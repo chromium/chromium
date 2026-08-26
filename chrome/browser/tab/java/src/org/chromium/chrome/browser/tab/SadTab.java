@@ -289,10 +289,10 @@ public class SadTab implements TabObserver, UserData, TabViewProvider {
     private static void recordEvent(boolean sendFeedbackView, int event) {
         if (sendFeedbackView) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Tabs.SadTab.Feedback.Event", event, SadTabEvent.MAX_SAD_TAB_EVENT);
+                    "Tabs.SadTab.Feedback.Event", event, SadTabEvent.COUNT);
         } else {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Tabs.SadTab.Reload.Event", event, SadTabEvent.MAX_SAD_TAB_EVENT);
+                    "Tabs.SadTab.Reload.Event", event, SadTabEvent.COUNT);
         }
     }
 

@@ -71,7 +71,7 @@ public class ShareSheetUsageRankingHelperTest {
     private Activity mActivity;
     private ShareParams mParams;
     private ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
-    private final @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
+    private final @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.COUNT;
     private final LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
 

@@ -42,12 +42,12 @@ import org.chromium.url.GURL;
 /** Handles the Link To Text action in the Sharing Hub. */
 @NullMarked
 public class LinkToTextCoordinator implements TabObserver {
-    @IntDef({LinkGeneration.TEXT, LinkGeneration.LINK, LinkGeneration.FAILURE, LinkGeneration.MAX})
+    @IntDef({LinkGeneration.TEXT, LinkGeneration.LINK, LinkGeneration.FAILURE, LinkGeneration.COUNT})
     public @interface LinkGeneration {
         int TEXT = 0;
         int LINK = 1;
         int FAILURE = 2;
-        int MAX = 3;
+        int COUNT = 3;
     }
 
     /**

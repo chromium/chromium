@@ -491,13 +491,13 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     case SadTabViewMode::RELOAD:
       UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabReloadHistogramKey,
                                 ui_metrics::SadTabEvent::BUTTON_CLICKED,
-                                ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
+                                ui_metrics::SadTabEvent::COUNT);
       [self.delegate sadTabViewReload:self];
       break;
     case SadTabViewMode::FEEDBACK: {
       UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey,
                                 ui_metrics::SadTabEvent::BUTTON_CLICKED,
-                                ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
+                                ui_metrics::SadTabEvent::COUNT);
       [self.delegate sadTabViewShowReportAnIssue:self];
       break;
     }

@@ -38,10 +38,10 @@ namespace {
 void RecordEvent(bool feedback, ui_metrics::SadTabEvent event) {
   if (feedback) {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey, event,
-                              ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
+                              ui_metrics::SadTabEvent::COUNT);
   } else {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabReloadHistogramKey, event,
-                              ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
+                              ui_metrics::SadTabEvent::COUNT);
   }
 }
 

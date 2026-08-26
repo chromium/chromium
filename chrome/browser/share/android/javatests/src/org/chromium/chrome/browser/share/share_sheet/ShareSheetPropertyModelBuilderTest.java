@@ -316,7 +316,7 @@ public final class ShareSheetPropertyModelBuilderTest {
                         shareParams,
                         /* saveLastUsed= */ false,
                         /* shareStartTime= */ 0,
-                        /* linkGenerationStatusForMetrics= */ LinkGeneration.MAX,
+                        /* linkGenerationStatusForMetrics= */ LinkGeneration.COUNT,
                         /* linkToggleMetricsDetails= */ null);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
@@ -337,7 +337,7 @@ public final class ShareSheetPropertyModelBuilderTest {
                         shareParams,
                         /* saveLastUsed= */ false,
                         /* shareStartTime= */ 0,
-                        /* linkGenerationStatusForMetrics= */ LinkGeneration.MAX,
+                        /* linkGenerationStatusForMetrics= */ LinkGeneration.COUNT,
                         /* linkToggleMetricsDetails= */ null);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
@@ -358,7 +358,7 @@ public final class ShareSheetPropertyModelBuilderTest {
                         shareParams,
                         /* saveLastUsed= */ false,
                         /* shareStartTime= */ 0,
-                        /* linkGenerationStatusForMetrics= */ LinkGeneration.MAX,
+                        /* linkGenerationStatusForMetrics= */ LinkGeneration.COUNT,
                         /* linkToggleMetricsDetails= */ null);
 
         assertEquals("Incorrect number of property models.", 4, propertyModels.size());

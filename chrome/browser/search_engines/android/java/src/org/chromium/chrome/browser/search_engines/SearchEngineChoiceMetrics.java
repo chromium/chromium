@@ -32,7 +32,7 @@ public class SearchEngineChoiceMetrics {
         int SNACKBAR_SHOWN = 0;
         int PROMPT_FOLLOWED = 1;
         int SEARCH_ENGINE_CHANGED = 2;
-        int MAX = 3;
+        int COUNT = 3;
     }
 
     /**
@@ -64,7 +64,7 @@ public class SearchEngineChoiceMetrics {
         int CHOICE_REQUEST_SUCCESS = 7;
         int CHOICE_ALREADY_APPLIED = 8;
         int CHOICE_RENEWAL_SKIPPED = 9;
-        int MAX = 10;
+        int COUNT = 10;
     }
 
     /**
@@ -75,7 +75,7 @@ public class SearchEngineChoiceMetrics {
      */
     public static void recordEvent(@Events int event) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.SearchEngineChoice.Events", event, Events.MAX);
+                "Android.SearchEngineChoice.Events", event, Events.COUNT);
     }
 
     /**
@@ -85,7 +85,7 @@ public class SearchEngineChoiceMetrics {
      */
     public static void recordEventV2(@EventsV2 int event) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.SearchEngineChoice.EventsV2", event, EventsV2.MAX);
+                "Android.SearchEngineChoice.EventsV2", event, EventsV2.COUNT);
     }
 
     /** Records the search engine type before the user made a choice about which engine to use. */

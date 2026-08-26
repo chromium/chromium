@@ -18,13 +18,13 @@ public final class LinkToTextMetricsHelper {
         LinkToTextDiagnoseStatus.SHOW_SHARINGHUB_FOR_HIGHLIGHT,
         LinkToTextDiagnoseStatus.REQUEST_SELECTOR,
         LinkToTextDiagnoseStatus.SELECTOR_RECEIVED,
-        LinkToTextDiagnoseStatus.MAX
+        LinkToTextDiagnoseStatus.COUNT
     })
     public @interface LinkToTextDiagnoseStatus {
         int SHOW_SHARINGHUB_FOR_HIGHLIGHT = 0;
         int REQUEST_SELECTOR = 1;
         int SELECTOR_RECEIVED = 2;
-        int MAX = 3;
+        int COUNT = 3;
     }
 
     /** Private constructor since all the methods in this class are static. */
@@ -36,7 +36,7 @@ public final class LinkToTextMetricsHelper {
      * @param linkGenerationStatus The state of the link generation that ended up being shared.
      */
     public static void recordSharedHighlightStateMetrics(@LinkGeneration int linkGenerationStatus) {
-        if (linkGenerationStatus == LinkGeneration.MAX) return;
+        if (linkGenerationStatus == LinkGeneration.COUNT) return;
         switch (linkGenerationStatus) {
             case LinkGeneration.LINK:
                 RecordUserAction.record(
@@ -54,7 +54,7 @@ public final class LinkToTextMetricsHelper {
         RecordHistogram.recordEnumeratedHistogram(
                 "SharedHighlights.AndroidShareSheet.SharedState",
                 linkGenerationStatus,
-                LinkGeneration.MAX);
+                LinkGeneration.COUNT);
     }
 
     /**
@@ -67,6 +67,6 @@ public final class LinkToTextMetricsHelper {
         RecordHistogram.recordEnumeratedHistogram(
                 "SharedHighlights.LinkToTextDiagnoseStatus",
                 linkToTextDiagnoseStatus,
-                LinkToTextDiagnoseStatus.MAX);
+                LinkToTextDiagnoseStatus.COUNT);
     }
 }

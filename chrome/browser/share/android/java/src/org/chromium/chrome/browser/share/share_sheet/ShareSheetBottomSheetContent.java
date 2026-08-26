@@ -119,11 +119,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mParams = params;
         mFeatureEngagementTracker = featureEngagementTracker;
 
-        // Set |mLinkGenerationState| to invalid value of |MAX| if |getLinkToTextSuccessful|
+        // Set |mLinkGenerationState| to invalid value of |COUNT| if |getLinkToTextSuccessful|
         // is not set in order to distinguish it from failure state. |getLinkToTextSuccessful| will
         // be set only for link to text.
         if (mParams.getLinkToTextSuccessful() == TriState.NOT_SET) {
-            mLinkGenerationState = LinkGeneration.MAX;
+            mLinkGenerationState = LinkGeneration.COUNT;
         } else if (mParams.getLinkToTextSuccessful() == TriState.TRUE) {
             mLinkGenerationState = LinkGeneration.LINK;
             mLinkToggleState = LinkToggleState.LINK;

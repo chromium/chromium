@@ -91,7 +91,7 @@ public class ShareSheetCoordinator
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
     private @Nullable ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
     private final ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
-    private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
+    private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.COUNT;
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;

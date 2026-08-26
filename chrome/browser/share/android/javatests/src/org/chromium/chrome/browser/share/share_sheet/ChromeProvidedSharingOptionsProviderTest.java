@@ -145,7 +145,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getPropertyModels_longScreenshotEnabledNoTab_excludesLongScreenshot() {
         mTabProvider.set(null);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
@@ -162,7 +162,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false,
                 /* printingEnabled= */ true,
-                LinkGeneration.MAX,
+                LinkGeneration.COUNT,
                 /* isScreenshotProtected= */ true);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -181,7 +181,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.isPdf()).thenReturn(true);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
@@ -197,7 +197,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
         mTabProvider.set(null);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
@@ -215,7 +215,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.isPdf()).thenReturn(true);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
@@ -236,7 +236,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_printingEnabled_includesPrintingIfNotDesktop() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
@@ -257,7 +257,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_isIncognito_doesNotIncludeQrCode() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ true, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ true, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -273,7 +273,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
@@ -290,7 +290,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_multipleTypes_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE),
@@ -311,7 +311,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_doesNotFilterByDetailedContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.COUNT);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.IMAGE),
@@ -351,7 +351,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getPropertyModels_linksForAutomotive() {
         mAutoTestRule.setIsAutomotive(true);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -387,7 +387,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getPropertyModels_textAndLinksIncognito() {
         mAutoTestRule.setIsAutomotive(true);
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ true, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ true, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -420,7 +420,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_linkAndTextShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -441,7 +441,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_linkShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -462,7 +462,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 .thenReturn(EntryPointDisplayReason.OFFER_FEATURE);
 
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -478,7 +478,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     public void getPropertyModels_textShare() {
         setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
+                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.COUNT);
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
