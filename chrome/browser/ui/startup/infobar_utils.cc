@@ -147,14 +147,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
 #endif
 
     if (IsAutomationEnabled()) {
-      if (infobars::IsInfoBarMigrated(
-              infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE)) {
-        infobars::BrowserInfoBarManager::From(g_browser_process)
-            ->ShowGlobally(
-                infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE);
-      } else {
-        AutomationInfoBarDelegate::Create();
-      }
+      AutomationInfoBarDelegate::Create();
     }
   }
 

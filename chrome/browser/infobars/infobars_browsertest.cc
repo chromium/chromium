@@ -171,8 +171,7 @@ class InfoBarUiTest : public TestInfoBar,
            {"MigratedPageInfo", "true"},
            {"MigratedGoogleApiKeys", "true"},
            {"MigratedObsoleteSystem", "true"},
-           {"MigratedThemeInstalled", "true"},
-           {"MigratedAutomation", "true"}});
+           {"MigratedThemeInstalled", "true"}});
     } else {
       feature_list_.InitAndDisableFeature(
           infobars::kCentralizedInfoBarFramework);
@@ -388,12 +387,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::AUTOMATION_INFOBAR_DELEGATE:
-      if (infobars::IsInfoBarMigrated(IBD::AUTOMATION_INFOBAR_DELEGATE)) {
-        infobars::BrowserInfoBarManager::From(g_browser_process)
-            ->ShowGlobally(IBD::AUTOMATION_INFOBAR_DELEGATE);
-      } else {
-        AutomationInfoBarDelegate::Create();
-      }
+      AutomationInfoBarDelegate::Create();
       break;
 
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/emulation.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/devtools_agent_host.h"
 
-class EmulationHandler : public protocol::Emulation::Backend {
+class EmulationHandler : public protocol::Emulation::Backend,
+                         public infobars::InfoBarManager::Observer {
  public:
   EmulationHandler(content::DevToolsAgentHost* agent_host,
                    protocol::UberDispatcher* dispatcher);
@@ -58,11 +58,13 @@ class EmulationHandler : public protocol::Emulation::Backend {
   protocol::Response SetPrimaryScreen(
       const protocol::String& screen_id) override;
 
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+
  private:
   infobars::ContentInfoBarManager* GetContentInfoBarManager();
 
   raw_ptr<content::DevToolsAgentHost> agent_host_;
-  base::WeakPtr<infobars::InfoBar> automation_info_bar_;
+  raw_ptr<infobars::InfoBar> automation_info_bar_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_EMULATION_HANDLER_H_
