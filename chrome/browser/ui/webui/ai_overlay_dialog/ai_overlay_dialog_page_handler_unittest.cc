@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -61,7 +61,7 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(tab_strip_model_.get()));
 
     controller_ =
-        std::make_unique<AiOverlayDialogController>(&browser_window_interface_);
+        std::make_unique<AiOverlayDialogControllerViews>(&browser_window_interface_);
 
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
     page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());

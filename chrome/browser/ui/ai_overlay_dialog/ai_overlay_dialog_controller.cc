@@ -10,32 +10,15 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
-#include "components/vector_icons/vector_icons.h"
-#include "extensions/browser/view_type_utils.h"
-#include "extensions/common/mojom/view_type.mojom.h"
-#include "ui/views/controls/webview/web_contents_set_background_color.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/widget/widget.h"
-#endif
 #include "url/gurl.h"
 
 namespace ttc {
@@ -65,120 +48,12 @@ AiOverlayDialogController::AiOverlayDialogController(
 
 AiOverlayDialogController::~AiOverlayDialogController() = default;
 
-#if defined(TOOLKIT_VIEWS)
-views::WebView* AiOverlayDialogController::GetActiveOverlayWebView() const {
-  auto* elements = BrowserElementsViews::From(browser_);
-  if (!elements) {
-    return nullptr;
-  }
-  return elements->GetViewAs<views::WebView>(kAiOverlayDialogWebViewElementId);
-}
-#else
-content::WebContents* AiOverlayDialogController::GetActiveOverlayWebContents()
-    const {
-  return android_shell_web_contents_.get();
-}
-#endif
-
-void AiOverlayDialogController::ShowOverlay() {
-#if defined(TOOLKIT_VIEWS)
-  views::WebView* overlay_web_view = GetActiveOverlayWebView();
-  if (!overlay_web_view) {
-    return;
-  }
-
-  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      overlay_web_view->GetWebContents(), SK_ColorTRANSPARENT);
-
-  webui::SetBrowserWindowInterface(overlay_web_view->GetWebContents(),
-                                   browser_);
-  extensions::SetViewType(overlay_web_view->GetWebContents(),
-                          extensions::mojom::ViewType::kComponent);
-  overlay_web_view->GetWebContents()->SetDelegate(this);
-
-  overlay_web_view->LoadInitialURL(
-      GURL(chrome::kChromeUIAiOverlayDialogUntrustedURL));
-
-  overlay_web_view->SetVisible(true);
-  overlay_web_view->InvalidateLayout();
-  overlay_web_view->parent()->InvalidateLayout();
-
-  if (overlay_web_view->GetWidget()) {
-    overlay_web_view->GetWidget()->LayoutRootViewIfNecessary();
-  }
-
-  if (auto* action_item = actions::ActionManager::Get().FindAction(
-          kActionShowAiOverlayDialog,
-          browser_->GetFeatures().GetRootActionItem())) {
-    action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
-                                          : vector_icons::kPauseOldIcon,
-        ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
-    action_item->SetProperty(kActionAiOverlayActiveKey, true);
-  }
-
-  // Update the action state to ensure the toolbar button prevents overflow when
-  // the dialog is active.
-  if (auto* pinned_actions = browser_->GetFeatures().pinned_toolbar_actions()) {
-    pinned_actions->UpdateActionState(kActionShowAiOverlayDialog,
-                                      /*is_active=*/true);
-  }
-#else
-  content::WebContents* web_contents = GetActiveOverlayWebContents();
-  if (web_contents) {
-    webui::SetBrowserWindowInterface(web_contents, browser_);
-    web_contents->SetDelegate(this);
-    content::NavigationController::LoadURLParams params{
-        GURL(chrome::kChromeUIAiOverlayDialogUntrustedURL)};
-    web_contents->GetController().LoadURLWithParams(params);
-  }
-#endif
-}
-
-void AiOverlayDialogController::HideOverlay() {
-#if defined(TOOLKIT_VIEWS)
-  views::WebView* overlay_web_view = GetActiveOverlayWebView();
-  if (overlay_web_view) {
-    overlay_web_view->SetVisible(false);
-  }
-
-  if (auto* action_item = actions::ActionManager::Get().FindAction(
-          kActionShowAiOverlayDialog,
-          browser_->GetFeatures().GetRootActionItem())) {
-    action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
-                                          : vector_icons::kMicOldIcon,
-        ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
-    action_item->SetProperty(kActionAiOverlayActiveKey, false);
-  }
-
-  // Update the action state to ensure the toolbar button prevents overflow when
-  // the dialog is active.
-  if (auto* pinned_actions = browser_->GetFeatures().pinned_toolbar_actions()) {
-    pinned_actions->UpdateActionState(kActionShowAiOverlayDialog,
-                                      /*is_active=*/false);
-  }
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AiOverlayDialogController::ToggleOverlay() {
   if (IsOverlayShowing()) {
     HideOverlay();
   } else {
     ShowOverlay();
   }
-}
-
-bool AiOverlayDialogController::IsOverlayShowing() const {
-#if defined(TOOLKIT_VIEWS)
-  views::WebView* overlay_web_view = GetActiveOverlayWebView();
-  return overlay_web_view != nullptr && overlay_web_view->GetVisible();
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif
 }
 
 // TODO(crbug.com/535704548): Consider renaming SetInputCaptionsVisible /
@@ -252,17 +127,6 @@ bool AiOverlayDialogController::CheckMediaAccessPermission(
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return true;
-}
-
-void AiOverlayDialogController::ResizeDueToAutoResize(
-    content::WebContents* source,
-    const gfx::Size& new_size) {
-#if defined(TOOLKIT_VIEWS)
-  views::WebView* overlay_web_view = GetActiveOverlayWebView();
-  if (overlay_web_view && overlay_web_view->GetWebContents() == source) {
-    overlay_web_view->SetPreferredSize(new_size);
-  }
-#endif
 }
 
 }  // namespace ttc

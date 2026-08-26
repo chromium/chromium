@@ -20,10 +20,6 @@ source_set("ai_overlay_dialog") {
     "//ui/base/unowned_user_data",
   ]
 
-  if (toolkit_views) {
-    public_deps += [ "//ui/views" ]
-  }
-
   deps = [
     "//chrome/browser:primitives",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -40,13 +36,23 @@ source_set("ai_overlay_dialog") {
     "//url",
   ]
 
-  if (!is_android) {
+  if (toolkit_views) {
+    sources += [
+      "ai_overlay_dialog_controller_views.cc",
+      "ai_overlay_dialog_controller_views.h",
+    ]
+    public_deps += [ "//ui/views" ]
     deps += [
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/toolbar",
       "//extensions/browser",
       "//extensions/common:mojom",
       "//ui/views/controls/webview",
+    ]
+  } else {
+    sources += [
+      "ai_overlay_dialog_controller_android.cc",
+      "ai_overlay_dialog_controller_android.h",
     ]
   }
 }

@@ -45,7 +45,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmarks_service_feature.h"
@@ -577,8 +577,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
       ai_overlay_dialog_controller_ =
-          GetUserDataFactory().CreateInstance<ttc::AiOverlayDialogController>(
-              *browser, browser);
+          GetUserDataFactory()
+              .CreateInstance<ttc::AiOverlayDialogControllerViews>(*browser,
+                                                                   browser);
     }
 
     if (glic::GlicEnabling::IsProfileEligible(profile)) {

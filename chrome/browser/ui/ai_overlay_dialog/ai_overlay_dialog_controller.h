@@ -16,12 +16,6 @@
 #include "ui/base/class_property.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-#if defined(TOOLKIT_VIEWS)
-namespace views {
-class WebView;
-}  // namespace views
-#endif
-
 class HostContentSettingsMap;
 
 namespace ttc {
@@ -45,16 +39,17 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
       delete;
   ~AiOverlayDialogController() override;
 
+
   // Shows the transparent overlay above the browser window.
-  void ShowOverlay();
+  virtual void ShowOverlay() = 0;
 
   // Hides the overlay.
-  void HideOverlay();
+  virtual void HideOverlay() = 0;
 
   // Toggles the overlay visibility.
   void ToggleOverlay();
 
-  bool IsOverlayShowing() const;
+  virtual bool IsOverlayShowing() const = 0;
 
   // content::WebContentsDelegate:
   void RequestMediaAccessPermission(
@@ -64,8 +59,6 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override;
 
   bool input_captions_visible() const { return input_captions_visible_; }
   void SetInputCaptionsVisible(bool visible);
@@ -90,13 +83,10 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
- private:
-#if defined(TOOLKIT_VIEWS)
-  views::WebView* GetActiveOverlayWebView() const;
-#else
-  content::WebContents* GetActiveOverlayWebContents() const;
-#endif
+ protected:
+  BrowserWindowInterface* browser() const { return browser_; }
 
+ private:
   raw_ptr<BrowserWindowInterface> browser_;
 
   ui::ScopedUnownedUserData<AiOverlayDialogController>
@@ -111,10 +101,6 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   absl::flat_hash_map<std::string, std::string> remembered_notes_;
 
   base::ObserverList<Observer> observers_;
-
-#if !defined(TOOLKIT_VIEWS)
-  std::unique_ptr<content::WebContents> android_shell_web_contents_;
-#endif
 };
 
 extern const ::ui::ClassProperty<bool>* const kActionAiOverlayActiveKey;
