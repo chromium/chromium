@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "components/sync/protocol/journey_specifics.pb.h"
+#include "components/history/core/browser/journeys/journey_row.h"
 
 namespace sql {
 class Database;
@@ -30,21 +29,16 @@ namespace history::journeys {
 //   continuation queries.
 class JourneysDatabase {
  public:
-  explicit JourneysDatabase(sql::Database* db);
+  JourneysDatabase();
 
   JourneysDatabase(const JourneysDatabase&) = delete;
   JourneysDatabase& operator=(const JourneysDatabase&) = delete;
 
-  ~JourneysDatabase();
-
-  // Initializes the database tables and indices for a fresh database. Returns
-  // true on success.
-  bool Init();
+  virtual ~JourneysDatabase();
 
   // Adds or updates a batch of journeys in the database, including their
   // history entries and continuation queries. Returns true on success.
-  bool AddOrUpdateJourneys(
-      const std::vector<sync_pb::JourneySpecifics>& journeys);
+  bool AddOrUpdateJourneys(const std::vector<JourneyRow>& journeys);
 
   // Deletes a batch of journeys and their associated child entries (history
   // entries and continuation queries) identified by `journey_ids`. Returns true
@@ -53,19 +47,27 @@ class JourneysDatabase {
 
   // Retrieves a full journey by its journey_id (including history entries and
   // continuation queries). Returns std::nullopt if not found or on error.
-  std::optional<sync_pb::JourneySpecifics> GetJourney(
-      const std::string& journey_id);
+  std::optional<JourneyRow> GetJourney(const std::string& journey_id);
 
-  // Retrieves all stored journeys, ordered by creation_time_micros DESC.
+  // Retrieves all stored journeys, ordered by creation_time DESC.
   // Returns an empty vector on error or if none exist.
-  std::vector<sync_pb::JourneySpecifics> GetAllJourneys();
+  std::vector<JourneyRow> GetAllJourneys();
 
   // Deletes all journeys and all associated child entries from all 3 tables.
   // Returns true on success.
   bool DeleteAllJourneys();
 
- private:
-  const raw_ptr<sql::Database> db_;
+ protected:
+  // Initializes the database tables and indices for a fresh database. Returns
+  // true on success.
+  bool InitJourneysTables();
+
+  // Drops all journey tables. Used by HistoryDatabase::RecreateAllTablesButURL.
+  bool DropJourneysTables();
+
+  // Returns the database for the functions in this interface. The descendant
+  // of this class implements this function to return its database.
+  virtual sql::Database& GetDB() = 0;
 };
 
 }  // namespace history::journeys
