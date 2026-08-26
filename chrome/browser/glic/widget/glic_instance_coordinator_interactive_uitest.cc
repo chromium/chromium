@@ -172,31 +172,12 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, DoNotCrashWhenReopening) {
                   OpenGlicFloatingWindow());
 }
 
-// TODO(b/453696965): Broken in multi-instance.
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
-                       DISABLED_ButtonTogglesGlicWindow) {
-  RunTestSequence(OpenGlicFloatingWindow(), PressButton(kGlicButtonElementId),
-                  WaitForGlicClose(), PressButton(kGlicButtonElementId),
-                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
-}
-
 constexpr char kActivateSurfaceIncompatibilityNotice[] =
     "Programmatic window activation does not work on the Weston reference "
     "implementation of Wayland used on Linux testbots. It also doesn't work "
     "reliably on Linux in general. For this reason, some of these tests which "
     "use ActivateSurface() may be skipped on machine configurations which do "
     "not reliably support them.";
-
-// TODO(b/453696965): Broken in multi-instance.
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
-                       DISABLED_HotkeyWhenDetachedActiveCloses) {
-  RunTestSequence(
-      OpenGlicFloatingWindow(),
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              kActivateSurfaceIncompatibilityNotice),
-      InAnyContext(ActivateSurface(kGlicHostElementId)), SimulateGlicHotkey(),
-      WaitForGlicClose(), CheckControllerHasWidget(false));
-}
 
 // TODO(393203136): Once tests can observe window controller state rather than
 // polling, make a test like this one with glic initially attached.
@@ -655,30 +636,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWithPreviousPostionUiTest,
   gfx::Rect initial_bounds =
       GlicWidget::GetInitialBounds(nullptr, GlicWidget::GetInitialSize());
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
-}
-
-class GlicInstanceCoordinatorUnloadOnCloseTest
-    : public GlicInstanceCoordinatorUiTest {
- public:
-  GlicInstanceCoordinatorUnloadOnCloseTest() {
-    features_.InitAndEnableFeature(features::kGlicUnloadOnClose);
-  }
-  ~GlicInstanceCoordinatorUnloadOnCloseTest() override = default;
-
-  auto CheckWebUiContentsExist(bool exist) {
-    return CheckResult([this]() { return !!GetHost()->webui_contents(); },
-                       exist, "CheckWebUiContentsExist");
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-// N/A for kGlicMultiInstance.
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnloadOnCloseTest,
-                       DISABLED_UnloadOnClose) {
-  RunTestSequence(OpenGlicFloatingWindow(), CheckWebUiContentsExist(true),
-                  CloseGlicWindow(), CheckWebUiContentsExist(false));
 }
 
 class GlicInstanceCoordinatorWithDelayedPreloadingUiTest

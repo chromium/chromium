@@ -1740,6 +1740,25 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocalHotkeyScopeTest,
   ASSERT_OK(WaitForGlicClose());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocalHotkeyScopeTest,
+                       HotkeyWhenDetachedActiveCloses) {
+  // Open Glic and detach it into a floating window.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndDetach());
+
+  // Focus the floating Glic instance.
+  ASSERT_OK(FocusGlic(instance));
+
+  // Simulate receiving the hotkey command via the accelerator subsystem.
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  // Verify Glic is closed and no floating instance remains.
+  ASSERT_OK(WaitForGlicClose(instance));
+  EXPECT_EQ(coordinator().GetInstanceWithFloaty(), nullptr);
+}
+#endif
+
 class GlicInstanceCoordinatorLocalHotkeyScopeDisabledTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
