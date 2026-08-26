@@ -36,6 +36,9 @@ bool WebSandboxSupportLinux::GetFallbackFontForCharacter(
   TRACE_EVENT0("fonts", "WebSandboxSupportLinux::GetFallbackFontForCharacter");
 
   bool success = false;
+  bool known_to_have_no_fallback = false;
+  std::pair<int32_t, std::string> no_fallback_key(
+      character, preferred_locale ? preferred_locale : "");
 
   {
     base::AutoLock lock(lock_);
@@ -43,10 +46,12 @@ bool WebSandboxSupportLinux::GetFallbackFontForCharacter(
     if (iter != unicode_font_families_.end()) {
       *fallback_font = iter->second;
       success = true;
+    } else {
+      known_to_have_no_fallback = no_fallback_font_.contains(no_fallback_key);
     }
   }
 
-  if (!success) {
+  if (!success && !known_to_have_no_fallback) {
     font_service::mojom::FontIdentityPtr font_identity;
     bool is_bold = false;
     bool is_italic = false;
@@ -66,6 +71,9 @@ bool WebSandboxSupportLinux::GetFallbackFontForCharacter(
 
       base::AutoLock lock(lock_);
       unicode_font_families_.emplace(character, *fallback_font);
+    } else {
+      base::AutoLock lock(lock_);
+      no_fallback_font_.insert(std::move(no_fallback_key));
     }
   }
 

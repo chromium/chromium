@@ -8,6 +8,9 @@
 #include <stdint.h>
 
 #include <map>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -56,6 +59,12 @@ class WebSandboxSupportLinux : public blink::WebSandboxSupport {
   // Maps unicode chars to their fallback fonts.
   std::map<int32_t, gfx::FallbackFontData> unicode_font_families_
       GUARDED_BY(lock_);
+  // Characters (with the locale they were requested for) for which the browser
+  // found no fallback font. Without this every occurrence of such a character
+  // costs a round trip to the browser each time the text containing it is
+  // shaped; with no color emoji font installed that is every emoji, since
+  // Blink first asks for an emoji presentation font.
+  std::set<std::pair<int32_t, std::string>> no_fallback_font_ GUARDED_BY(lock_);
 
   const sk_sp<font_service::FontLoader> font_loader_;
 };
