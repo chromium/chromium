@@ -32,8 +32,8 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -716,9 +716,8 @@ void BackgroundContentsService::AddWebContents(
           Profile::FromBrowserContext(new_contents->GetBrowserContext()))
           ->GetLastActiveBrowser();
   if (browser) {
-    chrome::AddWebContents(browser->GetBrowserForMigrationOnly(), nullptr,
-                           std::move(new_contents), target_url, disposition,
-                           window_features);
+    chrome::AddWebContents(browser, nullptr, std::move(new_contents),
+                           target_url, disposition, window_features);
   }
 }
 

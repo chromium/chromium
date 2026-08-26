@@ -33,7 +33,6 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
-class Browser;
 class BrowserWindowInterface;
 class PrefRegistrySimple;
 class Profile;
