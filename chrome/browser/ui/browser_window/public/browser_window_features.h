@@ -480,11 +480,6 @@ class BrowserWindowFeatures {
   // supported for those cases.
   ToastController* toast_controller();
 
-  // Returns a pointer to the ToastService for the browser window. This can
-  // return nullptr for non-normal browser windows because toasts are not
-  // supported for those cases.
-  ToastService* toast_service() { return toast_service_.get(); }
-
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::LockedStateController* locked_state_controller() {
     return locked_state_controller_.get();

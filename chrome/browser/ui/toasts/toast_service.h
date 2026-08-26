@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
 class BrowserWindowInterface;
 class ToastController;
 class ToastRegistry;
@@ -15,14 +17,22 @@ class ToastRegistry;
 // register its toast.
 class ToastService {
  public:
+  DECLARE_USER_DATA(ToastService);
+
   explicit ToastService(BrowserWindowInterface* browser_window_interface);
   ~ToastService();
+
+  // Returns the service for `browser`, or null if it does not have one
+  // (toasts are only supported for normal and app windows).
+  static ToastService* From(BrowserWindowInterface* browser);
 
   const ToastRegistry* toast_registry() { return toast_registry_.get(); }
 
   ToastController* toast_controller() { return toast_controller_.get(); }
 
  private:
+  ui::ScopedUnownedUserData<ToastService> scoped_unowned_user_data_;
+
   void RegisterToasts(BrowserWindowInterface* browser_window_interface);
   std::unique_ptr<ToastRegistry> toast_registry_;
   std::unique_ptr<ToastController> toast_controller_;

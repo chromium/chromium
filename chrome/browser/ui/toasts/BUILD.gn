@@ -29,6 +29,7 @@ source_set("toasts") {
     "//components/omnibox/common",
     "//content/public/browser",
     "//ui/base",
+    "//ui/base/unowned_user_data",
     "//ui/views",
   ]
 }

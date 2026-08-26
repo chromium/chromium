@@ -908,7 +908,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
-    toast_service_ = std::make_unique<ToastService>(browser);
+    toast_service_ =
+        GetUserDataFactory().CreateInstance<ToastService>(*browser, browser);
   }
 
   upgrade_notification_controller_ =

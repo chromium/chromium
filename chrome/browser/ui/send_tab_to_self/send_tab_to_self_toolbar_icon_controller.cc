@@ -87,10 +87,8 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
               l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND),
               static_cast<int>(new_entries.size()),
               base::UTF8ToUTF16(new_entries[0]->GetDeviceName()));
-      browser->GetFeatures()
-          .toast_service()
-          ->toast_controller()
-          ->MaybeShowToast(std::move(params));
+      ToastService::From(browser)->toast_controller()->MaybeShowToast(
+          std::move(params));
     } else {
       // If no browser is active, record the entries as pending and wait for
       // a browser window to be activated.
@@ -173,7 +171,7 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
     params.toast_close_callback = base::ScopedClosureRunner(
         base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
                        weak_ptr_factory_.GetWeakPtr()));
-    browser->GetFeatures().toast_service()->toast_controller()->MaybeShowToast(
+    ToastService::From(browser)->toast_controller()->MaybeShowToast(
         std::move(params));
   }
 }

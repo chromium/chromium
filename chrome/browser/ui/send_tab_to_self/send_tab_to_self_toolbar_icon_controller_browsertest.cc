@@ -293,12 +293,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
             ShareActivatedEntryPoint::kAutoOpened);
   EXPECT_EQ(model->activated_call_count(), 1);
 
-  EXPECT_EQ(browser()
-                ->GetFeatures()
-                .toast_service()
-                ->toast_controller()
-                ->GetCurrentToastId(),
-            ToastId::kSendTabToSelfTabOpened);
+  EXPECT_EQ(
+      ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
+      ToastId::kSendTabToSelfTabOpened);
 }
 
 // This test cannot work on Wayland because the platform does not allow clients
@@ -348,11 +345,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome2",
                                       AutoOpenOutcome::kUnopenedImmediately, 2);
 
-  EXPECT_FALSE(browser()
-                   ->GetFeatures()
-                   .toast_service()
-                   ->toast_controller()
-                   ->IsShowingToast());
+  EXPECT_FALSE(
+      ToastService::From(browser())->toast_controller()->IsShowingToast());
 
   // Activate the browser and check that the entries are opened in the
   // background and the auto-open outcome is recorded.
@@ -374,12 +368,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation, 2);
 
-  EXPECT_EQ(browser()
-                ->GetFeatures()
-                .toast_service()
-                ->toast_controller()
-                ->GetCurrentToastId(),
-            ToastId::kSendTabToSelfTabsOpenedInBackground);
+  EXPECT_EQ(
+      ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
+      ToastId::kSendTabToSelfTabsOpenedInBackground);
 
   // Manually activate one of the background tabs (index 1) and verify the
   // model was notified.
@@ -426,11 +417,8 @@ IN_PROC_BROWSER_TEST_F(
                                   .shared_time = now + base::Seconds(1)}});
   const SendTabToSelfEntry* entry_1 = entries[0];
 
-  ASSERT_FALSE(browser()
-                   ->GetFeatures()
-                   .toast_service()
-                   ->toast_controller()
-                   ->IsShowingToast());
+  ASSERT_FALSE(
+      ToastService::From(browser())->toast_controller()->IsShowingToast());
 
   // Activate the browser and check that the entries are opened in the
   // background and the auto-open outcome is recorded.
@@ -442,12 +430,9 @@ IN_PROC_BROWSER_TEST_F(
   // index remains 0.
   ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
-  ASSERT_EQ(browser()
-                ->GetFeatures()
-                .toast_service()
-                ->toast_controller()
-                ->GetCurrentToastId(),
-            ToastId::kSendTabToSelfTabsOpenedInBackground);
+  ASSERT_EQ(
+      ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
+      ToastId::kSendTabToSelfTabsOpenedInBackground);
 
   // Simulate clicking the toast action button.
   controller()->SwitchToLatestTabsOpenedInBackground(browser());
@@ -501,11 +486,8 @@ IN_PROC_BROWSER_TEST_F(
                               .target_device_cache_guid = "device_b",
                               .shared_time = now + base::Seconds(1)}});
 
-  ASSERT_FALSE(browser()
-                   ->GetFeatures()
-                   .toast_service()
-                   ->toast_controller()
-                   ->IsShowingToast());
+  ASSERT_FALSE(
+      ToastService::From(browser())->toast_controller()->IsShowingToast());
 
   // Activate the browser and check that the entries are opened in the
   // background and the auto-open outcome is recorded.
@@ -523,12 +505,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(url_3,
             browser()->GetTabStripModel()->GetWebContentsAt(3)->GetURL());
 
-  ASSERT_EQ(browser()
-                ->GetFeatures()
-                .toast_service()
-                ->toast_controller()
-                ->GetCurrentToastId(),
-            ToastId::kSendTabToSelfTabsOpenedInBackground);
+  ASSERT_EQ(
+      ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
+      ToastId::kSendTabToSelfTabsOpenedInBackground);
 
   // Close the previously active tab (index 1).
   browser()->GetTabStripModel()->CloseWebContentsAt(
@@ -584,11 +563,8 @@ IN_PROC_BROWSER_TEST_F(
                               .target_device_cache_guid = "device_b",
                               .shared_time = now + base::Seconds(1)}});
 
-  ASSERT_FALSE(browser()
-                   ->GetFeatures()
-                   .toast_service()
-                   ->toast_controller()
-                   ->IsShowingToast());
+  ASSERT_FALSE(
+      ToastService::From(browser())->toast_controller()->IsShowingToast());
 
   // Activate the browser and check that the entries are opened in the
   // background and the auto-open outcome is recorded.
@@ -600,12 +576,9 @@ IN_PROC_BROWSER_TEST_F(
   // index remains 0.
   ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
-  ASSERT_EQ(browser()
-                ->GetFeatures()
-                .toast_service()
-                ->toast_controller()
-                ->GetCurrentToastId(),
-            ToastId::kSendTabToSelfTabsOpenedInBackground);
+  ASSERT_EQ(
+      ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
+      ToastId::kSendTabToSelfTabsOpenedInBackground);
 
   // Close the first of the newly opened tabs.
   browser()->GetTabStripModel()->CloseWebContentsAt(1,

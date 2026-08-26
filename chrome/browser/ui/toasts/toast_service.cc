@@ -68,7 +68,17 @@ const gfx::VectorIcon& GetTaskInProgressIcon() {
 }
 }  // namespace
 
-ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
+DEFINE_USER_DATA(ToastService);
+
+// static
+ToastService* ToastService::From(BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+ToastService::ToastService(BrowserWindowInterface* browser_window_interface)
+    : scoped_unowned_user_data_(
+          browser_window_interface->GetUnownedUserDataHost(),
+          *this) {
   toast_registry_ = std::make_unique<ToastRegistry>();
   toast_controller_ = std::make_unique<ToastController>(
       browser_window_interface, toast_registry_.get());
