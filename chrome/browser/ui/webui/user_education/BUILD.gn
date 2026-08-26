@@ -2,21 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
-mojom("mojo_bindings") {
-  sources = [ "user_education.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
-  webui_module_path = "/"
-}
-
 source_set("user_education") {
   sources = [
     "user_education_handler.cc",
     "user_education_handler.h",
   ]
 
-  public_deps = [ ":mojo_bindings" ]
+  public_deps = [ "//components/user_education/webui:mojo_bindings" ]
 
   deps = [
     "//chrome/browser/feature_engagement",

@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/user_education.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/interaction/element_identifier.h"

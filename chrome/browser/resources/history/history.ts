@@ -21,6 +21,8 @@ export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrRouter} from 'chrome://resources/js/cr_router.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+// This is used to ensure that the same proxy factory is used in tests.
+export {browserProxyFactory as userEducationProxyFactory} from 'chrome://resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 export {HistoryAppElement} from './app.js';
 export type {BrowserProxy, RemoveVisitsRequest} from './browser_proxy.js';
 export {BrowserProxyImpl} from './browser_proxy.js';
@@ -41,5 +43,3 @@ export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
 export {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 export {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
-export {browserProxyFactory as userEducationProxyFactory, FeaturePromoFeatureUsedAction} from './user_education.mojom-webui.js';
-export type {BrowserProxy as UserEducationBrowserProxy, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';

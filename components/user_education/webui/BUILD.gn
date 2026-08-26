@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "user_education.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "chrome://resources/mojo/components/user_education/webui"
+}
+
 source_set("webui") {
   sources = [
     "help_bubble_handler.cc",

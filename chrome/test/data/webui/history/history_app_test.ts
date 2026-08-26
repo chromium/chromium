@@ -6,7 +6,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CrRouter, historyEmbeddingsBrowserProxyFactory, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CrRouter, historyEmbeddingsBrowserProxyFactory, HistoryEmbeddingsPageHandlerRemote, userEducationProxyFactory} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -21,7 +21,6 @@ import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {TestUserEducationBrowserProxy} from './test_user_education_browser_proxy.js';
 
-import {userEducationProxyFactory} from 'chrome://history/history.js';
 // clang-format on
 
 suite('HistoryAppTest', function() {

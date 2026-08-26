@@ -7,11 +7,11 @@
 
 #include "base/feature.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "components/user_education/webui/user_education.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class BrowserUserEducationInterface;

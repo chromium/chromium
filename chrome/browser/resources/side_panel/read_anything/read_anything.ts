@@ -8,6 +8,8 @@ export type {SpEmptyStateElement} from '//read-anything-side-panel.top-chrome/sh
 export {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 export {PageCallbackRouter} from '//resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js';
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+// This is used to ensure that the same proxy factory is used in tests.
+export {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 export type {AppElement} from './app/app.js';
 export {AppStyleUpdater} from './app/app_style_updater.js';
 export type {ReadAnythingToolbarElement} from './app/read_anything_toolbar.js';
@@ -86,5 +88,3 @@ export type {MetricsBrowserProxy} from './shared/metrics_browser_proxy.js';
 export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './shared/metrics_browser_proxy.js';
 export {LinkStatus, PageType, ReadAnythingLogger, SpeechControls, TimeFrom, ViewMode} from './shared/read_anything_logger.js';
 export {calculateTextBounds, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from './shared/rect_calculations.js';
-export {browserProxyFactory as userEducationProxyFactory, FeaturePromoFeatureUsedAction} from './user_education.mojom-webui.js';
-export type {BrowserProxy as UserEducationBrowserProxy, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';

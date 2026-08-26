@@ -7,10 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "chrome/browser/ui/webui/user_education/user_education_handler.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/user_education.mojom.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"

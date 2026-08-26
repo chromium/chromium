@@ -52,6 +52,7 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.lineFocusEnabled = true;
     await microtasksFinished();
     lineFocusMenu.close();
+    assertEquals(userEducationProxyFactory, lineFocusMenu.proxy);
     assertEquals(
         1, userEducationProxy.getCallCount('notifyNewBadgeFeatureUsed'));
     assertDeepEquals(

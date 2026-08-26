@@ -8,12 +8,12 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 
 import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
-import {browserProxyFactory as userEducationProxyFactory} from '../user_education.mojom-webui.js';
 
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import {getHtml} from './line_focus_menu.html.js';
@@ -56,6 +56,8 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   accessor lineFocusStyle: LineFocusStyle|null = null;
   accessor lineFocusEnabled: boolean = false;
   accessor lineFocusMovement: LineFocusMovement|null = null;
+
+  proxy: Object|undefined;
 
   private toggleOptions_: Array<MenuStateItem<boolean>> = [
     {
@@ -156,6 +158,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   close() {
     this.$.menu.close();
     if (this.lineFocusEnabled) {
+      this.proxy = userEducationProxyFactory;
       userEducationProxyFactory.getInstance().handler.notifyNewBadgeFeatureUsed(
           LINE_FOCUS_FEATURE_NAME);
     }
