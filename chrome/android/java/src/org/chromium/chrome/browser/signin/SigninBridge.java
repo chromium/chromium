@@ -66,6 +66,7 @@ import org.chromium.components.signin.metrics.CrossDeviceInitialState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -85,6 +86,7 @@ final class SigninBridge {
                 IdentityManager identityManager,
                 SigninManager signinManager,
                 @Nullable AccountPreviewDataService accountPreviewDataService,
+                ModalDialogManager modalDialogManager,
                 BottomSheetController bottomSheetController,
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -98,6 +100,7 @@ final class SigninBridge {
                     identityManager,
                     signinManager,
                     accountPreviewDataService,
+                    modalDialogManager,
                     bottomSheetController,
                     accountPickerDelegate,
                     accountPickerBottomSheetStrings,
@@ -412,6 +415,7 @@ final class SigninBridge {
                 signinManager.getIdentityManager(),
                 signinManager,
                 accountPreviewDataService,
+                assertNonNull(windowAndroid.getModalDialogManager()),
                 bottomSheetController,
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 strings,

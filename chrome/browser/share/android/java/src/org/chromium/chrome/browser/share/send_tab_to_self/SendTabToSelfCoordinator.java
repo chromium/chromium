@@ -257,6 +257,7 @@ public class SendTabToSelfCoordinator
                                 assertNonNull(identityManager),
                                 assertNonNull(signinManager),
                                 accountPreviewDataService,
+                                assertNonNull(mModalDialogManagerSupplier.get()),
                                 mBottomSheetController,
                                 new SendTabToSelfAccountPickerDelegate(this::onSignInComplete),
                                 bottomSheetStrings,

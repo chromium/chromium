@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -16,46 +17,28 @@ import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Coordinator of the account picker bottom sheet. */
+/** Coordinator of the account picker bottom sheet or modal dialog. */
 @NullMarked
 public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiCoordinator {
     private final AccountPickerBottomSheetView mView;
-    private final BottomSheetController mBottomSheetController;
-    private final AccountPickerDelegate mAccountPickerDelegate;
-    private final AccountPickerDismissalLogger mDismissalLogger;
+    private final AccountPickerPresenter mPresenter;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
-    private final BottomSheetObserver mBottomSheetObserver =
-            new BottomSheetObserver() {
-                @Override
-                public void onSheetStateChanged(
-                        @SheetState int newState, @StateChangeReason int reason) {
-                    if (newState != BottomSheetController.SheetState.HIDDEN) {
-                        return;
-                    }
-
-                    mDismissalLogger.logBottomSheetDismissal(reason);
-                    if (reason != StateChangeReason.INTERACTION_COMPLETE) {
-                        mAccountPickerDelegate.onSignInCancel();
-                    }
-                    AccountPickerBottomSheetCoordinator.this.destroy();
-                }
-            };
 
     /**
-     * Constructs the AccountPickerBottomSheetCoordinator and shows the bottom sheet on the screen.
+     * Constructs the AccountPickerBottomSheetCoordinator and shows the bottom sheet or modal dialog
+     * on the screen.
      */
     @MainThread
     public AccountPickerBottomSheetCoordinator(
@@ -63,6 +46,7 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
             IdentityManager identityManager,
             SigninManager signinManager,
             @Nullable AccountPreviewDataService accountPreviewDataService,
+            ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -71,9 +55,8 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
             boolean isWebSignin,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedAccountId) {
-        mBottomSheetController = bottomSheetController;
-        mAccountPickerDelegate = accountPickerDelegate;
-        mDismissalLogger = new AccountPickerDismissalLogger(signinAccessPoint, isWebSignin);
+        Activity activity = assumeNonNull(windowAndroid.getActivity().get());
+        var dismissalLogger = new AccountPickerDismissalLogger(signinAccessPoint, isWebSignin);
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.SHOWN, signinAccessPoint);
 
@@ -91,10 +74,29 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
                         isWebSignin,
                         signinAccessPoint,
                         selectedAccountId);
+
+        boolean showAsDialog = SigninUtils.shouldShowAccountPickerDialog(activity);
+
+        mPresenter =
+                showAsDialog
+                        ? new ModalDialogAccountPickerPresenter(
+                                modalDialogManager,
+                                dismissalLogger,
+                                accountPickerDelegate,
+                                this::destroy)
+                        : new BottomSheetAccountPickerPresenter(
+                                bottomSheetController,
+                                dismissalLogger,
+                                accountPickerDelegate,
+                                this::destroy);
+
         mView =
                 new AccountPickerBottomSheetView(
-                        assumeNonNull(windowAndroid.getActivity().get()),
-                        mAccountPickerBottomSheetMediator);
+                        activity,
+                        mAccountPickerBottomSheetMediator,
+                        showAsDialog
+                                ? AccountPickerBottomSheetView.PresentationMode.MODAL_DIALOG
+                                : AccountPickerBottomSheetView.PresentationMode.BOTTOM_SHEET);
 
         mAccountPickerCoordinator =
                 new AccountPickerCoordinator(
@@ -108,8 +110,8 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
                 mAccountPickerBottomSheetMediator.getModel(),
                 mView,
                 AccountPickerBottomSheetViewBinder::bind);
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        mBottomSheetController.requestShowContent(mView, true);
+
+        mPresenter.show(mView);
     }
 
     /** Releases the resources used by AccountPickerBottomSheetCoordinator. */
@@ -117,15 +119,14 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
     private void destroy() {
         mAccountPickerCoordinator.destroy();
         mAccountPickerBottomSheetMediator.destroy();
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
+        mPresenter.destroy();
     }
 
     /** Implements {@link SigninBottomSheetUiCoordinator}. */
     @Override
     @MainThread
     public void dismiss() {
-        // The observer calls destroy() after the sheet is hidden.
-        mBottomSheetController.hideContent(mView, true, StateChangeReason.INTERACTION_COMPLETE);
+        mPresenter.dismiss();
     }
 
     /**

@@ -681,6 +681,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mSigninBottomSheetCoordinator.show(
                 mWindowAndroid,
                 mActivity,
+                mModalDialogManagerSupplier.get(),
                 mBottomSheetControllerSupplier.get(),
                 mDeviceLockActivityLauncher,
                 signinManager,

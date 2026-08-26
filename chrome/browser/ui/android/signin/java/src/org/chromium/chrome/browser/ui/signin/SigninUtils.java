@@ -15,8 +15,10 @@ import android.view.View;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper functions for sign-in and accounts. */
 @NullMarked
@@ -162,5 +164,16 @@ public final class SigninUtils {
         }
         return context.getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
+    }
+
+    /**
+     * Returns whether the account picker should be presented as a modal dialog rather than a bottom
+     * sheet.
+     *
+     * @param context The context used to determine device form factor.
+     */
+    public static boolean shouldShowAccountPickerDialog(Context context) {
+        return ChromeFeatureList.sAccountPickerDialog.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 }

@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 @NullMarked
 class AccountPickerDismissalLogger {
@@ -38,6 +39,25 @@ class AccountPickerDismissalLogger {
             promoAction = AccountConsistencyPromoAction.DISMISSED_BACK;
         } else if (reason == StateChangeReason.TAP_SCRIM) {
             promoAction = AccountConsistencyPromoAction.DISMISSED_SCRIM;
+        } else {
+            return; // Not a user-initiated reason.
+        }
+
+        logActiveDismissal(promoAction);
+    }
+
+    /**
+     * Logs dismissal metrics based on the given DialogDismissalCause, if this is considered a
+     * dismissal made by the user.
+     */
+    @MainThread
+    void logModalDialogDismissal(@DialogDismissalCause int dismissalCause) {
+        final @AccountConsistencyPromoAction int promoAction;
+
+        if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                || dismissalCause == DialogDismissalCause.NAVIGATE_BACK
+                || dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
+            promoAction = AccountConsistencyPromoAction.DISMISSED_BACK;
         } else {
             return; // Not a user-initiated reason.
         }

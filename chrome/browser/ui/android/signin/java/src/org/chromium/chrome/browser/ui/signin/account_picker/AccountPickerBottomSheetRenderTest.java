@@ -443,6 +443,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     mAccountManagerTestRule.getIdentityManager(),
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegate,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

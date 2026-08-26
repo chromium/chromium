@@ -90,6 +90,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -152,6 +153,7 @@ public class SigninBridgeTest {
             mAccountPickerBottomSheetCoordinatorFactoryMock;
 
     @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
+    @Mock private ModalDialogManager mModalDialogManagerMock;
 
     private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
             mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
@@ -163,6 +165,9 @@ public class SigninBridgeTest {
         Context context = ApplicationProvider.getApplicationContext();
 
         lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
+        lenient()
+                .when(mWindowAndroidMock.getModalDialogManager())
+                .thenReturn(mModalDialogManagerMock);
         lenient().when(mTabMock.getProfile()).thenReturn(mProfileMock);
         lenient().when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
@@ -207,6 +212,7 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         anyInt(),
                         anyBoolean(),
                         anyInt(),
@@ -229,6 +235,7 @@ public class SigninBridgeTest {
                 mExtensionName);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -268,6 +275,7 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         anyInt(),
                         eq(mIsWebSignin),
                         eq(mSigninAccessPoint),
@@ -290,6 +298,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, mSigninAccessPoint);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -324,6 +333,7 @@ public class SigninBridgeTest {
                         mSigninAccessPoint);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
                 .create(
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -367,6 +377,7 @@ public class SigninBridgeTest {
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -433,6 +444,7 @@ public class SigninBridgeTest {
                         any(),
                         any(),
                         any(),
+                        any(),
                         eq(mBottomSheetControllerMock),
                         any(),
                         any(),
@@ -480,6 +492,7 @@ public class SigninBridgeTest {
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
+                        any(),
                         any(),
                         any(),
                         any(),
@@ -546,6 +559,7 @@ public class SigninBridgeTest {
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
+                        any(),
                         any(),
                         any(),
                         any(),

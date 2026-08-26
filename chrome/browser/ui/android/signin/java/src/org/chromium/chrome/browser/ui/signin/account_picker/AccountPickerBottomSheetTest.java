@@ -304,6 +304,7 @@ public class AccountPickerBottomSheetTest {
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -332,6 +333,7 @@ public class AccountPickerBottomSheetTest {
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -567,6 +569,7 @@ public class AccountPickerBottomSheetTest {
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1141,6 +1144,7 @@ public class AccountPickerBottomSheetTest {
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1576,6 +1580,7 @@ public class AccountPickerBottomSheetTest {
                                     mFakeIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
