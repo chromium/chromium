@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -427,17 +426,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   VerifyModel(model.GetSubmenuModelAt(5), kGroup0Data);
 }
 
-class RecentTabsSubMenuModelSplitTest : public RecentTabsSubMenuModelTest {
- public:
-  RecentTabsSubMenuModelSplitTest() {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedSplitsFromCurrentSession) {
   Init();
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -487,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   VerifyModel(model.GetSubmenuModelAt(4), kSplitData);
 }
 
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedWindowWithSplit) {
   Init();
   DisableSync();
@@ -538,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   VerifyModel(window_submenu->GetSubmenuModelAt(2), kSplitSubmenuData);
 }
 
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedWindowWithGroupsAndSplits) {
   Init();
   DisableSync();
@@ -640,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   VerifyModel(window_submenu->GetSubmenuModelAt(5), kSplit2Data);
 }
 
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedWindowWithSplitAndRegularTabs) {
   Init();
   DisableSync();
@@ -697,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   VerifyModel(window_submenu->GetSubmenuModelAt(3), kSplitSubmenuData);
 }
 
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedGroupWithSplit) {
   Init();
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());

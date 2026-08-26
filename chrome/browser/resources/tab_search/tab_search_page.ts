@@ -383,7 +383,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     }
 
     // Check if we need to group any tabs into a new SplitViewData locally.
-    if (loadTimeData.getBoolean('splitViewTabRestoreEnabled') && tab.splitId) {
+    if (tab.splitId) {
       const matchingIndices: number[] = [];
       for (let i = 0; i < this.openTabs_.length; ++i) {
         const item = this.openTabs_[i]!;
@@ -676,8 +676,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       const nonSplitTabs: Tab[] = [];
 
       for (const tab of window.tabs) {
-        if (loadTimeData.getBoolean('splitViewTabRestoreEnabled') &&
-            tab.splitId) {
+        if (tab.splitId) {
           const splitIdStr = tokenToString(tab.splitId);
           if (!splitTabsMap.has(splitIdStr)) {
             splitTabsMap.set(splitIdStr, []);
@@ -710,20 +709,15 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     }
     this.openTabs_ = openTabsList;
 
-    const splitViewTabRestoreEnabled =
-        loadTimeData.getBoolean('splitViewTabRestoreEnabled');
-
-    const recentlyClosedSplitViews = splitViewTabRestoreEnabled ?
+    const recentlyClosedSplitViews =
         (profileData.recentlyClosedSplitViews || []).map(splitView => {
           const splitViewData = new SplitViewData({splitView});
           this.updateSplitViewTabGroup_(splitViewData, this.tabGroupsMap_);
           return splitViewData;
-        }) :
-        [];
+        });
 
-    const recentlyClosedTabsFiltered = splitViewTabRestoreEnabled ?
-        profileData.recentlyClosedTabs.filter(tab => !tab.splitId) :
-        profileData.recentlyClosedTabs;
+    const recentlyClosedTabsFiltered =
+        profileData.recentlyClosedTabs.filter(tab => !tab.splitId);
 
     this.recentlyClosedTabs_ = [
       ...recentlyClosedTabsFiltered.map(

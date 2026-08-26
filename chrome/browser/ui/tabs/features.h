@@ -25,9 +25,6 @@ BASE_DECLARE_FEATURE(kSplitViewHorizontal);
 // submenu to select the split's orientation.
 BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectAccess);
 
-// Whether or not a split view should restore together.
-BASE_DECLARE_FEATURE(kSplitViewTabRestore);
-
 // Enables CJK word boundary detection in Tab Search.
 BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
 

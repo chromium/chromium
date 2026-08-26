@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -282,9 +281,7 @@ void BrowserTabStripModelDelegate::WillCloseGroup(
 
 void BrowserTabStripModelDelegate::WillCloseSplit(
     const split_tabs::SplitTabId& split_id) {
-  if (base::FeatureList::IsEnabled(tabs::kSplitViewTabRestore)) {
-    CreateHistoricalSplit(split_id);
-  }
+  CreateHistoricalSplit(split_id);
 }
 
 void BrowserTabStripModelDelegate::GroupCloseStopped(
@@ -298,10 +295,6 @@ void BrowserTabStripModelDelegate::GroupCloseStopped(
 
 void BrowserTabStripModelDelegate::SplitClosed(
     const split_tabs::SplitTabId& split_id) {
-  if (!base::FeatureList::IsEnabled(tabs::kSplitViewTabRestore)) {
-    return;
-  }
-
   if (!browser_ || !browser_->GetProfile()) {
     return;
   }
@@ -315,10 +308,6 @@ void BrowserTabStripModelDelegate::SplitClosed(
 
 void BrowserTabStripModelDelegate::SplitCloseStopped(
     const split_tabs::SplitTabId& split_id) {
-  if (!base::FeatureList::IsEnabled(tabs::kSplitViewTabRestore)) {
-    return;
-  }
-
   if (!browser_ || !browser_->GetProfile()) {
     return;
   }

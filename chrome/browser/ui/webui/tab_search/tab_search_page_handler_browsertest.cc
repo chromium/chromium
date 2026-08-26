@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -1521,18 +1520,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, RemoveSplit_OtherPage) {
   page_.receiver_.FlushForTesting();
 }
 
-class TabSearchPageHandlerSplitViewTest : public TabSearchPageHandlerTest {
- public:
-  TabSearchPageHandlerSplitViewTest() {
-    feature_list_.InitAndEnableFeature(tabs::kSplitViewTabRestore);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerSplitViewTest,
-                       RecentlyClosedSplitView) {
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, RecentlyClosedSplitView) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
   AddTabWithTitle(browser1(), tab_url2_, kTabName2);
 

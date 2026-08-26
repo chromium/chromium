@@ -5963,8 +5963,7 @@ void TabStripModel::MaybeRemoveSplitsForUpdate(
 void TabStripModel::CreateHistoricalSplitIfClosing(
     const std::vector<tabs::TabInterface*>& tabs,
     uint32_t close_types) {
-  if (base::FeatureList::IsEnabled(tabs::kSplitViewTabRestore) &&
-      (close_types & TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB)) {
+  if (close_types & TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB) {
     std::map<split_tabs::SplitTabId, int> split_closing_counts;
     for (tabs::TabInterface* t : tabs) {
       std::optional<split_tabs::SplitTabId> split_id = t->GetSplit();

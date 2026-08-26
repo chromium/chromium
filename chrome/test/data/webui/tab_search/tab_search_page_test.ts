@@ -937,18 +937,14 @@ suite('TabSearchAppTest', () => {
       }),
     ];
 
-    await setupTest(
-        createProfileData({
-          windows: [{
-            active: true,
-            isHostWindow: true,
-            height: SAMPLE_WINDOW_HEIGHT,
-            tabs,
-          }],
-        }),
-        {
-          splitViewTabRestoreEnabled: true,
-        });
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs,
+      }],
+    }));
 
     assertEquals(2, queryRows().length);
 
@@ -972,23 +968,19 @@ suite('TabSearchAppTest', () => {
 
   test('process recently closed split view into a single row', async () => {
     const token = sampleToken(2n, 2n);
-    await setupTest(
-        createProfileData({
-          recentlyClosedSplitViews: [{
-            sessionId: 200,
-            id: token,
-            tabCount: 2,
-            lastActiveTime: {internalValue: 0n},
-            lastActiveElapsedText: '3 mins ago',
-            tabUrls: ['https://google.com', 'https://paypal.com'],
-            layout: SplitTabLayout.kSideBySide,
-            groupId: null,
-          }],
-          recentlyClosedSectionExpanded: true,
-        }),
-        {
-          splitViewTabRestoreEnabled: true,
-        });
+    await setupTest(createProfileData({
+      recentlyClosedSplitViews: [{
+        sessionId: 200,
+        id: token,
+        tabCount: 2,
+        lastActiveTime: {internalValue: 0n},
+        lastActiveElapsedText: '3 mins ago',
+        tabUrls: ['https://google.com', 'https://paypal.com'],
+        layout: SplitTabLayout.kSideBySide,
+        groupId: null,
+      }],
+      recentlyClosedSectionExpanded: true,
+    }));
 
     await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
@@ -1040,19 +1032,15 @@ suite('TabSearchAppTest', () => {
       title: 'Work Group',
     }];
 
-    await setupTest(
-        createProfileData({
-          windows: [{
-            active: true,
-            isHostWindow: true,
-            height: SAMPLE_WINDOW_HEIGHT,
-            tabs,
-          }],
-          tabGroups,
-        }),
-        {
-          splitViewTabRestoreEnabled: true,
-        });
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs,
+      }],
+      tabGroups,
+    }));
 
     assertEquals(1, queryRows().length);
 
@@ -1117,18 +1105,14 @@ suite('TabSearchAppTest', () => {
       }),
     ];
 
-    await setupTest(
-        createProfileData({
-          windows: [{
-            active: true,
-            isHostWindow: true,
-            height: SAMPLE_WINDOW_HEIGHT,
-            tabs,
-          }],
-        }),
-        {
-          splitViewTabRestoreEnabled: true,
-        });
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs,
+      }],
+    }));
 
     assertEquals(1, queryRows().length);
 
@@ -1162,18 +1146,14 @@ suite('TabSearchAppTest', () => {
       }),
     ];
 
-    await setupTest(
-        createProfileData({
-          windows: [{
-            active: true,
-            isHostWindow: true,
-            height: SAMPLE_WINDOW_HEIGHT,
-            tabs,
-          }],
-        }),
-        {
-          splitViewTabRestoreEnabled: true,
-        });
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        isHostWindow: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs,
+      }],
+    }));
 
     await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
