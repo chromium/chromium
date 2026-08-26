@@ -3687,6 +3687,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "snap_tolerance": "0.05"
+                    },
                     "enable_features": [
                         "CalculateDeadlineDerivedInterval"
                     ]
