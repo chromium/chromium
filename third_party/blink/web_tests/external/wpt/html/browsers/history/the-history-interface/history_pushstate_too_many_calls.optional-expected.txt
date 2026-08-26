@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] history pushState too many calls
-  Failed to execute 'pushState' on 'History': Throttling history state changes to prevent the browser from hanging.
-Harness: the test ran to completion.
-

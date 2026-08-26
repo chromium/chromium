@@ -6340,10 +6340,6 @@
       status: "stable",
     },
     {
-      name: "ThrottledHistoryAPIThrowsSecurityError",
-      status: "test",
-    },
-    {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "TimelineTrigger",
       status: "stable",
