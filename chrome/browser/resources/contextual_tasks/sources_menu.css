@@ -19,6 +19,10 @@ cr-action-menu {
   --cr-action-menu-padding: 16px 0;
 }
 
+cr-action-menu::part(dialog) {
+  max-height: none;
+}
+
 .header {
   color: var(--cr-primary-text-color);
   padding: 0 16px 8px 16px;
