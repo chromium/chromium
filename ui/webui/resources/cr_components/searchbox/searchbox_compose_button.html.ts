@@ -38,6 +38,7 @@ export function getHtml(this: SearchboxComposeButtonElement) {
       class="compose-container"
       part="compose-button"
       exportparts="hoverBackground"
+      tabindex="${this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
       aria-label="${this.a11yLabel}"
       title="${this.tooltipTitle}">
     ${this.hasFavicon_() ? html`

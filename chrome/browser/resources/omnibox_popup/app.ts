@@ -256,7 +256,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     const oldSelection = this.selection;
     super.setSelection(selection);
     this.getDropdown().updateSelection(oldSelection, this.selection);
-    if (notify) {
+    if (notify && this.webuiOmniboxPopupSelectionControlEnabled_) {
       this.searchboxBrowserProxy_.handler.setPopupSelection(
           selectionIsNativelySupported(this.selection) ? this.selection :
                                                          kDefaultSelection);

@@ -94,6 +94,17 @@ export class SearchboxComposeButtonElement extends
         reflect: true,
         attribute: 'energy-effect-animation-enabled',
       },
+      hasVirtualFocus: {
+        type: Boolean,
+        reflect: true,
+      },
+      virtualFocusEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+      dropdownIsVisible: {
+        type: Boolean,
+      },
     };
   }
 
@@ -110,6 +121,10 @@ export class SearchboxComposeButtonElement extends
       loadTimeData.valueExists('searchboxComposeButtonIcon') ?
       loadTimeData.getString('searchboxComposeButtonIcon') :
       '//resources/cr_components/searchbox/icons/search_spark.svg';
+
+  accessor hasVirtualFocus: boolean = false;
+  accessor dropdownIsVisible: boolean = false;
+  accessor virtualFocusEnabled: boolean = false;
 
   protected accessor isFuseboxEnabled_: boolean =
       loadTimeData.getBoolean('isFuseboxEnabled');

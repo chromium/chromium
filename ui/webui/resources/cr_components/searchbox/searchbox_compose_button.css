@@ -47,6 +47,13 @@
   gap: 3px;
 }
 
+:host([has-virtual-focus]) #composeButton {
+  background-color: var(--cr-hover-background-color);
+  outline: 2px solid var(
+      --color-searchbox-results-icon-focused-outline,
+      var(--cr-focus-outline-color));
+}
+
 .compose-container {
   z-index: 100;
   position: relative;

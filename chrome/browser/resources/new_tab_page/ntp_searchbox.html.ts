@@ -71,6 +71,7 @@ export function getHtml(this: NtpSearchboxElement) {
       <cr-searchbox-compose-button id="composeButton" slot="compose-button"
           ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
           ?has-user-input="${this.hasUserInput_}"
+          ?virtual-focus-enabled="${this.virtualFocusEnabled}"
           @compose-click="${this.onComposeClick_}">
       </cr-searchbox-compose-button>
     ` : ''}

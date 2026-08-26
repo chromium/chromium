@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createAutocompleteMatch, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createActionForTesting, createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {kDefaultSelection} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+interface MockInputElement {
+  inputElement: {value: string};
+  focus: () => void;
+  setInput:
+      (options:
+           {text: string, inline: string, moveCursorToEnd: boolean}) => void;
+}
 
 const TestElementBase = SearchboxSelectionMixin(CrLitElement);
 
@@ -18,10 +28,10 @@ class TestSearchboxSelectionMixinElement extends TestElementBase {
   isAimVisible: boolean = false;
   showEntrypoint: boolean = false;
   dropdownIsVisible: boolean = true;
-  result: any = null;
+  result: AutocompleteResult|null = null;
   mockPageHandler: TestMock<PageHandlerRemote> =
       TestMock.fromClass(PageHandlerRemote);
-  mockInputElement: any = {
+  mockInputElement: MockInputElement = {
     inputElement: {value: ''},
     focus: () => {},
     setInput: () => {},
@@ -71,10 +81,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
   test('getAvailableSelections', () => {
     const match1 = createAutocompleteMatch();
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match1],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     element.isAimVisible = true;
     element.showEntrypoint = false;
@@ -110,14 +119,107 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     });
   });
 
+  test('stepCyclesSelection', () => {
+    const match1 = createAutocompleteMatch();
+    const match2 = createAutocompleteMatch();
+    const match3 = createAutocompleteMatch();
+    const result = createAutocompleteResultForTesting({
+      matches: [match1, match2, match3],
+    });
+
+    const available = element.getAvailableSelections(result);
+    assertEquals(3, available.length);
+
+    // Forward direction with kStateOrLine: only stepping from the last item
+    // cycles.
+    assertFalse(element.stepCyclesSelection(
+        result, available[0]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+    assertFalse(element.stepCyclesSelection(
+        result, available[1]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+    assertTrue(element.stepCyclesSelection(
+        result, available[2]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+
+    // Backward direction with kStateOrLine: only stepping from the first item
+    // cycles.
+    assertTrue(element.stepCyclesSelection(
+        result, available[0]!, SelectionDirection.kBackward,
+        SelectionStep.kStateOrLine));
+    assertFalse(element.stepCyclesSelection(
+        result, available[1]!, SelectionDirection.kBackward,
+        SelectionStep.kStateOrLine));
+    assertFalse(element.stepCyclesSelection(
+        result, available[2]!, SelectionDirection.kBackward,
+        SelectionStep.kStateOrLine));
+
+    // Edge case: match with trailing sub-button (e.g. remove suggestion).
+    const matchWithDeletion = createAutocompleteMatch({supportsDeletion: true});
+    const resultWithDeletion = createAutocompleteResultForTesting({
+      matches: [match1, matchWithDeletion],
+    });
+    const availableWithDeletion =
+        element.getAvailableSelections(resultWithDeletion);
+    assertEquals(3, availableWithDeletion.length);
+    // availableWithDeletion[0] = line 0 (normal)
+    // availableWithDeletion[1] = line 1 (normal)
+    // availableWithDeletion[2] = line 1 (remove suggestion button)
+
+    // Stepping from line 1 with kStateOrLine goes to the remove button (no
+    // cycle).
+    assertFalse(element.stepCyclesSelection(
+        resultWithDeletion, availableWithDeletion[1]!,
+        SelectionDirection.kForward, SelectionStep.kStateOrLine));
+
+    // Stepping from line 1 with kWholeLine skips the remove button and cycles
+    // to line 0.
+    assertTrue(element.stepCyclesSelection(
+        resultWithDeletion, availableWithDeletion[1]!,
+        SelectionDirection.kForward, SelectionStep.kWholeLine));
+
+    // Empty or null results always cycle.
+    assertTrue(element.stepCyclesSelection(
+        null, available[0]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+
+    const emptyResult = createAutocompleteResultForTesting({matches: []});
+    assertTrue(element.stepCyclesSelection(
+        emptyResult, available[0]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+
+    const singleMatchResult = createAutocompleteResultForTesting({
+      matches: [match1],
+    });
+    const singleAvailable = element.getAvailableSelections(singleMatchResult);
+    assertEquals(1, singleAvailable.length);
+
+    // Stepping forward from unselected input enters the single item (no cycle).
+    assertFalse(element.stepCyclesSelection(
+        singleMatchResult, kDefaultSelection, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+
+    // Stepping backward from unselected input cycles/exits immediately.
+    assertTrue(element.stepCyclesSelection(
+        singleMatchResult, kDefaultSelection, SelectionDirection.kBackward,
+        SelectionStep.kStateOrLine));
+
+    // Once already on the single item, any step in either direction cycles.
+    assertTrue(element.stepCyclesSelection(
+        singleMatchResult, singleAvailable[0]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine));
+    assertTrue(element.stepCyclesSelection(
+        singleMatchResult, singleAvailable[0]!, SelectionDirection.kBackward,
+        SelectionStep.kStateOrLine));
+  });
+
   test('getNextSelection Forward Line', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
     const match3 = createAutocompleteMatch();
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match1, match2, match3],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     const available = element.getAvailableSelections(result);
     assertEquals(3, available.length);
@@ -127,20 +229,20 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         SelectionStep.kStateOrLine);
     assertDeepEquals(available[1]!, next);
 
-    const nextEnd = element.getNextSelection(
+    // getNextSelection always wraps cyclically.
+    const nextEndCycle = element.getNextSelection(
         result, available[2]!, SelectionDirection.kForward,
         SelectionStep.kStateOrLine);
-    assertDeepEquals(available[0]!, nextEnd);
+    assertDeepEquals(available[0]!, nextEndCycle);
   });
 
   test('getNextSelection Backward Line', () => {
     const match1 = createAutocompleteMatch();
     const match2 = createAutocompleteMatch();
     const match3 = createAutocompleteMatch();
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match1, match2, match3],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     const available = element.getAvailableSelections(result);
 
@@ -149,10 +251,11 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         SelectionStep.kStateOrLine);
     assertDeepEquals(available[0]!, prev);
 
-    const prevStart = element.getNextSelection(
+    // getNextSelection always wraps cyclically.
+    const prevStartCycle = element.getNextSelection(
         result, available[0]!, SelectionDirection.kBackward,
         SelectionStep.kStateOrLine);
-    assertDeepEquals(available[2]!, prevStart);
+    assertDeepEquals(available[2]!, prevStartCycle);
   });
 
   test('getNextSelection AllLines (PageUp/PageDown)', () => {
@@ -160,10 +263,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match2 = createAutocompleteMatch();
     match2.supportsDeletion = true;  // adds a focused button
     const match3 = createAutocompleteMatch();
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match1, match2, match3],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     const available = element.getAvailableSelections(result);
     assertEquals(4, available.length);
@@ -180,19 +282,29 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         result, available[3]!, SelectionDirection.kBackward,
         SelectionStep.kAllLines);
     assertDeepEquals(available[0]!, pageUp);
+
+    // Backward AllLines from unselected state (line -1) stays at line -1.
+    const defaultSelection = {
+      line: -1,
+      state: SelectionLineState.kNormal,
+      actionIndex: 0,
+    };
+    const backwardFromDefault = element.getNextSelection(
+        result, defaultSelection, SelectionDirection.kBackward,
+        SelectionStep.kAllLines);
+    assertDeepEquals(defaultSelection, backwardFromDefault);
   });
 
   test('getNextSelection All SelectionLineState types', () => {
     const match = createAutocompleteMatch();
     match.keywordModel =
         createMatchKeywordModelForTesting({chipHint: 'Search keyword'});
-    match.actions = [{} as any, {} as any];
+    match.actions = [createActionForTesting(), createActionForTesting()];
     match.supportsDeletion = true;
 
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     const available = element.getAvailableSelections(result);
     assertEquals(5, available.length);
@@ -276,10 +388,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     const match1 = createAutocompleteMatch();
     match1.supportsDeletion = true;
     const match2 = createAutocompleteMatch();
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [match1, match2],
-      suggestionGroupsMap: {},
-    } as any;
+    });
 
     const available = element.getAvailableSelections(result);
     assertEquals(3, available.length);
@@ -304,10 +415,9 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     };
 
     // Empty result matches
-    const result = {
+    const result = createAutocompleteResultForTesting({
       matches: [],
-      suggestionGroupsMap: {},
-    } as any;
+    });
     assertDeepEquals(
         selection,
         element.getNextSelection(

@@ -232,7 +232,7 @@ export class OmniboxPopupSearchboxElement extends
     icon: '',
   };
 
-  get showContextEntrypoint(): boolean {
+  override get showContextEntrypoint(): boolean {
     return this.shadowRoot
                ?.querySelector<OmniboxPopupContextualEntrypointElement>(
                    'omnibox-popup-contextual-entrypoint')

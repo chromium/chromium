@@ -66,6 +66,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
         <cr-searchbox-compose-button id="composeButton" slot="compose-button"
             ?dynamic="${this.searchboxDynamicAnimation_}"
             ?has-user-input="${this.hasUserInput_}"
+            ?virtual-focus-enabled="${this.virtualFocusEnabled}"
             ?hidden="${!this.aimButtonVisible_}"
             label-text="${this.aimButtonConfig_.text}"
             tooltip-title="${this.aimButtonConfig_.title}"
