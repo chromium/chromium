@@ -77,4 +77,12 @@ TEST(IDUtilTest, GenerateIDForPath) {
 #endif
 }
 
+TEST(IDUtilTest, HashedIdInHex) {
+  const std::string kExtensionId = "abcdefghijklmnopabcdefghijklmnop";
+  EXPECT_EQ("ACD66AF886BA7B085B41B4382BC39D1855BC18FE",
+            HashedIdInHex(kExtensionId));
+  EXPECT_EQ("DF43A9994ADFFA1484525827764397252D90EF618363E5D381A158AC38B11A8A",
+            HashedIdInHexSha256(kExtensionId));
+}
+
 }  // namespace crx_file::id_util

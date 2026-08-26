@@ -372,9 +372,11 @@ Accepted values are lists of id hashes.
 ## ID Hashes
 
 Instead of listing the ID directly in the allowlist or blocklist section, we
-use an uppercased SHA1 hash of the id.
+use an uppercased SHA-1 or SHA-256 hash of the id.
 
 To generate a new allowlist ID for an extension ID, do the following in bash:
+
+**For SHA-1:**
 ```
 $ echo -n "aaaabbbbccccddddeeeeffffgggghhhh" | \
      sha1sum | tr '[:lower:]' '[:upper:]'
@@ -386,11 +388,22 @@ The output should be something like:
 9A0417016F345C934A1A88F55CA17C05014EEEBA  -
 ```
 
+**For SHA-256:**
+```
+$ echo -n "aaaabbbbccccddddeeeeffffgggghhhh" | \
+     sha256sum | tr '[:lower:]' '[:upper:]'
+```
+The output should be something like:
+```
+2FC3FE769A0E3C2B6A1A8E5C4927A0B1A3F83C6A2E8B9DA8BD37E0A1B283A4F8  -
+```
+
 Add the ID to the allowlist or blocklist for the desired feature. It is also
 often useful to link the crbug next to the id hash, e.g.:
 ```
 "allowlist": [
   "9A0417016F345C934A1A88F55CA17C05014EEEBA"  // crbug.com/<num>
+  "2FC3FE769A0E3C2B6A1A8E5C4927A0B1A3F83C6A2E8B9DA8BD37E0A1B283A4F8"  // crbug.com/<num>
 ]
 ```
 

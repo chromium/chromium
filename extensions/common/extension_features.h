@@ -334,6 +334,9 @@ BASE_DECLARE_FEATURE(kOptimizeWebRequestProxy);
 // single `WebRequestHost.EventHandlingDone` mojo call per target.
 BASE_DECLARE_FEATURE(kWebRequestPerContextEventDispatch);
 
+// If enabled, `HashedExtensionId` uses SHA-256 hashes instead of SHA-1.
+BASE_DECLARE_FEATURE(kUseSha256ForExtensionHashes);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -505,7 +505,11 @@ bool SimpleFeature::IsIdInList(const HashedExtensionId& hashed_id,
   if (!IsValidHashedExtensionId(hashed_id))
     return false;
 
-  return std::ranges::contains(list, hashed_id.value());
+  // TODO(crbug.com/455599844): Remove the fallback search on `value_sha1()` and
+  // query only `value_sha256()` once the SHA-256 rollout is 100% complete and
+  // the feature is enabled by default.
+  return std::ranges::contains(list, hashed_id.value_sha256()) ||
+         std::ranges::contains(list, hashed_id.value_sha1());
 }
 
 bool SimpleFeature::MatchesManifestLocation(
@@ -584,8 +588,10 @@ bool SimpleFeature::IsValidExtensionId(const ExtensionId& extension_id) {
 // static
 bool SimpleFeature::IsValidHashedExtensionId(
     const HashedExtensionId& hashed_id) {
-  // As above, just the bare-bones check.
-  return hashed_id.value().length() == 40;
+  // TODO(crbug.com/455599844): Remove the 40-character length check (SHA-1) and
+  // require strictly 64 characters (SHA-256) once the rollout is complete.
+  // Allow both 40-character (SHA-1) and 64-character (SHA-256) hashes.
+  return hashed_id.value().length() == 40 || hashed_id.value().length() == 64;
 }
 
 void SimpleFeature::set_blocklist(StaticSpan<std::string_view> blocklist) {

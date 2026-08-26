@@ -467,7 +467,9 @@ class FeatureCompilerTest(unittest.TestCase):
     )
     f.Validate('PermissionFeature', {})
     self._hasError(
-      f, 'list should only have hex-encoded SHA1 hashes of extension ids'
+      f,
+      'list should only have hex-encoded SHA-1 or SHA-256 '
+      'hashes of extension ids',
     )
 
   def testHostedAppsCantUseAllowlistedFeatures_SimpleFeature(self):
@@ -625,21 +627,22 @@ class FeatureCompilerTest(unittest.TestCase):
   def testFeatureIdentityStringsUseStaticStorage(self):
     compiler = self._createTestFeatureCompiler('APIFeature')
     compiler._json = {
-        'feature_alpha': {
-            'alias': 'feature_beta',
-            'contexts': ['privileged_extension']
-        },
-        'feature_beta': {
-            'contexts': ['privileged_extension'],
-            'source': 'feature_alpha'
-        }
+      'feature_alpha': {
+        'alias': 'feature_beta',
+        'contexts': ['privileged_extension'],
+      },
+      'feature_beta': {
+        'contexts': ['privileged_extension'],
+        'source': 'feature_alpha',
+      },
     }
     compiler.Compile()
     cc_code = compiler.Render().Render()
 
     # The code below is formatted correctly!
     self.assertEqual(
-        cc_code, '''  {
+      cc_code,
+      '''  {
     SimpleFeature* feature = new SimpleFeature();
     feature->set_name(StaticStringView("feature_alpha"));
     feature->set_alias(StaticCString("feature_beta"));
@@ -658,7 +661,8 @@ class FeatureCompilerTest(unittest.TestCase):
     feature->set_contexts(StaticSpan(kContexts));
     feature->set_source(StaticCString("feature_alpha"));
     provider->AddFeature("feature_beta", feature);
-  }''')
+  }''',
+    )
 
   def testFeatureWithEmptyMatches(self):
     compiler = self._createTestFeatureCompiler('APIFeature')

@@ -45,6 +45,9 @@ std::string GenerateIdForPath(const base::FilePath& path);
 // Returns the hash of an extension ID in hex.
 std::string HashedIdInHex(std::string_view id);
 
+// Returns the SHA-256 hash of an extension ID in hex.
+std::string HashedIdInHexSha256(std::string_view id);
+
 // Normalizes the path for use by the extension. On Windows, this will make
 // sure the drive letter is uppercase.
 base::FilePath MaybeNormalizePath(const base::FilePath& path);

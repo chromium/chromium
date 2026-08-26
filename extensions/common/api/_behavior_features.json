@@ -14,7 +14,8 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "allowlist": [
-      "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // https://crbug.com/538252
+      "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F",   // https://crbug.com/538252 (SHA-1)
+      "CDF9DD8503F39D9609C6C191E04450FCCEB41BCF9712F361A9013DEF8B9C7552"    // (SHA-256)
     ]
   },
   "allow_usb_devices_permission_interface_class": {

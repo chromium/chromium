@@ -86,10 +86,21 @@ def ToPosixPath(path):
   return path.replace(os.path.sep, posixpath.sep)
 
 
-# Returns true if the list 'l' only contains strings that are a hex-encoded SHA1
-# hashes.
-def ListContainsOnlySha1Hashes(l):
-  return len(list(filter(lambda s: not re.match("^[A-F0-9]{40}$", s), l))) == 0
+# Compiled regular expression matching either a 40-character (SHA-1)
+# or 64-character (SHA-256) uppercase hexadecimal string.
+HEX_HASH_PATTERN = re.compile(r"^([A-F0-9]{40}|[A-F0-9]{64})$")
+
+
+# Returns true if the hash list only contains strings that are hex-encoded SHA1
+# or SHA256 hashes.
+# TODO(crbug.com/455599844): Remove the 40-character (SHA-1) regex matching and
+# rename to ListContainsOnlySha256Hashes once the rollout is 100% complete.
+def ListContainsOnlySha1OrSha256Hashes(hash_list):
+  """Returns True if all elements in hash_list are valid hex SHA-1 or SHA-256 hashes."""
+  return all(
+    isinstance(hash_entry, str) and HEX_HASH_PATTERN.match(hash_entry)
+    for hash_entry in hash_list
+  )
 
 
 # A "grammar" for what is and isn't allowed in the features.json files. This
@@ -141,8 +152,8 @@ FEATURE_GRAMMAR = {
       'subtype': str,
       'validators': [
         (
-          ListContainsOnlySha1Hashes,
-          'list should only have hex-encoded SHA1 hashes of extension ids',
+          ListContainsOnlySha1OrSha256Hashes,
+          'list should only have hex-encoded SHA-1 or SHA-256 hashes of extension ids',
         )
       ],
     }
@@ -152,8 +163,8 @@ FEATURE_GRAMMAR = {
       'subtype': str,
       'validators': [
         (
-          ListContainsOnlySha1Hashes,
-          'list should only have hex-encoded SHA1 hashes of extension ids',
+          ListContainsOnlySha1OrSha256Hashes,
+          'list should only have hex-encoded SHA-1 or SHA-256 hashes of extension ids',
         )
       ],
     }

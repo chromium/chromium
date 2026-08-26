@@ -71,6 +71,10 @@ std::string HashedIdInHex(std::string_view id) {
   return base::HexEncode(base::SHA1Hash(base::as_byte_span(id)));
 }
 
+std::string HashedIdInHexSha256(std::string_view id) {
+  return base::HexEncode(crypto::hash::Sha256(base::as_byte_span(id)));
+}
+
 base::FilePath MaybeNormalizePath(const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN)
   // Normalize any drive letter to upper-case. We do this for consistency with
