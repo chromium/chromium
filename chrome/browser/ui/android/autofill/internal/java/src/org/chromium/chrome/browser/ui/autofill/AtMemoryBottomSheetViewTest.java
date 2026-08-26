@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +37,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
@@ -69,6 +72,7 @@ public class AtMemoryBottomSheetViewTest {
 
     private Context mContext;
     private AtMemoryBottomSheetView mView;
+    private SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier;
 
     @Before
     public void setUp() {
@@ -77,6 +81,7 @@ public class AtMemoryBottomSheetViewTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
+        mBackPressStateChangedSupplier = ObservableSuppliers.createNonNull(false);
         mView = new AtMemoryBottomSheetView(mContext);
     }
 
@@ -433,6 +438,89 @@ public class AtMemoryBottomSheetViewTest {
 
         assertEquals(View.GONE, icon.getVisibility());
         assertEquals(View.VISIBLE, loadingView.getVisibility());
+    }
+
+    @Test
+    public void testBackPressSupplierUpdatesOnScreenChange() {
+        assertFalse(mView.getBackPressStateChangedSupplier().get());
+
+        mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
+        assertTrue(mView.getBackPressStateChangedSupplier().get());
+
+        mView.setCurrentScreen(ScreenId.HOME_SCREEN);
+        assertFalse(mView.getBackPressStateChangedSupplier().get());
+    }
+
+    @Test
+    public void testOnBackPressed_FlyoutScreen() {
+        PropertyModel model =
+                new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
+                        .with(FlyoutProperties.ON_BACK_CLICKED, mMockBackClickListener)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model,
+                mView.getFlyoutView(),
+                AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
+
+        mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
+
+        assertTrue(mView.onBackPressed());
+        verify(mMockBackClickListener).run();
+    }
+
+    @Test
+    public void testOnBackPressed_HomeScreen() {
+        PropertyModel model =
+                new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
+                        .with(FlyoutProperties.ON_BACK_CLICKED, mMockBackClickListener)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model,
+                mView.getFlyoutView(),
+                AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
+
+        mView.setCurrentScreen(ScreenId.HOME_SCREEN);
+
+        assertFalse(mView.onBackPressed());
+        verify(mMockBackClickListener, never()).run();
+    }
+
+    @Test
+    public void testFlyoutViewOnBackPressed() {
+        AtMemoryFlyoutView flyoutView = mView.getFlyoutView();
+        flyoutView.setBackClickListener(mMockBackClickListener);
+
+        flyoutView.onBackPressed();
+        verify(mMockBackClickListener).run();
+    }
+
+    @Test
+    public void testFlyoutViewOnBackPressed_NullListenerDoesNotCrash() {
+        AtMemoryFlyoutView flyoutView = mView.getFlyoutView();
+        flyoutView.onBackPressed();
+    }
+
+    @Test
+    public void testBottomSheetContentBackPressDelegation() {
+        AtMemoryBottomSheetContent content =
+                new AtMemoryBottomSheetContent(mView, mBottomSheetController);
+
+        mView.setCurrentScreen(ScreenId.FLYOUT_SCREEN);
+        assertTrue(content.getBackPressStateChangedSupplier().get());
+
+        PropertyModel model =
+                new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
+                        .with(FlyoutProperties.ON_BACK_CLICKED, mMockBackClickListener)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model,
+                mView.getFlyoutView(),
+                AtMemoryBottomSheetViewBinder::bindAtMemoryFlyoutView);
+
+        content.onBackPressed();
+        verify(mMockBackClickListener).run();
+
+        assertTrue(content.handleBackPress());
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

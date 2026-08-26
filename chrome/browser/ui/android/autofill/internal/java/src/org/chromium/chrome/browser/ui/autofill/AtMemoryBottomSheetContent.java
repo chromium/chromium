@@ -10,6 +10,7 @@ import android.view.View.MeasureSpec;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -114,6 +115,21 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     @Override
     public @ColorInt int getSheetBackgroundColorOverride() {
         return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
+        return mView.getBackPressStateChangedSupplier();
+    }
+
+    @Override
+    public void onBackPressed() {
+        handleBackPress();
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        return mView.onBackPressed();
     }
 
     // Measures the content height to achieve a wrap-content effect for the bottom sheet.
