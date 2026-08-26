@@ -190,6 +190,7 @@ scope.
   ([421690383](https://issues.chromium.org/issues/421690383))
 * A bug that allows an attacker to reliably read or infer limited browsing
   history.
+* A bug that allows local network access without the LNA permission.
 * Spoofs that hide important warnings under other obvious UI elements.
 * Split-view dialog confusion.
 * Clickjacking and enterjacking bugs of any kind (rapid clicks, holding
