@@ -259,14 +259,6 @@ bool StructTraits<
   out->set_is_autofilled_according_to_renderer(
       data.is_autofilled_according_to_renderer());
 
-  {
-    autofill::FormFieldData::CheckStatus check_status;
-    if (!data.ReadCheckStatus(&check_status)) {
-      return false;
-    }
-    out->set_check_status(std::move(check_status));
-  }
-
   out->set_is_focusable(data.is_focusable());
   out->set_is_visible(data.is_visible());
   out->set_should_autocomplete(data.should_autocomplete());

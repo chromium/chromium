@@ -91,7 +91,6 @@ struct FieldDescription {
   std::optional<std::vector<SelectOption>> select_options;
   std::optional<std::vector<SelectOption>> datalist_options;
   std::optional<FieldPropertiesMask> properties_mask;
-  std::optional<bool> checked;
   std::optional<int32_t> form_control_ax_id;
   std::optional<FormFieldData::LabelSource> label_source;
   std::optional<std::u16string> pattern;
@@ -229,13 +228,6 @@ FormFieldData GetFormFieldData(const FieldDescriptionType& description) {
   field_data.set_should_autocomplete(
       description.should_autocomplete.value_or(true));
   field_data.set_properties_mask(description.properties_mask.value_or(0));
-  if ((field_data.form_control_type() == FormControlType::kInputCheckbox ||
-       field_data.form_control_type() == FormControlType::kInputRadio)) {
-    field_data.set_check_status(
-        description.checked.value_or(false)
-            ? FormFieldData::CheckStatus::kChecked
-            : FormFieldData::CheckStatus::kCheckableButUnchecked);
-  }
   if (description.form_control_ax_id) {
     field_data.set_form_control_ax_id(*description.form_control_ax_id);
   }
@@ -251,10 +243,6 @@ FormFieldData GetFormFieldData(const FieldDescriptionType& description) {
   if (description.text_direction) {
     field_data.set_text_direction(*description.text_direction);
   }
-  CHECK(!description.checked.value_or(false) ||
-        field_data.form_control_type() == FormControlType::kInputCheckbox ||
-        field_data.form_control_type() == FormControlType::kInputRadio)
-      << "Only <input type=checkbox> and <input type=radio> are checkable";
   return field_data;
 }
 

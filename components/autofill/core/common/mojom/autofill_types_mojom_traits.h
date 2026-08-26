@@ -243,11 +243,6 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_autofilled_according_to_renderer();
   }
 
-  static autofill::FormFieldData::CheckStatus check_status(
-      const autofill::FormFieldData& r) {
-    return r.check_status();
-  }
-
   static bool is_focusable(const autofill::FormFieldData& r) {
     return r.is_focusable();
   }

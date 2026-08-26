@@ -45,8 +45,6 @@ using testing::UnorderedElementsAre;
 namespace autofill {
 namespace {
 
-using CheckStatus = FormFieldData::CheckStatus;
-
 auto HasId(FormRendererId expected_id) {
   return Property("renderer_id", &FormData::renderer_id, expected_id);
 }

@@ -30,7 +30,6 @@ FormFieldData CreateTestField() {
   f.set_name_attribute(f.name());
   f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
-  f.set_check_status(FormFieldData::CheckStatus::kChecked);
   return f;
 }
 

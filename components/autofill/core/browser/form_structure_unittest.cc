@@ -1785,14 +1785,6 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  // Checkable fields shouldn't affect the signature.
-  field.set_label(u"Select");
-  field.set_name(u"Select");
-  field.set_form_control_type(FormControlType::kInputCheckbox);
-  field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
   form_structure = std::make_unique<FormStructure>(form);
 
   EXPECT_EQ(FormStructureTestImpl::Hash64Bit(std::string("://&&email&first")),
@@ -1817,7 +1809,6 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
             form_structure->FormSignatureAsStr());
 
   // Checks how digits are removed from field names.
-  field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   field.set_label(u"Random Field label");
   field.set_name(u"random1234");
   field.set_form_control_type(FormControlType::kInputText);

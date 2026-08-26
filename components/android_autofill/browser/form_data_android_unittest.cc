@@ -52,7 +52,6 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.set_name_attribute(f.name());
   f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
-  f.set_check_status(FormFieldData::CheckStatus::kChecked);
   f.set_role(FormFieldData::RoleAttribute::kOther);
   f.set_is_focusable(true);
   f.set_renderer_id(FieldRendererId(renderer_id++));

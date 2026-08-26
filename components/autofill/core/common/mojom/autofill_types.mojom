@@ -252,12 +252,6 @@ struct AutocompleteParsingResult {
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
 struct FormFieldData {
-  enum CheckStatus {
-    kNotCheckable,
-    kCheckableButUnchecked,
-    kChecked,
-  };
-
   // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
   enum RoleAttribute {
     // "presentation"
@@ -314,7 +308,6 @@ struct FormFieldData {
 
   uint64 max_length;
   bool is_autofilled_according_to_renderer;
-  CheckStatus check_status;
   bool is_focusable;
   bool is_visible;
   bool should_autocomplete;

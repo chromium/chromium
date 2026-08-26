@@ -25,7 +25,6 @@ void FillCommonFields(FormFieldData* data) {
   data->set_autocomplete_attribute("off");
   data->set_max_length(200);
   data->set_is_autofilled_according_to_renderer(true);
-  data->set_check_status(FormFieldData::CheckStatus::kChecked);
   data->set_is_focusable(true);
   data->set_should_autocomplete(false);
   data->set_text_direction(base::i18n::RIGHT_TO_LEFT);
@@ -79,7 +78,7 @@ void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteSection4(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(static_cast<int>(data.check_status()));
+  pickle->WriteInt(0);
 }
 
 void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {

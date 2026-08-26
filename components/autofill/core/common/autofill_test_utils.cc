@@ -131,7 +131,6 @@ FormData WithoutValues(FormData form) {
     field.set_user_input({});
     field.set_value({});
     field.set_is_autofilled_according_to_renderer(false);
-    field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
     field.set_properties_mask(0);
   }
   return form;
@@ -154,7 +153,6 @@ FormFieldData WithoutUnserializedData(FormFieldData field) {
   field.set_host_form_signature({});
   field.set_origin(
       url::Origin::CreateFromNormalizedTuple("http", "placeholder", 80));
-  field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   return field;
 }
 
@@ -416,7 +414,6 @@ testing::Matcher<FormFieldData> FormFieldDataEq(const FormFieldData& expected) {
       FFD_PROPERTY_EQ(form_control_ax_id),
       FFD_PROPERTY_EQ(max_length),
       FFD_PROPERTY_EQ(is_autofilled_according_to_renderer),
-      FFD_PROPERTY_EQ(check_status),
       FFD_PROPERTY_EQ(is_focusable),
       FFD_PROPERTY_EQ(is_visible),
       FFD_PROPERTY_EQ(should_autocomplete),

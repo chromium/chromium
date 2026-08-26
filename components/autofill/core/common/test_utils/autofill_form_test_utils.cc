@@ -68,14 +68,6 @@ testing::Matcher<FormFieldData> FormFieldDescriptionEq(
                      expected.datalist_options);
   add_member_checker("properties_mask", &FormFieldData::properties_mask,
                      expected.properties_mask);
-  add_member_checker(
-      "check_status", &FormFieldData::check_status,
-      expected.checked.and_then(
-          [](bool is_checked) -> std::optional<FormFieldData::CheckStatus> {
-            return is_checked
-                       ? FormFieldData::CheckStatus::kChecked
-                       : FormFieldData::CheckStatus::kCheckableButUnchecked;
-          }));
   add_member_checker("form_control_ax_id", &FormFieldData::form_control_ax_id,
                      expected.form_control_ax_id);
   add_member_checker("label_source", &FormFieldData::label_source,

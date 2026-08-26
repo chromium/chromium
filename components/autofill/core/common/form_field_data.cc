@@ -35,7 +35,7 @@ namespace {
 
 // Increment this anytime pickle format is modified as well as provide
 // deserialization routine from previous kFormFieldDataPickleVersion format.
-const int kFormFieldDataPickleVersion = 10;
+const int kFormFieldDataPickleVersion = 11;
 
 void WriteSelectOption(const SelectOption& option, base::Pickle* pickle) {
   pickle->WriteString16(option.value);
@@ -141,12 +141,10 @@ bool DeserializeSection5(base::PickleIterator* iter,
 
 bool DeserializeSection6(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  FormFieldData::CheckStatus check_status =
-      FormFieldData::CheckStatus::kNotCheckable;
+  int check_status;
   if (!ReadAsInt(iter, &check_status)) {
     return false;
   }
-  field_data->set_check_status(check_status);
   return true;
 }
 
@@ -311,7 +309,6 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
   auto equality_tuple = [e = exclusions](const FormFieldData& f) {
     using enum Exclusion;
     static const bool kFalse = {};
-    static const CheckStatus kNotCheckable = CheckStatus::kNotCheckable;
     static const RoleAttribute kNoRole = RoleAttribute::kOther;
     static const LabelSource kNoLabelSource = LabelSource::kUnknown;
     static const base::i18n::TextDirection kNoTextDirection =
@@ -353,7 +350,6 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         !e.contains(kNotRefillRelated) ? f.form_control_ax_id_ : kNullId,
         f.max_length_,
         !e.contains_any({kValue, kNotRefillRelated}) ? f.is_autofilled_according_to_renderer_ : kFalse,
-        !e.contains_any({kValue, kNotRefillRelated}) ? f.check_status_ : kNotCheckable,
         f.is_focusable_,
         !e.contains(kNotRefillRelated) ? f.is_visible_ : kFalse,
         !e.contains(kNotRefillRelated) ? f.should_autocomplete_ : kFalse,
@@ -456,7 +452,6 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString(field_data.autocomplete_attribute());
   pickle->WriteUInt64(field_data.max_length());
   pickle->WriteBool(field_data.is_autofilled_according_to_renderer());
-  pickle->WriteInt(static_cast<int>(field_data.check_status()));
   pickle->WriteBool(field_data.is_focusable());
   pickle->WriteBool(field_data.should_autocomplete());
   pickle->WriteInt(static_cast<int>(field_data.role()));
@@ -616,6 +611,22 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
       }
       break;
     }
+    case 11: {
+      if (!DeserializeSection1(iter, &temp_form_field_data) ||
+          !DeserializeSection7(iter, &temp_form_field_data) ||
+          !DeserializeSection2(iter, &temp_form_field_data) ||
+          !DeserializeSection12(iter, &temp_form_field_data) ||
+          !DeserializeSection4(iter, &temp_form_field_data) ||
+          !DeserializeSection8(iter, &temp_form_field_data) ||
+          !DeserializeSection9(iter, &temp_form_field_data) ||
+          !DeserializeSection10(iter, &temp_form_field_data) ||
+          !DeserializeSection11(iter, &temp_form_field_data) ||
+          !DeserializeSection13(iter, &temp_form_field_data)) {
+        LOG(ERROR) << "Could not deserialize FormFieldData from pickle";
+        return false;
+      }
+      break;
+    }
     default: {
       LOG(ERROR) << "Unknown FormFieldData pickle version " << version;
       return false;
@@ -665,7 +676,6 @@ std::ostream& PrintWithIndentation(std::ostream& os,
   PRINT_PROPERTY(max_length);
   PRINT_PROPERTY(css_classes);
   PRINT_PROPERTY(is_autofilled_according_to_renderer);
-  PRINT_PROPERTY(check_status);
   PRINT_PROPERTY(should_autocomplete);
   PRINT_PROPERTY(role);
   PRINT_PROPERTY(text_direction);
