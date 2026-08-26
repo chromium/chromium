@@ -18,6 +18,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"

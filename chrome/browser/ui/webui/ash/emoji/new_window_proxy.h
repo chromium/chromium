@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_NEW_WINDOW_PROXY_H_
 
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

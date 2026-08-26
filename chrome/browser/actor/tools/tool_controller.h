@@ -16,7 +16,6 @@
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/aggregated_journal.h"
-#include "content/public/browser/weak_document_ptr.h"
 
 namespace actor {
 

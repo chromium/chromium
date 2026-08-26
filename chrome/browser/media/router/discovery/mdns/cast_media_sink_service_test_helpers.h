@@ -21,8 +21,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
-#include "content/public/browser/network_service_instance.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

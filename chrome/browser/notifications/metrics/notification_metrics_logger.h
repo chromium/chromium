@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/common/persistent_notification_status.h"
 
 // Logs when various notification-related events have occurred.
 // Methods are virtual so they can be mocked in tests.

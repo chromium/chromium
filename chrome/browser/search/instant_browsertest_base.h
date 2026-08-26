@@ -17,7 +17,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/test/browser_test.h"
 
 // This class provides an extension on top of InProcessBrowserTest, and
 // adds some utility methods which can be useful for various unit tests for

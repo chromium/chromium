@@ -21,7 +21,6 @@
 #include "components/download/public/common/download_target_info.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "content/public/browser/download_manager_delegate.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"  // nogncheck crbug.com/40147906

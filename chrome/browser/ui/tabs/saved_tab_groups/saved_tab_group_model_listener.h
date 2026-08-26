@@ -15,8 +15,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents.h"
 
 class TabStripModel;
 class Profile;

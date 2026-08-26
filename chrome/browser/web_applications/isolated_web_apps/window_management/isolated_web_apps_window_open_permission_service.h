@@ -22,11 +22,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents_observer.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace web_app {
 

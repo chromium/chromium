@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "content/public/browser/browsing_data_remover.h"
 
 namespace enterprise_commands {
 

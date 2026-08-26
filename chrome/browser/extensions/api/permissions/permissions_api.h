@@ -7,7 +7,6 @@
 
 #include "base/auto_reset.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_set.h"

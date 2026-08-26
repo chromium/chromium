@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
-#include "content/public/browser/visibility.h"
 
 namespace resource_coordinator {
 

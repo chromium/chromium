@@ -10,10 +10,6 @@
 class PrefService;
 class Profile;
 
-namespace content {
-class WebContents;
-}
-
 namespace session_restore_infobar {
 
 // `SessionRestoreInfobarModel` class is responsible for encapsulating the logic

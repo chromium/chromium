@@ -30,10 +30,6 @@ namespace metrics {
 class ProfileMetricsService;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace tabs {
 class TabInterface;
 }

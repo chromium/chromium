@@ -7,7 +7,6 @@
 
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents.h"
 
 // Interface of the tab ID generator.
 // This is to mock the free function used in production.

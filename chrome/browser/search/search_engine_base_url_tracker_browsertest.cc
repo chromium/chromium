@@ -7,6 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/search/instant_browsertest_base.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
 using SearchEngineBaseURLTrackerTest = InstantBrowserTestBase;

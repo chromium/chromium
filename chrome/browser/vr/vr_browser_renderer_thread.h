@@ -16,7 +16,6 @@
 #include "chrome/browser/vr/model/capturing_state_model.h"
 #include "chrome/browser/vr/model/web_vr_model.h"
 #include "chrome/browser/vr/vr_export.h"
-#include "content/public/browser/web_contents.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
