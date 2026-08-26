@@ -745,8 +745,9 @@ TEST_F(EnterpriseProxyServiceTest, RouteFlushingOnAuthFailureAndRecovery) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !service_->IsRefreshInProgress(); }));
 
-  // Verify that active routes were FLUSHED to prevent IdP loop.
-  EXPECT_EQ(0u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  // Verify that active routes are PRESERVED on blocked state for maximal
+  // availability.
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
   configs = service_->GetProvisioningDomainConfigs();
   ASSERT_EQ(1u, configs.size());
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedBlocked,

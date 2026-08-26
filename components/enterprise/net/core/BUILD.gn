@@ -29,6 +29,7 @@ static_library("core") {
       "provisioning_domain_client.h",
       "provisioning_domain_fetcher.h",
       "proxy_provisioning_domain_manager.h",
+      "timer_utils.h",
       "types.h",
       "utils.h",
     ]
@@ -41,6 +42,7 @@ static_library("core") {
       "provisioning_domain_client.cc",
       "provisioning_domain_fetcher.cc",
       "proxy_provisioning_domain_manager.cc",
+      "timer_utils.cc",
       "types.cc",
       "utils.cc",
     ]
@@ -68,6 +70,7 @@ source_set("unit_tests") {
       "provisioning_domain_client_unittest.cc",
       "provisioning_domain_fetcher_unittest.cc",
       "proxy_provisioning_domain_manager_unittest.cc",
+      "timer_utils_unittest.cc",
       "utils_unittest.cc",
     ]
     deps += [

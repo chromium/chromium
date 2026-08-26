@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_fetcher.h"
+#include "components/enterprise/net/core/timer_utils.h"
 #include "components/enterprise/net/core/utils.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -171,6 +172,9 @@ void ProxyProvisioningDomainManager::ForceRefresh() {
   if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
   }
+
+  consecutive_transient_failures_ = 0;
+  expiration_timer_.Stop();
   if (is_refresh_in_progress()) {
     CancelRefresh();
   }
@@ -178,6 +182,7 @@ void ProxyProvisioningDomainManager::ForceRefresh() {
 }
 
 void ProxyProvisioningDomainManager::CancelRefresh() {
+  expiration_timer_.Stop();
   weak_factory_.InvalidateWeakPtrs();
   fetcher_.reset();
 }
@@ -198,6 +203,21 @@ void ProxyProvisioningDomainManager::Refresh() {
   StartRefreshInternal(/*force=*/false);
 }
 
+void ProxyProvisioningDomainManager::ScheduleProactiveRefresh() {
+  expiration_timer_.Stop();
+  if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent ||
+      state() == ProvisioningDomainProxyConfig::State::kFailedBlocked) {
+    return;
+  }
+
+  expiration_timer_.Start(
+      FROM_HERE,
+      CalculateProactiveRefreshDelay(fetched_config_.expires,
+                                     base::Time::Now()),
+      base::BindOnce(&ProxyProvisioningDomainManager::Refresh,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
   if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
@@ -211,15 +231,13 @@ void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
   }
 
   if (!url_loader_factory_) {
-    fetched_config_.state =
-        ProvisioningDomainProxyConfig::State::kFailedTransient;
-    NotifyIfStateChanged();
+    consecutive_transient_failures_++;
+    TransitionToState(ProvisioningDomainProxyConfig::State::kFailedTransient);
     return;
   }
   fetcher_ = std::make_unique<ProvisioningDomainFetcher>(policy_, auth_service_,
                                                          url_loader_factory_);
-  fetched_config_.state = ProvisioningDomainProxyConfig::State::kFetching;
-  NotifyIfStateChanged();
+  TransitionToState(ProvisioningDomainProxyConfig::State::kFetching);
 
   fetcher_->Start(
       base::BindOnce(&ProxyProvisioningDomainManager::OnRefreshComplete,
@@ -232,21 +250,61 @@ void ProxyProvisioningDomainManager::OnRefreshComplete(
 
   if (result.has_value()) {
     fetched_config_ = std::move(*result);
-    fetched_config_.state = ProvisioningDomainProxyConfig::State::kValid;
+    TransitionToState(ProvisioningDomainProxyConfig::State::kValid);
   } else {
-    ProvisioningDomainProxyConfig::State state =
+    ProvisioningDomainProxyConfig::State error_state =
         ClassifyFetchError(result.error());
-    if (state == ProvisioningDomainProxyConfig::State::kFailedTransient) {
-      // Preserve existing routes for momentary network/server blips.
-      fetched_config_.state = state;
+    if (error_state == ProvisioningDomainProxyConfig::State::kFailedTransient) {
+      consecutive_transient_failures_++;
+      if (consecutive_transient_failures_ >= kMaxTransientRetries) {
+        TransitionToState(ProvisioningDomainProxyConfig::State::kFailedBlocked);
+      } else {
+        TransitionToState(
+            ProvisioningDomainProxyConfig::State::kFailedTransient);
+      }
     } else {
-      // Flush active routes so re-authentication and IdP traffic connect
-      // directly (kFailedBlocked) or mark permanently failed
-      // (kFailedPermanent).
+      TransitionToState(error_state);
+    }
+  }
+}
+
+void ProxyProvisioningDomainManager::TransitionToState(
+    ProvisioningDomainProxyConfig::State new_state) {
+  fetched_config_.state = new_state;
+
+  switch (new_state) {
+    case ProvisioningDomainProxyConfig::State::kValid:
+      consecutive_transient_failures_ = 0;
+      ScheduleProactiveRefresh();
+      break;
+
+    case ProvisioningDomainProxyConfig::State::kFailedTransient: {
+      base::TimeDelta retry_delay =
+          CalculateTransientRetryDelay(consecutive_transient_failures_);
+      expiration_timer_.Start(
+          FROM_HERE, retry_delay,
+          base::BindOnce(&ProxyProvisioningDomainManager::Refresh,
+                         weak_factory_.GetWeakPtr()));
+      break;
+    }
+
+    case ProvisioningDomainProxyConfig::State::kFailedBlocked:
+      consecutive_transient_failures_ = 0;
+      expiration_timer_.Stop();
+      break;
+
+    case ProvisioningDomainProxyConfig::State::kFailedPermanent:
+      consecutive_transient_failures_ = 0;
+      expiration_timer_.Stop();
       fetched_config_ = ProvisioningDomainProxyConfig();
       fetched_config_.pvd_id = policy_.pvd_id;
-      fetched_config_.state = state;
-    }
+      fetched_config_.state =
+          ProvisioningDomainProxyConfig::State::kFailedPermanent;
+      break;
+
+    case ProvisioningDomainProxyConfig::State::kFetching:
+    case ProvisioningDomainProxyConfig::State::kRefreshNeeded:
+      break;
   }
 
   NotifyIfStateChanged();

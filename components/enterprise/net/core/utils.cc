@@ -472,7 +472,8 @@ std::optional<ProvisioningDomainProxyConfig> ParseProvisioningDomainConfig(
 
   if (const std::string* expires_str = dict.FindString(kExpiresKey)) {
     base::Time expires_time;
-    if (base::Time::FromString(expires_str->c_str(), &expires_time)) {
+    if (base::Time::FromUTCString(expires_str->c_str(), &expires_time) ||
+        base::Time::FromString(expires_str->c_str(), &expires_time)) {
       config_data.expires = expires_time;
     }
   }
