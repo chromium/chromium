@@ -49,9 +49,7 @@
 #include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
-#include "ui/base/win/atl_module.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -273,7 +271,6 @@ void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
 void CrossPlatformAccessibilityBrowserTest::SetUpOnMainThread() {
 #if BUILDFLAG(IS_WIN)
   com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
-  ui::win::CreateATLModuleIfNeeded();
 #endif
   // For OOPIF tests.
   host_resolver()->AddRule("*", "127.0.0.1");
