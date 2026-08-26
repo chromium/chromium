@@ -155,14 +155,21 @@ extension ILType {
 /// Generate a map with only one element. As Fuzzilli runs, the OperationMutator
 /// and VariadicInputReducer will modify the `CreateMap` operation to increase
 /// or decrease the element count.
+///
+/// `findOrGenerateType` is preferred over specifying `inputs` because
+/// Fuzzilli only uses CodeGenerators to produce types in `inputs`, while
+/// `findOrGenerateType` uses a variety of sources (e.g. `builtins`, other
+/// method properties and methods). An input is specified (i.e. `.one`)
+/// to prevent the CodeGenerator from being scheduled first when there are
+/// no visible variables, as `findOrGenerateType` causes a crash if there
+/// are no visibile variables.
 private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     "MojoString_GoldenEntryMapGenerator",
-    inputs: .required(
-        .jsStringElement,
-        .jsGoldenEntry
-    ),
+    inputs: .one,
     produces: [.jsString_GoldenEntryMap]
-) { b, key, val in
+) { b, _, _ in
+    let key = b.findOrGenerateType(.jsStringElement)
+    let val = b.findOrGenerateType(.jsGoldenEntry)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(
@@ -174,12 +181,11 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
 }
 private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
     "MojoInteger_String_GoldenEntryMapMapGenerator",
-    inputs: .required(
-        .jsIntegerElement,
-        .jsString_GoldenEntryMap
-    ),
+    inputs: .one,
     produces: [.jsInteger_String_GoldenEntryMapMap]
-) { b, key, val in
+) { b, _, _ in
+    let key = b.findOrGenerateType(.jsIntegerElement)
+    let val = b.findOrGenerateType(.jsString_GoldenEntryMap)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(
@@ -191,12 +197,11 @@ private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
 }
 private let MojoFloat_BooleanMapGenerator = CodeGenerator(
     "MojoFloat_BooleanMapGenerator",
-    inputs: .required(
-        .jsFloatElement,
-        .jsBooleanElement
-    ),
+    inputs: .one,
     produces: [.jsFloat_BooleanMap]
-) { b, key, val in
+) { b, _, _ in
+    let key = b.findOrGenerateType(.jsFloatElement)
+    let val = b.findOrGenerateType(.jsBooleanElement)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(

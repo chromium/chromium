@@ -132,11 +132,20 @@ extension ILType {
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
 /// the `CreateArray` operation to increase or decrease the element count. This
 /// allows arrays to be arbitrarily long.
+///
+/// `findOrGenerateType` is preferred over specifying `inputs` because
+/// Fuzzilli only uses CodeGenerators to produce types in `inputs`, while
+/// `findOrGenerateType` uses a variety of sources (e.g. `builtins`, other
+/// method properties and methods). An input is specified (i.e. `.one`)
+/// to prevent the CodeGenerator from being scheduled first when there are
+/// no visible variables, as `findOrGenerateType` causes a crash if there
+/// are no visibile variables.
 private let MojoIntegerArrayGenerator = CodeGenerator(
     "MojoIntegerArrayGenerator",
-    inputs: .required(.integer),
+    inputs: .one,
     produces: [.jsIntegerArray]
-) { b, elem in
+) { b, _ in
+    let elem = b.findOrGenerateType(.integer)
     var elements: [Variable] = [elem]
     b.createArray(
         with: elements,
