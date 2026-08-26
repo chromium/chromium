@@ -19926,6 +19926,7 @@
                     "params": {
                         "sqrt_allocation_limits_factor": "80",
                         "sqrt_allocation_limits_max_growing_factor": "4",
+                        "sqrt_allocation_limits_min_growing_factor": "1.1",
                         "sqrt_allocation_limits_minimal_factor": "20",
                         "sqrt_allocation_limits_slow_factor": "80"
                     },
