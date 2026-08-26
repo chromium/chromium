@@ -2634,8 +2634,6 @@ static_library("ui") {
       "views/tab_search_bubble_host.h",
       "views/tabs/browser_tab_strip_controller.cc",
       "views/tabs/browser_tab_strip_controller.h",
-      "views/tabs/horizontal/tab_scroll_button_container.cc",
-      "views/tabs/horizontal/tab_scroll_button_container.h",
       "views/tabs/horizontal_tab_style_views.cc",
       "views/tabs/horizontal_tab_style_views.h",
       "views/tabs/new_tab_button.cc",
@@ -3212,7 +3210,6 @@ static_library("ui") {
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      # - c/b/ui/views/tabs/horizontal/tab_scroll_button_container.h
       # - c/b/ui/views/tabs/tab_group_style.h
       # - c/b/ui/views/tabs/tab_slot_view.h
       # - c/b/ui/views/tabs/tab_style_views.h
@@ -3225,6 +3222,11 @@ static_library("ui") {
       # - c/b/ui/views/tabs/tab.h
       # - c/b/ui/views/tabs/tab_slot_controller.h
       "//chrome/browser/ui/views/tabs/tab:impl",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following header gets componentized:
+      # - c/b/ui/views/tabs/tab_strip_control_button.h
+      "//chrome/browser/ui/views/tabs/horizontal",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following header gets componentized:

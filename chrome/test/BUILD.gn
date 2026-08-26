@@ -8725,6 +8725,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/views/tabs/dragging:interactive_ui_tests",
+      "//chrome/browser/ui/views/tabs/horizontal",
       "//chrome/browser/ui/views/tabs/hovercard",
       "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
       "//chrome/browser/ui/views/tabs/hovercard:interactive_ui_tests",

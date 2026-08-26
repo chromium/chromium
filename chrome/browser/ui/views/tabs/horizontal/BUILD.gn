@@ -4,15 +4,21 @@
 
 import("//build/config/ui.gni")
 
+assert(toolkit_views)
+
 source_set("horizontal") {
   sources = [
     "horizontal_tab_closing_helper.h",
     "horizontal_tab_strip_overflow_indicator_view.h",
+    "tab_scroll_button_container.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/ui/views/tabs/shared",
+    "//ui/base/interaction",
+    "//ui/gfx/animation",
+    "//ui/menus",
     "//ui/views",
   ]
 
@@ -27,12 +33,21 @@ source_set("horizontal") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+
+  # TODO(crbug.com/451609048): Remove this circular dependency when the
+  # following header gets componentized:
+  # - c/b/ui/views/tabs/tab_strip_control_button.h
+  # (No allow_circular_includes_from entry belongs here -- the waiver that
+  # makes this legal is declared on //chrome/browser/ui:ui, which is the
+  # target that owns tab_strip_control_button.h and depends on this
+  # target.)
 }
 
 source_set("impl") {
   sources = [
     "horizontal_tab_closing_helper.cc",
     "horizontal_tab_strip_overflow_indicator_view.cc",
+    "tab_scroll_button_container.cc",
   ]
 
   deps = [
@@ -40,11 +55,21 @@ source_set("impl") {
     "//base",
     "//base:i18n",
     "//cc/paint",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:impl",
+    "//components/feature_engagement/public:feature_constants",
     "//skia",
+    "//ui/actions",
+    "//ui/base",
     "//ui/base/metadata",
     "//ui/color",
     "//ui/gfx",
