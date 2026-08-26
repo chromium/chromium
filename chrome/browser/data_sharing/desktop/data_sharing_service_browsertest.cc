@@ -9,7 +9,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/test/browser_test.h"
