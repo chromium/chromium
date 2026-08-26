@@ -248,8 +248,8 @@ id<GREYMatcher> HidePasswordButton() {
 id<GREYMatcher> DeleteButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_SETTINGS_TOOLBAR_DELETE),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
-      nullptr);
+      grey_userInteractionEnabled(),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
 // Matcher for the Delete button in Confirmation Alert for password
