@@ -188,4 +188,29 @@ TEST_F(NetworkHintsHandlerImplTest,
   handler.FlushForTesting();
 }
 
+TEST_F(NetworkHintsHandlerImplTest, IgnoresHintsAfterFrameIsDestroyed) {
+  const content::StoragePartitionConfig kGuestConfig =
+      content::StoragePartitionConfig::Create(profile(), "test_domain",
+                                              "test_name", /*in_memory=*/true);
+  std::unique_ptr<content::WebContents> guest_contents =
+      CreateGuestWebContents(kGuestConfig);
+  content::RenderFrameHost* frame = guest_contents->GetPrimaryMainFrame();
+  const content::GlobalRenderFrameHostId frame_id = frame->GetGlobalId();
+  auto handler = CreateHandlerForFrame(frame);
+
+  EXPECT_CALL(*mock_preconnect_manager_, StartPreresolveHosts(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(*mock_preconnect_manager_,
+              StartPreconnectUrl(_, _, _, _, _, _, _, _))
+      .Times(0);
+
+  guest_contents.reset();
+  ASSERT_EQ(nullptr, content::RenderFrameHost::FromID(frame_id));
+
+  const url::SchemeHostPort kTarget(GURL("https://target.example/"));
+  handler->PrefetchDNS({kTarget});
+  handler->Preconnect(kTarget, /*allow_credentials=*/true);
+  handler.FlushForTesting();
+}
+
 }  // namespace predictors

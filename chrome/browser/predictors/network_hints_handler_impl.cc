@@ -52,7 +52,7 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
     return;
 
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+      content::RenderFrameHost::FromID(render_frame_host_id_);
   if (!render_frame_host)
     return;
 
@@ -83,7 +83,7 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
   // will result in at least some cross-site information leakage.
 
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+      content::RenderFrameHost::FromID(render_frame_host_id_);
   if (!render_frame_host)
     return;
 
@@ -101,8 +101,7 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(
     content::RenderFrameHost* frame_host)
-    : render_process_id_(frame_host->GetProcess()->GetDeprecatedID()),
-      render_frame_id_(frame_host->GetRoutingID()) {
+    : render_frame_host_id_(frame_host->GetGlobalId()) {
   // Get the PreconnectManager for this process.
   auto* render_process_host = frame_host->GetProcess();
   auto* profile =
