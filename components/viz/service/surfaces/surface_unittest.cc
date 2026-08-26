@@ -14,6 +14,7 @@
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -599,6 +600,87 @@ TEST_F(SurfaceTest, BypassOutdatedSurfaceActivation) {
   ASSERT_TRUE(parent_surface);
   EXPECT_TRUE(parent_surface->HasActiveFrame());
   EXPECT_TRUE(parent_surface->activation_dependencies().empty());
+}
+
+// Tests that reentrant surface activation doesn't cause a stale
+// SurfaceAllocationGroup* to be stored. See crbug.com/540357382 for details.
+TEST_F(SurfaceTest, ReentrantSurfaceActivationStaleAllocationGroup) {
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+
+  constexpr FrameSinkId fs_c1(10, 1);
+  constexpr FrameSinkId fs_c2(20, 1);
+  constexpr FrameSinkId fs_s(30, 1);
+
+  auto c1_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_c1, /*is_root=*/false);
+  auto c2_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_c2, /*is_root=*/false);
+  auto s_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_s, /*is_root=*/false);
+
+  const base::UnguessableToken token_c1 = base::UnguessableToken::Create();
+  const base::UnguessableToken token_c2 = base::UnguessableToken::Create();
+  const base::UnguessableToken token_s = base::UnguessableToken::Create();
+
+  SurfaceId unresolvable_dep(
+      FrameSinkId(99, 1),
+      LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
+
+  auto build_frame = [](std::vector<SurfaceId> deps,
+                        std::vector<SurfaceRange> refs) {
+    return CompositorFrameBuilder()
+        .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+        .SetActivationDependencies(std::move(deps))
+        .SetReferencedSurfaces(std::move(refs))
+        .SetDeadline(FrameDeadline(base::TimeTicks::Now(), 10000u,
+                                   base::Milliseconds(16), false))
+        .Build();
+  };
+
+  // Step 1: Submit C1 frame with an unresolvable dependency. This creates
+  // allocation group G1 and keeps C1 pending.
+  LocalSurfaceId c1_lsid(2, 1, token_c1);
+  SurfaceId c1_surface_id(fs_c1, c1_lsid);
+  c1_support->SubmitCompositorFrame(
+      c1_lsid,
+      build_frame({unresolvable_dep}, {SurfaceRange(unresolvable_dep)}));
+
+  // Step 2: Submit C2 frame with an unresolvable dependency and referencing
+  // C1's surface. This creates allocation group G2 and keeps C2 pending.
+  LocalSurfaceId c2_lsid(1, 1, token_c2);
+  c2_support->SubmitCompositorFrame(
+      c2_lsid, build_frame({unresolvable_dep}, {SurfaceRange(unresolvable_dep),
+                                                SurfaceRange(c1_surface_id)}));
+
+  // Step 3: Submit surface S that would trigger reentrancy. S depends on an
+  // older surface in G1, so C1(2, 1) satisfies it, and a newer surface in G2,
+  // so C2(1, 1) activates as a fallback. The animate transition directive
+  // ensures that reentrant OnActivationDependencyResolved() returns early
+  // instead of hitting `CHECK(pending_frame_data_)`.
+  SurfaceId c1_older_surface_id(fs_c1, LocalSurfaceId(1, 1, token_c1));
+  SurfaceId c2_newer_surface_id(fs_c2, LocalSurfaceId(2, 1, token_c2));
+
+  CompositorFrame s_frame = build_frame(
+      {c1_older_surface_id, c2_newer_surface_id},
+      {SurfaceRange(c1_older_surface_id), SurfaceRange(c2_newer_surface_id)});
+  s_frame.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective::CreateAnimate(
+          blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false,
+          /*sequence_id=*/1, /*delay_layer_tree_view_deletion=*/true));
+
+  LocalSurfaceId s_lsid(1, 1, token_s);
+  s_support->SubmitCompositorFrame(s_lsid, std::move(s_frame));
+
+  // Step 4: Remove C2's reference to C1 so G1 has no active embedders.
+  c2_support->SubmitCompositorFrame(c2_lsid, build_frame({}, {}));
+
+  // Destroy C1 and garbage collect. This deletes C1 and destroys G1.
+  c1_support.reset();
+  surface_manager->GarbageCollectSurfaces();
+
+  // Step 5: Submit a new frame for S. UpdateActivationDependencies() iterates
+  // `blocking_allocation_groups_` which shouldn't contain G1.
+  s_support->SubmitCompositorFrame(s_lsid, build_frame({}, {}));
 }
 
 }  // namespace
