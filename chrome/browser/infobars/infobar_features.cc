@@ -14,6 +14,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedAutomation,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedCollectedCookies,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -72,6 +77,8 @@ BASE_FEATURE_PARAM(bool,
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
+    case InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE:
+      return &kMigratedAutomation;
     case InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE:
       return &kMigratedCollectedCookies;
     case InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE:
