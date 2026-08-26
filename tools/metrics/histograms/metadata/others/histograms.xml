@@ -4994,13 +4994,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.CheckedWords" units="words"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of words checked within a session.
 
-    Warning: this histogram was expired from M83 to M107; data may be missing.
+    Warning: this histogram was expired from M83 to M107 and also from 2024-12
+    to 2026-08; data may be missing.
   </summary>
 </histogram>
 
@@ -5039,13 +5040,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.MisspelledWords" units="words"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of misspelled words within a session.
 
-    Warning: this histogram was expired from M83 to M107; data may be missing.
+    Warning: this histogram was expired from M83 to M107 and also from 2024-12
+    to 2026-08; data may be missing.
   </summary>
 </histogram>
 
@@ -5061,18 +5063,19 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.ReplacedWords" units="words"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The number of misspelled-but-replaced words within a session.
 
-    Warning: this histogram was expired from M83 to M107; data may be missing.
+    Warning: this histogram was expired from M83 to M107 and also from 2024-12
+    to 2026-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SpellCheck.ShownSuggestions" units="suggestions"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -5080,7 +5083,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     This is incremented and logged when a context menu with spelling suggestions
     is shown for a misspelled word.
 
-    Warning: this histogram was expired from M83 to M107; data may be missing.
+    Warning: this histogram was expired from M83 to M107 and also from 2024-12
+    to 2026-08; data may be missing.
   </summary>
 </histogram>
 
@@ -5115,11 +5119,14 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SpellCheck.SuggestionHitRatio" units="%"
-    expires_after="2024-12-01">
+    expires_after="2027-08-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The percentage of replacement executions within suggestion occurrences.
+
+    Warning: this histogram was expired from 2024-12 to 2026-08; data may be
+    missing.
   </summary>
 </histogram>
 
