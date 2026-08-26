@@ -579,10 +579,17 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
                            ExportedSharedImageMojoDeserialization_EmptyBuffer);
   FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest,
                            ExportedSharedImageMojoDeserialization_ZeroMailbox);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSharedImageTest,
+      ExportedSharedImageMojoDeserialization_DuplicateManagedSyncTokens);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSharedImageTest,
+      ExportedSharedImageMojoDeserialization_ValidManagedSyncTokens);
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
-                      const SyncToken& sync_token,
+                      const SyncToken& creation_sync_token,
+                      const std::vector<SyncToken>& managed_sync_tokens,
                       std::string debug_label,
                       std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                       std::optional<gfx::BufferUsage> buffer_usage,
@@ -592,6 +599,7 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
+  std::vector<SyncToken> managed_sync_tokens_;
   std::string debug_label_;
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
   std::optional<gfx::BufferUsage> buffer_usage_;

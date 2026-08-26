@@ -56,8 +56,9 @@ TEST(ClientSharedImageTest, ImportUnowned) {
                                kUsage};
 
   auto client_si = ClientSharedImage::ImportUnowned(ExportedSharedImage(
-      mailbox, metadata, SyncToken(), "ClientSharedImageTest", std::nullopt,
-      std::nullopt, GL_TEXTURE_2D, /*is_software=*/false));
+      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
+      "ClientSharedImageTest", std::nullopt, std::nullopt, GL_TEXTURE_2D,
+      /*is_software=*/false));
 
   // Check that the ClientSI's state matches the input parameters.
   EXPECT_EQ(client_si->mailbox(), mailbox);
@@ -83,8 +84,9 @@ TEST(ClientSharedImageTest,
                                kUsage};
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), "ClientSharedImageTest", std::nullopt,
-      std::nullopt, /*texture_target=*/0, /*is_software=*/false);
+      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
+      "ClientSharedImageTest", std::nullopt, std::nullopt,
+      /*texture_target=*/0, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
   bool success =
@@ -116,8 +118,9 @@ TEST(ClientSharedImageTest,
   empty_handle.type = gfx::EMPTY_BUFFER;
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), "ClientSharedImageTest",
-      std::move(empty_handle), gfx::BufferUsage::GPU_READ,
+      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
+      "ClientSharedImageTest", std::move(empty_handle),
+      gfx::BufferUsage::GPU_READ,
       /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
@@ -142,8 +145,9 @@ TEST(ClientSharedImageTest,
                                kUsage};
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), "ClientSharedImageTest", std::nullopt,
-      std::nullopt, /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
+      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
+      "ClientSharedImageTest", std::nullopt, std::nullopt,
+      /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
   bool success =
@@ -151,6 +155,80 @@ TEST(ClientSharedImageTest,
           exported_si, deserialized_si);
 
   EXPECT_FALSE(success);
+}
+
+TEST(ClientSharedImageTest,
+     ExportedSharedImageMojoDeserialization_DuplicateManagedSyncTokens) {
+  auto mailbox = Mailbox::Generate();
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageMetadata metadata{kFormat,
+                               kSize,
+                               gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin,
+                               kOpaque_SkAlphaType,
+                               kUsage};
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id = CommandBufferId::FromUnsafeValue(42);
+
+  // Two sync tokens from the same sequence (same client_id)
+  SyncToken token1(ns, cmd_id, /*release_count=*/100);
+  token1.SetVerifyFlush();
+  SyncToken token2(ns, cmd_id, /*release_count=*/200);
+  token2.SetVerifyFlush();
+
+  ExportedSharedImage exported_si(
+      mailbox, metadata, SyncToken(), {token1, token2}, "ClientSharedImageTest",
+      std::nullopt, std::nullopt,
+      /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
+
+  ExportedSharedImage deserialized_si;
+  bool success =
+      mojo::test::SerializeAndDeserialize<gpu::mojom::ExportedSharedImage>(
+          exported_si, deserialized_si);
+
+  // Deserialization must fail because duplicate client IDs are not allowed.
+  EXPECT_FALSE(success);
+}
+
+TEST(ClientSharedImageTest,
+     ExportedSharedImageMojoDeserialization_ValidManagedSyncTokens) {
+  auto mailbox = Mailbox::Generate();
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageMetadata metadata{kFormat,
+                               kSize,
+                               gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin,
+                               kOpaque_SkAlphaType,
+                               kUsage};
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id1 = CommandBufferId::FromUnsafeValue(42);
+  CommandBufferId cmd_id2 = CommandBufferId::FromUnsafeValue(43);
+
+  SyncToken token1(ns, cmd_id1, /*release_count=*/100);
+  token1.SetVerifyFlush();
+  SyncToken token2(ns, cmd_id2, /*release_count=*/200);
+  token2.SetVerifyFlush();
+
+  ExportedSharedImage exported_si(
+      mailbox, metadata, SyncToken(), {token1, token2}, "ClientSharedImageTest",
+      std::nullopt, std::nullopt,
+      /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
+
+  ExportedSharedImage deserialized_si;
+  bool success =
+      mojo::test::SerializeAndDeserialize<gpu::mojom::ExportedSharedImage>(
+          exported_si, deserialized_si);
+
+  EXPECT_TRUE(success);
+  EXPECT_EQ(deserialized_si.managed_sync_tokens_.size(), 2u);
+  EXPECT_EQ(deserialized_si.managed_sync_tokens_[0], token1);
+  EXPECT_EQ(deserialized_si.managed_sync_tokens_[1], token2);
 }
 
 TEST(ClientSharedImageTest, CreateMappableBufferFromHandle_EmptyBuffer) {

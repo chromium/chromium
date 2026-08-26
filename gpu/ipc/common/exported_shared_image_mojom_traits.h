@@ -55,6 +55,11 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return shared_image.creation_sync_token_;
   }
 
+  static const std::vector<gpu::SyncToken>& managed_sync_tokens(
+      const gpu::ExportedSharedImage& shared_image) {
+    return shared_image.managed_sync_tokens_;
+  }
+
   static const std::string& debug_label(
       const gpu::ExportedSharedImage& shared_image) {
     return shared_image.debug_label_;
@@ -84,9 +89,22 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
         !data.ReadMetadata(&out->metadata_) ||
         !data.ReadDebugLabel(&out->debug_label_) ||
         !data.ReadCreationSyncToken(&out->creation_sync_token_) ||
+        !data.ReadManagedSyncTokens(&out->managed_sync_tokens_) ||
         !data.ReadBufferHandle(&out->buffer_handle_) ||
         !data.ReadBufferUsage(&out->buffer_usage_)) {
       return false;
+    }
+    // There must be at most one SyncToken per client sequence. Reject any
+    // deserialized payload with duplicate client IDs to prevent receiving
+    // processes from crashing or entering an inconsistent state.
+    const auto& managed_tokens = out->managed_sync_tokens_;
+    for (size_t i = 0; i < managed_tokens.size(); ++i) {
+      for (size_t j = i + 1; j < managed_tokens.size(); ++j) {
+        if (managed_tokens[i].GetClientId() ==
+            managed_tokens[j].GetClientId()) {
+          return false;
+        }
+      }
     }
     // If GpuMemoryBufferHandle is passed in, BufferUsage should also be passed.
     if (out->buffer_handle_ && !out->buffer_usage_) {
