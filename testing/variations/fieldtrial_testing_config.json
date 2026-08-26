@@ -10984,9 +10984,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_ANE_execution",
+                    "name": "Enabled_CPU_execution",
                     "params": {
-                        "allow_gpu_execution": "true",
+                        "allow_gpu_execution": "false",
                         "enable_on_device_classifier": "true"
                     },
                     "enable_features": [
