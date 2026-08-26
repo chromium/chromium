@@ -491,6 +491,34 @@ void AtMemoryManager::OnPopupHidden() {
   popup_state_.reset();
 }
 
+IsAsync AtMemoryManager::FillOrPreviewSearchResult(
+    BrowserAutofillManager& bam,
+    mojom::ActionPersistence action_persistence,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    const Suggestion& suggestion,
+    base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+        metadata) {
+  const Suggestion::AtMemoryPayload& payload =
+      suggestion.GetPayload<Suggestion::AtMemoryPayload>();
+
+  switch (action_persistence) {
+    case mojom::ActionPersistence::kPreview:
+      bam.FillOrPreviewField(
+          action_persistence,
+          mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
+          field_id,
+          MaybeObfuscateValue(payload.value, payload.memory_data_type,
+                              payload.is_personal_context_sourced),
+          FillingProduct::kAtMemory,
+          /*field_type_used=*/std::nullopt);
+      return IsAsync(false);
+    case mojom::ActionPersistence::kFill: {
+      return FillSearchResult(bam, form_id, field_id, suggestion, metadata);
+    }
+  }
+}
+
 IsAsync AtMemoryManager::FillSearchResult(
     BrowserAutofillManager& bam,
     const FormGlobalId& form_id,

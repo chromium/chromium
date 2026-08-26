@@ -827,8 +827,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      NOTIMPLEMENTED()
-          << "Previewing for AtMemory is not implemented: b/540805115";
+      manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
+          *manager_, mojom::ActionPersistence::kPreview, last_query_.form_id,
+          last_query_.field_id, suggestion);
       break;
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
@@ -1155,9 +1156,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kAtMemorySearchResult: {
       const IsAsync is_async =
-          manager_->client().GetAtMemoryManager()->FillSearchResult(
-              *manager_, last_query_.form_id, last_query_.field_id, suggestion,
-              metadata);
+          manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
+              *manager_, mojom::ActionPersistence::kFill, last_query_.form_id,
+              last_query_.field_id, suggestion, metadata);
       if (is_async) {
         manager_->client().UpdateAutofillSuggestions(
             PrepareLoadingStateSuggestions(

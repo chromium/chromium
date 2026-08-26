@@ -87,6 +87,17 @@ class AtMemoryManager {
   // Called when suggestions are hidden.
   void OnPopupHidden();
 
+  // Fills or previews the selected search result. Returns `IsAsync(true)` if
+  // the operation involves reauthentication or server communication.
+  IsAsync FillOrPreviewSearchResult(
+      BrowserAutofillManager& bam,
+      mojom::ActionPersistence action_persistence,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      const Suggestion& suggestion,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          metadata = std::nullopt);
+
   // Fills the selected search result. Returns `IsAsync(true)` if the operation
   // involves reauthentication or server communication.
   IsAsync FillSearchResult(
