@@ -169,21 +169,19 @@ PendingCredentialsState ComputePendingCredentialsState(
     return PendingCredentialsState::NEW_LOGIN;
   }
 
-  if (generation_manager && generation_manager->HasGeneratedPassword() &&
-      generation_manager->generated_password() == password_to_save.value &&
-      parsed_submitted_form.username_value == u"" &&
-      similar_saved_form->username_value == u"") {
-    // This is the special corner case when a generated password is being saved
-    // with an empty username, while another generated password with an empty
-    // username is already being stored. In this case, just silently update the
-    // password (the allowance to update is asked before filling the form in
-    // this case).
-    return PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
-  }
-
   // A similar credential exists in the store already.
   if (similar_saved_form->password_value != password_to_save.value) {
     return PendingCredentialsState::UPDATE;
+  }
+
+  // When a password is generated for a form, it is presaved into the store
+  // before submission. If that presaved credential is the match (having the
+  // exact same generated password), this submission is a new login with the
+  // submitted form data, not a routine login with an already saved credential.
+  // For more details, see crbug.com/552837140.
+  if (generation_manager && generation_manager->HasGeneratedPassword() &&
+      generation_manager->generated_password() == password_to_save.value) {
+    return PendingCredentialsState::NEW_LOGIN;
   }
 
   // If the autofilled credentials were a weak match, store a copy with the

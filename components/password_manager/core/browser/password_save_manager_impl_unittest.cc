@@ -1253,6 +1253,43 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGeneratedPasswordEmptyStore) {
   Mock::VerifyAndClearExpectations(mock_profile_form_saver());
 }
 
+TEST_P(PasswordSaveManagerImplTest,
+       SaveGeneratedPasswordWithPresavedMatchInStoreLogsMetrics) {
+  base::HistogramTester histogram_tester;
+  fetcher()->NotifyFetchCompleted();
+
+  PasswordForm form_with_generated_password = parsed_submitted_form_;
+  form_with_generated_password.password_value = u"strong_generated_pass";
+
+  // 1. Presave the generated password.
+  EXPECT_CALL(*mock_profile_form_saver(), Save);
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      form_with_generated_password);
+  EXPECT_TRUE(password_save_manager_impl()->HasGeneratedPassword());
+
+  // 2. Simulate store refetch delivering the presaved password (as happens when
+  // sync commits the presave in the background).
+  SetNonFederatedAndNotifyFetchCompleted({form_with_generated_password});
+
+  // 3. User submits the form.
+  password_save_manager_impl()->CreatePendingCredentials(
+      form_with_generated_password, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // 4. Save the form.
+  EXPECT_CALL(*mock_profile_form_saver(), UpdateReplace);
+  password_save_manager_impl()->Save(&observed_form_,
+                                     form_with_generated_password);
+
+  // 5. Verify the generated password metric is recorded.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated", /*sample=*/true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated.NotUsingAccountStorage",
+      /*sample=*/true, 1);
+}
+
 TEST_P(PasswordSaveManagerImplTest, PresaveGenerated_ModifiedUsername) {
   fetcher()->NotifyFetchCompleted();
 
@@ -2402,13 +2439,15 @@ TEST_F(
   saved_match_.in_store = PasswordForm::Store::kProfileStore;
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
-  password_save_manager_impl()->PresaveGeneratedPassword(parsed_observed_form_);
-  PasswordForm::Store store_to_save =
-      password_save_manager_impl()->GetPasswordStoreForSaving(
-          parsed_observed_form_);
+  PasswordForm form_with_generated_password = parsed_observed_form_;
+  form_with_generated_password.password_value = u"new_generated_password";
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      form_with_generated_password);
   EXPECT_EQ(
-      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,
-      store_to_save);
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          form_with_generated_password),
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
