@@ -1922,6 +1922,14 @@ void RTCPeerConnectionHandler::TrackIceConnectionStateChange(
   peer_connection_tracker_->TrackIceConnectionStateChange(this, state);
 }
 
+void RTCPeerConnectionHandler::TrackOnTrack(const RTCTrackEvent& event) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!peer_connection_tracker_) {
+    return;
+  }
+  peer_connection_tracker_->TrackOnTrack(this, event);
+}
+
 // Called any time the combined peerconnection state changes
 void RTCPeerConnectionHandler::OnConnectionChange(
     webrtc::PeerConnectionInterface::PeerConnectionState new_state) {

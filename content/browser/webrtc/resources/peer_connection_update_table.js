@@ -136,8 +136,13 @@ export class PeerConnectionUpdateTable {
         'transceiverModified'].includes(update.type)) {
       const data = JSON.parse(update.value);
       type += '(index=' + data.transceiverIndex + ', kind=' + data.kind + ')';
-    } else if (['oniceconnectionstatechange', 'onconnectionstatechange',
-        'onsignalingstatechange'].includes(update.type)) {
+    } else if (update.type === 'ontrack') {
+      const data = JSON.parse(update.value);
+      type += '(kind=' + data.kind + ')';
+    } else if ([
+                 'oniceconnectionstatechange', 'onconnectionstatechange',
+                 'onsignalingstatechange'
+               ].includes(update.type)) {
       const fieldName = {
         'oniceconnectionstatechange' : 'iceconnectionstate',
         'onconnectionstatechange' : 'connectionstate',
@@ -239,8 +244,10 @@ export class PeerConnectionUpdateTable {
           valueContainer.appendChild(sectionDetails);
         });
       }
-    } else if (['icecandidate', 'addIceCandidate', 'transceiverAdded',
-        'transceiverModified'].includes(update.type)) {
+    } else if ([
+                 'icecandidate', 'addIceCandidate', 'transceiverAdded',
+                 'transceiverModified', 'ontrack'
+               ].includes(update.type)) {
       const parts = JSON.parse(update.value);
       valueContainer.textContent = JSON.stringify(parts, null, ' ');
     } else {

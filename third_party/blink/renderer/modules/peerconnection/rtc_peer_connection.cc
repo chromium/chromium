@@ -2772,6 +2772,11 @@ void RTCPeerConnection::DidModifyTransceivers(
     auto* track_event = MakeGarbageCollected<RTCTrackEvent>(
         transceiver->receiver(), transceiver->receiver()->track(),
         transceiver->receiver()->streams(), transceiver);
+    // Only log events that are actually dispatched to JavaScript, matching
+    // the condition in MaybeDispatchEvent().
+    if (!suppress_events_) {
+      peer_handler_->TrackOnTrack(*track_event);
+    }
     MaybeDispatchEvent(track_event);
   }
 

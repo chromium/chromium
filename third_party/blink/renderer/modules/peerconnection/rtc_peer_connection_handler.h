@@ -49,6 +49,7 @@ class RTCAnswerOptionsPlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
 class RTCSessionDescriptionInit;
+class RTCTrackEvent;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
 
@@ -189,6 +190,10 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   virtual void TrackIceConnectionStateChange(
       webrtc::PeerConnectionInterface::IceConnectionState state);
+
+  // Called by the client when the "track" event is fired for a remote track
+  // added by setRemoteDescription.
+  virtual void TrackOnTrack(const RTCTrackEvent& event);
 
   // Asynchronously calls native_peer_connection_->getStats on the signaling
   // thread. (Future cleanup potential: just use the other GetStats() method?)
