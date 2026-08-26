@@ -87,6 +87,12 @@ class DropTargetViewTest : public ChromeViewsTestBase,
   MockDragDelegate drag_delegate_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
   std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
+  gfx::AnimationTestApi::PrefersReducedMotionResetter
+      prefers_reduced_motion_reset_ =
+          gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -125,8 +131,6 @@ TEST_P(DropTargetViewTest, ViewIsClosedAfterDelay) {
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
       &(drop_target_view()->animation_for_testing()));
-  auto scoped_mode = animation.SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
@@ -154,8 +158,6 @@ TEST_P(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
       &(drop_target_view()->animation_for_testing()));
-  auto scoped_mode = animation.SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
@@ -342,8 +344,6 @@ TEST_P(DropTargetViewTest, GetSizeForAvailableSpaceWithAnimation) {
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
       &(drop_target_view()->animation_for_testing()));
-  auto scoped_mode = animation.SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
@@ -436,8 +436,6 @@ TEST_P(DropTargetViewTest, AnimateFromNudgeToFull) {
       &(drop_target_view()->animation_for_testing()));
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
-  auto scoped_mode = animation.SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   // Start in nudge state.
   view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kNudge,
@@ -497,8 +495,6 @@ TEST_P(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
       &(drop_target_view()->animation_for_testing()));
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
-  auto scoped_mode = animation.SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   // Start in nudge state.
   view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kNudge,
