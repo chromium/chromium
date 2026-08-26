@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin.services;
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,31 +26,6 @@ public class ProfileDataUtils {
     }
 
     /**
-     * Gets the preferred {@link DisplayableProfileData} (matching the preferred Gaia ID if present)
-     * or the first cached profile data from the given {@link Promise}. If the cache is not yet
-     * populated or no accounts exist, return null.
-     *
-     * @param promise The promise containing the list of profile data.
-     * @param preferredGaiaId The preferred Gaia ID to look for, or null.
-     * @return The preferred or first {@link DisplayableProfileData} if available, otherwise null.
-     */
-    public static @Nullable DisplayableProfileData getPreferredOrFirstIfFulfilledAndNotEmpty(
-            Promise<List<DisplayableProfileData>> promise, @Nullable GaiaId preferredGaiaId) {
-        List<DisplayableProfileData> profileDataList = getProfileDataIfFulfilledOrEmpty(promise);
-        if (profileDataList.isEmpty()) {
-            return null;
-        }
-        if (preferredGaiaId != null) {
-            for (DisplayableProfileData profileData : profileDataList) {
-                if (preferredGaiaId.equals(profileData.getAccountId().getId())) {
-                    return profileData;
-                }
-            }
-        }
-        return profileDataList.get(0);
-    }
-
-    /**
      * Gets the cached default {@link DisplayableProfileData} from the given {@link Promise}. If the
      * cache is not yet populated or no accounts exist, return null.
      *
@@ -61,6 +35,12 @@ public class ProfileDataUtils {
      */
     public static @Nullable DisplayableProfileData getFirstIfFulfilledAndNotEmpty(
             Promise<List<DisplayableProfileData>> promise) {
-        return getPreferredOrFirstIfFulfilledAndNotEmpty(promise, /* preferredGaiaId= */ null);
+        if (promise.isFulfilled()) {
+            List<DisplayableProfileData> profileData = promise.getResult();
+            if (!profileData.isEmpty()) {
+                return profileData.get(0);
+            }
+        }
+        return null;
     }
 }

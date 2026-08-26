@@ -83,8 +83,7 @@ import java.util.Collection;
 })
 @Features.EnableFeatures({
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-    SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
 @Features.DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
 public class BookmarkManagerCoordinatorTest {
