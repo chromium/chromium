@@ -277,6 +277,10 @@ void WebUIPermissionChip::ExecuteForTesting() {
   }
 }
 
+void WebUIPermissionChip::EndAnimationForTesting() {
+  ResetAnimation(AnimationState::kCollapsed);
+}
+
 void WebUIPermissionChip::OnExpandAnimationEnded() {
   // Ignore blind IPCs sent by the WebUI frontend after a forced synchronous
   // snap triggered by ResetAnimation().

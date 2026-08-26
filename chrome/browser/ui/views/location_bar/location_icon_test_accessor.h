@@ -7,10 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class BrowserWindowInterface;
 class LocationIconView;
 
@@ -22,18 +18,19 @@ class LocationIconTestAccessor {
   // Simulates clicking the location icon to show the Page Info bubble.
   void Click();
 
-  // Shows the Page Info bubble (calls Click() or delegates to ShowBubble).
+  // Shows the Page Info bubble.
   bool ShowBubble();
 
   // Checks if the Page Info bubble is currently showing.
   bool IsBubbleShowing() const;
 
+  // Returns true if the icon is visible. This may update asynchronously.
+  bool IsVisible();
+
   // Returns the legacy LocationIconView if in Views mode, or nullptr if WebUI.
   LocationIconView* GetLocationIconView();
 
  private:
-  content::WebContents* GetWebContents();
-
   raw_ptr<BrowserWindowInterface> browser_;
 };
 

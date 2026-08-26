@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -27,6 +29,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/views/mouse_constants.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -123,16 +126,28 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   // Checks that the permission chip is visible and in the given mode.
   // If `is_request` is false, should be in indicator mode instead.
   auto CheckChipIsRequest(bool is_request) {
-    return CheckViewProperty(
-        is_request ? PermissionChipView::kPermissionRequestChipElementId
-                   : PermissionChipView::kIndicatorChipElementId,
-        &PermissionChipView::GetIsRequestForTesting, is_request);
+    return CheckResult(
+        [this, is_request]() {
+          auto* chip = is_request ? GetDashboardController()
+                                        ->permission_dashboard()
+                                        ->GetRequestChip()
+                                  : GetDashboardController()
+                                        ->permission_dashboard()
+                                        ->GetIndicatorChip();
+          return chip ? chip->GetIsRequestForTesting() : !is_request;
+        },
+        is_request);
   }
 
   auto CheckChipText(int id_string) {
-    return CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                             &PermissionChipView::GetText,
-                             l10n_util::GetStringUTF16(id_string));
+    return CheckResult(
+        [this]() {
+          auto* chip = GetDashboardController()
+                           ->permission_dashboard()
+                           ->GetIndicatorChip();
+          return chip ? chip->GetTextForTesting() : std::u16string();
+        },
+        l10n_util::GetStringUTF16(id_string));
   }
 
   void SetPermission(ContentSettingsType type, ContentSetting setting) {
@@ -168,6 +183,22 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
     return GetLocationBar()->GetPermissionDashboardController();
   }
 
+  // Waits for the specified amount of time.
+  StepBuilder DoWaitForTime(base::TimeDelta delay) {
+    StepBuilder step = Do(base::BindOnce(
+        [](base::TimeDelta delay) {
+          // Have to allow nestable tasks to use this within a
+          // RunTestSequence() call.
+          base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+              FROM_HERE, run_loop.QuitClosure(), delay);
+          run_loop.Run();
+        },
+        delay));
+    step.SetDescription("DoWaitForTime()");
+    return step;
+  }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
@@ -198,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       PressButton(PermissionChipView::kPermissionRequestChipElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       // The permission chip is hidden because the permission
-      // request was dismissed instantly after a click.
-      EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId));
+      // request was dismissed after a click.
+      WaitForHide(PermissionChipView::kPermissionRequestChipElementId));
 }
 
 // 1. Enable Camera permission
@@ -782,11 +813,19 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
                               "Screenshot not supported in all test modes."),
       Screenshot(PageInfoMainView::kMainLayoutElementId,
                  "SuppressPageInfoReopen_PageInfo", "7663434"),
-      PressButton(PermissionChipView::kIndicatorChipElementId),
+      PressButton(PermissionChipView::kIndicatorChipElementId,
+                  InputType::kMouse),
       WaitForHide(PageInfoMainView::kPermissionsElementId),
       // Repeat again to make sure all flags are reset and can be reused.
-      PressButton(PermissionChipView::kIndicatorChipElementId),
+      // Has to be some delay for it to not get blocked, however.
+      DoWaitForTime(views::kMinimumTimeBetweenButtonClicks +
+                    base::Milliseconds(50)),
+      PressButton(PermissionChipView::kIndicatorChipElementId,
+                  InputType::kMouse),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
-      PressButton(PermissionChipView::kIndicatorChipElementId),
+      DoWaitForTime(views::kMinimumTimeBetweenButtonClicks +
+                    base::Milliseconds(50)),
+      PressButton(PermissionChipView::kIndicatorChipElementId,
+                  InputType::kMouse),
       WaitForHide(PageInfoMainView::kPermissionsElementId));
 }

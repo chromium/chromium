@@ -103,5 +103,8 @@ class PermissionChipInterface {
   virtual void SetBubbleOwner(BubbleOwnerDelegate* owner) = 0;
 
   virtual void ExecuteForTesting() = 0;
+
+  // Unlike ResetAnimation, will always invoke the observer animation events.
+  virtual void EndAnimationForTesting() = 0;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_INTERFACE_H_

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -19,22 +21,6 @@ LocationIconTestAccessor::LocationIconTestAccessor(
     : browser_(browser) {}
 
 LocationIconTestAccessor::~LocationIconTestAccessor() = default;
-
-content::WebContents* LocationIconTestAccessor::GetWebContents() {
-  if (!browser_) {
-    return nullptr;
-  }
-  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  if (!browser_view || !browser_view->toolbar_button_provider()) {
-    return nullptr;
-  }
-  WebUIToolbarWebView* webui_view =
-      browser_view->toolbar_button_provider()->GetWebUIToolbarViewForTesting();
-  if (!webui_view || !webui_view->GetWebViewForTesting()) {
-    return nullptr;
-  }
-  return webui_view->GetWebViewForTesting()->web_contents();
-}
 
 LocationIconView* LocationIconTestAccessor::GetLocationIconView() {
   if (!browser_) {
@@ -53,6 +39,19 @@ LocationIconView* LocationIconTestAccessor::GetLocationIconView() {
 bool LocationIconTestAccessor::IsBubbleShowing() const {
   return PageInfoBubbleViewBase::GetShownBubbleType() !=
          PageInfoBubbleViewBase::BUBBLE_NONE;
+}
+
+// Returns true if the icon is visible.
+bool LocationIconTestAccessor::IsVisible() {
+  if (!browser_) {
+    return false;
+  }
+  auto* browser_elements = BrowserElements::From(browser_);
+  if (!browser_elements) {
+    return false;
+  }
+
+  return browser_elements->GetElement(kLocationIconElementId);
 }
 
 void LocationIconTestAccessor::Click() {
