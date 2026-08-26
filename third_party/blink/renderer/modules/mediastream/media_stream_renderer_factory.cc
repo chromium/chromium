@@ -88,9 +88,8 @@ MediaStreamRendererFactory::GetAudioRenderer(
     const WebString& device_id,
     base::RepeatingCallback<void()> on_render_error_callback) {
   DCHECK(!web_stream.IsNull());
-  SendLogMessage(String::Format("%s({web_stream_id=%s}, {device_id=%s})",
-                                __func__, web_stream.Id().Utf8().c_str(),
-                                device_id.Utf8().c_str()));
+  SendLogMessage(StrCat({__func__, "({web_stream_id=", web_stream.Id(),
+                         "}, {device_id=", device_id, "})"}));
 
   MediaStreamDescriptor& descriptor = *web_stream;
   auto audio_components = descriptor.AudioComponents();
@@ -101,8 +100,8 @@ MediaStreamRendererFactory::GetAudioRenderer(
     // avoid that.
     auto video_tracks = descriptor.VideoComponents();
     if (video_tracks.empty()) {
-      SendLogMessage(String::Format(
-          "%s => (ERROR: no audio tracks in media stream)", __func__));
+      SendLogMessage(
+          StrCat({__func__, " => (ERROR: no audio tracks in media stream)"}));
     }
     return nullptr;
   }
@@ -119,8 +118,8 @@ MediaStreamRendererFactory::GetAudioRenderer(
   if (!audio_track) {
     // This can happen if the track was cloned.
     // TODO(tommi, perkj): Fix cloning of tracks to handle extra data too.
-    SendLogMessage(String::Format(
-        "%s => (ERROR: no native track for WebMediaStreamTrack)", __func__));
+    SendLogMessage(StrCat(
+        {__func__, " => (ERROR: no native track for WebMediaStreamTrack)"}));
     return nullptr;
   }
 
@@ -132,9 +131,9 @@ MediaStreamRendererFactory::GetAudioRenderer(
   if (!PeerConnectionRemoteAudioTrack::From(audio_track)) {
     // TODO(xians): Add support for the case where the media stream contains
     // multiple audio tracks.
-    SendLogMessage(UNSAFE_TODO(String::Format(
-        "%s => (creating TrackAudioRenderer for %s audio track)", __func__,
-        audio_track->is_local_track() ? "local" : "remote")));
+    SendLogMessage(StrCat({__func__, " => (creating TrackAudioRenderer for ",
+                           audio_track->is_local_track() ? "local" : "remote",
+                           " audio track)"}));
 
     return base::MakeRefCounted<TrackAudioRenderer>(
         audio_components[0].Get(), *frame, String(device_id),
@@ -157,19 +156,19 @@ MediaStreamRendererFactory::GetAudioRenderer(
       PeerConnectionDependencyFactory::From(*frame->DomWindow())
           .GetWebRtcAudioDevice();
   DCHECK(audio_device);
-  SendLogMessage(String::Format(
-      "%s => (media stream is a remote WebRTC stream)", __func__));
+  SendLogMessage(
+      StrCat({__func__, " => (media stream is a remote WebRTC stream)"}));
   // Share the existing renderer if any, otherwise create a new one.
   scoped_refptr<WebRtcAudioRenderer> renderer(audio_device->renderer());
 
   if (renderer) {
-    SendLogMessage(String::Format(
-        "%s => (using existing WebRtcAudioRenderer for remote stream)",
-        __func__));
+    SendLogMessage(
+        StrCat({__func__,
+                " => (using existing WebRtcAudioRenderer for remote stream)"}));
   } else {
-    SendLogMessage(String::Format(
-        "%s => (creating new WebRtcAudioRenderer for remote stream)",
-        __func__));
+    SendLogMessage(
+        StrCat({__func__,
+                " => (creating new WebRtcAudioRenderer for remote stream)"}));
 
     renderer = base::MakeRefCounted<WebRtcAudioRenderer>(
         PeerConnectionDependencyFactory::From(*frame->DomWindow())
@@ -180,16 +179,16 @@ MediaStreamRendererFactory::GetAudioRenderer(
         String(device_id), std::move(on_render_error_callback));
 
     if (!audio_device->SetAudioRenderer(renderer.get())) {
-      SendLogMessage(String::Format(
-          "%s => (ERROR: WRADI::SetAudioRenderer failed)", __func__));
+      SendLogMessage(
+          StrCat({__func__, " => (ERROR: WRADI::SetAudioRenderer failed)"}));
       return nullptr;
     }
   }
 
   auto ret = renderer->CreateSharedAudioRendererProxy(web_stream);
   if (!ret) {
-    SendLogMessage(String::Format(
-        "%s => (ERROR: CreateSharedAudioRendererProxy failed)", __func__));
+    SendLogMessage(StrCat(
+        {__func__, " => (ERROR: CreateSharedAudioRendererProxy failed)"}));
   }
   return ret;
 }

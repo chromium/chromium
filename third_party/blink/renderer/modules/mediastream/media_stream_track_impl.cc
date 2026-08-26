@@ -281,7 +281,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   // been called. Update the muted state manually.
   muted_ = ready_state_ == MediaStreamSource::kReadyStateMuted;
 
-  SendLogMessage(String::Format("%s()", __func__));
+  SendLogMessage(StrCat({__func__, "()"}));
 
   MediaStreamVideoTrack* const video_track =
       MediaStreamVideoTrack::From(Component());
@@ -368,8 +368,7 @@ String MediaStreamTrackImpl::ContentHint() const {
 }
 
 void MediaStreamTrackImpl::SetContentHint(const String& hint) {
-  SendLogMessage(
-      String::Format("%s({hint=%s})", __func__, hint.Utf8().c_str()));
+  SendLogMessage(StrCat({__func__, "({hint=", hint, "})"}));
   WebMediaStreamTrack::ContentHintType translated_hint =
       WebMediaStreamTrack::ContentHintType::kNone;
   switch (component_->GetSourceType()) {
@@ -419,8 +418,8 @@ void MediaStreamTrackImpl::setReadyState(
   if (ready_state_ != MediaStreamSource::kReadyStateEnded &&
       ready_state_ != ready_state) {
     ready_state_ = ready_state;
-    SendLogMessage(UNSAFE_TODO(String::Format("%s({ready_state=%s})", __func__,
-                                              readyState().AsCStr())));
+    SendLogMessage(
+        StrCat({__func__, "({ready_state=", readyState().AsCStr(), "})"}));
 
     // Observers may dispatch events which create and add new Observers;
     // take a snapshot so as to safely iterate.
@@ -432,7 +431,7 @@ void MediaStreamTrackImpl::setReadyState(
 }
 
 void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
-  SendLogMessage(String::Format("%s()", __func__));
+  SendLogMessage(StrCat({__func__, "()"}));
   if (Ended()) {
     return;
   }
@@ -458,7 +457,7 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
 
 MediaStreamTrack* MediaStreamTrackImpl::clone(
     ExecutionContext* execution_context) {
-  SendLogMessage(String::Format("%s()", __func__));
+  SendLogMessage(StrCat({__func__, "()"}));
 
   // Instantiate the clone.
   MediaStreamTrackImpl* cloned_track =
@@ -963,7 +962,7 @@ void MediaStreamTrackImpl::SourceChangedState() {
 
       break;
   }
-  SendLogMessage(String::Format("%s()", __func__));
+  SendLogMessage(StrCat({__func__, "()"}));
 }
 
 void MediaStreamTrackImpl::SourceChangedCaptureConfiguration() {

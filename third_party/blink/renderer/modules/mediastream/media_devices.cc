@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -126,9 +127,9 @@ void LogDevicesEnumerated(
   audio_caps_builder.Append("[");
   audio_caps_builder.AppendRange(
       audio_input_capabilities, ", ", [](const auto& cap) {
-        return String::Format(
-            "{channels=%d, sample_rate=%d, latency=%" PRId64 "ms}",
-            cap->channels, cap->sample_rate, cap->latency.InMilliseconds());
+        return Format("{{channels={}, sample_rate={}, latency={}ms}}",
+                      cap->channels, cap->sample_rate,
+                      cap->latency.InMilliseconds());
       });
   audio_caps_builder.Append("]");
 
@@ -137,11 +138,10 @@ void LogDevicesEnumerated(
   video_caps_builder.Append("[");
   video_caps_builder.AppendRange(
       video_input_capabilities, ", ", [](const auto& cap) {
-        return String::Format(
-            "{formats=%u, facing_mode=%d, pan_tilt_zoom=%d}",
-            cap->formats.size(), static_cast<int>(cap->facing_mode),
-            (cap->control_support.pan || cap->control_support.tilt ||
-             cap->control_support.zoom));
+        return Format("{{formats={}, facing_mode={}, pan_tilt_zoom={:d}}}",
+                      cap->formats.size(), static_cast<int>(cap->facing_mode),
+                      (cap->control_support.pan || cap->control_support.tilt ||
+                       cap->control_support.zoom));
       });
   video_caps_builder.Append("]");
 

@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/size.h"
@@ -152,11 +153,10 @@ void MaybeLogStreamDevice(const int32_t& request_id,
 std::string GetTrackLogString(int32_t request_id,
                               MediaStreamComponent* component,
                               bool is_pending) {
-  String str = String::Format(
-      "StartAudioTrack({track=[request_id = %d, id: %s, enabled: %d]}, "
-      "{is_pending=%d})",
-      request_id, component->Id().Utf8().c_str(), component->Enabled(),
-      is_pending);
+  String str = Format(
+      "StartAudioTrack({{track=[request_id = {}, id: {}, enabled: {:d}]}}, "
+      "{{is_pending={:d}}})",
+      request_id, component->Id(), component->Enabled(), is_pending);
   return str.Utf8();
 }
 
@@ -180,10 +180,9 @@ std::string GetOnTrackStartedLogString(
     blink::WebPlatformMediaStreamSource* source,
     MediaStreamRequestResult result) {
   const MediaStreamDevice& device = source->device();
-  String str = String::Format(
-      "OnTrackStarted({request_id = %d}, {session_id=%s}, {result=%s})",
-      request_id, device.session_id().ToString().c_str(),
-      base::ToString(result).c_str());
+  String str = Format(
+      "OnTrackStarted({{request_id = {}}}, {{session_id={}}}, {{result={}}})",
+      request_id, device.session_id().ToString(), base::ToString(result));
   return str.Utf8();
 }
 
