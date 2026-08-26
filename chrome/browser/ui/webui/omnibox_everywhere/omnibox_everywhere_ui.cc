@@ -593,10 +593,7 @@ void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
           /*prefer_entire_screen=*/false, base::DoNothing());
       break;
     case kScreenshotRegion:
-      // TODO(crbug.com/532198850): Region capture currently falls back to
-      // window capture pending region selection support.
-      handler->StartScreenshare(
-          /*prefer_entire_screen=*/false, base::DoNothing());
+      handler->CaptureRegionScreenshot(base::DoNothing());
       break;
   }
 }
