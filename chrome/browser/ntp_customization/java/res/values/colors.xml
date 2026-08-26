@@ -25,4 +25,6 @@ found in the LICENSE file.
 
     <!-- Ntp customization sync history recyclerview color. -->
     <color name="ntp_customization_theme_sync_badge_stroke_color">?attr/colorOnPrimary</color>
+
+    <color name="search_box_shadow_color">@color/color_primary_with_alpha_50</color>
 </resources>
