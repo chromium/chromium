@@ -174,6 +174,9 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     if ((this.result?.matches?.length ?? 0) > 0) {
       return false;
     }
+    if (this.hasTabs()) {
+      return false;
+    }
     return true;
   }
 

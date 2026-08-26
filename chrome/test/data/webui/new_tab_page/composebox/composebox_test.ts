@@ -1346,4 +1346,24 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
         0, getActiveObserversForTarget(testProxy.element.$.matches).length);
     assertTrue(composeboxObservers.every(observer => observer.disconnected));
   });
+
+  test(
+      'smartTabSharingActive causes hasTabs true and input has has-tabs class',
+      async () => {
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            'getSmartTabSharingActive', {active: true});
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+          smartTabSharingActive: true,
+          smartTabSharingVisible: true,
+        });
+        await microtasksFinished();
+        await testProxy.element.updateComplete;
+
+        assertTrue(testProxy.element.hasTabs());
+        assertFalse(testProxy.element.hasAttribute('should-remain-folded_'));
+
+        const inputElement = testProxy.element.getInputElement();
+        assertTrue(inputElement.classList.contains('has-tabs'));
+      });
 });
