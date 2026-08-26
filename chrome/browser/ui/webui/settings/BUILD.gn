@@ -211,6 +211,7 @@ source_set("impl") {
     "//chrome/browser/file_system_access",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/selection",
     "//chrome/browser/google",
     "//chrome/browser/gpu",
     "//chrome/browser/hid",

@@ -42,6 +42,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
@@ -1870,6 +1871,15 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
       scoped_revocation_reporter(
           profile, primary_pattern, secondary_pattern, content_type,
           permissions::PermissionSourceUI::SITE_SETTINGS);
+
+  // For INLINE_CUE_MENU, if the site is in the default blocklist, resetting it
+  // explicitly sets CONTENT_SETTING_ALLOW in HostContentSettingsMap so that
+  // the user's intent to unblock the site takes precedence over the default
+  // blocklist fallback.
+  if (content_type == ContentSettingsType::INLINE_CUE_MENU &&
+      glic::UnblockDefaultSiteForInlineCue(profile, primary_pattern_string)) {
+    return;
+  }
 
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                     content_type, CONTENT_SETTING_DEFAULT);

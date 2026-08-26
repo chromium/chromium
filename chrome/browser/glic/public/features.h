@@ -38,7 +38,6 @@ BASE_DECLARE_FEATURE(kGlicOnboardingMetricsMigration);
 
 BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
 extern const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly;
-extern const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList;
 extern const base::FeatureParam<bool> kGlicSelectionShowCopyButtons;
 extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
 extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;
@@ -48,6 +47,8 @@ extern const base::FeatureParam<bool> kGlicSelectionPromptInlineFulfillment;
 extern const base::FeatureParam<std::string>
     kGlicSelectionPromptInlinePromptTemplate;
 extern const base::FeatureParam<bool> kGlicSelectionPromptSkills;
+extern const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites;
+base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites();
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 

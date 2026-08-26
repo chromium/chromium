@@ -30,6 +30,7 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1152,6 +1153,22 @@ void GetExceptionsForContentType(ContentSettingsType type,
     auto& urls_with_granted_entries =
         all_provider_exceptions[ProviderType::kDefaultProvider];
     GetFileSystemGrantedEntries(&urls_with_granted_entries, profile, incognito);
+  }
+
+  // Display default blocked sites for the inline cue in the
+  // settings so users can see and manage those sites.
+  if (type == ContentSettingsType::INLINE_CUE_MENU) {
+    auto& pref_exceptions =
+        all_provider_exceptions[ProviderType::kPrefProvider];
+    std::vector<std::string> blocked_sites =
+        glic::GetActiveDefaultBlockedSitePatternsForInlineCue(profile);
+    for (const std::string& site : blocked_sites) {
+      ContentSettingsPattern pattern = ContentSettingsPattern::FromString(site);
+      pref_exceptions.push_back(GetExceptionForPage(
+          type, profile, pattern, ContentSettingsPattern::Wildcard(),
+          GetDisplayNameForPattern(profile, pattern), CONTENT_SETTING_BLOCK,
+          SiteSettingSource::kPreference, base::Time(), incognito));
+    }
   }
 
   for (auto& one_provider_exceptions : all_provider_exceptions) {

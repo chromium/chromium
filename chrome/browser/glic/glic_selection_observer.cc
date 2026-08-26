@@ -23,6 +23,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/explain_selection_trigger.h"
+#include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -263,6 +265,14 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
     CreatePageContextEligibilityAPI(std::move(account));
   }
 
+  if (profile) {
+    if (auto* settings_map =
+            HostContentSettingsMapFactory::GetForProfile(profile)) {
+      content_settings_observation_.Observe(settings_map);
+    }
+  }
+  UpdatePageBlockedState();
+
   web_contents->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
         RenderFrameCreated(render_frame_host);
@@ -351,6 +361,7 @@ void GlicSelectionObserver::OnVisibilityChanged(
 
 void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
   is_hidden_on_current_page_ = false;
+  UpdatePageBlockedState();
   if (widget_delegate_) {
     is_explaining_ = false;
     widget_delegate_->CloseWidget();
@@ -819,45 +830,27 @@ void GlicSelectionObserver::ShowSelectionAffordance(
   }
 }
 
-bool GlicSelectionObserver::ShouldShowSelectionWidget() {
-  // TODO(b/519247911): Update this.
-  if (is_hidden_on_current_page_) {
-    return false;
+void GlicSelectionObserver::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(ContentSettingsType::INLINE_CUE_MENU)) {
+    UpdatePageBlockedState();
+    if (is_site_blocked_on_current_page_ && widget_delegate_) {
+      DismissUI(DismissReason::kExternal);
+    }
   }
+}
 
+void GlicSelectionObserver::UpdatePageBlockedState() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  is_site_blocked_on_current_page_ =
+      IsSiteBlockedForInlineCue(profile, web_contents()->GetLastCommittedURL());
+}
 
-  if (ContentSettingsPattern::FromURL(web_contents()->GetLastCommittedURL())
-          .IsValid()) {
-    HostContentSettingsMap* settings_map =
-        HostContentSettingsMapFactory::GetForProfile(profile);
-    ContentSetting setting =
-        settings_map->GetContentSetting(web_contents()->GetLastCommittedURL(),
-                                        web_contents()->GetLastCommittedURL(),
-                                        ContentSettingsType::INLINE_CUE_MENU);
-    if (setting == CONTENT_SETTING_BLOCK) {
-      return false;
-    }
-  }
-
-  // Check the top cue only list.
-  std::string top_cue_only_list_str =
-      features::kGlicSelectionTopCueOnlyList.Get();
-  if (!top_cue_only_list_str.empty()) {
-    std::vector<std::string> top_cue_only_hosts =
-        base::SplitString(top_cue_only_list_str, ",", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    std::string_view current_host =
-        web_contents()->GetLastCommittedURL().host();
-    for (const std::string& host : top_cue_only_hosts) {
-      if (current_host == host || current_host.ends_with("." + host)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+bool GlicSelectionObserver::ShouldShowSelectionWidget() {
+  return !is_hidden_on_current_page_ && !is_site_blocked_on_current_page_;
 }
 
 void GlicSelectionObserver::OnHide() {

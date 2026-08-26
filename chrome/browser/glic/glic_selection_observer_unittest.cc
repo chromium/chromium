@@ -123,6 +123,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   using GlicSelectionObserver::OnPageContextEligibilityChanged;
   using GlicSelectionObserver::RenderFrameCreated;
   using GlicSelectionObserver::RenderFrameDeleted;
+  using GlicSelectionObserver::ShouldShowSelectionWidget;
 
   void set_call_base_update_selection_state(bool value) {
     call_base_update_selection_state_ = value;
@@ -1555,6 +1556,28 @@ TEST_F(GlicSelectionObserverPromptTest,
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
                                     web_contents()->GetWeakPtr(),
                                     GlicNudgeActivity::kNudgeClicked);
+}
+
+TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{features::kGlicSelectionDefaultBlockedSites.name,
+        "https://blocked-site.com"}});
+
+  NavigateAndCommit(GURL("https://blocked-site.com/page"));
+  EXPECT_FALSE(observer_->ShouldShowSelectionWidget());
+
+  NavigateAndCommit(GURL("https://allowed-site.com/page"));
+  EXPECT_TRUE(observer_->ShouldShowSelectionWidget());
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(GURL("https://allowed-site.com/page"),
+                                      GURL("https://allowed-site.com/page"),
+                                      ContentSettingsType::INLINE_CUE_MENU,
+                                      CONTENT_SETTING_BLOCK);
+
+  EXPECT_FALSE(observer_->ShouldShowSelectionWidget());
 }
 
 }  // namespace glic

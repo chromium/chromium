@@ -42,8 +42,6 @@ BASE_FEATURE(kGlicSelectionPrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly{
     &kGlicSelectionPrompt, "updates_only", true};
-const base::FeatureParam<std::string> kGlicSelectionTopCueOnlyList{
-    &kGlicSelectionPrompt, "top_cue_only_list", ""};
 const base::FeatureParam<bool> kGlicSelectionShowCopyButtons{
     &kGlicSelectionPrompt, "show_copy_buttons", false};
 const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt{
@@ -56,6 +54,15 @@ const base::FeatureParam<std::string> kGlicSelectionPromptInlinePromptTemplate{
     &kGlicSelectionPrompt, "inline_prompt_template", ""};
 const base::FeatureParam<bool> kGlicSelectionPromptSkills{
     &kGlicSelectionPrompt, "skills", true};
+const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites{
+    &kGlicSelectionPrompt, "GlicSelectionDefaultBlockedSites", ""};
+
+base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites() {
+  std::string sites_str = kGlicSelectionDefaultBlockedSites.Get();
+  std::vector<std::string> sites = base::SplitString(
+      sites_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return base::flat_set<std::string>(std::move(sites));
+}
 
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);

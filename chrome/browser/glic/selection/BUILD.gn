@@ -12,6 +12,8 @@ source_set("selection") {
   sources = [
     "explain_selection_trigger.cc",
     "explain_selection_trigger.h",
+    "inline_cue_blocklist_utils.cc",
+    "inline_cue_blocklist_utils.h",
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",
@@ -27,6 +29,7 @@ source_set("selection") {
   deps = [
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic:public_types",
     "//chrome/browser/glic/public:features",
@@ -40,8 +43,9 @@ source_set("selection") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
-    "//chrome/common:chrome_features",
     "//components/actor/public/mojom:mojo_bindings",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//mojo/public/mojom/base",
@@ -101,14 +105,20 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "explain_selection_trigger_unittest.cc" ]
+  sources = [
+    "explain_selection_trigger_unittest.cc",
+    "inline_cue_blocklist_utils_unittest.cc",
+  ]
   deps = [
     ":selection",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/test:test_support",
