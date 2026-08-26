@@ -168,7 +168,9 @@ GeicPwcManager::TabEntry::TabEntry(
   }
 }
 
-GeicPwcManager::TabEntry::~TabEntry() = default;
+GeicPwcManager::TabEntry::~TabEntry() {
+  Observe(nullptr);
+}
 
 void GeicPwcManager::TabEntry::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {

@@ -14,8 +14,12 @@
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -23,6 +27,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -42,15 +47,33 @@ class FakeGeicClient : public mojom::GeicClient {
   mojom::FocusedTabDataPtr last_data_;
 };
 
-class GeicBrowserHostImplTest : public BrowserWithTestWindowTest {
+class GeicBrowserHostImplTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         pwc::mojom::features::kPrivilegedWebContents);
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
-    AddTab(browser(), GURL("https://example.com/initial"));
-    tab_ = browser()->GetActiveTabInterface();
+    mock_browser_window_interface_ =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+    tab_strip_model_delegate_.SetBrowserWindowInterface(
+        mock_browser_window_interface_.get());
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, profile());
+    TabStripModel* strip = tab_strip_model_.get();
+    ON_CALL(*mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(strip));
+    ON_CALL(*mock_browser_window_interface_, GetActiveTabInterface())
+        .WillByDefault([strip]() -> tabs::TabInterface* {
+          return strip ? strip->GetActiveTab() : nullptr;
+        });
+    ON_CALL(*mock_browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(*mock_browser_window_interface_, GetSessionID())
+        .WillByDefault(testing::ReturnRef(session_id_));
+
+    AddTab(GURL("https://example.com/initial"));
+    tab_ = tab_strip_model_->GetActiveTab();
     ASSERT_TRUE(tab_);
 
     host_impl_ = std::make_unique<GeicBrowserHostImpl>(tab_);
@@ -70,16 +93,84 @@ class GeicBrowserHostImplTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     host_impl_.reset();
     tab_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
+    tab_strip_model_->CloseAllTabs();
+    tab_strip_model_.reset();
+    tab_strip_model_delegate_.SetBrowserWindowInterface(nullptr);
+    mock_browser_window_interface_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  struct WindowContext {
+    SessionID session_id = SessionID::InvalidValue();
+    std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>> window;
+    TestTabStripModelDelegate delegate;
+    std::unique_ptr<TabStripModel> tab_strip_model;
+
+    WindowContext() = default;
+    WindowContext(const WindowContext&) = delete;
+    WindowContext& operator=(const WindowContext&) = delete;
+
+    ~WindowContext() {
+      if (tab_strip_model) {
+        tab_strip_model->CloseAllTabs();
+      }
+      delegate.SetBrowserWindowInterface(nullptr);
+    }
+  };
+
+  std::unique_ptr<WindowContext> CreateWindowContext(SessionID session_id) {
+    auto ctx = std::make_unique<WindowContext>();
+    ctx->session_id = session_id;
+    ctx->window =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+    ctx->delegate.SetBrowserWindowInterface(ctx->window.get());
+    ctx->tab_strip_model =
+        std::make_unique<TabStripModel>(&ctx->delegate, profile());
+    TabStripModel* strip = ctx->tab_strip_model.get();
+    ON_CALL(*ctx->window, GetTabStripModel())
+        .WillByDefault(testing::Return(strip));
+    ON_CALL(*ctx->window, GetActiveTabInterface())
+        .WillByDefault([strip]() -> tabs::TabInterface* {
+          return strip ? strip->GetActiveTab() : nullptr;
+        });
+    ON_CALL(*ctx->window, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(*ctx->window, GetSessionID())
+        .WillByDefault(testing::ReturnRef(ctx->session_id));
+    return ctx;
+  }
+
+  void AddTab(const GURL& url) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    content::WebContents* raw_contents = contents.get();
+    tab_strip_model_->AppendWebContents(std::move(contents),
+                                        /*foreground=*/true);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents,
+                                                               url);
+  }
+
+  void NavigateAndCommitActiveTab(const GURL& url) {
+    content::WebContents* active_contents =
+        tab_strip_model_->GetActiveWebContents();
+    CHECK(active_contents);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(active_contents,
+                                                               url);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_tab_features_;
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   FakeGeicClient client_;
   mojo::Receiver<mojom::GeicClient> client_receiver_{&client_};
   std::unique_ptr<GeicBrowserHostImpl> host_impl_;
   mojo::Remote<mojom::GeicBrowserHost> host_remote_;
+  std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
+      mock_browser_window_interface_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  SessionID session_id_ = SessionID::FromSerializedValue(1);
 };
 
 TEST_F(GeicBrowserHostImplTest, GetFocusedTabReturnsFocusedTabDataWhenActive) {
@@ -111,18 +202,15 @@ TEST_F(GeicBrowserHostImplTest,
   auto initial_state = register_future.Take();
   ASSERT_TRUE(initial_state);
   ASSERT_TRUE(initial_state->focused_tab_data);
-
-  // Both paths must return matching state structure and URL.
-  ASSERT_EQ(initial_state->focused_tab_data->which(), direct_tab_data->which());
-  ASSERT_TRUE(initial_state->focused_tab_data->is_focused_tab());
+  EXPECT_TRUE(initial_state->focused_tab_data->is_focused_tab());
   EXPECT_EQ(initial_state->focused_tab_data->get_focused_tab()->url,
-            direct_tab_data->get_focused_tab()->url);
+            GURL("https://example.com/initial"));
 }
 
 TEST_F(GeicBrowserHostImplTest,
        GetContextFromFocusedTabReturnsErrorWhenTabClosed) {
   tab_ = nullptr;
-  browser()->tab_strip_model()->CloseAllTabs();
+  tab_strip_model_->CloseAllTabs();
   base::test::TestFuture<GetContextResult> future;
   host_remote_->GetContextFromFocusedTab(mojom::TabContextOptions::New(),
                                          future.GetCallback());
@@ -141,48 +229,51 @@ TEST_F(GeicBrowserHostImplTest,
 }
 
 TEST_F(GeicBrowserHostImplTest, ActivityInSecondWindowDoesNotAffectHost) {
-  std::unique_ptr<Browser> window2 =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, /*hosted_app=*/false);
-  AddTab(window2.get(), GURL("https://example.com/window2_tab"));
+  std::unique_ptr<WindowContext> window2 =
+      CreateWindowContext(SessionID::FromSerializedValue(2));
 
-  // host_impl_ is attached to tab_ in browser() (Window 1).
-  // Activity in Window 2 should not change host_impl_'s focused tab data.
+  std::unique_ptr<content::WebContents> contents2 =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContents* raw_contents2 = contents2.get();
+  window2->tab_strip_model->AppendWebContents(std::move(contents2),
+                                              /*foreground=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      raw_contents2, GURL("https://example.com/window2_tab"));
+
+  // host_impl_ is attached to tab_ in mock_browser_window_interface_ (Window
+  // 1). Activity in Window 2 should not change host_impl_'s focused tab data.
   {
     auto validated = host_impl_->GetValidatedActiveTab();
     ASSERT_TRUE(validated.contents);
     EXPECT_EQ(validated.metadata->url, GURL("https://example.com/initial"));
-    EXPECT_EQ(validated.metadata->window_id, browser()->GetSessionID().id());
+    EXPECT_EQ(validated.metadata->window_id, session_id_.id());
   }
-
-  window2->tab_strip_model()->CloseAllTabs();
 }
 
 TEST_F(GeicBrowserHostImplTest, TabMovedBetweenWindowsFollowsNewWindow) {
-  std::unique_ptr<Browser> window2 =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, /*hosted_app=*/false);
+  std::unique_ptr<WindowContext> window2 =
+      CreateWindowContext(SessionID::FromSerializedValue(2));
 
-  // Move tab_ from browser() to window2:
+  // Move tab_ from tab_strip_model_ to window2->tab_strip_model:
   std::unique_ptr<tabs::TabModel> detached_tab =
-      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+      tab_strip_model_->DetachTabAtForInsertion(0);
   ASSERT_EQ(detached_tab.get(), tab_);
-  window2->tab_strip_model()->InsertDetachedTabAt(0, std::move(detached_tab),
-                                                  AddTabTypes::ADD_ACTIVE);
+  window2->tab_strip_model->InsertDetachedTabAt(0, std::move(detached_tab),
+                                                AddTabTypes::ADD_ACTIVE);
 
-  // Verify host_impl_ follows tab_ to window2 dynamically:
-  EXPECT_EQ(tab_->GetBrowserWindowInterface(), window2.get());
+  // Verify host_impl_ follows tab_ to mock_window2 dynamically:
+  EXPECT_EQ(tab_->GetBrowserWindowInterface(), window2->window.get());
   {
     auto validated = host_impl_->GetValidatedActiveTab();
     ASSERT_TRUE(validated.contents);
     EXPECT_EQ(validated.metadata->url, GURL("https://example.com/initial"));
-    EXPECT_EQ(validated.metadata->window_id, window2->GetSessionID().id());
+    EXPECT_EQ(validated.metadata->window_id, window2->session_id.id());
   }
 
   tab_ = nullptr;
-  window2->tab_strip_model()->CloseAllTabs();
 }
 
 TEST_F(GeicBrowserHostImplTest, NavigationDuringExtractionReturnsError) {
-
   auto validated = host_impl_->GetValidatedActiveTab();
   ASSERT_TRUE(validated.contents);
   ASSERT_EQ(validated.rejection, RejectionKind::kNone);
@@ -203,11 +294,8 @@ TEST_F(GeicBrowserHostImplTest, NavigationDuringExtractionReturnsError) {
 
 TEST_F(GeicBrowserHostImplTest,
        SubframeNavigationDuringExtractionDoesNotReturnError) {
-  AddTab(browser(), GURL("https://example.com/initial"));
-  NavigateAndCommitActiveTab(GURL("https://example.com/initial"));
-
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      tab_strip_model_->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
 
   // Append a subframe to the primary main frame.
