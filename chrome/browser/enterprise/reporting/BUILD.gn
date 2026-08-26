@@ -88,10 +88,7 @@ if (!is_android) {
     ]
 
     if (!is_chromeos) {
-      sources += [
-        "cloud_profile_reporting_browsertest.cc",
-        "report_scheduler_browsertest.cc",
-      ]
+      sources += [ "report_scheduler_browsertest.cc" ]
       deps += [ "//chrome/browser:chrome_browser_main" ]
     }
   }
@@ -102,7 +99,7 @@ if (is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "cloud_profile_reporting_browsertest.cc" ]
+    sources = []
 
     deps = [
       "//base",
@@ -121,7 +118,10 @@ source_set("platform_browser_tests") {
   if (is_chromeos) {
     sources = [ "security_reporting_cros_browsertest.cc" ]
   } else {
-    sources = [ "security_reporting_browsertest.cc" ]
+    sources = [
+      "cloud_profile_reporting_browsertest.cc",
+      "security_reporting_browsertest.cc",
+    ]
   }
 
   deps = [
@@ -132,6 +132,7 @@ source_set("platform_browser_tests") {
     "//chrome/test:test_support",
     "//components/device_signals/core/browser",
     "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common:test_support",
     "//content/test:test_support",
     "//testing/gmock",
   ]
