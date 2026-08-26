@@ -110,10 +110,9 @@ class AtMemoryHandler {
       const blink::WebKeyboardEvent& event);
 
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
-  // `element`. If `pop` is true, removes the entry found.
-  std::optional<AskForValuesToFillInfo> FindAskForValuesToFill(
-      const blink::WebElement& element,
-      bool pop);
+  // `element` and removes the entry, if one was found.
+  std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
+      const blink::WebElement& element);
 
   // Records a UKM event if the user pressed "@" twice in quick succession.
   void MaybeRecordAtAt(const blink::WebElement& element,

@@ -348,7 +348,7 @@ void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
 void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
                                                   const std::u16string& value) {
   const std::optional<AskForValuesToFillInfo> info =
-      FindAskForValuesToFill(element, /*pop=*/true);
+      ExtractAskForValuesToFill(element);
   if (!info) {
     return;
   }
@@ -384,7 +384,7 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement element,
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
-AtMemoryHandler::FindAskForValuesToFill(const WebElement& element, bool pop) {
+AtMemoryHandler::ExtractAskForValuesToFill(const WebElement& element) {
   // This function is intended only for WebFormControlElements and for
   // contenteditables that aren't WebFormElement. See
   // form_util::GetFieldRendererId().
@@ -396,9 +396,7 @@ AtMemoryHandler::FindAskForValuesToFill(const WebElement& element, bool pop) {
     return std::nullopt;
   }
   AskForValuesToFillInfo info = *it;
-  if (pop) {
-    last_at_memory_ask_for_values_to_fills_.erase(it);
-  }
+  last_at_memory_ask_for_values_to_fills_.erase(it);
 
   const WebString value = [&] {
     if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
@@ -424,7 +422,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     return;
   }
 
-  FindAskForValuesToFill(element, /*pop=*/true);
+  ExtractAskForValuesToFill(element);
 
   static constexpr size_t kMaxSize = 10;
   while (last_at_memory_ask_for_values_to_fills_.size() >= kMaxSize) {
