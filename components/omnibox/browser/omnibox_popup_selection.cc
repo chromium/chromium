@@ -66,11 +66,6 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
     }
     case KEYWORD_MODE:
       return !match.associated_keyword.empty();
-    case FOCUSED_BUTTON_AIM: {
-      // This case was missing before; it is handled only with special logic
-      // in `GetAvailableSelectionsSorted` below.
-      return false;
-    }
     case FOCUSED_BUTTON_ACTION: {
       // Actions buttons should not be shown in keyword mode.
       return !match.from_keyword && action_index < match.actions.size();

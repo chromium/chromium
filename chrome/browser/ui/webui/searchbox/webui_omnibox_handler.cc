@@ -383,10 +383,6 @@ void WebuiOmniboxHandler::OpenCurrentSelection(
   page_->OpenCurrentSelection(disposition);
 }
 
-void WebuiOmniboxHandler::ResetPopupToInitialState() {
-  page_->ResetPopupToInitialState();
-}
-
 void WebuiOmniboxHandler::SetAimButtonVisible(bool visible) {
   page_->SetAimButtonVisible(visible);
 }

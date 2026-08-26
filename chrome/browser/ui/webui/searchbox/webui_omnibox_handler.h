@@ -82,7 +82,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step);
   void OpenCurrentSelection(WindowOpenDisposition disposition);
-  void ResetPopupToInitialState();
   void SetAimButtonVisible(bool visible) override;
 
   // SearchboxHandler:

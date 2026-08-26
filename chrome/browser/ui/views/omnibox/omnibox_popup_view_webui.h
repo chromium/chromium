@@ -50,7 +50,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step) override;
   void OpenCurrentSelection(WindowOpenDisposition disposition) override;
-  void ResetPopupToInitialState() override;
   bool IsSelectionPopupControlled() const override;
 
   // OmniboxEditModel::Observer:

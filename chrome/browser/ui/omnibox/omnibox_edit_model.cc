@@ -1409,7 +1409,17 @@ void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
                          : OmniboxPopupSelection::Step::kWholeLine;
 
   if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
-    popup_view_->StepSelection(direction, step);
+    const OmniboxPopupSelection old_selection = GetPopupSelection();
+    OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
+        autocomplete_controller()->input(), autocomplete_controller()->result(),
+        controller_->client()->GetTemplateURLService(),
+        view_->AimButtonVisible(), direction, step);
+    // Pass through to native step if this is a keyword mode transition because
+    // the popup does not yet support keyword mode.
+    if (new_selection.state != OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      popup_view_->StepSelection(direction, step);
+      return;
+    }
   }
 
   StepPopupSelection(direction, step);
@@ -1423,7 +1433,17 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
       OmniboxPopupSelection::Step::kStateOrLine;
 
   if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
-    popup_view_->StepSelection(direction, step);
+    const OmniboxPopupSelection old_selection = GetPopupSelection();
+    OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
+        autocomplete_controller()->input(), autocomplete_controller()->result(),
+        controller_->client()->GetTemplateURLService(),
+        view_->AimButtonVisible(), direction, step);
+    // Pass through to native step if this is a keyword mode transition because
+    // the popup does not yet support keyword mode.
+    if (new_selection.state != OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      popup_view_->StepSelection(direction, step);
+      return;
+    }
   }
 
   StepPopupSelection(direction, step);
@@ -1991,9 +2011,6 @@ void OmniboxEditModel::ResetPopupToInitialState() {
   if (!popup_view_) {
     return;
   }
-  if (popup_view_->IsSelectionPopupControlled()) {
-    popup_view_->ResetPopupToInitialState();
-  }
   size_t new_line = autocomplete_controller()->result().default_match()
                         ? 0
                         : OmniboxPopupSelection::kNoMatch;
@@ -2503,8 +2520,8 @@ void OmniboxEditModel::StepPopupSelection(
   } else if (new_selection.state ==
              OmniboxPopupSelection::LineState::KEYWORD_MODE) {
     // Prepare for keyword mode before accepting it.
-    SetPopupSelection(new_selection, /*reset_to_default=*/false,
-                      /*force_update_ui=*/false, /*native_update=*/false);
+    SetPopupSelection(OmniboxPopupSelection(
+        new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
     // Note: Popup behavior currently depends on the entry method being tab.
     // This is not ideal for nuanced metrics, but it is how it has worked
     // for a long time. Consider refactoring to fix this if needed.
