@@ -1290,7 +1290,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
 }
 
 String Request::MimeType() const {
-  return request_->MimeType();
+  return request_->HeaderList()->ExtractMIMEType();
 }
 
 String Request::ContentType() const {

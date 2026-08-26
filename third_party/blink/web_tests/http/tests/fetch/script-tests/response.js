@@ -399,11 +399,11 @@ promise_test(function(t) {
     res.headers.set('Content-Type', 'Text/Html');
     return res.blob()
       .then(function(blob) {
-          assert_equals(blob.type, 'text/plain');
+          assert_equals(blob.type, 'text/html');
           assert_equals(res.headers.get('Content-Type'), 'Text/Html');
         });
   },
-  'MIME type unchanged if headers are modified after Response() constructor');
+  'MIME type reflects headers modified after Response() constructor');
 
 // The following three tests follow different code paths in Body::readAsync().
 promise_test(function(t) {

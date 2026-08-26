@@ -557,7 +557,7 @@ bool Response::IsBodyUsed() const {
 }
 
 String Response::MimeType() const {
-  return response_->MimeType();
+  return response_->HeaderList()->ExtractMIMEType();
 }
 
 String Response::ContentType() const {

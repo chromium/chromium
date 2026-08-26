@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] MIME type should reflect Content-Type headers of response.
-  assert_equals: mime type can be overridden expected "text/plain" but got "text/html"
-Harness: the test ran to completion.
-
