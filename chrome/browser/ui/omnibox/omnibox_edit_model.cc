@@ -806,7 +806,7 @@ void OmniboxEditModel::PopulateActiveTabContext() {
   BrowserWindowInterface* browser =
       static_cast<ChromeOmniboxClient*>(client)->browser();
   SearchboxContextData* searchbox_context_data =
-      browser ? browser->GetFeatures().searchbox_context_data() : nullptr;
+      browser ? SearchboxContextData::From(browser) : nullptr;
   TabStripModel* tab_strip = browser ? browser->GetTabStripModel() : nullptr;
   tabs::TabInterface* tab = tab_strip ? tab_strip->GetActiveTab() : nullptr;
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;

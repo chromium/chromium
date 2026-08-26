@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   BrowserWindowInterface* browser_window_interface =
       webui::GetBrowserWindowInterface(GetWebContents());
   SearchboxContextData* searchbox_context_data =
-      browser_window_interface->GetFeatures().searchbox_context_data();
+      SearchboxContextData::From(browser_window_interface);
   ASSERT_TRUE(searchbox_context_data);
 
   // Test Add Image.

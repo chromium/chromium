@@ -61,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEditModelBrowserTest,
             OmniboxPopupState::kAim);
 
   // Verify context was populated correctly with TabHandle (not SessionID).
-  SearchboxContextData* context_data =
-      browser()->GetFeatures().searchbox_context_data();
+  SearchboxContextData* context_data = SearchboxContextData::From(browser());
   ASSERT_TRUE(context_data);
 
   std::unique_ptr<SearchboxContextData::Context> context =

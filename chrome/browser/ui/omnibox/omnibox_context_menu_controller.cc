@@ -785,7 +785,7 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     return;
   }
   SearchboxContextData* searchbox_context_data =
-      browser_window_interface->GetFeatures().searchbox_context_data();
+      SearchboxContextData::From(browser_window_interface);
   if (!searchbox_context_data) {
     return;
   }

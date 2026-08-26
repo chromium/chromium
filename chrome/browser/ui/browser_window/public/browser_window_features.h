@@ -420,10 +420,6 @@ class BrowserWindowFeatures {
     return profile_menu_coordinator_.get();
   }
 
-  SearchboxContextData* searchbox_context_data() {
-    return searchbox_context_data_.get();
-  }
-
   SessionServiceBrowserHelper* session_service_browser_helper() {
     return session_service_browser_helper_.get();
   }

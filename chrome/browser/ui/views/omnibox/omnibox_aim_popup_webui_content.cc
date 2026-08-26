@@ -176,7 +176,7 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
   std::unique_ptr<SearchboxContextData::Context> context;
   if (browser_window) {
-    auto* context_data = browser_window->GetFeatures().searchbox_context_data();
+    auto* context_data = SearchboxContextData::From(browser_window);
     context = context_data->TakePendingContext();
   }
   if (!context) {

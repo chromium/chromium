@@ -4,10 +4,21 @@
 
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
 SearchboxContextData::Context::Context() = default;
 SearchboxContextData::Context::~Context() = default;
 
-SearchboxContextData::SearchboxContextData() {
+DEFINE_USER_DATA(SearchboxContextData);
+
+// static
+SearchboxContextData* SearchboxContextData::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+SearchboxContextData::SearchboxContextData(ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 SearchboxContextData::~SearchboxContextData() {

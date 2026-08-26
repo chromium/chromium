@@ -509,7 +509,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
           *browser, browser, profile, browser->GetTabStripModel());
 
-  searchbox_context_data_ = std::make_unique<SearchboxContextData>();
+  searchbox_context_data_ =
+      GetUserDataFactory().CreateInstance<SearchboxContextData>(
+          *browser, browser->GetUnownedUserDataHost());
 
   session_service_browser_helper_ =
       std::make_unique<SessionServiceBrowserHelper>(

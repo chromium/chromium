@@ -12,6 +12,9 @@
 #include "base/sequence_checker.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class BrowserWindowInterface;
 
 // Temporarily stores search context (files, mode, query, etc.) while moving
 // from one piece of UI to another (e.g. context menu to composebox dialog).
@@ -28,8 +31,15 @@ class SearchboxContextData {
     omnibox::ToolMode mode = omnibox::TOOL_MODE_UNSPECIFIED;
   };
 
-  SearchboxContextData();
+  DECLARE_USER_DATA(SearchboxContextData);
+
+  // `host` is the UnownedUserDataHost of the browser window this data
+  // belongs to; tests may pass their own host.
+  explicit SearchboxContextData(ui::UnownedUserDataHost& host);
   ~SearchboxContextData();
+
+  // Returns the data for `browser`, or null if it does not have one.
+  static SearchboxContextData* From(BrowserWindowInterface* browser);
 
   // Takes ownership of pending context from caller.
   void SetPendingContext(std::unique_ptr<Context> context);
@@ -38,6 +48,8 @@ class SearchboxContextData {
   std::unique_ptr<Context> TakePendingContext();
 
  private:
+  ui::ScopedUnownedUserData<SearchboxContextData> scoped_unowned_user_data_;
+
   std::unique_ptr<Context> pending_context_;
 
   SEQUENCE_CHECKER(sequence_checker_);
