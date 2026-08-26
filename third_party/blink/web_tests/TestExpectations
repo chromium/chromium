@@ -340,6 +340,8 @@ crbug.com/309675 compositing/gestures/gesture-tapHighlight-simple-longPress.html
 
 crbug.com/845267 [ Mac ] http/tests/inspector-protocol/page/page-lifecycleEvents.js [ Failure Pass ]
 crbug.com/333842054 http/tests/inspector-protocol/page/page-events-associated-isolation.js [ Failure Pass ]
+# Opening a shared-memory mock camera can crash on macOS when the capture client requests a GpuMemoryBuffer.
+crbug.com/548945723 [ Mac ] virtual/mock-camera/http/tests/inspector-protocol/browser/add-mock-camera-open.js [ Crash ]
 
 # Counters failures to be fixed with new implementation
 crbug.com/990657 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]

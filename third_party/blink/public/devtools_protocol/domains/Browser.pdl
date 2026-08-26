@@ -225,6 +225,16 @@ domain Browser
       # Commandline parameters
       array of string arguments
 
+  # Adds or updates a mock camera in the shared video capture device list for
+  # test automation. The mock camera is not scoped to a particular page or
+  # frame and is removed when the DevTools session that created it disconnects.
+  experimental command addMockCamera
+    parameters
+      # Required non-empty identifier for the mock camera. This is mapped to an
+      # internal virtual-device identifier and is not the MediaDeviceInfo.deviceId
+      # exposed to the page.
+      string deviceId
+
   # Chrome histogram bucket.
   experimental type Bucket extends object
     properties

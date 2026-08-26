@@ -22,6 +22,7 @@ namespace content {
 class BrowserContext;
 class DevToolsAgentHostImpl;
 class FrameTreeNode;
+class MockCaptureDeviceController;
 
 namespace protocol {
 
@@ -65,6 +66,8 @@ class BrowserHandler : public DevToolsDomainHandler,
 
   Response GetBrowserCommandLine(
       std::unique_ptr<protocol::Array<std::string>>* arguments) override;
+
+  Response AddMockCamera(const std::string& device_id) override;
 
   void SetPermission(
       std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
@@ -140,6 +143,8 @@ class BrowserHandler : public DevToolsDomainHandler,
   // Stores past histogram snapshots for producing histogram deltas.
   std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshots_;
+
+  std::unique_ptr<MockCaptureDeviceController> mock_capture_device_controller_;
 
   base::WeakPtrFactory<BrowserHandler> weak_ptr_factory_{this};
 };

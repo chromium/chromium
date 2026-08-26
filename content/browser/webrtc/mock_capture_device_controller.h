@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/webrtc/mock_camera_device.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -26,7 +27,7 @@ namespace content {
 // Sequence-affine; must be constructed, called, and destroyed on one
 // caller-selected sequence. Owned MockCameraDevice instances live on that same
 // sequence.
-class MockCaptureDeviceController {
+class CONTENT_EXPORT MockCaptureDeviceController {
  public:
   using ConnectToVideoSourceProviderCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>)>;

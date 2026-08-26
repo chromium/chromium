@@ -1,0 +1,5 @@
+Tests Browser.addMockCamera device-list updates and session cleanup.
+Initially no video inputs: true
+Mock camera added: true
+Mock camera removed after session disconnect: true
+

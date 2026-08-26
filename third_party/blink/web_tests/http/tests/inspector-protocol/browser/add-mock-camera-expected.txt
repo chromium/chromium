@@ -1,0 +1,5 @@
+Tests Browser.addMockCamera target scoping, parameter validation.
+Page target rejected command: true
+Missing deviceId rejected: true
+Empty deviceId rejected: true
+

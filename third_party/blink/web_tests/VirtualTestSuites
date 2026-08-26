@@ -2113,6 +2113,26 @@
     ],
     "expires": "Jul 24, 2027"
   },
+  "These tests require an isolated capture-device environment so their exact",
+  "video-input counts do not depend on cameras attached to the host or fake",
+  "devices configured by the test runner. They run exclusively in this suite",
+  "with wrapped capture devices hidden. Fake media UI is also enabled so the",
+  "camera-opening test can call getUserMedia() without a permission prompt.",
+  {
+    "prefix": "mock-camera",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/browser/add-mock-camera-device-list.js",
+      "http/tests/inspector-protocol/browser/add-mock-camera-open.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--video-capture-use-virtual-devices-only",
+      "--use-fake-ui-for-media-stream"
+    ],
+    "owners": ["mkim@igalia.com"],
+    "expires": "Feb 14, 2027"
+  },
   "This suite is incompatible with the default WPT Origin Isolation mode of ",
   "Site Isolation (see",
   "WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which",

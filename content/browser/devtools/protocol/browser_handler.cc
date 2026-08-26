@@ -24,6 +24,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "build/util/chromium_git_revision.h"
@@ -31,18 +32,22 @@
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
+#include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/global_privacy_control_util.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/webrtc/mock_capture_device_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/filename_util.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "third_party/blink/public/common/global_privacy_control/global_privacy_control_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -54,6 +59,13 @@ namespace content {
 namespace protocol {
 
 namespace {
+
+constexpr char kVirtualDeviceIdPrefix[] = "virtual-chromium-";
+
+void ConnectToVideoSourceProvider(
+    mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
+  GetVideoCaptureService().ConnectToVideoSourceProvider(std::move(receiver));
+}
 
 base::expected<std::optional<url::Origin>, Response> ParseOriginString(
     base::optional_ref<const std::string> origin_string) {
@@ -100,6 +112,7 @@ Response BrowserHandler::Disable() {
   download_behavior_overrides_.clear();
   SetDownloadEventsEnabled(false);
   histograms_snapshots_.clear();
+  mock_capture_device_controller_.reset();
 
   if (session()->GetAgentHost()->GetType() == DevToolsAgentHost::kTypeBrowser) {
     ResetGlobalPrivacyControlDevToolsOverride();
@@ -678,6 +691,29 @@ Response BrowserHandler::GetBrowserCommandLine(
     return Response::ServerError(
         "Command line not returned because --enable-automation not set.");
   }
+}
+
+Response BrowserHandler::AddMockCamera(const std::string& device_id) {
+  if (session()->GetAgentHost()->GetType() != DevToolsAgentHost::kTypeBrowser) {
+    return Response::ServerError(
+        "Browser.addMockCamera is only supported on the browser target");
+  }
+
+  if (device_id.empty()) {
+    return Response::InvalidParams("deviceId must not be empty");
+  }
+
+  if (!mock_capture_device_controller_) {
+    mock_capture_device_controller_ =
+        std::make_unique<MockCaptureDeviceController>(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindRepeating(&ConnectToVideoSourceProvider));
+  }
+
+  mock_capture_device_controller_->AddMockCamera(MockCameraConfig{
+      .device_id = base::StrCat({kVirtualDeviceIdPrefix, device_id}),
+  });
+  return Response::Success();
 }
 
 Response BrowserHandler::Crash() {
