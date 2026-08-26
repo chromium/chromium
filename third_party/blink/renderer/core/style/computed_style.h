@@ -2492,7 +2492,15 @@ class ComputedStyle final : public ComputedStyleBase {
       return false;
     }
     if (pseudo == kPseudoIdMarker) {
-      return IsDisplayListItem();
+      // A list item's ::marker generates a box if it has non-normal
+      // 'content' (which requires ::marker rules to have matched), or a
+      // 'list-style-type' or marker image; see
+      // PseudoElementLayoutObjectIsNeeded(). Every <li> in a
+      // 'list-style: none' list has none of these, and creating the
+      // PseudoElement just to resolve its style and throw it away is a
+      // measurable cost on list-heavy pages.
+      return IsDisplayListItem() && (HasPseudoElementStyle(kPseudoIdMarker) ||
+                                     ListStyleType() || GeneratesMarkerImage());
     }
     // ::backdrop is generated for top layer elements (where Overlay is not
     // none).

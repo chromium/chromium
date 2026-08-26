@@ -7905,4 +7905,61 @@ TEST_F(StyleEngineTest, StyleSheetCacheNullAndInvalidContexts) {
   EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, context));
 }
 
+TEST_F(StyleEngineTest, NoThrowawayMarkerStyleForListStyleNone) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ul { list-style: none; }
+      .green { color: green; }
+      .with-content::marker { content: "+"; }
+      #str { list-style-type: "*"; }
+    </style>
+    <ul>
+      <li id="none"><span id="child"></span></li>
+      <li id="str"></li>
+      <li id="content" class="with-content"></li>
+    </ul>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* none = GetDocument().getElementById(AtomicString("none"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* str = GetDocument().getElementById(AtomicString("str"));
+  Element* content = GetDocument().getElementById(AtomicString("content"));
+
+  // A list item with neither a list-style nor ::marker rules has no marker;
+  // a list-style-type or ::marker 'content' alone is enough to generate one.
+  EXPECT_FALSE(none->GetPseudoElement(kPseudoIdMarker));
+  EXPECT_TRUE(str->GetPseudoElement(kPseudoIdMarker));
+  EXPECT_TRUE(content->GetPseudoElement(kPseudoIdMarker));
+
+  // Restyling a descendant of the markerless list item must not compute (and
+  // throw away) a ::marker style for the list item; only #child is resolved.
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  child->classList().Add(AtomicString("green"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_FALSE(none->GetPseudoElement(kPseudoIdMarker));
+
+  // A (non-independent) inherited change on the list item recalculates the
+  // list item and its child, but still no ::marker.
+  start_count = GetStyleEngine().StyleForElementCount();
+  none->SetInlineStyleProperty(CSSPropertyID::kFontSize, "20px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_FALSE(none->GetPseudoElement(kPseudoIdMarker));
+
+  // Giving it a list-style-type generates the marker as usual ...
+  none->SetInlineStyleProperty(CSSPropertyID::kListStyleType, "disc");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(none->GetPseudoElement(kPseudoIdMarker));
+  EXPECT_TRUE(none->GetPseudoElement(kPseudoIdMarker)->GetLayoutObject());
+
+  // ... and so does a ::marker rule with 'content', even with no list-style.
+  none->RemoveInlineStyleProperty(CSSPropertyID::kListStyleType);
+  none->classList().Add(AtomicString("with-content"));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(none->GetPseudoElement(kPseudoIdMarker));
+  EXPECT_TRUE(none->GetPseudoElement(kPseudoIdMarker)->GetLayoutObject());
+}
+
 }  // namespace blink
