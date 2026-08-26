@@ -5,8 +5,8 @@
 #include "ui/gtk/gtk_key_bindings_handler.h"
 
 #include <array>
+#include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "ui/base/glib/gsettings.h"
@@ -122,7 +122,7 @@ ui::TextEditCommand GtkKeyBindingsHandler::MatchEvent(const ui::Event& event) {
 void GtkKeyBindingsHandler::OnSettingsChanged(GSettings* settings,
                                               const char* key) {
   DCHECK(settings);
-  if (UNSAFE_TODO(strcmp(key, kGtkKeyTheme)) != 0) {
+  if (std::string_view(key) != kGtkKeyTheme) {
     return;
   }
   auto g_free_deleter = [](gchar* s) { g_free(s); };
@@ -131,7 +131,7 @@ void GtkKeyBindingsHandler::OnSettingsChanged(GSettings* settings,
   if (!key_theme) {
     return;
   }
-  emacs_theme_ = UNSAFE_TODO(strcmp(key_theme.get(), kEmacsKeyTheme)) == 0;
+  emacs_theme_ = (std::string_view(key_theme.get()) == kEmacsKeyTheme);
 }
 
 }  // namespace gtk
