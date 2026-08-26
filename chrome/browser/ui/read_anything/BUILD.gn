@@ -96,6 +96,10 @@ source_set("read_anything") {
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/page_load_metrics/browser",
+
+    # Temporarily added to avoid build flakiness while we untangle a circular
+    # dependency
+    "//components/user_education/webui:mojo_bindings",
     "//services/metrics/public/cpp:metrics_cpp",
   ]
 }
