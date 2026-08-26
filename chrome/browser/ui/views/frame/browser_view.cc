@@ -155,6 +155,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
+#include "chrome/browser/ui/views/find_bar_owner.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
@@ -3414,8 +3415,7 @@ void BrowserView::CutCopyPaste(int command_id) {
 }
 
 std::unique_ptr<FindBar> BrowserView::CreateFindBar() {
-  return std::make_unique<FindBarHost>(
-      browser_->GetFeatures().find_bar_owner());
+  return std::make_unique<FindBarHost>(FindBarOwner::From(browser_.get()));
 }
 
 WebContentsModalDialogHost* BrowserView::GetWebContentsModalDialogHost() {

@@ -837,10 +837,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       std::make_unique<extensions::BrowserExtensionWindowController>(browser);
 
   if (browser_view) {
-    find_bar_owner_ = std::make_unique<FindBarOwnerViews>(browser_view);
+    find_bar_owner_ = GetUserDataFactory().CreateInstance<FindBarOwnerViews>(
+        *browser, browser_view, browser->GetUnownedUserDataHost());
   } else if (webui_browser_window) {
     find_bar_owner_ =
-        std::make_unique<FindBarOwnerWebUIBrowser>(webui_browser_window);
+        GetUserDataFactory().CreateInstance<FindBarOwnerWebUIBrowser>(
+            *browser, webui_browser_window, browser->GetUnownedUserDataHost());
   }
 
   // Must be after exclusive_access_manager_.

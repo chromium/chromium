@@ -19,7 +19,8 @@ class Widget;
 
 class FindBarOwnerWebUIBrowser : public FindBarOwner {
  public:
-  explicit FindBarOwnerWebUIBrowser(WebUIBrowserWindow* window);
+  FindBarOwnerWebUIBrowser(WebUIBrowserWindow* window,
+                           ui::UnownedUserDataHost& host);
   ~FindBarOwnerWebUIBrowser() override;
 
  private:

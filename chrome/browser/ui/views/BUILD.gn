@@ -617,7 +617,12 @@ if (is_linux) {
 
 source_set("find_bar_owner") {
   public = [ "find_bar_owner.h" ]
-  public_deps = [ "//ui/gfx/geometry" ]
+  sources = [ "find_bar_owner.cc" ]
+  public_deps = [
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/geometry",
+  ]
+  deps = [ "//chrome/browser/ui/browser_window" ]
 }
 
 if (is_mac) {

@@ -352,8 +352,6 @@ class BrowserWindowFeatures {
     return extension_side_panel_manager_.get();
   }
 
-  FindBarOwner* find_bar_owner() { return find_bar_owner_.get(); }
-
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();

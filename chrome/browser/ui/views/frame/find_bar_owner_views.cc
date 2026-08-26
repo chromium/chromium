@@ -16,8 +16,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
-FindBarOwnerViews::FindBarOwnerViews(BrowserView* browser_view)
-    : browser_view_(browser_view) {}
+FindBarOwnerViews::FindBarOwnerViews(BrowserView* browser_view,
+                                     ui::UnownedUserDataHost& host)
+    : FindBarOwner(host), browser_view_(browser_view) {}
 
 FindBarOwnerViews::~FindBarOwnerViews() = default;
 

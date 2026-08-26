@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
+#include "chrome/browser/ui/views/find_bar_owner.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
@@ -1067,8 +1068,7 @@ views::NativeWidget* WebUIBrowserWindow::CreateNativeWidget() {
 #endif
 
 std::unique_ptr<FindBar> WebUIBrowserWindow::CreateFindBar() {
-  return std::make_unique<FindBarHost>(
-      browser_->GetFeatures().find_bar_owner());
+  return std::make_unique<FindBarHost>(FindBarOwner::From(browser_));
 }
 
 web_modal::WebContentsModalDialogHost*

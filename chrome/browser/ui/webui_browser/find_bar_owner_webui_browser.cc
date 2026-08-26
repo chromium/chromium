@@ -19,8 +19,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-FindBarOwnerWebUIBrowser::FindBarOwnerWebUIBrowser(WebUIBrowserWindow* window)
-    : window_(window) {}
+FindBarOwnerWebUIBrowser::FindBarOwnerWebUIBrowser(
+    WebUIBrowserWindow* window,
+    ui::UnownedUserDataHost& host)
+    : FindBarOwner(host), window_(window) {}
 
 FindBarOwnerWebUIBrowser::~FindBarOwnerWebUIBrowser() = default;
 
