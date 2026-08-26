@@ -200,3 +200,76 @@ source_set("tab_style_views_impl") {
     "//ui/views",
   ]
 }
+
+source_set("tab_container") {
+  sources = [
+    "tab_container.h",
+    "tab_container_impl.h",
+    "tab_slot_animation_delegate.h",
+    "tab_strip_layout_helper.h",
+    "z_orderable_tab_container_element.h",
+  ]
+
+  deps = [
+    ":base",
+    ":tab_group",
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//components/tab_groups",
+    "//ui/base/metadata",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  # TODO(crbug.com/451609048): Remove this circular dependency when the
+  # following header gets componentized:
+  # - c/b/ui/views/tabs/tab.h
+  # (No allow_circular_includes_from entry belongs here -- the waiver that
+  # makes this legal is declared on //chrome/browser/ui:ui, which is the
+  # target that owns tab.h and depends on this target.)
+}
+
+source_set("tab_container_impl") {
+  sources = [
+    "tab_container.cc",
+    "tab_container_impl.cc",
+    "tab_slot_animation_delegate.cc",
+    "tab_strip_layout_helper.cc",
+    "z_orderable_tab_container_element.cc",
+  ]
+
+  deps = [
+    ":base",
+    ":tab_container",
+    ":tab_group",
+    ":tab_style_views",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/range",
+    "//ui/views",
+  ]
+
+  # TODO(crbug.com/451609048): Remove this circular dependency when the
+  # following headers get componentized:
+  # - c/b/ui/views/tabs/tab.h
+  # - c/b/ui/views/tabs/tab_strip.h
+  # (No allow_circular_includes_from entry belongs here -- the waiver that
+  # makes this legal is declared on //chrome/browser/ui:ui, which is the
+  # target that owns tab.h and tab_strip.h and depends on this target.)
+}

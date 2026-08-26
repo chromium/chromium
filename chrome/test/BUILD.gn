@@ -7776,6 +7776,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tab_contents:unit_tests",
       "//chrome/browser/ui/views/tab_sharing:unit_tests",
       "//chrome/browser/ui/views/tabs:base",
+      "//chrome/browser/ui/views/tabs:tab_container",
       "//chrome/browser/ui/views/tabs:tab_group",
       "//chrome/browser/ui/views/tabs:tab_style_views",
       "//chrome/browser/ui/views/tabs/dragging",
