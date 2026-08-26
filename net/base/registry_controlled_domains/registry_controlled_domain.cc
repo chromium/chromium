@@ -226,17 +226,16 @@ RegistryResult GetRegistryInTrimmedHost(std::string_view host,
 
   if (match->tags.Has(DomainRuleTag::kException)) {
     const size_t first_dot = match->suffix.find('.');
-    if (first_dot == std::string_view::npos) {
-      // If we get here, we had an exception rule with no dots (e.g.
-      // "!foo").  This would only be valid if we had a corresponding
-      // wildcard rule, which would have to be "*".  But we explicitly
-      // disallow that case, so this kind of rule is invalid.
-      // TODO(crbug.com/40406311): This assumes that all wildcard entries,
-      // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
-      // on the PSL, which is why it returns the length of foo.invalid. This
-      // isn't entirely correct.
-      NOTREACHED() << "Invalid exception rule";
-    }
+    // If there is no first dot, we had an exception rule with no dots (e.g.
+    // "!foo").  This would only be valid if we had a corresponding wildcard
+    // rule, which would have to be "*".  But we explicitly disallow that case,
+    // so this kind of rule is invalid.
+    // TODO(crbug.com/40406311): This assumes that all wildcard entries,
+    // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
+    // on the PSL, which is why it returns the length of foo.invalid. This
+    // isn't entirely correct.
+    CHECK_NE(first_dot, std::string_view::npos)
+        << "Invalid exception rule. Suffix: '" << match->suffix << "'";
     return {match->suffix.substr(first_dot + 1), false};
   }
 
