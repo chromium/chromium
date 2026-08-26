@@ -1048,16 +1048,6 @@ bool WebRequestAPI::HasWebRequestOrDeclarativeWebRequestExtension() const {
          (declarative_request_extension_count_ > 0);
 }
 
-bool WebRequestAPI::HasWebRequestExtension() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kForceWebRequestProxyForTest)) {
-    return true;
-  }
-
-  return web_request_extension_count_ > 0;
-}
-
 bool WebRequestAPI::IsAvailableToWebViewEmbedderWebUIFrame(
     content::RenderFrameHost* render_frame_host) const {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)

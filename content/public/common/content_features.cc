@@ -1021,10 +1021,6 @@ BASE_FEATURE(kServiceWorkerAutoPreload, base::FEATURE_ENABLED_BY_DEFAULT);
 // enabled.
 BASE_FEATURE(kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kOptimizeWebRequestProxyForServiceWorkerAutoPreloadAllowDeclarativeNetRequest{
-        &kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
-        "allow_declarative_net_request", false};
 
 // crbug.com/40410035: When enabled, download requests ("Save link as",
 // "Save image as", <a download>) are intercepted by service workers, allowing
