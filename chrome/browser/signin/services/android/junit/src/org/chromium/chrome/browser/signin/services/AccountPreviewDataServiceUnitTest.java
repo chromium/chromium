@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,13 +19,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
 import org.chromium.google_apis.gaia.GaiaId;
 
+import java.util.List;
+
 /** Unit tests for {@link AccountPreviewDataService} and {@link AccountPreviewPreference}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
 public class AccountPreviewDataServiceUnitTest {
+    private static final long NATIVE_SERVICE_PTR = 12345L;
     private static final GaiaId GAIA_ID = new GaiaId("gaia-id-1");
     private static final @DataType int[] DATA_TYPES =
             new int[] {DataType.BOOKMARKS, DataType.PASSWORDS};
@@ -34,10 +43,12 @@ public class AccountPreviewDataServiceUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AccountPreviewDataService.Natives mNativeMock;
+    private AccountPreviewDataService mService;
 
     @Before
     public void setUp() {
         AccountPreviewDataServiceJni.setInstanceForTesting(mNativeMock);
+        mService = new AccountPreviewDataService(NATIVE_SERVICE_PTR);
     }
 
     @Test
@@ -105,5 +116,38 @@ public class AccountPreviewDataServiceUnitTest {
 
         assertFalse(pref.equals(prefDifferentFormFactor));
         assertNotEquals(pref.hashCode(), prefDifferentFormFactor.hashCode());
+    }
+
+    @Test
+    public void testGetPreferredAccountOrDefault_withMatchingPreference() {
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        TestAccounts.ACCOUNT2.getGaiaId(), new int[0], OTHER_DEVICE_FORM_FACTOR);
+        doReturn(preference).when(mNativeMock).getPreferredAccountForPromo(NATIVE_SERVICE_PTR);
+
+        List<AccountInfo> accounts = List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2);
+        AccountInfo selected = mService.getPreferredAccountOrDefault(accounts);
+        assertEquals(TestAccounts.ACCOUNT2, selected);
+    }
+
+    @Test
+    public void testGetPreferredAccountOrDefault_withNoMatchingPreference() {
+        doReturn(null).when(mNativeMock).getPreferredAccountForPromo(NATIVE_SERVICE_PTR);
+
+        List<AccountInfo> accounts = List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2);
+        AccountInfo selected = mService.getPreferredAccountOrDefault(accounts);
+        assertEquals(TestAccounts.ACCOUNT1, selected);
+    }
+
+    @Test
+    public void testGetPreferredAccountOrDefault_preferenceNotFoundInAccounts() {
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        new GaiaId("unknown-gaia-id"), new int[0], OTHER_DEVICE_FORM_FACTOR);
+        doReturn(preference).when(mNativeMock).getPreferredAccountForPromo(NATIVE_SERVICE_PTR);
+
+        List<AccountInfo> accounts = List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2);
+        AccountInfo selected = mService.getPreferredAccountOrDefault(accounts);
+        assertEquals(TestAccounts.ACCOUNT1, selected);
     }
 }

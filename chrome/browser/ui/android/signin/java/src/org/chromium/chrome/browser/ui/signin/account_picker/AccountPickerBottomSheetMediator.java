@@ -35,6 +35,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -63,6 +65,7 @@ public class AccountPickerBottomSheetMediator
     private final Activity mActivity;
     private final IdentityManager mIdentityManager;
     private final SigninManager mSigninManager;
+    private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
     private final AccountPickerDelegate mAccountPickerDelegate;
     private final Runnable mDismissBottomSheet;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -71,11 +74,6 @@ public class AccountPickerBottomSheetMediator
     private final PropertyModel mModel;
     private final AccountManagerFacade mAccountManagerFacade;
     private final boolean mIsSeamlessSignin;
-
-    // TODO(crbug.com/532967032): Remove annotation once implementation is complete.
-    @SuppressWarnings("UnusedVariable")
-    private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
-
     private @Nullable Runnable mRequestDisplayBottomSheet;
     private @Nullable CoreAccountInfo mSelectedAccount;
     private @Nullable CoreAccountInfo mDefaultAccount;
@@ -443,14 +441,11 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
-        if (accountId != null) {
-            mDefaultAccount =
-                    assertNonNull(AccountUtils.findAccountByGaiaId(accounts, accountId.getId()));
-            setSelectedAccount(mDefaultAccount);
-            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
-            return;
-        }
-        mDefaultAccount = accounts.get(0);
+        mDefaultAccount =
+                accountId != null
+                        ? assertNonNull(
+                                AccountUtils.findAccountByGaiaId(accounts, accountId.getId()))
+                        : getPreferredAccountOrDefault(accounts);
         setSelectedAccount(mDefaultAccount);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
     }
@@ -484,7 +479,7 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
-        mDefaultAccount = accounts.get(0);
+        mDefaultAccount = getPreferredAccountOrDefault(accounts);
         mSelectedAccount =
                 mSelectedAccount == null
                         ? null
@@ -786,5 +781,12 @@ public class AccountPickerBottomSheetMediator
     private void startSigninTimestampLogging() {
         @FlowVariant String flowVariant = mAccountPickerDelegate.getSigninFlowVariant();
         mSigninTimestampsLogger = SigninFlowTimestampsLogger.startLogging(flowVariant);
+    }
+
+    private AccountInfo getPreferredAccountOrDefault(List<AccountInfo> accounts) {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
+                        && mAccountPreviewDataService != null
+                ? mAccountPreviewDataService.getPreferredAccountOrDefault(accounts)
+                : accounts.get(0);
     }
 }

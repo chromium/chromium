@@ -74,12 +74,14 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -103,6 +105,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -216,6 +219,75 @@ public class AccountPickerBottomSheetTest {
 
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
+        checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
+    public void testCollapsedSheetWithPreferredAccount_preferredAccountEnabled() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountOrDefault(any()))
+                .thenReturn(TestAccounts.ACCOUNT2);
+
+        var accountConsistencyHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SHOWN);
+
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        // Since the flag is enabled and Account2 is preferred, it should default to Account2.
+        checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT2);
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
+    public void testCollapsedSheetWithSpecifiedAccountAndDifferentPreferredAccount() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        TestAccounts.ACCOUNT2.getGaiaId(),
+                        new int[0],
+                        DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+
+        var accountConsistencyHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SHOWN);
+
+        buildAndShowBottomSheetForAccount(
+                AccountPickerLaunchMode.DEFAULT, TestAccounts.ACCOUNT1.getId());
+
+        // Account1 is preselected, so it should be displayed even though Account2 is preferred.
+        checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
+    public void testCollapsedSheetWithPreferredAccount_preferredAccountDisabled() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        TestAccounts.ACCOUNT2.getGaiaId(),
+                        new int[0],
+                        DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
+        when(mAccountPreviewDataServiceMock.getPreferredAccountForPromo()).thenReturn(preference);
+
+        var accountConsistencyHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SHOWN);
+
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        // Since the flag is disabled, it should default to the first account (Account1).
         checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
         accountConsistencyHistogram.assertExpected();
     }
