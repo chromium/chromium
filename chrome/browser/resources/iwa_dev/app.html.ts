@@ -70,6 +70,9 @@ ${!this.devModeEnabled_ ? html`
             .app="${this.selectedAppForUpdateOptions_}"
             .currentPinnedVersion="${
               this.getPinnedVersion_(this.selectedAppForUpdateOptions_.appId)}"
+            .currentAllowDowngrades="${
+              this.getAllowDowngrades_(
+                  this.selectedAppForUpdateOptions_.appId)}"
             @close="${this.onUpdateOptionsDialogClose_}"
             @request-parse-update-manifest-from-url="${
               this.onRequestParseUpdateManifestFromUrl_}"

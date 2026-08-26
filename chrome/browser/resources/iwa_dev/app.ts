@@ -159,13 +159,22 @@ export class IwaDevAppElement extends CrLitElement {
     return getStoredUpdateOptions(appId).pinnedVersion;
   }
 
+  protected getAllowDowngrades_(appId: string): boolean {
+    return getStoredUpdateOptions(appId).allowDowngrades;
+  }
+
   protected async onUpdateOptionsSaved_(
       e: CustomEvent<UpdateOptionsSavedEventDetail>) {
-    const {app, selectedChannel, pinnedVersion} = e.detail;
+    const {app, selectedChannel, pinnedVersion, allowDowngrades} = e.detail;
 
-    if (pinnedVersion !== undefined) {
+    if (pinnedVersion !== undefined || allowDowngrades !== undefined) {
       const options = getStoredUpdateOptions(app.appId);
-      options.pinnedVersion = pinnedVersion;
+      if (pinnedVersion !== undefined) {
+        options.pinnedVersion = pinnedVersion;
+      }
+      if (allowDowngrades !== undefined) {
+        options.allowDowngrades = allowDowngrades;
+      }
       saveStoredUpdateOptions(app.appId, options);
     }
 

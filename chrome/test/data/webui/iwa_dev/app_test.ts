@@ -830,6 +830,28 @@ suite('<iwa-dev-app>', () => {
     assertEquals('1.2.0', getStoredUpdateOptions(appInfo.appId).pinnedVersion);
   });
 
+  test('shows toast when allow downgrades is saved', async () => {
+    handler.setResultFor(
+        'parseUpdateManifestFromUrl',
+        Promise.resolve({versions: [], channels: []}));
+    const appInfo = await setupManifestInstalledApp();
+    getListItems()[0]!.dispatchEvent(new CustomEvent('request-update-options', {
+      detail: {app: appInfo},
+    }));
+    await microtasksFinished();
+
+    const dialog = getUpdateOptionsDialog()!;
+    assertTrue(!!dialog);
+    dialog.dispatchEvent(new CustomEvent('update-options-saved', {
+      detail: {app: appInfo, allowDowngrades: true},
+    }));
+
+    await microtasksFinished();
+    assertTrue(app.$.toast.open);
+    assertEquals('Update options saved', app.$.toast.textContent?.trim());
+    assertTrue(getStoredUpdateOptions(appInfo.appId).allowDowngrades);
+  });
+
   test(
       'calls updateManifestInstalledApp with stored pinned version',
       async () => {
@@ -849,13 +871,13 @@ suite('<iwa-dev-app>', () => {
       });
 
   test(
-      'passes stored pinned version when opening update options dialog',
+      'passes stored update options when opening update options dialog',
       async () => {
         handler.setResultFor(
             'parseUpdateManifestFromUrl',
             Promise.resolve({versions: [], channels: []}));
         const appInfo = await setupManifestInstalledApp(
-            {allowDowngrades: false, pinnedVersion: '2.5.0'});
+            {allowDowngrades: true, pinnedVersion: '2.5.0'});
 
         getListItems()[0]!.dispatchEvent(
             new CustomEvent('request-update-options', {
@@ -867,6 +889,7 @@ suite('<iwa-dev-app>', () => {
         assertTrue(!!dialog);
         assertTrue(dialog.$.dialog.open);
         assertEquals('2.5.0', dialog.currentPinnedVersion);
+        assertTrue(dialog.currentAllowDowngrades);
       });
 
   test(

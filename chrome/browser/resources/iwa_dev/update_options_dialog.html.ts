@@ -59,6 +59,15 @@ export function getHtml(this: IwaDevUpdateOptionsDialogElement) {
         `)}
       </datalist>
     </div>
+    <div class="toggle-container">
+      <span id="allowDowngradesLabel">Allow Downgrades</span>
+      <cr-toggle id="allowDowngradesToggle"
+          aria-labelledby="allowDowngradesLabel"
+          ?checked="${this.selectedAllowDowngrades_}"
+          @change="${this.onAllowDowngradesChange_}"
+          ?disabled="${this.isFetching_}">
+      </cr-toggle>
+    </div>
     ${this.fetchError_ ? html`
       <div class="error-message" aria-live="polite">${this.fetchError_}</div>
     ` : ''}

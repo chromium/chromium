@@ -6,6 +6,7 @@ import 'chrome://iwa-dev/update_options_dialog.js';
 
 import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -15,6 +16,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
   let cancelButton: HTMLButtonElement;
   let channelInput: HTMLInputElement;
   let pinnedVersionInput: HTMLInputElement;
+  let allowDowngradesToggle: CrToggleElement;
 
   function createAppInfo(updateChannel: string = 'default'): IwaDevModeAppInfo {
     return {
@@ -32,11 +34,13 @@ suite('<iwa-dev-update-options-dialog>', () => {
   }
 
   async function createDialog(
-      app: IwaDevModeAppInfo, currentPinnedVersion: string|null = null) {
+      app: IwaDevModeAppInfo, currentPinnedVersion: string|null = null,
+      currentAllowDowngrades: boolean = false) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('iwa-dev-update-options-dialog');
     dialog.app = app;
     dialog.currentPinnedVersion = currentPinnedVersion;
+    dialog.currentAllowDowngrades = currentAllowDowngrades;
 
     const fetchPromise =
         eventToPromise('request-parse-update-manifest-from-url', dialog);
@@ -55,6 +59,9 @@ suite('<iwa-dev-update-options-dialog>', () => {
     pinnedVersionInput = dialog.shadowRoot.querySelector<HTMLInputElement>(
         '#pinnedVersionInput')!;
     assertTrue(!!pinnedVersionInput);
+    allowDowngradesToggle = dialog.shadowRoot.querySelector<CrToggleElement>(
+        '#allowDowngradesToggle')!;
+    assertTrue(!!allowDowngradesToggle);
 
     const event = await fetchPromise as CustomEvent<{
                     url: string,
@@ -79,6 +86,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
   interface OpenDialogOptions {
     currentChannel?: string;
     currentPinnedVersion?: string|null;
+    currentAllowDowngrades?: boolean;
     channels?: ChannelMetadata[];
     versions?: VersionEntry[];
   }
@@ -86,12 +94,14 @@ suite('<iwa-dev-update-options-dialog>', () => {
   async function openDialog(options: OpenDialogOptions = {}) {
     const currentChannel = options.currentChannel || 'default';
     const currentPinnedVersion = options.currentPinnedVersion ?? null;
+    const currentAllowDowngrades = options.currentAllowDowngrades || false;
     const channels =
         options.channels || [{channel: 'beta', displayName: 'Beta'}];
     const versions = options.versions || [];
 
-    const callback =
-        await createDialog(createAppInfo(currentChannel), currentPinnedVersion);
+    const callback = await createDialog(
+        createAppInfo(currentChannel), currentPinnedVersion,
+        currentAllowDowngrades);
     callback({success: {versions, channels}});
     await microtasksFinished();
   }
@@ -99,16 +109,19 @@ suite('<iwa-dev-update-options-dialog>', () => {
   interface OpenDialogWithErrorOptions {
     currentChannel?: string;
     currentPinnedVersion?: string|null;
+    currentAllowDowngrades?: boolean;
     error?: string;
   }
 
   async function openDialogWithError(options: OpenDialogWithErrorOptions = {}) {
     const currentChannel = options.currentChannel || 'default';
     const currentPinnedVersion = options.currentPinnedVersion ?? null;
+    const currentAllowDowngrades = options.currentAllowDowngrades || false;
     const error = options.error || 'Network error';
 
-    const callback =
-        await createDialog(createAppInfo(currentChannel), currentPinnedVersion);
+    const callback = await createDialog(
+        createAppInfo(currentChannel), currentPinnedVersion,
+        currentAllowDowngrades);
     callback({error});
     await microtasksFinished();
   }
@@ -120,6 +133,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
         await openDialog({
           currentChannel: 'default',
           currentPinnedVersion: '1.0.0',
+          currentAllowDowngrades: true,
           channels: [
             {channel: 'default', displayName: 'Default'},
             {channel: 'beta', displayName: 'Beta Channel'},
@@ -135,6 +149,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
         assertTrue(dialog.$.dialog.open);
         assertEquals('default', channelInput.value);
         assertEquals('1.0.0', pinnedVersionInput.value);
+        assertTrue(allowDowngradesToggle.checked);
 
         const channelOptions = getChannelOptions();
         assertEquals(3, channelOptions.length);
@@ -267,10 +282,29 @@ suite('<iwa-dev-update-options-dialog>', () => {
         assertTrue(saveButton.hasAttribute('disabled'));
       });
 
+  test('disables save button until allow downgrades is toggled', async () => {
+    await openDialog({currentAllowDowngrades: false});
+    assertFalse(allowDowngradesToggle.checked);
+    assertTrue(saveButton.hasAttribute('disabled'));
+
+    // Toggling on enables save
+    allowDowngradesToggle.click();
+    await microtasksFinished();
+    assertTrue(allowDowngradesToggle.checked);
+    assertFalse(saveButton.hasAttribute('disabled'));
+
+    // Toggling off disables save again
+    allowDowngradesToggle.click();
+    await microtasksFinished();
+    assertFalse(allowDowngradesToggle.checked);
+    assertTrue(saveButton.hasAttribute('disabled'));
+  });
+
   test('emits update-options-saved on save click', async () => {
     await openDialog({
       currentChannel: 'default',
       currentPinnedVersion: '1.0.0',
+      currentAllowDowngrades: false,
       channels: [{channel: 'beta', displayName: 'Beta'}],
       versions: [{version: '2.0.0', src: '', channels: ['beta']}],
     });
@@ -279,6 +313,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
     channelInput.dispatchEvent(new Event('input'));
     pinnedVersionInput.value = '  2.0.0  ';
     pinnedVersionInput.dispatchEvent(new Event('input'));
+    allowDowngradesToggle.click();
     await microtasksFinished();
 
     const savePromise = eventToPromise('update-options-saved', dialog);
@@ -288,10 +323,12 @@ suite('<iwa-dev-update-options-dialog>', () => {
                         app: IwaDevModeAppInfo,
                         selectedChannel?: string,
                         pinnedVersion?: string,
+                        allowDowngrades?: boolean,
                       }>;
     assertEquals('test-app-id', saveEvent.detail.app.appId);
     assertEquals('beta', saveEvent.detail.selectedChannel);
     assertEquals('2.0.0', saveEvent.detail.pinnedVersion);
+    assertTrue(!!saveEvent.detail.allowDowngrades);
     assertFalse(dialog.$.dialog.open);
   });
 

@@ -45,11 +45,15 @@ cr-input {
   margin-bottom: 8px;
 }
 
-.dropdown-container label {
+.dropdown-container label,
+.toggle-container span {
   color: var(--cr-secondary-text-color);
-  display: block;
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+.dropdown-container label {
+  display: block;
 }
 
 .dropdown-select {

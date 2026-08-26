@@ -29,3 +29,9 @@
   position: absolute;
   z-index: 1;
 }
+
+.toggle-container {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}

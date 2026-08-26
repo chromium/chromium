@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from '//resources/js/assert.js';
@@ -20,6 +21,7 @@ export interface UpdateOptionsSavedEventDetail {
   app: IwaDevModeAppInfo;
   selectedChannel?: string;
   pinnedVersion?: string|null;
+  allowDowngrades?: boolean;
 }
 
 export interface IwaDevUpdateOptionsDialogElement {
@@ -48,12 +50,14 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     return {
       app: {type: Object},
       currentPinnedVersion: {type: String},
+      currentAllowDowngrades: {type: Boolean},
       isFetching_: {type: Boolean, state: true},
       fetchError_: {type: String, state: true},
       channels_: {type: Array, state: true},
       selectedChannel_: {type: String, state: true},
       versions_: {type: Array, state: true},
       selectedPinnedVersion_: {type: String, state: true},
+      selectedAllowDowngrades_: {type: Boolean, state: true},
     };
   }
 
@@ -66,6 +70,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   };
 
   accessor currentPinnedVersion: string|null = null;
+  accessor currentAllowDowngrades: boolean = false;
 
   protected accessor isFetching_: boolean = true;
   protected accessor fetchError_: string = '';
@@ -73,11 +78,13 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   protected accessor selectedChannel_: string = '';
   protected accessor versions_: VersionEntry[] = [];
   protected accessor selectedPinnedVersion_: string = '';
+  protected accessor selectedAllowDowngrades_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
     this.selectedChannel_ = this.getCurrentChannel_();
     this.selectedPinnedVersion_ = this.getCurrentPinnedVersion_() || '';
+    this.selectedAllowDowngrades_ = this.currentAllowDowngrades;
   }
 
   protected onCrDialogOpen_() {
@@ -102,6 +109,10 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     this.shadowRoot.querySelector<HTMLElement>('#pinnedVersionInput')?.focus();
   }
 
+  protected onAllowDowngradesChange_(e: CustomEvent<boolean>) {
+    this.selectedAllowDowngrades_ = e.detail;
+  }
+
   protected getCurrentChannel_(): string {
     return this.app.source.updateInfo?.updateChannel || 'default';
   }
@@ -122,7 +133,8 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     if (this.isFetching_) {
       return true;
     }
-    return !this.hasChannelChange_() && !this.hasPinnedVersionChange_();
+    return !this.hasChannelChange_() && !this.hasPinnedVersionChange_() &&
+        !this.hasAllowDowngradesChange_();
   }
 
   protected onSaveClick_() {
@@ -139,6 +151,10 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     if (this.hasPinnedVersionChange_()) {
       const version = this.selectedPinnedVersion_.trim();
       detail.pinnedVersion = version.length === 0 ? null : version;
+    }
+
+    if (this.hasAllowDowngradesChange_()) {
+      detail.allowDowngrades = this.selectedAllowDowngrades_;
     }
 
     this.fire('update-options-saved', detail);
@@ -175,6 +191,10 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     const version = this.selectedPinnedVersion_.trim();
     const current = this.getCurrentPinnedVersion_() || '';
     return version !== current;
+  }
+
+  private hasAllowDowngradesChange_(): boolean {
+    return this.selectedAllowDowngrades_ !== this.currentAllowDowngrades;
   }
 }
 
