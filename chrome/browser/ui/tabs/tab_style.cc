@@ -27,10 +27,6 @@ constexpr int kSeparatorHeight = 16;
 // The standard tab width is 232 DIP, excluding separators and overlap.
 constexpr int kTabWidth = 232;
 
-// Used in glass frame in cases where we want the tab background colors to
-// have some transparency, to show the frame underneath.
-constexpr float kAlphaForUnhoveredTransparentTabBackground = 0.5f;
-
 }  // namespace
 
 TabStyle::~TabStyle() = default;
@@ -269,14 +265,8 @@ SkColor TabStyle::GetTabBackgroundColor(
 
   switch (state) {
     case TabStyle::TabSelectionState::kActive:
+    case TabStyle::TabSelectionState::kSelected:
       return color;
-    case TabStyle::TabSelectionState::kSelected: {
-      if (hovered) {
-        return color;
-      }
-      return SkColorSetA(color, SkColorGetA(color) *
-                                    kAlphaForUnhoveredTransparentTabBackground);
-    }
     case TabStyle::TabSelectionState::kInactive: {
       // When the frame is transparent, using the unhovered color
       // as the background can produce jarring effects. So we just use the

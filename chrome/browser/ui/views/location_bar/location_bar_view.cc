@@ -1813,12 +1813,21 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
           << " aim=" << aim_is_shown;
       break;
     case OmniboxPopupState::kClassic:
-    case OmniboxPopupState::kFull:
-      DCHECK(classic_is_open && !aim_is_shown)
+    case OmniboxPopupState::kFull: {
+      // When the omnibox loses focus (e.g. when another window is activated),
+      // the popup widget is closed immediately, before the popup state manager
+      // finishes updating its state to kNone. If a synchronous UI event (like
+      // a theme change on window activation) triggers validation during this
+      // window, `classic_is_open` may already be false while `state` is still
+      // `kClassic` or `kFull`.
+      const bool classic_is_expected =
+          classic_is_open || (omnibox_view_ && !omnibox_view_->HasFocus());
+      DCHECK(classic_is_expected && !aim_is_shown)
           << "Widget state mismatch in "
           << (state == OmniboxPopupState::kClassic ? "kClassic" : "kFull")
           << ": classic=" << classic_is_open << " aim=" << aim_is_shown;
       break;
+    }
     case OmniboxPopupState::kAim:
       DCHECK(!classic_is_open && aim_is_shown)
           << "Widget state mismatch in kAim: classic=" << classic_is_open

@@ -95,6 +95,9 @@ TEST(ColorProviderKeyTest, EqualityFrameStyle) {
   key1.frame_style = ColorProviderKey::FrameStyle::kDefault;
   key2.frame_style = ColorProviderKey::FrameStyle::kSystem;
   EXPECT_NE(key1, key2);
+
+  key2.frame_style = ColorProviderKey::FrameStyle::kGlass;
+  EXPECT_NE(key1, key2);
 }
 
 TEST(ColorProviderKeyTest, EqualityUserColorSource) {

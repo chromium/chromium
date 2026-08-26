@@ -68,6 +68,8 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     kDefault,
     // Paints an emulated system style frame.
     kSystem,
+    // Paints a glass style frame (e.g. macOS Liquid Glass).
+    kGlass,
   };
   // The type of color palette that is generated.
   enum class SchemeVariant {

@@ -166,7 +166,8 @@ bool VerticalTabStyleViews::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background,
     bool hovered) const {
-  if (selection_state == TabStyle::TabSelectionState::kActive) {
+  if (selection_state == TabStyle::TabSelectionState::kActive ||
+      selection_state == TabStyle::TabSelectionState::kSelected) {
     return true;
   }
 
