@@ -232,6 +232,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean("enableReloadGlowUp",
                      features::IsToolbarGlowUpReloadEnabled());
   source->AddBoolean("enableGlowUp", features::IsToolbarGlowUpEnabled());
+  source->AddBoolean("enableBackForwardGlowUp",
+                     features::IsToolbarGlowUpBackForwardEnabled());
   source->AddBoolean("enablePinnedToolbarActions",
                      features::IsWebUIPinnedToolbarActionsEnabled());
   source->AddBoolean("enableAppMenuButton",

@@ -60,7 +60,8 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   };
   accessor windowIsMaximizedOrFullscreen: boolean = false;
   accessor touchUi: boolean = false;
-  accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
+  accessor glowUpEnabled: boolean =
+      loadTimeData.getBoolean('enableBackForwardGlowUp');
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -72,6 +73,11 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   }
 
   private manualRippleTriggered_: boolean = false;
+  // True when the button is actively playing the Glow Up click animation.
+  // While true, the icon is switched to the animated version. Once the
+  // animation completes, this is reset to false to fall back to the static
+  // icon.
+  private animating_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected pressHandler_: PressHandler = new PressHandler(
       this.onLongPress_.bind(this), this.onShortPress_.bind(this));
@@ -100,8 +106,67 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       this.browserProxy_.browserControlsHandler.forward(flags);
     }
     if (this.glowUpEnabled) {
-      playIconAnimation(this.$.button);
+      // The glow up animation should only trigger for physical mouse clicks.
+      // - Keyboard interactions trigger a synthetic 'click' event (handled via
+      // onClick_ -> onShortPress_).
+      // - Touch interactions trigger 'pointerup' but with a pointerType of
+      // 'touch' or 'pen'.
+      // - We also exclude middle/right clicks (button !== 0) and touch UI mode.
+      const isPointerUp = e.type === 'pointerup';
+      const isMouse =
+          isPointerUp && (e as PointerEvent).pointerType === 'mouse';
+      const isLeftClick = e.button === 0;
+      if (!this.touchUi && isMouse && isLeftClick) {
+        if (this.animating_) {
+          this.updateComplete.then(() => {
+            playIconAnimation(this.$.button);
+          });
+        } else {
+          this.animating_ = true;
+          this.requestUpdate();
+          this.playAnimation_();
+        }
+      }
     }
+  }
+
+  /**
+   * Triggers the SMIL icon animation after the DOM has updated with the
+   * animated SVG icon.
+   */
+  private async playAnimation_() {
+    await this.updateComplete;
+    await this.$.button.updateComplete;
+    const crIcon = this.$.button.shadowRoot?.querySelector('cr-icon');
+    if (crIcon && 'updateComplete' in crIcon) {
+      await (crIcon as CrLitElement).updateComplete;
+    }
+    playIconAnimation(this.$.button);
+    this.listenToAnimationEnd_();
+  }
+
+  /**
+   * Listens to the SMIL animation end event on the animate element.
+   * Resets the animating state once the animation finishes to fall back to the
+   * static icon.
+   */
+  private listenToAnimationEnd_() {
+    // Query for either 'animate' or 'animateTransform' elements that have
+    // 'begin="indefinite"', which indicates they are triggerable animations.
+    const animate =
+        this.$.button.shadowRoot?.querySelector('cr-icon')?.shadowRoot?.querySelector(
+            'animate[begin="indefinite"], animateTransform[begin="indefinite"]');
+    if (!animate) {
+      this.animating_ = false;
+      this.requestUpdate();
+      return;
+    }
+    const handler = () => {
+      animate.removeEventListener('endEvent', handler);
+      this.animating_ = false;
+      this.requestUpdate();
+    };
+    animate.addEventListener('endEvent', handler);
   }
 
   protected getAriaLabel_(): string {
@@ -181,7 +246,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   }
 
   protected getIronIcon_(): string {
-    if (this.glowUpEnabled) {
+    if (this.glowUpEnabled && this.animating_) {
       return this.direction === 'back' ? 'webui-toolbar:back_arrow_glow_up' :
                                          'webui-toolbar:forward_arrow_glow_up';
     }
