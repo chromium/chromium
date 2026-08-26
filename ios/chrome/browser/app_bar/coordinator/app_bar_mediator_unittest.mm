@@ -874,7 +874,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:NO]);
   [mediator_ updateAssistantButton];
@@ -889,7 +889,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -933,7 +933,7 @@ TEST_F(AppBarMediatorTest, TestOptimisticFallback_WhenCapabilityIsUnknown) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -941,17 +941,16 @@ TEST_F(AppBarMediatorTest, TestOptimisticFallback_WhenCapabilityIsUnknown) {
 }
 
 // Tests that when account capability is explicitly false (e.g. child account),
-// optimistic fallback is blocked and the button falls back to Account/AIM.
+// the button is optimistically shown and enabled as kAsk.
 TEST_F(AppBarMediatorTest, TestNoFallback_WhenCapabilityExplicitlyFalse) {
   SetLocationEligible(true);
   SignInWithTriboolCapability(signin::Tribool::kFalse);
 
-  OCMExpect([consumer_
-      setAssistantButtonState:AppBarAssistantButtonState::kAccount
-                  highlighted:NO
-                      enabled:YES
-                       avatar:[OCMArg any]
-                     signedIn:YES]);
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -1003,7 +1002,7 @@ TEST_F(AppBarMediatorTest,
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -1033,8 +1032,7 @@ TEST_F(AppBarMediatorTest, TestNoFallback_WhenLocalEnterprisePolicyDisabled) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that in incognito mode, the assistant button stays in kAsk state but is
-// disabled.
+// Tests that in incognito mode, the assistant button stays in kAsk state.
 TEST_F(AppBarMediatorTest, TestGeminiButtonDisabled_WhenInIncognito) {
   std::unique_ptr<net::test::MockNetworkChangeNotifier> mock_network =
       net::test::MockNetworkChangeNotifier::Create();
@@ -1046,7 +1044,7 @@ TEST_F(AppBarMediatorTest, TestGeminiButtonDisabled_WhenInIncognito) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -1087,7 +1085,7 @@ TEST_F(AppBarMediatorTest,
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -1109,7 +1107,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_WorkspacePolicyPending) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -1160,7 +1158,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonUpdatedOnNetworkChange) {
 
   SetLocationEligible(true);
   SignInWithTriboolCapability(signin::Tribool::kTrue);
-
   auto fake_gemini = std::make_unique<FakeGeminiService>();
   gemini::IneligibilityReasons reasons;
   reasons.workspace = true;
@@ -1179,7 +1176,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonUpdatedOnNetworkChange) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
   // Expect the consumer to be notified when the network reconnects.
-  // Because the workspace check is disabled, it transitions from optimistic
+  // Because Workspace policy is restricted, it transitions from optimistic
   // offline fallback (kAsk) to kAccount when online.
   OCMExpect([consumer_
                 setAssistantButtonState:AppBarAssistantButtonState::kAccount
@@ -1382,7 +1379,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateNonEEANonJapanEligible) {
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:YES]);
   [mediator_ updateAssistantButton];
@@ -1682,7 +1679,7 @@ TEST_F(AppBarMediatorTest, TestGeminiEligibilityChangeUpdatesAssistantButton) {
   // When eligible, it should update state to kAsk.
   OCMExpect([consumer setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                   highlighted:NO
-                                      enabled:NO
+                                      enabled:YES
                                        avatar:nil
                                      signedIn:NO]);
 
@@ -2148,10 +2145,10 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStatePriority_GeminiOverAll) {
   mediator_.overrideLensAvailabilityForTesting = YES;
 
   // Gemini is eligible, AIM is eligible, Lens is eligible.
-  // Gemini (kAsk) should be chosen (disabled because no active web state).
+  // Gemini (kAsk) should be chosen.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:NO]);
 
