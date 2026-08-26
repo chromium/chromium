@@ -9128,6 +9128,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/permissions/chip:interactive_ui_tests",
         "//chrome/browser/ui/views/site_data:interactive_ui_tests",
         "//chrome/browser/ui/views/tab_sharing:interactive_ui_tests",
+        "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
         "//chrome/browser/ui/views/tabs/tab",
         "//chrome/browser/ui/views/tabs/vertical:impl",
         "//chrome/browser/ui/views/translate",

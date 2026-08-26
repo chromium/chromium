@@ -49,6 +49,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/tab_search",

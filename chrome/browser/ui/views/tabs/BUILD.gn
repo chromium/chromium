@@ -51,3 +51,31 @@ source_set("base_impl") {
     "//ui/gfx/geometry",
   ]
 }
+
+source_set("new_tab_button_menu_model") {
+  sources = [ "new_tab_button_menu_model.h" ]
+
+  deps = [
+    "//base",
+    "//ui/base/interaction",
+    "//ui/menus",
+  ]
+}
+
+source_set("new_tab_button_menu_model_impl") {
+  sources = [ "new_tab_button_menu_model.cc" ]
+
+  deps = [
+    ":new_tab_button_menu_model",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/base/interaction",
+  ]
+}
