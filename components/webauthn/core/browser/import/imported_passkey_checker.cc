@@ -54,6 +54,25 @@ ImportedPasskeyStatus CheckImportedPasskey(
     }
   }
 
+  const bool has_large_blob = passkey.large_blob.has_value();
+  const bool has_uncompressed_size =
+      passkey.large_blob_uncompressed_size.has_value();
+  if (has_large_blob != has_uncompressed_size) {
+    return ImportedPasskeyStatus::kLargeBlobInvalid;
+  }
+
+  if (has_large_blob) {
+    if (passkey.large_blob->size() >
+        passkey_model_utils::kLargeBlobMaxCompressedSize) {
+      return ImportedPasskeyStatus::kLargeBlobTooLarge;
+    }
+
+    if (*passkey.large_blob_uncompressed_size >
+        passkey_model_utils::kLargeBlobMaxUncompressedSize) {
+      return ImportedPasskeyStatus::kLargeBlobUncompressedSizeTooLarge;
+    }
+  }
+
   return ImportedPasskeyStatus::kOk;
 }
 

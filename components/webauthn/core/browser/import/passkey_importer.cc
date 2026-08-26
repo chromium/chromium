@@ -43,6 +43,25 @@ sync_pb::WebauthnCredentialSpecifics CandidateToSpecifics(
   return passkey;
 }
 
+sync_pb::WebauthnCredentialSpecifics_Encrypted CandidateToEncryptedSpecifics(
+    const PasskeyImportCandidate& candidate) {
+  sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
+  encrypted.set_private_key(candidate.private_key.data(),
+                            candidate.private_key.size());
+  if (!candidate.hmac_secret.empty()) {
+    encrypted.set_hmac_secret(candidate.hmac_secret.data(),
+                              candidate.hmac_secret.size());
+  }
+  if (candidate.large_blob.has_value() &&
+      candidate.large_blob_uncompressed_size.has_value()) {
+    encrypted.set_large_blob(std::string(candidate.large_blob->begin(),
+                                         candidate.large_blob->end()));
+    encrypted.set_large_blob_uncompressed_size(
+        *candidate.large_blob_uncompressed_size);
+  }
+  return encrypted;
+}
+
 void RecordPasskeyImportError(const PasskeyImportCandidate& candidate,
                               ImportedPasskeyStatus status,
                               ImportProcessingResult& result) {
@@ -93,15 +112,9 @@ void PasskeyImporter::ProcessPasskeys(
 
     sync_pb::WebauthnCredentialSpecifics passkey =
         CandidateToSpecifics(candidate);
-    sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
-    encrypted.set_private_key(candidate.private_key.data(),
-                              candidate.private_key.size());
-    if (!candidate.hmac_secret.empty()) {
-      encrypted.set_hmac_secret(candidate.hmac_secret.data(),
-                                candidate.hmac_secret.size());
-    }
     if (!webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
-            trusted_vault_key, encrypted, &passkey)) {
+            trusted_vault_key, CandidateToEncryptedSpecifics(candidate),
+            &passkey)) {
       RecordPasskeyImportError(
           candidate, ImportedPasskeyStatus::kEncryptionFailed, result);
       continue;

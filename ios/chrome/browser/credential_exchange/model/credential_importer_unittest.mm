@@ -243,6 +243,66 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithHmacSecret) {
   EXPECT_EQ(decrypted.hmac_secret(), "01234567890123456789012345678901");
 }
 
+TEST_F(CredentialImporterTest, ImportsPasskeyWithLargeBlob) {
+  CredentialExchangePasskey* passkey = CreateTestPasskey();
+  passkey.largeBlob = ToNSData("large_blob");
+  passkey.largeBlobUncompressedSize = @(100);
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[ passkey ]
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
+
+  FakePasskeyModelObserver observer(passkey_model_.get());
+
+  [importer_
+      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+
+  ASSERT_TRUE(observer.WaitForPasskeysChanged());
+  ASSERT_FALSE(passkey_model_->IsEmpty());
+  auto passkeys = passkey_model_->GetPasskeys(
+      webauthn::PasskeyModel::AnyRp(),
+      webauthn::PasskeyModel::ShadowedCredentials::kExclude);
+  ASSERT_THAT(passkeys, SizeIs(1));
+  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
+  EXPECT_TRUE(
+      webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+          TestTrustedVaultKey(), passkeys[0], &decrypted));
+  EXPECT_EQ(decrypted.large_blob(), "large_blob");
+  EXPECT_EQ(decrypted.large_blob_uncompressed_size(), 100u);
+}
+
+TEST_F(CredentialImporterTest, ImportsPasskeyWithEmptyLargeBlob) {
+  CredentialExchangePasskey* passkey = CreateTestPasskey();
+  passkey.largeBlob = [NSData data];
+  passkey.largeBlobUncompressedSize = @(0);
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[ passkey ]
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
+
+  FakePasskeyModelObserver observer(passkey_model_.get());
+
+  [importer_
+      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+
+  ASSERT_TRUE(observer.WaitForPasskeysChanged());
+  ASSERT_FALSE(passkey_model_->IsEmpty());
+  auto passkeys = passkey_model_->GetPasskeys(
+      webauthn::PasskeyModel::AnyRp(),
+      webauthn::PasskeyModel::ShadowedCredentials::kExclude);
+  ASSERT_THAT(passkeys, SizeIs(1));
+  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
+  EXPECT_TRUE(
+      webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+          TestTrustedVaultKey(), passkeys[0], &decrypted));
+  EXPECT_TRUE(decrypted.has_large_blob());
+  EXPECT_EQ(decrypted.large_blob(), "");
+  EXPECT_TRUE(decrypted.has_large_blob_uncompressed_size());
+  EXPECT_EQ(decrypted.large_blob_uncompressed_size(), 0u);
+}
+
 TEST_F(CredentialImporterTest, DoesNotImportInvalidPassword) {
   NSString* tooLongPassword = [@"" stringByPaddingToLength:1001
                                                 withString:@"a"
@@ -515,6 +575,8 @@ TEST_F(CredentialImporterFidoExtensionsDisabledTest,
   CredentialExchangePasskey* passkey = CreateTestPasskey();
   passkey.hmacSecret = ToNSData("01234567890123456789012345678901");
   passkey.hmacSecretAlgorithm = @"sha256";
+  passkey.largeBlob = ToNSData("large_blob_data");
+  passkey.largeBlobUncompressedSize = @(100);
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]
@@ -537,6 +599,8 @@ TEST_F(CredentialImporterFidoExtensionsDisabledTest,
       webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
           TestTrustedVaultKey(), passkeys[0], &decrypted));
   EXPECT_FALSE(decrypted.has_hmac_secret());
+  EXPECT_FALSE(decrypted.has_large_blob());
+  EXPECT_FALSE(decrypted.has_large_blob_uncompressed_size());
 }
 
 }  // namespace

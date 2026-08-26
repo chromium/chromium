@@ -24,6 +24,8 @@ struct PasskeyImportCandidate {
   int64_t creation_time = 0;
   std::vector<uint8_t> hmac_secret;
   std::optional<std::string> hmac_secret_algorithm;
+  std::optional<std::vector<uint8_t>> large_blob;
+  std::optional<uint64_t> large_blob_uncompressed_size;
 };
 
 }  // namespace webauthn

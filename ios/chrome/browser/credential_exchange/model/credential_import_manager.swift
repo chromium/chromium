@@ -103,6 +103,8 @@ import Foundation
             stats.passkeyCount += 1
             var hmacSecret: Data? = nil
             var hmacSecretAlgorithm: String? = nil
+            var largeBlob: Data? = nil
+            var largeBlobUncompressedSize: NSNumber? = nil
             #if compiler(>=6.3)
               if #available(iOS 26.4, *) {
                 if let hmacCred = passkey.fido2Extensions?.hmacCredentials {
@@ -119,6 +121,10 @@ import Foundation
                     }
                   }
                 }
+                if let lb = passkey.fido2Extensions?.largeBlob {
+                  largeBlob = lb.data
+                  largeBlobUncompressedSize = NSNumber(value: lb.uncompressedSize)
+                }
               }
             #endif
             passkeys.append(
@@ -132,9 +138,8 @@ import Foundation
                 creationDate: nil,
                 hmacSecret: hmacSecret,
                 hmacSecretAlgorithm: hmacSecretAlgorithm,
-                // TODO(crbug.com/458337350): Handle large_blob.
-                largeBlob: nil,
-                largeBlobUncompressedSize: nil))
+                largeBlob: largeBlob,
+                largeBlobUncompressedSize: largeBlobUncompressedSize))
           case .address:
             stats.addressCount += 1
           case .apiKey:

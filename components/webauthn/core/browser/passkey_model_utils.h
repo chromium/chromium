@@ -43,6 +43,12 @@ inline constexpr size_t kGpmCreatedCredentialIdLength = 16u;
 // The byte length of the WebauthnCredentialSpecifics `hmac_secret` field.
 inline constexpr size_t kHmacSecretSize = 32u;
 
+// The maximum allowed compressed size (in bytes) of a large blob in GPM.
+inline constexpr size_t kLargeBlobMaxCompressedSize = 2048u;
+
+// The maximum allowed uncompressed size (in bytes) of a large blob in GPM.
+inline constexpr size_t kLargeBlobMaxUncompressedSize = 1024u * 1024u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();

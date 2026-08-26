@@ -164,5 +164,63 @@ TEST(ImportedPasskeyCheckerTest,
   }
 }
 
+TEST(ImportedPasskeyCheckerTest,
+     ReturnsStatusForLargeBlobWithoutUncompressedSize) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob = {1, 2, 3};
+  EXPECT_EQ(CheckImportedPasskey(passkey),
+            ImportedPasskeyStatus::kLargeBlobInvalid);
+}
+
+TEST(ImportedPasskeyCheckerTest,
+     ReturnsStatusForUncompressedSizeWithoutLargeBlob) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob_uncompressed_size = 10;
+  EXPECT_EQ(CheckImportedPasskey(passkey),
+            ImportedPasskeyStatus::kLargeBlobInvalid);
+}
+
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForLargeBlobTooLarge) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob = base::RandBytesAsVector(
+      passkey_model_utils::kLargeBlobMaxCompressedSize + 1);
+  passkey.large_blob_uncompressed_size = 3000;
+  EXPECT_EQ(CheckImportedPasskey(passkey),
+            ImportedPasskeyStatus::kLargeBlobTooLarge);
+}
+
+TEST(ImportedPasskeyCheckerTest,
+     ReturnsStatusForValidLargeBlobWithUncompressedSizeZero) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob = {1, 2, 3};
+  passkey.large_blob_uncompressed_size = 0;
+  EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kOk);
+}
+
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForValidEmptyLargeBlob) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob = std::vector<uint8_t>();
+  passkey.large_blob_uncompressed_size = 0;
+  EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kOk);
+}
+
+TEST(ImportedPasskeyCheckerTest,
+     ReturnsStatusForLargeBlobUncompressedSizeTooLarge) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob = {1, 2, 3};
+  passkey.large_blob_uncompressed_size =
+      passkey_model_utils::kLargeBlobMaxUncompressedSize + 1;
+  EXPECT_EQ(CheckImportedPasskey(passkey),
+            ImportedPasskeyStatus::kLargeBlobUncompressedSizeTooLarge);
+}
+
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForValidLargeBlob) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.large_blob =
+      base::RandBytesAsVector(passkey_model_utils::kLargeBlobMaxCompressedSize);
+  passkey.large_blob_uncompressed_size = 3000;
+  EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kOk);
+}
+
 }  // namespace
 }  // namespace webauthn

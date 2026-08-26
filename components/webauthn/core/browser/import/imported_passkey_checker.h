@@ -42,7 +42,13 @@ enum class ImportedPasskeyStatus {
   kHmacSecretInvalidSize = 9,
   // HMAC secret uses an algorithm not supported by GPM.
   kHmacSecretUnsupportedAlgorithm = 10,
-  kMaxValue = kHmacSecretUnsupportedAlgorithm,
+  // Large blob is present without uncompressed size, or vice versa.
+  kLargeBlobInvalid = 11,
+  // Large blob exceeds the maximum allowed compressed size.
+  kLargeBlobTooLarge = 12,
+  // Large blob exceeds the maximum uncompressed size.
+  kLargeBlobUncompressedSizeTooLarge = 13,
+  kMaxValue = kLargeBlobUncompressedSizeTooLarge,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:ImportedPasskeyStatus)
 

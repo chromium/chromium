@@ -255,9 +255,10 @@ constexpr int kSupportedCredentialTypesCount = 2;
   std::vector<webauthn::PasskeyImportCandidate> passkeys;
 
   for (CredentialExchangePasskey* passkey : _passkeys) {
-    // TODO(crbug.com/458337350): Handle extensions.
     std::vector<uint8_t> hmacSecret;
     std::optional<std::string> hmacSecretAlgorithm;
+    std::optional<std::vector<uint8_t>> largeBlob;
+    std::optional<uint64_t> largeBlobUncompressedSize;
     if (base::FeatureList::IsEnabled(kCredentialExchangeFidoExtensions)) {
       if (passkey.hmacSecret) {
         hmacSecret =
@@ -266,6 +267,14 @@ constexpr int kSupportedCredentialTypesCount = 2;
       if (passkey.hmacSecretAlgorithm) {
         hmacSecretAlgorithm =
             base::SysNSStringToUTF8(passkey.hmacSecretAlgorithm);
+      }
+      if (passkey.largeBlob) {
+        largeBlob =
+            base::ToVector(base::apple::NSDataToSpan(passkey.largeBlob));
+      }
+      if (passkey.largeBlobUncompressedSize) {
+        largeBlobUncompressedSize =
+            [passkey.largeBlobUncompressedSize unsignedLongLongValue];
       }
     }
     passkeys.push_back(webauthn::PasskeyImportCandidate{
@@ -280,6 +289,8 @@ constexpr int kSupportedCredentialTypesCount = 2;
         .creation_time = timeNow,
         .hmac_secret = std::move(hmacSecret),
         .hmac_secret_algorithm = std::move(hmacSecretAlgorithm),
+        .large_blob = std::move(largeBlob),
+        .large_blob_uncompressed_size = largeBlobUncompressedSize,
     });
   }
 
