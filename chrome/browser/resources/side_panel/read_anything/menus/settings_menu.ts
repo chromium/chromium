@@ -314,8 +314,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   private initializeMenuOptions_() {
     let optionIDs: SettingsOption[];
-    if (this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled() &&
-        this.visualBrowserProxy_.isImmersiveEnabled()) {
+    if (this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled()) {
       optionIDs = this.initializeMenuOptionsForImprovedUi_();
     } else {
       optionIDs = this.initializeMenuOptionsLegacy_();

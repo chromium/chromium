@@ -54,9 +54,6 @@ const ON_AUDIO_PLAYER_FOCUS_OUTLINE =
     'var(--color-read-anything-on-audio-player-focus-outline';
 const AUDIO_CONTROLS_ICON = 'var(--color-read-anything-audio-controls-icon';
 const FULL_PAGE_SCROLLBAR = 'var(--color-read-anything-full-page-scrollbar';
-// Toolbar icon colors for when the immersive flag is disabled.
-const LEGACY_TOOLBAR_ICON = 'var(--color-sys-on-surface-subtle)';
-const LEGACY_PLAYPAUSE_ICON = 'var(--color-sys-primary)';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
 // obstructing any text.
@@ -151,20 +148,10 @@ export class AppStyleUpdater {
     // Since the window line focus scrim goes into the toolbar area, update the
     // toolbar icons as needed to maintain visibility on top of the dark scrim.
     const isWindow = type === LineFocusType.WINDOW;
-    if (this.visualBrowserProxy_.isImmersiveEnabled()) {
-      const colorSuffix =
-          isWindow ? ColorSuffix.DARK : this.getCurrentColorSuffix_();
-      this.setStyle_(
-          '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
-    } else {
-      const iconColor = isWindow ? this.getToolbarIconColor_(ColorSuffix.DARK) :
-                                   LEGACY_TOOLBAR_ICON;
-      this.setStyle_('--legacy-toolbar-icon-color', iconColor);
-      const playPauseColor = isWindow ?
-          this.getLineFocusColor_(ColorSuffix.DARK) :
-          LEGACY_PLAYPAUSE_ICON;
-      this.setStyle_('--legacy-audio-player-icon-color', playPauseColor);
-    }
+    const colorSuffix =
+        isWindow ? ColorSuffix.DARK : this.getCurrentColorSuffix_();
+    this.setStyle_(
+        '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
   }
 
   setLineFocusHeight() {

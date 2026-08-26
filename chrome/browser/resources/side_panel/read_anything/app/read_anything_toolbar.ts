@@ -58,7 +58,7 @@ import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
 import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from '../shared/common.js';
-import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
+import {getNewIndex, isArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from '../shared/read_anything_logger.js';
 
@@ -79,7 +79,6 @@ export interface ReadAnythingToolbarElement {
     fontMenu: FontMenuElement,
     textMenu: TextMenuElement,
     fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
-    moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     highlightMenu: HighlightMenuElement,
     lineFocusMenu: LineFocusMenuElement,
@@ -96,39 +95,6 @@ interface MenuButton {
   openMenu: (target: HTMLElement) => void;
   announceId?: string;
 }
-
-
-type ToggleButtonId =
-    typeof LINK_TOGGLE_BUTTON_ID|typeof IMAGES_TOGGLE_BUTTON_ID;
-interface ToggleButton {
-  id: ToggleButtonId;
-  icon: string;
-  title: string;
-}
-
-export const moreOptionsClass = '.more-options-icon';
-
-// Link toggle button constants.
-export const LINKS_ENABLED_ICON =
-    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-    'read-anything:link' :
-    'read-anything:links-enabled-old';
-export const LINKS_DISABLED_ICON =
-    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-    'read-anything:link-off' :
-    'read-anything:links-disabled-old';
-export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
-
-// Images toggle button constants.
-export const IMAGES_ENABLED_ICON =
-    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-    'read-anything:image' :
-    'read-anything:images-enabled-old';
-export const IMAGES_DISABLED_ICON =
-    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-    'read-anything:hide-image' :
-    'read-anything:images-disabled-old';
-export const IMAGES_TOGGLE_BUTTON_ID = 'images-toggle-button';
 
 // Max number of paragraph elements inside an aria-live region for
 // announcing setting changes. Not clearing the element may make
@@ -171,15 +137,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       settingsPrefs: {type: Object},
       areFontsLoaded_: {type: Boolean},
       textStyleOptions_: {type: Array},
-      textStyleToggles_: {type: Array},
       hideSpinner_: {type: Boolean},
       speechRate_: {type: Number},
-      moreOptionsButtons_: {type: Array},
       pageLanguage: {type: String},
       presentationState: {type: Number},
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
-      isImmersiveEnabled_: {type: Boolean},
       isLineFocusShowing: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusEnabled: {type: Boolean},
@@ -218,14 +181,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor lineFocusMovement: LineFocusMovement|null = null;
   accessor isAiPlaybackActive: boolean = false;
   protected accessor hideSpinner_: boolean = true;
-  protected accessor isImmersiveEnabled_: boolean = false;
   protected accessor isAiPlaybackUiEnabled_: boolean = false;
-  // Overflow buttons on the toolbar that open a menu of options.
-  protected accessor moreOptionsButtons_: MenuButton[] = [];
   protected accessor speechRate_: number = 1;
   // Buttons on the toolbar that open a menu of options.
   protected accessor textStyleOptions_: MenuButton[] = [];
-  protected accessor textStyleToggles_: ToggleButton[] = [];
   protected accessor areFontsLoaded_: boolean = false;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
@@ -234,7 +193,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private startTime_: number = Date.now();
   private constructorTime_: number = 0;
   private currentFocusId_: string = '';
-  private windowResizeCallback_: () => void = () => {};
   private toolbarContainerBlurCallback_: () => void = () => {};
   // The previous speech active status so we can track when it changes.
   private wasSpeechActive_: boolean = false;
@@ -269,42 +227,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.constructorTime_ = Date.now();
     this.logger_.logTimeFrom(
         TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
-    this.isImmersiveEnabled_ = this.visualBrowserProxy_.isImmersiveEnabled();
     this.isAiPlaybackUiEnabled_ =
         this.visualBrowserProxy_
             .isReadAnythingReadAloudExperimentalPlaybackUiEnabled();
-
-    this.textStyleToggles_ = [
-      {
-        id: LINK_TOGGLE_BUTTON_ID,
-        icon: this.visualBrowserProxy_.isLinksEnabled() ? LINKS_ENABLED_ICON :
-                                                          LINKS_DISABLED_ICON,
-        title: this.visualBrowserProxy_.isLinksEnabled() ?
-            loadTimeData.getString('disableLinksLabel') :
-            loadTimeData.getString('enableLinksLabel'),
-      },
-      {
-        id: IMAGES_TOGGLE_BUTTON_ID,
-        icon: this.visualBrowserProxy_.isImagesEnabled() ? IMAGES_ENABLED_ICON :
-                                                           IMAGES_DISABLED_ICON,
-        title: this.visualBrowserProxy_.isImagesEnabled() ?
-            loadTimeData.getString('disableImagesLabel') :
-            loadTimeData.getString('enableImagesLabel'),
-      },
-    ];
   }
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
-    window.addEventListener('resize', this.windowResizeCallback_);
-    if (this.isImmersiveEnabled_) {
-      this.toolbarContainerBlurCallback_ =
-          this.onToolbarContainerBlur_.bind(this);
-      this.$.toolbarContainer.addEventListener(
-          'blur', this.toolbarContainerBlurCallback_);
-    }
+    this.toolbarContainerBlurCallback_ =
+        this.onToolbarContainerBlur_.bind(this);
+    this.$.toolbarContainer.addEventListener(
+        'blur', this.toolbarContainerBlurCallback_);
 
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
@@ -314,13 +248,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   override disconnectedCallback() {
-    if (this.windowResizeCallback_) {
-      window.removeEventListener('resize', this.windowResizeCallback_);
-    }
-    if (this.isImmersiveEnabled_) {
-      this.$.toolbarContainer.removeEventListener(
-          'blur', this.toolbarContainerBlurCallback_);
-    }
+    this.$.toolbarContainer.removeEventListener(
+        'blur', this.toolbarContainerBlurCallback_);
     if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
       clearTimeout(this.spinnerDebouncerCallbackHandle_);
     }
@@ -358,92 +287,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-  private maybeUpdateMoreOptions_() {
-    if (this.isImmersiveEnabled_) {
-      return;
-    }
-
-    // Hide the more options button first to calculate if we need it
-    const toolbar = this.$.toolbarContainer;
-    const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
-    assert(moreOptionsButton, 'more options button doesn\'t exist');
-    this.hideElement_(moreOptionsButton, false);
-
-    // Show all the buttons to see if they fit.
-    const buttons =
-        Array.from(toolbar.querySelectorAll<HTMLElement>('.text-style-button'));
-    assert(buttons, 'no toolbar buttons');
-    buttons.forEach(btn => this.showElement_(btn));
-    toolbar.dispatchEvent(new CustomEvent('reset-toolbar', {
-      bubbles: true,
-      composed: true,
-    }));
-
-    if (!toolbar.offsetParent) {
-      return;
-    }
-
-    // When the toolbar's width exceeds the parent width, then the content has
-    // overflowed.
-    const parentWidth = toolbar.offsetParent.scrollWidth;
-    if (toolbar.scrollWidth > parentWidth) {
-      // Hide at least 3 buttons and more if needed.
-      let numOverflowButtons = 3;
-      let nextOverflowButton = buttons[buttons.length - numOverflowButtons];
-      assert(nextOverflowButton);
-      // No need to hide a button if it only exceeds the width by a little (i.e.
-      // only the padding overflows).
-      const maxDiff = 5;
-      let overflowLength = nextOverflowButton.offsetLeft +
-          nextOverflowButton.offsetWidth - parentWidth;
-      while (overflowLength > maxDiff) {
-        numOverflowButtons++;
-        nextOverflowButton = buttons[buttons.length - numOverflowButtons];
-        if (!nextOverflowButton) {
-          break;
-        }
-
-        overflowLength = nextOverflowButton.offsetLeft +
-            nextOverflowButton.offsetWidth - parentWidth;
-      }
-
-      // Notify the app and toolbar of the overflow.
-      toolbar.dispatchEvent(new CustomEvent('toolbar-overflow', {
-        bubbles: true,
-        composed: true,
-        detail: {numOverflowButtons, overflowLength},
-      }));
-
-      // If we have too much overflow, we won't use the more options button.
-      if (numOverflowButtons > buttons.length) {
-        return;
-      }
-
-      // Hide the overflowed buttons and show the more options button in front
-      // of them.
-      this.showElement_(moreOptionsButton);
-      const overflowedButtons =
-          buttons.slice(buttons.length - numOverflowButtons);
-      overflowedButtons.forEach(btn => this.hideElement_(btn, true));
-      toolbar.insertBefore(moreOptionsButton, overflowedButtons[0]!);
-    }
-  }
-
-  private hideElement_(element: HTMLElement, keepSpace: boolean) {
-    if (keepSpace) {
-      element.classList.add('visibility-hidden');
-    } else {
-      element.classList.add('hidden');
-    }
-  }
-
-  private showElement_(element: HTMLElement) {
-    element.classList.remove('hidden', 'visibility-hidden');
-  }
-
-
   private initializeMenuButtons_() {
-    const fontSizeElement = {
+    this.textStyleOptions_ = [{
       id: 'font-size',
       icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
           'read-anything:format-size' :
@@ -452,60 +297,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       openMenu: (target: HTMLElement) =>
           openMenu(this.$.fontSizeMenu.get(), target),
       announceId: 'size-announce',
-    };
-    if (this.isImmersiveEnabled_) {
-      this.textStyleOptions_ = [fontSizeElement];
-      return;
-    }
-
-    this.textStyleOptions_.push(
-        fontSizeElement,
-        {
-          id: 'font',
-          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:font-download' :
-              'read-anything:font-old',
-          ariaLabel: loadTimeData.getString('fontNameTitle'),
-          openMenu: (target: HTMLElement) => this.$.fontMenu.open(target),
-        },
-        {
-          id: 'color',
-          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:palette' :
-              'read-anything:color-old',
-          ariaLabel: loadTimeData.getString('themeTitle'),
-          openMenu: (target: HTMLElement) => this.$.colorMenu.open(target),
-        },
-        {
-          id: 'line-spacing',
-          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:format-line-spacing' :
-              'read-anything:line-spacing-old',
-          ariaLabel: loadTimeData.getString('lineSpacingTitle'),
-          openMenu: (target: HTMLElement) =>
-              this.$.lineSpacingMenu.open(target),
-        },
-        {
-          id: 'letter-spacing',
-          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:format-letter-spacing-2' :
-              'read-anything:letter-spacing-old',
-          ariaLabel: loadTimeData.getString('letterSpacingTitle'),
-          openMenu: (target: HTMLElement) =>
-              this.$.letterSpacingMenu.open(target),
-        },
-    );
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.textStyleOptions_.push({
-        id: 'line-focus',
-        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'read-anything:wb-incandescent' :
-            'read-anything:line-focus-old',
-        ariaLabel: loadTimeData.getString('lineFocusLabel'),
-        openMenu: (target: HTMLElement) => this.$.lineFocusMenu.open(target),
-      });
-    }
-    this.requestUpdate();
+    }];
   }
 
   protected getHighlightButtonLabel_(): string {
@@ -550,8 +342,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected onResetToolbar_() {
-    this.$.moreOptionsMenu.getIfExists()?.close();
-    this.moreOptionsButtons_ = [];
     this.style.setProperty('--toolbar-flex-wrap', flexWrapTypical);
   }
 
@@ -567,14 +357,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.style.setProperty('--toolbar-flex-wrap', flexWrapOverflow);
       return;
     }
-
-    // If we only overflow by a little, use the more options button.
-    this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
   }
 
   restoreSettingsFromPrefs() {
-    this.updateLinkToggleButton();
-    this.updateImagesToggleButton();
     this.setFont_(this.visualBrowserProxy_.getFontName());
     this.speechRate_ = getCurrentSpeechRate();
   }
@@ -609,14 +394,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fire(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
-  protected onTextStyleMenuButtonFromOverflowClick_(e: Event) {
-    const currentTarget = e.currentTarget as HTMLElement;
-    const index = Number.parseInt(currentTarget.dataset['index']!);
-    const menu = this.moreOptionsButtons_[index];
-    assert(menu);
-    menu.openMenu(currentTarget);
-  }
-
   protected onTextStyleMenuButtonClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
@@ -633,60 +410,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.isAiPlaybackActive = !this.isAiPlaybackActive;
   }
 
-  protected onVoiceSelectionMenuClick_(event: MouseEvent) {
-    const voiceMenu =
-        this.$.toolbarContainer.querySelector('#voiceSelectionMenu');
-    assert(voiceMenu, 'no voiceMenu element');
-    (voiceMenu as VoiceSelectionMenuElement)
-        .onVoiceSelectionMenuClick(event.target as HTMLElement);
-  }
-
   protected onMoreOptionsClick_(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (this.isImmersiveEnabled_) {
-      this.$.settingsMenu.open(target);
-      return;
-    }
-
-    const menu = this.$.moreOptionsMenu.get();
-    openMenu(menu, target);
-  }
-
-  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
-    // Event handler for highlight-change (from highlight-menu).
-    const changedHighlight = event.detail.data;
-    if (!this.isImmersiveEnabled_) {
-      this.setHighlightButtonIcon_(
-          changedHighlight !== this.audioBrowserProxy_.getNoHighlighting());
-    }
-  }
-
-  protected onHighlightClick_(event: MouseEvent) {
-    // Click handler for the highlight button. Used both for the
-    // highlight menu mode and the toggle button mode.
-    this.$.highlightMenu.open(event.target as HTMLElement);
-  }
-
-  private setHighlightButtonIcon_(turnOn: boolean) {
-    // Sets the icon of the highlight button. This happens regardless of
-    // whether the button toggles highlight on/off (the behavior when the phrase
-    // highlighting flag is off), or the button shows the highlight menu (when
-    // the flag is on).
-    const button = this.$.toolbarContainer.querySelector('#highlight');
-    assert(button, 'no highlight button');
-    if (turnOn) {
-      button.setAttribute(
-          'iron-icon',
-          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:ink-highlighter-move' :
-              'read-anything:highlight-on-old');
-    } else {
-      button.setAttribute(
-          'iron-icon',
-          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:ink-highlighter' :
-              'read-anything:highlight-off-old');
-    }
+    this.$.settingsMenu.open(target);
   }
 
   private setFont_(font: string) {
@@ -707,64 +433,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected onFontSizeDecreaseClick_() {
     this.updateFontSize_(false);
-  }
-
-  protected onToggleButtonClick_(e: Event) {
-    const toggleMenuId = (e.currentTarget as HTMLElement).id;
-
-    if (toggleMenuId === LINK_TOGGLE_BUTTON_ID) {
-      this.onToggleLinksClick_();
-    } else if (toggleMenuId === IMAGES_TOGGLE_BUTTON_ID) {
-      this.onToggleImagesClick_();
-    }
-  }
-
-  private onToggleLinksClick_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
-
-    this.visualBrowserProxy_.onLinksEnabledToggled();
-    this.fire(ToolbarEvent.LINKS);
-    this.updateLinkToggleButton();
-  }
-
-  private onToggleImagesClick_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
-
-    this.visualBrowserProxy_.onImagesEnabledToggled();
-    this.fire(ToolbarEvent.IMAGES);
-    this.updateImagesToggleButton();
-  }
-
-  private updateLinkToggleButton() {
-    const button = this.shadowRoot.getElementById(LINK_TOGGLE_BUTTON_ID) as
-        CrIconButtonElement;
-    if (button) {
-      button.ironIcon = this.visualBrowserProxy_.isLinksEnabled() ?
-          LINKS_ENABLED_ICON :
-          LINKS_DISABLED_ICON;
-      const linkStatusLabel = this.visualBrowserProxy_.isLinksEnabled() ?
-          loadTimeData.getString('disableLinksLabel') :
-          loadTimeData.getString('enableLinksLabel');
-      button.title = linkStatusLabel;
-      button.ariaLabel = linkStatusLabel;
-    }
-  }
-
-  private updateImagesToggleButton() {
-    const button = this.shadowRoot?.getElementById(IMAGES_TOGGLE_BUTTON_ID) as
-        CrIconButtonElement;
-    if (button) {
-      button.ironIcon = this.visualBrowserProxy_.isImagesEnabled() ?
-          IMAGES_ENABLED_ICON :
-          IMAGES_DISABLED_ICON;
-      const imageStatusLabel = this.visualBrowserProxy_.isImagesEnabled() ?
-          loadTimeData.getString('disableImagesLabel') :
-          loadTimeData.getString('enableImagesLabel');
-      button.title = imageStatusLabel;
-      button.ariaLabel = imageStatusLabel;
-    }
   }
 
   private announceSizeChage(increase: boolean) {
@@ -852,18 +520,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           (!el.disabled) && (el.className !== 'separator');
     });
 
-    // Allow focusing the more options menu if it's visible.
-    const moreOptionsButton = this.$.more;
-    assert(moreOptionsButton, 'no more options button');
-    if (moreOptionsButton.style.display &&
-        (moreOptionsButton.style.display !== 'none')) {
-      focusableElements.push(moreOptionsButton);
-      Array.from(toolbar.querySelectorAll(moreOptionsClass))
-          .forEach(element => {
-            focusableElements.push(element as HTMLElement);
-          });
-    }
-
     this.onKeyDown_(e, focusableElements);
   }
 
@@ -906,10 +562,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     previousId: SettingsOption|null,
     target: HTMLElement,
   }>) {
-    if (!this.isImmersiveEnabled_) {
-      return;
-    }
-
     const {id, previousId, target} = event.detail;
     if (previousId) {
       const previousMenu = this.settingsMenu_[previousId];
@@ -925,10 +577,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private closeAllMenus_(previousId: SettingsOption|null = null) {
-    if (!this.isImmersiveEnabled_) {
-      return;
-    }
-
     if (previousId) {
       this.closeSubmenu_(previousId);
     }
@@ -959,11 +607,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     };
   }
 
-  private getMoreOptionsButtons_(): HTMLElement[] {
-    return Array.from(
-        this.$.toolbarContainer.querySelectorAll(moreOptionsClass));
-  }
-
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
     if (!isHorizontalArrow(e.key)) {
       return;
@@ -973,33 +616,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     //  Move to the next focusable item in the toolbar, wrapping around
     //  if we've reached the end or beginning.
     assert(e.target instanceof HTMLElement);
-    let newIndex = getNewIndex(e.key, e.target, focusableElements);
-    const direction = isForwardArrow(e.key) ? 1 : -1;
-    // If the next item has overflowed, skip focusing the more options button
-    // itself and go directly to the children. We still need this button in the
-    // list of focusable elements because it can become focused by tabbing while
-    // the menu is open and we want the arrow key behavior to continue smoothly.
-    // This is skipped in immersive mode because the more options button opens
-    // the main settings menu instead of the overflow menu.
+    const newIndex = getNewIndex(e.key, e.target, focusableElements);
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus);
-    if ((elementToFocus.id === 'more' && !this.isImmersiveEnabled_) ||
-        elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
-      const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();
-      // If the more options menu has not been rendered yet, render it and wait
-      // for it to be drawn so we can get the number of elements in the menu.
-      if (!moreOptionsRendered || !moreOptionsRendered.open) {
-        openMenu(this.$.moreOptionsMenu.get(), this.$.more);
-        requestAnimationFrame(() => {
-          const moreOptions = this.getMoreOptionsButtons_();
-          focusableElements = focusableElements.concat(moreOptions);
-          newIndex = (direction === 1) ? (newIndex + 1) :
-                                         (focusableElements.length - 1);
-          this.updateFocus_(focusableElements, newIndex);
-        });
-        return;
-      }
-    }
     this.updateFocus_(focusableElements, newIndex);
   }
 
@@ -1041,7 +660,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     if (this.isSpeechActive !== this.wasSpeechActive_) {
-      this.maybeUpdateMoreOptions_();
       this.wasSpeechActive_ = this.isSpeechActive;
     }
   }
@@ -1056,19 +674,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       el.tabIndex = -1;
     });
     this.currentFocusId_ = elementToFocus.id;
-
-    // If a more options button is focused and we tab away, we need to tab
-    // back to the more options button instead of the item inside the menu since
-    // the menu closes when we tab away.
-    if (elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
-      this.$.more.tabIndex = 0;
-    } else {
-      elementToFocus.tabIndex = 0;
-      // Close the overflow menu if the next button is not in the menu.
-      if (!this.isImmersiveEnabled_) {
-        this.$.moreOptionsMenu.getIfExists()?.close();
-      }
-    }
+    elementToFocus.tabIndex = 0;
 
     // Wait for the next animation frame for the overflow menu to show or hide.
     requestAnimationFrame(() => {
@@ -1085,36 +691,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return loadTimeData.getStringF('voiceSpeedWithRateLabel', this.speechRate_);
   }
 
-  protected getAudioState_(): string {
-    if (this.isImmersiveEnabled_) {
-      return 'immersive-enabled';
-    }
-    if (this.isSpeechActive) {
-      return 'active';
-    }
-    return 'inactive';
-  }
-
-  protected getToolbarContainerClass_(): string {
-    return this.isImmersiveEnabled_ ? 'immersive-toolbar-container' :
-                                      'toolbar-container';
-  }
-
-  protected getGranularityContainerClass_(): string {
-    return this.isSpeechActive || this.isImmersiveEnabled_ ?
-        'granularity-container-when-active-true' :
-        'granularity-container-when-active-false';
-  }
-
   protected shouldDisableGranularityNavButtons_(): boolean {
-    return !this.isReadAloudPlayable ||
-        (this.isImmersiveEnabled_ && !this.isSpeechActive);
+    return !this.isReadAloudPlayable || !this.isSpeechActive;
   }
 
   protected onToolbarContainerBlur_() {
-    if (this.isImmersiveEnabled_) {
-      this.$.toolbarContainer.tabIndex = -1;
-    }
+    this.$.toolbarContainer.tabIndex = -1;
   }
 }
 

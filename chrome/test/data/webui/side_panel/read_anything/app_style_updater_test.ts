@@ -163,7 +163,6 @@ suite('AppStyleUpdater', () => {
           'window line focus',
       () => {
         visualBrowserProxy.lineFocusEnabled = true;
-        visualBrowserProxy.immersiveEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-dark)',
@@ -175,42 +174,11 @@ suite('AppStyleUpdater', () => {
           'for non-window line focus',
       () => {
         visualBrowserProxy.lineFocusEnabled = true;
-        visualBrowserProxy.immersiveEnabled = true;
         visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
         updater.setLineFocusStyle(LineFocusType.LINE);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-yellow)',
             app.style.getPropertyValue('--toolbar-icon-color'));
-      });
-
-  test(
-      'setLineFocusStyle sets dark legacy toolbar icon colors for window ' +
-          'line focus',
-      () => {
-        visualBrowserProxy.lineFocusEnabled = true;
-        visualBrowserProxy.immersiveEnabled = false;
-        updater.setLineFocusStyle(LineFocusType.WINDOW);
-        assertEquals(
-            'var(--color-read-anything-toolbar-icon-dark)',
-            app.style.getPropertyValue('--legacy-toolbar-icon-color'));
-        assertEquals(
-            'var(--color-read-anything-line-focus-dark)',
-            app.style.getPropertyValue('--legacy-audio-player-icon-color'));
-      });
-
-  test(
-      'setLineFocusStyle sets default legacy toolbar icon colors for ' +
-          'non-window line focus',
-      () => {
-        visualBrowserProxy.lineFocusEnabled = true;
-        visualBrowserProxy.immersiveEnabled = false;
-        updater.setLineFocusStyle(LineFocusType.LINE);
-        assertEquals(
-            'var(--color-sys-on-surface-subtle)',
-            app.style.getPropertyValue('--legacy-toolbar-icon-color'));
-        assertEquals(
-            'var(--color-sys-primary)',
-            app.style.getPropertyValue('--legacy-audio-player-icon-color'));
       });
 
   test('setLineFocusPos sets y position', () => {

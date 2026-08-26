@@ -57,7 +57,6 @@ export class RateMenuElement extends RateMenuElementBase {
     return {
       settingsPrefs: {type: Object},
       options_: {type: Array},
-      isImmersiveEnabled_: {type: Boolean},
     };
   }
 
@@ -65,9 +64,6 @@ export class RateMenuElement extends RateMenuElementBase {
 
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
-
-  protected accessor isImmersiveEnabled_: boolean =
-      chrome.readingMode.isImmersiveEnabled;
 
   protected accessor options_: Array<MenuStateItem<number>> =
       RATE_OPTIONS.map(rate => {
