@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -199,8 +197,9 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
     protected boolean hasTabPropertiesModel(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
-            assumeNonNull(model);
-            return TabProperties.isTabOrTabGroup(model);
+            if (model != null) {
+                return TabProperties.isTabOrTabGroup(model);
+            }
         }
         return false;
     }
@@ -231,8 +230,7 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
     protected boolean hasCollaboration(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
-            assumeNonNull(model);
-            if (TabProperties.isTabOrTabGroup(model)) {
+            if (model != null && TabProperties.isTabOrTabGroup(model)) {
                 @Nullable TabGroupColorViewProvider provider =
                         model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
                 return provider != null && provider.hasCollaborationId();

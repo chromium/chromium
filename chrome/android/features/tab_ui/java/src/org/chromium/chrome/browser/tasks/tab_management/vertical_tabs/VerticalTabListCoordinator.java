@@ -1290,12 +1290,6 @@ public class VerticalTabListCoordinator {
                                         tabGroupId,
                                         startPoint,
                                         groupDragShadowView);
-                        if (dragStarted
-                                && !TabProperties.isTabGroupCollapsed(model)
-                                && !groupTabs.isEmpty()) {
-                            int repTabId = groupTabs.get(0).getId();
-                            recyclerView.post(() -> toggleTabGroupExpansion(repTabId));
-                        }
                     } else {
                         mLastDraggedGroupId = null;
                         View gridCardView = buildGridCardDragShadow(activity, model);
@@ -1647,16 +1641,7 @@ public class VerticalTabListCoordinator {
                 touchHelperCallback.restoreDraggedItem(isOSNewWindowDrop);
                 itemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
 
-                if (mLastDraggedGroupId != null) {
-                    Token groupId = mLastDraggedGroupId;
-                    mLastDraggedGroupId = null;
-                    TabModel tabModel = mTabModelSelector.getCurrentModel();
-                    if (tabModel != null) {
-                        // Always expand tab group on drop.
-                        tabModel.setTabGroupCollapsed(
-                                groupId, /* isCollapsed= */ false, /* animate= */ false);
-                    }
-                }
+                mLastDraggedGroupId = null;
                 dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
                 return true;
             }
