@@ -114,6 +114,15 @@ public class TabListModelUnitTest {
         assertEquals(
                 archivedGroupModel, tabListModel.getModelFromArchivedTabGroupSyncId("sync_id_1"));
         assertNull(tabListModel.getModelFromArchivedTabGroupSyncId("non_existent"));
+
+        // Verify indexFromModel lookup helper.
+        assertEquals(0, tabListModel.indexFromModel(tabModel));
+        assertEquals(1, tabListModel.indexFromModel(activeGroupModel));
+        assertEquals(2, tabListModel.indexFromModel(archivedGroupModel));
+        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexFromModel(null));
+        PropertyModel unaddedModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+        assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexFromModel(unaddedModel));
     }
 
     @Test

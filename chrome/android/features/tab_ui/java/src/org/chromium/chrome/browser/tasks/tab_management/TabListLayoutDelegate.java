@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -39,6 +40,7 @@ import org.chromium.url.GURL;
 abstract class TabListLayoutDelegate implements TabGroupObserver {
     protected final TabListMediator mMediator;
     protected final TabListModel mModelList;
+    private @Nullable TabGridAccessibilityHelper mAccessibilityHelper;
 
     TabListLayoutDelegate(TabListMediator mediator, TabListModel modelList) {
         mMediator = mediator;
@@ -388,6 +390,15 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     }
 
     /**
+     * Sets the accessibility helper used to resolve layout-specific accessibility actions.
+     *
+     * @param helper The {@link TabGridAccessibilityHelper} instance.
+     */
+    void setAccessibilityHelper(@Nullable TabGridAccessibilityHelper helper) {
+        mAccessibilityHelper = helper;
+    }
+
+    /**
      * Allows layout-specific customization of accessibility node info for a given view model.
      *
      * @param host The host view being initialized.
@@ -395,7 +406,14 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      * @param model The {@link PropertyModel} associated with the view.
      */
     void populateAccessibilityNodeInfo(
-            View host, AccessibilityNodeInfo info, @Nullable PropertyModel model) {}
+            View host, AccessibilityNodeInfo info, @Nullable PropertyModel model) {
+        if (mAccessibilityHelper != null) {
+            for (AccessibilityAction action :
+                    mAccessibilityHelper.getPotentialActionsForView(host)) {
+                info.addAction(action);
+            }
+        }
+    }
 
     /**
      * Handles layout-specific accessibility actions.
@@ -408,26 +426,19 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      */
     boolean performAccessibilityAction(
             View host, int action, @Nullable Bundle args, @Nullable PropertyModel model) {
-        return false;
-    }
-
-    /**
-     * Handles accessibility reorder actions for this layout type.
-     *
-     * @param host The host view executing the action.
-     * @param action The accessibility reorder action ID.
-     * @param helper The {@link TabGridAccessibilityHelper} to resolve positions.
-     * @return True if the reorder action was handled, false otherwise.
-     */
-    boolean performReorderAction(View host, int action, TabGridAccessibilityHelper helper) {
-        Pair<Integer, Integer> positions = helper.getPositionsOfReorderAction(host, action);
-        int currentPosition = positions.first;
-        int targetPosition = positions.second;
-        if (!mModelList.isValidIndex(currentPosition) || !mModelList.isValidIndex(targetPosition)) {
-            return false;
+        if (mAccessibilityHelper != null && mAccessibilityHelper.isReorderAction(action)) {
+            Pair<Integer, Integer> positions =
+                    mAccessibilityHelper.getPositionsOfReorderAction(host, action);
+            int currentPosition = positions.first;
+            int targetPosition = positions.second;
+            if (!mModelList.isValidIndex(currentPosition)
+                    || !mModelList.isValidIndex(targetPosition)) {
+                return false;
+            }
+            mModelList.move(currentPosition, targetPosition);
+            RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
+            return true;
         }
-        mModelList.move(currentPosition, targetPosition);
-        RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
-        return true;
+        return false;
     }
 }

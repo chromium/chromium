@@ -167,6 +167,20 @@ public class TabListModel extends ModelList {
     }
 
     /**
+     * Finds the index of a given {@link PropertyModel} in the model list.
+     *
+     * @param model The {@link PropertyModel} to search for.
+     * @return The index within the model list or {@link TabModel#INVALID_TAB_INDEX}.
+     */
+    public int indexFromModel(@Nullable PropertyModel model) {
+        if (model == null) return TabModel.INVALID_TAB_INDEX;
+        for (int i = 0; i < size(); i++) {
+            if (get(i).model == model) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
      * Lookup the position of an archived tab group by its sync ID.
      *
      * @param syncId The sync ID to search for.

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -26,7 +28,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
@@ -497,7 +498,9 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     void populateAccessibilityNodeInfo(
             View host, AccessibilityNodeInfo info, @Nullable PropertyModel model) {
-        if (model != null && TabProperties.isTabGroupHeader(model)) {
+        if (model == null) return;
+        // Set expand/collapse actions and state for tab group headers.
+        if (TabProperties.isTabGroupHeader(model)) {
             boolean isCollapsed = TabProperties.isTabGroupCollapsed(model);
             info.addAction(
                     isCollapsed
@@ -508,6 +511,49 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
                             isCollapsed
                                     ? AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED
                                     : AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL);
+        }
+
+        if (!TabProperties.isTabOrTabGroup(model)) {
+            return;
+        }
+
+        int position = mModelList.indexFromModel(model);
+        if (position == TabModel.INVALID_TAB_INDEX || !mModelList.isValidIndex(position)) {
+            return;
+        }
+
+        boolean isPinned = TabProperties.isPinnedTab(model);
+        boolean canMoveUp;
+        boolean canMoveDown;
+        if (isPinned) {
+            // Pinned tabs can move up if not the first, and down only if the next item is also
+            // pinned.
+            canMoveUp = position > 0;
+            canMoveDown =
+                    position + 1 < mModelList.size()
+                            && TabProperties.isPinnedTab(mModelList.get(position + 1).model);
+        } else {
+            // Unpinned items can move up if predecessor is not pinned, and down if not at list end.
+            canMoveUp =
+                    position > 0 && !TabProperties.isPinnedTab(mModelList.get(position - 1).model);
+            canMoveDown = position + 1 < mModelList.size();
+        }
+
+        Context context = host.getContext();
+        boolean isTabGroup = TabProperties.isTabGroupHeader(model);
+        int upStringRes =
+                isTabGroup ? R.string.move_tab_group_up : R.string.accessibility_tab_movement_up;
+        int downStringRes =
+                isTabGroup
+                        ? R.string.move_tab_group_down
+                        : R.string.accessibility_tab_movement_down;
+        if (canMoveUp) {
+            info.addAction(
+                    new AccessibilityAction(R.id.move_tab_up, context.getString(upStringRes)));
+        }
+        if (canMoveDown) {
+            info.addAction(
+                    new AccessibilityAction(R.id.move_tab_down, context.getString(downStringRes)));
         }
     }
 
@@ -523,13 +569,27 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             AccessibilityState.sendAccessibilityEvent(event);
             return true;
         }
+        if (action == R.id.move_tab_up || action == R.id.move_tab_down) {
+            return performReorderAction(action, model);
+        }
         return false;
     }
 
-    @Override
-    boolean performReorderAction(View host, int action, TabGridAccessibilityHelper helper) {
-        // TODO(crbug.com/40946404): Use NestedTabReorderUtils to handle nested tab and group
-        // reordering.
-        return super.performReorderAction(host, action, helper);
+    private boolean performReorderAction(int action, @Nullable PropertyModel model) {
+        if (model == null || !TabProperties.isTabOrTabGroup(model)) return false;
+        int currentPosition = mModelList.indexFromModel(model);
+        if (!mModelList.isValidIndex(currentPosition)) {
+            return false;
+        }
+
+        // Delegate reordering directly to NestedTabReorderUtils to update the TabModel and UI.
+        boolean toPrevious = action == R.id.move_tab_up;
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        if (NestedTabReorderUtils.reorderItemInDirection(
+                tabModel, mModelList, currentPosition, toPrevious)) {
+            RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
+            return true;
+        }
+        return false;
     }
 }
