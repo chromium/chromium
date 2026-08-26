@@ -5346,8 +5346,8 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
       if (std::optional<Member<const ScopedCSSName>> name =
               animation_data->TimelineTriggerNameList().at(i)) {
         if (name->Get()) {
-          before_slash->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-              name->Get()->GetName()));
+          before_slash->Append(
+              *MakeGarbageCollected<CSSCustomIdentValue>(*name->Get()));
         }
       }
 
