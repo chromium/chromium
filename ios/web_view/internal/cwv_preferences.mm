@@ -154,4 +154,8 @@
   }));
 }
 
+- (void)shutDown {
+  _prefService = nullptr;
+}
+
 @end
