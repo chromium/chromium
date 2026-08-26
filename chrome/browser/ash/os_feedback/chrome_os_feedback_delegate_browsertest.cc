@@ -36,7 +36,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
@@ -58,6 +58,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -260,7 +261,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     EXPECT_EQ(SendReportStatus::kSuccess, future.Get());
   }
 
-  Browser* LaunchFeedbackAppAndGetBrowser() {
+  BrowserWindowInterface* LaunchFeedbackAppAndGetBrowser() {
     // Install system apps, namely the Feedback App.
     ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
@@ -284,10 +285,9 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
         ash::FindSystemWebAppBrowser(browser()->GetProfile(),
                                      ash::SystemWebAppType::OS_FEEDBACK,
                                      ash::BrowserType::kApp);
-    Browser* feedback_browser = feedback_browser_delegate
-                                    ? feedback_browser_delegate->GetBrowser()
-                                          .GetBrowserForMigrationOnly()
-                                    : nullptr;
+    BrowserWindowInterface* feedback_browser =
+        feedback_browser_delegate ? &feedback_browser_delegate->GetBrowser()
+                                  : nullptr;
 
     EXPECT_NE(feedback_browser, nullptr);
 
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
 // Diagnostics app will launch the app as an independent SWA
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        OpenDiagnosticsApp_From_SWA) {
-  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  BrowserWindowInterface* feedback_browser = LaunchFeedbackAppAndGetBrowser();
   CHECK(feedback_browser);
 
   auto feedback_delegate =
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
 // Test that the Metrics (Histograms) dialog opens
 // when OpenMetricsDialog is invoked.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
-  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  BrowserWindowInterface* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
       feedback_browser->GetWindow()->GetNativeWindow();
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
 // Feedback SWA.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        OpenSystemInfoDialog_From_FeedbackSWA) {
-  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  BrowserWindowInterface* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
       feedback_browser->GetWindow()->GetNativeWindow();
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // window bounds.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        DontRestoreUnresizableSystemWebApp) {
-  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  BrowserWindowInterface* feedback_browser = LaunchFeedbackAppAndGetBrowser();
   aura::Window* feedback_window =
       feedback_browser->GetWindow()->GetNativeWindow();
 
