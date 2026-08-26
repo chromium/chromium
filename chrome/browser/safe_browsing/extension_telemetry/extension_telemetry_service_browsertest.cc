@@ -648,7 +648,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
             await waitForTabLoad(second_tab.id);
 
             await chrome.tabs.remove(second_tab.id);
-
+            chrome.test.succeed();
+          },
+          async function captureVisibleTabOp() {
             const newWindow =
                 await chrome.windows.create({url: 'http://www.google.com'});
             await waitForTabLoad(newWindow.tabs[0].id);
@@ -767,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     const JSCallStack& callstack = call_details.js_callstacks(0);
     ASSERT_GE(callstack.frames_size(), 1);
     EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
-    EXPECT_EQ(callstack.frames(0).function_name(), "tabOps");
+    EXPECT_EQ(callstack.frames(0).function_name(), "captureVisibleTabOp");
   }
 
   // Verify enterprise telemetry reporting.
