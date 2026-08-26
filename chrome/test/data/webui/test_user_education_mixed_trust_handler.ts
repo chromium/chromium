@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BrowserProxy, FeaturePromoFeatureUsedAction, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from 'chrome://resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import type {FeaturePromoFeatureUsedAction, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from '//resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 
-// TODO(https://crbug.com/546619486): Currently this code is duplicated here and
-// in read_anything with minor differences. Find a way to make this a shared
-// file.
+import {TestBrowserProxy} from './test_browser_proxy.js';
 
-export class TestUserEducationBrowserProxy extends TestBrowserProxy implements
-    BrowserProxy {
-  handler: UserEducationMixedTrustHandlerInterface;
+export class TestUserEducationMixedTrustHandler extends TestBrowserProxy
+    implements UserEducationMixedTrustHandlerInterface {
   private showNewBadgeResponses_: Map<string, boolean> = new Map();
 
   constructor() {
@@ -22,7 +18,6 @@ export class TestUserEducationBrowserProxy extends TestBrowserProxy implements
       'maybeShowFeaturePromo',
       'maybeShowNewBadgeFor',
     ]);
-    this.handler = this;
   }
 
   maybeShowFeaturePromo(params: FeaturePromoParams) {

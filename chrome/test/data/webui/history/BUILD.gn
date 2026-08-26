@@ -34,7 +34,6 @@ build_webui_tests("build") {
     "link_click_test.ts",
     "searched_label_test.ts",
     "test_browser_proxy.ts",
-    "test_user_education_browser_proxy.ts",
     "fake_foreign_session_page_handler.ts",
     "test_util.ts",
   ]

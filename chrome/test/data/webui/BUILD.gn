@@ -558,6 +558,7 @@ webui_ts_library("build_ts") {
       "polymer_test_util.ts",
       "test_api.ts",
       "test_store.ts",
+      "test_user_education_mixed_trust_handler.ts",
     ]
   }
 
@@ -570,7 +571,10 @@ webui_ts_library("build_ts") {
   ]
 
   if (!is_android) {
-    deps += [ "//third_party/polymer/v3_0:library" ]
+    deps += [
+      "//third_party/polymer/v3_0:library",
+      "//ui/webui/resources/mojo:build_ts",
+    ]
 
     definitions += [
       "//tools/typescript/definitions/chrome_event.d.ts",
