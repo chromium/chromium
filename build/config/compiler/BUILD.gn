@@ -910,6 +910,8 @@ config("compiler") {
   if (compiler_timing) {
     if (is_clang) {
       cflags += [ "-ftime-trace" ]
+      c_additional_outputs =
+          [ "{{target_out_dir}}/{{label_name}}/{{source_name_part}}.json" ]
       if (use_lld && is_mac) {
         ldflags += [ "-Wl,--time-trace" ]
       }

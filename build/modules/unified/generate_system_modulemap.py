@@ -374,6 +374,7 @@ def calculate_transitive_headers(
         tmpdir_path = pathlib.Path(tmpdir)
         source_file = tmpdir_path / 'dummy.cpp'
         dep_file = tmpdir_path / 'dummy.d'
+        object_file = tmpdir_path / 'dummy.o'
         input_headers = {source_file.absolute()}
 
         with open(source_file, 'w') as f:
@@ -400,7 +401,7 @@ def calculate_transitive_headers(
             *_format_clang_args(
                 [
                     '-o',
-                    'NUL' if os.name == 'nt' else '/dev/null',
+                    object_file,
                     # This is what we really care about. Just which headers were in
                     # the transitive includes of a given header.
                     '-MD',

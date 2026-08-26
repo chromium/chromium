@@ -234,6 +234,7 @@ template("msvc_toolchain") {
     }
 
     tool("cc") {
+      output = "$object_subdir/{{source_name_part}}.obj"
       precompiled_header_type = "msvc"
       pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
@@ -242,22 +243,26 @@ template("msvc_toolchain") {
       # full file name and will quote automatically when necessary.
       depsformat = "msvc"
       description = "CC {{output}}"
-      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+      outputs = [ output ]
 
       # Note that the code coverage wrapper scripts assumes that {{source}}
       # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${module_name_flag} /Fo{{output}} /Fd\"$pdbname\""
+      # {{output}} may contain additional outputs, so use $output instead of
+      # {{output}} in command.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${module_name_flag} /Fo$output /Fd\"$pdbname\""
     }
 
     tool("cxx_module") {
+      output = "$object_subdir/{{source_name_part}}.pcm"
       pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
       depsformat = "msvc"
       description = "CXX_MODULE {{output}}"
-      outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
-      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name=\"{{cc_module_name}}\" /Fd\"$pdbname\" /c -x c++ -Xclang -emit-module {{source}}"
+      outputs = [ output ]
+      command = "$env_wrapper$cl /Fo$output /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name=\"{{cc_module_name}}\" /Fd\"$pdbname\" /c -x c++ -Xclang -emit-module {{source}}"
     }
 
     tool("cxx") {
+      output = "$object_subdir/{{source_name_part}}.obj"
       precompiled_header_type = "msvc"
 
       # The PDB name needs to be different between C and C++ compiled files.
@@ -266,11 +271,13 @@ template("msvc_toolchain") {
       # See comment in CC tool about quoting.
       depsformat = "msvc"
       description = "CXX {{output}}"
-      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+      outputs = [ output ]
 
       # Note that the code coverage wrapper scripts assumes that {{source}}
       # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /TP {{module_deps}}${module_name_flag} /Fd\"$pdbname\""
+      # {{output}} may contain additional outputs, so use $output instead of
+      # {{output}} in command.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo$output /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /TP {{module_deps}}${module_name_flag} /Fd\"$pdbname\""
     }
 
     tool("rc") {
