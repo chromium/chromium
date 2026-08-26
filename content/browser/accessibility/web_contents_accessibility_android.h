@@ -517,6 +517,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       int32_t unique_id);
 
+  // Returns the selection range as text offsets for the given node.
+  // Returns nullptr if neither selection start nor end is on the given node, or
+  // `kAXAndroidUndefinedSelectionIndex` if either selection start or end is
+  // not on it.
   base::android::ScopedJavaLocalRef<jintArray> GetSelectionRangeAsTextOffsets(
       JNIEnv* env,
       int32_t unique_id);

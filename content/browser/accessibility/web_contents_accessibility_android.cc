@@ -2039,12 +2039,15 @@ WebContentsAccessibilityAndroid::GetSelectionRangeAsTextOffsets(
   }
 
   if (node->IsAtomicTextField()) {
-    int sel_start = 0;
-    int sel_end = 0;
+    int sel_start = ui::kAXAndroidUndefinedSelectionIndex;
+    int sel_end = ui::kAXAndroidUndefinedSelectionIndex;
     node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &sel_start);
     node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &sel_end);
-    int selection_data[] = {node->GetUniqueId(), sel_start, node->GetUniqueId(),
-                            sel_end};
+    if (sel_start == ui::kAXAndroidUndefinedSelectionIndex &&
+        sel_end == ui::kAXAndroidUndefinedSelectionIndex) {
+      return nullptr;
+    }
+    int selection_data[] = {sel_start, sel_end};
     return ToJavaIntArray(env, selection_data);
   }
 
@@ -2061,8 +2064,19 @@ WebContentsAccessibilityAndroid::GetSelectionRangeAsTextOffsets(
   auto [focus_node_id, focus_offset] =
       ResolvePositionToTextOffset(selection->focus);
 
-  int selection_data[] = {anchor_node_id, anchor_offset, focus_node_id,
-                          focus_offset};
+  if (focus_node_id != unique_id) {
+    focus_offset = ui::kAXAndroidUndefinedSelectionIndex;
+  }
+
+  if (anchor_node_id != unique_id) {
+    anchor_offset = ui::kAXAndroidUndefinedSelectionIndex;
+  }
+
+  if (anchor_offset == ui::kAXAndroidUndefinedSelectionIndex &&
+      focus_offset == ui::kAXAndroidUndefinedSelectionIndex) {
+    return nullptr;
+  }
+  int selection_data[] = {anchor_offset, focus_offset};
   return ToJavaIntArray(env, selection_data);
 }
 

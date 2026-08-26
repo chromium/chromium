@@ -2256,8 +2256,9 @@ public class WebContentsAccessibilityTest {
                 0,
                 OFFSET_TYPE_TEXT);
 
-        // 4. Moving forward with extended selection on input1 advances from the local
-        // selection cursor (1 -> 2).
+        // 4. Moving forward with extended selection on input1 should fail as we are already at the
+        // end of the node.
+        // TODO(crbug.com/548749861): Fix this, the correct expectation is action failure.
         moveAtGranularityAndAssertBounds(
                 input1Vvid,
                 ACTION_NEXT_AT_MOVEMENT_GRANULARITY,

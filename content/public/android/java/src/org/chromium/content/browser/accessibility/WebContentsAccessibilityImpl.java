@@ -187,10 +187,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public static final int EXT_SEL_END_OFFSET_TYPE = 5;
 
     // Selection range as text offsets indices
-    private static final int SEL_START_NODE = 0;
-    private static final int SEL_START_OFFSET = 1;
-    private static final int SEL_END_NODE = 2;
-    private static final int SEL_END_OFFSET = 3;
+    private static final int SEL_START_OFFSET = 0;
+    private static final int SEL_END_OFFSET = 1;
 
     // Accessibility extras key for absolute drawing order (paint order among all
     // nodes in tree). Used to compute occlusion.
@@ -1989,7 +1987,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return;
         }
 
-        if (updateMovementAtGranularityFromSelection(mAccessibilityFocusId)) {
+        if (updateMovementAtGranularityFromSelection()) {
             return;
         }
 
@@ -2181,28 +2179,29 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     /**
      * Synchronizes granularity movement indices and selection tracking from the current selection
-     * range for the given node.
+     * range for the accessibility focused node.
      *
-     * @param queryNodeId The node ID to query the selection range for.
      * @return true if granularity movement state was updated from an active selection ending on the
      *     focused node; false otherwise.
      */
-    private boolean updateMovementAtGranularityFromSelection(int queryNodeId) {
+    private boolean updateMovementAtGranularityFromSelection() {
+        if (mAccessibilityFocusId == View.NO_ID) {
+            return false;
+        }
+
         // Get selection flattened to text offsets. This function prioritizes the internal selection
         // properties for editable nodes, and converts selection range to text offsets for
         // non-editable nodes if they are selected by child offsets.
         int[] selection =
                 WebContentsAccessibilityImplJni.get()
-                        .getSelectionRangeAsTextOffsets(mNativeObj, queryNodeId);
+                        .getSelectionRangeAsTextOffsets(mNativeObj, mAccessibilityFocusId);
         if (selection != null) {
-            int startNodeId = selection[SEL_START_NODE];
             int startOffset = selection[SEL_START_OFFSET];
-            int endNodeId = selection[SEL_END_NODE];
             int endOffset = selection[SEL_END_OFFSET];
 
-            if (endNodeId == mAccessibilityFocusId && endOffset != UNDEFINED_SELECTION_INDEX) {
+            if (endOffset != UNDEFINED_SELECTION_INDEX) {
                 mMovementAtGranularityIndex = endOffset;
-                if (startNodeId == mAccessibilityFocusId) {
+                if (startOffset != UNDEFINED_SELECTION_INDEX) {
                     mSelectionStartIndex = startOffset;
                     mIsCurrentlyExtendingSelection = (startOffset != endOffset);
                 } else {
@@ -2223,7 +2222,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return;
         }
 
-        updateMovementAtGranularityFromSelection(mAccessibilityFocusId);
+        updateMovementAtGranularityFromSelection();
     }
 
     /** Gets the ID of the current accessibility focused node. */
@@ -2463,7 +2462,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private void handleTextSelectionChanged(int id) {
         // Ignore selection changes on unrelated nodes.
         if (id == mCurrentRootId || id == mAccessibilityFocusId) {
-            if (!updateMovementAtGranularityFromSelection(id)) {
+            if (!updateMovementAtGranularityFromSelection()) {
                 // If selection was cleared or the focused node is not the selection end, reset
                 // granularity movement state.
                 resetMovementAtGranularityState();
