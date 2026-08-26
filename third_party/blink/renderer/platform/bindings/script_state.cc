@@ -33,7 +33,6 @@ ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
 
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          DOMWrapperWorld* world,
-                         ExecutionContext* execution_context,
                          scoped_refptr<scheduler::EventLoop> event_loop)
     : isolate_(world->GetIsolate()),
       context_(isolate_, context),
@@ -46,8 +45,6 @@ ScriptState::ScriptState(v8::Local<v8::Context> context,
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
   context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this,
                                            kTypeTag);
-  RendererResourceCoordinator::Get()->OnScriptStateCreated(this,
-                                                           execution_context);
 }
 
 void ScriptState::EnqueueMicrotask(

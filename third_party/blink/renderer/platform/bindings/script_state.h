@@ -244,7 +244,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
  protected:
   ScriptState(v8::Local<v8::Context>,
               DOMWrapperWorld*,
-              ExecutionContext*,
               scoped_refptr<scheduler::EventLoop>);
 
  private:

@@ -9,8 +9,6 @@
 
 namespace blink {
 
-// TODO(chrisha): Remove knowledge of ExecutionContext class from this code!
-class ExecutionContext;
 class Frame;
 class HTMLFrameOwnerElement;
 class ScriptState;
@@ -39,11 +37,8 @@ class PLATFORM_EXPORT RendererResourceCoordinator {
   // Used for tracking content javascript contexts (frames, workers, worklets,
   // etc). These functions are thread-safe.
 
-  // Called when a |script_state| is created. Note that |execution_context| may
-  // be nullptr if the |script_state| is not associated with an
-  // |execution_context|.
-  virtual void OnScriptStateCreated(ScriptState* script_state,
-                                    ExecutionContext* execution_context) = 0;
+  // Called when a |script_state| is created.
+  virtual void OnScriptStateCreated(ScriptState* script_state) = 0;
   // Called when the |script_state| has been detached from the v8::Context
   // (and ExecutionContext, if applicable) it was associated with at creation.
   // At this point the associated v8::Context is considered "detached" until it

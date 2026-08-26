@@ -30,8 +30,7 @@ class DummyRendererResourceCoordinator final
 
   // RendererResourceCoordinator:
   void SetMainThreadTaskLoadIsLow(bool) final {}
-  void OnScriptStateCreated(ScriptState* script_state,
-                            ExecutionContext* execution_context) final {}
+  void OnScriptStateCreated(ScriptState* script_state) final {}
   void OnScriptStateDetached(ScriptState* script_state) final {}
   void OnScriptStateDestroyed(ScriptState* script_state) final {}
   void OnBeforeContentFrameAttached(const Frame& frame,

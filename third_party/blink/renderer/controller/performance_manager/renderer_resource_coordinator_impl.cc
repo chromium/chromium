@@ -113,8 +113,7 @@ void RendererResourceCoordinatorImpl::SetMainThreadTaskLoadIsLow(
 }
 
 void RendererResourceCoordinatorImpl::OnScriptStateCreated(
-    ScriptState* script_state,
-    ExecutionContext* execution_context) {
+    ScriptState* script_state) {
   DCHECK(script_state);
   DCHECK(service_);
 
@@ -158,7 +157,7 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
     } break;
   }
 
-  if (execution_context) {
+  if (auto* execution_context = ExecutionContext::From(script_state)) {
     // This should never happen for a regexp world.
     DCHECK_NE(DOMWrapperWorld::WorldType::kRegExp, dom_wrapper.GetWorldType());
 
