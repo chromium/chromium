@@ -127,6 +127,20 @@ using AIPageContentResultOrError =
     base::expected<AIPageContentResult, std::string>;
 using OnAIPageContentDone =
     base::OnceCallback<void(AIPageContentResultOrError)>;
+
+// This is a browser-process utility function that queries the outermost main
+// frame and all local subframe roots in the Page's frame tree using Mojo to
+// extract the structured page content representation.
+//
+// Callers should prefer using the higher-level `PageContentExtractionService`
+// for typical use cases. Direct calls to `GetAIPageContent()` are appropriate
+// when custom options are required (such as setting `on_critical_path = true`
+// during active user interaction) that the service's global static
+// configuration does not support.
+//
+// For a detailed comparison of caching and lifecycle integration, see the
+// integration guide at:
+// `components/page_content_annotations/content/pces_guide.md`.
 void GetAIPageContent(content::WebContents* web_contents,
                       blink::mojom::AIPageContentOptionsPtr options,
                       OnAIPageContentDone done_callback);

@@ -58,8 +58,23 @@ using FetchPageContextCallback =
 using GetTabIdCallback =
     base::RepeatingCallback<std::optional<int64_t>(content::WebContents*)>;
 
-// Class for deciding when a page is ready for getting page content, and
-// extracts page content.
+// A WebContentsObserver / WebContentsUserData class that manages the lifecycle
+// of page content extraction for the main frame of a WebContents.
+//
+// AnnotatedPageContentRequest implements a state machine that observes
+// navigation, load, visibility, and FCP events to determine when the page has
+// "settled" (layout is stable and loading is complete) and is ready for
+// extraction. It supports automatic extraction on load or tab backgrounding, as
+// well as on-demand extractions (extracting either `AnnotatedPageContent` for
+// HTML pages, or text for PDFs).
+//
+// The class coordinates with `PageContentExtractionService` to cache results,
+// and uses `PageContextFetcher` under the hood to perform the actual extraction
+// IPC.
+//
+// For a detailed guide of this flow, see
+// `components/page_content_annotations/content/pces_guide.md`.
+//
 // TODO(b/490161242): Rename this class to reflect that it's the observer.
 // TODO(b/487632737): Rename this class to reflect that it requests either:
 // - `AnnotatedPageContent` for non-PDF pages.

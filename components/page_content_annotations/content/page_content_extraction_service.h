@@ -93,6 +93,28 @@ class AnnotatedPageContentRequest;
 struct ExtractedPageContentResult;
 class PageContentCacheHandler;
 
+// A Profile-keyed service that manages the extraction, caching, and retrieval
+// of page content (specifically `AnnotatedPageContent` for HTML pages and plain
+// text for PDFs).
+//
+// This service coordinates:
+// - Caching: Maintains an in-memory and on-disk cache of extracted page
+//   content (for HTML pages). PDF extractions are not cached.
+// - Observers: Automatically extracts page content when an observer is
+//   registered and fires notifications to registered `Observer`s upon
+//   extraction.
+// - Lifecycle management: Cleans up cached content when tabs are closed,
+//   handles tab visibility/backgrounding state, etc.
+//
+// Developers looking to fetch page content should prefer using this service
+// over the more direct `optimization_guide::GetAIPageContent` to benefit from:
+// 1. Shared Caching: Avoids running redundant extractions on the renderer if
+//    multiple features query the same page.
+// 2. Lifecycle Integration: Automatically handles waiting for the page to
+//    load, settling of layout stability, and cache cleanup on tab closing.
+//
+// For a detailed integration guide, comparison matrix, and usage examples,
+// see `components/page_content_annotations/content/pces_guide.md`.
 class PageContentExtractionService : public KeyedService,
                                      public base::SupportsUserData {
  public:
