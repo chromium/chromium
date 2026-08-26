@@ -64,10 +64,15 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
   void ClearCookies(const net::CookieDeletionInfo::TimeRange& creation_range,
                     base::OnceClosure callback) override;
 
+  void SetDatabaseManager(
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+          database_manager);
+
  protected:
   ~FakeSafeBrowsingService() override;
 
  private:
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   network::TestURLLoaderFactory url_loader_factory_;
 };
 

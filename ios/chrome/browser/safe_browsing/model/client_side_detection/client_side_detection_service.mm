@@ -142,6 +142,15 @@ Scorer* ClientSideDetectionService::GetScorer() const {
   return scorer_.get();
 }
 
+void ClientSideDetectionService::SetScorerForTesting(  // IN-TEST
+    std::unique_ptr<Scorer> scorer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  scorer_ = std::move(scorer);
+  for (auto& observer : observers_) {
+    observer.OnScorerChanged();
+  }
+}
+
 void ClientSideDetectionService::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);

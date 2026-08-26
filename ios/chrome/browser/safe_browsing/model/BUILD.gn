@@ -6,6 +6,46 @@ import("//ios/build/config.gni")
 import("//ios/features.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
+source_set("user_population_helper") {
+  sources = [
+    "user_population_helper.h",
+    "user_population_helper.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser/sync",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+  ]
+}
+
+source_set("verdict_cache_manager_factory") {
+  sources = [
+    "verdict_cache_manager_factory.h",
+    "verdict_cache_manager_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/sync",
+    "//components/sync/service",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model",
+  ]
+}
+
 source_set("model") {
   sources = [
     "chrome_enterprise_url_lookup_service_factory.h",
@@ -33,14 +73,15 @@ source_set("model") {
     "safe_browsing_helper_factory.mm",
     "safe_browsing_metrics_collector_factory.h",
     "safe_browsing_metrics_collector_factory.mm",
-    "user_population_helper.h",
-    "user_population_helper.mm",
     "v5_get_hash_protocol_manager_factory.h",
     "v5_get_hash_protocol_manager_factory.mm",
     "v5_search_hashes_cache_factory.h",
     "v5_search_hashes_cache_factory.mm",
-    "verdict_cache_manager_factory.h",
-    "verdict_cache_manager_factory.mm",
+  ]
+
+  public_deps = [
+    ":user_population_helper",
+    ":verdict_cache_manager_factory",
   ]
 
   deps = [

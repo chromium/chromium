@@ -299,7 +299,7 @@ FakeSafeBrowsingService::GetURLLoaderFactory() {
 
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 FakeSafeBrowsingService::GetDatabaseManager() {
-  return nullptr;
+  return database_manager_;
 }
 
 network::mojom::NetworkContext* FakeSafeBrowsingService::GetNetworkContext() {
@@ -311,4 +311,10 @@ void FakeSafeBrowsingService::ClearCookies(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   std::move(callback).Run();
+}
+
+void FakeSafeBrowsingService::SetDatabaseManager(
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+        database_manager) {
+  database_manager_ = database_manager;
 }

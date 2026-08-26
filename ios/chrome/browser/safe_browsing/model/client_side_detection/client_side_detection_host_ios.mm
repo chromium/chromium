@@ -1,0 +1,677 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h"
+
+#import <UIKit/UIKit.h>
+
+#import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/rand_util.h"
+#import "base/strings/strcat.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
+#import "components/safe_browsing/core/browser/db/database_manager.h"
+#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
+#import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/visual_utils.h"
+#import "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
+#import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
+#import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#import "net/base/ip_address.h"
+#import "net/base/url_util.h"
+#import "ui/display/screen.h"
+#import "ui/gfx/image/image.h"
+#import "url/url_constants.h"
+
+namespace safe_browsing {
+
+namespace {
+// Delay before initiating snapshot and classification to allow page to settle.
+constexpr base::TimeDelta kStabilizationDelay = base::Milliseconds(750);
+
+// Matches enum in tools/metrics/histograms/metadata/sb_client/enums.xml.
+enum class ClientSideAllowlistMatchResult {
+  kNoMatch = 0,
+  kCsdMatch = 1,
+  kHighConfidenceMatch = 2,
+  kCsdAndHighConfidenceMatch = 3,
+  kMaxValue = kCsdAndHighConfidenceMatch,
+};
+
+ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
+    bool match_csd_allowlist,
+    bool match_hc_allowlist) {
+  if (match_csd_allowlist && match_hc_allowlist) {
+    return ClientSideAllowlistMatchResult::kCsdAndHighConfidenceMatch;
+  } else if (match_csd_allowlist) {
+    return ClientSideAllowlistMatchResult::kCsdMatch;
+  } else if (match_hc_allowlist) {
+    return ClientSideAllowlistMatchResult::kHighConfidenceMatch;
+  } else {
+    return ClientSideAllowlistMatchResult::kNoMatch;
+  }
+}
+
+}  // namespace
+
+#pragma mark - Public
+
+ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
+    web::WebState* web_state,
+    ClientSideDetectionService* service,
+    VerdictCacheManager* cache_manager,
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    history::HistoryService* history_service)
+    : ClientSideDetectionHostBase(
+          service ? service->GetWeakPtr() : nullptr,
+          cache_manager,
+          /*intelligent_scan_delegate=*/nullptr,
+          pref_service,
+          identity_manager
+              ? std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+                    identity_manager)
+              : nullptr,
+          history_service,
+          web_state ? web_state->GetBrowserState()->IsOffTheRecord() : false),
+      web_state_(web_state),
+      service_(service),
+      identity_manager_(identity_manager) {
+  CHECK(web_state_);
+  web_state_->AddObserver(this);
+}
+
+ClientSideDetectionHostIOS::~ClientSideDetectionHostIOS() {
+  if (web_state_) {
+    web_state_->RemoveObserver(this);
+  }
+  CancelPendingRequests();
+}
+
+#pragma mark - ClientSideDetectionHostBase
+
+GURL ClientSideDetectionHostIOS::GetCurrentUrl() const {
+  return web_state_ ? web_state_->GetLastCommittedURL() : GURL();
+}
+
+ClientSideDetectionFeatureCacheBase*
+ClientSideDetectionHostIOS::GetFeatureCache() {
+  if (!web_state_) {
+    return nullptr;
+  }
+
+  // This does nothing if the cache already exists.
+  ClientSideDetectionFeatureCache::CreateForWebState(web_state_);
+  return ClientSideDetectionFeatureCache::FromWebState(web_state_);
+}
+
+std::vector<GURL> ClientSideDetectionHostIOS::GetRedirectChain() {
+  // TODO(crbug.com/502615476): Hook into SafeBrowsingTabHelper to leverage its
+  // existing redirect chain extraction.
+  return std::vector<GURL>();
+}
+
+credit_card_form::ReferringApp ClientSideDetectionHostIOS::GetReferringApp()
+    const {
+  return credit_card_form::kNoReferringApp;
+}
+
+ChromeUserPopulation ClientSideDetectionHostIOS::GetUserPopulation() {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return GetUserPopulationForProfile(profile);
+}
+
+bool ClientSideDetectionHostIOS::IsAccountSignedIn() {
+  return identity_manager_ &&
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+bool ClientSideDetectionHostIOS::IsErrorDocument() {
+  return is_error_page_ || web_state_->IsCrashed();
+}
+
+void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
+  // TODO(crbug.com/502615476): Implement inner text extraction on iOS.
+  std::move(callback).Run("");
+}
+
+void ClientSideDetectionHostIOS::ClassifyPhishingThroughThresholds(
+    ClientPhishingRequest* verdict) {
+  // TODO(crbug.com/502615476): Implement threshold scoring.
+}
+
+void ClientSideDetectionHostIOS::MaybeStartImageEmbedding(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    safe_browsing::PhishingDetectorResult result) {
+  // TODO(crbug.com/502615476): Implement image embedding.
+  MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip);
+}
+
+void ClientSideDetectionHostIOS::MaybeRunUserReportCallback() {
+  // TODO(crbug.com/502615476): Implement user report callback.
+}
+
+void ClientSideDetectionHostIOS::MaybeStartGeminiAntiscamProtection(
+    GURL url,
+    ClientSideDetectionType request_type,
+    std::optional<bool> did_match_high_confidence_allowlist) {
+  // No-op on iOS for now.
+}
+
+void ClientSideDetectionHostIOS::MaybeStartPreClassification(
+    ClientSideDetectionType request_type) {
+  if (!web_state_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    MaybeRunUserReportCallback();
+    return;
+  }
+
+  if (request_type != ClientSideDetectionType::USER_REPORT &&
+      !IsEnhancedProtectionEnabled() &&
+      base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
+    return;
+  }
+
+  if (is_preclassifying_ || is_classifying() || is_csd_running()) {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionTierSystem)) {
+      if (!NewRequestTypeTierHigher(request_type)) {
+        base::UmaHistogramExactLinear(
+            base::StrCat({"SBClientPhishing.BlockingRequestType.",
+                          GetRequestTypeName(request_type)}),
+            last_request_type(), ClientSideDetectionType_MAX + 1);
+        return;
+      }
+    }
+    CancelPendingRequests();
+  }
+
+  if (!service_) {
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
+    return;
+  }
+
+  is_preclassifying_ = true;
+  set_last_request_type(request_type);
+  set_last_committed_url(request_type, web_state_->GetLastCommittedURL());
+
+  LogClientSideDetectionEvent(
+      ClientSideDetectionEvent::kTriggerStartsPreClassification, request_type);
+
+  MaybeStartClassification(web_state_->GetLastCommittedURL());
+}
+
+void ClientSideDetectionHostIOS::CancelPendingRequests() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  is_preclassifying_ = false;
+  set_is_classifying(false);
+  set_is_csd_running(false);
+  ClientSideDetectionHostBase::CancelPendingRequests();
+}
+
+void ClientSideDetectionHostIOS::ShowBlockingPage(
+    GURL phishing_url,
+    safe_browsing::ClientSideDetectionType request_type,
+    std::optional<safe_browsing::IntelligentScanVerdict>
+        intelligent_scan_verdict,
+    bool should_show_scam_warning) {
+  // TODO(crbug.com/502615476): Implement enforcement via interstitial blocking
+  // page.
+}
+
+void ClientSideDetectionHostIOS::UpdateDebuggingMetadataWithNetworkResult(
+    GURL phishing_url,
+    net::HttpStatusCode response_code) {
+  if (web_state_) {
+    ClientSideDetectionFeatureCacheBase* feature_cache = GetFeatureCache();
+    if (feature_cache) {
+      LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+          feature_cache->GetOrCreateDebuggingMetadataForURL(phishing_url);
+      if (debugging_metadata) {
+        debugging_metadata->set_network_result(response_code);
+      }
+    }
+  }
+}
+
+void ClientSideDetectionHostIOS::AddReferrerChain(
+    safe_browsing::ClientPhishingRequest* verdict) {
+  // TODO(crbug.com/502615476): Implement referrer chain telemetry.
+}
+
+#pragma mark - web::WebStateObserver
+
+void ClientSideDetectionHostIOS::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->HasCommitted() &&
+      !navigation_context->IsSameDocument()) {
+    if (is_csd_running()) {
+      base::UmaHistogramExactLinear(
+          "SBClientPhishing.ClientSideDetection.InterruptedByNavigation",
+          last_request_type(), ClientSideDetectionType_MAX + 1);
+    }
+    CancelPendingRequests();
+    set_is_csd_running(false);
+    set_is_classifying(false);
+    is_preclassifying_ = false;
+    set_last_request_type(
+        ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED);
+    set_should_send_as_force_request(false);
+    set_trigger_model_request_sent_as_force_request(false);
+    clear_clipboard_extracted_data();
+
+    MaybeRunUserReportCallback();
+
+    set_current_url(navigation_context->GetUrl());
+    is_page_loaded_ = false;
+    is_fcp_received_ = false;
+    is_error_page_ = navigation_context->GetError() != nullptr;
+    did_match_high_confidence_allowlist_ = std::nullopt;
+    send_sample_ping_ = false;
+    stabilization_timer_.Stop();
+    EnsureObservingMetricsHelper();
+  }
+}
+
+void ClientSideDetectionHostIOS::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    EnsureObservingMetricsHelper();
+    is_page_loaded_ = true;
+    MaybeTriggerClassification();
+  }
+}
+
+void ClientSideDetectionHostIOS::WebStateDestroyed(web::WebState* web_state) {
+  metrics_helper_observation_.Reset();
+  CancelPendingRequests();
+  stabilization_timer_.Stop();
+  web_state_->RemoveObserver(this);
+  web_state_ = nullptr;
+}
+
+#pragma mark - WebPerformanceMetricsTabHelper::Observer
+
+void ClientSideDetectionHostIOS::OnFirstContentfulPaint(
+    WebPerformanceMetricsTabHelper* tab_helper,
+    double first_contentful_paint) {
+  is_fcp_received_ = true;
+  MaybeTriggerClassification();
+}
+
+#pragma mark - Private
+
+void ClientSideDetectionHostIOS::EnsureObservingMetricsHelper() {
+  WebPerformanceMetricsTabHelper* metrics_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(web_state_);
+  if (metrics_helper) {
+    if (!metrics_helper_observation_.IsObserving()) {
+      metrics_helper_observation_.Observe(metrics_helper);
+    }
+
+    double fcp = metrics_helper->GetAggregateAbsoluteFirstContentfulPaint();
+    if (fcp != std::numeric_limits<double>::max()) {
+      // FCP has already been received prior to starting observation or for the
+      // current navigation.
+      is_fcp_received_ = true;
+    }
+  } else {
+    // If the performance metrics helper is not available (e.g. in unit tests),
+    // skip the FCP gate and mark it as received immediately.
+    is_fcp_received_ = true;
+  }
+}
+
+void ClientSideDetectionHostIOS::MaybeTriggerClassification() {
+  if (!is_page_loaded_ || !is_fcp_received_) {
+    return;
+  }
+
+  if (!IsEnhancedProtectionEnabled() &&
+      base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification)) {
+    return;
+  }
+
+  if (stabilization_timer_.IsRunning()) {
+    return;
+  }
+
+  stabilization_timer_.Start(
+      FROM_HERE, kStabilizationDelay,
+      base::BindOnce(
+          &ClientSideDetectionHostIOS::TriggerClassificationAfterDelay,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ClientSideDetectionHostIOS::TriggerClassificationAfterDelay() {
+  if (should_send_as_force_request() || HasForceRequestFromRtUrlLookup()) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad", true);
+    MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
+  } else {
+    MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
+  }
+}
+
+void ClientSideDetectionHostIOS::MaybeStartClassification(const GURL& url) {
+  DCHECK(service_);
+
+  // 1. Chrome UI Scheme.
+  if (url.SchemeIs(kChromeUIScheme)) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_CHROME_UI_PAGE);
+    return;
+  }
+
+  // 2. Local Resource / Localhost Guard.
+  std::string_view host = url.host();
+  if (base::FeatureList::IsEnabled(kClientSideDetectionLocalResourceCheckFix)) {
+    if (url.SchemeIsFile() || net::IsLocalhost(url)) {
+      RecordPreClassificationCheckResult(
+          url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+      return;
+    }
+  } else {
+    if (url.HostIsIPAddress()) {
+      net::IPAddress address;
+      if (address.AssignFromIPLiteral(host) && !address.IsValid()) {
+        RecordPreClassificationCheckResult(
+            url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+        return;
+      }
+    } else if (host == "localhost" ||
+               host.find('.') == std::string_view::npos) {
+      // Intranet hostnames have no dots.
+      RecordPreClassificationCheckResult(
+          url, PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+      return;
+    }
+  }
+
+  // 3. Error Page / Document.
+  std::string mime_type = web_state_->GetContentsMimeType();
+  bool is_mime_type_unsupported =
+      mime_type != "text/html" && mime_type != "application/xhtml+xml";
+  bool is_error_page = IsErrorDocument();
+  if (!is_mime_type_unsupported) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IsErrorDocumentOnSupportedMimeType", is_error_page);
+  }
+  if (base::FeatureList::IsEnabled(kClientSideDetectionSkipErrorPage) &&
+      is_error_page) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_ERROR_DOCUMENT);
+    return;
+  }
+
+  // 4. Unsupported MIME type.
+  if (is_mime_type_unsupported) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
+    return;
+  }
+
+  // 5. Private IP Address.
+  if (url.HostIsIPAddress()) {
+    net::IPAddress address;
+    if (address.AssignFromIPLiteral(host) &&
+        service_->IsPrivateIPAddress(address)) {
+      RecordPreClassificationCheckResult(
+          url, PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP);
+      return;
+    }
+  }
+
+  // 6. Scheme Not Supported (only HTTP/HTTPS are classified).
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_SCHEME_NOT_SUPPORTED);
+    return;
+  }
+
+  // 7. Off The Record (Incognito).
+  if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_OFF_THE_RECORD);
+    return;
+  }
+
+  // 8. Policy Allowlist.
+  if (GetPrefs() && IsURLAllowlistedByPolicy(url, *GetPrefs())) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
+    return;
+  }
+
+  // 9. Query CSD Allowlist (Asynchronous Database Check).
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager =
+      GetApplicationContext()->GetSafeBrowsingService()
+          ? GetApplicationContext()
+                ->GetSafeBrowsingService()
+                ->GetDatabaseManager()
+          : nullptr;
+  if (!database_manager) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER);
+    return;
+  }
+
+  base::OnceCallback<void(bool)> result_callback =
+      base::BindOnce(&ClientSideDetectionHostIOS::OnAllowlistCheckDone,
+                     weak_ptr_factory_.GetWeakPtr(), url);
+  safe_browsing::AllowlistCheckerClient::StartCheckCsdAllowlist(
+      database_manager, url, std::move(result_callback));
+}
+
+void ClientSideDetectionHostIOS::RecordPreClassificationCheckResult(
+    const GURL& url,
+    PreClassificationCheckResult reason) {
+  is_preclassifying_ = false;
+
+  LogClientSideDetectionEvent(
+      ClientSideDetectionEvent::kPreClassificationCheckComplete,
+      last_request_type());
+
+  RecordPreClassificationCheckResultWithAndWithoutSuffix(reason,
+                                                         last_request_type());
+  if (IsEnhancedProtectionEnabled() && web_state_) {
+    ClientSideDetectionFeatureCacheBase* feature_cache = GetFeatureCache();
+    if (feature_cache) {
+      LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+          feature_cache->GetOrCreateDebuggingMetadataForURL(url);
+      if (debugging_metadata) {
+        debugging_metadata->set_preclassification_check_result(reason);
+      }
+    }
+  }
+}
+
+void ClientSideDetectionHostIOS::OnAllowlistCheckDone(const GURL& url,
+                                                      bool match_allowlist) {
+  send_sample_ping_ = CanSendSamplePing(last_request_type());
+
+  switch (last_request_type()) {
+    case ClientSideDetectionType::CREDIT_CARD_FORM:
+    case ClientSideDetectionType::CLIPBOARD_COPY_API:
+    case ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"SBClientPhishing.MatchCSDAllowlistOn",
+               safe_browsing::GetRequestTypeName(last_request_type())}),
+          match_allowlist);
+      break;
+    default:
+      break;
+  }
+
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager =
+      GetApplicationContext()->GetSafeBrowsingService()
+          ? GetApplicationContext()
+                ->GetSafeBrowsingService()
+                ->GetDatabaseManager()
+          : nullptr;
+  if (!database_manager) {
+    OnHighConfidenceAllowlistCheckDone(
+        url, match_allowlist, tick_clock()->NowTicks(), false, std::nullopt);
+    return;
+  }
+
+  base::OnceCallback<void(
+      bool, std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                              HighConfidenceAllowlistCheckLoggingDetails>)>
+      hc_callback = base::BindOnce(
+          &ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone,
+          weak_ptr_factory_.GetWeakPtr(), url, match_allowlist,
+          tick_clock()->NowTicks());
+
+  // TODO(crbug.com/551707094): High confidence allowlist checking should be
+  // skipped if the CSD allowlist has a match.
+  database_manager->CheckUrlForHighConfidenceAllowlist(url,
+                                                       std::move(hc_callback));
+}
+
+void ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone(
+    const GURL& url,
+    bool match_allowlist,
+    base::TimeTicks check_start_time,
+    bool url_on_high_confidence_allowlist,
+    std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                      HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration",
+      tick_clock()->NowTicks() - check_start_time);
+
+  ClientSideAllowlistMatchResult match_result =
+      GetClientSideAllowlistMatchResult(match_allowlist && !send_sample_ping_,
+                                        url_on_high_confidence_allowlist);
+
+  base::UmaHistogramEnumeration("SBClientPhishing.MatchHighConfidenceAllowlist",
+                                match_result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"SBClientPhishing.MatchHighConfidenceAllowlist.",
+                    safe_browsing::GetRequestTypeName(last_request_type())}),
+      match_result);
+
+  PreClassificationCheckResult phishing_reason =
+      PreClassificationCheckResult::NO_CLASSIFY_MAX;
+
+  if (match_allowlist && !send_sample_ping_) {
+    phishing_reason =
+        PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
+  }
+
+  if (phishing_reason == PreClassificationCheckResult::NO_CLASSIFY_MAX &&
+      ShouldAcceptHCAllowlist(last_request_type(),
+                              url_on_high_confidence_allowlist)) {
+    phishing_reason =
+        PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST;
+  }
+
+  did_match_high_confidence_allowlist_ = url_on_high_confidence_allowlist;
+
+  ContinueClassificationAfterAllowlistChecks(url, phishing_reason);
+}
+
+void ClientSideDetectionHostIOS::ContinueClassificationAfterAllowlistChecks(
+    const GURL& url,
+    PreClassificationCheckResult phishing_reason) {
+  if (phishing_reason != PreClassificationCheckResult::NO_CLASSIFY_MAX) {
+    RecordPreClassificationCheckResult(url, phishing_reason);
+    return;
+  }
+
+  if (ShouldStopAtPreClassification()) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
+    return;
+  }
+
+  // Cache Guard Check.
+  bool is_phishing = false;
+  if (last_request_type() == ClientSideDetectionType::TRIGGER_MODELS &&
+      service_ && service_->GetValidCachedResult(url, &is_phishing)) {
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
+
+    // Directly invoke warning reload if cached as phishy
+    MaybeShowPhishingWarning(
+        /*is_from_cache=*/true, ClientSideDetectionType::TRIGGER_MODELS,
+        did_match_high_confidence_allowlist_, url, is_phishing,
+        /*response_code=*/std::nullopt,
+        /*intelligent_scan_verdict=*/std::nullopt);
+    return;
+  }
+
+  if (last_request_type() != ClientSideDetectionType::USER_REPORT &&
+      service_->AtPhishingReportLimit()) {
+    base::UmaHistogramExactLinear("SBClientPhishing.RequestTypeAtReportLimit",
+                                  last_request_type(),
+                                  ClientSideDetectionType_MAX + 1);
+    RecordPreClassificationCheckResult(
+        url, PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);
+    return;
+  }
+
+  // Successful Pre-classification Gating Metric (Classify!)
+  RecordPreClassificationCheckResult(url,
+                                     PreClassificationCheckResult::CLASSIFY);
+
+  set_is_csd_running(true);
+
+  // TODO(crbug.com/502615476): Trigger a snapshot and the visual classification
+  // logic once implemented.
+}
+
+bool ClientSideDetectionHostIOS::ShouldStopAtPreClassification() {
+  switch (last_request_type()) {
+    case ClientSideDetectionType::CLIPBOARD_COPY_API:
+      return base::RandDouble() >=
+             safe_browsing::kCsdClipboardCopyApiSampleRate.Get();
+    case ClientSideDetectionType::CREDIT_CARD_FORM:
+      return base::RandDouble() >=
+             safe_browsing::kCsdCreditCardFormSampleRate.Get();
+    case ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE:
+      return base::RandDouble() >=
+             safe_browsing::kCsdProactivePasswordProtectionSampleRate.Get();
+    default:
+      break;
+  }
+  return false;
+}
+
+}  // namespace safe_browsing

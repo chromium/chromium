@@ -65,6 +65,10 @@ class ClientSideDetectionService : public ClientSideDetectionServiceBase {
   // renderer processes and does not need to expose a `Scorer` interface here.
   Scorer* GetScorer() const;
 
+  // Sets a mock `Scorer` for testing (or nullptr to clear it) and notifies
+  // observers.
+  void SetScorerForTesting(std::unique_ptr<Scorer> scorer);
+
  private:
   friend class ClientSideDetectionServiceTest;
 
