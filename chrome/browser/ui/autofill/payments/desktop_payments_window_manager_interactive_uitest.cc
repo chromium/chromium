@@ -249,6 +249,25 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
+// Tests that an error dialog is shown if the URL to open returned from the
+// server has a non-HTTP/HTTPS scheme.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       Vcn3ds_InvokeUi_BadUrlScheme_ErrorDialogShown) {
+  PaymentsWindowManager::Vcn3dsContext context;
+  context.card = test::GetVirtualCard();
+  context.context_token = kTestContextToken;
+  context.completion_callback = authentication_complete_callback_.Get();
+  context.user_consent_already_given = true;
+  Vcn3dsChallengeOptionMetadata metadata;
+  metadata.url_to_open = GURL("data:text/html,Hello");
+  metadata.success_query_param_name = "token";
+  metadata.failure_query_param_name = "failure";
+  context.challenge_option.vcn_3ds_metadata = std::move(metadata);
+  window_manager().InitVcn3dsAuthentication(std::move(context));
+  EXPECT_TRUE(
+      client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
+}
+
 // Tests that an error dialog is shown if there is no success query param name
 // returned from the server.
 // TODO(crbug.com/435092593): Re-enable once flakiness is fixed.

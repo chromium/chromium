@@ -82,6 +82,7 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   if (const std::optional<Vcn3dsChallengeOptionMetadata>& metadata =
           context.challenge_option.vcn_3ds_metadata;
       !metadata.has_value() || metadata->url_to_open.is_empty() ||
+      !metadata->url_to_open.SchemeIsHTTPOrHTTPS() ||
       metadata->success_query_param_name.empty() ||
       metadata->failure_query_param_name.empty()) {
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
