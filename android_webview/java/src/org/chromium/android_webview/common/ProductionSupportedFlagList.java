@@ -663,6 +663,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8BaselineBatchCompilation"),
         Flag.baseFeature("V8ConcurrentSparkplug"),
         Flag.baseFeature("V8Flag_homomorphic_ic"),
+        Flag.baseFeature("V8Flag_intl_date_time_pattern_generator_cache_eviction"),
         Flag.baseFeature("V8Flag_incremental_marking_always_user_visible"),
         Flag.baseFeature("V8Flag_large_page_pool"),
         Flag.baseFeature("V8Flag_late_heap_limit_check"),
