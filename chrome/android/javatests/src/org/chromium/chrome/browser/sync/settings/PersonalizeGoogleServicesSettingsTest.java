@@ -6,14 +6,27 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,11 +46,14 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Tests for {@link PersonalizeGoogleServicesSettings}. */
@@ -52,11 +68,16 @@ public class PersonalizeGoogleServicesSettingsTest {
     private final SettingsTestRule<PersonalizeGoogleServicesSettings> mSettingsTestRule =
             new SettingsTestRule<>(PersonalizeGoogleServicesSettings.class);
 
+    private final SettingsTestRule<MainSettings> mSettingsSearchTestRule =
+            new SettingsTestRule<>(null);
+
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule).around(mSettingsTestRule);
+            RuleChain.outerRule(mSyncTestRule)
+                    .around(mSettingsTestRule)
+                    .around(mSettingsSearchTestRule);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -68,11 +89,14 @@ public class PersonalizeGoogleServicesSettingsTest {
     @Rule public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock private GoogleActivityController mGoogleActivityController;
+    @Mock private RegionalCapabilitiesService mRegionalCapabilities;
 
     @Before
     public void setUp() {
         ServiceLoaderUtil.setInstanceForTesting(
                 GoogleActivityController.class, mGoogleActivityController);
+        RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
     }
 
     @Test
@@ -118,5 +142,68 @@ public class PersonalizeGoogleServicesSettingsTest {
         mSettingsTestRule.startSettingsActivity();
         // The activity should terminate immediately if the user is not signed in.
         ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PersonalizedGoogleServices"})
+    public void testSearchWebAndAppActivity_signedIn() {
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("app activity"));
+
+        onViewWaiting(withText(R.string.personalized_google_services_waa_title)).perform(click());
+
+        onView(highlighted(withText(R.string.personalized_google_services_waa_title)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PersonalizedGoogleServices"})
+    public void testSearchLinkedGoogleServices_signedIn() {
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+
+        onViewWaiting(withText(R.string.personalized_google_services_linked_services_title))
+                .perform(click());
+
+        onView(highlighted(withText(R.string.personalized_google_services_linked_services_title)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PersonalizedGoogleServices"})
+    public void testSearchPersonalizeGoogleServices_nonEea() {
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+
+        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PersonalizedGoogleServices"})
+    public void testSearchPersonalizeGoogleServices_signedOut() {
+        mSettingsSearchTestRule.startSettingsActivity();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("linked google services"));
+
+        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
+    }
+
+    private static Matcher<View> highlighted(Matcher<View> childMatcher) {
+        return allOf(hasDescendant(childMatcher), isHighlighted());
     }
 }

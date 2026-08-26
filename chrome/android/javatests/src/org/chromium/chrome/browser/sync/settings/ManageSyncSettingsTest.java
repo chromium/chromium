@@ -1731,6 +1731,34 @@ public class ManageSyncSettingsTest {
         onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
     }
 
+    @Test
+    @SmallTest
+    public void testSearchPersonalizationAndLinkingTitle_signedIn_nonEea() {
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("personalization"));
+
+        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchPersonalizationAndLinkingTitle_signedIn_eea() {
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("linking"));
+
+        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title_eea))
+                .check(matches(isDisplayed()));
+    }
+
     private static Matcher<View> highlighted(Matcher<View> childMatcher) {
         return allOf(hasDescendant(childMatcher), isHighlighted());
     }
