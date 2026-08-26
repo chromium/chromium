@@ -39,7 +39,9 @@ class MODULES_EXPORT HapticsController final
  private:
   void PlayHaptics(V8HapticEffect effect, double intensity);
 
-  // Bound lazily on first use; auto-reset when the context is destroyed.
+  // Bound at construction for documents that support haptics; left unbound
+  // (so playHaptics() no-ops) otherwise. Auto-reset when the context is
+  // destroyed.
   HeapMojoRemote<mojom::blink::HapticsService> haptics_service_;
 };
 

@@ -349,6 +349,10 @@ enum PermissionsPolicyFeature {
   // See https://www.w3.org/TR/webnn/#permissions-policy-integration
   kWebNN = 147,
 
+  // Controls access to the Web Haptics API (navigator.playHaptics).
+  // See https://github.com/WICG/web-haptics/blob/main/readme.md.
+  kHaptics = 148,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update

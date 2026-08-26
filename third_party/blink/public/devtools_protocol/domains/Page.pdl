@@ -127,6 +127,7 @@ domain Page
       gamepad
       geolocation
       gyroscope
+      haptics
       hid
       identity-credentials-get
       idle-detection

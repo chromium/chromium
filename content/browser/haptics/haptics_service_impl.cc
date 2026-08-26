@@ -9,6 +9,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace content {
 
@@ -17,6 +18,24 @@ void HapticsServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::HapticsService> receiver) {
   CHECK(render_frame_host);
+
+  // Fenced-frame state and the "haptics" permissions policy are fixed for the
+  // document's lifetime, so enforce them once at bind time.
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::HSI_PLAY_HAPTICS_IN_FENCED_FRAME);
+    return;
+  }
+
+  if (!render_frame_host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kHaptics)) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::HSI_PLAY_HAPTICS_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
   new HapticsServiceImpl(*render_frame_host, std::move(receiver));
 }
 
@@ -27,29 +46,17 @@ HapticsServiceImpl::HapticsServiceImpl(
 
 void HapticsServiceImpl::PlayHaptics(blink::mojom::HapticEffect effect,
                                      double intensity) {
-  if (!std::isfinite(intensity) || intensity < 0.0 || intensity > 1.0) {
-    bad_message::ReceivedBadMessage(
-        render_frame_host().GetProcess(),
-        bad_message::HSI_PLAY_HAPTICS_INVALID_INTENSITY);
-    return;
-  }
-
   auto& rfh = static_cast<RenderFrameHostImpl&>(render_frame_host());
 
-  if (rfh.IsNestedWithinFencedFrame()) {
+  if (!std::isfinite(intensity) || intensity < 0.0 || intensity > 1.0) {
     bad_message::ReceivedBadMessage(
-        render_frame_host().GetProcess(),
-        bad_message::HSI_PLAY_HAPTICS_IN_FENCED_FRAME);
+        rfh.GetProcess(), bad_message::HSI_PLAY_HAPTICS_INVALID_INTENSITY);
     return;
   }
 
-  // Drop calls queued by a document that is no longer active.
   if (!rfh.IsActive()) {
     return;
   }
-
-  // TODO(crbug.com/531787872): Re-check the "haptics" permissions policy here
-  // once the feature is defined.
 
   if (!rfh.HasStickyUserActivation()) {
     return;

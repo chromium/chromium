@@ -403,6 +403,7 @@ enum BadMessageReason {
   HSI_PLAY_HAPTICS_INVALID_INTENSITY = 375,
   HSI_PLAY_HAPTICS_IN_FENCED_FRAME = 376,
   PSI_STORAGE_ACCESS_FROM_SANDBOXED_FRAME = 377,
+  HSI_PLAY_HAPTICS_BLOCKED_BY_PERMISSIONS_POLICY = 378,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

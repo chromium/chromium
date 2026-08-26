@@ -555,6 +555,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="375" label="HSI_PLAY_HAPTICS_INVALID_INTENSITY"/>
   <int value="376" label="HSI_PLAY_HAPTICS_IN_FENCED_FRAME"/>
   <int value="377" label="PSI_STORAGE_ACCESS_FROM_SANDBOXED_FRAME"/>
+  <int value="378" label="HSI_PLAY_HAPTICS_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -9012,6 +9012,8 @@ data/origin_trials/worker.js
 data/overlapping_cross_site_iframe.html
 data/overscroll_navigation.html
 data/page-executing-trust-token-signing-from-204-subframe.html
+data/page-with-haptics-permissions-policy-disabled.html
+data/page-with-haptics-permissions-policy-disabled.html.mock-http-headers
 data/page-with-trust-token-permissions-policy-disabled.html
 data/page-with-trust-token-permissions-policy-disabled.html.mock-http-headers
 data/page204.html

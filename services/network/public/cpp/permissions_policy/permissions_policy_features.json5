@@ -372,6 +372,11 @@
       permissions_policy_name: "gyroscope",
     },
     {
+      name: "Haptics",
+      permissions_policy_name: "haptics",
+      depends_on: ["WebHaptics"],
+    },
+    {
       name: "Hid",
       permissions_policy_name: "hid",
       depends_on: ["WebHID"],

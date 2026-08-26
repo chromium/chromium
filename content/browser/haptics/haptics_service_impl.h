@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_HAPTICS_HAPTICS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_HAPTICS_HAPTICS_SERVICE_IMPL_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/haptics/haptics.mojom.h"
@@ -21,7 +22,7 @@ class RenderFrameHost;
 // Mojo pipe. On Windows the platform backend runs in the browser process and is
 // reached with a direct in-process call; there is no browser<->device-service
 // pipe.
-class HapticsServiceImpl final
+class CONTENT_EXPORT HapticsServiceImpl final
     : public DocumentService<blink::mojom::HapticsService> {
  public:
   static void Create(

@@ -552,3 +552,19 @@ server.
 A site can make arbitrary local network requests, scanning for HTTP hosts and
 building a fingerprint of how the network (or device if checking for localhost
 connections) is set up.
+
+### 🔺 Web Haptics: theoretical exfiltration risk only, no infiltration/fingerprinting risk
+*Feature: kHaptics*
+
+[`navigator.playHaptics()`](https://github.com/WICG/web-haptics/blob/main/readme.md)
+is a write-only API with a fixed effect vocabulary and no return value. It
+exposes no device capabilities or device enumeration to the renderer, so it
+provides no fingerprinting surface, and there is no observable state an embedder
+could modify to pass information into a fenced frame (no infiltration risk).
+
+The only theoretical concern is exfiltration: a fenced frame could drive the
+actuator in a pattern that some other context observes through a physical sensor
+(e.g. a microphone picking up the vibration). As with Gamepad
+[`pulse()`](https://developer.mozilla.org/en-US/docs/Web/API/GamepadHapticActuator/pulse),
+the resulting signal is far too noisy to be a practical channel. The
+feature is disabled in fenced frames.
