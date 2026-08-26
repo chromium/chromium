@@ -26,7 +26,7 @@ public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
     private final CallbackHelper mOnUnhandledKeyUpEventCallbackHelper = new CallbackHelper();
 
     private Runnable mOnHideCustomViewRunnable;
-    private Activity mActivity;
+    private final Activity mActivity;
     private final boolean mAllowHardwareAcceleration;
     private View mCustomView;
     private AwContentsClient.CustomViewCallback mExitCallback;
@@ -35,10 +35,6 @@ public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
             Activity activity, boolean allowHardwareAcceleration) {
         mActivity = activity;
         mAllowHardwareAcceleration = allowHardwareAcceleration;
-    }
-
-    public void setActivity(Activity activity) {
-        mActivity = activity;
     }
 
     @Override

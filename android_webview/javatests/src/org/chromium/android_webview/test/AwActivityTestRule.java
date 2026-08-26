@@ -34,8 +34,6 @@ import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
@@ -121,8 +119,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     private final List<WeakReference<Activity>> mActivitiesCreatedInTests = new ArrayList<>();
 
-    private final List<WeakReference<Activity>> mReparentedActivities = new ArrayList<>();
-
     @Nullable private Consumer<AwSettings> mMaybeMutateAwSettings;
 
     public AwActivityTestRule() {
@@ -182,13 +178,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             }
         }
         mActivitiesCreatedInTests.clear();
-
-        for (WeakReference<Activity> activityRef : mReparentedActivities) {
-            CriteriaHelper.pollUiThread(
-                    () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef),
-                    "Reparented Activity context should be garbage collected.");
-        }
-        mReparentedActivities.clear();
 
         super.after();
     }
@@ -650,11 +639,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * @param themeId The theme resource ID to apply to the newly spawned AwTestRunnerActivity.
      */
     public AwTestContainerView reparentAwContents(AwTestContainerView view, int themeId) {
-        Activity oldActivity = ContextUtils.activityFromContext(view.getContext());
-        if (oldActivity != null) {
-            mReparentedActivities.add(new WeakReference<>(oldActivity));
-        }
-
         AwTestRunnerActivity newActivity;
         Intent intent = new Intent(getActivity(), AwTestRunnerActivity.class);
         newActivity =
@@ -665,41 +649,31 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         ApplicationTestUtils.waitForActivityState(newActivity, Stage.RESUMED);
         mActivitiesCreatedInTests.add(new WeakReference<>(newActivity));
 
-        AwTestContainerView newContainerView =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            ViewGroup parent = (ViewGroup) view.getParent();
-                            if (parent != null) {
-                                parent.removeView(view);
-                            }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup parent = (ViewGroup) view.getParent();
+                    if (parent != null) {
+                        parent.removeView(view);
+                    }
 
-                            Context context = newActivity;
-                            if (themeId != 0) {
-                                context = new ContextThemeWrapper(newActivity, themeId);
-                            }
+                    Context context = newActivity;
+                    if (themeId != 0) {
+                        context = new ContextThemeWrapper(newActivity, themeId);
+                    }
 
-                            AwTestContainerView newContainer =
-                                    new AwTestContainerView(
-                                            context,
-                                            /* allowHardwareAcceleration= */ true,
-                                            /* allowMultipleHardwareViews= */ true);
-                            newContainer.initialize(view.getAwContents());
-                            view.getAwContents()
-                                    .adopt(
-                                            newContainer,
-                                            newContainer.getInternalAccessDelegate());
+                    AwTestContainerView newContainerView =
+                            new AwTestContainerView(
+                                    context,
+                                    /* allowHardwareAcceleration= */ true,
+                                    /* allowMultipleHardwareViews= */ true);
+                    newContainerView.initialize(view.getAwContents());
+                    view.getAwContents()
+                            .adopt(newContainerView, newContainerView.getInternalAccessDelegate());
 
-                            newActivity.addView(newContainer);
-                            newContainer.requestFocus();
-                            return newContainer;
-                        });
-
-        if (oldActivity != null) {
-            ApplicationTestUtils.finishActivity(oldActivity);
-            setActivity(newActivity);
-        }
-
-        return newContainerView;
+                    newActivity.addView(newContainerView);
+                    newContainerView.requestFocus();
+                    return newContainerView;
+                });
     }
 
     public void destroyAwContentsOnMainSync(@Nullable final AwContents awContents) {
