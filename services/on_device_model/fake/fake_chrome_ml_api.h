@@ -17,6 +17,7 @@ inline constexpr char kFakeToolName[] = "fake_tool";
 
 // Format prefixes used by PieceToString for tool-related input pieces.
 inline constexpr char kToolDeclPrefix[] = "[ToolDecl:";
+inline constexpr char kToolCallPrefix[] = "[ToolCall:";
 inline constexpr char kToolRespPrefix[] = "[ToolResp:";
 
 const ChromeMLAPI* GetFakeMlApi();

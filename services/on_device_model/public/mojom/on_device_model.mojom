@@ -198,6 +198,10 @@ union InputPiece {
   // Tool response provided as input.
   [MinVersion=2]
   ToolResponse tool_response;
+
+  // Tool call provided as input.
+  [MinVersion=3]
+  ToolCall tool_call;
 };
 
 [Stable]

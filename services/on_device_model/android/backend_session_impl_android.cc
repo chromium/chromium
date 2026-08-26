@@ -58,6 +58,7 @@ ConvertInputPiecesToJava(
       case Tag::kBitmap:
       case Tag::kAudio:
       case Tag::kToolDeclaration:
+      case Tag::kToolCall:
       case Tag::kToolResponse:
       case Tag::kUnknownType:
         // TODO(crbug.com/425408635): Support image, audio, and other input

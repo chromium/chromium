@@ -50,6 +50,10 @@ std::string PieceToString(const ml::InputPiece& piece) {
           [](const ml::ToolDeclaration& decl) -> std::string {
             return base::StrCat({kToolDeclPrefix, decl.name, "]"});
           },
+          [](const ml::ToolCall& call) -> std::string {
+            return base::StrCat({kToolCallPrefix, call.call_id, ":", call.name,
+                                 "=", call.arguments_json, "]"});
+          },
           [](const ml::ToolResponse& resp) -> std::string {
             return base::StrCat(
                 {kToolRespPrefix, resp.name, "=", resp.result_json, "]"});
@@ -280,6 +284,7 @@ bool SessionAppend(ChromeMLSession session,
                     << "Tool declaration ignored outside system prompt.";
               }
             },
+            [](const ml::ToolCall&) {},
             [&](const ml::ToolResponse&) {
               instance->awaiting_tool_responses = false;
             },
@@ -413,7 +418,8 @@ void SessionSizeInTokensInputPiece(ChromeMLSession session,
     // SAFETY: `input_size` describes how big `input` is.
     const ml::InputPiece& piece = UNSAFE_BUFFERS(input[i]);
     if (!std::holds_alternative<std::string>(piece) &&
-        !std::holds_alternative<ml::Token>(piece)) {
+        !std::holds_alternative<ml::Token>(piece) &&
+        !std::holds_alternative<ml::ToolCall>(piece)) {
       continue;
     }
 

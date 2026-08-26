@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/test/test.pb.h"
+#include "base/values.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -18,8 +19,8 @@
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
-#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -717,6 +718,19 @@ TEST_F(SubstitutionTest, BlockOnIncompleteRepeated) {
       CreateSubstitutions(request.read(), substitutions);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "waiting for...ABC");
+}
+
+TEST_F(SubstitutionTest, OnDeviceInputToStringToolCall) {
+  base::DictValue arguments;
+  arguments.Set("city", "Paris");
+  auto input = on_device_model::mojom::Input::New();
+  input->pieces.push_back(on_device_model::mojom::InputPiece::NewToolCall(
+      on_device_model::mojom::ToolCall::New("call-1", "get_weather",
+                                            std::move(arguments))));
+
+  EXPECT_EQ(
+      OnDeviceInputToString(*input),
+      R"(<tool-call id=call-1 name=get_weather arguments={"city":"Paris"}>)");
 }
 
 }  // namespace

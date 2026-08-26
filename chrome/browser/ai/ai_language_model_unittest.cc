@@ -253,6 +253,7 @@ std::string FormatInput(const on_device_model::mojom::Input& input) {
         str += "<audio>";
         break;
       case Tag::kToolDeclaration:
+      case Tag::kToolCall:
       case Tag::kToolResponse:
       case Tag::kUnknownType:
         // Not exercised by tests that format input for expectation matching.

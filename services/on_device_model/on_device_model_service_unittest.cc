@@ -44,6 +44,15 @@ ml::ToolDeclaration MakeToolDeclaration() {
   return decl;
 }
 
+ml::ToolCall MakeToolCall(
+    std::string arguments_json = R"({"location":{"city":"Paris"}})") {
+  ml::ToolCall call;
+  call.call_id = fake_ml::kFakeToolCallId;
+  call.name = fake_ml::kFakeToolName;
+  call.arguments_json = std::move(arguments_json);
+  return call;
+}
+
 mojom::InputPiecePtr MakeMojomInputPiece(ml::InputPiece piece) {
   return std::visit(
       absl::Overload{
@@ -67,6 +76,14 @@ mojom::InputPiecePtr MakeMojomInputPiece(ml::InputPiece piece) {
                 mojom::ToolDeclaration::New(std::move(decl.name),
                                             std::move(decl.description),
                                             std::move(*parsed_schema)));
+          },
+          [](ml::ToolCall call) {
+            auto parsed_arguments = base::JSONReader::ReadDict(
+                call.arguments_json, base::JSON_PARSE_RFC);
+            CHECK(parsed_arguments.has_value());
+            return mojom::InputPiece::NewToolCall(mojom::ToolCall::New(
+                std::move(call.call_id), std::move(call.name),
+                std::move(*parsed_arguments)));
           },
           [](ml::ToolResponse response) {
             std::optional<base::Value> result;
@@ -1280,6 +1297,67 @@ TEST_F(OnDeviceModelServiceTest, ToolResponseProcessing) {
   EXPECT_THAT(response2.responses(),
               testing::Contains(testing::HasSubstr(base::StrCat(
                   {fake_ml::kToolRespPrefix, fake_ml::kFakeToolName, "="}))));
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolCallInputProcessing) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(
+      MakeInput({ml::Token::kModel, MakeToolCall(), ml::Token::kEnd}), {});
+
+  TestResponseHolder response;
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_TRUE(response.complete());
+  EXPECT_THAT(
+      response.responses(),
+      testing::Contains(testing::HasSubstr(base::StrCat(
+          {fake_ml::kToolCallPrefix, fake_ml::kFakeToolCallId, ":",
+           fake_ml::kFakeToolName, R"(={"location":{"city":"Paris"}}])"}))));
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolCallInputSizeInTokens) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  base::test::TestFuture<uint32_t> future;
+  session->GetSizeInTokens(
+      MakeMojomInput(std::vector<ml::InputPiece>{MakeToolCall("{}")}),
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            base::StrCat({fake_ml::kToolCallPrefix, fake_ml::kFakeToolCallId,
+                          ":", fake_ml::kFakeToolName, "={}]"})
+                .size());
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolCallInputPreservedInClone) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  auto append_waiter = std::make_unique<ContextClientWaiter>();
+  session->Append(
+      MakeInput({ml::Token::kModel, MakeToolCall(), ml::Token::kEnd}),
+      append_waiter->BindRemote());
+  append_waiter->WaitForCompletion();
+
+  mojo::Remote<mojom::Session> cloned;
+  session->Clone(cloned.BindNewPipeAndPassReceiver());
+  TestResponseHolder response;
+  cloned->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_TRUE(response.complete());
+  EXPECT_THAT(
+      response.responses(),
+      testing::Contains(testing::HasSubstr(base::StrCat(
+          {fake_ml::kToolCallPrefix, fake_ml::kFakeToolCallId, ":",
+           fake_ml::kFakeToolName, R"(={"location":{"city":"Paris"}}])"}))));
 }
 
 TEST_F(OnDeviceModelServiceTest, InvalidToolResponseReportsBadMessageOnAppend) {

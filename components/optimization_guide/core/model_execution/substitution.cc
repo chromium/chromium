@@ -390,6 +390,12 @@ std::string OnDeviceInputPieceToString(
       return std::string("<image>");
     case Tag::kAudio:
       return std::string("<audio>");
+    case Tag::kToolCall: {
+      const auto& call = piece->get_tool_call();
+      return base::StrCat(
+          {"<tool-call id=", call->call_id, " name=", call->name,
+           " arguments=", WriteJsonForDisplay(call->arguments), ">"});
+    }
     case Tag::kToolResponse: {
       const auto& response = piece->get_tool_response();
       // Tool responses include result or error for safety checking.

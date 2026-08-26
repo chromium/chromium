@@ -71,6 +71,17 @@ std::optional<ml::InputPiece> ConvertMojomInputPieceToMlInputPiece(
       }
       return output;
     }
+    case odmm::InputPiece::Tag::kToolCall: {
+      auto& input = piece->get_tool_call();
+      ml::ToolCall output;
+      output.call_id = std::move(input->call_id);
+      output.name = std::move(input->name);
+      if (!base::JSONWriter::Write(input->arguments, &output.arguments_json)) {
+        LOG(WARNING) << "Failed to serialize tool call arguments.";
+        return std::nullopt;
+      }
+      return output;
+    }
     case odmm::InputPiece::Tag::kToolResponse: {
       auto& input = piece->get_tool_response();
       bool has_error =
