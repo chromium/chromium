@@ -2883,6 +2883,7 @@ test("content_unittests") {
     "../browser/tracing/traces_internals/traces_internals_handler_unittest.cc",
     "../browser/url_loader_factory_params_helper_unittest.cc",
     "../browser/usb/web_usb_service_impl_unittest.cc",
+    "../browser/wake_lock/wake_lock_service_impl_unittest.cc",
     "../browser/web_contents/aura/gesture_nav_simple_unittest.cc",
     "../browser/web_contents/file_chooser_impl_unittest.cc",
     "../browser/web_contents/web_contents_delegate_unittest.cc",
