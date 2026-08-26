@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -206,6 +209,19 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // dependencies for non-normal browsers.
   side_panel_registry_ =
       GetUserDataFactory().CreateInstance<SidePanelRegistry>(tab, &tab);
+
+  // Created before the page-action controllers below:
+  // PwaInstallPageAction's constructor looks the manager up, and treats its
+  // absence as a surface that cannot install web apps.
+  if (web_app::AreWebAppsUserInstallable(profile)) {
+    app_banner_manager_ =
+        GetUserDataFactory()
+            .CreateInstanceWithFactoryMethod<webapps::AppBannerManagerDesktop,
+                                             tabs::TabInterface&,
+                                             content::WebContents*>(
+                tab, &webapps::AppBannerManagerDesktop::Create, tab,
+                tab.GetContents());
+  }
 
   // This block instantiate the page action controllers. They do not require any
   // pre-condition. Because some feature need them during their instantiation,
@@ -767,6 +783,31 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   form_interaction_tab_helper_.reset();
   form_interaction_tab_helper_ =
       GetUserDataFactory().CreateInstance<FormInteractionTabHelper>(*tab, *tab);
+
+  if (app_banner_manager_) {
+    // Observers of the old manager (e.g. PwaInstallPageAction, the
+    // autotestPrivate waiter) detach in their own WillDiscardContents
+    // callbacks. Those run after this one: callbacks fire in registration
+    // order, and TabFeatures — the owner performing the swap — necessarily
+    // registers before anything it creates in Init(), while some observers
+    // register at arbitrary later times. Deregister the old manager from the
+    // tab now so the replacement can register (and later callbacks in this
+    // pass resolve the new instance), but destroy it asynchronously so it
+    // outlives every detach callback regardless of registration order.
+    // TODO(crbug.com/347770670): once tab discarding in its current
+    // contents-swapping form goes away, the deferred destruction (and
+    // DeregisterFromTabForDiscard) can be removed.
+    app_banner_manager_->DeregisterFromTabForDiscard();
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(app_banner_manager_));
+    app_banner_manager_ =
+        GetUserDataFactory()
+            .CreateInstanceWithFactoryMethod<webapps::AppBannerManagerDesktop,
+                                             tabs::TabInterface&,
+                                             content::WebContents*>(
+                *tab, &webapps::AppBannerManagerDesktop::Create, *tab,
+                new_contents);
+  }
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);

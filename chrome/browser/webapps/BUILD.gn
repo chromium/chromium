@@ -97,6 +97,7 @@ if (is_android) {
       "//chrome/common",
       "//components/infobars/content",
       "//components/security_state/content",
+      "//components/tabs:public",
       "//components/webapps/browser",
       "//content/public/browser",
     ]

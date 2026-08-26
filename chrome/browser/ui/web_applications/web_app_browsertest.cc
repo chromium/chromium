@@ -96,6 +96,7 @@
 #include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1456,8 +1457,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, MAYBE_UninstallMenuOption) {
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ShortcutMenuOptionsInIncognito) {
   BrowserWindowInterface* const incognito_browser =
       CreateIncognitoBrowser(profile());
-  EXPECT_EQ(webapps::AppBannerManagerDesktop::FromWebContents(
-                incognito_browser->GetTabStripModel()->GetActiveWebContents()),
+  EXPECT_EQ(webapps::AppBannerManagerDesktop::From(
+                incognito_browser->GetTabStripModel()->GetActiveTab()),
             nullptr);
   NavigateViaLinkClickToURLAndWait(incognito_browser, GetInstallableAppURL());
 

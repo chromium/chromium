@@ -139,6 +139,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -3627,7 +3628,8 @@ void WebAppIntegrationTestDriver::CheckInstallIconShown() {
     return;
   }
   content::WebContents* web_contents = GetCurrentTab(browser());
-  if (webapps::AppBannerManagerDesktop::FromWebContents(web_contents)) {
+  if (webapps::AppBannerManagerDesktop::From(
+          tabs::TabInterface::GetFromContents(web_contents))) {
     auto* app_banner_manager =
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     app_banner_manager->WaitForInstallableCheck();
@@ -3644,7 +3646,8 @@ void WebAppIntegrationTestDriver::CheckInstallIconNotShown() {
     return;
   }
   content::WebContents* web_contents = GetCurrentTab(browser());
-  if (webapps::AppBannerManagerDesktop::FromWebContents(web_contents)) {
+  if (webapps::AppBannerManagerDesktop::From(
+          tabs::TabInterface::GetFromContents(web_contents))) {
     auto* app_banner_manager =
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     app_banner_manager->WaitForInstallableCheck();

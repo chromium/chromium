@@ -18,6 +18,7 @@ source_set("banners") {
       "//chrome/browser/web_applications",
       "//components/webapps/common",
       "//content/public/browser",
+      "//ui/base/unowned_user_data",
     ]
   }
 }
@@ -53,6 +54,7 @@ source_set("impl") {
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
       "//chrome/browser/web_applications/proto",
+      "//components/tabs:public",
       "//components/webapps/browser:constants",
       "//extensions/browser",
       "//extensions/common:common_constants",
@@ -77,6 +79,7 @@ source_set("test_support") {
       "test_app_banner_manager_desktop.cc",
       "test_app_banner_manager_desktop.h",
     ]
+    deps += [ "//components/tabs:public" ]
     public_deps = [ ":banners" ]
     deps += [
       "//base/test:test_support",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_DESKTOP_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,29 +17,47 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace extensions {
 class ExtensionRegistry;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace webapps {
 enum class InstallResultCode;
 class TestAppBannerManagerDesktop;
 
-// Manages web app banners for desktop platforms.
-class AppBannerManagerDesktop
-    : public AppBannerManager::Delegate,
-      public content::WebContentsUserData<AppBannerManagerDesktop>,
-      public web_app::WebAppInstallManagerObserver {
+// Manages web app banners for desktop platforms. Owned by the tab's
+// TabFeatures.
+class AppBannerManagerDesktop : public AppBannerManager::Delegate,
+                                public web_app::WebAppInstallManagerObserver {
  public:
+  DECLARE_USER_DATA(AppBannerManagerDesktop);
+
   AppBannerManagerDesktop(const AppBannerManagerDesktop&) = delete;
   AppBannerManagerDesktop& operator=(const AppBannerManagerDesktop&) = delete;
 
   ~AppBannerManagerDesktop() override;
 
-  static void CreateForWebContents(content::WebContents* web_contents);
-  using content::WebContentsUserData<AppBannerManagerDesktop>::FromWebContents;
+  // Creates the manager, honoring the testing factory override.
+  // `web_contents` is passed explicitly because during a discard the manager
+  // is recreated for the incoming WebContents before `tab` swaps its
+  // contents.
+  static std::unique_ptr<AppBannerManagerDesktop> Create(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents);
+
+  static AppBannerManagerDesktop* From(tabs::TabInterface* tab);
+
+  // Deregisters this manager from the tab's UnownedUserDataHost ahead of its
+  // asynchronous destruction during a tab discard, so that the replacement
+  // manager can register while observers of the old one detach in their own
+  // discard callbacks.
+  void DeregisterFromTabForDiscard();
 
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
@@ -48,10 +67,12 @@ class AppBannerManagerDesktop
   }
 
  protected:
-  explicit AppBannerManagerDesktop(content::WebContents* web_contents);
+  AppBannerManagerDesktop(tabs::TabInterface& tab,
+                          content::WebContents* web_contents);
 
   using CreateAppBannerManagerForTesting =
-      std::unique_ptr<AppBannerManagerDesktop> (*)(content::WebContents*);
+      std::unique_ptr<AppBannerManagerDesktop> (*)(tabs::TabInterface&,
+                                                   content::WebContents*);
   static CreateAppBannerManagerForTesting
       override_app_banner_manager_desktop_for_testing_;
 
@@ -88,9 +109,6 @@ class AppBannerManagerDesktop
       webapps::InstallResultCode code);
 
  private:
-  friend class content::WebContentsUserData<AppBannerManagerDesktop>;
-  friend class FakeAppBannerManagerDesktop;
-
   web_app::WebAppRegistrar& registrar() const;
 
   // web_app::WebAppInstallManagerObserver:
@@ -118,9 +136,10 @@ class AppBannerManagerDesktop
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  base::WeakPtrFactory<AppBannerManagerDesktop> weak_factory_{this};
+  std::optional<ui::ScopedUnownedUserData<AppBannerManagerDesktop>>
+      scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<AppBannerManagerDesktop> weak_factory_{this};
 };
 
 }  // namespace webapps

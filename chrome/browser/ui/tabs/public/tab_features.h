@@ -161,6 +161,10 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
 
+namespace webapps {
+class AppBannerManagerDesktop;
+}  // namespace webapps
+
 #if !BUILDFLAG(IS_ANDROID)
 namespace skills {
 class SkillsUpdateObserver;
@@ -480,6 +484,12 @@ class TabFeatures {
   // Responsible for managing the "File System Access" page action.
   std::unique_ptr<FileSystemAccessPageActionController>
       file_system_access_page_action_controller_;
+
+  // Manages web app banners. Null when web apps are not user-installable in
+  // this profile. Declared before the page-action controllers because
+  // PwaInstallPageAction observes the AppBannerManager, so the manager must
+  // outlive it.
+  std::unique_ptr<webapps::AppBannerManagerDesktop> app_banner_manager_;
 
   // Responsible for managing all page actions of a tab. Other controllers
   // interact with this to have their feature's page action shown.

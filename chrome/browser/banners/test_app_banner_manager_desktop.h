@@ -15,6 +15,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace webapps {
 
 // Provides the ability to await the results of the installability check that
@@ -23,7 +27,8 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
                                     private AppBannerManager::Observer,
                                     private content::WebContentsObserver {
  public:
-  explicit TestAppBannerManagerDesktop(content::WebContents* web_contents);
+  TestAppBannerManagerDesktop(tabs::TabInterface& tab,
+                              content::WebContents* web_contents);
 
   TestAppBannerManagerDesktop(const TestAppBannerManagerDesktop&) = delete;
   TestAppBannerManagerDesktop& operator=(const TestAppBannerManagerDesktop&) =
