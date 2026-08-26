@@ -1,8 +1,8 @@
 Name: wayland-protocols
 URL: http://wayland.freedesktop.org/
-Version: 1.45
+Version: 1.49
 Update Mechanism: Manual
-License: MIT, LGPL-2.0, LGPL-2.1
+License: MIT
 License File: src/COPYING
 Security Critical: yes
 Shipped: yes
