@@ -7,12 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -21,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
@@ -215,5 +220,88 @@ TEST_F(BrowserModalHostTest, ShowDownloadList) {
 
   [handler showDownloadList];
 
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-sendTabToSelfToDeviceWithURL:...` starts the
+// SendTabToSelfCoordinator using the default base view controller when no scene
+// UI provider is available.
+TEST_F(BrowserModalHostTest,
+       SendTabToSelfStartsCoordinatorWithDefaultBaseViewController) {
+  id classMock = OCMClassMock([SendTabToSelfCoordinator class]);
+  SendTabToSelfCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()
+                                       url:GURL("https://www.example.com")
+                                     title:@"Example Title"
+                     targetDeviceCacheGUID:@"target_guid"
+                          targetDeviceName:@"Target Device"
+                                entryPoint:send_tab_to_self::ShareEntryPoint::
+                                               kShareSheet])
+      .andReturn(mockCoordinator);
+  __block base::test::TestFuture<void> start_future;
+  OCMExpect([mockCoordinator start]).andDo(^(NSInvocation* invocation) {
+    start_future.SetValue();
+  });
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<SendTabToSelfCommands> handler =
+      HandlerForProtocol(dispatcher, SendTabToSelfCommands);
+
+  [handler sendTabToSelfToDeviceWithURL:GURL("https://www.example.com")
+                                  title:@"Example Title"
+                               deviceID:@"target_guid"
+                             deviceName:@"Target Device"
+                             entryPoint:send_tab_to_self::ShareEntryPoint::
+                                            kShareSheet];
+
+  EXPECT_TRUE(start_future.Wait());
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-sendTabToSelfToDeviceWithURL:...` starts the
+// SendTabToSelfCoordinator using the active view controller from the scene UI
+// provider when available.
+TEST_F(
+    BrowserModalHostTest,
+    SendTabToSelfStartsCoordinatorWithActiveViewControllerFromSceneUIProvider) {
+  UIViewController* activeViewController = [[UIViewController alloc] init];
+  id mockSceneUIProvider = OCMProtocolMock(@protocol(SceneUIProvider));
+  OCMStub([mockSceneUIProvider activeViewController])
+      .andReturn(activeViewController);
+  scene_state_.controller = (SceneController*)mockSceneUIProvider;
+
+  id classMock = OCMClassMock([SendTabToSelfCoordinator class]);
+  SendTabToSelfCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:activeViewController
+                                   browser:browser_.get()
+                                       url:GURL("https://www.example.com")
+                                     title:@"Example Title"
+                     targetDeviceCacheGUID:@"target_guid"
+                          targetDeviceName:@"Target Device"
+                                entryPoint:send_tab_to_self::ShareEntryPoint::
+                                               kShareSheet])
+      .andReturn(mockCoordinator);
+  __block base::test::TestFuture<void> start_future;
+  OCMExpect([mockCoordinator start]).andDo(^(NSInvocation* invocation) {
+    start_future.SetValue();
+  });
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<SendTabToSelfCommands> handler =
+      HandlerForProtocol(dispatcher, SendTabToSelfCommands);
+
+  [handler sendTabToSelfToDeviceWithURL:GURL("https://www.example.com")
+                                  title:@"Example Title"
+                               deviceID:@"target_guid"
+                             deviceName:@"Target Device"
+                             entryPoint:send_tab_to_self::ShareEntryPoint::
+                                            kShareSheet];
+
+  EXPECT_TRUE(start_future.Wait());
   EXPECT_OCMOCK_VERIFY(classMock);
 }

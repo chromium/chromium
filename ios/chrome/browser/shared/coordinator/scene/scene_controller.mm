@@ -297,7 +297,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                                ProfileStateObserver,
                                SceneUIBlockerStateObserver,
                                SceneUIHandler,
-                               SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
