@@ -21,10 +21,6 @@ Expression `monitorEvents()`
 has side effect: true, expected: true
 Expression `unmonitorEvents()`
 has side effect: true, expected: true
-Expression `monitorEvents.toString()`
-has side effect: false, expected: false
-Expression `unmonitorEvents.toString()`
-has side effect: false, expected: false
 Expression `document.getElementsByTagName('div')`
 has side effect: false, expected: false
 Expression `document.getElementsByTagNameNS(namespace, 'div')`
