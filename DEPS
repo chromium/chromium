@@ -2209,7 +2209,7 @@ deps = {
     Var('chromium_git') + '/chromium/web-tests.git' + '@' + Var('crossbench_web_tests_revision'),
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '9aee17863159457d0e7b255265fdab4d0654a05e',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'a445689c2a77eef88bf088f2b909a693c3f16e99',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
