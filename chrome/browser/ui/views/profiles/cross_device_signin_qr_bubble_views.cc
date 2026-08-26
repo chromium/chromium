@@ -241,9 +241,5 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   bubble->set_margins(gfx::Insets());
   bubble->set_fixed_width(kDialogWidth);
 
-  if (browser_view && browser_view->GetWidget()) {
-    bubble->set_parent_window(browser_view->GetWidget()->GetNativeView());
-  }
-
   return bubble;
 }
