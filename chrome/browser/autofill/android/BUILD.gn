@@ -96,6 +96,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextNoticePreference.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetViewBinder.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.autofill"
@@ -128,6 +134,7 @@ android_library("java") {
     "//components/autofill/android:main_autofill_java",
     "//components/autofill/android:payments_interfaces_java",
     "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
@@ -239,6 +246,7 @@ android_resources("java_resources") {
     "java/res/layout/autofill_save_address_profile_prompt.xml",
     "java/res/layout/autofill_update_address_profile_prompt.xml",
     "java/res/layout/autofill_vcn_enroll_bottom_sheet_content.xml",
+    "java/res/layout/autofill_wallet_reminder_notice_bottom_sheet.xml",
     "java/res/layout/radio_button_group_third_party_preference.xml",
     "java/res/menu/prefeditor_editor_menu.xml",
     "java/res/values/dimens.xml",
@@ -265,6 +273,7 @@ android_library("test_java") {
     "javatest/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextSettingsRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetRenderTest.java",
   ]
 
   deps = [
@@ -285,6 +294,8 @@ android_library("test_java") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android/test:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
@@ -319,6 +330,10 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/utils/TestUtils.java",
     "junit/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetContentTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetModuleTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetViewTest.java",
   ]
 
   deps = [
