@@ -70,6 +70,18 @@ constexpr char kMojoFuzzerHtml[] = R"(
 <script
  src="gen/third_party/blink/public/mojom/locks/lock_manager.mojom-lite.js">
 </script>
+<script
+ src="gen/services/network/public/mojom/no_vary_search.mojom-lite.js">
+</script>
+<script
+ src="gen/services/network/public/mojom/referrer_policy.mojom-lite.js">
+</script>
+<script
+ src="gen/third_party/blink/public/mojom/loader/referrer.mojom-lite.js">
+</script>
+<script
+ src="gen/third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-lite.js">
+</script>
 )";
 
 std::unique_ptr<net::test_server::HttpResponse> HandleMojoFuzzerRequest(
