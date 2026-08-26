@@ -740,7 +740,7 @@ class SBLocalDatabaseManagerTest_V4V5
       public ::testing::WithParamInterface<bool> {
  public:
   SBLocalDatabaseManagerTest_V4V5() {
-    if (GetParam()) {
+    if (IsV5()) {
       feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
     } else {
       feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
@@ -764,8 +764,8 @@ class SBLocalDatabaseManagerTest_V4V5
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestGetThreatSource) {
   WaitForTasksOnTaskRunner();
   ThreatSource expected_threat_source =
-      GetParam() ? ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
-                 : ThreatSource::LOCAL_PVER4;
+      IsV5() ? ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+             : ThreatSource::LOCAL_PVER4;
   EXPECT_EQ(expected_threat_source,
             sb_local_database_manager_->GetBrowseUrlThreatSource(
                 CheckBrowseUrlType::kHashDatabase));
@@ -839,7 +839,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
               std::vector<SBThreatType>{SB_THREAT_TYPE_URL_MALWARE});
   }
 
-  if (GetParam()) {
+  if (IsV5()) {
     histograms.ExpectTotalCount("SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup",
                                 1);
     histograms.ExpectTotalCount(
@@ -1493,7 +1493,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestChecksAreQueued) {
   // Wait for the DB thread search and UI thread reply callback to execute.
   WaitForTasksOnTaskRunner();
 
-  if (GetParam()) {
+  if (IsV5()) {
     histograms.ExpectTotalCount(
         "SafeBrowsing.V5CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
     histograms.ExpectTotalCount("SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup",
@@ -2631,7 +2631,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, DatabaseInitializationHistograms) {
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
 
-  if (GetParam()) {
+  if (IsV5()) {
     histograms.ExpectTotalCount("SafeBrowsing.V4DatabaseInitializationTime", 0);
     histograms.ExpectTotalCount("SafeBrowsing.V5DatabaseInitializationTime", 1);
   } else {
@@ -2657,10 +2657,10 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TimeSinceLastUpdateResponseHistograms) {
 
   histograms.ExpectTotalCount(
       "SafeBrowsing.V5LocalDatabaseManager.TimeSinceLastUpdateResponse",
-      GetParam() ? 1 : 0);
+      IsV5() ? 1 : 0);
   histograms.ExpectTotalCount(
       "SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse",
-      GetParam() ? 0 : 1);
+      IsV5() ? 0 : 1);
   histograms.ExpectTotalCount(
       "SafeBrowsing.SBLocalDatabaseManager.TimeSinceLastUpdateResponse", 1);
 }
