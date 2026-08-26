@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
   ASSERT_TRUE(zoom_bubble_coordinator_->bubble());
   const ZoomBubbleView* zoom_bubble = zoom_bubble_coordinator_->bubble();
-  EXPECT_TRUE(zoom_bubble->GetAnchorView());
+  EXPECT_TRUE(zoom_bubble->GetAnchor());
 
   views::test::WidgetDestroyedWaiter waiter(
       const_cast<views::Widget*>(zoom_bubble->GetWidget()));
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
   ASSERT_TRUE(zoom_bubble_coordinator_->bubble());
   zoom_bubble = zoom_bubble_coordinator_->bubble();
-  EXPECT_FALSE(zoom_bubble->GetAnchorView());
+  EXPECT_FALSE(zoom_bubble->GetAnchor());
 
   // Exit fullscreen before ending the test for the sake of sanity.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());

@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -1315,18 +1316,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPageAction) {
   observer_->WaitForUI();
 
   // Verify that the page action is shown.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  page_actions::PageActionView* action_view =
-      browser_view->GetLocationBarView()
-          ->page_action_container()
-          ->GetPageActionView(kActionWebAuthnAmbientSignin);
-  ASSERT_TRUE(action_view);
+  page_actions::PageActionTestAccessor action_view(
+      browser(), kActionWebAuthnAmbientSignin);
+  EXPECT_TRUE(action_view.GetVisible());
 
   // Simulate user selection.
-  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  action_view->NotifyClick(click);
+  action_view.Click();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
@@ -1392,21 +1387,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIDeduplication) {
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
   observer_->WaitForUI();
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  page_actions::PageActionView* action_view =
-      browser_view->GetLocationBarView()
-          ->page_action_container()
-          ->GetPageActionView(kActionWebAuthnAmbientSignin);
+  page_actions::PageActionTestAccessor action_view(
+      browser(), kActionWebAuthnAmbientSignin);
   // If deduplication failed, there would be 2 credentials, triggering the
   // bubble instead of page action.
-  ASSERT_TRUE(action_view);
-  EXPECT_TRUE(action_view->GetVisible());
+  EXPECT_TRUE(action_view.GetVisible());
 
   // Simulate user selection.
-  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  action_view->NotifyClick(click);
+  action_view.Click();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
@@ -1446,20 +1434,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
   content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequestWithPassword);
   observer_->WaitForUI();
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  page_actions::PageActionView* action_view =
-      browser_view->GetLocationBarView()
-          ->page_action_container()
-          ->GetPageActionView(kActionWebAuthnAmbientSignin);
+  page_actions::PageActionTestAccessor action_view(
+      browser(), kActionWebAuthnAmbientSignin);
   // If deduplication failed, there would be 2 mechanisms (1 passkey, 1
   // password), triggering the bubble instead of page action.
-  ASSERT_TRUE(action_view);
-  EXPECT_TRUE(action_view->GetVisible());
+  EXPECT_TRUE(action_view.GetVisible());
 
-  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  action_view->NotifyClick(click);
+  action_view.Click();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));

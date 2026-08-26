@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -122,9 +125,32 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    CHECK(location_bar_view);
     return **std::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetType);
+  }
+
+  bool IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType image_type) {
+    if (features::IsWebUILocationBarEnabled()) {
+      auto* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser());
+      if (auto* const provider = browser_view->toolbar_button_provider()) {
+        if (auto* const webui_view =
+                provider->GetWebUIToolbarViewForTesting()) {
+          if (auto* const webui_loc_bar = webui_view->GetLocationBar()) {
+            if (auto* model =
+                    webui_loc_bar->content_setting_image_control().GetModel(
+                        image_type)) {
+              return model->is_visible();
+            }
+          }
+        }
+      }
+      return false;
+    }
+    return GetContentSettingImageView(image_type).GetVisible();
   }
 
   raw_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;
@@ -251,10 +277,9 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, ScriptBlockedIcon) {
   GURL url(std::string("data:text/html,") + kHtml);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Get the script blocked icon on the omnibox. It should be hidden.
-  ContentSettingImageView& script_blocked_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::kJavaScript);
-  EXPECT_FALSE(script_blocked_icon.GetVisible());
+  // Check that the script blocked icon on the omnibox is hidden.
+  EXPECT_FALSE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kJavaScript));
 
   // Disable javascript.
   HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
@@ -263,9 +288,11 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, ScriptBlockedIcon) {
   // Reload the page
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
 
-  // Waits until the geolocation icon is visible, or aborts the tests otherwise.
+  // Waits until the script blocked icon is visible, or aborts the tests
+  // otherwise.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return script_blocked_icon.GetVisible();
+    return IsContentSettingImageVisible(
+        ContentSettingImageModel::ImageType::kJavaScript);
   })) << "Timeout waiting for the script blocked icon to become visible.";
 }
 
@@ -447,12 +474,9 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
-  // Get the geolocation icon on the omnibox.
-  ContentSettingImageView& geolocation_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::kGeolocation);
-
   // Geolocation icon should be off in the beginning.
-  EXPECT_FALSE(geolocation_icon.GetVisible());
+  EXPECT_FALSE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
 
   // Query current position, and wait for the query to complete.
   content::RenderFrameHost* rfh_a = web_contents()->GetPrimaryMainFrame();
@@ -463,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   )"));
 
   // Geolocation icon should be on since geolocation API is used.
-  EXPECT_TRUE(geolocation_icon.GetVisible());
+  EXPECT_TRUE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
 
   content::RenderFrameDeletedObserver deleted(rfh_a);
 
@@ -473,7 +498,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   content::RenderFrameHost* rfh_b = web_contents()->GetPrimaryMainFrame();
 
   // Geolocation icon should be off after navigation.
-  EXPECT_FALSE(geolocation_icon.GetVisible());
+  EXPECT_FALSE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
 
   // The previous page should be bfcached.
   EXPECT_FALSE(deleted.deleted());
@@ -489,7 +515,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Geolocation icon should be on again.
-  EXPECT_TRUE(geolocation_icon.GetVisible());
+  EXPECT_TRUE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
 
   // 4) Navigate forward to B. |RenderFrameHost| have to be restored from
   // BackForwardCache and be the primary main frame.
@@ -498,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
 
   // Geolocation icon should be off.
-  EXPECT_FALSE(geolocation_icon.GetVisible());
+  EXPECT_FALSE(IsContentSettingImageVisible(
+      ContentSettingImageModel::ImageType::kGeolocation));
 }
 
 class LocationBarViewPageActionHideWhileEditingTests

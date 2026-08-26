@@ -17,8 +17,7 @@ namespace page_actions {
 IconLabelBubbleView* GetIconLabelBubbleViewForTesting(
     PageActionViewInterface* interface_ptr,
     actions::ActionId action_id) {
-  CHECK(!features::IsWebUILocationBarEnabled());
-  if (!interface_ptr) {
+  if (features::IsWebUILocationBarEnabled() || !interface_ptr) {
     return nullptr;
   }
   PageActionPropertiesProvider provider;
