@@ -1,3 +1,4 @@
 include_rules = [
   "+pdf/mojom/pdf.mojom.h",
+  "+chrome/browser/ui/read_anything",
 ]

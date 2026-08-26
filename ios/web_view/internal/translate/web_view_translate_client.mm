@@ -135,4 +135,8 @@ bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {
   return !url.is_empty() && !url.SchemeIs(url::kFtpScheme);
 }
 
+bool WebViewTranslateClient::IsReadingModeOpen() const {
+  return false;
+}
+
 }  // namespace ios_web_view

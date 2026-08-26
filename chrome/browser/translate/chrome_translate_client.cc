@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -27,7 +28,19 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/translate/translate_service.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"   // nogncheck
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"  // nogncheck
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"      // nogncheck
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"         // nogncheck
 #include "chrome/browser/ui/translate/translate_bubble_factory.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/common/content_switches.h"
+#endif
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -118,6 +131,51 @@ bool IsAutomaticTranslationType(translate::TranslationType type) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
+
+SidePanelUI* ChromeTranslateClient::GetSidePanelUIFromTab(
+    tabs::TabInterface* tab) const {
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  return browser ? browser->GetFeatures().side_panel_ui() : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
+void ChromeTranslateClient::TriggerPdfTranslation() {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
+  if (side_panel_ui) {
+    side_panel_ui->Show(
+        SidePanelEntryId::kReadAnything,
+        SidePanelOpenTrigger::kPdfTranslation);
+  }
+#endif
+}
+
+bool ChromeTranslateClient::IsReadingModeOpen() const {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
+  if (side_panel_ui) {
+    if (side_panel_ui->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
+      return true;
+    }
+  }
+  if (auto* controller = ReadAnythingController::From(tab)) {
+    if (controller->GetPresentationState() ==
+        ReadAnythingController::PresentationState::kInImmersiveOverlay) {
+      return true;
+    }
+  }
+#endif
+  return false;
+}
 
 ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),

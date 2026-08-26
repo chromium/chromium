@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/timer/timer.h"
@@ -24,11 +25,15 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -39,6 +44,7 @@
 #include "components/translate/core/browser/translate_error_details.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/common/content_features.h"
@@ -51,6 +57,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -396,7 +403,9 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
   void SetTranslateScript(const std::string& script) { script_ = script; }
 
   virtual void InitFeatures() {
-    scoped_feature_list_.InitAndEnableFeature(toast_features::kTranslateToast);
+    scoped_feature_list_.InitWithFeatures(
+        {toast_features::kTranslateToast, features::kImmersiveReadAnything},
+        {});
   }
 
  protected:
@@ -1497,6 +1506,53 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, NoAutoTranslateNoToast) {
   EXPECT_FALSE(IsToastShown(ToastId::kTranslate));
   EXPECT_TRUE(IsTranslateBubbleShown());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, IsReadingModeOpen) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  // 1. Test Side Panel Mode
+  // Show reading mode side panel
+  SidePanelUI* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  // Hide it
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
+
+  // 2. Test Immersive Mode
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Show immersive Reading Mode UI
+  controller->ShowImmersiveUI(
+      ReadAnythingController::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  // Close immersive Reading Mode UI
+  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       TriggerPdfTranslationOpensSidePanel) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
+}
+#endif
 
 }  // namespace
 }  // namespace translate

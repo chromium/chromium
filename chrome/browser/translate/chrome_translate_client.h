@@ -31,6 +31,11 @@ class WebContents;
 }  // namespace content
 
 class PrefService;
+class SidePanelUI;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace language {
 class AcceptLanguagesService;
@@ -120,6 +125,8 @@ class ChromeTranslateClient
                        translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
+  void TriggerPdfTranslation() override;
+  bool IsReadingModeOpen() const override;
 
   // Performs a one-time undo of the translation and shows the translation
   // bubble.
@@ -143,6 +150,10 @@ class ChromeTranslateClient
 
   // content::WebContentsObserver implementation.
   void WebContentsDestroyed() override;
+
+  // Returns the SidePanelUI instance associated with the tab, or nullptr if
+  // there is no such instance.
+  SidePanelUI* GetSidePanelUIFromTab(tabs::TabInterface* tab) const;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Shows the Full Page Translate bubble.
