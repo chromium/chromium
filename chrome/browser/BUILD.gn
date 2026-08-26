@@ -2440,7 +2440,6 @@ source_set("browser") {
     "//services/network/public/proto",
     "//services/on_device_model/public/cpp",
     "//services/preferences/public/cpp",
-    "//services/preferences/public/mojom",
     "//services/preferences/tracked",
     "//services/service_manager/public/cpp",
     "//skia",
@@ -2450,13 +2449,9 @@ source_set("browser") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/common",
-    "//third_party/icu",
     "//third_party/leveldatabase",
-    "//third_party/libaddressinput",
     "//third_party/libyuv",
-    "//third_party/re2",
     "//third_party/zlib",
-    "//ui/accessibility",
     "//ui/actions",
     "//ui/base",
     "//ui/base/clipboard",
@@ -2476,11 +2471,8 @@ source_set("browser") {
     "//ui/menus",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
-    "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",
-    "//ui/strings",
-    "//ui/webui",
 
     # TODO(crbug.com/430804948): Remove this circular dependency when the
     # following headers get componentized:
@@ -2503,9 +2495,6 @@ source_set("browser") {
       "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/ui/webui/ntp_microsoft_auth",
     ]
-  }
-  if (!is_android || enable_webui_ntp) {
-    deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
   }
 
   if (is_android) {
@@ -2549,10 +2538,7 @@ source_set("browser") {
     ]
 
     #!is_android
-    public_deps += [
-      "//chrome/browser/accessibility/phrase_segmentation",
-      "//ui/base/mojom:ui_base_types",
-    ]
+    public_deps += [ "//chrome/browser/accessibility/phrase_segmentation" ]
 
     #!is_android
     deps += [
@@ -2681,12 +2667,6 @@ source_set("browser") {
       "//services/device/public/cpp/hid",
       "//ui/views",
       "//ui/web_dialogs",
-      "//ui/webui",
-      "//ui/webui/resources/cr_components/app_management:mojo_bindings",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-      "//ui/webui/resources/cr_components/history:mojo_bindings",
-      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
-      "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     ]
 
     if (is_win || is_chromeos) {
@@ -3014,11 +2994,8 @@ source_set("browser") {
       # build target.
       "//remoting/host/chromeos:features",
       "//services/device/public/cpp/geolocation",
-      "//third_party/nearby:rpc_resources_proto",
       "//ui/chromeos",
-      "//ui/chromeos/resources",
       "//ui/chromeos/strings",
-      "//ui/chromeos/styles:cros_tokens_color_mappings",
       "//ui/events/ozone",
       "//ui/ozone",
       "//ui/wm/public",
@@ -3243,7 +3220,6 @@ source_set("browser") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/controlled_frame",
-      "//ui/base/mojom:ui_base_types",
     ]
 
     deps += [
