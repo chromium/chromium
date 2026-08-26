@@ -53,12 +53,13 @@ jobs:
         run: echo "version=$(grep '^rust-version' Cargo.toml | sed 's/rust-version = "\(.*\)"/\1/')" >> $GITHUB_OUTPUT
       - name: Install Rust
         run: rustup update ${{ steps.msrv.outputs.version }} && rustup default ${{ steps.msrv.outputs.version }}
-      - name: Test in debug mode
-        run: cargo test --no-fail-fast
-      - name: Test in release mode
-        run: cargo test --no-fail-fast --release
-      - name: Check with no default features
-        run: cargo check --no-default-features
+      # Dev-dependencies evolve more quickly than we'd like and don't keep to
+      # our MSRV, so we only build the library here rather than run the test
+      # suite (which would pull in dev-dependencies).
+      - name: Build
+        run: cargo build
+      - name: Build with no default features
+        run: cargo build --no-default-features
   asan:
     name: asan
     runs-on: ubuntu-latest

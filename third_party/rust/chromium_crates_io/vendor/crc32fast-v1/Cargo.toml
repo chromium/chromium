@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "crc32fast"
-version = "1.5.0"
+version = "1.5.1"
 authors = [
     "Sam Rijs <srijs@airpost.net>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -48,6 +48,10 @@ std = []
 [lib]
 name = "crc32fast"
 path = "src/lib.rs"
+
+[[test]]
+name = "exhaustive"
+path = "tests/exhaustive.rs"
 
 [[bench]]
 name = "bench"

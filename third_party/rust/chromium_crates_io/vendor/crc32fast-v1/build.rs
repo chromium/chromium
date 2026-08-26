@@ -5,8 +5,16 @@ fn main() {
         // rustc 1.80 stabilized ARM CRC32 intrinsics:
         // https://doc.rust-lang.org/nightly/core/arch/aarch64/fn.__crc32d.html
         if minor_version >= 80 {
-            println!("cargo:rustc-cfg=stable_arm_crc32_intrinsics");
             println!("cargo:rustc-check-cfg=cfg(stable_arm_crc32_intrinsics)");
+            println!("cargo:rustc-check-cfg=cfg(stable_vpclmulqdq)");
+            println!("cargo:rustc-cfg=stable_arm_crc32_intrinsics");
+        }
+
+        // rustc 1.89 stabilized the x86 VPCLMULQDQ intrinsics (256-bit AVX2 and 512-bit AVX-512):
+        // https://doc.rust-lang.org/core/arch/x86_64/fn._mm256_clmulepi64_epi128.html
+        // Gating the wide fold paths on this keeps the crate MSRV unchanged on older toolchains.
+        if minor_version >= 89 {
+            println!("cargo:rustc-cfg=stable_vpclmulqdq");
         }
     }
 }

@@ -30,6 +30,9 @@
 //!
 //! - A fast baseline implementation which processes up to 16 bytes per iteration
 //! - An optimized implementation for modern `x86` using `sse` and `pclmulqdq` instructions
+//! - Wider `x86` implementations using `vpclmulqdq` on 256-bit (`avx2`) and 512-bit (`avx512f`)
+//!   registers (available when built with Rust 1.89 or newer)
+//! - An optimized implementation for `aarch64` using `crc32` instructions
 //!
 //! Calling the [`Hasher::new`] constructor at runtime will perform a feature detection to select the most
 //! optimal implementation for the current CPU feature set.

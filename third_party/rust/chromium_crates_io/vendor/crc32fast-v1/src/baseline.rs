@@ -35,6 +35,7 @@ pub(crate) fn update_fast_16(prev: u32, mut buf: &[u8]) -> u32 {
 
     while buf.len() >= BYTES_AT_ONCE {
         for _ in 0..UNROLL {
+            let w0 = u32::from_le_bytes([buf[0], buf[1], buf[2], buf[3]]) ^ crc;
             crc = CRC32_TABLE[0x0][buf[0xf] as usize]
                 ^ CRC32_TABLE[0x1][buf[0xe] as usize]
                 ^ CRC32_TABLE[0x2][buf[0xd] as usize]
@@ -47,10 +48,10 @@ pub(crate) fn update_fast_16(prev: u32, mut buf: &[u8]) -> u32 {
                 ^ CRC32_TABLE[0x9][buf[0x6] as usize]
                 ^ CRC32_TABLE[0xa][buf[0x5] as usize]
                 ^ CRC32_TABLE[0xb][buf[0x4] as usize]
-                ^ CRC32_TABLE[0xc][buf[0x3] as usize ^ ((crc >> 0x18) & 0xFF) as usize]
-                ^ CRC32_TABLE[0xd][buf[0x2] as usize ^ ((crc >> 0x10) & 0xFF) as usize]
-                ^ CRC32_TABLE[0xe][buf[0x1] as usize ^ ((crc >> 0x08) & 0xFF) as usize]
-                ^ CRC32_TABLE[0xf][buf[0x0] as usize ^ (crc & 0xFF) as usize];
+                ^ CRC32_TABLE[0xc][(w0 >> 24) as usize]
+                ^ CRC32_TABLE[0xd][((w0 >> 16) & 0xFF) as usize]
+                ^ CRC32_TABLE[0xe][((w0 >> 8) & 0xFF) as usize]
+                ^ CRC32_TABLE[0xf][(w0 & 0xFF) as usize];
             buf = &buf[16..];
         }
     }
