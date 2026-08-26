@@ -213,6 +213,15 @@ constexpr base::FeatureParam<int>
         /*default_value=*/1000};
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kClientSideDetectionServerModelRolloutDesktop,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int>
+    kClientSideDetectionServerModelRolloutVersionDesktop{
+        &kClientSideDetectionServerModelRolloutDesktop, "ModelVersion",
+        /*default_value=*/1000};
+#endif
+
 BASE_FEATURE(kClientSideDetectionSkipErrorPage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
