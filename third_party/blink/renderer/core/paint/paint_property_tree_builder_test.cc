@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
 
-#include "base/compiler_specific.h"
+#include <string_view>
+
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -3774,7 +3775,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
     // properties effect.
     EXPECT_EQ(clip_properties->EffectIsolationNode()->Parent(),
               &clip_local_properties.Effect());
-    if (UNSAFE_TODO(strcmp(containment, "paint")) == 0) {
+    if (std::string_view(containment) == "paint") {
       // If we contain paint, then clip isolation node is parented to the
       // overflow clip, which is in turn parented to the local border box
       // properties clip.
