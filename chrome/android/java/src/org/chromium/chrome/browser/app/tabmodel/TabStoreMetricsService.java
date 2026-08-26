@@ -287,7 +287,6 @@ public class TabStoreMetricsService {
          * @param authNewTabData The list of new tabs in the authoritative store.
          * @param shadowFrozenData The list of frozen tabs in the shadow store.
          * @param shadowNewTabData The list of new tabs in the shadow store.
-         * @param shadowStoreCaughtUp Whether the shadow store has caught up.
          * @param regularFallbackTabs The map of tab IDs to URLs of regular fallback tabs created
          *     during restoration for the legacy store.
          */
@@ -296,10 +295,7 @@ public class TabStoreMetricsService {
                 List<TabCreationData> authNewTabData,
                 List<CreateFrozenTabArguments> shadowFrozenData,
                 List<CreateNewTabArguments> shadowNewTabData,
-                boolean shadowStoreCaughtUp,
                 Map<@TabId Integer, String> regularFallbackTabs) {
-            if (!shadowStoreCaughtUp) return;
-
             int authTabCount = authFrozenData.size() + authNewTabData.size();
             Set<Token> groupIds = new HashSet<>();
             int authPinnedCount = countPinnedTabsAndCollectGroupIds(authFrozenData, groupIds);

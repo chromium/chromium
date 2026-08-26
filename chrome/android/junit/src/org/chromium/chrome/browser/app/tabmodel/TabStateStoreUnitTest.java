@@ -375,6 +375,7 @@ public class TabStateStoreUnitTest {
     @Test
     public void testLoadAndRestore_Success() {
         mTabStateStore.onNativeLibraryReady();
+        Assert.assertFalse(mTabStateStore.hasLoadWarnings());
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
         mTabStateStore.loadState(
@@ -387,6 +388,8 @@ public class TabStateStoreUnitTest {
 
         callbacks.get(0).onResult(mRegularData);
         callbacks.get(1).onResult(mIncognitoData);
+
+        Assert.assertFalse(mTabStateStore.hasLoadWarnings());
 
         verify(mObserver).onInitialized(0);
 
@@ -513,6 +516,8 @@ public class TabStateStoreUnitTest {
 
         regularCallback.onResult(mRegularData);
 
+        Assert.assertTrue(mTabStateStore.hasLoadWarnings());
+
         verify(mTabStateStorageService, never())
                 .clearUnusedNodesForWindow(any(), anyBoolean(), any());
         verify(mTabCountTracker, never()).clearTabCount(anyBoolean());
@@ -558,6 +563,8 @@ public class TabStateStoreUnitTest {
         when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
 
         Assert.assertThrows(AssertionError.class, () -> regularCallback.onResult(mRegularData));
+
+        Assert.assertTrue(mTabStateStore.hasLoadWarnings());
 
         verify(mTabStateStorageService).clearUnusedNodesForWindow(WINDOW_TAG, false, null);
         verify(mTabCountTracker).clearTabCount(false);

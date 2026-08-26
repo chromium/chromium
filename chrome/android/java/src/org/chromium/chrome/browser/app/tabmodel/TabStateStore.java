@@ -72,6 +72,7 @@ public class TabStateStore implements TabPersistentStore {
     private @Nullable CombinedTabRestorer mMergeCombinedTabRestorer;
     private int mRestoredTabCount;
     private boolean mIsDestroyed;
+    private boolean mHasLoadWarnings;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -92,8 +93,7 @@ public class TabStateStore implements TabPersistentStore {
                 }
 
                 @Override
-                public void willCloseTabs(
-                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     if (!isAllTabs) return;
                     cancelLoadingTabs(tabs.get(0).isOffTheRecord());
                 }
@@ -503,6 +503,11 @@ public class TabStateStore implements TabPersistentStore {
         }
     }
 
+    /** Returns whether any {@link StorageLoadWarning}s occurred during data loading. */
+    public boolean hasLoadWarnings() {
+        return mHasLoadWarnings;
+    }
+
     @Override
     public void addObserver(TabPersistentStoreObserver observer) {
         mObservers.addObserver(observer);
@@ -598,6 +603,9 @@ public class TabStateStore implements TabPersistentStore {
         StorageLoadWarning[] warnings = data.getWarnings();
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabStateStore.LoadWarningCount", warnings.length);
+        if (warnings.length > 0) {
+            mHasLoadWarnings = true;
+        }
         if (!mIsAuthoritative && warnings.length > 0) {
             mTabStateStorageService.clearUnusedNodesForWindow(
                     mWindowTag, incognito, /* tabStripCollection= */ null);
