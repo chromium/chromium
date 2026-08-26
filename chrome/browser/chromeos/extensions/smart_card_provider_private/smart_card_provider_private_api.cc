@@ -428,9 +428,10 @@ void SmartCardProviderPrivateAPI::OnMojoContextDisconnected() {
   // Disconnect all mojom::SmartCardConnection receivers created on this context
   // as their handles will all become invalid at PC/SC level once the context
   // is released.
-  for (mojo::ReceiverId connection_receiver_id :
-       context_data.connection_receiver_ids) {
-    connection_receivers_.Remove(connection_receiver_id);
+  auto connection_receiver_ids =
+      std::move(context_data.connection_receiver_ids);
+  for (mojo::ReceiverId connection_receiver_id : connection_receiver_ids) {
+    RemoveConnection(connection_receiver_id);
   }
 
   RunOrQueueRequest(
@@ -446,13 +447,7 @@ void SmartCardProviderPrivateAPI::OnMojoConnectionDisconnected() {
         FROM_HERE, disconnect_observer_);
   }
 
-  // Break the watcher pipe.
-  auto it = connection_watchers_per_receiver_.find(
-      connection_receivers_.current_receiver());
-  if (it != connection_watchers_per_receiver_.end()) {
-    connection_watchers_.Remove(it->second);
-    connection_watchers_per_receiver_.erase(it);
-  }
+  RemoveConnection(connection_receivers_.current_receiver());
 
   auto callback =
       base::BindOnce(&SmartCardProviderPrivateAPI::OnScardHandleDisconnected,
@@ -1653,8 +1648,20 @@ void SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed(
   if (it == connection_receivers_per_watcher_.end()) {
     return;
   }
-  connection_receivers_.Remove(it->second);
-  connection_receivers_per_watcher_.erase(it);
+  mojo::ReceiverId connection_receiver_id = it->second;
+  RemoveConnection(connection_receiver_id);
+}
+
+void SmartCardProviderPrivateAPI::RemoveConnection(
+    mojo::ReceiverId connection_receiver_id) {
+  auto it = connection_watchers_per_receiver_.find(connection_receiver_id);
+  if (it != connection_watchers_per_receiver_.end()) {
+    mojo::RemoteSetElementId watcher_id = it->second;
+    connection_watchers_per_receiver_.erase(it);
+    connection_receivers_per_watcher_.erase(watcher_id);
+    connection_watchers_.Remove(watcher_id);
+  }
+  connection_receivers_.Remove(connection_receiver_id);
 }
 
 void SmartCardProviderPrivateAPI::NotifyConnectionUsed() {

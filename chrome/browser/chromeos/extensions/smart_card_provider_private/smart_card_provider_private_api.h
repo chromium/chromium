@@ -333,6 +333,10 @@ class SmartCardProviderPrivateAPI
   // the connection.
   void OnMojoWatcherPipeClosed(mojo::RemoteSetElementId watcher_id);
 
+  // Removes a connection receiver and tears down its associated connection
+  // watcher and tracking maps. Safe to call even if already disconnected.
+  void RemoveConnection(mojo::ReceiverId connection_receiver_id);
+
   // This may only be called only when processing a received method call on
   // SmartCardConnection().
   void NotifyConnectionUsed();

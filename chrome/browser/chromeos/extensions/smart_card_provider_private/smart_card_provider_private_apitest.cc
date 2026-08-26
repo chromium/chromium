@@ -1123,6 +1123,20 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       DisconnectContextDisconnectsWatcher) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(context.is_bound());
+  ASSERT_TRUE(connection.is_bound());
+
+  auto disconnect_count = connections_watcher_.GetTimesDisconnected();
+  connections_watcher_.ClearDisconnectFuture();
+  context.reset();
+  connections_watcher_.WaitForDisconnect();
+  EXPECT_EQ(disconnect_count + 1, connections_watcher_.GetTimesDisconnected());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        WatcherDisconnectionSeversConnection) {
   LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
   auto [context, connection] = CreateContextAndConnection();
