@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -61,6 +62,8 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
     receiver_.set_disconnect_handler(std::move(handler));
   }
 
+  void Close() { receiver_.reset(); }
+
   void set_start_closure(base::OnceClosure closure) {
     start_closure_ = std::move(closure);
   }
@@ -90,9 +93,8 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
   // mojom::PeerSession implementation:
   void Start(const std::string& client_jid,
              mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
-             mojo::PendingRemote<mojom::DesktopSession> desktop_control,
-             mojo::PendingReceiver<mojom::DesktopSessionEvents>
-                 desktop_events_receiver,
+             mojo::PendingRemote<mojom::DesktopSessionRequester>
+                 desktop_session_requester,
              mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
              mojo::PendingRemote<mojom::PairingRequester> pairing_requester,
              const DesktopEnvironmentOptions& desktop_environment_options,
@@ -101,6 +103,10 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
     start_called_ = true;
     if (event_handler) {
       event_handler_remote_.Bind(std::move(event_handler));
+    }
+    if (desktop_session_requester) {
+      desktop_session_requester_remote_.Bind(
+          std::move(desktop_session_requester));
     }
     if (ice_config_fetcher) {
       ice_config_fetcher_remote_.Bind(std::move(ice_config_fetcher));
@@ -151,6 +157,10 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
   mojo::Remote<mojom::PairingRequester>& pairing_requester_remote() {
     return pairing_requester_remote_;
   }
+  mojo::Remote<mojom::DesktopSessionRequester>&
+  desktop_session_requester_remote() {
+    return desktop_session_requester_remote_;
+  }
 
  private:
   mojo::Receiver<mojom::PeerSession> receiver_{this};
@@ -158,6 +168,8 @@ class MockPeerSessionReceiver : public mojom::PeerSession {
   mojo::Remote<mojom::TransportEventHandler> transport_event_handler_;
   mojo::Remote<mojom::IceConfigFetcher> ice_config_fetcher_remote_;
   mojo::Remote<mojom::PairingRequester> pairing_requester_remote_;
+  mojo::Remote<mojom::DesktopSessionRequester>
+      desktop_session_requester_remote_;
   base::OnceClosure start_closure_;
   base::OnceClosure transport_closure_;
   bool start_called_ = false;
@@ -186,10 +198,15 @@ class MockPeerSessionManager : public mojom::PeerSessionManager {
 
   bool launch_called() const { return launch_called_; }
 
+  mojo::PendingReceiver<mojom::PeerSession> TakeReceiver() {
+    return std::move(last_receiver_);
+  }
+
   // mojom::PeerSessionManager implementation:
   void LaunchPeerSession(
       mojo::PendingReceiver<mojom::PeerSession> receiver) override {
     launch_called_ = true;
+    last_receiver_ = std::move(receiver);
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
@@ -197,6 +214,7 @@ class MockPeerSessionManager : public mojom::PeerSessionManager {
 
  private:
   mojo::AssociatedReceiver<mojom::PeerSessionManager> receiver_{this};
+  mojo::PendingReceiver<mojom::PeerSession> last_receiver_;
   bool launch_called_ = false;
   base::OnceClosure quit_closure_;
 };
@@ -448,18 +466,13 @@ TEST_F(IpcPeerSessionTest, CreateInvokesLaunchPeerSession) {
       }));
 
   base::RunLoop run_loop;
-  mock_desktop_manager.set_quit_closure(run_loop.QuitClosure());
+  mock_peer_manager.set_quit_closure(run_loop.QuitClosure());
 
   std::unique_ptr<PeerSession> session = factory.Create();
   EXPECT_NE(session, nullptr);
 
-  MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
-                 SessionPolicies(), SessionOptions());
-
   run_loop.Run();
   EXPECT_TRUE(mock_peer_manager.launch_called());
-  EXPECT_TRUE(mock_desktop_manager.get_desktop_session_called());
 }
 
 TEST_F(IpcPeerSessionTest,
@@ -488,20 +501,189 @@ TEST_F(IpcPeerSessionTest,
       }));
   factory.SetRequiredUsername("testuser");
 
-  base::RunLoop run_loop;
-  mock_desktop_manager.set_quit_closure(run_loop.QuitClosure());
+  base::RunLoop launch_loop;
+  mock_peer_manager.set_quit_closure(launch_loop.QuitClosure());
 
   std::unique_ptr<PeerSession> session = factory.Create();
-  EXPECT_NE(session, nullptr);
+  ASSERT_NE(session, nullptr);
+  launch_loop.Run();
+
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(mock_peer_manager.TakeReceiver());
+
+  base::RunLoop start_loop;
+  receiver.set_start_closure(start_loop.QuitClosure());
 
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
-                 SessionPolicies(), SessionOptions());
+  session->Start(&event_handler, "user@domain.com/resource",
+                 DesktopEnvironmentOptions(), SessionPolicies(),
+                 SessionOptions());
+  start_loop.Run();
 
-  run_loop.Run();
+  ASSERT_TRUE(receiver.desktop_session_requester_remote().is_bound());
+
+  base::RunLoop get_session_loop;
+  mock_desktop_manager.set_quit_closure(get_session_loop.QuitClosure());
+
+  mojo::PendingRemote<mojom::DesktopSession> control_remote;
+  mojo::PendingReceiver<mojom::DesktopSession> control_receiver =
+      control_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
+  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver =
+      events_remote.InitWithNewPipeAndPassReceiver();
+  receiver.desktop_session_requester_remote()->RequestDesktopSession(
+      std::move(control_receiver), std::move(events_remote),
+      ScreenResolution(webrtc::DesktopSize(1920, 1080),
+                       webrtc::DesktopVector(96, 96)));
+
+  get_session_loop.Run();
   EXPECT_TRUE(mock_desktop_manager.get_desktop_session_called());
   ASSERT_TRUE(mock_desktop_manager.last_options());
   EXPECT_EQ(mock_desktop_manager.last_options()->required_username, "testuser");
+  EXPECT_EQ(mock_desktop_manager.last_options()->client_id, "user@domain.com");
+  EXPECT_EQ(mock_desktop_manager.last_options()
+                ->screen_resolution.dimensions()
+                .width(),
+            1920);
+  EXPECT_EQ(mock_desktop_manager.last_options()
+                ->screen_resolution.dimensions()
+                .height(),
+            1080);
+}
+
+TEST_F(IpcPeerSessionTest,
+       RequestDesktopSessionPropagatesResolutionAndEnforcesPolicies) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<mojo::PendingReceiver<mojom::DesktopSession>,
+                         mojo::PendingRemote<mojom::DesktopSessionEvents>,
+                         mojom::DesktopSessionOptionsPtr>
+      session_requested_future;
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), session_requested_future.GetRepeatingCallback(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
+
+  DesktopEnvironmentOptions env_options;
+  env_options.set_enable_curtaining(true);
+
+  base::test::TestFuture<void> start_future;
+  receiver.set_start_closure(start_future.GetCallback());
+
+  MockEventHandler event_handler;
+  session->Start(&event_handler, "client_id_123@domain.com/channel",
+                 env_options, SessionPolicies(), SessionOptions());
+  EXPECT_TRUE(start_future.Wait());
+
+  ASSERT_TRUE(receiver.desktop_session_requester_remote().is_bound());
+
+  mojo::PendingRemote<mojom::DesktopSession> control_remote;
+  mojo::PendingReceiver<mojom::DesktopSession> control_receiver =
+      control_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote;
+  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver =
+      events_remote.InitWithNewPipeAndPassReceiver();
+  receiver.desktop_session_requester_remote()->RequestDesktopSession(
+      std::move(control_receiver), std::move(events_remote),
+      ScreenResolution(webrtc::DesktopSize(1600, 900),
+                       webrtc::DesktopVector(96, 96)));
+
+  auto [received_control_receiver, received_events_remote, received_options] =
+      session_requested_future.Take();
+  ASSERT_TRUE(received_options);
+  EXPECT_EQ(received_options->client_id, "client_id_123@domain.com");
+  EXPECT_TRUE(received_options->is_curtained);
+  EXPECT_EQ(received_options->screen_resolution.dimensions().width(), 1600);
+  EXPECT_EQ(received_options->screen_resolution.dimensions().height(), 900);
+}
+
+TEST_F(IpcPeerSessionTest, RequestDesktopSessionRejectsDuplicateRequests) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  int call_count = 0;
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+              mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+              mojom::DesktopSessionOptionsPtr options) { call_count++; }),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
+
+  base::test::TestFuture<void> start_future;
+  receiver.set_start_closure(start_future.GetCallback());
+
+  MockEventHandler event_handler;
+  session->Start(&event_handler, "client@domain.com/channel",
+                 DesktopEnvironmentOptions(), SessionPolicies(),
+                 SessionOptions());
+  EXPECT_TRUE(start_future.Wait());
+
+  ASSERT_TRUE(receiver.desktop_session_requester_remote().is_bound());
+
+  base::test::TestFuture<void> disconnect_future;
+  receiver.desktop_session_requester_remote().set_disconnect_handler(
+      disconnect_future.GetCallback());
+
+  mojo::PendingRemote<mojom::DesktopSession> control_remote1;
+  mojo::PendingReceiver<mojom::DesktopSession> control_receiver1 =
+      control_remote1.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote1;
+  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver1 =
+      events_remote1.InitWithNewPipeAndPassReceiver();
+  receiver.desktop_session_requester_remote()->RequestDesktopSession(
+      std::move(control_receiver1), std::move(events_remote1),
+      ScreenResolution());
+
+  mojo::PendingRemote<mojom::DesktopSession> control_remote2;
+  mojo::PendingReceiver<mojom::DesktopSession> control_receiver2 =
+      control_remote2.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote2;
+  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver2 =
+      events_remote2.InitWithNewPipeAndPassReceiver();
+  receiver.desktop_session_requester_remote()->RequestDesktopSession(
+      std::move(control_receiver2), std::move(events_remote2),
+      ScreenResolution());
+
+  EXPECT_TRUE(disconnect_future.Wait());
+  EXPECT_EQ(call_count, 1);
+  EXPECT_FALSE(receiver.desktop_session_requester_remote().is_connected());
+}
+
+TEST_F(IpcPeerSessionTest, RequestDesktopSessionDisconnectsWhenSessionClosed) {
+  mojo::PendingRemote<mojom::PeerSession> remote;
+  MockPeerSessionReceiver receiver;
+  receiver.Bind(remote.InitWithNewPipeAndPassReceiver());
+
+  auto session = std::make_unique<IpcPeerSession>(
+      std::move(remote), base::DoNothing(),
+      std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
+      base::NullCallback());
+
+  base::test::TestFuture<void> start_future;
+  receiver.set_start_closure(start_future.GetCallback());
+
+  MockEventHandler event_handler;
+  session->Start(&event_handler, "client@domain.com/channel",
+                 DesktopEnvironmentOptions(), SessionPolicies(),
+                 SessionOptions());
+  EXPECT_TRUE(start_future.Wait());
+
+  ASSERT_TRUE(receiver.desktop_session_requester_remote().is_bound());
+
+  base::test::TestFuture<void> disconnect_future;
+  receiver.desktop_session_requester_remote().set_disconnect_handler(
+      disconnect_future.GetCallback());
+
+  // Trigger session close via remote disconnect.
+  receiver.Close();
+
+  EXPECT_TRUE(disconnect_future.Wait());
+  EXPECT_FALSE(receiver.desktop_session_requester_remote().is_connected());
 }
 
 TEST_F(IpcPeerSessionTest, StartPropagatesSessionPoliciesAndOptions) {

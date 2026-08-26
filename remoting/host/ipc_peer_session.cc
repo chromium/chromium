@@ -56,21 +56,16 @@ void IpcPeerSession::Start(
 
   DCHECK(!event_handler_receiver_);
 
-  std::string client_id;
-  SplitSignalingIdResource(client_jid, &client_id, /*resource=*/nullptr);
-  // TODO(crbug.com/502281489): Populate `screen_resolution`.
-  mojom::DesktopSessionOptionsPtr desktop_session_options =
-      mojom::DesktopSessionOptions::New();
-  desktop_session_options->is_curtained =
+  desktop_session_options_ = mojom::DesktopSessionOptions::New();
+  SplitSignalingIdResource(client_jid, &desktop_session_options_->client_id,
+                           /*resource=*/nullptr);
+  desktop_session_options_->is_curtained =
       desktop_environment_options.enable_curtaining();
-  desktop_session_options->client_id = client_id;
 
-  mojo::PendingRemote<mojom::DesktopSession> control_remote;
-  mojo::PendingReceiver<mojom::DesktopSessionEvents> events_receiver;
-  get_desktop_session_callback_.Run(
-      control_remote.InitWithNewPipeAndPassReceiver(),
-      events_receiver.InitWithNewPipeAndPassRemote(),
-      std::move(desktop_session_options));
+  DCHECK(!desktop_session_requester_receiver_.is_bound());
+  mojo::PendingRemote<mojom::DesktopSessionRequester>
+      desktop_session_requester_remote =
+          desktop_session_requester_receiver_.BindNewPipeAndPassRemote();
 
   mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler_remote;
   if (event_handler) {
@@ -93,9 +88,34 @@ void IpcPeerSession::Start(
 
   remote_->Start(
       std::string(client_jid), std::move(event_handler_remote),
-      std::move(control_remote), std::move(events_receiver),
+      std::move(desktop_session_requester_remote),
       std::move(ice_config_fetcher_remote), std::move(pairing_requester_remote),
       desktop_environment_options, session_policies, session_options);
+}
+
+void IpcPeerSession::RequestDesktopSession(
+    mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+    mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+    const ScreenResolution& screen_resolution) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!desktop_session_options_) {
+    LOG(ERROR)
+        << "Desktop session already requested or session is not started.";
+    desktop_session_requester_receiver_.ReportBadMessage(
+        "Desktop session already requested or session is not started.");
+    return;
+  }
+
+  if (!get_desktop_session_callback_) {
+    LOG(ERROR) << "RequestDesktopSession called without a valid callback.";
+    return;
+  }
+
+  desktop_session_options_->screen_resolution = screen_resolution;
+
+  get_desktop_session_callback_.Run(std::move(control_receiver),
+                                    std::move(events_remote),
+                                    std::move(desktop_session_options_));
 }
 
 void IpcPeerSession::GetIceConfig(GetIceConfigCallback callback) {
@@ -207,6 +227,8 @@ void IpcPeerSession::DoNotifySessionClosed(
   transport_event_handler_receiver_.reset();
   ice_config_fetcher_receiver_.reset();
   pairing_requester_receiver_.reset();
+  desktop_session_requester_receiver_.reset();
+  desktop_session_options_.reset();
   send_transport_info_callback_.Reset();
   if (event_handler_) {
     auto* handler = event_handler_.get();

@@ -153,6 +153,22 @@ interface PairingRequester {
   RequestPairing(string client_name) => (PairingResponse? pairing_response);
 };
 
+// Interface for requesting desktop session creation.
+//
+// Callee: Trusted Network Process (`remoting::IpcPeerSession`).
+// Caller: Untrusted Peer Connection Process
+//         (`remoting::PeerConnectionProcess`).
+[EnableIf=is_win|is_linux]
+interface DesktopSessionRequester {
+  // Requests a desktop session with the given initial screen resolution.
+  // Can only be called once per peer session. Repeated calls will be rejected
+  // as a bad message and terminate the calling process.
+  RequestDesktopSession(
+      pending_receiver<DesktopSession> control_receiver,
+      pending_remote<DesktopSessionEvents> events_remote,
+      ScreenResolution screen_resolution);
+};
+
 // A session interface implemented by the Peer Connection process.
 // If the caller drops the remote, the disconnect handler terminates the Peer
 // Connection process.
@@ -164,8 +180,7 @@ interface PeerSession {
   // Starts the peer session.
   Start(string client_jid,
         pending_remote<PeerSessionEventHandler> event_handler,
-        pending_remote<DesktopSession> desktop_control,
-        pending_receiver<DesktopSessionEvents> desktop_events_receiver,
+        pending_remote<DesktopSessionRequester> desktop_session_requester,
         pending_remote<IceConfigFetcher> ice_config_fetcher,
         pending_remote<PairingRequester> pairing_requester,
         DesktopEnvironmentOptions desktop_environment_options,

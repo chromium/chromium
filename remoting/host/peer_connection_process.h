@@ -78,9 +78,8 @@ class PeerConnectionProcess : public IPC::Listener,
   // mojom::PeerSession implementation.
   void Start(const std::string& client_jid,
              mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler,
-             mojo::PendingRemote<mojom::DesktopSession> desktop_control,
-             mojo::PendingReceiver<mojom::DesktopSessionEvents>
-                 desktop_events_receiver,
+             mojo::PendingRemote<mojom::DesktopSessionRequester>
+                 desktop_session_requester,
              mojo::PendingRemote<mojom::IceConfigFetcher> ice_config_fetcher,
              mojo::PendingRemote<mojom::PairingRequester> pairing_requester,
              const DesktopEnvironmentOptions& desktop_environment_options,
@@ -127,9 +126,8 @@ class PeerConnectionProcess : public IPC::Listener,
       control_receiver_{this};
   mojo::Receiver<mojom::PeerSession> session_receiver_{this};
 
-  mojo::PendingRemote<mojom::DesktopSession> desktop_session_control_remote_;
-  mojo::PendingReceiver<mojom::DesktopSessionEvents>
-      desktop_session_events_receiver_;
+  mojo::Remote<mojom::DesktopSessionRequester>
+      desktop_session_requester_remote_;
 
   std::unique_ptr<IpcDesktopEnvironmentFactory> desktop_environment_factory_;
   mojo::Remote<mojom::PeerSessionEventHandler> event_handler_;

@@ -34,7 +34,8 @@ class IpcPeerSession : public PeerSession,
                        public protocol::Transport,
                        public mojom::TransportEventHandler,
                        public mojom::IceConfigFetcher,
-                       public mojom::PairingRequester {
+                       public mojom::PairingRequester,
+                       public mojom::DesktopSessionRequester {
  public:
   using GetDesktopSessionCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<mojom::DesktopSession>,
@@ -79,6 +80,12 @@ class IpcPeerSession : public PeerSession,
   void RequestPairing(const std::string& client_name,
                       RequestPairingCallback callback) override;
 
+  // mojom::DesktopSessionRequester interface:
+  void RequestDesktopSession(
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      const ScreenResolution& screen_resolution) override;
+
  private:
   void OnPeerSessionDisconnected();
   void OnEventHandlerDisconnected();
@@ -98,11 +105,18 @@ class IpcPeerSession : public PeerSession,
       transport_event_handler_receiver_{this};
   mojo::Receiver<mojom::IceConfigFetcher> ice_config_fetcher_receiver_{this};
   mojo::Receiver<mojom::PairingRequester> pairing_requester_receiver_{this};
+  mojo::Receiver<mojom::DesktopSessionRequester>
+      desktop_session_requester_receiver_{this};
   raw_ptr<EventHandler> event_handler_ = nullptr;
   GetDesktopSessionCallback get_desktop_session_callback_;
   std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher_;
   PeerSessionFactory::RequestPairingOnceCallback request_pairing_cb_;
   SendTransportInfoCallback send_transport_info_callback_;
+
+  // Options for creating the desktop session. `screen_resolution` remains
+  // unpopulated until `RequestDesktopSession()` is called. Reset to null once
+  // the desktop session is requested.
+  mojom::DesktopSessionOptionsPtr desktop_session_options_;
 
   base::WeakPtrFactory<IpcPeerSession> weak_factory_{this};
 };
