@@ -223,6 +223,51 @@ TEST_F(LocalFrameViewTest, CanHaveScrollbarsIfScrollingAttrEqualsNoChanged) {
   EXPECT_TRUE(ChildDocument().View()->CanHaveScrollbars());
 }
 
+TEST_F(LocalFrameViewTest, ConvertFromToRootFrameWithRotation) {
+  SetBodyInnerHTML(R"HTML(
+    <iframe id="frame" style="position: absolute; left: 10px; top: 20px;
+        width: 200px; height: 200px; border: none; transform: rotate(90deg);">
+    </iframe>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  gfx::Rect rect(100, 100, 50, 80);
+
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    EXPECT_EQ(gfx::Rect(80, 60, 80, 50),
+              ChildFrame().View()->ConvertFromRootFrame(rect));
+  } else {
+    // Incorrect.
+    EXPECT_EQ(gfx::Rect(90, 80, 50, 80),
+              ChildFrame().View()->ConvertFromRootFrame(rect));
+  }
+  EXPECT_EQ(gfx::Rect(30, 120, 80, 50),
+            ChildFrame().View()->ConvertToRootFrame(rect));
+}
+
+TEST_F(LocalFrameViewTest, ConvertFromToRootFrameWithScale) {
+  SetBodyInnerHTML(R"HTML(
+    <iframe id="frame" style="position: absolute; left: 10px; top: 20px;
+        width: 200px; height: 200px; border: none;
+        transform-origin: 0 0; transform: scale(2);">
+    </iframe>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  gfx::Rect rect(100, 100, 50, 80);
+
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    EXPECT_EQ(gfx::Rect(45, 40, 25, 40),
+              ChildFrame().View()->ConvertFromRootFrame(rect));
+  } else {
+    // Incorrect.
+    EXPECT_EQ(gfx::Rect(90, 80, 50, 80),
+              ChildFrame().View()->ConvertFromRootFrame(rect));
+  }
+  EXPECT_EQ(gfx::Rect(210, 220, 100, 160),
+            ChildFrame().View()->ConvertToRootFrame(rect));
+}
+
 TEST_F(LocalFrameViewTest,
        MainThreadScrollingForBackgroundFixedAttachmentWithCompositing) {
   SetPreferCompositingToLCDText(true);

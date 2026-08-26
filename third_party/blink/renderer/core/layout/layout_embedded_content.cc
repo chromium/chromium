@@ -145,6 +145,12 @@ gfx::PointF LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
   return EmbeddedContentTransform().Inverse().MapPoint(point);
 }
 
+gfx::Rect LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
+    const gfx::Rect& rect) const {
+  NOT_DESTROYED();
+  return EmbeddedContentTransform().Inverse().MapRect(rect);
+}
+
 PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
     const PhysicalOffset& offset) const {
   NOT_DESTROYED();

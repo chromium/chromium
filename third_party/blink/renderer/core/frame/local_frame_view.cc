@@ -3773,6 +3773,16 @@ gfx::Rect LocalFrameView::ConvertToContainingEmbeddedContentView(
 gfx::Rect LocalFrameView::ConvertFromContainingEmbeddedContentView(
     const gfx::Rect& parent_rect) const {
   if (ParentFrameView()) {
+    if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+      auto* layout_object = GetLayoutEmbeddedContent();
+      if (!layout_object) {
+        return parent_rect;
+      }
+
+      return layout_object->EmbeddedContentFromBorderBox(ToEnclosingRect(
+          layout_object->AbsoluteToLocalRect(PhysicalRect(parent_rect))));
+    }
+
     gfx::Rect local_rect = parent_rect;
     local_rect.Offset(-DeprecatedLocation().OffsetFromOrigin());
     return local_rect;
