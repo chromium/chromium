@@ -622,6 +622,8 @@ PrefetchContainer::~PrefetchContainer() {
   // https://chromium-review.googlesource.com/c/chromium/src/+/5657659/comments/0cfb14c0_3050963e
   //
   // TODO(crbug.com/356314759): Do it.
+
+  OnStale();
   NotifyObservers(&PrefetchContainerObserver::OnWillBeDestroyed);
 
   CancelStreamingURLLoaderIfNotServing();
@@ -1070,6 +1072,10 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
            << new_load_state;
 
   load_state_ = new_load_state;
+
+  if (IsPrefetchStale()) {
+    OnStale();
+  }
 }
 
 PrefetchContainer::LoadState PrefetchContainer::GetLoadState() const {
@@ -2263,6 +2269,23 @@ void PrefetchContainer::RecordPrefetchContainerServedCountHistogram() {
       base::StrCat(
           {"Prefetch.PrefetchContainer.ServedCount.", GetMetricsSuffix()}),
       served_count_);
+}
+
+// Called when `this` is stale.
+// TODO(crbug.com/551306029): Currently, expiration of
+// `PrefetchCacheableDuration()` does not trigger `OnStale`
+// reactively. Support staleness notifications upon cache expiration.
+// For WebView Prefetch, this is no-op, because `PrefetchCacheableDuration()` is
+// longer than TTL so `PrefetchContainer` is destroyed before that.
+void PrefetchContainer::OnStale() {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
+    return;
+  }
+  if (is_stale_notified_) {
+    return;
+  }
+  is_stale_notified_ = true;
+  NotifyObservers(&PrefetchContainerObserver::OnPrefetchStale);
 }
 
 }  // namespace content

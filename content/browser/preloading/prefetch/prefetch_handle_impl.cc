@@ -14,7 +14,8 @@ namespace content {
 class PrefetchHandleImpl::PrefetchContainerObserverForCallback final
     : public PrefetchContainerObserver {
  public:
-  PrefetchContainerObserverForCallback() = default;
+  explicit PrefetchContainerObserverForCallback(
+      scoped_refptr<PrefetchStalenessAtomicState> is_stale);
   ~PrefetchContainerObserverForCallback() override = default;
 
   // Not movable nor copyable.
@@ -43,8 +44,10 @@ class PrefetchHandleImpl::PrefetchContainerObserverForCallback final
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override;
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override;
 
  private:
+  scoped_refptr<PrefetchStalenessAtomicState> is_stale_;
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       on_prefetch_head_received_;
   base::RepeatingCallback<void(
@@ -52,6 +55,13 @@ class PrefetchHandleImpl::PrefetchContainerObserverForCallback final
       const std::optional<int>& response_code)>
       on_prefetch_completed_or_failed_;
 };
+
+PrefetchHandleImpl::PrefetchContainerObserverForCallback::
+    PrefetchContainerObserverForCallback(
+        scoped_refptr<PrefetchStalenessAtomicState> is_stale)
+    : is_stale_(std::move(is_stale)) {
+  CHECK(is_stale_);
+}
 
 void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
     SetOnPrefetchHeadReceivedCallback(
@@ -71,6 +81,11 @@ void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
 
 void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
     OnWillBeDestroyed(const PrefetchContainer& prefetch_container) {}
+
+void PrefetchHandleImpl::PrefetchContainerObserverForCallback::OnPrefetchStale(
+    const PrefetchContainer& prefetch_container) {
+  is_stale_->is_stale.store(true, std::memory_order_relaxed);
+}
 
 void PrefetchHandleImpl::PrefetchContainerObserverForCallback::
     OnGotInitialEligibility(const PrefetchContainer& prefetch_container) {}
@@ -126,7 +141,9 @@ PrefetchHandleImpl::PrefetchHandleImpl(
     base::WeakPtr<PrefetchService> prefetch_service,
     base::WeakPtr<PrefetchContainer> prefetch_container)
     : prefetch_service_(std::move(prefetch_service)),
-      prefetch_container_(std::move(prefetch_container)) {
+      prefetch_container_(std::move(prefetch_container)),
+      is_stale_(base::MakeRefCounted<PrefetchStalenessAtomicState>(
+          !prefetch_container_ || prefetch_container_->IsPrefetchStale())) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefetch_service_);
   // Note that `prefetch_container_` can be nullptr.
@@ -134,11 +151,11 @@ PrefetchHandleImpl::PrefetchHandleImpl(
   if (base::FeatureList::IsEnabled(
           features::kPrefetchAsyncPrefetchHandleCallback)) {
     prefetch_container_async_observer_ = AsyncObserverForCallback::Create(
-        std::make_unique<PrefetchContainerObserverForCallback>());
+        std::make_unique<PrefetchContainerObserverForCallback>(is_stale_));
     CHECK(prefetch_container_async_observer_);
   } else {
     prefetch_container_observer_ =
-        std::make_unique<PrefetchContainerObserverForCallback>();
+        std::make_unique<PrefetchContainerObserverForCallback>(is_stale_);
   }
 
   if (prefetch_container_) {
@@ -202,6 +219,17 @@ void PrefetchHandleImpl::SetOnPrefetchCompletedOrFailedCallback(
 bool PrefetchHandleImpl::IsAlive() const {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   return static_cast<bool>(prefetch_container_);
+}
+
+bool PrefetchHandleImpl::IsPrefetchStale() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  return is_stale_->is_stale.load(std::memory_order_relaxed);
+}
+
+scoped_refptr<PrefetchStalenessAtomicState>
+PrefetchHandleImpl::GetStalenessAtomicState() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  return is_stale_;
 }
 
 void PrefetchHandleImpl::SetPrefetchStatusOnReleaseStartedPrefetch(
