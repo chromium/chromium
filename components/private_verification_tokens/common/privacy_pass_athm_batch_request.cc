@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
@@ -78,6 +79,11 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
                               marshaled_req.end());
     client_requests.push_back(std::move(*bridge_result));
   }
+
+  std::array<uint8_t, sizeof(uint32_t)> version_bytes =
+      base::U32ToBigEndian(issuer_config.public_key.version());
+  batch_request_body.insert(batch_request_body.end(), version_bytes.begin(),
+                            version_bytes.end());
 
   return PrivacyPassAthmBatchRequest(
       issuer_config.public_key, std::move(*params), std::move(client_requests),

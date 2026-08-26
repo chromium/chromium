@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/private_verification_tokens/common/athm_test_issuer.h"
@@ -80,7 +81,11 @@ TEST(PrivacyPassAthmBatchRequestTest, RoundtripBatchIssuance) {
           PrivacyPassAthmBatchRequest::Create(issuer_config, kNumBuckets);
   ASSERT_TRUE(batch_request.has_value());
   EXPECT_EQ(batch_request->request_body().size(),
-            kBatchSize * params->single_request_size);
+            kBatchSize * params->single_request_size + sizeof(uint32_t));
+  EXPECT_EQ(
+      base::U32FromBigEndian(
+          base::span(batch_request->request_body()).last<sizeof(uint32_t)>()),
+      issuer_config.public_key.version());
 
   const uint8_t hidden_metadata = 1;
   std::optional<std::string> batch_response = issuer->BatchIssue(
@@ -146,9 +151,18 @@ TEST(PrivacyPassAthmBatchRequestTest, SingleUseFinalization) {
           PrivacyPassAthmBatchRequest::Create(issuer_config, kNumBuckets);
   ASSERT_TRUE(batch_request.has_value());
 
+  auto params = GetParametersForVersion(1);
+  ASSERT_TRUE(params.has_value());
+  ASSERT_EQ(batch_request->request_body().size(),
+            params->single_request_size + sizeof(uint32_t));
+  EXPECT_EQ(
+      base::U32FromBigEndian(
+          base::span(batch_request->request_body()).last<sizeof(uint32_t)>()),
+      issuer_config.public_key.version());
+
   std::string_view req_str(
       reinterpret_cast<const char*>(batch_request->request_body().data()),
-      batch_request->request_body().size());
+      params->single_request_size);
   anonymous_tokens::AthmTokenRequest unmarshaled_req;
   absl::Status req_status =
       anonymous_tokens::UnmarshalAthmTokenRequest(req_str, &unmarshaled_req);

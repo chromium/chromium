@@ -63,7 +63,8 @@ class PrivacyPassAthmBatchRequest {
       delete;
 
   // The serialized HTTP request body containing the concatenated marshaled
-  // AthmTokenRequest structures (each 36 bytes) for all tokens in the batch.
+  // AthmTokenRequest structures (each 36 bytes) for all tokens in the batch
+  // followed by the 4-byte version number in big-endian order.
   const std::vector<uint8_t>& request_body() const { return request_body_; }
 
   // Unblinds and finalizes the batch response returned by the issuance server.

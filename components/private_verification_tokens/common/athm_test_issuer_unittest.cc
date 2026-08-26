@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
@@ -415,6 +416,15 @@ TEST(AthmTestIssuerTest, BatchIssue_StringOverload_Success) {
           PrivacyPassAthmBatchRequest::Create(issuer_config, kBucketCount);
   ASSERT_TRUE(batch_request.has_value());
 
+  auto params = GetParametersForVersion(1);
+  ASSERT_TRUE(params.has_value());
+  EXPECT_EQ(batch_request->request_body().size(),
+            kBatchSize * params->single_request_size + sizeof(uint32_t));
+  EXPECT_EQ(
+      base::U32FromBigEndian(
+          base::span(batch_request->request_body()).last<sizeof(uint32_t)>()),
+      1u);
+
   constexpr uint8_t kMetadata = 1;
   std::optional<std::string> response_body = issuer->BatchIssue(
       base::as_string_view(batch_request->request_body()), kMetadata);
@@ -459,6 +469,51 @@ TEST(AthmTestIssuerTest,
 
   std::optional<std::string> response_body =
       issuer->BatchIssue("not_36_bytes", /*hidden_metadata=*/0);
+  EXPECT_FALSE(response_body.has_value());
+}
+
+TEST(AthmTestIssuerTest,
+     BatchIssue_StringOverload_UnsupportedVersion_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("batch-str-bad-ver"));
+  ASSERT_TRUE(issuer.has_value());
+
+  std::optional<AthmTestClient> client =
+      AthmTestClient::Create(issuer->public_key(), issuer->public_key_proof(),
+                             kBucketCount, DeploymentId("batch-str-bad-ver"));
+  ASSERT_TRUE(client.has_value());
+
+  std::optional<AthmClientRequest> valid_req = client->CreateClientRequest();
+  ASSERT_TRUE(valid_req.has_value());
+
+  std::optional<std::vector<uint8_t>> formatted_valid_req =
+      CreateAthmTokenRequestBytes(
+          PrivateVerificationTokensParameters::kAthmTokenType,
+          issuer->truncated_key_id(), base::ToVector(valid_req->request()));
+  ASSERT_TRUE(formatted_valid_req.has_value());
+
+  // Append unsupported version number 2 as 4 bytes in big-endian.
+  std::vector<uint8_t> request_body = *formatted_valid_req;
+  std::array<uint8_t, sizeof(uint32_t)> version_bytes =
+      base::U32ToBigEndian(2u);
+  request_body.insert(request_body.end(), version_bytes.begin(),
+                      version_bytes.end());
+
+  std::optional<std::string> response_body = issuer->BatchIssue(
+      base::as_string_view(request_body), /*hidden_metadata=*/0);
+  EXPECT_FALSE(response_body.has_value());
+}
+
+TEST(AthmTestIssuerTest,
+     BatchIssue_StringOverload_OnlyVersionBytes_ReturnsNullopt) {
+  std::optional<AthmTestIssuer> issuer =
+      AthmTestIssuer::Create(kBucketCount, DeploymentId("batch-str-ver-only"));
+  ASSERT_TRUE(issuer.has_value());
+
+  // 4-byte body with version = 1, but no token requests.
+  std::array<uint8_t, sizeof(uint32_t)> version_only = base::U32ToBigEndian(1u);
+  std::optional<std::string> response_body = issuer->BatchIssue(
+      base::as_string_view(version_only), /*hidden_metadata=*/0);
   EXPECT_FALSE(response_body.has_value());
 }
 

@@ -80,11 +80,12 @@ class AthmTestIssuer {
       uint8_t hidden_metadata) const;
 
   // Issuer side: processes a concatenated batch request body `request_body`
-  // (sliced into single wire-formatted request chunks according to Version 1
-  // parameters) by delegating to the vector BatchIssue() overload. Returns the
-  // concatenated serialized token responses as a string, or nullopt if
-  // `request_body` has an invalid/empty size, or if any request fails
-  // validation or signing.
+  // (sliced into single wire-formatted request chunks according to the 4-byte
+  // version number extracted from the end of the request body) by delegating to
+  // the vector BatchIssue() overload. Returns the concatenated serialized token
+  // responses as a string, or nullopt if `request_body` has an invalid/empty
+  // size, an unsupported version, or if any request fails validation or
+  // signing.
   std::optional<std::string> BatchIssue(std::string_view request_body,
                                         uint8_t hidden_metadata) const;
 

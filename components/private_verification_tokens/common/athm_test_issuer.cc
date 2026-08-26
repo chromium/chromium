@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
@@ -89,23 +90,34 @@ std::optional<std::vector<std::vector<uint8_t>>> AthmTestIssuer::BatchIssue(
 std::optional<std::string> AthmTestIssuer::BatchIssue(
     std::string_view request_body,
     uint8_t hidden_metadata) const {
+  constexpr size_t kVersionSize = sizeof(uint32_t);
+  if (request_body.size() < kVersionSize) {
+    return std::nullopt;
+  }
+
+  base::span<const uint8_t> request_body_span =
+      base::as_byte_span(request_body);
+  const uint32_t version =
+      base::U32FromBigEndian(request_body_span.last<kVersionSize>());
   std::optional<PrivateVerificationTokensParameters> params =
-      GetParametersForVersion(1);
+      GetParametersForVersion(version);
   if (!params.has_value()) {
     return std::nullopt;
   }
 
-  if (request_body.empty() ||
-      request_body.size() % params->single_request_size != 0) {
+  std::string_view token_requests =
+      request_body.substr(0, request_body.size() - kVersionSize);
+  if (token_requests.empty() ||
+      token_requests.size() % params->single_request_size != 0) {
     return std::nullopt;
   }
 
-  const size_t batch_size = request_body.size() / params->single_request_size;
+  const size_t batch_size = token_requests.size() / params->single_request_size;
   std::vector<std::vector<uint8_t>> requests;
   requests.reserve(batch_size);
   for (size_t i = 0; i < batch_size; ++i) {
     base::span<const uint8_t> single_req =
-        base::as_byte_span(request_body)
+        base::as_byte_span(token_requests)
             .subspan(i * params->single_request_size,
                      params->single_request_size);
     requests.push_back(base::ToVector(single_req));
