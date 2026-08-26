@@ -76,9 +76,6 @@ class SignInFunctions {
                              const TestAccountSigninCredentials& test_account,
                              int previously_signed_in_accounts);
 
-  void TurnOnSync(const TestAccountSigninCredentials& test_account,
-                  int previously_signed_in_accounts);
-
   void SignOutFromWeb();
 
   void SignOut();

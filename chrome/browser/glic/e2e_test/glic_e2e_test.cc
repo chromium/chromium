@@ -213,7 +213,10 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
                 }));
     // Sign in to opted in test account.
     CHECK(test_account.has_value());
-    sign_in_functions.TurnOnSync(*test_account, 0);
+    sign_in_functions.SignInFromSettingsWithSyncChoice(
+        *test_account, 0,
+        signin::test::SignInFunctions::SyncChoice::
+            kAcceptAllOptionalDataTypesSync);
   } else {
     SigninWithPrimaryAccount(browser()->GetProfile());
     SetGlicCapability(browser()->GetProfile(), true);

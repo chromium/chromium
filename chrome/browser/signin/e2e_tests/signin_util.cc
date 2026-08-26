@@ -181,20 +181,6 @@ void SignInFunctions::SignInFromCurrentPage(
                                  PrimaryAccountWait::kNotWait);
 }
 
-void SignInFunctions::TurnOnSync(
-    const TestAccountSigninCredentials& test_account,
-    int previously_signed_in_accounts) {
-  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  SignInFromSettings(test_account, previously_signed_in_accounts);
-
-  SignInTestObserver observer(identity_manager(browser_.Run()),
-                              account_reconcilor(browser_.Run()));
-  EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(
-      browser_.Run(), kDialogTimeout));
-  observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
-                                 PrimaryAccountWait::kWaitForAdded);
-}
-
 void SignInFunctions::SignOutFromWeb() {
   SignInTestObserver observer(identity_manager(browser_.Run()),
                               account_reconcilor(browser_.Run()),

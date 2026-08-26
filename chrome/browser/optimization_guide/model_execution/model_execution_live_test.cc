@@ -78,7 +78,10 @@ class ModelExecutionLiveTest : public signin::test::LiveTest {
 IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest, PRE_SimpleSyncFlow) {
   signin::test::TestAccount ta;
   CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-  sign_in_functions.TurnOnSync(ta, 0);
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      ta, 0,
+      signin::test::SignInFunctions::SyncChoice::
+          kAcceptAllOptionalDataTypesSync);
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(IsSettingVisible(
@@ -110,7 +113,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest,
                        PRE_SimpleSyncFlowForMinorAccount) {
   signin::test::TestAccount ta;
   CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_MINOR", ta));
-  sign_in_functions.TurnOnSync(ta, 0);
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      ta, 0,
+      signin::test::SignInFunctions::SyncChoice::
+          kAcceptAllOptionalDataTypesSync);
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(IsSettingVisible(
