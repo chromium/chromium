@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
@@ -36,6 +37,8 @@ typedef base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>
 // example of this showing up is on Ungroup from the tab group editor bubble.
 class DeletionDialogController : public TabStripModelObserver {
  public:
+  DECLARE_USER_DATA(DeletionDialogController);
+
   // Mapping of the different text strings and user preferences on this dialog.
   enum class DialogType {
     // Saved tab group dialogs.
@@ -95,6 +98,9 @@ class DeletionDialogController : public TabStripModelObserver {
     std::optional<base::OnceClosure> keep_groups;
   };
 
+  // Returns the controller for `browser`, or null if it does not have one.
+  static DeletionDialogController* From(BrowserWindowInterface* browser);
+
   DeletionDialogController(BrowserWindowInterface* browser,
                            Profile* profile,
                            TabStripModel* tab_strip_model);
@@ -139,6 +145,8 @@ class DeletionDialogController : public TabStripModelObserver {
   void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);
 
  private:
+  ui::ScopedUnownedUserData<DeletionDialogController> scoped_unowned_user_data_;
+
   // Builds a DialogModel for showing the dialog.
   std::unique_ptr<ui::DialogModel> BuildDialogModel(
       const DialogMetadata& dialog_metadata);

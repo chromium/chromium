@@ -248,10 +248,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   base::HistogramTester histogram_tester;
 
   // Allow the Ungroup command to be immediately performed for saved groups.
-  if (browser()->GetFeatures().tab_group_deletion_dialog_controller()) {
-    browser()
-        ->GetFeatures()
-        .tab_group_deletion_dialog_controller()
+  if (tab_groups::DeletionDialogController::From(browser())) {
+    tab_groups::DeletionDialogController::From(browser())
         ->SetPrefsPreventShowingDialogForTesting(
             /*should_prevent_dialog=*/true);
   }
@@ -429,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
 
   // Make sure the dialog is shown, and fake clicking the button.
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
   EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
 
   // Pull the dialog state and call the OnDialogOk method.
@@ -443,7 +441,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
                        CloseGroupedTab) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
 
@@ -453,9 +450,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   tsm->ActivateTabAt(0);
   tsm->CloseSelectedTabs();
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser_view->browser()
-          ->GetFeatures()
-          .tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
 
   EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
 
@@ -467,14 +462,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
                        CloseGroupedTabWithPreventShowDialog) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
 
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser_view->browser()
-          ->GetFeatures()
-          .tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
   deletion_dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
 
   TabStripModel* tsm = browser()->GetTabStripModel();

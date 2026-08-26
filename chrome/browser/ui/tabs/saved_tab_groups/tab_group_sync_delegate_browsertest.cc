@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
@@ -1170,7 +1171,7 @@ class TabGroupSyncDelegateBrowserTestWithFocusing
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTestWithFocusing,
                        DeleteSavedGroupWhenAllTabsInWindowAreInGroupWithFocus) {
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
   deletion_dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
 
   // Tab 0 is in the browser. Add to new group.

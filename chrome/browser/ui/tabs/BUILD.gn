@@ -197,6 +197,7 @@ if (!is_android) {
       ":tab_strip_model_observer",
       "//base",
       "//components/tab_groups",
+      "//ui/base/unowned_user_data",
       "//ui/color:color_headers",
       "//ui/gfx/range",
     ]

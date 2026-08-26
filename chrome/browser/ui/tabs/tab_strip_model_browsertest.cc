@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
 
   // Make sure the dialog is shown, and fake clicking the button.
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
   EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
 
   // Pull the dialog state and call the OnDialogOk method.
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
 
   // Make sure the dialog is shown, and fake clicking the button.
   tab_groups::DeletionDialogController* deletion_dialog_controller =
-      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+      tab_groups::DeletionDialogController::From(browser());
   EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
 
   // Pull the dialog state and call the OnDialogOk method.

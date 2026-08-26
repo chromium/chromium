@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -470,9 +471,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       PressButton(kTabGroupEditorBubbleDeleteGroupButtonId),
       // Accept the deletion dialog.
       Do([&]() {
-        browser()
-            ->GetFeatures()
-            .tab_group_deletion_dialog_controller()
+        tab_groups::DeletionDialogController::From(browser())
             ->SimulateOkButtonForTesting();
       }),
       EnsureNotPresent(kSavedTabGroupButtonElementId));

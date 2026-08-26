@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                              CloseTabSource::kFromMouse);
 
         tab_groups::DeletionDialogController* deletion_dialog_controller =
-            browser()->GetFeatures().tab_group_deletion_dialog_controller();
+            tab_groups::DeletionDialogController::From(browser());
         if (deletion_dialog_controller &&
             deletion_dialog_controller->IsShowingDialog()) {
           deletion_dialog_controller->SimulateOkButtonForTesting();

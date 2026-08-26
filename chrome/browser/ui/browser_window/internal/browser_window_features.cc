@@ -533,8 +533,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   }
 
   tab_group_deletion_dialog_controller_ =
-      std::make_unique<tab_groups::DeletionDialogController>(browser, profile,
-                                                             tab_strip_model_);
+      GetUserDataFactory().CreateInstance<tab_groups::DeletionDialogController>(
+          *browser, browser, profile, tab_strip_model_);
 
   tab_menu_model_delegate_ =
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(

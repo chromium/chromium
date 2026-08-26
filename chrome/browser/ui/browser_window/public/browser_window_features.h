@@ -449,10 +449,6 @@ class BrowserWindowFeatures {
     return synced_window_delegate_.get();
   }
 
-  tab_groups::DeletionDialogController* tab_group_deletion_dialog_controller() {
-    return tab_group_deletion_dialog_controller_.get();
-  }
-
   TabMenuModelDelegate* tab_menu_model_delegate() {
     return tab_menu_model_delegate_.get();
   }
