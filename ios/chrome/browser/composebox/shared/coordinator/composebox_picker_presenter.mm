@@ -6,19 +6,36 @@
 
 #import <PhotosUI/PhotosUI.h>
 
+#import "base/feature_list.h"
 #import "base/memory/weak_ptr.h"
+#import "components/contextual_search/input_state_model.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/lens/lens_features.h"
+#import "components/omnibox/common/omnibox_features.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_api.h"
+#import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_configuration.h"
 
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
                                          UIDocumentPickerDelegate,
                                          UIImagePickerControllerDelegate,
                                          UINavigationControllerDelegate>
+
+// The service managing the active privacy primitive (ConsentKit) flow.
+@property(nonatomic, strong) id<PrivacyPrimitiveService>
+    privacyPrimitiveService;
+
 @end
 
 @implementation ComposeboxPickerPresenter {
@@ -128,6 +145,69 @@
 }
 
 - (void)presentDriveFilePicker {
+  if (!_browser) {
+    return;
+  }
+
+  ProfileIOS* profile = _browser->GetProfile();
+  PrefService* prefService = profile->GetPrefs();
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
+
+  auto consentState = static_cast<contextual_search::DriveConsentState>(
+      prefService->GetInteger(contextual_search::kDriveConsentState));
+
+  // TODO(crbug.com/551907302): Scope Drive consent state per GAIA ID or clear
+  // it on account switch so consent is not shared across accounts in the same
+  // Profile.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOptionDisclaimer) &&
+      !base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted) &&
+      consentState != contextual_search::DriveConsentState::kConsent &&
+      identity) {
+    PrivacyPrimitiveConfiguration* config =
+        [[PrivacyPrimitiveConfiguration alloc] init];
+    config.identity = identity;
+    config.flowID = omnibox::kComposeboxDriveConsentFlowId.Get();
+    config.productID = omnibox::kComposeboxDriveConsentProductId.Get();
+
+    self.privacyPrimitiveService =
+        ios::provider::CreatePrivacyPrimitiveService(config);
+    if (!self.privacyPrimitiveService) {
+      [self showDriveFilePickerInternal];
+      return;
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    [self.privacyPrimitiveService
+        showFlowWithPresentingViewController:_baseViewController
+                           completionHandler:^(BOOL success) {
+                             [weakSelf privacyPrimitiveFlowCompletedWithSuccess:
+                                           success];
+                           }];
+    return;
+  }
+
+  [self showDriveFilePickerInternal];
+}
+
+- (void)privacyPrimitiveFlowCompletedWithSuccess:(BOOL)success {
+  self.privacyPrimitiveService = nil;
+  if (!success || !_browser) {
+    return;
+  }
+  PrefService* prefs = _browser->GetProfile()->GetPrefs();
+  prefs->SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+  [self showDriveFilePickerInternal];
+}
+
+- (void)showDriveFilePickerInternal {
+  if (!_browser) {
+    return;
+  }
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
       _browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerCommands

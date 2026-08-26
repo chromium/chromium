@@ -1,6 +1,14 @@
 include_rules = [
   # keep-sorted start
+  "+components/contextual_search",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/tab_picker/coordinator",
-  "+ios/chrome/browser/tab_switcher/ui_bundled"
+  "+ios/chrome/browser/tab_switcher/ui_bundled",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  ".*unittest\\..*": [
+    "+ios/chrome/browser/sync/model",
+  ],
+}

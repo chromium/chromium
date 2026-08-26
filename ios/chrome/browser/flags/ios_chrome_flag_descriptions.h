@@ -466,6 +466,12 @@ inline constexpr char kComposeboxDevToolsDescription[] =
     "Enables development tools for the composebox, allowing simulation of "
     "delays and failures.";
 
+inline constexpr char kComposeboxDriveContextMenuOptionDisclaimerName[] =
+    "Enable Composebox Drive disclaimer";
+inline constexpr char kComposeboxDriveContextMenuOptionDisclaimerDescription[] =
+    "Enables Google Drive disclaimer and ConsentKit flow before attaching "
+    "Drive files in Composebox.";
+
 inline constexpr char kComposeboxDriveContextMenuOptionName[] =
     "Enable Composebox Drive option";
 inline constexpr char kComposeboxDriveContextMenuOptionDescription[] =
