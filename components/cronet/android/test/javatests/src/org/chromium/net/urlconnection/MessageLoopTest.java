@@ -39,8 +39,6 @@ public class MessageLoopTest {
         }
     }
 
-    private boolean mFailed;
-
     @Test
     @SmallTest
     public void testInterrupt() throws Exception {

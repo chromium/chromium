@@ -34,8 +34,6 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
         reason = "Fallback does not support H2")
 @DoNotBatch(reason = "crbug/1459563")
 public class CronetUrlRequestH2Test {
-    private static final String TAG = CronetUrlRequestH2Test.class.getSimpleName();
-
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     @Before

@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
-import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UrlRequest;
@@ -27,8 +26,6 @@ import org.chromium.net.UrlRequest;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class AndroidCallbackWrapperTest {
-    private NativeTestServer mNativeTestServer;
-
     @Before
     public void setUp() throws Exception {
         assume().that(Build.VERSION.SDK_INT).isAtLeast(Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
