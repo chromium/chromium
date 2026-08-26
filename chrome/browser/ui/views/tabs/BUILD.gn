@@ -149,3 +149,54 @@ source_set("tab_group_impl") {
     "//ui/views",
   ]
 }
+
+source_set("tab_style_views") {
+  sources = [
+    "horizontal_tab_style_views.h",
+    "tab_style_views.h",
+    "vertical_tab_style_views.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("tab_style_views_impl") {
+  sources = [
+    "horizontal_tab_style_views.cc",
+    "tab_style_views.cc",
+    "vertical_tab_style_views.cc",
+  ]
+
+  deps = [
+    ":base",
+    ":tab_group",
+    ":tab_style_views",
+    "//base",
+    "//base:i18n",
+    "//cc/paint",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/common:impl",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
