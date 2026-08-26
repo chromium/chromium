@@ -54,6 +54,15 @@ void ApplyChromeRefresh2026ColorOverrides(ui::ColorMixer& mixer) {
   mixer[ui::kColorToolbarSearchFieldBackground] = {ui::kColorSysSurface4};
 }
 
+void ApplyChromeSettingsRefresh2026ColorOverrides(ui::ColorMixer& mixer) {
+  if (!base::FeatureList::IsEnabled(features::kSettingsRefresh2026)) {
+    return;
+  }
+
+  // Settings page colors.
+  mixer[kColorSettingsWebuiPageBackground] = {ui::kColorSysSurface2};
+}
+
 }  // namespace
 
 void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
@@ -532,4 +541,5 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysInversePrimary};
 
   ApplyChromeRefresh2026ColorOverrides(mixer);
+  ApplyChromeSettingsRefresh2026ColorOverrides(mixer);
 }

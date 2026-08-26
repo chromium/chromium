@@ -156,9 +156,10 @@ export class SettingsUiElement extends SettingsUiElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    const enableWebuiRefresh2026 =
-        loadTimeData.getString('webuiRefresh2026') !== '';
-    if (enableWebuiRefresh2026) {
+    const enableThemedColors =
+        loadTimeData.getString('webuiRefresh2026') !== '' ||
+        loadTimeData.getString('settingsRefresh2026') !== '';
+    if (enableThemedColors) {
       this.addThemedColors_();
       ColorChangeUpdater.forDocument().start();
     }
