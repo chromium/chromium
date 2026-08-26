@@ -133,9 +133,6 @@ public class VerticalTabUtils {
     /** Feature parameter name for enabling external drag. */
     public static final String EXTERNAL_DRAG_PARAM = "external_drag";
 
-    /** Feature parameter name for enabling tab group hover cards. */
-    public static final String GROUP_HOVER_CARD_PARAM = "group_hover_card";
-
     /** Feature parameter name for enabling the incognito button in the footer. */
     public static final String INCOGNITO_BUTTON_PARAM = "incognito_button";
 
@@ -261,14 +258,6 @@ public class VerticalTabUtils {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 EXTERNAL_DRAG_PARAM,
-                /* defaultValue= */ false);
-    }
-
-    /** Returns whether tab group hover cards are enabled for Vertical Tabs. */
-    public static boolean isGroupHoverCardEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                GROUP_HOVER_CARD_PARAM,
                 /* defaultValue= */ false);
     }
 

@@ -144,22 +144,6 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testIsGroupHoverCardEnabled_DefaultDisabled() {
-        assertFalse(VerticalTabUtils.isGroupHoverCardEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsGroupHoverCardEnabled_EnabledViaOverride() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.GROUP_HOVER_CARD_PARAM,
-                /* testValue= */ true);
-        assertTrue(VerticalTabUtils.isGroupHoverCardEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testIsIncognitoButtonEnabled_DefaultDisabled() {
         assertFalse(VerticalTabUtils.isIncognitoButtonEnabled());
     }
