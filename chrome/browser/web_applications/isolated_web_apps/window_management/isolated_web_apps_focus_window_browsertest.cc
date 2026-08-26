@@ -8,10 +8,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_view_focus_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
@@ -21,6 +24,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace web_app {
@@ -28,30 +33,49 @@ namespace web_app {
 namespace {
 
 content::RenderFrameHost* GetMainFrame(const BrowserWindowInterface& browser) {
-  content::WebContents* web_contents =
-      browser.tab_strip_model()->GetActiveWebContents();
-  return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
+  return browser.tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetPrimaryMainFrame();
 }
 
-bool WaitForMainFrameToFocus(BrowserWindowInterface* browser) {
-  return base::test::RunUntil([browser]() -> bool {
-    content::RenderFrameHost* frame = GetMainFrame(*browser);
-    if (!frame) {
-      return false;
+std::vector<content::WebContents*> GetAllWebContents(
+    BrowserWindowInterface* browser) {
+  std::vector<content::WebContents*> web_contents = {
+      browser->tab_strip_model()->GetActiveWebContents()};
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (WebUIToolbarWebView* webui_toolbar =
+          browser_view->toolbar_button_provider()
+              ->GetWebUIToolbarViewForTesting()) {
+    if (content::WebContents* toolbar_contents =
+            webui_toolbar->GetWebViewForTesting()->web_contents()) {
+      web_contents.push_back(toolbar_contents);
     }
-    content::RenderWidgetHostView* view = frame->GetView();
-    return view != nullptr && view->HasFocus();
-  });
+  }
+  return web_contents;
 }
 
 bool IsMainFrameFocused(BrowserWindowInterface* browser) {
-  content::RenderFrameHost* frame = GetMainFrame(*browser);
-  if (!frame) {
-    return false;
-  }
-  return content::EvalJs(frame, "document.hasFocus()",
+  return content::EvalJs(GetMainFrame(*browser), "document.hasFocus()",
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
       .ExtractBool();
+}
+
+bool WaitForMainFrameToFocus(BrowserWindowInterface* browser) {
+  views::FocusManager* focus_manager =
+      BrowserView::GetBrowserViewForBrowser(browser)->GetFocusManager();
+  std::vector<content::WebContents*> web_contents = GetAllWebContents(browser);
+
+  return base::test::RunUntil([&]() {
+    ui_test_utils::FocusChangeObserver observer(focus_manager, web_contents);
+    if (GetMainFrame(*browser)->GetView()->HasFocus() &&
+        IsMainFrameFocused(browser)) {
+      return true;
+    }
+
+    observer.WaitForFocusChange(base::Seconds(1));
+    return GetMainFrame(*browser)->GetView()->HasFocus() &&
+           IsMainFrameFocused(browser);
+  });
 }
 
 bool IsWindowActive(BrowserWindowInterface* browser) {
