@@ -45,7 +45,6 @@ class EventInit;
 class EventPath;
 class EventTarget;
 class Node;
-class Element;
 class PseudoElement;
 class CSSPseudoElement;
 class ScriptState;
@@ -355,13 +354,12 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
   PassiveMode HandlingPassive() const { return handling_passive_; }
 
-  // Retargets the provided `element` to prevent it from being leaked when this
+  // Retargets the provided `node` to prevent it from being leaked when this
   // event is fired on a node inside a ShadowRoot. If this is called during
-  // event dispatching, where currentTarget() has a value, `element` is
-  // retargeted against currentTarget(). Otherwise, it is retargeted against
-  // target().  target() may be null after event dispatch to prevent leaking,
-  // and in that case, this method will return null as well.
-  Element* Retarget(Element* element) const;
+  // event dispatching, where currentTarget() has a value, `node` is retargeted
+  // against currentTarget(). Otherwise, it is retargeted against the node's
+  // document.
+  Node* Retarget(Node* node) const;
 
  private:
   AtomicString type_;

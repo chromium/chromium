@@ -36,8 +36,8 @@ class SnapEvent : public Event {
             Member<Node> block_target,
             Member<Node> inline_target);
 
-  Node* snapTargetBlock() { return snap_target_block_.Get(); }
-  Node* snapTargetInline() { return snap_target_inline_.Get(); }
+  Node* snapTargetBlock() const { return Retarget(snap_target_block_.Get()); }
+  Node* snapTargetInline() const { return Retarget(snap_target_inline_.Get()); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(snap_target_block_);

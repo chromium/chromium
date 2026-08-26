@@ -49,7 +49,7 @@ Element* CommandEvent::source() const {
                           : nullptr;
   }
 
-  return Retarget(source_);
+  return DynamicTo<Element>(Retarget(source_));
 }
 
 DispatchEventResult CommandEvent::DispatchEvent(EventDispatcher& dispatcher) {
