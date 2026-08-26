@@ -1028,8 +1028,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowSignInPref(profile) || !SignInPreference.isSignedIn(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_SIGN_IN));
                     } else {
-                        indexData.addChildParentLink(
-                                ManageSyncSettings.class.getName(), getUniqueId(PREF_SIGN_IN));
+                        indexData.updateEntryForKey(
+                                getPrefFragmentName(),
+                                PREF_SIGN_IN,
+                                R.string.prefs_section_account_and_google_services,
+                                ManageSyncSettings.class.getName());
                     }
                     if (!shouldShowDeveloperSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_DEVELOPER));

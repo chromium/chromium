@@ -967,6 +967,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
                 @Override
                 public int getXmlRes(Profile profile) {
+                    if (!SignInPreference.isSignedIn(profile)) {
+                        return 0;
+                    }
+
                     return R.xml.unified_account_settings_preferences;
                 }
 
