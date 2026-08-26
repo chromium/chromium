@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(UiHierarchyDataCollectorBrowserTest,
 
   // CreateBrowser() will create a browser with a single tab (about:blank).
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  Browser* browser = CreateBrowser(profile);
+  BrowserWindowInterface* browser = CreateBrowser(profile);
   ASSERT_TRUE(browser);
   std::string browser_window_title = base::UTF16ToUTF8(
       WindowMetadataController::From(browser)->GetWindowTitleForCurrentTab(

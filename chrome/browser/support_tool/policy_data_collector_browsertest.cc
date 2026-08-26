@@ -23,7 +23,6 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/browser/browser_policy_connector.h"

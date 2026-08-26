@@ -13,7 +13,7 @@ include_rules = [
   "+chrome/browser/ash/system_logs",
   "+chrome/browser/profiles",
   "+chrome/browser/support_tool",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/test",
 ]
 
