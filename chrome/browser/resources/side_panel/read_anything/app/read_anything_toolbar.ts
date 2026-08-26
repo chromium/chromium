@@ -57,7 +57,7 @@ import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
-import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from '../shared/common.js';
+import {openMenu, spinnerDebounceTimeout} from '../shared/common.js';
 import {getNewIndex, isArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from '../shared/read_anything_logger.js';
@@ -104,10 +104,6 @@ interface MenuButton {
 // It is unlikely someone will change the font size more than 5 times so
 // this covers most use cases.
 const MAX_PARAGRAPHS_IN_ANNOUNCE_BLOCK = 5;
-
-// Constants for styling the toolbar when page zoom changes.
-const flexWrapTypical = 'nowrap';
-const flexWrapOverflow = 'wrap';
 
 const ReadAnythingToolbarElementBase =
     HelpBubbleMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
@@ -339,24 +335,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   setFontsLoaded() {
     this.areFontsLoaded_ = true;
-  }
-
-  protected onResetToolbar_() {
-    this.style.setProperty('--toolbar-flex-wrap', flexWrapTypical);
-  }
-
-  protected onToolbarOverflow_(
-      event:
-          CustomEvent<{numOverflowButtons: number, overflowLength: number}>) {
-    const firstHiddenButton =
-        this.textStyleOptions_.length - event.detail.numOverflowButtons;
-    // Wrap the buttons if we overflow significantly but aren't yet scrolling
-    // the whole app.
-    if (firstHiddenButton < 0 &&
-        event.detail.overflowLength < minOverflowLengthToScroll) {
-      this.style.setProperty('--toolbar-flex-wrap', flexWrapOverflow);
-      return;
-    }
   }
 
   restoreSettingsFromPrefs() {

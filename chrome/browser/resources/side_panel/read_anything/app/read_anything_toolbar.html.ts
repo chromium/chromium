@@ -12,9 +12,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
 <div id="toolbarContainer" class="immersive-toolbar-container"
     role="toolbar" aria-label="$i18n{readingModeReadAloudToolbarLabel}"
     tabindex="0"
-    @keydown="${this.onToolbarKeydown_}"
-    @reset-toolbar="${this.onResetToolbar_}"
-    @toolbar-overflow="${this.onToolbarOverflow_}">
+    @keydown="${this.onToolbarKeydown_}">
     ${this.isLineFocusShowing ? html`
     <cr-button class="toolbar-button" id="line-focus-off"
       tabindex="-1"
