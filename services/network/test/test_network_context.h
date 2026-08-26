@@ -368,7 +368,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       LookupProxyAuthCredentialsCallback callback) override {}
 #endif
   void SetSharedDictionaryCacheMaxSize(
-      std::optional<uint64_t> cache_max_size) override {}
+      std::optional<base::ByteSize> cache_max_size) override {}
   void ClearSharedDictionaryCache(
       base::Time start_time,
       base::Time end_time,

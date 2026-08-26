@@ -4,6 +4,7 @@
 
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -277,7 +278,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   RegisterDictionaryResultOrError RegisterDictionaryImpl(
       const SharedDictionaryIsolationKey& isolation_key,
       const SharedDictionaryInfo& dictionary_info,
-      std::optional<uint64_t> max_size_per_site,
+      std::optional<base::ByteSize> max_size_per_site,
       uint64_t max_count_per_site);
   DictionaryListOrError GetDictionariesImpl(
       const SharedDictionaryIsolationKey& isolation_key);
@@ -294,8 +295,8 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const SharedDictionaryIsolationKey& isolation_key);
   UnguessableTokenSetOrError DeleteExpiredDictionariesImpl(base::Time now);
   UnguessableTokenSetOrError ProcessEvictionImpl(
-      std::optional<uint64_t> cache_max_size,
-      std::optional<uint64_t> size_low_watermark,
+      std::optional<base::ByteSize> cache_max_size,
+      std::optional<base::ByteSize> size_low_watermark,
       uint64_t cache_max_count,
       uint64_t count_low_watermark);
   UnguessableTokenSetOrError GetAllDiskCacheKeyTokensImpl();
@@ -361,8 +362,8 @@ class SQLitePersistentSharedDictionaryStore::Backend
   // `count_low_watermark`, and fills their primary keys and tokens and total
   // size.
   Error SelectEvictionCandidates(
-      std::optional<uint64_t> cache_max_size,
-      std::optional<uint64_t> size_low_watermark,
+      std::optional<base::ByteSize> cache_max_size,
+      std::optional<base::ByteSize> size_low_watermark,
       uint64_t cache_max_count,
       uint64_t count_low_watermark,
       std::vector<int64_t>* primary_keys_out,
@@ -377,7 +378,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
   Error MaybeEvictDictionariesForPerSiteLimit(
       const SchemefulSite& top_frame_site,
-      std::optional<uint64_t> max_size_per_site,
+      std::optional<base::ByteSize> max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
       uint64_t* total_dictionary_size_out);
@@ -385,7 +386,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   SizeOrError GetDictionarySizePerSite(const SchemefulSite& top_frame_site);
   Error SelectCandidatesForPerSiteEviction(
       const SchemefulSite& top_frame_site,
-      std::optional<uint64_t> max_size_per_site,
+      std::optional<base::ByteSize> max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<int64_t>* primary_keys_out,
       std::vector<base::UnguessableToken>* tokens_out,
@@ -509,12 +510,12 @@ SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
 SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     const SharedDictionaryIsolationKey& isolation_key,
     const SharedDictionaryInfo& dictionary_info,
-    std::optional<uint64_t> max_size_per_site,
+    std::optional<base::ByteSize> max_size_per_site,
     uint64_t max_count_per_site) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
   CHECK_NE(0u, max_count_per_site);
   if (max_size_per_site.has_value() &&
-      dictionary_info.size() > *max_size_per_site) {
+      base::ByteSize(dictionary_info.size()) > *max_size_per_site) {
     return base::unexpected(Error::kTooBigDictionary);
   }
 
@@ -624,7 +625,7 @@ SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     MaybeEvictDictionariesForPerSiteLimit(
         const SchemefulSite& top_frame_site,
-        std::optional<uint64_t> max_size_per_site,
+        std::optional<base::ByteSize> max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
         uint64_t* total_dictionary_size_out) {
@@ -658,7 +659,7 @@ SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     SelectCandidatesForPerSiteEviction(
         const SchemefulSite& top_frame_site,
-        std::optional<uint64_t> max_size_per_site,
+        std::optional<base::ByteSize> max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<int64_t>* primary_keys_out,
         std::vector<base::UnguessableToken>* tokens_out,
@@ -667,18 +668,21 @@ SQLitePersistentSharedDictionaryStore::Backend::
   CHECK(tokens_out->empty());
   CHECK_EQ(0, *total_size_of_candidates_out);
 
-  ASSIGN_OR_RETURN(uint64_t size_per_site,
+  ASSIGN_OR_RETURN(uint64_t size_per_site_raw,
                    GetDictionarySizePerSite(top_frame_site));
   ASSIGN_OR_RETURN(uint64_t count_per_site,
                    GetDictionaryCountPerSite(top_frame_site));
 
+  // Historical note: `size_per_site_raw` is in bytes, but
+  // `UmaHistogramMemoryKB` expects KB (or `base::ByteSize`).
   base::UmaHistogramMemoryKB(
       base::StrCat({kHistogramPrefix, "DictionarySizeKBPerSiteWhenAdded"}),
-      size_per_site);
+      size_per_site_raw);
   base::UmaHistogramCounts1000(
       base::StrCat({kHistogramPrefix, "DictionaryCountPerSiteWhenAdded"}),
       count_per_site);
 
+  const base::ByteSize size_per_site(size_per_site_raw);
   if ((!max_size_per_site.has_value() || size_per_site <= *max_size_per_site) &&
       count_per_site <= max_count_per_site) {
     return Error::kOk;
@@ -689,9 +693,9 @@ SQLitePersistentSharedDictionaryStore::Backend::
     to_be_removed_count = count_per_site - max_count_per_site;
   }
 
-  int64_t to_be_removed_size = 0;
+  base::ByteSize to_be_removed_size;
   if (max_size_per_site.has_value() && size_per_site > *max_size_per_site) {
-    to_be_removed_size = size_per_site - *max_size_per_site;
+    to_be_removed_size = (size_per_site - *max_size_per_site).AsByteSize();
   }
   static constexpr char kQuery[] =
       // clang-format off
@@ -735,7 +739,8 @@ SQLitePersistentSharedDictionaryStore::Backend::
     primary_keys_out->emplace_back(primary_key_in_database);
     tokens_out->emplace_back(*disk_cache_key_token);
 
-    if (*total_size_of_candidates_out >= to_be_removed_size &&
+    if (base::ByteSize(base::checked_cast<uint64_t>(
+            *total_size_of_candidates_out)) >= to_be_removed_size &&
         tokens_out->size() >= to_be_removed_count) {
       break;
     }
@@ -1339,8 +1344,8 @@ SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
 
 SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
 SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
-    std::optional<uint64_t> cache_max_size,
-    std::optional<uint64_t> size_low_watermark,
+    std::optional<base::ByteSize> cache_max_size,
+    std::optional<base::ByteSize> size_low_watermark,
     uint64_t cache_max_count,
     uint64_t count_low_watermark) {
   if (!InitializeDatabase()) {
@@ -1385,18 +1390,19 @@ SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
 
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
-    std::optional<uint64_t> cache_max_size,
-    std::optional<uint64_t> size_low_watermark,
+    std::optional<base::ByteSize> cache_max_size,
+    std::optional<base::ByteSize> size_low_watermark,
     uint64_t cache_max_count,
     uint64_t count_low_watermark,
     std::vector<int64_t>* primary_keys_out,
     std::vector<base::UnguessableToken>* tokens_out,
     int64_t* total_size_after_eviction_out) {
   CHECK_EQ(cache_max_size.has_value(), size_low_watermark.has_value());
-  ASSIGN_OR_RETURN(uint64_t total_dictionary_size,
+  ASSIGN_OR_RETURN(uint64_t total_dictionary_size_raw,
                    GetTotalDictionarySizeImpl());
   ASSIGN_OR_RETURN(uint64_t total_dictionary_count, GetTotalDictionaryCount());
 
+  base::ByteSize total_dictionary_size(total_dictionary_size_raw);
   if ((!cache_max_size.has_value() ||
        total_dictionary_size <= *cache_max_size) &&
       total_dictionary_count <= cache_max_count) {
@@ -1409,7 +1415,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
   }
 
   base::CheckedNumeric<uint64_t> checked_total_dictionary_size =
-      total_dictionary_size;
+      total_dictionary_size_raw;
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -1450,7 +1456,8 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     tokens_out->emplace_back(*disk_cache_key_token);
 
     if ((!size_low_watermark.has_value() ||
-         checked_total_dictionary_size.ValueOrDie() <= *size_low_watermark) &&
+         checked_total_dictionary_size.ValueOrDie() <=
+             size_low_watermark->InBytes()) &&
         tokens_out->size() >= to_be_removed_count) {
       break;
     }
@@ -1766,7 +1773,7 @@ void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
     const SharedDictionaryIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
-    std::optional<uint64_t> max_size_per_site,
+    std::optional<base::ByteSize> max_size_per_site,
     uint64_t max_count_per_site,
     base::OnceCallback<void(RegisterDictionaryResultOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1845,8 +1852,8 @@ void SQLitePersistentSharedDictionaryStore::DeleteExpiredDictionaries(
 }
 
 void SQLitePersistentSharedDictionaryStore::ProcessEviction(
-    std::optional<uint64_t> cache_max_size,
-    std::optional<uint64_t> size_low_watermark,
+    std::optional<base::ByteSize> cache_max_size,
+    std::optional<base::ByteSize> size_low_watermark,
     uint64_t cache_max_count,
     uint64_t count_low_watermark,
     base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {

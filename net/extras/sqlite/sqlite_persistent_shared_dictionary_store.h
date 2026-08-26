@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void RegisterDictionary(
       const SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
-      std::optional<uint64_t> max_size_per_site,
+      std::optional<base::ByteSize> max_size_per_site,
       uint64_t max_count_per_site,
       base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
   void GetDictionaries(
@@ -146,8 +147,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   // `size_low_watermark` (if set) and the total count reaches
   // `count_low_watermark`.
   void ProcessEviction(
-      std::optional<uint64_t> cache_max_size,
-      std::optional<uint64_t> size_low_watermark,
+      std::optional<base::ByteSize> cache_max_size,
+      std::optional<base::ByteSize> size_low_watermark,
       uint64_t cache_max_count,
       uint64_t count_low_watermark,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);

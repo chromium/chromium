@@ -34,8 +34,9 @@ constexpr size_t kCachedStorageMaxSize = 10;
 
 // static
 std::unique_ptr<SharedDictionaryManager>
-SharedDictionaryManager::CreateInMemory(std::optional<uint64_t> cache_max_size,
-                                        uint64_t cache_max_count) {
+SharedDictionaryManager::CreateInMemory(
+    std::optional<base::ByteSize> cache_max_size,
+    uint64_t cache_max_count) {
   return std::make_unique<SharedDictionaryManagerInMemory>(cache_max_size,
                                                            cache_max_count);
 }
@@ -96,7 +97,7 @@ class SharedDictionaryManager::PreloadedDictionaries
 std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
-    std::optional<uint64_t> cache_max_size,
+    std::optional<base::ByteSize> cache_max_size,
     uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
     disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,

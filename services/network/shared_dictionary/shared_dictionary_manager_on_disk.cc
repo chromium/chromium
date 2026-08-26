@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -352,7 +353,7 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
     : public SharedDictionaryManagerOnDisk::SerializedTask {
  public:
   CacheEvictionTask(raw_ptr<SharedDictionaryManagerOnDisk> manager,
-                    std::optional<uint64_t> cache_max_size,
+                    std::optional<base::ByteSize> cache_max_size,
                     uint64_t cache_max_count)
       : manager_(manager),
         cache_max_size_(cache_max_size),
@@ -364,9 +365,9 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
 
   void Start() override {
     manager_->metadata_store().ProcessEviction(
-        cache_max_size_,
-        cache_max_size_.transform(
-            [](uint64_t size) -> uint64_t { return size * 0.9; }),
+        cache_max_size_, cache_max_size_.transform([](base::ByteSize size) {
+          return size * 0.9;
+        }),
         cache_max_count_, cache_max_count_ * 0.9,
         base::BindOnce(&CacheEvictionTask::OnProcessEvictionFinished,
                        weak_factory_.GetWeakPtr()));
@@ -401,7 +402,7 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
   }
 
   raw_ptr<SharedDictionaryManagerOnDisk> manager_;
-  const std::optional<uint64_t> cache_max_size_;
+  const std::optional<base::ByteSize> cache_max_size_;
   const uint64_t cache_max_count_;
   base::WeakPtrFactory<CacheEvictionTask> weak_factory_{this};
 };
@@ -486,7 +487,7 @@ class SharedDictionaryManagerOnDisk::ExpiredDictionaryDeletionTaskInfo
 SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
-    std::optional<uint64_t> cache_max_size,
+    std::optional<base::ByteSize> cache_max_size,
     uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
     disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
@@ -514,9 +515,11 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
                          std::move(file_operations_factory));
   MaybePostExpiredDictionaryDeletionTask();
   if (cache_max_size_.has_value()) {
+    // Convert to decimal MB to maintain historical metric continuity with
+    // existing dashboards (rather than binary MiB via base::ByteSize).
     base::UmaHistogramMemoryMB(
         "Net.SharedDictionaryManagerOnDisk.PolicySpecifiedCacheMaxSize",
-        *cache_max_size_ / (1000 * 1000));
+        static_cast<int>(cache_max_size_->InBytes() / (1000 * 1000)));
     MaybePostCacheEvictionTask();
   }
 }
@@ -536,11 +539,13 @@ SharedDictionaryManagerOnDisk::CreateStorage(
 }
 
 void SharedDictionaryManagerOnDisk::SetCacheMaxSize(
-    std::optional<uint64_t> cache_max_size) {
+    std::optional<base::ByteSize> cache_max_size) {
   if (cache_max_size.has_value()) {
+    // Convert to decimal MB to maintain historical metric continuity with
+    // existing dashboards (rather than binary MiB via base::ByteSize).
     base::UmaHistogramMemoryMB(
         "Net.SharedDictionaryManagerOnDisk.CacheMaxSize2",
-        *cache_max_size / (1000 * 1000));
+        static_cast<int>(cache_max_size->InBytes() / (1000 * 1000)));
   }
   cache_max_size_ = cache_max_size;
   MaybePostExpiredDictionaryDeletionTask();
@@ -707,6 +712,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
 
   base::UmaHistogramEnumeration("Net.SharedDictionaryOnDisk.StorageResult",
                                 SharedDictionaryStorageResult::kSuccess);
+  // Historical note: `info.size()` is in bytes, but `UmaHistogramMemoryKB`
+  // expects KB (or `base::ByteSize`).
   base::UmaHistogramMemoryKB("Net.SharedDictionaryManagerOnDisk.DictionarySize",
                              info.size());
   base::UmaHistogramMemoryMB(
@@ -731,7 +738,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
   MaybePostExpiredDictionaryDeletionTask();
 
   if ((!cache_max_size_.has_value() ||
-       result.value().total_dictionary_size() <= *cache_max_size_) &&
+       base::ByteSize(result.value().total_dictionary_size()) <=
+           *cache_max_size_) &&
       result.value().total_dictionary_count() <= cache_max_count_) {
     return;
   }

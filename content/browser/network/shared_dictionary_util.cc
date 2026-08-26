@@ -24,12 +24,12 @@ constexpr base::ByteSize kMaxCacheMaxSizeForInMemory = base::MiB(400);
 constexpr base::ByteSize kDefaultCacheMaxSizeForOnDisk = base::MiB(300);
 constexpr base::ByteSize kMaxCacheMaxSizeForOnDisk = base::MiB(400);
 
-uint64_t CaliculateCacheMaxSizeForInMemory() {
+base::ByteSize CaliculateCacheMaxSizeForInMemory() {
   base::ByteSize cache_max_size = kDefaultCacheMaxSizeForInMemory;
   const base::ByteSize total_memory =
       base::SysInfo::AmountOfTotalPhysicalMemory();
   if (total_memory.is_zero()) {
-    return cache_max_size.InBytes();
+    return cache_max_size;
   }
 
   // We want to use up to 1% of the computer's memory, with a limit of 400 MB,
@@ -38,15 +38,15 @@ uint64_t CaliculateCacheMaxSizeForInMemory() {
   if (cache_max_size > kMaxCacheMaxSizeForInMemory) {
     cache_max_size = kMaxCacheMaxSizeForInMemory;
   }
-  return cache_max_size.InBytes();
+  return cache_max_size;
 }
 
-uint64_t CaliculateCacheMaxSizeForOnDisk(const base::FilePath& path) {
+base::ByteSize CaliculateCacheMaxSizeForOnDisk(const base::FilePath& path) {
   base::ByteSize cache_max_size = kDefaultCacheMaxSizeForOnDisk;
   const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
       base::SysInfo::AmountOfDiskSpace(path);
   if (!disk_space) {
-    return cache_max_size.InBytes();
+    return cache_max_size;
   }
 
   // We want to use up to 1% of the available disk space, with a limit of 400
@@ -55,7 +55,7 @@ uint64_t CaliculateCacheMaxSizeForOnDisk(const base::FilePath& path) {
   if (cache_max_size > kMaxCacheMaxSizeForOnDisk) {
     cache_max_size = kMaxCacheMaxSizeForOnDisk;
   }
-  return cache_max_size.InBytes();
+  return cache_max_size;
 }
 
 }  // namespace
@@ -71,7 +71,7 @@ void CalculateAndSetSharedDictionaryCacheMaxSize(
                        : base::BindOnce(&CaliculateCacheMaxSizeForOnDisk, path),
           base::BindOnce(
               [](base::WeakPtr<StoragePartition> storage_partition,
-                 uint64_t cache_max_size) {
+                 base::ByteSize cache_max_size) {
                 if (!storage_partition) {
                   return;
                 }

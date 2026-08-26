@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -1400,7 +1401,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->http_cache_max_size = disk_cache_size;
     if (disk_cache_size > 0) {
       network_context_params->shared_dictionary_cache_max_size =
-          disk_cache_size;
+          base::ByteSize(static_cast<uint64_t>(disk_cache_size));
     }
 
     network_context_params->file_paths =

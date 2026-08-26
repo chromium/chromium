@@ -89,7 +89,7 @@ constexpr base::MemoryConsumerTraits kInMemoryTraits(
 }  // namespace
 
 SharedDictionaryManagerInMemory::SharedDictionaryManagerInMemory(
-    std::optional<uint64_t> cache_max_size,
+    std::optional<base::ByteSize> cache_max_size,
     uint64_t cache_max_count)
     : SharedDictionaryManager("SharedDictionaryManagerInMemory",
                               kInMemoryTraits),
@@ -110,7 +110,7 @@ SharedDictionaryManagerInMemory::CreateStorage(
 }
 
 void SharedDictionaryManagerInMemory::SetCacheMaxSize(
-    std::optional<uint64_t> cache_max_size) {
+    std::optional<base::ByteSize> cache_max_size) {
   cache_max_size_ = cache_max_size;
   MaybeRunCacheEviction();
 }
@@ -153,28 +153,27 @@ void SharedDictionaryManagerInMemory::ClearDataForIsolationKey(
 
 void SharedDictionaryManagerInMemory::MaybeRunCacheEvictionPerSite(
     const net::SchemefulSite& top_frame_site) {
-  const std::optional<uint64_t> max_size_per_site =
-      cache_max_size_.transform([](uint64_t size) { return size / 2; });
+  const std::optional<base::ByteSize> max_size_per_site =
+      cache_max_size_.transform([](base::ByteSize size) { return size / 2; });
   RunCacheEvictionImpl(top_frame_site, max_size_per_site, max_size_per_site,
                        cache_max_count_ / 2, cache_max_count_ / 2);
 }
 
 void SharedDictionaryManagerInMemory::MaybeRunCacheEviction() {
-  RunCacheEvictionImpl(std::nullopt, cache_max_size_,
-                       cache_max_size_.transform([](uint64_t size) -> uint64_t {
-                         return size * 0.9;
-                       }),
-                       cache_max_count_, cache_max_count_ * 0.9);
+  RunCacheEvictionImpl(
+      std::nullopt, cache_max_size_,
+      cache_max_size_.transform([](base::ByteSize size) { return size * 0.9; }),
+      cache_max_count_, cache_max_count_ * 0.9);
 }
 
 void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
     std::optional<net::SchemefulSite> top_frame_site,
-    std::optional<uint64_t> max_size,
-    std::optional<uint64_t> size_low_watermark,
+    std::optional<base::ByteSize> max_size,
+    std::optional<base::ByteSize> size_low_watermark,
     uint64_t max_count,
     uint64_t count_low_watermark) {
   CHECK_EQ(max_size.has_value(), size_low_watermark.has_value());
-  uint64_t total_size = 0u;
+  base::ByteSize total_size;
   size_t dictionary_count = 0u;
   for (const auto& it1 : storages()) {
     if (top_frame_site && it1.first.top_frame_site() != *top_frame_site) {
@@ -185,7 +184,7 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
     for (const auto& it2 : storage->GetDictionaryMap()) {
       dictionary_count += it2.second.size();
       for (const auto& it3 : it2.second) {
-        total_size += it3.second.size();
+        total_size += base::ByteSize(it3.second.size());
       }
     }
   }
@@ -219,7 +218,7 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
 
   std::vector<EvictionCandidate> eviction_candidates;
   for (auto& dict_ref : dictionaries) {
-    total_size -= dict_ref.dict()->size();
+    total_size -= base::ByteSize(dict_ref.dict()->size());
     eviction_candidates.emplace_back(
         dict_ref.storage(), url::SchemeHostPort(dict_ref.dict()->url()),
         dict_ref.dict()->match(), dict_ref.dict()->match_dest());

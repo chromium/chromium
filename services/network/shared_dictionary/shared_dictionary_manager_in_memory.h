@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
@@ -22,7 +23,7 @@ class SharedDictionaryStorage;
 class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
  public:
   explicit SharedDictionaryManagerInMemory(
-      std::optional<uint64_t> cache_max_size,
+      std::optional<base::ByteSize> cache_max_size,
       uint64_t cache_max_count);
   ~SharedDictionaryManagerInMemory() override;
 
@@ -35,7 +36,7 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryStorageEvictionReason previous_eviction_reason) override;
-  void SetCacheMaxSize(std::optional<uint64_t> cache_max_size) override;
+  void SetCacheMaxSize(std::optional<base::ByteSize> cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
@@ -64,12 +65,12 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   // is nullopt, performs the cache eviction for the all storages. Otherwise,
   // performs the cache eviction for the specified `top_frame_site`'s storages.
   void RunCacheEvictionImpl(std::optional<net::SchemefulSite> top_frame_site,
-                            std::optional<uint64_t> max_size,
-                            std::optional<uint64_t> size_low_watermark,
+                            std::optional<base::ByteSize> max_size,
+                            std::optional<base::ByteSize> size_low_watermark,
                             uint64_t max_count,
                             uint64_t count_low_watermark);
 
-  std::optional<uint64_t> cache_max_size_;
+  std::optional<base::ByteSize> cache_max_size_;
   const uint64_t cache_max_count_;
   base::WeakPtrFactory<SharedDictionaryManagerInMemory> weak_factory_{this};
 };

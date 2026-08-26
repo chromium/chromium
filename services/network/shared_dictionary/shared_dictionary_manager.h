@@ -10,6 +10,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -66,7 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
   // Returns a SharedDictionaryManager which keeps the whole dictionary
   // information in memory.
   static std::unique_ptr<SharedDictionaryManager> CreateInMemory(
-      std::optional<uint64_t> cache_max_size,
+      std::optional<base::ByteSize> cache_max_size,
       uint64_t cache_max_count);
 
   // Returns a SharedDictionaryManager which keeps the dictionary information
@@ -74,7 +75,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
   static std::unique_ptr<SharedDictionaryManager> CreateOnDisk(
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
-      std::optional<uint64_t> cache_max_size,
+      std::optional<base::ByteSize> cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
       disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
@@ -99,7 +100,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
   void OnStorageDeleted(const net::SharedDictionaryIsolationKey& isolation_key);
 
   // Sets the max size of shared dictionary cache.
-  virtual void SetCacheMaxSize(std::optional<uint64_t> cache_max_size) = 0;
+  virtual void SetCacheMaxSize(
+      std::optional<base::ByteSize> cache_max_size) = 0;
   virtual void ClearData(base::Time start_time,
                          base::Time end_time,
                          base::RepeatingCallback<bool(const GURL&)> url_matcher,
