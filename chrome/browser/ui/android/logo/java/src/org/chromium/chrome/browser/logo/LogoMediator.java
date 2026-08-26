@@ -333,7 +333,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
     private void showSearchProviderInitialView() {
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, getDefaultGoogleLogoDrawable());
-
+        mLogoModel.set(LogoProperties.LOGO, null);
         mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
     }
 
