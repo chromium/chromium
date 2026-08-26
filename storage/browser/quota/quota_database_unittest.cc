@@ -101,9 +101,14 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     return db->EnsureOpened() == QuotaError::kNone;
   }
 
-  int GetTransactionNesting(QuotaDatabase* db) {
+  int IsGlobalTransactionValid(QuotaDatabase* db) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(db->sequence_checker_);
-    return db->db_->transaction_nesting();
+    // There should always be a single global transaction active. If we commit
+    // it, there should be no transactions left.
+    bool is_valid = db->db_->CommitTransactionDeprecated() &&
+                    !db->db_->HasActiveTransactions();
+    EXPECT_TRUE(db->db_->BeginTransactionDeprecated());
+    return is_valid;
   }
 
   template <typename EntryType>
@@ -851,8 +856,9 @@ TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
     ASSERT_TRUE(EnsureOpened(db.get()));
     EXPECT_TRUE(expecter.SawExpectedErrors());
 
-    // Ensure no nested transactions after reentrant calls to EnsureOpened()
-    EXPECT_EQ(GetTransactionNesting(db.get()), 1);
+    // Ensure that the reentrant call to EnsureOpened() opens only one global
+    // transaction.
+    EXPECT_TRUE(IsGlobalTransactionValid(db.get()));
 
     // Ensure data is deleted.
     base::FilePath storage_path = db->GetStoragePath();

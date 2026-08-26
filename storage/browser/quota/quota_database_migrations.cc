@@ -32,8 +32,8 @@ constexpr int kDeprecatedTemporaryQuotaType = 0;
 // static
 bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
-  CHECK_EQ(0, quota_database.db_->transaction_nesting(),
-           base::NotFatalUntil::M148);
+  CHECK(!quota_database.db_->HasActiveTransactions(),
+        base::NotFatalUntil::M148);
 
   // Reset tables for versions lower than 10 since they are unsupported.
   if (quota_database.meta_table_->GetVersionNumber() < 10) {

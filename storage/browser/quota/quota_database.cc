@@ -932,11 +932,9 @@ void QuotaDatabase::Commit() {
     timer_.Stop();
   }
 
-  CHECK_EQ(1, db_->transaction_nesting(), base::NotFatalUntil::M148);
   db_->CommitTransactionDeprecated();
-  CHECK_EQ(0, db_->transaction_nesting(), base::NotFatalUntil::M148);
-  db_->BeginTransactionDeprecated();
-  CHECK_EQ(1, db_->transaction_nesting(), base::NotFatalUntil::M148);
+  CHECK(!db_->HasActiveTransactions(), base::NotFatalUntil::M148);
+  CHECK(db_->BeginTransactionDeprecated(), base::NotFatalUntil::M148);
 }
 
 void QuotaDatabase::ScheduleCommit() {
@@ -998,7 +996,7 @@ QuotaError QuotaDatabase::EnsureOpened() {
   }
 
   // Start a long-running transaction.
-  CHECK_EQ(0, db_->transaction_nesting(), base::NotFatalUntil::M148);
+  CHECK(!db_->HasActiveTransactions(), base::NotFatalUntil::M148);
   db_->BeginTransactionDeprecated();
 
   return QuotaError::kNone;
@@ -1174,7 +1172,7 @@ bool QuotaDatabase::ResetStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!db_file_path_.empty(), base::NotFatalUntil::M148);
   CHECK(storage_directory_, base::NotFatalUntil::M148);
-  CHECK(!db_ || !db_->transaction_nesting(), base::NotFatalUntil::M148);
+  CHECK(!db_ || !db_->HasActiveTransactions(), base::NotFatalUntil::M148);
   VLOG(1) << "Deleting existing quota data and starting over.";
 
   meta_table_.reset();
