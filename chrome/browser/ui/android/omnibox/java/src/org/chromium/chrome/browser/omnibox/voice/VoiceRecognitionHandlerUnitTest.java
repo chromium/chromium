@@ -210,9 +210,9 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     @SmallTest
-    public void testIsVoiceSearchEnabled_FalseWhenIncognito() {
+    public void testIsVoiceSearchEnabled_TrueWhenIncognito() {
         doReturn(true).when(mDataProvider).isIncognito();
-        assertFalse(mHandler.isVoiceSearchEnabled());
+        assertTrue(mHandler.isVoiceSearchEnabled());
     }
 
     @Test

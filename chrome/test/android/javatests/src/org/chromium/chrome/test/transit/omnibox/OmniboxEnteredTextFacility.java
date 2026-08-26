@@ -30,8 +30,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         declareEnterCondition(omniboxFacility.urlBarElement.matches(withText(mText)));
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
-            if (omniboxFacility.getHostStation().isIncognito()
-                    || OmniboxCapabilities.isDesktopPlatform()) {
+            if (OmniboxCapabilities.isDesktopPlatform()) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
             } else {
                 declareEnterCondition(omniboxFacility.micButtonElement.present());
