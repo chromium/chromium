@@ -1505,11 +1505,13 @@ BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
-// Disables WebAuthn on Android Auto. Default enabled in M137, remove in or
-// after M140.
+// Kill switch for WebAuthn on Android Auto. WebAuthn was disabled in M137 due
+// to missing platform support causing crashes (crbug.com/408118757), and
+// re-enabled in M154 now that platform support is in place
+// (crbug.com/540089011). Remove in or after M157.
 BASE_FEATURE(kWebauthnDisabledOnAuto,
              "WebAuthenticationDisabledOnAuto",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables Exclusive Access Manager on Android platform
