@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -88,6 +89,7 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
+    profile_ = std::make_unique<TestingProfile>();
     if (PrefService* local_state =
             TestingBrowserProcess::GetGlobal()->local_state()) {
       local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
@@ -95,6 +97,7 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    profile_.reset();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(nullptr);
     ChromeViewsTestBase::TearDown();
   }
@@ -119,8 +122,11 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
   }
 #endif
 
+  TestingProfile* profile() { return profile_.get(); }
+
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, InitializationDoesNotCrash) {
@@ -135,12 +141,39 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, BackgroundModePrefToggle) {
   bool callback_called = false;
   OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
       [](bool* called) { *called = true; }, &callback_called));
+  manager.SetProfile(profile());
 
   // Toggle background mode pref off and on.
   if (local_state) {
     local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
+    EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
     local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+    EXPECT_NE(manager.status_icon_for_testing(), nullptr);
   }
+}
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       RequiresProfileToEnableBackgroundMode) {
+  bool callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
+      [](bool* called) { *called = true; }, &callback_called));
+
+  // Background mode is not entered without a profile even if the pref is
+  // enabled.
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+
+  // Background mode is entered and creates a status icon once a profile is set.
+  manager.SetProfile(profile());
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+
+  // Clearing the profile resets background mode and removes the status icon.
+  manager.SetProfile(nullptr);
+  EXPECT_EQ(manager.status_icon_for_testing(), nullptr);
+
+  // Setting the profile again re-enters background mode and restores the status
+  // icon.
+  manager.SetProfile(profile());
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
 }
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
@@ -158,6 +191,7 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
   bool callback_called = false;
   OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
       [](bool* called) { *called = true; }, &callback_called));
+  manager.SetProfile(profile());
 
   StatusIcon* status_icon = manager.status_icon_for_testing();
   ASSERT_NE(status_icon, nullptr);
@@ -185,6 +219,7 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   bool callback_called = false;
   OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
       [](bool* called) { *called = true; }, &callback_called));
+  manager.SetProfile(profile());
 
   StatusIcon* status_icon = manager.status_icon_for_testing();
   ASSERT_NE(status_icon, nullptr);

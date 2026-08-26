@@ -72,7 +72,7 @@ void OmniboxEverywhereBackgroundModeManager::SetProfile(Profile* profile) {
     return;
   }
   profile_ = profile;
-  UpdateProfileKeepAlive();
+  OnPrefChanged();
 }
 
 void OmniboxEverywhereBackgroundModeManager::Reset() {
@@ -98,7 +98,8 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
   startup_launch_client_.SetLaunchOnStartup(should_launch_on_startup);
 #endif
 
-  if (!background_mode_enabled) {
+  // Only show the status tray/menu bar icon when we have an active profile.
+  if (!profile_ || !background_mode_enabled) {
     Reset();
     return;
   }
