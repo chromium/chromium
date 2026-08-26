@@ -16,6 +16,7 @@ include_rules = [
   "+services/network/test",
   "+services/network/public/mojom",
   "+third_party/libxml/chromium",
+  "+third_party/metrics_proto",
   "+ui/base/device_form_factor.h",
   "+ui/base/l10n",
 ]

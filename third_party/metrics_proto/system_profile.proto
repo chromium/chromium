@@ -22,7 +22,7 @@ option features.utf8_validation = NONE;
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 51
+// Next tag: 52
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   int64 build_timestamp = 1;
@@ -1584,4 +1584,95 @@ message SystemProfileProto {
   }
   // The current state of accessibility features on the client.
   AccessibilityState accessibility_state = 49;
+
+  // Enterprise management authority and status for the platform and loaded
+  // profiles.
+  // Next tag: 3
+  message EnterpriseManagement {
+    // The enterprise management authority categorization of the underlying
+    // operating system or device.
+    enum PlatformStatus {
+      option features.enum_type = CLOSED;
+
+      // Represents an uninitialized, unmeasured, or unknown sentinel value.
+      PLATFORM_UNSPECIFIED = 0;
+
+      // No enterprise device management detected on the operating system.
+      PLATFORM_UNMANAGED = 1;
+
+      // Device is managed by local machine policies.
+      PLATFORM_COMPUTER_LOCAL = 2;
+
+      // Device is managed by an on-premises domain directory.
+      // On platforms without OS-level domain directory detection, this status
+      // is also reported if a machine-scoped platform policy is present.
+      PLATFORM_DOMAIN_LOCAL = 3;
+
+      // Device is managed by cloud device management.
+      PLATFORM_CLOUD = 4;
+
+      // Device is managed by a cloud domain directory.
+      PLATFORM_CLOUD_DOMAIN = 5;
+    }
+
+    // The enterprise management status of a browser profile.
+    //
+    // Note that "Browser" terminology is maintained for parity with Chromium's
+    // BrowserManagementStatus enum and corresponding UMA histogram. Despite the
+    // name, these statuses are evaluated per-profile, not per-browser.
+    enum BrowserStatus {
+      option features.enum_type = CLOSED;
+
+      // Represents an uninitialized, unmeasured, or unknown sentinel value.
+      BROWSER_UNSPECIFIED = 0;
+
+      // No enterprise policies apply to this browser profile.
+      BROWSER_UNMANAGED = 1;
+
+      // Profile is managed by local policies, with <= 3 policies (including
+      // both mandatory and recommended policies).
+      BROWSER_COMPUTER_LOCAL_LE3 = 2;
+
+      // Profile is managed by local policies, with > 3 policies (including
+      // both mandatory and recommended policies).
+      BROWSER_COMPUTER_LOCAL_GT3 = 3;
+
+      // Profile is managed by an on-premises domain directory.
+      BROWSER_DOMAIN_LOCAL = 4;
+
+      // Profile is managed by cloud policies.
+      BROWSER_CLOUD = 5;
+
+      // Profile is managed by a cloud domain directory.
+      BROWSER_CLOUD_DOMAIN = 6;
+    }
+
+    // All active platform management authorities detected on the machine.
+    // A device can have multiple authorities simultaneously.
+    //
+    // Expected values:
+    // - Usually contains at least one value, but can be empty during early
+    //   startup.
+    // - PLATFORM_UNSPECIFIED is never reported in this list.
+    // - PLATFORM_UNMANAGED only appears in a single-item list (never alongside
+    //   other statuses).
+    repeated PlatformStatus platform_status = 1;
+
+    // Deduplicated set of active management statuses across all loaded profiles
+    // in this browser session (user-data-dir). A profile is considered loaded
+    // if a browser window opened it during this session and it is either still
+    // open or has not yet been cleaned up. Guest, System, and Incognito/OTR
+    // profiles are not reported.
+    //
+    // Expected values:
+    // - Usually contains at least one value, but can be empty during early
+    //   startup, in a guest-only session, or while on the profile picker.
+    // - BROWSER_UNSPECIFIED is never reported in this list.
+    // - BROWSER_UNMANAGED can appear alongside other statuses when multiple
+    //   profiles with different management states are loaded.
+    repeated BrowserStatus browser_status = 2;
+  }
+
+  // Enterprise management status of the client.
+  EnterpriseManagement enterprise_management = 51;
 }

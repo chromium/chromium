@@ -17,7 +17,8 @@ namespace policy {
 class ManagementService;
 class PolicyService;
 
-// MetricsProvider that logs the platform and active profiles' enterprise management status.
+// MetricsProvider that logs the platform and active profiles' enterprise
+// management status.
 class POLICY_EXPORT EnterpriseManagementMetricsProvider
     : public metrics::MetricsProvider {
  public:
@@ -26,20 +27,25 @@ class POLICY_EXPORT EnterpriseManagementMetricsProvider
     raw_ptr<PolicyService> policy_service = nullptr;
   };
 
-  using GetProfileStatesCallback = base::RepeatingCallback<std::vector<ProfileState>()>;
+  using GetProfileStatesCallback =
+      base::RepeatingCallback<std::vector<ProfileState>()>;
 
   EnterpriseManagementMetricsProvider(
       ManagementService* platform_management_service,
       GetProfileStatesCallback get_profile_states_callback);
 
-  EnterpriseManagementMetricsProvider(const EnterpriseManagementMetricsProvider&) = delete;
-  EnterpriseManagementMetricsProvider& operator=(const EnterpriseManagementMetricsProvider&) = delete;
+  EnterpriseManagementMetricsProvider(
+      const EnterpriseManagementMetricsProvider&) = delete;
+  EnterpriseManagementMetricsProvider& operator=(
+      const EnterpriseManagementMetricsProvider&) = delete;
 
   ~EnterpriseManagementMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+  void ProvideSystemProfileMetrics(
+      metrics::SystemProfileProto* system_profile_proto) override;
 
  private:
   raw_ptr<ManagementService> platform_management_service_;

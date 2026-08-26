@@ -257,6 +257,7 @@ source_set("internal") {
     "//net",
     "//services/network/public/cpp",
     "//third_party/libxml:xml_writer",
+    "//third_party/metrics_proto",
     "//third_party/re2",
     "//ui/base",
     "//url",
@@ -680,6 +681,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libxml:xml_reader",
+    "//third_party/metrics_proto",
     "//ui/base",
   ]
   if (is_chromeos) {
