@@ -6,6 +6,7 @@ module fusebox_action.mojom;
 
 import "components/omnibox/composebox/composebox_query.mojom";
 
+// LINT.IfChange(SuggestInventory)
 // This enum is mapped to third_party/omnibox_proto/suggest_inventory.proto.
 enum SuggestInventory {
   kDefault = 0,
@@ -13,10 +14,19 @@ enum SuggestInventory {
   kAimTakeover = 2,
   kImageGenTakeover = 3,
   kConversationStarters = 4,
-  kBrainstorm = 5,
-  kHelpMeLearn = 6,
-  kWriteOrEdit = 7,
+  kAiHpCreateChip = 5,
+  kAiHpGetItDoneChip = 6,
+  kAiHpSimplifyChip = 7,
+  kAiHpIfl = 8,
+  kAiHpReservations = 9,
+  kBrainstorm = 10,
+  kHelpMeLearn = 11,
+  kWriteOrEdit = 12,
+  kAddFile = 13,
+  kAddTab = 14,
+  kAimImages = 15,
 };
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_inventory.proto:SuggestInventory)
 
 // LINT.IfChange(QueryActionOverride)
 enum QueryActionOverride {
