@@ -13,6 +13,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_consumer.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -37,7 +38,6 @@
 #import "ios/web/public/download/download_task_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/url_util.h"
-// TODO(crbug.com/40286505): Depend on account_picker_consumer.h directly.
 
 @interface SaveToDriveMediator () <AuthenticationServiceObserving,
                                    CRWDownloadTaskObserver,
