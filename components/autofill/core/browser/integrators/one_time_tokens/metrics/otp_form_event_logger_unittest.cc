@@ -17,7 +17,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -53,7 +52,6 @@ class OtpFormEventLoggerIntegrationTest
       public testing::Test {
  protected:
   OtpFormEventLoggerIntegrationTest() = default;
-  base::test::ScopedFeatureList feature_list_;
 
   void SetUp() override {
     SetUpHelper();
@@ -312,10 +310,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
-#if BUILDFLAG(IS_ANDROID)
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kAndroidSmsOtpFilling);
-#endif
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -466,10 +460,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
-#if BUILDFLAG(IS_ANDROID)
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kAndroidSmsOtpFilling);
-#endif
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();

@@ -244,10 +244,6 @@ inline constexpr char kAndroidProgressBarVisualUpdateName[] =
 inline constexpr char kAndroidProgressBarVisualUpdateDescription[] =
     "Enable the new updated progress bar";
 
-inline constexpr char kAndroidSmsOtpFillingName[] = "Enable SMS OTP filling";
-inline constexpr char kAndroidSmsOtpFillingDescription[] =
-    "Enables filling of OTPs received via SMS on Android";
-
 inline constexpr char kApiContextualTasksPrivateName[] =
     "Extensions Contextual Tasks API";
 inline constexpr char kApiContextualTasksPrivateDescription[] =

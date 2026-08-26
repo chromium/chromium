@@ -41,11 +41,6 @@ BASE_DECLARE_FEATURE(kActorLoginSyncsPasswordPermissions);
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables filling of OTPs received via SMS on Android.
-BASE_DECLARE_FEATURE(kAndroidSmsOtpFilling);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enables using clientside form classifier predictions for password forms.
 BASE_DECLARE_FEATURE(kApplyClientsideModelPredictionsForPasswordTypes);
 

@@ -454,11 +454,7 @@
     "owners": [ "agazal@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 155
   },
-  {
-    "name": "android-sms-otp-filling",
-    "owners": ["koerber@google.com", "lottermann@google.com", "chrome-otp-team@google.com"],
-    "expiry_milestone": 152
-  },
+
   {
     "name": "android-surface-color-update",
     "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],

@@ -11685,12 +11685,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kFwupdDeveloperMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-sms-otp-filling", flag_descriptions::kAndroidSmsOtpFillingName,
-     flag_descriptions::kAndroidSmsOtpFillingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kAndroidSmsOtpFilling)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"tab-group-home", tabs::flag_descriptions::kTabGroupHomeName,
