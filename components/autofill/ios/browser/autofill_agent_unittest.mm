@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
+#import <optional>
 #import <string>
 #import <variant>
 
@@ -1132,12 +1133,11 @@ TEST_F(AutofillAgentTest, FillData_UpdateWithResults) {
   const FieldRendererId field_id = fields[0].renderer_id;
 
   // Set the result returned from filling.
-  std::string serializedResult;
-  ASSERT_TRUE(base::JSONWriter::Write(
+  std::optional<std::string> serialized_result = base::WriteJson(
       base::DictValue().Set(base::NumberToString(field_id.value()),
-                            base::UTF16ToUTF8(field_value)),
-      &serializedResult));
-  base::Value result(serializedResult);
+                            base::UTF16ToUTF8(field_value)));
+  ASSERT_TRUE(serialized_result.has_value());
+  base::Value result(serialized_result.value());
   fake_main_frame_->AddJsResultForFunctionCall(&result, "autofill.fillForm");
 
   EXPECT_CALL(delegate_mock_,
@@ -1178,12 +1178,11 @@ TEST_F(AutofillAgentTest, FillData_UnknowFieldIdInResults) {
   const FieldRendererId unknown_field_id = FieldRendererId(101);
 
   // Set the result returned from filling.
-  std::string serializedResult;
-  ASSERT_TRUE(base::JSONWriter::Write(
+  std::optional<std::string> serialized_result = base::WriteJson(
       base::DictValue().Set(base::NumberToString(unknown_field_id.value()),
-                            base::UTF16ToUTF8(fields[0].value)),
-      &serializedResult));
-  base::Value result(serializedResult);
+                            base::UTF16ToUTF8(fields[0].value)));
+  ASSERT_TRUE(serialized_result.has_value());
+  base::Value result(serialized_result.value());
   fake_main_frame_->AddJsResultForFunctionCall(&result, "autofill.fillForm");
 
   EXPECT_CALL(delegate_mock_, DidFillField).Times(0);

@@ -2434,11 +2434,11 @@ TEST_F(FormStructureTestImpl, LogBuffer_FormSignatures) {
   LogBuffer buffer;
   buffer << form_structure;
 
-  std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(*buffer.RetrieveResult(), &json));
-  EXPECT_THAT(json, testing::HasSubstr("Form signature:"));
-  EXPECT_THAT(json, testing::HasSubstr("Form alternative signature:"));
-  EXPECT_THAT(json, testing::HasSubstr("Form structural signature:"));
+  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
+  ASSERT_TRUE(json.has_value());
+  EXPECT_THAT(json.value(), testing::HasSubstr("Form signature:"));
+  EXPECT_THAT(json.value(), testing::HasSubstr("Form alternative signature:"));
+  EXPECT_THAT(json.value(), testing::HasSubstr("Form structural signature:"));
 }
 
 // The test below validates that the `MatchInfo` structure of `AutofillField` is
