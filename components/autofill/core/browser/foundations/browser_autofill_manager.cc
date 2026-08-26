@@ -1145,10 +1145,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
-  if (AtMemoryManager* am = client().GetAtMemoryManager();
-      am && IsAtMemoryTriggerSource(trigger_source)) {
+  if (AtMemoryManager* amm = client().GetAtMemoryManager();
+      amm && IsAtMemoryTriggerSource(trigger_source)) {
     AtMemorySearchState state =
-        am->GetStateForField(field.global_id(), field.origin());
+        amm->GetStateForField(field.global_id(), field.origin());
 
     // Show suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(
@@ -2097,10 +2097,10 @@ void BrowserAutofillManager::DidShowSuggestions(
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, field_id);
 
-  if (AtMemoryManager* am = client().GetAtMemoryManager()) {
-    am->OnPopupShown(*this, form_id, field_id, trigger_source,
-                     parent_suggestion_metadata, update_suggestions_callback,
-                     driver().GetPageUkmSourceId());
+  if (AtMemoryManager* amm = client().GetAtMemoryManager()) {
+    amm->OnPopupShown(*this, form_id, field_id, trigger_source,
+                      parent_suggestion_metadata, update_suggestions_callback,
+                      driver().GetPageUkmSourceId());
   }
   if (parent_suggestion_metadata.has_value()) {
     // The shown suggestions were in a sub-popup and the code below is not

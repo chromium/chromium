@@ -714,29 +714,29 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
-    am->OnPopupHidden();
+  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+    amm->OnPopupHidden();
   }
   manager_->OnSuggestionsHidden(reason);
 }
 
 bool AutofillExternalDelegate::OnFilterChanged(const std::u16string& filter) {
-  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
-    return am->OnFilterChanged(filter);
+  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+    return amm->OnFilterChanged(filter);
   }
   return false;
 }
 
 bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
-  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
-    return am->OnSearchSubmitted(filter);
+  if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+    return amm->OnSearchSubmitted(filter);
   }
   return false;
 }
 
 bool AutofillExternalDelegate::IsSearching() const {
-  if (const AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
-    return am->IsSearching();
+  if (const AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+    return amm->IsSearching();
   }
   return false;
 }
@@ -1188,8 +1188,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 last_query_.field_id);
       break;
     case SuggestionType::kAtMemorySearchAffordance:
-      if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
-        am->OnSearchSubmitted(suggestion.main_text.value);
+      if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+        amm->OnSearchSubmitted(suggestion.main_text.value);
       }
       // The popup remains open to show search results once the query completes.
       return;
