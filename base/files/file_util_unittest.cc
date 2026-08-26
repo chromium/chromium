@@ -5631,7 +5631,6 @@ TEST_F(FileUtilTest, CreatingFileWithSameNameAfterDelete) {
   ASSERT_EQ(second_file.GetLength(), 0);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(FileUtilTest, IsReservedNameOnWindows) {
   static constexpr auto kAllowedBasenames =
       std::to_array<const base::FilePath::CharType*>({
@@ -5640,15 +5639,24 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
           FILE_PATH_LITERAL("a b.txt"),
           FILE_PATH_LITERAL("a-b.txt"),
           FILE_PATH_LITERAL("My Computer"),
+          FILE_PATH_LITERAL("conin$.txt"),
+          FILE_PATH_LITERAL("conout$.log"),
       });
 
   static constexpr auto kDisallowedBasenames =
       std::to_array<const base::FilePath::CharType*>({
           FILE_PATH_LITERAL("con"),
+          FILE_PATH_LITERAL("con "),
+          FILE_PATH_LITERAL("con. "),
           FILE_PATH_LITERAL("con.zip"),
+          FILE_PATH_LITERAL("conin$"),
+          FILE_PATH_LITERAL("conin$ "),
+          FILE_PATH_LITERAL("conout$"),
+          FILE_PATH_LITERAL("aux . "),
           FILE_PATH_LITERAL("NUL"),
           FILE_PATH_LITERAL("NUL.zip"),
           FILE_PATH_LITERAL("desktop.ini"),
+          FILE_PATH_LITERAL("desktop.ini "),
       });
 
   for (const base::FilePath::CharType* basename : kAllowedBasenames) {
@@ -5659,7 +5667,6 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
     EXPECT_TRUE(IsReservedNameOnWindows(basename)) << basename;
   }
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 

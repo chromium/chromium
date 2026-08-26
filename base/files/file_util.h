@@ -811,7 +811,6 @@ BASE_EXPORT std::optional<std::string> CopyFileToDownloadsCollection(
 
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Returns whether the specified file name is a reserved name on Windows.
 // This includes names like "com2.zip" (which correspond to devices) and
 // desktop.ini and thumbs.db which have special meaning to the Windows shell.
@@ -819,7 +818,6 @@ BASE_EXPORT std::optional<std::string> CopyFileToDownloadsCollection(
 // reserved on Windows.
 BASE_EXPORT bool IsReservedNameOnWindows(
     const base::FilePath::StringType& filename);
-#endif
 
 // Internal --------------------------------------------------------------------
 
