@@ -4,7 +4,10 @@
 
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 
+#include "base/feature_list.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/network_request_service_settings.h"
 
 namespace enterprise_connectors {
 
@@ -20,11 +23,10 @@ ConnectorsManagerBase::ConnectorsManagerBase(
 
 ConnectorsManagerBase::~ConnectorsManagerBase() = default;
 
-std::optional<AnalysisSettings> ConnectorsManagerBase::GetAnalysisSettings(
-    const GURL& url,
+bool ConnectorsManagerBase::CanGetAnalysisSettings(
     AnalysisConnector connector) {
   if (!IsAnalysisConnectorEnabled(connector)) {
-    return std::nullopt;
+    return false;
   }
 
   if (analysis_connector_settings_.count(connector) == 0) {
@@ -33,7 +35,13 @@ std::optional<AnalysisSettings> ConnectorsManagerBase::GetAnalysisSettings(
 
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
-  if (analysis_connector_settings_.count(connector) == 0) {
+  return analysis_connector_settings_.count(connector) != 0;
+}
+
+std::optional<AnalysisSettings> ConnectorsManagerBase::GetAnalysisSettings(
+    const GURL& url,
+    AnalysisConnector connector) {
+  if (!CanGetAnalysisSettings(connector)) {
     return std::nullopt;
   }
 
@@ -42,6 +50,42 @@ std::optional<AnalysisSettings> ConnectorsManagerBase::GetAnalysisSettings(
   return analysis_connector_settings_[connector][0]->GetAnalysisSettings(
       url, GetDataRegion(connector));
 }
+
+#if !BUILDFLAG(IS_IOS)
+std::optional<AnalysisSettings>
+ConnectorsManagerBase::GetNetworkRequestAnalysisSettings(
+    const GURL& tab_url,
+    const GURL& request_url) {
+  if (!base::FeatureList::IsEnabled(kEnableAuditOnlyNetworkRequestConnector) ||
+      !CanGetAnalysisSettings(AnalysisConnector::NETWORK_REQUEST)) {
+    return std::nullopt;
+  }
+
+  // Only `BlockUntilVerdict::kNoBlock` settings are currently supported,
+  // so we just need to aggregate the tags from matching sub-settings in the
+  // policy array. We skip entries that don't match this pattern as it likely
+  // indicates a future version of the policy that supports blocking requests.
+  std::optional<AnalysisSettings> final_settings;
+  for (const auto& entry :
+       analysis_connector_settings_[AnalysisConnector::NETWORK_REQUEST]) {
+    auto sub_settings = entry->GetNetworkRequestAnalysisSettings(
+        tab_url, request_url,
+        GetDataRegion(AnalysisConnector::NETWORK_REQUEST));
+    if (sub_settings &&
+        sub_settings->block_until_verdict == BlockUntilVerdict::kNoBlock) {
+      if (final_settings) {
+        // Tags are currently the only thing that might vary from each entry in
+        // the list, so it's the only `AnalysisSettings` field we need to merge.
+        final_settings->tags.insert(sub_settings->tags.begin(),
+                                    sub_settings->tags.end());
+      } else {
+        final_settings = std::move(sub_settings);
+      }
+    }
+  }
+  return final_settings;
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 bool ConnectorsManagerBase::IsAnalysisConnectorEnabled(
     AnalysisConnector connector) const {
@@ -248,9 +292,21 @@ void ConnectorsManagerBase::CacheAnalysisConnectorPolicy(
 
   const base::ListValue& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value) {
-    analysis_connector_settings_[connector].push_back(
-        MakeAnalysisServiceSettings(service_settings,
-                                    *service_provider_config_));
+    if (connector == AnalysisConnector::NETWORK_REQUEST) {
+#if BUILDFLAG(IS_IOS)
+      // The "OnNetworkRequestEnterpriseConnector" policy is not supported on
+      // iOS so this code should not be reachable.
+      NOTREACHED();
+#else
+      analysis_connector_settings_[connector].push_back(
+          std::make_unique<NetworkRequestServiceSettings>(
+              service_settings, *service_provider_config_));
+#endif
+    } else {
+      analysis_connector_settings_[connector].push_back(
+          MakeAnalysisServiceSettings(service_settings,
+                                      *service_provider_config_));
+    }
   }
 }
 
@@ -270,6 +326,12 @@ void ConnectorsManagerBase::StartObservingPrefs(PrefService* pref_service) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   StartObservingAnalysisPref(AnalysisConnector::FILE_TRANSFER);
+#endif
+
+#if !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kEnableAuditOnlyNetworkRequestConnector)) {
+    StartObservingAnalysisPref(AnalysisConnector::NETWORK_REQUEST);
+  }
 #endif
 
   StartObservingReportingPref();
