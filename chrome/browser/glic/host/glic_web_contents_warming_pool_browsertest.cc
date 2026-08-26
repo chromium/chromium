@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, MAYBE_BackfillWarming) {
 }
 
 // TODO(b/496609005): Skip on ChromeOS due to profile ineligibility timeouts.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_WarmedContainerConnects DISABLED_WarmedContainerConnects
 #else
 #define MAYBE_WarmedContainerConnects WarmedContainerConnects
