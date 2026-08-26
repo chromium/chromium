@@ -225,7 +225,7 @@ SecurePaymentConfirmationAppFactory::~SecurePaymentConfirmationAppFactory() =
 
 void SecurePaymentConfirmationAppFactory::Create(
     base::WeakPtr<Delegate> delegate) {
-  DCHECK(delegate);
+  CHECK(delegate);
 
   base::WeakPtr<PaymentRequestSpec> spec = delegate->GetSpec();
   if (!spec || !spec->payment_method_identifiers_set().contains(
