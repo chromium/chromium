@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.4.34] - 2026-08-22
+
+## What's Changed
+* doc: Add context-logger utility to README by @alekseysidorov in https://github.com/rust-lang/log/pull/735
+* Add alloc support for boxed loggers by @malezjaa in https://github.com/rust-lang/log/pull/737
+
+## New Contributors
+* @alekseysidorov made their first contribution in https://github.com/rust-lang/log/pull/735
+* @malezjaa made their first contribution in https://github.com/rust-lang/log/pull/737
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.33...0.4.34
+
 ## [0.4.33] - 2026-06-20
 
 ## What's Changed
@@ -428,8 +440,9 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.33...HEAD
-[0.4.32]: https://github.com/rust-lang/log/compare/0.4.32...0.4.33
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.34...HEAD
+[0.4.34]: https://github.com/rust-lang/log/compare/0.4.33...0.4.34
+[0.4.33]: https://github.com/rust-lang/log/compare/0.4.32...0.4.33
 [0.4.32]: https://github.com/rust-lang/log/compare/0.4.31...0.4.32
 [0.4.31]: https://github.com/rust-lang/log/compare/0.4.30...0.4.31
 [0.4.30]: https://github.com/rust-lang/log/compare/0.4.29...0.4.30

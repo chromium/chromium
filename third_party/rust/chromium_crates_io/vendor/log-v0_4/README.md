@@ -95,6 +95,7 @@ There are many available implementations to choose from, here are some options:
     * [`log_err`](https://docs.rs/log_err/*/log_err/)
     * [`log-reload`](https://docs.rs/log-reload/*/log_reload/)
     * [`alterable_logger`](https://docs.rs/alterable_logger/*/alterable_logger)
+    * [`context-logger`](https://docs.rs/context-logger/*/context_logger)
 
 Executables should choose a logger implementation and initialize it early in the
 runtime of the program. Logger implementations will typically include a

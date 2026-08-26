@@ -33,11 +33,12 @@ cargo_crate("lib") {
   cargo_pkg_name = "log"
   cargo_pkg_description = "A lightweight logging facade for Rust"
   cargo_pkg_repository = "https://github.com/rust-lang/log"
-  cargo_pkg_version = "0.4.33"
+  cargo_pkg_version = "0.4.34"
 
   allow_unsafe = true
 
   features = [
+    "alloc",
     "release_max_level_info",
     "std",
   ]
