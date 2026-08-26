@@ -52,6 +52,7 @@ suite('NodeStore', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.scrollTo(0, 0);
 
     // Always set a large innerHeight and innerWidth to ensure elements are
     // considered visible and don't wrap unexpectedly in tests.

@@ -13,6 +13,8 @@ suite('RectCalculations', () => {
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.scrollTo(0, 0);
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
@@ -146,7 +148,6 @@ suite('RectCalculations', () => {
     let container: HTMLDivElement;
 
     setup(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       container = document.createElement('div');
       container.style.lineHeight = '1';
       container.style.margin = '0';

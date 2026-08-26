@@ -23,6 +23,8 @@ suite('LineFocusMoveMode', () => {
   let bufferValReceived: boolean|undefined;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
+  let speechController: SpeechController;
+  let nodeStore: NodeStore;
 
   const defaultHeight = 1000;
 
@@ -65,6 +67,11 @@ suite('LineFocusMoveMode', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.scrollTo(0, 0);
+    nodeStore = new NodeStore();
+    NodeStore.setInstance(nodeStore);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
     metricsBrowserProxy = mockMetrics();
     visualBrowserProxy = new TestVisualBrowserProxy();
     // Initialize font size so that the threshold for merging text bounds
@@ -174,7 +181,7 @@ suite('LineFocusMoveMode', () => {
     test('onWordBoundary scrolls to line', () => {
       const container = createShortContainer();
       model.setMaxY(defaultHeight * 2);
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 7,
@@ -190,7 +197,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onWordBoundary scrolls to line if it would go off screen', () => {
       const container = createShortContainer();
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 7,
@@ -207,7 +214,7 @@ suite('LineFocusMoveMode', () => {
     test('onWordBoundary only counts new lines', () => {
       const container = createShortContainer();
       mockLinesCounters();
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments1 = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -506,7 +513,7 @@ suite('LineFocusMoveMode', () => {
     test('onWordBoundary updates position', () => {
       const container = createShortContainer();
       model.setMaxY(defaultHeight * 2);
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -522,7 +529,7 @@ suite('LineFocusMoveMode', () => {
     test('onWordBoundary scrolls if line would go off screen', () => {
       const container = createShortContainer();
       model.setMaxY(10);
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -539,7 +546,7 @@ suite('LineFocusMoveMode', () => {
     test('onWordBoundary only counts new lines', () => {
       const container = createShortContainer();
       mockLinesCounters();
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments1 = [{
         node: ReadAloudNode.create(container)!,
         start: 5,
@@ -566,7 +573,7 @@ suite('LineFocusMoveMode', () => {
       model.setTextBounds([]);
       assertEquals(0, model.getTextBounds().length);
 
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -585,7 +592,7 @@ suite('LineFocusMoveMode', () => {
           const customBounds = [new DOMRect(0, 50, 200, 20)];
           model.setTextBounds(customBounds);
 
-          NodeStore.getInstance().setDomNode(container, 1);
+          nodeStore.setDomNode(container, 1);
           const segments = [{
             node: ReadAloudNode.create(container)!,
             start: 0,
@@ -601,10 +608,9 @@ suite('LineFocusMoveMode', () => {
       mode.onActivated(container, defaultHeight);
       model.setMaxY(10);
 
-      const speechController = SpeechController.getInstance();
       speechController.isSpeechActive = () => true;
 
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -638,7 +644,7 @@ suite('LineFocusMoveMode', () => {
           // Simulate a scroll occurred prior to onWordBoundary.
           scroller.scrollTop = 150;
 
-          NodeStore.getInstance().setDomNode(container, 1);
+          nodeStore.setDomNode(container, 1);
           const segments = [{
             node: ReadAloudNode.create(container)!,
             start: 0,
@@ -955,7 +961,6 @@ suite('LineFocusMoveMode', () => {
           const container = createShortContainer();
           scroller.appendChild(container);
 
-          const speechController = SpeechController.getInstance();
           speechController.isSpeechActive = () => true;
 
           model.setCurrentLineIndex(null);
@@ -986,7 +991,6 @@ suite('LineFocusMoveMode', () => {
           const container = createShortContainer();
           scroller.appendChild(container);
 
-          const speechController = SpeechController.getInstance();
           speechController.isSpeechActive = () => false;
 
           model.setCurrentLineIndex(null);
@@ -1007,7 +1011,6 @@ suite('LineFocusMoveMode', () => {
     test(
         'onScrollEnd notifies visual position change if speech is active',
         () => {
-          const speechController = SpeechController.getInstance();
           speechController.isSpeechActive = () => true;
           model.setInitiatedScroll(false);
 
@@ -1267,7 +1270,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onWordBoundary does nothing', () => {
       const container = createShortContainer();
-      NodeStore.getInstance().setDomNode(container, 1);
+      nodeStore.setDomNode(container, 1);
       const segments = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
