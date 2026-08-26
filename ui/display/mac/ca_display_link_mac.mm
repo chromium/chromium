@@ -144,20 +144,12 @@ void CADisplayLinkMac::TryRecordDisplayLinkCreation(
     bool in_gpu_process) {
   auto& globals = CADisplayLinkGlobals::Get();
   base::AutoLock lock(globals.lock);
+
   auto [it, inserted] = globals.recorded_displays.insert(display_id);
   if (inserted) {
-    if (in_gpu_process) {
-      // Recorded from the GpuMain (CompositorGpuThread) or VizCompositor
-      // threads in the GPU process.
-      UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CADisplayLink",
-                            success);
-
-    } else {
-      // Created only from the VSyncThread of the Browser process.
-      // Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2 is used to compare
-      // CADisplayLink in Browser with CVDisplayLink.
-      RecordDisplayLinkCreation(success);
-    }
+    UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CADisplayLinkV2",
+                          success);
+    RecordDisplayLinkCreation(success);
   }
 }
 

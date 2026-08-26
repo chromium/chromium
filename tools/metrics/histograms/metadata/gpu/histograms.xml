@@ -2581,7 +2581,7 @@ chromium-metrics-reviews@google.com.
     ImageTransportSurfaceOverlayMacEGL within the GPU process.
   </summary>
   <token key="Source">
-    <variant name="CADisplayLink"
+    <variant name="CADisplayLinkV2"
         summary="CADisplayLink using [screen displayLinkWithTarget]"/>
     <variant name="CVDisplayLink"
         summary="CVDisplayLink using CVDisplayLinkCreateWithCGDisplay"/>
