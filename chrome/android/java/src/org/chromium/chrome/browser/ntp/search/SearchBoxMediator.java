@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnDragListener;
 
 import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -255,13 +257,30 @@ class SearchBoxMediator implements DestroyObserver {
 
         mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW, apply);
 
-        @StyleRes
-        int resId =
-                apply
-                        ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
-                        : R.style.TextAppearance_FakeSearchBoxTextMedium;
+        @StyleRes int resId = getFakeSearchBoxTextStyle(apply);
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
         updateDseIconTint();
+    }
+
+    /**
+     * Returns the text appearance style resource ID for the fake search box hint text.
+     *
+     * <p>When NTP Aurora is enabled ({@link NewTabPageUtils#isNtpAuroraEnabled()}), returns the new
+     * style TextAppearance_FakeSearchBoxTextNewStyle.
+     *
+     * <p>When NTP Aurora is disabled, falls back to legacy typography based on {@code apply}.
+     *
+     * @param apply Whether a white background is applied to the fake search box.
+     * @return The text appearance style resource ID to apply to the fake search box.
+     */
+    @VisibleForTesting
+    static @StyleRes int getFakeSearchBoxTextStyle(boolean apply) {
+        if (NewTabPageUtils.isNtpAuroraEnabled()) {
+            return R.style.TextAppearance_FakeSearchBoxTextNewStyle;
+        }
+        return apply
+                ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
+                : R.style.TextAppearance_FakeSearchBoxTextMedium;
     }
 
     /**
