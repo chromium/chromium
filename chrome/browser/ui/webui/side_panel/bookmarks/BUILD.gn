@@ -68,6 +68,7 @@ source_set("impl") {
     "//chrome/common",
     "//components/bookmarks/managed",
     "//components/commerce/core:feature_list",
+    "//components/enterprise/isolated_mode",
     "//components/favicon_base",
     "//components/page_image_service",
     "//components/prefs",

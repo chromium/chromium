@@ -44,8 +44,8 @@ export interface BookmarksApiProxy {
   showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource): void;
-  contextMenuOpenBookmarkInIncognitoWindow(ids: string[], source: ActionSource):
-      void;
+  contextMenuOpenBookmarkInOffTheRecordWindow(
+      ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource):
       void;
   contextMenuOpenBookmarkInSplitView(ids: string[], source: ActionSource): void;
@@ -89,9 +89,9 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.executeOpenInNewWindowCommand(ids, source);
   }
 
-  contextMenuOpenBookmarkInIncognitoWindow(
+  contextMenuOpenBookmarkInOffTheRecordWindow(
       ids: string[], source: ActionSource) {
-    this.handler.executeOpenInIncognitoWindowCommand(ids, source);
+    this.handler.executeOpenInOffTheRecordWindowCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource) {

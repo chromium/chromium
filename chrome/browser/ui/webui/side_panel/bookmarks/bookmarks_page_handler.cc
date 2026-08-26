@@ -48,12 +48,14 @@
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -104,6 +106,11 @@ class BookmarksPageHandler::BookmarkContextMenu
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+      if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+              *browser_window->GetProfile()->GetPrefs(),
+              chrome::GetChannel())) {
+        AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED);
+      }
       if (bookmarks.size() == 1 && bookmarks.front()->is_url()) {
         AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
       }
@@ -118,6 +125,10 @@ class BookmarksPageHandler::BookmarkContextMenu
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+    if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+            *browser_window->GetProfile()->GetPrefs(), chrome::GetChannel())) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED);
+    }
     if (bookmarks.size() == 1 && bookmarks.front()->is_url()) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
     }
@@ -523,7 +534,7 @@ void BookmarksPageHandler::ExecuteOpenInNewWindowCommand(
                             IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
 }
 
-void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
+void BookmarksPageHandler::ExecuteOpenInOffTheRecordWindowCommand(
     const std::vector<std::string>& side_panel_ids,
     side_panel::mojom::ActionSource source) {
   const std::vector<int64_t> node_ids =
@@ -531,8 +542,12 @@ void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
   if (node_ids.empty()) {
     return;
   }
-  ExecuteContextMenuCommand(node_ids, source,
-                            IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+  int command_id = enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+                       *browser_window_interface_->GetProfile()->GetPrefs(),
+                       chrome::GetChannel())
+                       ? IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED
+                       : IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO;
+  ExecuteContextMenuCommand(node_ids, source, command_id);
 }
 
 void BookmarksPageHandler::GetIncognitoAvailableCount(

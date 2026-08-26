@@ -114,11 +114,12 @@ interface BookmarksPageHandler {
   ExecuteOpenInNewWindowCommand(
       array<string> side_panel_ids, ActionSource source);
 
-  // Opens the bookmarks specified by `side_panel_ids` in a new incognito
-  // window, using the same logic as the native bookmarks context menu.
+  // Opens the bookmarks specified by `side_panel_ids` in a new off-the-record
+  // (Incognito or Isolated) window, using the same logic as the native
+  // bookmarks context menu.
   // Some of the `side_panel_ids` may be a folder or a url node, so it could
   // also map to a merged node that has an actual string representation.
-  ExecuteOpenInIncognitoWindowCommand(
+  ExecuteOpenInOffTheRecordWindowCommand(
       array<string> side_panel_ids, ActionSource source);
 
   // Opens the bookmarks specified by `side_panel_ids` in a new tab group, using
