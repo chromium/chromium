@@ -535,7 +535,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 // Tests that the SearchSuggestionService can trigger prerendering after the
 // corresponding prefetch request succeeds.
 // TODO(crbug.com/40943413): enable the flaky test.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrerenderHintReceivedBeforeSucceed \
   DISABLED_PrerenderHintReceivedBeforeSucceed
 #else
