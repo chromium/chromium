@@ -38,6 +38,8 @@ vars = {
 
   # ninja CIPD package version.
   'ninja_version': 'version:3@1.12.1.chromium.4',
+
+  'non_git_source': 'True',
 }
 
 allowed_hosts = [
@@ -54,6 +56,9 @@ deps = {
   'node_modules': {
     'dep_type': 'gcs',
     'bucket': 'chromium-nodejs',
+    # condition 'non_git_source' is required so gclient sync will download
+    # GCS dependencies in Cog environments (b/345321320).
+    'condition': 'non_git_source',
     'objects': [
       {
         'object_name': 'chromium-bidi/e7aab7e5ac29d62f5c023d7e8ba5eedc09a11945a88b0e174fc42f64c0820071',

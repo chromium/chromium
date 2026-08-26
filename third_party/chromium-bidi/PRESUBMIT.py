@@ -26,9 +26,7 @@ _EXCLUDED_PATTERNS = (
 )
 
 
-def _GetAffectedFiles(
-    input_api, extensions, exclude_patterns=_EXCLUDED_PATTERNS
-):
+def _GetAffectedFiles(input_api, extensions, exclude_patterns=_EXCLUDED_PATTERNS):
     """Returns affected files matching extensions."""
     presubmit_dir = input_api.PresubmitLocalPath()
     files = []

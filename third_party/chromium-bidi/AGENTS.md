@@ -22,8 +22,8 @@ To restore the project to a known good state, run the following commands in orde
 
 1. **Build:** `autoninja -C ../../out/Default third_party/chromium-bidi:default third_party/chromium-bidi:webdriver_bidi_unittests third_party/chromium-bidi:webdriver_bidi_e2e_tests`
 2. **Unit Tests:** `../../out/Default/bin/run_webdriver_bidi_unittests`
-3. **Format:** `git cl format`
-4. **Verify BidiMapper Import:** `node ../../out/Default/gen/third_party/chromium-bidi/src/bidiMapper/BidiMapper.js`. If this
+3. **Format:** `./tools/node.py node_modules/prettier/bin/prettier.cjs --cache --write . && ./tools/node.py node_modules/eslint/bin/eslint.js --cache --fix . && ruff check --fix . && ruff format . && find src tests docs examples -type f | xargs keep-sorted --mode=fix`
+4. **Verify BidiMapper Import:** `./tools/node.py ../../out/Default/gen/third_party/chromium-bidi/src/bidiMapper/BidiMapper.js`. If this
    fails with `ERR_MODULE_NOT_FOUND`, it's likely due to a missing `.js` extension in
    an import statement in one of the TypeScript source files.
 
@@ -60,6 +60,14 @@ directory for errors.
 
 Note: E2E tests are slow, so run only the necessary tests.
 
+### WPT Tests
+
+To run a specific WPT test, use the following command:
+
+`../../third_party/blink/tools/run_wpt_tests.py -t Default --no-manifest-update external/wpt/webdriver/tests/bidi/<path_to_test>`
+
+Note: WPT tests are very slow, so run only when needed and only the necessary tests.
+
 ### Fixing the build after a new command is added
 
 When a new command is added to the WebDriver BiDi CDDL (for instance after running `tools/update-bidi-types.sh`), run the following steps to fix the build:
@@ -76,5 +84,5 @@ When a new command is added to the WebDriver BiDi CDDL (for instance after runni
 3.  **Add the new command to `src/bidiMapper/CommandProcessor.ts`**. Add a new `case`
     for the new command in the `switch` statement. First parse the command parameters
     and then throw an exception.
-4.  **Run `autoninja -C ../../out/Default third_party/chromium-bidi:default` and `git cl format`** to verify the fix.
+4.  **Run `autoninja -C ../../out/Default third_party/chromium-bidi:default` and format code** (`./tools/node.py node_modules/prettier/bin/prettier.cjs --cache --write . && find src tests -type f | xargs keep-sorted --mode=fix`) to verify the fix.
 5.  **Do not run e2e tests for this kind of fixes.**

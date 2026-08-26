@@ -165,7 +165,7 @@ The project uses Chromium build toolchains (`gn` and `ninja`/`autoninja`) for co
    ```
 2. Generate the Ninja build configuration:
    ```sh
-   gn gen ../../out/Default
+   gn gen --root=../.. ../../out/Default
    ```
 3. Build the project:
    ```sh
@@ -211,11 +211,11 @@ To auto-format and lint files:
 
 - **JavaScript / TypeScript / JSON / Markdown (Prettier):**
   ```sh
-  ./tools/node.py node_modules/.bin/prettier --cache --write .
+  ./tools/node.py node_modules/prettier/bin/prettier.cjs --cache --write .
   ```
 - **JavaScript / TypeScript (ESLint auto-fix):**
   ```sh
-  ./tools/node.py node_modules/.bin/eslint --cache --fix .
+  ./tools/node.py node_modules/eslint/bin/eslint.js --cache --fix .
   ```
 - **Python (Ruff / git cl format):**
   ```sh
@@ -224,8 +224,9 @@ To auto-format and lint files:
   (or via `git cl format --python`)
 - **keep-sorted:**
   ```sh
-  keep-sorted --mode=fix $(git ls-files)
+  find src tests docs examples -type f | xargs keep-sorted --mode=fix
   ```
+  (or in git: `git ls-files | xargs keep-sorted --mode=fix`)
 
 ### Starting WebDriver BiDi Server
 
@@ -401,16 +402,22 @@ Refer to [examples/README.md](examples/README.md).
 
 WPT tests for WebDriver BiDi are located in Chromium under `third_party/blink/web_tests/external/wpt/webdriver/tests/bidi/`.
 
+First, build the WPT target:
+
+```sh
+autoninja -C ../../out/Default headless_shell_wpt
+```
+
 To run all BiDi WPT tests in Chromium:
 
 ```sh
-../../third_party/blink/tools/run_wpt_tests.py -t Default external/wpt/webdriver/tests/bidi/
+../../third_party/blink/tools/run_wpt_tests.py -t Default --no-manifest-update external/wpt/webdriver/tests/bidi/
 ```
 
 To run a specific test:
 
 ```sh
-../../third_party/blink/tools/run_wpt_tests.py -t Default external/wpt/webdriver/tests/bidi/session/status/status.py
+../../third_party/blink/tools/run_wpt_tests.py -t Default --no-manifest-update external/wpt/webdriver/tests/bidi/session/status/status.py
 ```
 
 ## How does it work?

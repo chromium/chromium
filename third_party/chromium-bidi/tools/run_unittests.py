@@ -48,7 +48,16 @@ def main():
             if os.path.isdir(src):
                 if os.path.exists(dst):
                     shutil.rmtree(dst)
-                shutil.copytree(src, dst)
+                # Skip .bin/ and broken symlinks to avoid permission errors
+                # on virtual/Cog filesystems. Runtime tests only need library
+                # packages, not CLI binaries.
+                shutil.copytree(
+                    src,
+                    dst,
+                    symlinks=False,
+                    ignore=shutil.ignore_patterns(".bin"),
+                    ignore_dangling_symlinks=True,
+                )
             else:
                 shutil.copy2(src, dst)
 
