@@ -567,4 +567,7 @@ BASE_FEATURE(kBrowserInitiatedFileUploadValidation,
 
 BASE_FEATURE(kSafeRevalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBindURLLoaderFactoryToHighPriorityTaskRunner,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

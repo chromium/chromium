@@ -376,6 +376,11 @@ BASE_DECLARE_FEATURE(kBrowserInitiatedFileUploadValidation);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kSafeRevalidation);
 
+// When enabled, binds URLLoaderFactory Mojo receiver to a high priority task
+// runner.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kBindURLLoaderFactoryToHighPriorityTaskRunner);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
