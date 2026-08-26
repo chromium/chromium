@@ -40,19 +40,24 @@ final class WindowStateManager {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface WindowState {
-        /** The window state is unknown. */
         int UNKNOWN = 0;
 
-        /** The window is in a normal state (not maximized, minimized, or fullscreen). */
+        /**
+         * The window is in a normal state (not {@link #MAXIMIZED}, {@link #MINIMIZED}, or {@link
+         * #FULLSCREEN}).
+         */
         int NORMAL = 1;
 
-        /** The window is maximized. */
+        /**
+         * For desktop windowing mode, this is for when the window is maximized. For
+         * non-desktop-windowing mode, this is for when the window isn't in split-screen mode.
+         */
         int MAXIMIZED = 2;
 
-        /** The window is minimized. */
+        /** The window isn't visible. */
         int MINIMIZED = 3;
 
-        /** The window is in fullscreen mode. */
+        /** The immersive mode, such as when playing a video in fullscreen. */
         int FULLSCREEN = 4;
     }
 
@@ -64,6 +69,20 @@ final class WindowStateManager {
     private @Nullable Rect mCurrentBoundsInPx;
     private @Nullable Rect mPreviousBoundsInDp;
     private @Nullable Rect mRestoredBoundsInPx;
+
+    /**
+     * Initializes the window state, including bounds.
+     *
+     * @param activity The top {@link Activity} in the window.
+     * @param display The {@link DisplayAndroid} the activity is on.
+     */
+    void init(Activity activity, DisplayAndroid display) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        updateInternal(activity, display, /* isForInit= */ true);
+    }
 
     /**
      * To be called only by {@code ChromeAndroidTaskImpl#mDecorViewLayoutChangeListener}. Do
@@ -99,7 +118,7 @@ final class WindowStateManager {
             return false;
         }
 
-        updateInternal(activity, display);
+        updateInternal(activity, display, /* isForInit= */ false);
 
         // Only detect changes in valid (non-null) window bounds in DP.
         return mPreviousBoundsInDp != null
@@ -124,7 +143,7 @@ final class WindowStateManager {
             return;
         }
 
-        updateInternal(activity, display);
+        updateInternal(activity, display, /* isForInit= */ false);
     }
 
     /** Returns the current {@link WindowState}. */
@@ -170,8 +189,17 @@ final class WindowStateManager {
         return mRestoredBoundsInPx;
     }
 
+    /**
+     * Contains implementation details to update the current window state (including bounds). All
+     * non-private methods that need to update the window state should call this method.
+     *
+     * @param activity The top {@link Activity} in the window.
+     * @param display The {@link DisplayAndroid} the activity is on.
+     * @param isForInit Whether this method is called during {@link ChromeAndroidTask}
+     *     initialization.
+     */
     @RequiresApi(api = VERSION_CODES.R)
-    private void updateInternal(Activity activity, DisplayAndroid display) {
+    private void updateInternal(Activity activity, DisplayAndroid display, boolean isForInit) {
         float dipScale = display.getDipScale();
         Rect newBoundsInPx = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
         Rect newBoundsInDp = DisplayUtil.scaleToEnclosingRect(newBoundsInPx, 1.0f / dipScale);
@@ -182,7 +210,8 @@ final class WindowStateManager {
         mCurrentBoundsInDp = newBoundsInDp;
 
         // Determine the window state using the current bounds.
-        @WindowState int newWindowState = getWindowStateInternal(activity, newBoundsInPx);
+        @WindowState
+        int newWindowState = getWindowStateInternal(activity, newBoundsInPx, isForInit);
 
         // Update "restored bounds" using the current window state.
         if (newWindowState == WindowState.NORMAL) {
@@ -212,14 +241,27 @@ final class WindowStateManager {
                 /* bottom= */ y + decorView.getHeight());
     }
 
+    /**
+     * Returns the current {@link WindowState}.
+     *
+     * @param activity The top {@link Activity} in the window.
+     * @param currentBoundsInPx The current window bounds of the top {@link Activity}.
+     * @param isForInit Whether this method is called during {@link ChromeAndroidTask}
+     *     initialization.
+     */
     @RequiresApi(api = VERSION_CODES.R)
     private static @WindowState int getWindowStateInternal(
-            Activity activity, Rect currentBoundsInPx) {
-        if (isMinimized(activity)) {
+            Activity activity, Rect currentBoundsInPx, boolean isForInit) {
+        // As of Aug 24, 2026, Android does not create new windows in "minimized" or
+        // "fullscreen" states. The logic here relies on this assumption and uses "isForInit" to
+        // avoid IPC-induced ANRs during ChromeActivity startup.
+        // See https://crbug.com/525334878 for the IPCs involved.
+
+        if (!isForInit && isMinimized(activity)) {
             return WindowState.MINIMIZED;
         }
 
-        if (isFullscreen(activity)) {
+        if (!isForInit && isFullscreen(activity)) {
             return WindowState.FULLSCREEN;
         }
 

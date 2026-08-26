@@ -1377,10 +1377,9 @@ final class ChromeAndroidTaskImpl
             assert mId == null;
         }
 
-        // Update WindowStateManager with the initial window state, i.e., when we are about to add
-        // the first Activity to the Task.
+        // Initialize WindowStateManager when we are about to add the first Activity to the Task.
         if (mActivityScopedObjectsDeque.isEmpty()) {
-            mWindowStateManager.update(
+            mWindowStateManager.init(
                     getActivity(activityWindowAndroid), activityWindowAndroid.getDisplay());
         }
 
