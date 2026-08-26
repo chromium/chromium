@@ -1038,7 +1038,7 @@ TEST_F(EmailVerifierDelegateTest, BlockedByNotSignedInStrikes) {
 
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",
-      EvpAutofillFlowResult::kStrikeDatabaseBlock, 1);
+      EvpAutofillFlowResult::kNotSignedInStrikeDatabaseBlock, 1);
 }
 
 // Verifies that when the user accepts the verification prompt, strikes in the

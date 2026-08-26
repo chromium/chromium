@@ -254,6 +254,7 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="DriverInactive"/>
   <int value="12" label="PageNavigatedDuringVerification"/>
   <int value="13" label="PageNavigatedDuringCheckIfVerifiable"/>
+  <int value="14" label="NotSignedInStrikeDatabaseBlock"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/content/browser/integrators/email_verifier/email_verifier_delegate.h:EvpAutofillFlowResult) -->

@@ -476,6 +476,7 @@ void EmailVerifierDelegate::NotifyFlowCompleted(AutofillManager* manager,
       case EvpAutofillFlowResult::kTokenFieldHasNoNonce:
       case EvpAutofillFlowResult::kUserPrefDisabled:
       case EvpAutofillFlowResult::kStrikeDatabaseBlock:
+      case EvpAutofillFlowResult::kNotSignedInStrikeDatabaseBlock:
       case EvpAutofillFlowResult::kVerifierUnavailable:
       case EvpAutofillFlowResult::kUserDeclinedPermissionPrompt:
       case EvpAutofillFlowResult::kUserIgnoredPermissionPrompt:
@@ -780,16 +781,21 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
       GetEmailVerificationStrikeDatabaseId(display_email);
   EmailVerificationStrikeDatabase* strike_db =
       GetEmailVerificationStrikeDatabase();
-  EmailVerificationNotSignedInStrikeDatabase* not_signed_in_strike_db =
-      GetEmailVerificationNotSignedInStrikeDatabase();
-  if ((strike_db && strike_db->ShouldBlockFeature(strike_id)) ||
-      (not_signed_in_strike_db &&
-       not_signed_in_strike_db->ShouldBlockFeature(strike_id))) {
-    // Check both strike databases before attempting network discovery. If the
-    // email has reached the strike limit for user declines or not-signed-in
-    // attempts, suppress the verification flow early.
+  if (strike_db && strike_db->ShouldBlockFeature(strike_id)) {
+    // If the email has reached the strike limit for user prompt declines,
+    // suppress the verification flow early.
     NotifyFlowCompleted(&manager, email_field_id,
                         EvpAutofillFlowResult::kStrikeDatabaseBlock);
+    return;
+  }
+  EmailVerificationNotSignedInStrikeDatabase* not_signed_in_strike_db =
+      GetEmailVerificationNotSignedInStrikeDatabase();
+  if (not_signed_in_strike_db &&
+      not_signed_in_strike_db->ShouldBlockFeature(strike_id)) {
+    // If the email has reached the strike limit for not-signed-in attempts,
+    // suppress the verification flow early.
+    NotifyFlowCompleted(&manager, email_field_id,
+                        EvpAutofillFlowResult::kNotSignedInStrikeDatabaseBlock);
     return;
   }
 
