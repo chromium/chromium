@@ -306,6 +306,7 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   void SetMockTimeForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
+  void InvalidateBuffers();
 
   base::WeakPtr<Core> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
@@ -584,6 +585,11 @@ void DesktopCaptureDevice::Core::SetMockTimeForTesting(
   tick_clock_ = tick_clock;
   capture_timer_ = std::make_unique<base::OneShotTimer>(tick_clock_);
   capture_timer_->SetTaskRunner(task_runner);
+}
+
+void DesktopCaptureDevice::Core::InvalidateBuffers() {
+  CHECK(client_);
+  client_->InvalidateBuffers();
 }
 
 void DesktopCaptureDevice::Core::OnCaptureResult(
@@ -1489,6 +1495,14 @@ void DesktopCaptureDevice::RequestRefreshFrame() {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Core::RequestRefreshFrame, core_->GetWeakPtr()));
+}
+
+void DesktopCaptureDevice::InvalidateBuffers() {
+  if (!core_) {
+    return;
+  }
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Core::InvalidateBuffers, core_->GetWeakPtr()));
 }
 
 void DesktopCaptureDevice::SetNotificationWindowId(
