@@ -8,7 +8,6 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import os.path
-import tempfile
 
 def _IsGLES2CmdBufferFile(affected_file):
   filename = os.path.basename(affected_file.LocalPath())
@@ -56,40 +55,40 @@ def CommonChecks(input_api, output_api):
 
   messages = []
 
-  with tempfile.TemporaryDirectory() as temp_dir:
-    commands = []
-    if len(gles2_cmd_buffer_files) > 0:
-      commands.append(
-          input_api.Command(
-              name='build_gles2_cmd_buffer',
-              cmd=[
-                  input_api.python3_executable, 'build_gles2_cmd_buffer.py',
-                  '--check', '--output-dir=' + temp_dir
-              ],
-              kwargs={},
-              message=output_api.PresubmitError))
-    if len(raster_cmd_buffer_files) > 0:
-      commands.append(
-          input_api.Command(
-              name='build_raster_cmd_buffer',
-              cmd=[
-                  input_api.python3_executable, 'build_raster_cmd_buffer.py',
-                  '--check', '--output-dir=' + temp_dir
-              ],
-              kwargs={},
-              message=output_api.PresubmitError))
-    if len(webgpu_cmd_buffer_files) > 0:
-      commands.append(
-          input_api.Command(
-              name='build_webgpu_cmd_buffer',
-              cmd=[
-                  input_api.python3_executable, 'build_webgpu_cmd_buffer.py',
-                  '--check', '--output-dir=' + temp_dir
-              ],
-              kwargs={},
-              message=output_api.PresubmitError))
-    if len(commands) > 0:
-      messages.extend(input_api.RunTests(commands))
+  temp_dir = input_api.CreateTemporaryDirectory()
+  commands = []
+  if len(gles2_cmd_buffer_files) > 0:
+    commands.append(
+        input_api.Command(
+            name='build_gles2_cmd_buffer',
+            cmd=[
+                input_api.python3_executable, 'build_gles2_cmd_buffer.py',
+                '--check', '--output-dir=' + temp_dir
+            ],
+            kwargs={},
+            message=output_api.PresubmitError))
+  if len(raster_cmd_buffer_files) > 0:
+    commands.append(
+        input_api.Command(
+            name='build_raster_cmd_buffer',
+            cmd=[
+                input_api.python3_executable, 'build_raster_cmd_buffer.py',
+                '--check', '--output-dir=' + temp_dir
+            ],
+            kwargs={},
+            message=output_api.PresubmitError))
+  if len(webgpu_cmd_buffer_files) > 0:
+    commands.append(
+        input_api.Command(
+            name='build_webgpu_cmd_buffer',
+            cmd=[
+                input_api.python3_executable, 'build_webgpu_cmd_buffer.py',
+                '--check', '--output-dir=' + temp_dir
+            ],
+            kwargs={},
+            message=output_api.PresubmitError))
+  if len(commands) > 0:
+    messages.extend(input_api.RunTests(commands))
 
   return messages
 
