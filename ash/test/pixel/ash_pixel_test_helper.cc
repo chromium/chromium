@@ -50,7 +50,7 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
     // `chromeos::features::IsSystemBlurEnabled()`.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    CHECK_EQ(base::SysInfo::AmountOfTotalPhysicalMemory(), base::MiBU(512));
+    CHECK_EQ(base::SysInfo::AmountOfTotalPhysicalMemory(), base::MiB(512));
   }
 }
 

@@ -87,7 +87,7 @@ TEST(OpenXrViewPropertiesTest, CommandLineSwitchIgnored) {
 TEST(OpenXrViewPropertiesTest, LowMemoryDeviceClamping) {
   // Override memory to 8GB (low-memory threshold is <=8GB).
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(8));
+      base::GiB(8));
 
   OpenXrViewProperties properties(kDefaultXrViewProperties, /*view_count=*/2,
                                   kMaxTextureSize);
@@ -99,7 +99,7 @@ TEST(OpenXrViewPropertiesTest, LowMemoryDeviceClamping) {
 TEST(OpenXrViewPropertiesTest, HighMemoryDeviceAspectPreservingMax) {
   // Override memory to 16GB (above 8GB threshold).
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(16));
+      base::GiB(16));
 
   OpenXrViewProperties properties(kDefaultXrViewProperties, /*view_count=*/2,
                                   kMaxTextureSize);
@@ -111,7 +111,7 @@ TEST(OpenXrViewPropertiesTest, CommandLineSwitchOverride) {
   // Override memory to 8GB (low-memory threshold is <=8GB). The command line
   // should ignore the default low-memory scale.
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(8));
+      base::GiB(8));
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kWebXrMaxFramebufferScale, "2.0");

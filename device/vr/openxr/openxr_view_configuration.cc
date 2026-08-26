@@ -38,7 +38,7 @@ constexpr XrView kDefaultView{
 constexpr bool kSupportsViewportScaling =
     !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX);
 
-constexpr base::ByteSize kLowMemoryThreshold = base::GiBU(8);
+constexpr base::ByteSize kLowMemoryThreshold = base::GiB(8);
 constexpr double kLowMemoryDefaultMaxScaleFactor = 1.5f;
 }  // namespace
 
