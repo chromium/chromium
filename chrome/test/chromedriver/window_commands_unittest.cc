@@ -227,6 +227,46 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   ASSERT_EQ("pointerUp", base::OptionalFromPtr(action3.FindString("subtype")));
 }
 
+// Builds a wheel input source sequence with a single scroll action using the
+// given origin string.
+static base::DictValue MakeWheelScrollSequence(const std::string& origin) {
+  base::DictValue action_sequence;
+  action_sequence.Set("type", "wheel");
+  action_sequence.Set("id", "foo");
+  base::ListValue actions;
+  base::DictValue action;
+  action.Set("type", "scroll");
+  action.Set("x", 0);
+  action.Set("y", 0);
+  action.Set("deltaX", 0);
+  action.Set("deltaY", 0);
+  action.Set("origin", origin);
+  actions.Append(std::move(action));
+  action_sequence.Set("actions", std::move(actions));
+  return action_sequence;
+}
+
+TEST(WindowCommandsTest, ProcessInputActionSequenceWheelScrollOriginPointer) {
+  Session session("1");
+  std::vector<base::DictValue> action_list;
+  base::DictValue action_sequence = MakeWheelScrollSequence("pointer");
+  Status status =
+      ProcessInputActionSequence(&session, action_sequence, &action_list);
+  ASSERT_EQ(kInvalidArgument, status.code());
+}
+
+TEST(WindowCommandsTest, ProcessInputActionSequenceWheelScrollOriginViewport) {
+  Session session("1");
+  std::vector<base::DictValue> action_list;
+  base::DictValue action_sequence = MakeWheelScrollSequence("viewport");
+  Status status =
+      ProcessInputActionSequence(&session, action_sequence, &action_list);
+  ASSERT_TRUE(status.IsOk());
+  ASSERT_EQ(1U, action_list.size());
+  ASSERT_EQ("viewport",
+            base::OptionalFromPtr(action_list[0].FindString("origin")));
+}
+
 TEST(WindowCommandsTest, ExecuteSetRPHRegistrationMode_NoParams) {
   base::DictValue params;
   Status status = CallWindowCommand(ExecuteSetRPHRegistrationMode, params);

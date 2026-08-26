@@ -1561,6 +1561,11 @@ Status ProcessInputActionSequence(Session* session,
               return Status(kInvalidArgument,
                             "if 'origin' is a string, it must be either "
                             "'viewport' or 'pointer'");
+            if (*subtype == "scroll" && origin == "pointer") {
+              return Status(kInvalidArgument,
+                            "'pointer' origin is not supported for wheel "
+                            "scroll actions");
+            }
             action_dict.Set("origin", origin);
           }
         } else {

@@ -93,7 +93,5 @@ This is a wdspec test.
   AssertionError
 [FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerUp]
   AssertionError
-[FAIL] test_wheel_action_scroll_origin_pointer_not_supported
-  AssertionError
 Harness: the test ran to completion.
 
