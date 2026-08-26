@@ -235,6 +235,15 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//ui/views",
   ]
+
+  if (enable_extensions) {
+    sources += [ "recent_session_observer_impl_browsertest.cc" ]
+    deps += [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//ui/base/interaction:test_support",
+    ]
+  }
 }
 
 if (!is_chromeos_device) {
