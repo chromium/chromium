@@ -92,7 +92,12 @@ template("bidi_bundle") {
       entrypoint,
     ]
 
-    outputs = [ output_file ]
+    _notices_file = "$target_gen_dir/${target_name}_THIRD_PARTY_NOTICES"
+    outputs = [
+      output_file,
+      "${output_file}.map",
+      _notices_file,
+    ]
 
     data = outputs
 
@@ -104,7 +109,9 @@ template("bidi_bundle") {
       "--output",
       rebase_path(output_file, root_build_dir),
       "--gen-dir",
-      rebase_path(root_gen_dir, root_build_dir),
+      rebase_path(target_gen_dir, root_build_dir),
+      "--notices-file",
+      rebase_path(_notices_file, root_build_dir),
     ]
   }
 }

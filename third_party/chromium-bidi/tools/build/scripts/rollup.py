@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--entrypoint", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--gen-dir", required=True)
+    parser.add_argument("--notices-file")
     args = parser.parse_args()
 
     # Resolve absolute path to rollup under repository root
@@ -33,6 +34,10 @@ def main():
     rollup_path = os.path.join(
         repo_root, "node_modules/@rollup/wasm-node/dist/bin/rollup"
     )
+
+    env_vars = [f"GEN_DIR:{os.path.abspath(args.gen_dir)}"]
+    if args.notices_file:
+        env_vars.append(f"NOTICES_FILE:{os.path.abspath(args.notices_file)}")
 
     # Invoke rollup via node wrapper, setting the working directory to the repository root
     node_path = os.path.join(repo_root, "tools", "node.py")
@@ -49,7 +54,7 @@ def main():
         "--format",
         "iife",
         "--environment",
-        f"GEN_DIR:{os.path.abspath(args.gen_dir)}",
+        ",".join(env_vars),
     ]
 
     result = subprocess.run(cmd, cwd=repo_root, capture_output=True, text=True)

@@ -8,6 +8,7 @@ lib
 logs/
 node_modules/
 out/
+gen/
 wptreport*.json
 .vscode/*
 !.vscode/extensions.json

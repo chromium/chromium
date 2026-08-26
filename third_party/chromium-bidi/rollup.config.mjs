@@ -20,7 +20,9 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 
-const genDir = process.env.GEN_DIR || 'out/Default';
+const noticesFile =
+  process.env.NOTICES_FILE ||
+  path.join(process.env.GEN_DIR || 'out/Default', 'THIRD_PARTY_NOTICES');
 
 // Generate Mapper Tab
 const mapperTabConfig = {
@@ -47,24 +49,31 @@ const mapperTabConfig = {
           failOnViolation: true,
         },
         output: {
-          file: path.join(genDir, 'src', 'THIRD_PARTY_NOTICES'),
+          file: noticesFile,
           template(dependencies) {
-            const stringified_dependencies = dependencies.map((dependency) => {
-              let arr = [];
-              arr.push(`Name: ${dependency.name ?? 'N/A'}`);
-              let url = dependency.homepage ?? dependency.repository;
-              if (url !== null && typeof url !== 'string') {
-                url = url.url;
-              }
-              arr.push(`URL: ${url ?? 'N/A'}`);
-              arr.push(`Version: ${dependency.version ?? 'N/A'}`);
-              arr.push(`License: ${dependency.license ?? 'N/A'}`);
-              if (dependency.licenseText !== null) {
-                arr.push('');
-                arr.push(dependency.licenseText.replaceAll('\r', ''));
-              }
-              return arr.join('\n');
+            const sortedDependencies = [...dependencies].sort((a, b) => {
+              const nameA = a.name || '';
+              const nameB = b.name || '';
+              return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
             });
+            const stringified_dependencies = sortedDependencies.map(
+              (dependency) => {
+                let arr = [];
+                arr.push(`Name: ${dependency.name ?? 'N/A'}`);
+                let url = dependency.homepage ?? dependency.repository;
+                if (url !== null && typeof url !== 'string') {
+                  url = url.url;
+                }
+                arr.push(`URL: ${url ?? 'N/A'}`);
+                arr.push(`Version: ${dependency.version ?? 'N/A'}`);
+                arr.push(`License: ${dependency.license ?? 'N/A'}`);
+                if (dependency.licenseText !== null) {
+                  arr.push('');
+                  arr.push(dependency.licenseText.replaceAll('\r', ''));
+                }
+                return arr.join('\n');
+              },
+            );
             const divider =
               '\n\n-------------------- DEPENDENCY DIVIDER --------------------\n\n';
             return stringified_dependencies.join(divider);
