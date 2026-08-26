@@ -147,6 +147,18 @@ public class StartupController {
         AwBrowserProcess.finishVariationsInit();
     }
 
+    /** Runs immediate post-browser startup tasks following BrowserProcess init. */
+    public void immediatePostBrowserProcessStartTask() {
+        AwBrowserProcess.finishBrowserProcessStart();
+        // TODO(crbug.com/332706093): See if this can be moved before loading native.
+        if (!WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING)) {
+            AwClassPreloader.preloadClasses();
+        }
+
+        AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
+    }
+
     /**
      * Runs post-browser-process startup tasks that need to run on the UI thread before and after
      * Chromium initialization is complete.

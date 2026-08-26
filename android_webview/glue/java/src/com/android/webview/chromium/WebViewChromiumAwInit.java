@@ -23,7 +23,6 @@ import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
-import org.chromium.android_webview.AwClassPreloader;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwThreadUtils;
@@ -47,14 +46,11 @@ import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.SelectionActionMenuClientWrapper;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LoaderErrors;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayDeque;
@@ -247,10 +243,9 @@ public class WebViewChromiumAwInit {
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
 
         preBrowserProcessStartTasks.addLast(mStartupController::preBrowserProcessStartTask);
-
-        addBrowserProcessStartTasksToQueue(
-                preBrowserProcessStartTasks, postBrowserProcessStartTasks);
-
+        preBrowserProcessStartTasks.addLast(AwBrowserProcess::runPreBrowserProcessStart);
+        postBrowserProcessStartTasks.addLast(
+                mStartupController::immediatePostBrowserProcessStartTask);
         postBrowserProcessStartTasks.addLast(mStartupController::postBrowserProcessStartTask);
 
         // Initialize the decoupled StartupTasksRunner with a Delegate interface implementation.
@@ -276,53 +271,16 @@ public class WebViewChromiumAwInit {
                     public boolean isStartupFinished() {
                         return mInitState.get() == INIT_FINISHED;
                     }
+
+                    @Override
+                    public void doAsyncBrowserStartup(
+                            BrowserStartupController.StartupCallback callback) {
+                        AwBrowserProcess.triggerAsyncBrowserProcess(callback);
+                    }
                 },
                 preBrowserProcessStartTasks,
                 postBrowserProcessStartTasks,
                 mChromiumFirstStartupRequestMode.get());
-    }
-
-    private void addBrowserProcessStartTasksToQueue(
-            ArrayDeque<Runnable> preBrowserProcessStartTasks,
-            ArrayDeque<Runnable> postBrowserProcessStartTasks) {
-        StartupCallback callback =
-                new StartupCallback() {
-                    @Override
-                    public void onSuccess(
-                            @Nullable BrowserStartupController.StartupMetrics metrics) {
-                        mStartupTasksRunner.recordContentMetrics(metrics);
-                        mStartupTasksRunner.finishAsyncRun();
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED);
-                    }
-                };
-        preBrowserProcessStartTasks.addLast(
-                () -> {
-                    AwBrowserProcess.runPreBrowserProcessStart();
-                    if (mStartupTasksRunner.getRunState()
-                            == StartupTasksRunner.StartupRequestMode.ASYNC) {
-                        AwBrowserProcess.triggerAsyncBrowserProcess(callback);
-                    }
-                });
-        postBrowserProcessStartTasks.addLast(
-                () -> {
-                    AwBrowserProcess.finishBrowserProcessStart();
-                    runImmediateTaskAfterBrowserProcessInit();
-                });
-    }
-
-    // Run the next startup task following BrowserProcess init.
-    private void runImmediateTaskAfterBrowserProcessInit() {
-        // TODO(crbug.com/332706093): See if this can be moved before loading native.
-        if (!WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING)) {
-            AwClassPreloader.preloadClasses();
-        }
-
-        AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
     private void recordStartupMetrics(StartupTasksRunner.StartupTimings timings) {
