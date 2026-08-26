@@ -185,6 +185,7 @@
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
+#include "chrome/browser/subresource_filter/subresource_filter_navigation_download_policy.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -337,7 +338,6 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/site_token_provider/features.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/user_prefs/user_prefs.h"
@@ -7766,17 +7766,8 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
     content::RenderFrameHost* frame_host,
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {
-  const auto* throttle_manager =
-      subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-          frame_host->GetPage());
-  if (throttle_manager &&
-      throttle_manager->IsRenderFrameHostTaggedAsAd(frame_host)) {
-    download_policy->SetAllowed(blink::NavigationDownloadType::kAdFrame);
-    if (!user_gesture) {
-      download_policy->SetDisallowed(
-          blink::NavigationDownloadType::kAdFrameNoGesture);
-    }
-  }
+  subresource_filter::AugmentNavigationDownloadPolicy(frame_host, user_gesture,
+                                                      download_policy);
 }
 
 void ChromeContentBrowserClient::GetMediaDeviceIDSalt(

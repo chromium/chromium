@@ -6,12 +6,14 @@ source_set("subresource_filter") {
   public = [
     "chrome_content_subresource_filter_web_contents_helper_factory.h",
     "subresource_filter_history_observer.h",
+    "subresource_filter_navigation_download_policy.h",
     "subresource_filter_profile_context_factory.h",
   ]
 
   sources = [
     "chrome_content_subresource_filter_web_contents_helper_factory.cc",
     "subresource_filter_history_observer.cc",
+    "subresource_filter_navigation_download_policy.cc",
     "subresource_filter_profile_context_factory.cc",
   ]
 
@@ -33,6 +35,8 @@ source_set("subresource_filter") {
     "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
     "//url",
   ]
 }
