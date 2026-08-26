@@ -108,12 +108,19 @@ class AppMenuBuilder {
     return *this;
   }
 
-  // Adds a section header.
   AppMenuBuilder& AddSectionHeader(int string_id) {
     auto section_item = ActionAppMenuManager::CreateSectionActionItem(
         l10n_util::GetStringUTF16(string_id), DisplayType::kRow, bg_color_);
     if (parent_) {
       parent_ = parent_->AddChild(std::move(section_item));
+    }
+    return *this;
+  }
+
+  AppMenuBuilder& AddDivider() {
+    auto item = ActionAppMenuManager::CreateDividerActionItem();
+    if (parent_) {
+      parent_->AddChild(std::move(item));
     }
     return *this;
   }
@@ -213,6 +220,13 @@ ActionAppMenuManager::CreateSectionActionItem(
   }
 
   return section_item;
+}
+
+std::unique_ptr<actions::ActionItem>
+ActionAppMenuManager::CreateDividerActionItem() {
+  auto item = actions::ActionItem::Builder().Build();
+  item->SetProperty(kDisplayTypeKey, DisplayType::kDivider);
+  return item;
 }
 
 actions::ActionItem* ActionAppMenuManager::GetAppMenuRoot(
@@ -343,6 +357,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 
   builder.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
     sub.AddAction(kActionFind)
+        .AddDivider()
         .AddAction(actions::kActionCut)
         .AddAction(actions::kActionCopy)
         .AddAction(actions::kActionPaste);
@@ -352,18 +367,24 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
       kActionSaveAndShareSubmenu, [this](AppMenuBuilder& sub) {
         Profile* profile = browser_window_interface_->GetProfile();
         if (media_router::MediaRouterEnabled(profile)) {
-          sub.AddAction(kActionRouteMedia);
+          sub.AddAction(kActionRouteMedia).AddDivider();
         }
 
-        sub.AddAction(kActionSavePage).AddAction(kActionCreateShortcut);
+        sub.AddAction(kActionSavePage)
+            .AddDivider()
+            .AddAction(kActionCreateShortcut);
 
-        if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
-          sub.AddAction(kActionCopyUrl)
-              .AddAction(kActionSendTabToSelf)
-              .AddAction(kActionQrCodeGenerator);
-        }
-        if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
-          sub.AddAction(kActionSharingHubScreenshot);
+        if (!sharing_hub::SharingIsDisabledByPolicy(profile) ||
+            sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
+          sub.AddDivider();
+          if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
+            sub.AddAction(kActionCopyUrl)
+                .AddAction(kActionSendTabToSelf)
+                .AddAction(kActionQrCodeGenerator);
+          }
+          if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
+            sub.AddAction(kActionSharingHubScreenshot);
+          }
         }
       });
 
@@ -378,13 +399,16 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
       sub.AddAction(kActionSidePanelShowCustomizeChrome);
     }
 
-    sub.AddAction(kActionShowReadingModeSidePanel)
+    sub.AddDivider()
+        .AddAction(kActionShowReadingModeSidePanel)
+        .AddDivider()
         .AddAction(kActionPerformance)
         .AddAction(kActionTaskManagerAppMenu)
+        .AddDivider()
         .AddAction(kActionDevTools);
 
     if (base::debug::IsProfilingSupported()) {
-      sub.AddAction(kActionProfilingEnabled);
+      sub.AddDivider().AddAction(kActionProfilingEnabled);
     }
 
     if (IsChromeLabsEnabled()) {
@@ -392,7 +416,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
       if (ShouldShowChromeLabsUI(profile) &&
           profile->GetPrefs()->GetBoolean(
               chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy)) {
-        sub.AddAction(kActionShowChromeLabs);
+        sub.AddDivider().AddAction(kActionShowChromeLabs);
       }
     }
   });

@@ -29,6 +29,7 @@ class ActionAppMenuManager {
     kRow,
     kBlock,
     kFooter,
+    kDivider,
     kCustom,
   };
 
@@ -48,6 +49,8 @@ class ActionAppMenuManager {
       std::u16string text,
       DisplayType display_type,
       std::optional<ui::ColorId> container_color = std::nullopt);
+
+  static std::unique_ptr<actions::ActionItem> CreateDividerActionItem();
 
   static actions::ActionItem* GetAppMenuRoot(
       BrowserWindowInterface* browser_window_interface);
