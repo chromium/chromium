@@ -8601,14 +8601,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 
   // Must explicitly get preselection bubble from controller. Widget should be
   // hidden when omnibox has focus.
-  ASSERT_FALSE(controller->get_preselection_widget_for_testing()->IsVisible());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* widget = controller->get_preselection_widget_for_testing();
+    return widget && !widget->IsVisible();
+  }));
 
   // Move focus away from omnibox to the overlay web view.
   controller->GetOverlayWebViewForTesting()->RequestFocus();
 
   // Widget should be visible when web view receives focus and overlay is open.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return controller->get_preselection_widget_for_testing()->IsVisible();
+    auto* widget = controller->get_preselection_widget_for_testing();
+    return widget && widget->IsVisible();
   }));
 }
 
