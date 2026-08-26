@@ -20,9 +20,9 @@ desc: |-
 
   For more information on <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>, see https://wicg.github.io/local-network-access/ and https://developer.chrome.com/blog/local-network-access.
 
-  Overrides from this policy take precedence over overrides set by DeviceLocalNetworkAccessIpAddressSpaceOverrides.
+  This policy does not support dynamic refresh.
 
-  Overrides from the command-line switch --ip-address-space-overrides take precedence over overrides set by policies.
+  Overrides from the command-line switch --ip-address-space-overrides take precedence over overrides set by this policy.
 
 example_value:
 - '100.64.0.0/10=public'

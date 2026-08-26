@@ -1890,7 +1890,7 @@ message OBSOLETE_ExtendedFkeysModifierProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 71, 90, 131;
+  reserved 61, 71, 90, 131, 1478, 1479, 1480;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -2133,9 +2133,4 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
   optional IntegerPolicyProto DeviceWeeklyScheduledResuspendDelayMs = 1461;
   optional IntegerPolicyProto DeviceOnlinePasswordMismatchBehavior = 1470;
-  optional StringListPolicyProto DeviceLocalNetworkAccessAllowedForUrls = 1478;
-  optional StringListPolicyProto DeviceLocalNetworkAccessBlockedForUrls = 1479;
-  optional StringListPolicyProto
-      DeviceLocalNetworkAccessIpAddressSpaceOverrides = 1480;
-
 }

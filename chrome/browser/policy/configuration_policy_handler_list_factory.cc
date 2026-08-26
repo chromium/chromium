@@ -2465,21 +2465,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut,
     base::Value::Type::BOOLEAN },
 
-  // For Local Network Access policies, device policies are added before user
-  // policies so that user policies override device policies.
-#if BUILDFLAG(IS_CHROMEOS)
-  { key::kDeviceLocalNetworkAccessAllowedForUrls,
-    prefs::kManagedLocalNetworkAccessAllowedForUrls,
-    base::Value::Type::LIST },
-#endif  // BUILDFLAG(IS_CHROMEOS)
   { key::kLocalNetworkAccessAllowedForUrls,
     prefs::kManagedLocalNetworkAccessAllowedForUrls,
     base::Value::Type::LIST },
-#if BUILDFLAG(IS_CHROMEOS)
-  { key::kDeviceLocalNetworkAccessBlockedForUrls,
-    prefs::kManagedLocalNetworkAccessBlockedForUrls,
-    base::Value::Type::LIST },
-#endif  // BUILDFLAG(IS_CHROMEOS)
   { key::kLocalNetworkAccessBlockedForUrls,
     prefs::kManagedLocalNetworkAccessBlockedForUrls,
     base::Value::Type::LIST },
@@ -2495,7 +2483,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLoopbackNetworkBlockedForUrls,
     prefs::kManagedLoopbackNetworkBlockedForUrls,
     base::Value::Type::LIST },
-
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kCAPlatformIntegrationEnabled,
     prefs::kCAPlatformIntegrationEnabled,
@@ -2655,18 +2642,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   }
 
   // Policies for all platforms - Start
-
-  // For Local Network Access policies, device policies are added before user
-  // policies so that user policies override device policies.
-#if BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
-      std::make_unique<LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler>(
-          key::kDeviceLocalNetworkAccessIpAddressSpaceOverrides));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  handlers->AddHandler(
-      std::make_unique<LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler>(
-          key::kLocalNetworkAccessIpAddressSpaceOverrides));
-
+      std::make_unique<
+          LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler>());
   handlers->AddHandler(std::make_unique<DefaultSensorsSettingPolicyHandler>());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   handlers->AddHandler(

@@ -15,8 +15,7 @@ namespace policy {
 class LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler
     : public ListPolicyHandler {
  public:
-  explicit LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler(
-      const char* policy_name);
+  LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler();
   LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler(
       const LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler&) = delete;
   LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler& operator=(
