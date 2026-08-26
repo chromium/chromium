@@ -33,6 +33,8 @@ _IGNORED_SUFFIXES = (
     '_grd_files.json',
     '.modulemap',
     '.rsp',
+    '-tsconfig.json',
+    '-tsconfig.ref.json',
     'typemap_config',
 )
 
