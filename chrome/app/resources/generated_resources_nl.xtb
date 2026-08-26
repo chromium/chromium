@@ -354,6 +354,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 bookmark en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}other{{BOOKMARK_COUNT} bookmarks en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}}</translation>
 <translation id="125220115284141797">Standaard</translation>
 <translation id="1252219782845132919">Groep verbergen</translation>
+<translation id="1252597096488926946">Scrollknoppen losmaken</translation>
 <translation id="1252987234827889034">Er is een profielfout opgetreden</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
@@ -976,6 +977,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1755601632425835748">Tekstgrootte</translation>
 <translation id="1756963401828337401">Kies een scherm om vast te leggen</translation>
 <translation id="17584710573359123">Bekijken in de Chrome Web Store</translation>
+<translation id="176013700366797492">Ga naar Google Wallet om <ph name="BEGIN_LINK1" />voorkeuren voor gegevens en privacy<ph name="END_LINK1" /> te beheren of <ph name="BEGIN_LINK2" />betaalmethoden<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />kaarten<ph name="END_LINK3" /> zoals klantenkaarten en ID's te beheren</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> opnieuw toegewezen aan <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Accounts van <ph name="NAME" /></translation>
 <translation id="176272781006230109">winkelsuggesties</translation>
@@ -1701,6 +1703,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2322193970951063277">Kop- en voettekst</translation>
 <translation id="2322622365472107569">Eindtijd: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Opgeslagen wifi-netwerken</translation>
+<translation id="2323685460575935191">Scrollknoppen verbergen</translation>
 <translation id="2325444234681128157">Wachtwoord onthouden</translation>
 <translation id="2326188115274135041">Bevestig je pincode om automatisch ontgrendelen aan te zetten</translation>
 <translation id="2326583548923775947">Dit is geen Google-account. Items die je in Chrome opslaat, zijn niet beschikbaar op andere apparaten.</translation>
@@ -1957,6 +1960,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2508747373511408451">De app <ph name="APPLICATION_NAME" /> vereist dat Google Drive beschikbaar is.</translation>
 <translation id="2509495747794740764">De waarde voor de schaal moet een getal tussen de 10 en 200 zijn.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (geselecteerd)</translation>
 <translation id="2513904627589542105">Zelfcontrole</translation>
 <translation id="251425554130284360">Je ziet pagina's die je hebt bezocht en voorgestelde zoekopdrachten zodat je makkelijk terug kunt gaan naar je meest recente activiteit.
@@ -4990,6 +4994,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4831226137013573603">microfoon dempen</translation>
 <translation id="483262387981411190">Gezichtsbediening onderbreken of hervatten</translation>
 <translation id="4833683849865011483">Er is één printer gevonden op de printerserver</translation>
+<translation id="4834388789911023644">Een review schrijven</translation>
 <translation id="4835598628985424375">Je lippen samendrukken</translation>
 <translation id="4835677468087803981">Pincode verbergen</translation>
 <translation id="4836504898754963407">Vingerafdrukken beheren</translation>
@@ -8547,6 +8552,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7625823789272218216">Nieuw tabblad aan linkerkant</translation>
 <translation id="762730429396410864">Het CPU-prestatieniveau dat aan websites wordt gerapporteerd handmatig instellen</translation>
 <translation id="7627749368210392160">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apparaten in je lokale netwerk</translation>
+<translation id="7628068697012244394">Een review schrijven</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecteer een actie voor elke toets</translation>
 <translation id="7629206210984165492">Ingetogen</translation>
@@ -8973,6 +8979,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7949038991703929816">Kan geschiedenis niet laden. Zorg dat de bestanden geldige updaterlogboeken bevatten.</translation>
 <translation id="7950629216186736592">Reden: LBS ondersteunt alleen URL's met http://, https:// en file://.</translation>
 <translation id="7950814699499457511">Aan • Deze extensie heeft geen privacyprocedures gepubliceerd, zoals hoe de extensie gegevens verzamelt en gebruikt</translation>
+<translation id="7951159420392892566">Scrollknoppen losmaken</translation>
 <translation id="795130320946928025">Virtuele kaart uitzetten</translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="7953236668995583915">Laad deze pagina opnieuw om je geüpdatete instellingen toe te passen op deze site</translation>

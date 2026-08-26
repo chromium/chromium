@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">कुकी, साइट डेटा</translation>
 <translation id="1312721752506309252">बेहतर सुरक्षा की सुविधा चालू है</translation>
 <translation id="1321993286294231467">इमेज सेव करने के दौरान कोई गड़बड़ी हुई.</translation>
+<translation id="1322683976135389755">प्रॉम्प्ट: इस लेख की खास जानकारी दो, तीन में से पहली स्लाइड</translation>
 <translation id="1322735045095424339">आपके संगठन के मुताबिक, गुप्त मोड इस्तेमाल करना ज़रूरी है</translation>
 <translation id="1323735185997015385">मिटाएं</translation>
 <translation id="132683371494960526">मूल फ़ोल्‍डर बदलने के लिए दो बार टैप करें.</translation>
@@ -699,6 +700,7 @@
 <translation id="3272527697863656322">अभी नहीं</translation>
 <translation id="3272955648592358996">आपके डेटा का इस्तेमाल, Google के एआई को और बेहतर बनाने के लिए किया जाता है</translation>
 <translation id="3273510436356991673">होम स्क्रीन को अपनी पसंद के मुताबिक बनाएं</translation>
+<translation id="327455571215090823">ऑटोमैटिक तरीके से भरने की सुविधा के लिए बेहतर सुझाव, निजता के साथ</translation>
 <translation id="3277021493514034324">साइट का पता कॉपी किया गया</translation>
 <translation id="3280562213547448728">वॉइस सर्च</translation>
 <translation id="3289505634533552500">वॉइस सर्च</translation>
@@ -912,6 +914,7 @@
 <translation id="4004204301268239848">पासवर्ड आपके Google खाते में सेव किए जाते हैं इसलिए आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकते हैं.</translation>
 <translation id="4007463141047732631">टैब ग्रुप में बदलाव करें</translation>
 <translation id="4011489366247192265">सोर्स की भाषा</translation>
+<translation id="4014099645251211155">'Chrome में Gemini' का इस्तेमाल करके, पेज पर मौजूद कॉन्टेंट के बारे में कोई भी सवाल पूछें</translation>
 <translation id="4017599800655151880">थंबनेल</translation>
 <translation id="4018440314314549819">सेव किए गए पासवर्ड ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="4021447724486050609">अपना ब्राउज़र अपडेट करें</translation>
@@ -1054,6 +1057,7 @@
 <translation id="4509345063551561634">स्थानः</translation>
 <translation id="4517684186578051919">डिवाइस की जानकारी</translation>
 <translation id="4520798012560649652">गुप्त मोड के बारे में ज़्यादा जानें</translation>
+<translation id="4524737913322680818">'Chrome में Gemini' की मदद से, खरीदारी करें, प्लान बनाएं, और अन्य काम करें</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} बुकमार्क}one{{count} बुकमार्क}other{{count} बुकमार्क}}</translation>
 <translation id="4525629404718770519">लिंक की झलक दिखाएं</translation>
 <translation id="452750746583162491">सिंक किए गए डेटा को कंट्रोल करें</translation>
@@ -1210,6 +1214,7 @@
 <translation id="4979397965658815378">अपने सभी डिवाइस पर बुकमार्क, पासवर्ड, इतिहास और दूसरी तरह की सेटिंग पाने के लिए Google खाते से साइन इन करें.</translation>
 <translation id="4985921635659180565">फ़ाइल मिटाने के लिए शेड्यूल करने के बाद, इसे रद्द नहीं किया जा सकता.</translation>
 <translation id="498624032394115435">जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं.</translation>
+<translation id="4986428648020277392">प्रॉम्प्ट: मुझे क्या खरीदना चाहिए? तीन में से दूसरी स्लाइड</translation>
 <translation id="498768198683310172">Gemini का इस्तेमाल करना शुरू करें</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> को आपका संगठन मैनेज करता है.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
@@ -1476,6 +1481,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5838430324585198889">Google के ऐप्लिकेशन इस्तेमाल करें और अपने iPad पर ज़्यादा सुविधाएं पाएं</translation>
 <translation id="583923961930319521">अपने सभी डिवाइसों पर पासवर्ड इस्तेमाल करें</translation>
+<translation id="5841763734702350465">प्रॉम्प्ट: इसे मेरे कैलेंडर में जोड़ो, तीन में से तीसरी स्लाइड</translation>
 <translation id="5843013299019689749">बैकग्राउंड का काला रंग</translation>
 <translation id="5844284118433003733">Google खाते में साइन इन करने पर, आपका ब्राउज़िंग डेटा आपके Google खाते से लिंक हो जाता है. इससे Google की सभी सेवाओं पर आपका डेटा सुरक्षित रहता है. उदाहरण: डेटा की सुरक्षा से जुड़े किसी मामले के बाद, Gmail में आपके डेटा की सुरक्षा बढ़ा दी जाती है.</translation>
 <translation id="5854790677617711513">30 दिनों से ज़्यादा पुराना</translation>
@@ -1785,6 +1791,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6775952316617222141">Chrome में Gemini से Live बातचीत करें</translation>
 <translation id="6779455296366983087">आपका ब्राउज़िंग डेटा मिटा दिया जाएगा</translation>
 <translation id="6782531425936234573">डेटा एक्सपोर्ट करें</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> को हटाएं</translation>
 <translation id="6791425686608802741">"टैब को नए ग्रुप में जोड़ें" पर टैप करें</translation>
 <translation id="6794476726485507147">इस पेज पर वापस आने के लिए, रिमाइंडर पाने की तारीख और समय चुनें</translation>
 <translation id="6797543908718012274">रीडिंग मोड चालू करें</translation>

@@ -354,6 +354,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google". Kjo do të pastrojë gjithashtu çdo dublikatë.}other{{BOOKMARK_COUNT} faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google". Kjo do të pastrojë gjithashtu çdo dublikatë.}}</translation>
 <translation id="125220115284141797">Parazgjedhja</translation>
 <translation id="1252219782845132919">Fshih grupin</translation>
+<translation id="1252597096488926946">Zhgozhdo butonat e lëvizjes</translation>
 <translation id="1252987234827889034">Ndodhi një gabim i profilit</translation>
 <translation id="1254034280040157728">Kanioni i Madh</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
@@ -976,6 +977,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1755601632425835748">Madhësia e tekstit</translation>
 <translation id="1756963401828337401">Zgjidh një ekran për të regjistruar</translation>
 <translation id="17584710573359123">Shikoje në "Dyqanin e uebit" të Chrome</translation>
+<translation id="176013700366797492">Vizito "Portofolin e Google" për të kontrolluar <ph name="BEGIN_LINK1" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK1" /> ose për të menaxhuar <ph name="BEGIN_LINK2" />mënyrat e pagesës<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />dokumentet dixhitale<ph name="END_LINK3" /> si kartat e besnikërisë dhe dokumentet e identifikimit</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> u rilidh me <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Llogaritë e <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugjerimet për blerje</translation>
@@ -1701,6 +1703,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2322193970951063277">Titujt dhe fundet e faqeve</translation>
 <translation id="2322622365472107569">Koha e përfundimit: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rrjetet Wi-Fi të ruajtura</translation>
+<translation id="2323685460575935191">Fshih butonat e lëvizjes</translation>
 <translation id="2325444234681128157">Kujto fjalëkalimin</translation>
 <translation id="2326188115274135041">Konfirmo kodin PIN për të aktivizuar shkyçjen automatike</translation>
 <translation id="2326583548923775947">Kjo nuk është një "Llogari e Google". Artikujt që ruan te Chrome nuk do të ofrohen në pajisjet e tjera.</translation>
@@ -1957,6 +1960,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2508747373511408451">Aplikacioni "<ph name="APPLICATION_NAME" />" kërkon që "Disku i Google" të jetë i disponueshëm.</translation>
 <translation id="2509495747794740764">Sasia e shkallëzimit duhet të jetë numër nga 10 në 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (zgjedhur)</translation>
 <translation id="2513904627589542105">Vetëtestim</translation>
 <translation id="251425554130284360">Po shikon faqet që ke vizituar dhe kërkimet e sugjeruara për të të ndihmuar të kthehesh me lehtësi tek aktivitetet e tua të fundit.
@@ -4993,6 +4997,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4831226137013573603">heqja e zërit të mikrofonit</translation>
 <translation id="483262387981411190">Vendos në pauzë ose vazhdo me kontrollin me anë të fytyrës</translation>
 <translation id="4833683849865011483">U gjet 1 printer nga serveri i printimit</translation>
+<translation id="4834388789911023644">Shkruaj një koment</translation>
 <translation id="4835598628985424375">Rrudh buzët me njëra-tjetrën</translation>
 <translation id="4835677468087803981">Fshihe kodin PIN</translation>
 <translation id="4836504898754963407">Menaxho gjurmët e gishtave</translation>
@@ -8553,6 +8558,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7625823789272218216">Skedë e re në të majtë</translation>
 <translation id="762730429396410864">Cakto manualisht nivelin e performancës së CPU-së që raportohet te uebsajtet</translation>
 <translation id="7627749368210392160">Sajtet mund ta përdorin këtë veçori për t'u qasur në pajisjet e tjera në rrjetin tënd lokal</translation>
+<translation id="7628068697012244394">Shkruaj një koment</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Klasa <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Zgjidh një veprim për çdo tast</translation>
 <translation id="7629206210984165492">Modeste</translation>
@@ -8979,6 +8985,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7949038991703929816">Ngarkimi i historikut dështoi. Sigurohu që skedarët të përmbajnë evidenca të vlefshme të përditësuesit.</translation>
 <translation id="7950629216186736592">Arsyeja: LBS mbështet vetëm URL-të në formatin http://, https:// dhe file://.</translation>
 <translation id="7950814699499457511">Aktive • Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat</translation>
+<translation id="7951159420392892566">Zhgozhdo butonat e lëvizjes</translation>
 <translation id="795130320946928025">Çaktivizo kartën virtuale</translation>
 <translation id="7952708427581814389">Sajtet mund të kërkojnë të shikojnë tekstin dhe imazhet në kujtesën e fragmenteve</translation>
 <translation id="7953236668995583915">Ringarko këtë faqe për të zbatuar cilësimet e përditësuara në këtë sajt</translation>

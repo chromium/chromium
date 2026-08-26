@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti proširenu stvarnost, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Promijenite položaj da biste prilagodili doživljaj pregledavanja</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
+<translation id="1861244985839668297">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu HID uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati HID uređaje.</translation>
 <translation id="1861262398884155592">Mapa je prazna</translation>
 <translation id="1881806992065048905">Donja tablica izgleda stranice Nova kartica</translation>
 <translation id="1887786770086287077">Pristup lokaciji isključen je za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>

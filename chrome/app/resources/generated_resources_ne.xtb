@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{एउटा बुकमार्क र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यो बुकमार्क र अन्य सामग्री आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्। तपाईंले यसो गर्नुभयो भने सबै कपीहरू पनि हट्ने छन्।}other{{BOOKMARK_COUNT} वटा बुकमार्कहरू र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यी बुकमार्क र अन्य सामग्री आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्। तपाईंले यसो गर्नुभयो भने सबै कपीहरू पनि हट्ने छन्।}}</translation>
 <translation id="125220115284141797">डिफल्ट</translation>
 <translation id="1252219782845132919">समूह लुकाउनुहोस्</translation>
+<translation id="1252597096488926946">स्क्रोल गर्ने बटनहरू अनपिन गर्नुहोस्</translation>
 <translation id="1252987234827889034">प्रोफाइल सम्बन्धी त्रुटि भयो</translation>
 <translation id="1254034280040157728">ग्र्यान्ड क्यान्यन</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
@@ -977,6 +978,7 @@
 <translation id="1755601632425835748">टेक्स्टको आकार</translation>
 <translation id="1756963401828337401">क्याप्चर कुनै स्क्रिन छनौट गर्नुहोस्</translation>
 <translation id="17584710573359123">Chrome वेब स्टोरमा हेर्नुहोस्</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा तथा गोपनीयतासम्बन्धी प्राथमिकताहरू<ph name="END_LINK1" /> नियन्त्रण गर्न वा लोयल्टी कार्ड र ID जस्ता <ph name="BEGIN_LINK2" />भुक्तानी विधिहरू<ph name="END_LINK2" /> र <ph name="BEGIN_LINK3" />पासहरू<ph name="END_LINK3" /> व्यवस्थापन गर्न Google Wallet मा जानुहोस्</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> रिम्याप गरेर <ph name="REMAPPING_OPTION" /> बनाइएको छ।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />का खाताहरू</translation>
 <translation id="176272781006230109">किनमेलसम्बन्धी सुझावहरू</translation>
@@ -1701,6 +1703,7 @@
 <translation id="2322193970951063277">हेडर तथा फुटरहरू</translation>
 <translation id="2322622365472107569">अन्त्य हुने समय: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">सुरक्षित गरिएका Wi-Fi नेटवर्कहरू</translation>
+<translation id="2323685460575935191">स्क्रोल बटनहरू लुकाउनुहोस्</translation>
 <translation id="2325444234681128157">पासवर्ड सम्झनुहोस्</translation>
 <translation id="2326188115274135041">स्वतः अनलक हुने सुविधा सक्षम पार्न PIN पुष्टि गर्नुहोस्</translation>
 <translation id="2326583548923775947">यो Google खाता होइन। तपाईंले Chrome मा सेभ गर्ने सामग्रीहरू अन्य डिभाइसमा उपलब्ध हुने छैनन्।</translation>
@@ -1957,6 +1960,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> एप प्रयोग गर्न Google Drive उपलब्ध हुनु पर्छ।</translation>
 <translation id="2509495747794740764">मापनको परिमाण १० देखि २०० बीचको संख्या हुनु पर्छ।</translation>
 <translation id="2509566264613697683">८ गुणा</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (चयन गरिएको)</translation>
 <translation id="2513904627589542105">सेल्फ टेस्ट</translation>
 <translation id="251425554130284360">तपाईं आफूले हालसालै गरेको गतिविधिमा फर्कन सक्नुहोस् भन्नाका लागि तपाईंलाई तपाईंले हेरेका पेज र सिफारिस गरिएका खोजहरू देखाइँदै छन्।
@@ -4992,6 +4996,7 @@
 <translation id="4831226137013573603">माइक्रोफोन म्युट गर्ने की</translation>
 <translation id="483262387981411190">फेस कन्ट्रोल पज वा सुचारु गर्नुहोस्</translation>
 <translation id="4833683849865011483">प्रिन्ट सर्भरमा १ प्रिन्टर फेला पर्‍यो</translation>
+<translation id="4834388789911023644">रिभ्यू लेख्नुहोस्</translation>
 <translation id="4835598628985424375">ओठ जोडेर मुख चुच्चो पार्नुहोस्</translation>
 <translation id="4835677468087803981">PIN लुकाउनुहोस्</translation>
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
@@ -5450,7 +5455,7 @@
 <translation id="5178667623289523808">अघिल्लो फेला पार्नुहोस्</translation>
 <translation id="5179428098696668914">AI प्लेब्याक अफ गर्नुहोस्</translation>
 <translation id="5180276433875360121"><ph name="CERT_LIST" /> देखाउनुहोस्</translation>
-<translation id="5181140330217080051">डाउनलोड गर्दै</translation>
+<translation id="5181140330217080051">डाउनलोड गरिँदै छ</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> को Google पासवर्ड म्यानेजरमा</translation>
 <translation id="5181551096188687373">यो पासवर्ड यस डिभाइसमा मात्र सेभ गरिएको छ। यो पासवर्ड आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न यसलाई आफ्नो Google खाता (<ph name="USER_EMAIL" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="5182671122927417841">विस्तार असक्षम गर्नुहोस्</translation>
@@ -8551,6 +8556,7 @@
 <translation id="7625823789272218216">नयाँ ट्याब बायाँतिर देखिन्छ</translation>
 <translation id="762730429396410864">वेबसाइटहरूलाई रिपोर्ट गरिने CPU को पर्फर्मेन्सको श्रेणी म्यानुअल रूपमा सेट गर्नुहोस्</translation>
 <translation id="7627749368210392160">साइटहरूले यो सुविधा प्रयोग गरी तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्न सक्छन्</translation>
+<translation id="7628068697012244394">रिभ्यू लेख्नुहोस्</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ग्रेड <ph name="GRADE" /></translation>
 <translation id="762917478230183172">प्रत्येक कीका निम्ति एउटा कारबाही चयन गर्नुहोस्</translation>
 <translation id="7629206210984165492">शान्त</translation>
@@ -8977,6 +8983,7 @@
 <translation id="7949038991703929816">हिस्ट्री लोड गर्न सकिएन। फाइलहरूमा वैध अपडेटर लगहरू समावेश गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="7950629216186736592">कारण: LBS http://, https:// र file:// URL हरूमा मात्र चल्छ।</translation>
 <translation id="7950814699499457511">अन छ • यो एक्स्टेन्सनले गोपनीयतासम्बन्धी अभ्यासहरू (जस्तै, डेटा सङ्कलन तथा प्रयोग गर्ने तरिका) प्रकाशित गरेको छैन</translation>
+<translation id="7951159420392892566">स्क्रोल गर्ने बटनहरू अनपिन गर्नुहोस्</translation>
 <translation id="795130320946928025">भर्चुअल कार्ड अफ गर्नुहोस्</translation>
 <translation id="7952708427581814389">साइटहरूले तपाईंको क्लिपबोर्डमा भएका पाठ तथा फोटोहरू हेर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="7953236668995583915">तपाईंले परिवर्तन गरेका सेटिङ यो साइटमा लागू गर्न यो पेज रिलोड गर्नुहोस्</translation>

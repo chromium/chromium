@@ -354,6 +354,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 záložka a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google. Tím se také odstraní všechny duplicity.}few{{BOOKMARK_COUNT} záložky a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google. Tím se také odstraní všechny duplicity.}many{{BOOKMARK_COUNT} záložky a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google. Tím se také odstraní všechny duplicity.}other{{BOOKMARK_COUNT} záložek a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google. Tím se také odstraní všechny duplicity.}}</translation>
 <translation id="125220115284141797">Výchozí</translation>
 <translation id="1252219782845132919">Skrýt skupinu</translation>
+<translation id="1252597096488926946">Odepnout tlačítka pro posouvání</translation>
 <translation id="1252987234827889034">Došlo k chybě profilu</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
@@ -976,6 +977,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1755601632425835748">Velikost textu</translation>
 <translation id="1756963401828337401">Vyberte obrazovku, kterou chcete zachytit</translation>
 <translation id="17584710573359123">Zobrazit v Internetovém obchodu Chrome</translation>
+<translation id="176013700366797492">Pokud chcete spravovat <ph name="BEGIN_LINK1" />předvolby dat a ochrany soukromí<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />platební metody<ph name="END_LINK2" /> nebo <ph name="BEGIN_LINK3" />karty<ph name="END_LINK3" />, jako jsou věrnostní karty a průkazy totožnosti, přejděte do Peněženky Google.</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> je přemapováno na <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> – účty</translation>
 <translation id="176272781006230109">návrhy nákupů</translation>
@@ -1701,6 +1703,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2322193970951063277">Záhlaví a zápatí</translation>
 <translation id="2322622365472107569">Čas ukončení: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Uložené sítě Wi-Fi</translation>
+<translation id="2323685460575935191">Skrýt tlačítka pro posouvání</translation>
 <translation id="2325444234681128157">Zapamatovat heslo</translation>
 <translation id="2326188115274135041">Pokud chcete zapnout automatické odemykání, potvrďte PIN</translation>
 <translation id="2326583548923775947">Toto není účet Google. Položky, které uložíte do Chromu, nebudou dostupné na jiných zařízeních.</translation>
@@ -1957,6 +1960,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2508747373511408451">Aplikace <ph name="APPLICATION_NAME" /> vyžaduje, aby byl k dispozici Disk Google.</translation>
 <translation id="2509495747794740764">Hodnota měřítka musí být v intervalu 10 až 200.</translation>
 <translation id="2509566264613697683">8×</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (vybráno)</translation>
 <translation id="2513904627589542105">Autonomní test</translation>
 <translation id="251425554130284360">Zobrazují se vám stránky, které jste navštívili, a návrhy vyhledávání, které vám pomohou snadno se vrátit k nedávné aktivitě.
@@ -4990,6 +4994,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4831226137013573603">ztlumit mikrofon</translation>
 <translation id="483262387981411190">Pozastavit nebo obnovit ovládání obličejem</translation>
 <translation id="4833683849865011483">Na tiskovém serveru byla nalezena jedna tiskárna</translation>
+<translation id="4834388789911023644">Napsat recenzi</translation>
 <translation id="4835598628985424375">Našpulte rty</translation>
 <translation id="4835677468087803981">Skrýt PIN</translation>
 <translation id="4836504898754963407">Správa otisků prstů</translation>
@@ -8551,6 +8556,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7625823789272218216">Nová karta vlevo</translation>
 <translation id="762730429396410864">Ručně nastavit úroveň výkonu procesoru hlášenou webům</translation>
 <translation id="7627749368210392160">Weby mohou tuto funkci použít k přístupu k dalším zařízením v místní síti</translation>
+<translation id="7628068697012244394">Napsat recenzi</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), podoba: <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vyberte akci pro každou klávesu</translation>
 <translation id="7629206210984165492">Tlumená</translation>
@@ -8977,6 +8983,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7949038991703929816">Historii se nepodařilo načíst. Soubory musí obsahovat platné protokoly aktualizačního nástroje.</translation>
 <translation id="7950629216186736592">Důvod: LBS podporuje pouze adresy URL se schématem http://, https:// nebo file://.</translation>
 <translation id="7950814699499457511">Zapnuto • Pro toto rozšíření nebyly publikovány postupy v oblasti ochrany soukromí, například informace o tom, jak shromažďuje a používá data</translation>
+<translation id="7951159420392892566">Odepnout tlačítka pro posouvání</translation>
 <translation id="795130320946928025">Vypnout virtuální kartu</translation>
 <translation id="7952708427581814389">Weby mohou žádat o zobrazení textu a obrázků ve schránce</translation>
 <translation id="7953236668995583915">Pokud na tomto webu chcete použít aktualizovaná nastavení, načtěte tuto stránku znovu</translation>

@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="1832046143430087831">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan. Setelan ini nonaktif.</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
+<translation id="1842869163383855194">Akses mudah untuk menggunakan Penelusuran di Chrome di berbagai perangkat Anda, meskipun Chrome diminimalkan.</translation>
 <translation id="1843347690926158494">Telusuri tab ini dengan Google Lens</translation>
 <translation id="1849248141818021764">Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, Anda perlu <ph name="BEGIN_LINK" />menghapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Gunakan aplikasi Chrome untuk terus menjelajah kapan saja di mana saja</translation>
@@ -325,6 +326,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4173512894976930765">Situs mungkin akan berfungsi seperti yang diharapkan. Anda akan logout dari sebagian besar situs saat menutup semua jendela Chrome, kecuali Akun Google Anda jika Anda login ke Chrome.</translation>
 <translation id="4175922240926474352">Chrome memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
+<translation id="4222394563269716113">Buka Penelusuran di Chrome dengan pintasan keyboard.</translation>
 <translation id="4222932583846282852">Membatalkan...</translation>
 <translation id="4224210481850767180">Penginstalan telah dibatalkan.</translation>
 <translation id="4242034826641750751">Chrome memerlukan izin mikrofon dan kamera untuk situs ini</translation>
@@ -350,6 +352,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Bagikan dokumen ini ke Gemini di Chrome untuk mendapatkan ringkasan singkat dan mengajukan pertanyaan lanjutan</translation>
+<translation id="4447327682081576371">Tampilkan Penelusuran di Chrome di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4493028449971051158">Error saat sistem dimulai: jalankan penginstal sebagai administrator.</translation>
@@ -435,6 +438,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5402307365844630024">Aktifkan/nonaktifkan Gemini di Chrome Beta</translation>
 <translation id="541844421954567481">Bawa sandi, tab, dan info lainnya kapan saja di mana saja dengan aplikasi Chrome di <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="5430073640787465221">File preferensi Anda rusak atau tidak valid. Google Chrome tidak dapat memulihkan setelan Anda.</translation>
+<translation id="545114101312117217">Akses mudah ke pintasan Anda dari Penelusuran di Chrome</translation>
 <translation id="5465210843490471889">Pilih profil Chrome yang akan digunakan dengan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome kini diluncurkan saat Windows dimulai sehingga Anda dapat langsung menjelajahi internet. Anda dapat menonaktifkannya di setelan.</translation>
 <translation id="5486346529181556467">Tingkatkan keamanan online untuk semua orang saat Anda melaporkan situs yang menurut Anda berbahaya. Pelajari lebih lanjut <ph name="BEGIN_LINK" />kebijakan situs tidak aman Google<ph name="END_LINK" />.</translation>
@@ -718,6 +722,8 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8074398340364918139">Untuk menelusuri fitur atau ekstensi Chrome tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
+<translation id="8093772166980702367">Tampilkan Penelusuran di Chrome di area notifikasi dan aktifkan pintasan keyboard</translation>
+<translation id="8110438089258398864">Anda dapat membuka kembali Mode AI Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="8113883687556086139">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personalisasi Chrome untuk Anda...</translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
@@ -767,6 +773,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="856656450041460113">Telusuri daftar bahasa</translation>
 <translation id="8575047640889685742">Gunakan <ph name="BEGIN_LINK" />frasa sandi Anda sendiri<ph name="END_LINK" /> untuk mengenkripsi semua data Chrome di Akun Google Anda. Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.</translation>
 <translation id="8590782867495422699">Buka kembali Mode AI Google Penelusuran</translation>
+<translation id="8598779894319572882">Dari tombol "Mode AI Google Penelusuran" di toolbar, Anda dapat membuka kembali Mode AI Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="8623450603356630491">Login ke Chrome di ponsel Anda</translation>

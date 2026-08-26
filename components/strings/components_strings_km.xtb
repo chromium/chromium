@@ -195,6 +195,7 @@
 <translation id="1319245136674974084">កុំ​​សួរ​ទៀត​សម្រាប់​កម្មវិធី​នេះ</translation>
 <translation id="132301787627749051">ស្វែងរក​រូបភាព​ឃ្លីបបត</translation>
 <translation id="1323433172918577554">បង្ហាញច្រើនទៀត​</translation>
+<translation id="1326962902431997202">បន្ទាត់​ឆូត​កាត់</translation>
 <translation id="1330449323196174374">បត់ភ្ជិត​ផ្ទាំង​ខាងឆ្វេង</translation>
 <translation id="1330952240988133220">រក្សាទុកលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="133173645041092770">បិទ​គេហទំព័រ</translation>
@@ -3703,6 +3704,7 @@
 <translation id="7308436126008021607">សមកាលកម្ម​ផ្ទៃខាងក្រោយ</translation>
 <translation id="7310392214323165548">ឧបករណ៍នឹងចាប់ផ្ដើមឡើងវិញឆាប់ៗនេះ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> ចុច tab បន្ទាប់មក enter ដើម្បីសួរ <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">ស្ថាប័ន​របស់អ្នក​បាន​សម្គាល់​គេហទំព័រនេះ ដោយសារ​វាអាច​បំពាន​គោលការណ៍។</translation>
 <translation id="7315372670898739748">ការភ្ជាប់មិនបានសម្រេចទេ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="7316521168101843192">កំពុងរក្សាទុកឯកសារទៅ Microsoft OneDrive</translation>

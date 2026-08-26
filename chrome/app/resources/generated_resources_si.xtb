@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 පිටුසනක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}one{පිටුසන් {BOOKMARK_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}other{පිටුසන් {BOOKMARK_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}}</translation>
 <translation id="125220115284141797">පෙරනිමි</translation>
 <translation id="1252219782845132919">සමූහය සඟවන්න</translation>
+<translation id="1252597096488926946">අනුචලන බොත්තම් ගලවන්න</translation>
 <translation id="1252987234827889034">පැතිකඩ දෝෂයක් ඇති විය</translation>
 <translation id="1254034280040157728">ග්‍රෑන්ඩ් කැනියන්</translation>
 <translation id="1254593899333212300">සෘජු අන්තර්ජාල සබැඳුම</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">පාඨයේ තරම</translation>
 <translation id="1756963401828337401">ග්‍රහණය කර ගැනීමට තිරයක් තෝරා ගන්න</translation>
 <translation id="17584710573359123">Chrome Web Store තුළ බලන්න</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />දත්ත සහ පෞද්ගලිකත්ව මනාප<ph name="END_LINK1" /> පාලනය කිරීමට හෝ <ph name="BEGIN_LINK2" />ගෙවීම් ක්‍රම<ph name="END_LINK2" /> සහ විශ්වාස කාඩ්පත් සහ ID යොමු වැනි <ph name="BEGIN_LINK3" />අවසරපත්<ph name="END_LINK3" /> කළමනාකරණය කිරීමට Google Wallet වෙත පිවිසෙන්න</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> වෙත යළි අනුරූපණය කර ඇත.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ගේ ගිණුම්</translation>
 <translation id="176272781006230109">සාප්පු සවාරි යෝජනා</translation>
@@ -1704,6 +1706,7 @@
 <translation id="2322193970951063277">ශීර්ෂ හා පාදම්</translation>
 <translation id="2322622365472107569">අවසන් වන වේලාව <ph name="TIME" /></translation>
 <translation id="2323018538045954000">සුරැකි Wi-Fi ජාල</translation>
+<translation id="2323685460575935191">අනුචලන බොත්තම් සඟවන්න</translation>
 <translation id="2325444234681128157">මුරපදය මතක තබා ගන්න</translation>
 <translation id="2326188115274135041">ස්වයංක්‍රිය අගුලු හැරීම ක්‍රියාත්මක කිරීමට PIN තහවුරු කරන්න</translation>
 <translation id="2326583548923775947">මෙය Google ගිණුමක් නොවේ. ඔබ Chrome වෙත සුරකින අයිතම වෙනත් උපාංගවල ලබා ගත නොහැකි වනු ඇත.</translation>
@@ -1960,6 +1963,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> යෙදුමට Google Drive තිබීම අවශ්‍ය වේ.</translation>
 <translation id="2509495747794740764">පරිමාණ ප්‍රමාණය 10 සහ 200 අතර අංකයක් විය යුතුය.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (තෝරා ඇත)</translation>
 <translation id="2513904627589542105">ස්වයං පරීක්ෂාව</translation>
 <translation id="251425554130284360">ඔබට ඔබේ වඩාත්ම මෑත ක්‍රියාකාරකම් වෙත පහසුවෙන් ආපසු යාමට උදවු කිරීමට ඔබ පිවිසි පිටු සහ යෝජිත සෙවීම් ඔබ දකියි.
@@ -4995,6 +4999,7 @@
 <translation id="4831226137013573603">මයික්‍රෆෝනය නිහඬ කිරීම</translation>
 <translation id="483262387981411190">මුහුණු පාලනය නවත්වන්න හෝ නැවත ආරම්භ කරන්න</translation>
 <translation id="4833683849865011483">මුද්‍රණ සේවාදායකයෙන් 1 මුද්‍රකයක් හමු විය</translation>
+<translation id="4834388789911023644">සමාලෝචනයක් ලියන්න</translation>
 <translation id="4835598628985424375">තොල් එකට තද කර මිරිකන්න</translation>
 <translation id="4835677468087803981">PIN සඟවන්න</translation>
 <translation id="4836504898754963407">ඇඟිලි සලකුණු කළමනා කරන්න</translation>
@@ -8556,6 +8561,7 @@
 <translation id="7625823789272218216">වමට නව ටැබය</translation>
 <translation id="762730429396410864">වෙබ් අඩවි වෙත වාර්තා කරන CPU කාර්ය සාධන ස්ථරය හස්තීයව සකසන්න</translation>
 <translation id="7627749368210392160">ඔබේ දේශීය ජාලයේ වෙනත් උපාංග වෙත ප්‍රවේශ වීමට වෙබ් අඩවි වලට මෙම විශේෂාංගය භාවිත කළ හැක</translation>
+<translation id="7628068697012244394">සමාලෝචනයක් ලියන්න</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> ශ්‍රේණිය</translation>
 <translation id="762917478230183172">එක් එක් යතුර සඳහා ක්‍රියාවක් තෝරන්න</translation>
 <translation id="7629206210984165492">යටපත් කළ</translation>
@@ -8982,6 +8988,7 @@
 <translation id="7949038991703929816">ඉතිහාසය පූරණය කිරීමට අසමත් විය. ගොනුවල වලංගු යාවත්කාලීන ලොග අඩංගු බව සහතික කර ගන්න.</translation>
 <translation id="7950629216186736592">හේතුව: LBS http://, https:// සහ file:// URL සඳහා පමණක් සහාය දක්වයි.</translation>
 <translation id="7950814699499457511">සක්‍රීය • මෙම දිගුව මෙය දත්ත රැස් කර භාවිත කරන ආකාරය වැනි පෞද්ගලිකත්ව පුරුදු ප්‍රකාශන කර නැත.</translation>
+<translation id="7951159420392892566">අනුචලන බොත්තම් ගලවන්න</translation>
 <translation id="795130320946928025">අතථ්‍ය කාඩ්පත ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="7952708427581814389">අඩවි ඔබේ පසුරු පුවරුවේ පෙළ සහ රූප බැලීමට ඉල්ලිය හැකිය</translation>
 <translation id="7953236668995583915">මෙම අඩවියෙහි ඔබේ යාවත්කාලීන කළ සැකසීම් යෙදීමට මෙම පිටුව නැවත පූරණය කරන්න</translation>

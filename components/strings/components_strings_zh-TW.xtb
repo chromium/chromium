@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">不要再詢問是否允許調整這個應用程式的大小</translation>
 <translation id="132301787627749051">搜尋剪貼簿圖片</translation>
 <translation id="1323433172918577554">顯示完整清單</translation>
+<translation id="1326962902431997202">刪除線</translation>
 <translation id="1330449323196174374">左半邊對折</translation>
 <translation id="1330952240988133220">將救濟號碼安全地儲存到 Google 錢包</translation>
 <translation id="133173645041092770">關閉網站</translation>
@@ -464,6 +465,7 @@
 <translation id="1757773103848038814">等寬字型</translation>
 <translation id="1757935267918149452">「變更 Google 密碼」按鈕，啟動後即可變更 Google 帳戶密碼</translation>
 <translation id="1759776526873274358">自動填入驗證碼，供網站用來提升安全性。Chrome 可從 Gmail 取得這些驗證碼。<ph name="BEGIN_LINK" />進一步瞭解這項功能<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">前往 Google 錢包控管<ph name="BEGIN_LINK1" />資料和隱私權偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方式<ph name="END_LINK2" />與會員卡和身分證件等<ph name="BEGIN_LINK3" />票證<ph name="END_LINK3" /></translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證未取得你裝置作業系統的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網路診斷<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相紙 (典藏用)</translation>
@@ -631,6 +633,7 @@
 <translation id="2090451897496479509">詳情請洽詢供應商</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">音訊</translation>
+<translation id="2092361763640578821">進一步瞭解</translation>
 <translation id="2093184051799735948">搜尋 <ph name="ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
@@ -787,6 +790,7 @@
 <translation id="2321291402658100099">管理資訊</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="232390861414237658">只要將這張卡片儲存到 Google Pay，在 Chrome 中購物時就能自動填入卡片資訊</translation>
+<translation id="2325722389016720813">按向上鍵或向下鍵即可查看自動完成建議。輸入文字即可自動完成。</translation>
 <translation id="2326283484705860548">現在可以自動填入更多 Google 錢包中的資訊</translation>
 <translation id="2326747055382936979">管理強化版自動填入功能</translation>
 <translation id="2328651992442742497">允許 (預設)</translation>
@@ -1540,6 +1544,7 @@
 <translation id="3642638418806704195">應用程式：</translation>
 <translation id="3647286794400715637">每個網址字串項目都必須包含 1 到 2 個網址。</translation>
 <translation id="3647400963805615193">關閉 Chrome 提示的按鈕，按下 Enter 鍵即可關閉，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">活動監控中</translation>
 <translation id="3648667207586409316">有哪些方法可以幫助我減輕壓力？</translation>
 <translation id="3650584904733503804">驗證成功</translation>
 <translation id="3650594806107685466">為確保信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的信用卡驗證碼</translation>
@@ -2002,6 +2007,7 @@
 <translation id="4377869186417956230">變更這個選單項目下的所有會員卡。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4378221908737133050">幫我列出居家大掃除檢查清單</translation>
+<translation id="4379357028567121852">來源：<ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">你可以從上次中斷的地方接著看，也能隨時建立新的分頁群組</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">從現在起，請將檔案儲存至雲端儲存空間</translation>
@@ -2171,6 +2177,7 @@
 <translation id="4711628883879888561">在分頁群組中協作</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">計算我的 GPA，並將學分時數、課程等級和成績點數值加權處理</translation>
+<translation id="4717533164160330041">如要使用這項功能，請先開啟 Gmail 的智慧功能</translation>
 <translation id="471880041731876836">你沒有這個網站的瀏覽權限</translation>
 <translation id="4718897478554657123">600 x 900 公釐</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網路診斷<ph name="END_LINK" /></translation>
@@ -2391,6 +2398,7 @@
 <translation id="5061227663725596739">你是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">為防止資料遺失，貴機構可能會監控特定瀏覽活動；詳情請參閱 <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /></translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 位址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第十卷</translation>
 <translation id="507130231501693183">出紙槽 4</translation>
@@ -2755,6 +2763,7 @@
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5660122698869360728">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等。</translation>
 <translation id="5663955426505430495">這部裝置的管理員已安裝支援額外功能的擴充功能。這些擴充功能可存取你的部分資料。</translation>
+<translation id="5664075349639500330">進一步瞭解如何使用隔離模式瀏覽。</translation>
 <translation id="5675650730144413517">這個網頁無法正常運作</translation>
 <translation id="5675959228867414813">依日期顯示</translation>
 <translation id="567604591393105935">商務底部功能表已開啟，顯示在畫面下半部</translation>
@@ -2826,6 +2835,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5794065675298686371">開啟價格追蹤通知</translation>
+<translation id="5796050750059455142">開啟「<ph name="BEGIN_LINK" />其他 Google 產品的智慧功能<ph name="LINK_END" />」</translation>
 <translation id="5797984091151707075">已遭管理員政策封鎖</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5806871454498484178">已禁止捲動及縮放</translation>
@@ -3133,6 +3143,7 @@
 <translation id="6329742260390895689">如要自動填入資訊，請前往 Google 錢包設定開啟「在各項 Google 服務中使用憑證」</translation>
 <translation id="6329815962353376655">&lt;輸入問題&gt;</translation>
 <translation id="633348045801643466">結帳時顯示「<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />先買後付<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />」選項</translation>
+<translation id="6335364777769284858">在 <ph name="BEGIN_LINK" />Gmail 設定<ph name="LINK_END" />中開啟「智慧功能」</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統不會使用這個值。</translation>
@@ -3267,6 +3278,7 @@
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6550245281449521513">不允許鎖定滑鼠</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />最新</translation>
+<translation id="6552244083450538912">以下對象可能仍會看到你的活動：你造訪的網站、你的雇主或學校以及網際網路服務供應商</translation>
 <translation id="6552566579578780089">付款方式</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />，<ph name="SUGGESTION_TYPE" />，「<ph name="GROUP_HEADER" />」群組的第 <ph name="MATCH_POSITION" /> 個項目，共 <ph name="NUM_MATCHES_IN_GROUP" /> 個項目。</translation>
 <translation id="6554732001434021288">上次造訪日期：<ph name="NUM_DAYS" /> 天前</translation>
@@ -3313,7 +3325,7 @@
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
 <translation id="6655085656059574817">保持帳戶連結有助於透過「<ph name="BNPL_ISSUER_NAME" />」快速付款。如要取消連結，可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
-<translation id="6656935431494847393">加入航班預訂和車輛資訊等相關細節</translation>
+<translation id="6656935431494847393">包含航班預訂和車輛資訊等</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659246032834639189">這個價格屬於低價位</translation>
 <translation id="6660413144148052430">位置</translation>
@@ -3501,6 +3513,7 @@
 <translation id="6972867931824045907">如要使用剪貼簿，請前往<ph name="LINK" />授予 Chrome 存取權。</translation>
 <translation id="6973656660372572881">已指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
+<translation id="6976229914347655621">貴機構要求的擴充功能會維持啟用狀態；詳情請參閱 <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /></translation>
 <translation id="6978236010531171013">一律分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
@@ -3667,6 +3680,7 @@
 <translation id="7269151392155523061">捷徑不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">你下載的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案供系統管理員查看。</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
+<translation id="7278933725460302617">你目前處於隔離模式</translation>
 <translation id="7282894295403887199">無法在無痕模式下造訪這個頁面</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可變更 Google 帳戶密碼</translation>
 <translation id="7286908876112207905">不允許將這項內容貼到這個網站</translation>
@@ -3685,6 +3699,7 @@
 <translation id="7308436126008021607">背景同步處理</translation>
 <translation id="7310392214323165548">裝置很快就會重新啟動</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> 依序按下 Tab 鍵和 Enter 鍵，即可詢問「<ph name="AI_ENGINE_NAME" />」</translation>
 <translation id="7313107491291103073">貴機構已將這個網站標記為可能違反政策，</translation>
 <translation id="7315372670898739748">連結失敗，請稍後再試</translation>
 <translation id="7316521168101843192">正在將檔案儲存至 Microsoft OneDrive</translation>
@@ -3839,6 +3854,7 @@
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556328470713619625">使用密碼金鑰</translation>
 <translation id="7559278538486662777">這個應用程式無法調整大小。</translation>
+<translation id="7561202748196702434">使用隔離模式瀏覽</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">你可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或身分遭到冒用。Chrome 建議你立即變更密碼。</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證是以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -4374,6 +4390,7 @@
 <translation id="8473626140772740486">300 x 450 公釐</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474910779563686872">顯示開發人員詳細資料</translation>
+<translation id="84764251640219124">網站無法使用第三方 Cookie。如果依賴這些 Cookie 的網站無法運作，可以<ph name="BEGIN_LINK" />嘗試允許該網站暫時存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
 <translation id="8483229036294884935">這個地址將從 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
 <translation id="8488350697529856933">適用對象</translation>
@@ -4440,6 +4457,7 @@
 <translation id="8619130384334725124">目前預設搜尋引擎</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">正在與金融機構聯絡...</translation>
+<translation id="8632584659860846053">關閉所有隔離視窗後，系統會刪除瀏覽記錄、Cookie 和網站資料、快取，以及你在表單輸入的資訊</translation>
 <translation id="8634957317623797170">54 x 86 公釐</translation>
 <translation id="8637362707224133343">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站來欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">必須能夠登入 Chrome，才能共用分頁、與他人協作</translation>

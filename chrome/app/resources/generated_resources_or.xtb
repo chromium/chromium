@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ। ଏହା ଫଳରେ ଯେ କୌଣସି ଡୁପ୍ଲିକେଟ ମଧ୍ୟ ଖାଲି ହୋଇଯିବ।}other{{BOOKMARK_COUNT} ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ। ଏହା ଫଳରେ ଯେ କୌଣସି ଡୁପ୍ଲିକେଟ ମଧ୍ୟ ଖାଲି ହୋଇଯିବ।}}</translation>
 <translation id="125220115284141797">ଡିଫଲ୍ଟ</translation>
 <translation id="1252219782845132919">ଗୋଷ୍ଠୀକୁ ଲୁଚାନ୍ତୁ</translation>
+<translation id="1252597096488926946">ସ୍କ୍ରୋଲ ବଟନଗୁଡ଼ିକୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="1252987234827889034">ପ୍ରୋଫାଇଲ୍‌ ତ୍ରୁଟି ହେଲା</translation>
 <translation id="1254034280040157728">ଗ୍ରାଣ୍ଡ କାନିୟନ</translation>
 <translation id="1254593899333212300">ସିଧାସଳଖ ଇଣ୍ଟର୍ନେ‍ଟ୍ ସଂଯୋଗ</translation>
@@ -977,6 +978,7 @@
 <translation id="1755601632425835748">ଟେକ୍ସଟ୍‌ର ଆକାର</translation>
 <translation id="1756963401828337401">କେପଚର କରିବାକୁ ଏକ ସ୍କ୍ରିନ ବାଛନ୍ତୁ</translation>
 <translation id="17584710573359123">Chrome ୱେବ୍‌ ଷ୍ଟୋର୍‌ରେ ଦେଖନ୍ତୁ</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ଡାଟା ଏବଂ ଗୋପନୀୟତା ପସନ୍ଦଗୁଡ଼ିକୁ<ph name="END_LINK1" /> ନିୟନ୍ତ୍ରଣ କରିବା କିମ୍ବା ଲୟାଲ୍ଟି କାର୍ଡ ଏବଂ IDଗୁଡ଼ିକ ପରି <ph name="BEGIN_LINK2" />ପେମେଣ୍ଟ ପଦ୍ଧତି<ph name="END_LINK2" /> ଏବଂ <ph name="BEGIN_LINK3" />ପାସଗୁଡ଼ିକୁ<ph name="END_LINK3" /> ପରିଚାଳନା କରିବା ପାଇଁ Google Walletକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" />କୁ ପୁଣି ମେପ କରାଯାଇଛି।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="176272781006230109">ସପିଂ ପାଇଁ ପରାମର୍ଶଗୁଡ଼ିକ</translation>
@@ -1703,6 +1705,7 @@
 <translation id="2322193970951063277">ହେଡର୍‍ ଏବଂ ଫୁଟର୍‌</translation>
 <translation id="2322622365472107569">ସମାପ୍ତି ସମୟ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ସେଭ୍ କରାଯାଇଥିବା ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
+<translation id="2323685460575935191">ସ୍କ୍ରୋଲ ବଟନଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2325444234681128157">ପାସ୍‌ୱାର୍ଡ ମନେ ରଖନ୍ତୁ</translation>
 <translation id="2326188115274135041">ସ୍ୱଚାଳିତ ଭାବେ ଅନଲକ୍ ଚାଲୁ କରିବାକୁ PIN ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2326583548923775947">ଏହା ଏକ Google ଆକାଉଣ୍ଟ ନୁହେଁ। Chromeରେ ଆପଣ ସେଭ କରୁଥିବା ଆଇଟମଗୁଡ଼ିକ ଅନ୍ୟ ଡିଭାଇସରେ ଉପଲବ୍ଧ ହେବ ନାହିଁ।</translation>
@@ -1959,6 +1962,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> ଆପ୍ଲିକେସନ Google Drive ଉପଲବ୍ଧ ଥିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="2509495747794740764">ମାପିବାର ରାଶି 10 ଓ 200 ମଧ୍ୟରେ ହେବା ଦରକାର।</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ଚୟନ କରାଯାଇଛି)</translation>
 <translation id="2513904627589542105">ସେଲ୍ଫ ଟେଷ୍ଟ</translation>
 <translation id="251425554130284360">ଆପଣ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପକୁ ସହଜରେ ଫେରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ପରାମର୍ଶ କରାଯାଇଥିବା ସର୍ଚ୍ଚଗୁଡ଼ିକୁ ଦେଖୁଛନ୍ତି।
@@ -4994,6 +4998,7 @@
 <translation id="4831226137013573603">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
 <translation id="483262387981411190">ଫେସ ନିୟନ୍ତ୍ରଣକୁ ବିରତ କରନ୍ତୁ କିମ୍ବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4833683849865011483">ପ୍ରିଣ୍ଟ ସର୍ଭରରୁ 1ଟି ପ୍ରିଣ୍ଟର୍ ମିଳିଲା</translation>
+<translation id="4834388789911023644">ଏକ ରିଭ୍ୟୁ ଲେଖନ୍ତୁ</translation>
 <translation id="4835598628985424375">ଓଠକୁ ଏକତ୍ର ସ୍କୁଇଜ କରି ଭିତରକୁ ଟାଣନ୍ତୁ</translation>
 <translation id="4835677468087803981">PIN ଲୁଚାନ୍ତୁ</translation>
 <translation id="4836504898754963407">ଟିପଚିହ୍ନଗୁଡ଼ିକର ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -8554,6 +8559,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7625823789272218216">ବାମ ପଟେ ଥିବା ନୂଆ ଟାବ</translation>
 <translation id="762730429396410864">ୱେବସାଇଟଗୁଡ଼ିକୁ ରିପୋର୍ଟ କରାଯାଇଥିବା CPU ପରଫରମାନ୍ସ ଟାୟରକୁ ମାନୁଆଲୀ ସେଟ କରନ୍ତୁ</translation>
 <translation id="7627749368210392160">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଏହି ଫିଚରକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
+<translation id="7628068697012244394">ଏକ ରିଭ୍ୟୁ ଲେଖନ୍ତୁ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ଗ୍ରେଡ୍ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ପ୍ରତ୍ୟେକ କୀ ପାଇଁ ଏକ କାର୍ଯ୍ୟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7629206210984165492">ସବଡ୍ୟୁଡ</translation>
@@ -8980,6 +8986,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7949038991703929816">ଇତିହାସ ଲୋଡ କରିବାରେ ବିଫଳ ହୋଇଛି। ଫାଇଲଗୁଡ଼ିକରେ ବୈଧ ଅପଡେଟର ଲଗଗୁଡ଼ିକ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="7950629216186736592">କାରଣ: LBS କେବଳ http://, https:// ଏବଂ file:// URLsକୁ ସମର୍ଥନ କରେ।</translation>
 <translation id="7950814699499457511">ଚାଲୁ ଅଛି • ଏହି ଏକ୍ସଟେନସନ ଏହା କିପରି ଡାଟା ସଂଗ୍ରହ ଏବଂ ବ୍ୟବହାର କରେ ପରି ଗୋପନୀୟତା କାର୍ଯ୍ୟଗୁଡ଼ିକ ପବ୍ଲିସ କରିନାହିଁ</translation>
+<translation id="7951159420392892566">ସ୍କ୍ରୋଲ ବଟନଗୁଡ଼ିକୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="795130320946928025">ଭର୍ଚୁଆଲ କାର୍ଡ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7952708427581814389">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡରେ ଥିବା ଟେକ୍ସଟ୍ ଏବଂ ଛବିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ପଚାରିପାରିବ</translation>
 <translation id="7953236668995583915">ଏହି ସାଇଟରେ ଆପଣଙ୍କ ଅପଡେଟ ହୋଇଥିବା ସେଟିଂସ ଲାଗୁ କରିବାକୁ ଏହି ପୃଷ୍ଠାକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>

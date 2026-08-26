@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomandă să întrerupi fila care încetinește browserul}few{Chrome recomandă să întrerupi filele care încetinesc browserul}other{Chrome recomandă să întrerupi filele care încetinesc browserul}}</translation>
 <translation id="1832046143430087831">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este dezactivată.</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
+<translation id="1842869163383855194">Acces ușor pentru a folosi Căutarea în Chrome pe dispozitiv, chiar dacă Chrome este minimizat.</translation>
 <translation id="1843347690926158494">Caută această filă cu Google Lens</translation>
 <translation id="1849248141818021764">Numai un utilizator care știe expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, va trebui să <ph name="BEGIN_LINK" />ștergi datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Folosește aplicația Chrome pentru a continua navigarea din mers</translation>
@@ -325,6 +326,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4173512894976930765">Probabil că site-urile vor funcționa conform așteptărilor. Dacă te-ai conectat la Chrome, când închizi toate ferestrele Chrome fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor.</translation>
 <translation id="4175922240926474352">Chrome a blocat descărcarea, deoarece site-ul nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relansează Chrome în cel mult o zi}few{Relansează Chrome în cel mult # zile}other{Relansează Chrome în cel mult # de zile}}</translation>
+<translation id="4222394563269716113">Deschide Căutarea în Chrome cu o comandă rapidă de la tastatură.</translation>
 <translation id="4222932583846282852">Se anulează…</translation>
 <translation id="4224210481850767180">Instalarea a fost anulată.</translation>
 <translation id="4242034826641750751">Chrome are nevoie de acces la cameră și microfon pentru acest site</translation>
@@ -350,6 +352,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Trimite acest document la Gemini în Chrome pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
+<translation id="4447327682081576371">Afișează Căutarea în Chrome în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
@@ -435,6 +438,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5402307365844630024">Activează / dezactivează Gemini în Chrome Beta</translation>
 <translation id="541844421954567481">Accesează parolele, filele și multe altele din mers cu aplicația Chrome pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
+<translation id="545114101312117217">Acces ușor la comenzile rapide din Căutarea în Chrome</translation>
 <translation id="5465210843490471889">Alege un profil Chrome pe care să-l folosești cu <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome se lansează acum când pornește Windows, astfel că poți începe să navighezi instantaneu. Poți dezactiva această opțiune din setări.</translation>
 <translation id="5486346529181556467">Îmbunătățește siguranța online pentru toată lumea raportând un site pe care îl consideri dăunător. Află mai multe despre <ph name="BEGIN_LINK" />politica Google privind site-urile nesigure<ph name="END_LINK" />.</translation>
@@ -720,6 +724,8 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8074398340364918139">Pentru a căuta o anumită funcție sau extensie Chrome, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
+<translation id="8093772166980702367">Afișează Căutarea în Chrome în bara de sistem și activează comanda rapidă de la tastatură</translation>
+<translation id="8110438089258398864">Poți să redeschizi Modul AI în Căutarea Google pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Se personalizează Chrome...</translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
@@ -769,6 +775,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="856656450041460113">Caută lista de limbi</translation>
 <translation id="8575047640889685742">Folosește <ph name="BEGIN_LINK" />propria expresie de acces<ph name="END_LINK" /> pentru a cripta toate datele Chrome din Contul Google. Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
 <translation id="8590782867495422699">Redeschide Modul AI în Căutarea Google</translation>
+<translation id="8598779894319572882">Folosind butonul Modul AI în Căutarea Google din bara de instrumente, poți să redeschizi Modul AI în Căutarea Google pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8601359445272098721">Nou! Poți traduce atât textul, cât și imaginile de pe ecran selectând butonul Tradu ecranul</translation>
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="8623450603356630491">Conectează-te la Chrome pe telefon</translation>

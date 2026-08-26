@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 էջանիշ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։ Բոլոր կրկնակները կջնջվեն։}one{{BOOKMARK_COUNT} էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։ Բոլոր կրկնակները կջնջվեն։}other{{BOOKMARK_COUNT} էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։ Բոլոր կրկնակները կջնջվեն։}}</translation>
 <translation id="125220115284141797">Կանխադրված</translation>
 <translation id="1252219782845132919">Թաքցնել խումբը</translation>
+<translation id="1252597096488926946">Ապամրացնել ոլորման կոճակները</translation>
 <translation id="1252987234827889034">Պրոֆիլում սխալ առաջացավ</translation>
 <translation id="1254034280040157728">Գրանդ Կանյոն</translation>
 <translation id="1254593899333212300">Համացանցի անմիջական կապակցում</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">Տեքստի չափսը</translation>
 <translation id="1756963401828337401">Ընտրեք էկրան՝ սքրինշոթ անելու համար</translation>
 <translation id="17584710573359123">Դիտել Chrome Web Store-ում</translation>
+<translation id="176013700366797492">Այցելեք Google Wallet՝ <ph name="BEGIN_LINK1" />տվյալների և գաղտնիության կարգավորումները<ph name="END_LINK1" /> ստուգելու կամ <ph name="BEGIN_LINK2" />վճարման եղանակները<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />անցաքարտերը<ph name="END_LINK3" />, օրինակ՝ մշտական հաճախորդի քարտերը և անձը հաստատող փաստաթղթերը, կառավարելու համար</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />ն այժմ աշխատում է որպես «<ph name="REMAPPING_OPTION" />» կոճակ։</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-ի հաշիվը</translation>
 <translation id="176272781006230109">գնումների առաջարկներ</translation>
@@ -1701,6 +1703,7 @@
 <translation id="2322193970951063277">Էջագլուխներ և էջատակեր</translation>
 <translation id="2322622365472107569">Ավարտի ժամը՝ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Պահված Wi-Fi ցանցեր</translation>
+<translation id="2323685460575935191">Թաքցնել ոլորման կոճակները</translation>
 <translation id="2325444234681128157">Հիշել գաղտնաբառը</translation>
 <translation id="2326188115274135041">Ավտոմատ ապակողպումը միացնելու համար հաստատեք PIN կոդը</translation>
 <translation id="2326583548923775947">Սա Google հաշիվ չէ։ Տարրերը, որոնք պահում եք Chrome-ում, հասանելի չեն լինի մյուս սարքերում։</translation>
@@ -1957,6 +1960,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> հավելվածի աշխատանքի համար պահանջվում է Google Drive պահոց։</translation>
 <translation id="2509495747794740764">Մասշտաբի արժեքը պետք է լինի թիվ՝ 10-ից 200 միջակայքում։</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />՝ <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ընտրված է)</translation>
 <translation id="2513904627589542105">Ինքնաստուգում</translation>
 <translation id="251425554130284360">Դուք տեսնում եք ձեր այցելած կայքերը և որոնման առաջարկվող հարցումները, որպեսզի կարողանաք հեշտությամբ վերադառնալ ձեր վերջին գործողություններին։
@@ -4989,6 +4993,7 @@
 <translation id="4831226137013573603">անջատել խոսափողը</translation>
 <translation id="483262387981411190">Դադարեցնել կամ վերսկսել դեմքի հետագծումը</translation>
 <translation id="4833683849865011483">Տպման սերվերում գտնվել է 1 տպիչ։</translation>
+<translation id="4834388789911023644">Գրել կարծիք</translation>
 <translation id="4835598628985424375">Շրթունքները սեղմեք իրար</translation>
 <translation id="4835677468087803981">Թաքցնել PIN կոդը</translation>
 <translation id="4836504898754963407">Մատնահետքերի կառավարում</translation>
@@ -8549,6 +8554,7 @@
 <translation id="7625823789272218216">Նոր ներդիր ձախ կողմում</translation>
 <translation id="762730429396410864">Ձեռքով սահմանել պրոցեսորի արտադրողականության մակարդակը, որը հաղորդվում է կայքերին</translation>
 <translation id="7627749368210392160">Կայքերը կարող են օգտագործել այս գործառույթը՝ ձեր լոկալ ցանցի մյուս սարքերի հասանելիություն ստանալու համար</translation>
+<translation id="7628068697012244394">Գրել կարծիք</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), մակարդակ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Ընտրեք գործողություն յուրաքանչյուր ստեղնի համար</translation>
 <translation id="7629206210984165492">Զուսպ</translation>
@@ -8975,6 +8981,7 @@
 <translation id="7949038991703929816">Չհաջողվեց բեռնել պատմությունը։ Համոզվեք, որ ֆայլերը պարունակում են թարմացման ծրագրի վավեր մատյաններ։</translation>
 <translation id="7950629216186736592">Պատճառը՝ LBS-ն աջակցում է միայն http://, https:// և file:// նախածանցներով սկսվող URL-ները։</translation>
 <translation id="7950814699499457511">Միացված է • Այս ընդլայնումը չի հրապարակել գաղտնիության քաղաքականություն, օրինակ՝ թե ինչպես է այն հավաքում և օգտագործում տվյալները</translation>
+<translation id="7951159420392892566">Ապամրացնել ոլորման կոճակները</translation>
 <translation id="795130320946928025">Հեռացնել վիրտուալ քարտը</translation>
 <translation id="7952708427581814389">Կայքերը կարող են սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն խնդրել</translation>
 <translation id="7953236668995583915">Վերաբեռնեք էջը՝ այս կայքում ձեր թարմացված կարգավորումները կիրառելու համար</translation>

@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies, site data</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
+<translation id="1322683976135389755">Prompt: Summarise this article, 1 of 3</translation>
 <translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
 <translation id="1323735185997015385">Delete</translation>
 <translation id="132683371494960526">Double tap to change the parent folder.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
 <translation id="3259451381796379533">This account won't work with Gemini. Sign in with a different Google Account.</translation>
 <translation id="3265736395246760288">Sign in faster from any of your synced devices.</translation>
+<translation id="3268166994745151153">This means that you'll lose your current progress</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3272955648592358996">Your data improves Google AI</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
+<translation id="327455571215090823">Smarter autofill, kept private</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3280562213547448728">Voice search</translation>
 <translation id="3289505634533552500">Voice search</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Passwords are saved in your Google Account so that you can use them on any device.</translation>
 <translation id="4007463141047732631">Edit group</translation>
 <translation id="4011489366247192265">From</translation>
+<translation id="4014099645251211155">Ask about anything on your page with Gemini in Chrome</translation>
 <translation id="4017599800655151880">Thumbnail</translation>
 <translation id="4018440314314549819">Autofill saved passwords</translation>
 <translation id="4021447724486050609">Update your browser</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Location:</translation>
 <translation id="4517684186578051919">Device information</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
+<translation id="4524737913322680818">Shop, plan and do more with Gemini in Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="4525629404718770519">Show link previews</translation>
 <translation id="452750746583162491">Review your synced data</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Make sure that your passwords are safe, find out if they've been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Turn on tab sharing</translation>
 <translation id="4658335131052370646">Save</translation>
+<translation id="465947902531722727">Switch profiles</translation>
 <translation id="466307903888586355">Saving files is blocked by your organisation</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Your organisation requires you to browse privately. Tab groups aren't synced in Incognito mode.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="4985921635659180565">Once a file is scheduled to be deleted, it can't be cancelled.</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
+<translation id="4986428648020277392">Prompt: Which should I buy? 2 of 3</translation>
+<translation id="498768198683310172">Start using Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tab group colour <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5838430324585198889">Unlock more features for your iPad with Google apps</translation>
 <translation id="583923961930319521">Use passwords on all your devices</translation>
+<translation id="5841763734702350465">Prompt: Add this to my calendar, 3 of 3</translation>
 <translation id="5843013299019689749">Black background colour</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
@@ -1782,6 +1791,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6775952316617222141">Go Live with Gemini in Chrome</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
 <translation id="6782531425936234573">Export data</translation>
+<translation id="6789665473250283877">Remove <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
 <translation id="6797543908718012274">Turn on reading mode</translation>
@@ -2153,6 +2163,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verify that it's you to autofill sensitive info</translation>
 <translation id="8015826420689927262">Delete attachment</translation>
+<translation id="8016869623424294549">You're about to switch profiles</translation>
 <translation id="8017015647846870183">From Google Password Manager, including passwords and passkeys</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023170444051056234">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>

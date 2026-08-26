@@ -53,6 +53,7 @@
 <translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1594928384848033697">Chromium 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用更新}=1{管理員要求您重新啟動 Chromium，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
+<translation id="161799137154286472">即使 Chromium 最小化，你亦能輕鬆在裝置上使用 Chromium 的「搜尋」功能。</translation>
 <translation id="1623563412065267963">透過手機的 Chromium 應用程式盡享 Google 最精彩的功能</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
 <translation id="1640672724030957280">正在下載…</translation>
@@ -156,6 +157,7 @@
 <translation id="2637732208198500597">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chromium 以套用更新}=1{「進階保護功能」要求你重新啟動 Chromium 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chromium 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="263863604136125912">啟用 Chromium</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
+<translation id="2658491404426988037">使用鍵盤快速鍵開啟 Chromium 的「搜尋」功能。</translation>
 <translation id="2661879430930417727">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chromium</translation>
 <translation id="2676569452213089702">即使 Chromium 最小化，你亦能輕鬆在裝置上使用 Chromium 版 Gemini。</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
@@ -197,6 +199,7 @@
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="3071024987058544609">Chromium 應用程式讓你隨時隨地享受 Google 的安全保障</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 USB 裝置}}</translation>
+<translation id="3086453456887799749">透過 Chromium 的「搜尋」功能輕鬆存取捷徑</translation>
 <translation id="3095811995836568724">Chromium 記錄</translation>
 <translation id="3103660991484857065">安裝程式無法解壓縮封存檔案，請重新下載 Chromium。</translation>
 <translation id="310459126943037700">工作結束唔到。</translation>
@@ -535,6 +538,7 @@
 <translation id="67706546131546258">此檔案可能不安全，因此 Chromium 建議掃瞄檔案。</translation>
 <translation id="6779406956731413166">Chromium 作業系統得以面世，有賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="683620163760053351">在系統列顯示 Chromium 的「搜尋」功能，並啟用鍵盤快速鍵</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -585,6 +589,7 @@
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在所有裝置上取用已儲存的資料及其他內容。</translation>
 <translation id="7252276985725323153">立即開始瀏覽：Chromium 現在可於 Windows 啟動時開啟。</translation>
+<translation id="7254793334142003943">在 Mac 選單列顯示 Chromium 的「搜尋」功能，並啟用鍵盤快速鍵</translation>
 <translation id="7274695763216404502">已固定！你可透過工具列再次使用「圖片搜尋」</translation>
 <translation id="7288567540154601580">分頁和擴充程式</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建議你移除此擴充程式}other{Chromium 建議你移除這些擴充程式}}</translation>

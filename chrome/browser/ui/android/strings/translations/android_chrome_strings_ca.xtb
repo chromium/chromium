@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Llista de lectura</translation>
 <translation id="1269129608791067105">Trobaràs l'historial aquí</translation>
 <translation id="1280921956537356716">Activa les notificacions de consells</translation>
+<translation id="1287449971634955609">Suprimeix les extensions i les dades que han desat en aquest dispositiu</translation>
 <translation id="1289129165308566697">Consulta el teu historial en altres dispositius</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
 <translation id="1298077576058087471">Estalvia fins a un 60% de les dades, llegeix les notícies d'avui</translation>
@@ -115,6 +116,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1413446866325418126">Desa les dades al teu Compte de Google</translation>
 <translation id="1414919006379339073">Tanca la finestra actual</translation>
 <translation id="1416550906796893042">Versió de l'aplicació</translation>
+<translation id="1426410128494586442">Sí</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
 <translation id="1435593198351412143">Obre els PDF automàticament</translation>
@@ -342,6 +344,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2385605401818128172">Pots revisar els llocs web que envien moltes notificacions i impedir que n'enviïn més en el futur</translation>
 <translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
 <translation id="2390510615457643724">Vols tornar a baixar <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Activa</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, pestanya d'incògnit seleccionada d'imatge sobre imatge</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, pestanya d'incògnit de gravació</translation>
@@ -559,6 +562,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3254409185687681395">Afegeix aquesta pàgina a les adreces d'interès</translation>
 <translation id="3265093782546847662">Totes les pàgines de <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Arrossega cap amunt per veure els resultats de la cerca</translation>
+<translation id="3268205181992599708">Activa el micròfon per utilitzar la veu</translation>
 <translation id="3269093882174072735">Carrega la imatge</translation>
 <translation id="3280562213547448728">Cerca per veu</translation>
 <translation id="3282801380074962248">Desplega la secció</translation>
@@ -785,6 +789,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • L'has utilitzat en aquest lloc web</translation>
 <translation id="4214315110991671325">Si permets les galetes, Chrome pot utilitzar-les per a la precàrrega.</translation>
 <translation id="421517251707893998">Toca Fixa aquesta drecera</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Escolta aquesta pàgina</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, pestanya d'incògnit fixada i seleccionada d'imatge sobre imatge</translation>
 <translation id="4225895483398857530">Drecera de la barra d'eines</translation>
@@ -803,7 +808,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4285498937028063278">No fixis</translation>
 <translation id="4285846616383034558">Galetes, memòria cau i altres dades dels llocs web</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueig de pantalla a la configuració d'Android<ph name="END_LINK" /></translation>
-<translation id="4293154608148215505">al telèfon</translation>
+<translation id="4293154608148215505">del teu telèfon</translation>
 <translation id="4296252229500326964">Pestanya d'incògnit nova</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, pestanya d'incògnit multiseleccionada</translation>
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
@@ -981,6 +986,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4961107849584082341">Tradueix aquesta pàgina a qualsevol idioma</translation>
 <translation id="4964614743143953889">Chrome t'avisa sobre baixades i llocs web que no són segurs</translation>
 <translation id="496607651705915226">Per desar i utilitzar contrasenyes noves al teu Compte de Google, actualitza Serveis de Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Prova de fer una altra cerca o obre l'historial complet de Chrome per veure més resultats.</translation>
 <translation id="497421865427891073">Ves endavant</translation>
 <translation id="497983151715419057">Revisa les pestanyes i els grups inactius aquí</translation>
@@ -1018,7 +1024,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5118713593561876160">Interessos</translation>
 <translation id="5122378528687922675">Si necessites ajuda, demana-la al teu pare o mare (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
-<translation id="5126335625961252141">la teva tauleta</translation>
+<translation id="5126335625961252141">de la teva tauleta</translation>
 <translation id="5130015735779747822">Desplaça't fins a la part inferior de la pàgina</translation>
 <translation id="5142281402488957685">Per actualitzar el contingut i veure històries noves, arrossega cap avall</translation>
 <translation id="5144385790872094440">Algunes de les pàgines que visites estan precarregades. És possible que les pàgines es precarreguin a través dels servidors de Google quan s'enllacin des d'una aplicació o des d'un lloc de Google.</translation>
@@ -1053,6 +1059,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5267572070504076962">Activa Navegació segura per obtenir protecció contra llocs web perillosos</translation>
 <translation id="5273031377282080577">El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="5284295735376057059">Propietats del document</translation>
+<translation id="5286907366254680517">Detectat</translation>
 <translation id="5290322819358431297">Emplena autom. les contrasenyes</translation>
 <translation id="5292796745632149097">Envia a</translation>
 <translation id="5301876394151419436">Has iniciat la sessió com a <ph name="EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -1692,6 +1699,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7714077993070342304">Obre el menú de Chrome</translation>
 <translation id="7733878270780732638">No hi ha prou espai al dispositiu.</translation>
 <translation id="7740287852186792672">Resultats de la cerca</translation>
+<translation id="7740996059027112821">Estàndard</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, pestanya d'incògnit per compartir seleccionada</translation>
 <translation id="774876555279732384">Els serveis d'emplenament automàtic també es gestionen a <ph name="BEGIN_LINK" />Configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Afegeix una cerca al lloc web</translation>

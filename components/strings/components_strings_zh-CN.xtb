@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">对于此应用不再询问</translation>
 <translation id="132301787627749051">搜索剪贴板上的图片</translation>
 <translation id="1323433172918577554">展开</translation>
+<translation id="1326962902431997202">删除线</translation>
 <translation id="1330449323196174374">关门折（左侧）</translation>
 <translation id="1330952240988133220">将身份纠正识别号安全地保存到 Google 钱包</translation>
 <translation id="133173645041092770">关闭网站</translation>
@@ -633,6 +634,7 @@
 <translation id="2090451897496479509">如需了解详情，请联系提供商</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">声音</translation>
+<translation id="2092361763640578821">详细了解</translation>
 <translation id="2093184051799735948">在 <ph name="ENGINE_NAME" /> 中搜索或输入网址</translation>
 <translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
@@ -1540,6 +1542,7 @@
 <translation id="3642638418806704195">应用：</translation>
 <translation id="3647286794400715637">每个网址字符串条目都必须包含 1-2 个网址。</translation>
 <translation id="3647400963805615193">关闭 Chrome 提示按钮，按 Enter 键即可关闭提示，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">活动监控</translation>
 <translation id="3648667207586409316">有哪些方法可以帮我减压？</translation>
 <translation id="3650584904733503804">验证成功</translation>
 <translation id="3650594806107685466">为保障银行卡安全，请输入<ph name="SIDE_OF_CARD" />的 CVC</translation>
@@ -2002,6 +2005,7 @@
 <translation id="4377869186417956230">更改为显示此菜单项下的所有会员卡。</translation>
 <translation id="4378154925671717803">电话</translation>
 <translation id="4378221908737133050">帮我制定一份居家深度清洁核对清单</translation>
+<translation id="4379357028567121852">来自“<ph name="APP_NAME" />”</translation>
 <translation id="4381997246130185847">您可随时随地继续上次未完成的操作，或创建新标签页分组</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">从现在起，请将您的文件保存到云端存储空间</translation>
@@ -2392,6 +2396,7 @@
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">打印记录</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">您的组织可能会监控某些浏览活动，以防数据泄露；如需了解详情，请前往 <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /></translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />检查代理服务器地址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第 10 卷</translation>
 <translation id="507130231501693183">信箱 4</translation>
@@ -2756,6 +2761,7 @@
 <translation id="5659593005791499971">邮箱</translation>
 <translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
+<translation id="5664075349639500330">详细了解如何在隔离模式下浏览。</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
 <translation id="5675959228867414813">按日期显示</translation>
 <translation id="567604591393105935">商务底部动作条已半屏打开</translation>
@@ -3269,6 +3275,7 @@
 <translation id="6547208576736763147">双孔（左侧）</translation>
 <translation id="6550245281449521513">不允许锁定鼠标</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />，新增项目</translation>
+<translation id="6552244083450538912">以下各方可能会看到您的活动：您访问的网站、您的雇主或学校、您的网络服务提供商</translation>
 <translation id="6552566579578780089">支付方式</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />。<ph name="SUGGESTION_TYPE" />。分组“<ph name="GROUP_HEADER" />”中的第 <ph name="MATCH_POSITION" /> 项，共 <ph name="NUM_MATCHES_IN_GROUP" /> 项。</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
@@ -3503,6 +3510,7 @@
 <translation id="6972867931824045907">如需使用剪贴板，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="6973656660372572881">固定代理服务器和 .pac 脚本网址均已指定。</translation>
 <translation id="6973988895180423160">3.5 x 5 英寸</translation>
+<translation id="6976229914347655621">根据您组织的要求，相关扩展程序将保持启用状态；如需了解详情，请前往 <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /></translation>
 <translation id="6978236010531171013">仍然共享</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
@@ -3669,6 +3677,7 @@
 <translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
+<translation id="7278933725460302617">您正在使用隔离模式</translation>
 <translation id="7282894295403887199">您无法在无痕模式下访问此页面</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可更改您的 Google 账号密码</translation>
 <translation id="7286908876112207905">不允许将此内容粘贴到该网站</translation>
@@ -3687,6 +3696,7 @@
 <translation id="7308436126008021607">后台同步</translation>
 <translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> 依次按 Tab 键和 Enter 键即可询问 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">您的组织已标记此网站，因为它可能违反了政策。</translation>
 <translation id="7315372670898739748">关联失败，请稍后再试</translation>
 <translation id="7316521168101843192">正在将文件保存到 Microsoft OneDrive</translation>
@@ -3841,6 +3851,7 @@
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7556328470713619625">使用通行密钥</translation>
 <translation id="7559278538486662777">无法调整此应用的大小。</translation>
+<translation id="7561202748196702434">正在隔离模式下浏览</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 账号，或者身份信息遭到盗用。Chrome 建议您立即更改密码。</translation>
 <translation id="7567204685887185387">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能是由骗子发出的。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -4007,7 +4018,7 @@
 <translation id="7815352264092918456">纸（普通）</translation>
 <translation id="7815407501681723534">找到了 <ph name="NUMBER_OF_RESULTS" /> 个与“<ph name="SEARCH_STRING" />”相符的<ph name="SEARCH_RESULTS" /></translation>
 <translation id="7816581410322248899">Jira 问题</translation>
-<translation id="7819605256207059717">已被贵组织屏蔽</translation>
+<translation id="7819605256207059717">已被您的组织屏蔽</translation>
 <translation id="7827688884439021871">获取实时建议，探索 AI 助力的浏览新方式</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
 <translation id="7831993212387676366">什么是购物清单？</translation>
@@ -4376,6 +4387,7 @@
 <translation id="8473626140772740486">300 x 450 毫米</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474910779563686872">显示开发者详细信息</translation>
+<translation id="84764251640219124">已阻止网站使用第三方 Cookie。若有依赖这些 Cookie 的网站无法正常运行，您可以<ph name="BEGIN_LINK" />尝试授权该网站临时访问第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="8479754468255770962">钉装（左下角）</translation>
 <translation id="8483229036294884935">系统将从您的 Google 账号 (<ph name="ACCOUNT" />) 中删除此地址</translation>
 <translation id="8488350697529856933">适用对象</translation>
@@ -4443,6 +4455,7 @@
 <translation id="8619130384334725124">当前默认搜索引擎</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8622864575115813231">正在联系金融机构…</translation>
+<translation id="8632584659860846053">在您关闭所有隔离窗口后，系统会立即删除您的浏览记录、Cookie 和网站数据、缓存以及在表单中输入的信息</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637362707224133343">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了钓鱼式攻击<ph name="END_LINK" />。钓鱼式攻击网站会假冒其他网站来诱骗您。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">若要分享标签页并与他人协作，您必须能够登录 Chrome</translation>

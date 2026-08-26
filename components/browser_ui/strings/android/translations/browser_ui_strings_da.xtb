@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1822318649925991542">Skift placering for at tilpasse din browseroplevelse</translation>
 <translation id="1848033246551405023">Sans Serif-skrifttype</translation>
+<translation id="1861244985839668297">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at bruge HID-enheder. Når denne indstilling er deaktiveret, kan websites ikke bruge HID-enheder.</translation>
 <translation id="1861262398884155592">Denne mappe er tom</translation>
 <translation id="1881806992065048905">Feltet i bunden, der viser udseendet af siden Ny fane</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>

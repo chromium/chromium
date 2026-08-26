@@ -354,6 +354,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}other{{BOOKMARK_COUNT} Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}}</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Gruppe ausblenden</translation>
+<translation id="1252597096488926946">Scroll-Buttons loslösen</translation>
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
@@ -976,6 +977,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1755601632425835748">Textgröße</translation>
 <translation id="1756963401828337401">Anzeige zum Erfassen auswählen</translation>
 <translation id="17584710573359123">Im Chrome Web Store ansehen</translation>
+<translation id="176013700366797492">In Google Wallet kannst du <ph name="BEGIN_LINK1" />Daten- und Datenschutzeinstellungen<ph name="END_LINK1" /> anpassen oder <ph name="BEGIN_LINK2" />Zahlungsmethoden<ph name="END_LINK2" /> sowie <ph name="BEGIN_LINK3" />Karten/Tickets<ph name="END_LINK3" /> wie Kundenkarten und Ausweise verwalten</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> neu zugeordnet zu <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konten von <ph name="NAME" /></translation>
 <translation id="176272781006230109">Shopping-Vorschläge</translation>
@@ -1701,6 +1703,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2322193970951063277">Kopf- und Fußzeilen</translation>
 <translation id="2322622365472107569">Ende: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gespeicherte WLANs</translation>
+<translation id="2323685460575935191">Scrollbuttons ausblenden</translation>
 <translation id="2325444234681128157">Passwort speichern</translation>
 <translation id="2326188115274135041">PIN bestätigen, um automatisches Entsperren zu aktivieren</translation>
 <translation id="2326583548923775947">Dies ist kein Google-Konto. Elemente, die du in Chrome speicherst, sind nicht auf anderen Geräten verfügbar.</translation>
@@ -1957,6 +1960,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2508747373511408451">Für die Anwendung <ph name="APPLICATION_NAME" /> ist Google Drive erforderlich.</translation>
 <translation id="2509495747794740764">Der Wert für die Skalierung muss zwischen 10 und 200 liegen.</translation>
 <translation id="2509566264613697683">8-fach</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ausgewählt)</translation>
 <translation id="2513904627589542105">Selbsttest</translation>
 <translation id="251425554130284360">Du siehst von dir besuchte Seiten und vorgeschlagene Suchanfragen, damit du deine letzte Aktivität schnell fortsetzen kannst.
@@ -4991,6 +4995,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4831226137013573603">Mikrofon stummschalten</translation>
 <translation id="483262387981411190">Gesichtssteuerung pausieren oder fortsetzen</translation>
 <translation id="4833683849865011483">Auf dem Druckserver wurde 1 Drucker gefunden</translation>
+<translation id="4834388789911023644">Rezension schreiben</translation>
 <translation id="4835598628985424375">Kussmund machen</translation>
 <translation id="4835677468087803981">PIN ausblenden</translation>
 <translation id="4836504898754963407">Fingerabdrücke verwalten</translation>
@@ -8549,6 +8554,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7625823789272218216">Neuer Tab links</translation>
 <translation id="762730429396410864">CPU-Leistungsstufe, die Websites gemeldet wird, manuell festlegen</translation>
 <translation id="7627749368210392160">Websites können diese Funktion verwenden, um auf andere Geräte in deinem lokalen Netzwerk zuzugreifen</translation>
+<translation id="7628068697012244394">Rezension schreiben</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Aktion für die jeweilige Taste auswählen</translation>
 <translation id="7629206210984165492">Dezent</translation>
@@ -8975,6 +8981,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7949038991703929816">Verlauf konnte nicht geladen werden. Stelle sicher, dass die Dateien gültige Updater-Logs enthalten.</translation>
 <translation id="7950629216186736592">Grund: Die Unterstützung älterer Browser funktioniert nur mit URLs, die http://, https:// und file:// enthalten.</translation>
 <translation id="7950814699499457511">Aktiviert • Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden</translation>
+<translation id="7951159420392892566">Scroll-Buttons loslösen</translation>
 <translation id="795130320946928025">Virtuelle Karte deaktivieren</translation>
 <translation id="7952708427581814389">Websites dürfen nachfragen, wenn sie auf Text und Bilder in meiner Zwischenablage zugreifen möchten</translation>
 <translation id="7953236668995583915">Aktualisiere diese Seite, um die neuen Einstellungen auf dieser Website zu übernehmen</translation>
@@ -9861,7 +9868,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8636500887554457830">Websites dürfen keine Pop-up-Fenster senden oder Weiterleitungen verwenden</translation>
 <translation id="8636514272606969031">Seitenleiste wurde angepinnt</translation>
 <translation id="8638719155236856752">ChromeOS-Netzwerkstatus</translation>
-<translation id="8639963783467694461">AutoFill-Einstellungen</translation>
+<translation id="8639963783467694461">Autofill-Einstellungen</translation>
 <translation id="8640575194957831802">Zuletzt geöffnet</translation>
 <translation id="8641946446576357115">Passwörter auf iOS-Geräten verwenden</translation>
 <translation id="8642577642520207435">Kameraberechtigung für <ph name="APP_NAME" /></translation>

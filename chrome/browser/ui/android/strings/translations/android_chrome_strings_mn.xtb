@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1269129608791067105">Та түүхээ эндээс олно</translation>
 <translation id="1280921956537356716">Зөвлөгөөний мэдэгдлийг асаах</translation>
+<translation id="1287449971634955609">Өргөтгөлүүдийг хасаж, тэдгээрийн энэ төхөөрөмж дээр хадгалсан өгөгдлийг устгах</translation>
 <translation id="1289129165308566697">Түүхээ бусад төхөөрөмж дээр харах</translation>
 <translation id="129553762522093515">Саяхан хаагдсан</translation>
 <translation id="1298077576058087471">Датагаа 60% хүртэл хэмнэж, өнөөдрийн мэдээг уншаарай</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Google Бүртгэлдээ өгөгдөл хадгалах</translation>
 <translation id="1414919006379339073">Одоогийн цонхыг хаах</translation>
 <translation id="1416550906796893042">Програмын хувилбар</translation>
+<translation id="1426410128494586442">Тийм</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1432581352905426595">Хайлтын системийг удирдах</translation>
 <translation id="1435593198351412143">PDF-үүдийг автоматаар нээх</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">Та олон мэдэгдэл илгээдэг сайтуудыг хянаж, ирээдүйд илүү олныг илгээхийг зогсоох боломжтой</translation>
 <translation id="2386938421315164605">Сэдвүүдийг нуух болон ил болгох</translation>
 <translation id="2390510615457643724">Та <ph name="FILE_NAME" /><ph name="FILE_SIZE" />-г дахин татахыг хүсэж байна уу?</translation>
+<translation id="2391579633712104609">180 °</translation>
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, Сонгосон Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, Бичлэг хийж буй нууцлалтай таб</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">Энэ хуудсыг хадгал</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-н бүх хуудас</translation>
 <translation id="3268048651973962414">Хайлтын илэрцийг харахын тулд дээш чирнэ үү</translation>
+<translation id="3268205181992599708">Дуу хоолойг ашиглахын тулд микрофоныг идэвхжүүлнэ үү</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
 <translation id="3280562213547448728">Дуут хайлт</translation>
 <translation id="3282801380074962248">Хэсгийг дэлгэх</translation>
@@ -786,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Та энэ сайт дээр ашигласан</translation>
 <translation id="4214315110991671325">Та күүкиг зөвшөөрсөн тохиолдолд тэдгээрийг Chrome урьдчилан ачаалахад ашиглаж магадгүй.</translation>
 <translation id="421517251707893998">Энэ товчлолыг бэхлэх дээр товшино уу</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Энэ хуудсыг сонсох</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, Сонгосон, бэхэлсэн, Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="4225895483398857530">Самбарын товчлол</translation>
@@ -982,6 +987,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4961107849584082341">Энэ хуудсыг дурын хэл рүү орчуулна уу</translation>
 <translation id="4964614743143953889">Аюултай сайт, татаж авсан файлын талаар Chrome танд сануулна</translation>
 <translation id="496607651705915226">Шинэ нууц үгнүүдийг Google Бүртгэлдээ хадгалах болон ашиглахын тулд Google Play үйлчилгээг шинэчилнэ үү</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Өөр ямар нэг зүйл хайх эсвэл илүү олон илэрц харахын тулд Chrome-н бүтэн түүхийг нээнэ үү.</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="497983151715419057">Идэвхгүй таб, бүлгээ эндээс хянана уу</translation>
@@ -1054,6 +1060,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5267572070504076962">Аюултай сайтуудын эсрэг хамгаалалт авахын тулд Safe Browsing-г асаана уу</translation>
 <translation id="5273031377282080577">Танай администратор энэ тохиргоог удирддаг.</translation>
 <translation id="5284295735376057059">Документын төлөв байдал</translation>
+<translation id="5286907366254680517">Илэрсэн</translation>
 <translation id="5290322819358431297">Нууц үгээ автоматаар бөглөөрэй</translation>
 <translation id="5292796745632149097">Илгээх</translation>
 <translation id="5301876394151419436">Та <ph name="EMAIL" />-р нэвтэрсэн байна. Та тохиргоонд хүссэн үедээ синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
@@ -1553,7 +1560,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7173338713290252554">Веб дээрх үнийн түүх</translation>
 <translation id="7177466738963138057">Та дараа үүнийг Тохиргоо хэсэгт өөрчлөх боломжтой</translation>
 <translation id="7177873915659574692">QR код үүсгэх боломжгүй. URL <ph name="CHARACTER_LIMIT" />-с олон тэмдэгттэй байна.</translation>
-<translation id="7179032284363038560">Энэ төхөөрөмжийг ашигладаг бусад хүн таны үйл ажиллагааг харахгүй тул та илүү нууцлалтай үзэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Өөр бүртгэл ашиглах</translation>
 <translation id="7182520625618447753">Тусгайлан өөрчилсөн үзэх хэрэглээнд зориулж хаяг оруулах хэсгийнхээ байрлалыг дээш, доош сэлгээрэй</translation>
 <translation id="7183517696921903380">Аппын шүүлтүүрийн хүснэгтийг нээсэн.</translation>
@@ -1694,6 +1700,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7714077993070342304">Chrome цэсийг нээх</translation>
 <translation id="7733878270780732638">Төхөөрөмжид хангалттай зай байхгүй байна.</translation>
 <translation id="7740287852186792672">Хайлтын үр дүн</translation>
+<translation id="7740996059027112821">Стандарт</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Сонгогдож, хуваалцаж буй нууцлалтай таб</translation>
 <translation id="774876555279732384">Автоматаар бөглөх хэсгийн үйлчилгээг мөн <ph name="BEGIN_LINK" />Android-н Тохиргоонд<ph name="END_LINK" /> удирддаг.</translation>
 <translation id="7758884017823246335">Сайтын хайлт нэмэх</translation>

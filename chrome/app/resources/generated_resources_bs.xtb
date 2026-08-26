@@ -354,6 +354,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}one{{BOOKMARK_COUNT} oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}few{{BOOKMARK_COUNT} oznake i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}other{{BOOKMARK_COUNT} oznaka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}}</translation>
 <translation id="125220115284141797">Zadano</translation>
 <translation id="1252219782845132919">Sakrij grupu</translation>
+<translation id="1252597096488926946">Otkači dugmad za klizanje</translation>
 <translation id="1252987234827889034">Došlo je do greške na profilu</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direktna internetska veza</translation>
@@ -982,6 +983,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1755601632425835748">Veličina teksta</translation>
 <translation id="1756963401828337401">Odaberite ekran za snimanje</translation>
 <translation id="17584710573359123">Prikaži u Chrome Web trgovini</translation>
+<translation id="176013700366797492">Posjetite Google Novčanik da upravljate <ph name="BEGIN_LINK1" />postavkama podataka i privatnosti<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />načinima plaćanja<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />karticama<ph name="END_LINK3" /> kao što su kartice lojalnosti i lični dokumenti</translation>
 <translation id="1761402971842586829">Dugme <ph name="BUTTON_NAME" /> je ponovo mapirano na opciju <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Računi koje koristi <ph name="NAME" /></translation>
 <translation id="176272781006230109">prijedloge za kupovinu</translation>
@@ -1711,6 +1713,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2322193970951063277">Zaglavlja i podnožja</translation>
 <translation id="2322622365472107569">Vrijeme završetka: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Sačuvane WiFi mreže</translation>
+<translation id="2323685460575935191">Sakrij dugmad za klizanje</translation>
 <translation id="2325444234681128157">Zapamti lozinku</translation>
 <translation id="2326188115274135041">Potvrdite PIN da uključite automatsko otključavanje</translation>
 <translation id="2326583548923775947">Ovo nije Google račun. Stavke koje sačuvate u Chrome neće biti dostupne na drugim uređajima.</translation>
@@ -1967,6 +1970,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2508747373511408451">Aplikacija <ph name="APPLICATION_NAME" /> zahtijeva dostupan Google Disk.</translation>
 <translation id="2509495747794740764">Razmjer mora biti broj između 10 i 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (odabrano)</translation>
 <translation id="2513904627589542105">Samotestiranje</translation>
 <translation id="251425554130284360">Prikazuju vam se stranice koje ste posjetili i predložena pretraživanja da se lakše vratite na zadnju aktivnost.
@@ -5004,6 +5008,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4831226137013573603">isključivanje zvuka mikrofona</translation>
 <translation id="483262387981411190">Pauziranje ili nastavak upravljanja licem</translation>
 <translation id="4833683849865011483">Pronađen je 1 štampač na serveru za štampanje</translation>
+<translation id="4834388789911023644">Napišite recenziju</translation>
 <translation id="4835598628985424375">Napućivanje usana stiskanjem</translation>
 <translation id="4835677468087803981">Sakrivanje PIN-a</translation>
 <translation id="4836504898754963407">Upravljajte otiscima prstiju</translation>
@@ -8570,6 +8575,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7625823789272218216">Nova kartica s lijeve strane</translation>
 <translation id="762730429396410864">Ručno postavite nivo performansi procesora koji se prijavljuje web lokacijama</translation>
 <translation id="7627749368210392160">Web lokacije mogu koristiti ovu funkciju da pristupe drugim uređajima na lokalnoj mreži</translation>
+<translation id="7628068697012244394">Napišite recenziju</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Stepen <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Odaberite radnju za svaku tipku</translation>
 <translation id="7629206210984165492">Prigušeno</translation>
@@ -8996,6 +9002,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7949038991703929816">Učitavanje historije nije uspjelo. Provjerite sadržavaju li fajlovi važeće zapisnike alata za ažuriranje.</translation>
 <translation id="7950629216186736592">Razlog: LBS podržava samo URL-ove http://, https:// i file://.</translation>
 <translation id="7950814699499457511">Uključeno • Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke</translation>
+<translation id="7951159420392892566">Otkači dugmad za klizanje</translation>
 <translation id="795130320946928025">Isključi virtuelnu karticu</translation>
 <translation id="7952708427581814389">Web lokacije mogu tražiti da vide tekst i slike u međumemoriji</translation>
 <translation id="7953236668995583915">Ponovo učitajte stranicu da primijenite ažurirane postavke na ovoj web lokaciji</translation>

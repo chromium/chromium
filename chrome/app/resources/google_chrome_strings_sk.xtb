@@ -88,6 +88,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome odporúča pozastaviť kartu, ktorá spomaľuje váš prehliadač}few{Chrome odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}many{Chrome recommends pausing the tabs slowing your browser}other{Chrome odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="1832046143430087831">Zrýchľuje weby pomocou nástroja V8 Chromu, ale mierne zníži odolnosť prehliadača voči útokom. Toto nastavenie je vypnuté.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
+<translation id="1842869163383855194">Jednoducho otvárajte Vyhľadávanie v Chrome v celom zariadení, a to aj vtedy, keď je Chrome minimalizovaný.</translation>
 <translation id="1843347690926158494">Prehľadať túto kartu pomocou funkcie Google Lens</translation>
 <translation id="1849248141818021764">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak ju zabudnete alebo budete chcieť toto nastavenie zmeniť, budete musieť <ph name="BEGIN_LINK" />vymazať údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Používajte aplikáciu Chrome a prehliadajte si internet kdekoľvek</translation>
@@ -326,6 +327,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4173512894976930765">Weby budú pravdepodobne fungovať podľa očakávaní. Po zavretí všetkých okien Chromu vás odhlásime z väčšiny webov. Neplatí to však pre váš účet Google (ak ste sa prihlásili do Chromu).</translation>
 <translation id="4175922240926474352">Chrome toto sťahovanie zablokoval, pretože daný web nepoužíva zabezpečené pripojenie a v súbore mohol niekto vykonať zmeny</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova spustite do jedného dňa}few{Chrome znova spustite do # dní}many{Chrome znova spustite do # dňa}other{Chrome znova spustite do # dní}}</translation>
+<translation id="4222394563269716113">Vyhľadávanie v Chrome môžete otvárať klávesovou skratkou.</translation>
 <translation id="4222932583846282852">Ruší sa...</translation>
 <translation id="4224210481850767180">Inštalácia bola zrušená.</translation>
 <translation id="4242034826641750751">Chrome vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
@@ -351,6 +353,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Zdieľajte tento dokument s Gemini v Chrome, aby ste získali rýchly prehľad a mohli klásť doplňujúce otázky</translation>
+<translation id="4447327682081576371">Zobrazovať Vyhľadávanie v Chrome na paneli s ponukami Macu a zapnúť klávesovú skratku</translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
 <translation id="4493028449971051158">Chyba pri spustení: spustite inštalátor ako správca.</translation>
@@ -440,6 +443,7 @@ Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo p
 <translation id="5430073640787465221">Súbor predvolieb je poškodený alebo neplatný. 
 
 Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
+<translation id="545114101312117217">Jednoduchý prístup k odkazom z Vyhľadávania v Chrome</translation>
 <translation id="5465210843490471889">Vyberte profil Chromu, ktorý chcete používať s <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome sa teraz spúšťa pri spustení systému Windows, takže môžete okamžite začať prehliadať. Túto možnosť môžete vypnúť v nastaveniach.</translation>
 <translation id="5486346529181556467">Nahláste web, ktorý považujete za škodlivý, a pomôžte tak zlepšiť bezpečnosť na internete pre všetkých. Prečítajte si viac o <ph name="BEGIN_LINK" />pravidlách Googlu proti nebezpečným webom<ph name="END_LINK" />.</translation>
@@ -725,6 +729,8 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8074398340364918139">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie Chromu, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>
 <translation id="8086881907087796310">Nepodarilo sa nainštalovať, pretože váš počítač nespĺňa minimálne požiadavky na hardvér.</translation>
+<translation id="8093772166980702367">Zobrazovať Vyhľadávanie v Chrome v oblasti oznámení a zapnúť klávesovú skratku</translation>
+<translation id="8110438089258398864">Režim AI vo Vyhľadávaní Google môžete znova otvoriť a klásť otázky počas prehliadania</translation>
 <translation id="8113883687556086139">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
 <translation id="8115695070094288807">Chrome sa prispôsobuje…</translation>
 <translation id="8118331347066725040">Odošlite spätnú väzbu k vyhľadávaniu pomocou funkcie Lens</translation>
@@ -774,6 +780,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="856656450041460113">Vyhľadať v zozname jazykov</translation>
 <translation id="8575047640889685742">Šifrujte všetky údaje Chromu vo svojom účte Google pomocou <ph name="BEGIN_LINK" />vlastnej prístupovej frázy<ph name="END_LINK" />. Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.</translation>
 <translation id="8590782867495422699">Znova otvoriť režim umelej inteligencie vo Vyhľadávaní Google</translation>
+<translation id="8598779894319572882">Tlačidlom Režim AI vo Vyhľadávaní Google na paneli s nástrojmi môžete znova otvoriť režim AI vo Vyhľadávaní Google a klásť otázky počas prehliadania</translation>
 <translation id="8601359445272098721">Novinka! Môžete prekladať text aj obrázky na obrazovke. Stačí vybrať tlačidlo Preložiť obrazovku.</translation>
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="8623450603356630491">Prihláste sa do Chromu v telefóne</translation>

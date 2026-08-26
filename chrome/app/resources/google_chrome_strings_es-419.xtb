@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomienda pausar la pestaña que ralentiza tu navegador}other{Chrome recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="1832046143430087831">Acelera los sitios con el motor V8 de Chrome, pero reduce ligeramente la resistencia de Chrome a los ataques. Este parámetro de configuración está desactivado.</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
+<translation id="1842869163383855194">Accede fácilmente a la Búsqueda en Chrome en todo tu dispositivo, incluso si Chrome está minimizado.</translation>
 <translation id="1843347690926158494">Buscar esta pestaña con Google Lens</translation>
 <translation id="1849248141818021764">Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, deberás <ph name="BEGIN_LINK" />borrar los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Usa la app de Chrome para seguir navegando estés donde estés</translation>
@@ -325,6 +326,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="4173512894976930765">Es probable que los sitios funcionen según lo previsto. Saldrás de la mayoría de los sitios cuando cierres todas las ventanas de Chrome, excepto tu Cuenta de Google si accediste a Chrome.</translation>
 <translation id="4175922240926474352">Chrome bloqueó esta descarga porque el sitio no usa una conexión segura y el archivo puede haber sido manipulado</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en el transcurso de 1 día}other{Reinicia Chrome en el transcurso de # días}}</translation>
+<translation id="4222394563269716113">Abre la Búsqueda en Chrome con una combinación de teclas.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">Se canceló la instalación.</translation>
 <translation id="4242034826641750751">Chrome necesita permiso de acceso al micrófono y la cámara para este sitio.</translation>
@@ -350,6 +352,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
 <translation id="4434353761996769206">Error de instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Comparte este documento con Gemini en Chrome para obtener una descripción general rápida y hacer preguntas adicionales</translation>
+<translation id="4447327682081576371">Mostrar la Búsqueda en Chrome en la barra de menú de Mac y activar la combinación de teclas</translation>
 <translation id="4450664632294415862">Chrome: Acceso a la red - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
 <translation id="4493028449971051158">Error de inicio: Ejecuta el instalador como administrador.</translation>
@@ -435,6 +438,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="5402307365844630024">Activar o desactivar Gemini en Chrome Beta</translation>
 <translation id="541844421954567481">Accede a tus contraseñas, pestañas y mucho más estés donde estés con la app de Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido. Google Chrome no puede recuperar tu configuración.</translation>
+<translation id="545114101312117217">Accede fácilmente a tus combinaciones de teclas desde la Búsqueda en Chrome</translation>
 <translation id="5465210843490471889">Elige un perfil de Chrome para usar con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome ahora se ejecuta cuando se inicia Windows para que puedas comenzar a navegar al instante. Puedes desactivar esta opción en la configuración.</translation>
 <translation id="5486346529181556467">Mejora la seguridad en línea para todos cuando denuncies un sitio que crees que es dañino. Obtén más información sobre la <ph name="BEGIN_LINK" />política de sitios no seguros de Google.<ph name="END_LINK" /></translation>
@@ -720,6 +724,8 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="8074398340364918139">Para buscar una función o extensión específica de Chrome, escribe su atajo en la barra de direcciones, seguido de la tecla que seleccionaste</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">La instalación falló porque tu computadora no cumple con los requisitos mínimos de hardware.</translation>
+<translation id="8093772166980702367">Mostrar la Búsqueda en Chrome en la bandeja del sistema y activar la combinación de teclas</translation>
+<translation id="8110438089258398864">Puedes volver a abrir el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="8113883687556086139">Verifica tu identidad para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personalizando Chrome…</translation>
 <translation id="8118331347066725040">Envía comentarios sobre la búsqueda con Lens</translation>
@@ -769,6 +775,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8575047640889685742">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para encriptar todos los datos de Chrome en tu Cuenta de Google. No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.</translation>
 <translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
+<translation id="8598779894319572882">Desde el botón "Modo IA de la Búsqueda de Google" en la barra de herramientas, puedes volver a abrir el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="8601359445272098721">¡Novedad! Puedes traducir texto e imágenes en la pantalla seleccionando el botón “Traducir pantalla”</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="8623450603356630491">Accede a Chrome en tu teléfono</translation>

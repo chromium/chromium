@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
 <translation id="1822318649925991542">Zmenou umiestnenia si prispôsobíte prostredie prehliadania</translation>
 <translation id="1848033246551405023">Bezpätkové písmo</translation>
+<translation id="1861244985839668297">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s ľudským rozhraním. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s ľudským rozhraním.</translation>
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
 <translation id="1881806992065048905">Dolný hárok vzhľadu stránky na novej karte</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>

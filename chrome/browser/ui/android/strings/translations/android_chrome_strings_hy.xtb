@@ -115,6 +115,7 @@
 <translation id="1413446866325418126">Պահեք տվյալները ձեր Google հաշվում</translation>
 <translation id="1414919006379339073">Փակել ընթացիկ պատուհանը</translation>
 <translation id="1416550906796893042">Ծրագրի տարբերակ</translation>
+<translation id="1426410128494586442">Այո</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
 <translation id="1435593198351412143">Ավտոմատ բացել PDF ֆայլերը</translation>
@@ -342,6 +343,7 @@
 <translation id="2385605401818128172">Դուք կարող եք դիտել այն կայքերը, որոնք չափազանց շատ ծանուցումներ են ուղարկում, և կանգնեցնել դրանց ուղարկումը</translation>
 <translation id="2386938421315164605">Թաքցրեք և ցուցադրեք թեմաները</translation>
 <translation id="2390510615457643724">Նորից ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Ակտիվացնել</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>
@@ -626,6 +628,7 @@
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
 <translation id="3560831525486613327">Բացեք նոր ներդիրի էջը</translation>
 <translation id="3563767357928833671">Ցուցադրվում է սեղմատախտակի բովանդակությունը</translation>
+<translation id="356407858591811361">Բացել նոր ինկոգնիտո պատուհան</translation>
 <translation id="3566639033325271639">Թարմացնել կարգավորումները</translation>
 <translation id="3568945271227339929">Կոտրված գաղտնաբառեր չկան</translation>
 <translation id="3575464060651642446">Այս սարքի գաղտնաբառերի ստուգում…</translation>
@@ -1053,6 +1056,7 @@
 <translation id="5267572070504076962">Միացրեք Անվտանգ դիտարկումը՝ վտանգավոր կայքերից պաշտպանվելու համար</translation>
 <translation id="5273031377282080577">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="5284295735376057059">Փաստաթղթի պարամետրեր</translation>
+<translation id="5286907366254680517">Ճանաչվել է</translation>
 <translation id="5290322819358431297">Գաղտնաբառերի ինքնալրացում</translation>
 <translation id="5292796745632149097">Ուղարկել</translation>
 <translation id="5301876394151419436">Դուք մուտք եք գործել որպես <ph name="EMAIL" />։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
@@ -1692,6 +1696,7 @@
 <translation id="7714077993070342304">Բացել Chrome-ի ընտրացանկը</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
 <translation id="7740287852186792672">Որոնման արդյունքներ</translation>
+<translation id="7740996059027112821">Ստանդարտ</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="774876555279732384">Ինքնալրացման ծառայությունները նաև կարելի է կառավարել <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7758884017823246335">Ավելացնել կայքում որոնումը</translation>

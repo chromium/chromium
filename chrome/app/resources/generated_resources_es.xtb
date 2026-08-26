@@ -354,6 +354,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 marcador y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}other{{BOOKMARK_COUNT} marcadores y otros elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}}</translation>
 <translation id="125220115284141797">Predeterminados</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
+<translation id="1252597096488926946">Desfijar botones de desplazamiento</translation>
 <translation id="1252987234827889034">Se ha producido un error del perfil</translation>
 <translation id="1254034280040157728">Gran Cañón</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -976,6 +977,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1756963401828337401">Elige una pantalla para hacer la captura</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="176013700366797492">Visita Google Wallet para controlar las <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o gestionar los <ph name="BEGIN_LINK2" />métodos de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />documentos<ph name="END_LINK3" />, como las tarjetas de fidelización y los documentos de identificación</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> reasignado a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugerencias de compra</translation>
@@ -1702,6 +1704,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2322193970951063277">Encabezado y pie de página</translation>
 <translation id="2322622365472107569">Hora de finalización: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi‑Fi guardadas</translation>
+<translation id="2323685460575935191">Ocultar botones de desplazamiento</translation>
 <translation id="2325444234681128157">Recordar contraseña</translation>
 <translation id="2326188115274135041">Confirma el PIN para activar el desbloqueo automático</translation>
 <translation id="2326583548923775947">Esta no es una cuenta de Google. Los elementos que guardes en Chrome no estarán disponibles en otros dispositivos.</translation>
@@ -1958,6 +1961,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2508747373511408451">La aplicación <ph name="APPLICATION_NAME" /> requiere que Google Drive esté disponible.</translation>
 <translation id="2509495747794740764">El valor de la escala debe ser un número entre 10 y 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
 <translation id="2513904627589542105">Prueba automática</translation>
 <translation id="251425554130284360">Estás viendo las páginas que has visitado y las búsquedas sugeridas para ayudarte a volver fácilmente a tu actividad más reciente.
@@ -4993,6 +4997,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4831226137013573603">silenciar micrófono</translation>
 <translation id="483262387981411190">Pausar o reanudar el control facial</translation>
 <translation id="4833683849865011483">Se ha encontrado 1 impresora en el servidor de impresión</translation>
+<translation id="4834388789911023644">Escribir una reseña</translation>
 <translation id="4835598628985424375">Poner los labios como para dar un beso</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Gestionar huellas dactilares</translation>
@@ -8554,6 +8559,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="762730429396410864">Define manualmente el nivel de rendimiento de la CPU que se comunica a los sitios web</translation>
 <translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
+<translation id="7628068697012244394">Escribir una reseña</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -8980,6 +8986,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7949038991703929816">No se ha podido cargar el historial. Asegúrate de que los archivos contengan registros del actualizador válidos.</translation>
 <translation id="7950629216186736592">Motivo: LBS solo admite URLs http://, https:// y file://.</translation>
 <translation id="7950814699499457511">Activada • Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos</translation>
+<translation id="7951159420392892566">Desfijar botones de desplazamiento</translation>
 <translation id="795130320946928025">Desactivar tarjeta virtual</translation>
 <translation id="7952708427581814389">Los sitios pueden solicitar permiso para ver texto e imágenes del portapapeles</translation>
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada a este sitio</translation>

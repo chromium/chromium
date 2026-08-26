@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{BOOKMARK_COUNT} 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
 <translation id="125220115284141797">デフォルト</translation>
 <translation id="1252219782845132919">グループを非表示</translation>
+<translation id="1252597096488926946">スクロール ボタンの固定を解除</translation>
 <translation id="1252987234827889034">プロフィール エラーが発生しました</translation>
 <translation id="1254034280040157728">グランド キャニオン</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">テキストのサイズ</translation>
 <translation id="1756963401828337401">キャプチャする画面を選択</translation>
 <translation id="17584710573359123">Chrome ウェブストアのページに移動</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />データとプライバシーの設定<ph name="END_LINK1" />を管理したり、<ph name="BEGIN_LINK2" />お支払い方法<ph name="END_LINK2" />やポイントカード、身分証明書などの<ph name="BEGIN_LINK3" />パス<ph name="END_LINK3" />を管理したりするには、Google ウォレットにアクセスしてください</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> を <ph name="REMAPPING_OPTION" /> に再マッピングしました。</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> さんのアカウント</translation>
 <translation id="176272781006230109">おすすめのショッピング情報</translation>
@@ -1700,6 +1702,7 @@
 <translation id="2322193970951063277">ヘッダーとフッター</translation>
 <translation id="2322622365472107569">終了時間: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存済みの Wi-Fi ネットワーク</translation>
+<translation id="2323685460575935191">スクロール ボタンを非表示</translation>
 <translation id="2325444234681128157">パスワードを保存する</translation>
 <translation id="2326188115274135041">PIN を入力して自動ロック解除を有効にする</translation>
 <translation id="2326583548923775947">これは Google アカウントではありません。Chrome に保存したアイテムを他のデバイスで使用することはできません。</translation>
@@ -1956,6 +1959,7 @@
 <translation id="2508747373511408451">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、Google ドライブへのアクセスが必要です。</translation>
 <translation id="2509495747794740764">倍率は 10～200 の数値で指定してください。</translation>
 <translation id="2509566264613697683">8 倍</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />（選択済み）</translation>
 <translation id="2513904627589542105">セルフテスト</translation>
 <translation id="251425554130284360">これまでアクセスしたページや検索候補が表示され、最近のアクティビティに簡単にアクセスできます。
@@ -4717,7 +4721,7 @@
 <translation id="4621866192918370652">このページを Google で検索して、追加の関連情報を確認できます</translation>
 <translation id="4622051949285931942">自動更新をオフにしますか？</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
-<translation id="4623894491222334521">ID ドキュメント</translation>
+<translation id="4623894491222334521">身分証明書</translation>
 <translation id="4624054169152573743">色のテーマ</translation>
 <translation id="4625350031596795804">フォーカス（大）のスタイル</translation>
 <translation id="4625905218692741757">グレーのデフォルト カラー</translation>
@@ -4990,6 +4994,7 @@
 <translation id="4831226137013573603">マイクのミュート</translation>
 <translation id="483262387981411190">顔コントロールを一時停止または再開する</translation>
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
+<translation id="4834388789911023644">レビューを書く</translation>
 <translation id="4835598628985424375">唇をくっつけてすぼめる</translation>
 <translation id="4835677468087803981">PIN を非表示</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
@@ -8549,6 +8554,7 @@
 <translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="762730429396410864">ウェブサイトに報告される CPU のパフォーマンス ティアを手動で設定します</translation>
 <translation id="7627749368210392160">サイトはこの機能を使用して、ローカル ネットワーク上の他のデバイスにアクセスできます</translation>
+<translation id="7628068697012244394">レビューを書く</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
 <translation id="762917478230183172">キーごとに操作を選択</translation>
 <translation id="7629206210984165492">控え目</translation>
@@ -8950,7 +8956,7 @@
 <translation id="7938881824185772026">Labs</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
-<translation id="7939918959917132075">拡張機能によってこの検索プロバイダに変更されました</translation>
+<translation id="7939918959917132075">拡張機能によって設定された検索プロバイダ</translation>
 <translation id="7940087892955752820">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 <ph name="SPECIFIC_NAME" /> をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
@@ -8974,6 +8980,7 @@
 <translation id="7949038991703929816">履歴を読み込めませんでした。ファイルに有効なアップデータ ログが含まれていることを確認してください。</translation>
 <translation id="7950629216186736592">理由: LBS では http://、https://、file:// の URL のみサポートされています。</translation>
 <translation id="7950814699499457511">オン • この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません</translation>
+<translation id="7951159420392892566">スクロール ボタンの固定を解除</translation>
 <translation id="795130320946928025">仮想カードを無効にする</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="7953236668995583915">更新した設定をこのサイトに適用するには、このページを再読み込みしてください</translation>

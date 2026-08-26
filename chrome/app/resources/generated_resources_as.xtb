@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{১ টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক। ই লগতে আটাইবোৰ ডুপ্লিকেটো মচি পেলাব।}one{{BOOKMARK_COUNT} টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক। ই লগতে আটাইবোৰ ডুপ্লিকেটো মচি পেলাব।}other{{BOOKMARK_COUNT} টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক। ই লগতে আটাইবোৰ ডুপ্লিকেটো মচি পেলাব।}}</translation>
 <translation id="125220115284141797">ডিফ’ল্ট</translation>
 <translation id="1252219782845132919">গোট লুকুৱাওক</translation>
+<translation id="1252597096488926946">স্ক্ৰ’ল কৰাৰ বুটাম আনপিন কৰক</translation>
 <translation id="1252987234827889034">প্ৰ’ফাইলত আসোঁৱাহ হৈছে</translation>
 <translation id="1254034280040157728">গ্ৰেণ্ড কেনিয়ন</translation>
 <translation id="1254593899333212300">পোনপটীয়া ইণ্টাৰনেট সংযোগ</translation>
@@ -985,6 +986,7 @@
 <translation id="1755601632425835748">পাঠৰ আকাৰ</translation>
 <translation id="1756963401828337401">কেপচাৰ কৰিবলৈ এখন স্ক্ৰীন বাছনি কৰক</translation>
 <translation id="17584710573359123">Chrome Web Storeত চাওক</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ডেটা আৰু গোপনীয়তাৰ অগ্ৰাধিকাৰ<ph name="END_LINK1" /> নিয়ন্ত্ৰণ কৰিবলৈ বা <ph name="BEGIN_LINK2" />পৰিশোধ পদ্ধতি<ph name="END_LINK2" /> আৰু লয়েল্টী কাৰ্ড আৰু আইডিৰ দৰে <ph name="BEGIN_LINK3" />পাছ<ph name="END_LINK3" /> পৰিচালনা কৰিবলৈ Google Walletলৈ যাওক</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />ক <ph name="REMAPPING_OPTION" />লৈ ৰিমেপ কৰা হৈছে।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ৰ একাউণ্ট</translation>
 <translation id="176272781006230109">শ্বপিঙৰ বিষয়ে পৰামৰ্শ</translation>
@@ -1714,6 +1716,7 @@
 <translation id="2322193970951063277">হে’ডাৰ আৰু ফুটাৰ</translation>
 <translation id="2322622365472107569">সমাপ্ত হোৱাৰ সময় <ph name="TIME" /></translation>
 <translation id="2323018538045954000">ছেভ হৈ থকা ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
+<translation id="2323685460575935191">স্ক্ৰ’ল কৰাৰ বুটাম লুকুৱাওক</translation>
 <translation id="2325444234681128157">পাছৱৰ্ড মনত ৰাখক</translation>
 <translation id="2326188115274135041">স্বয়ংক্ৰিয়ভাৱে আনলক হোৱাৰ সুবিধাটো অন কৰিবলৈ পিনটো নিশ্চিত কৰক</translation>
 <translation id="2326583548923775947">এইটো Google একাউণ্ট নহয়। আপুনি Chromeত ছেভ কৰা বস্তুবোৰ অন্য ডিভাইচসমূহত উপলব্ধ নহয়।</translation>
@@ -1970,6 +1973,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> এপ্লিকেশ্বনটোৰ বাবে Google Drive উপলব্ধ হোৱাটো আৱশ্যক।</translation>
 <translation id="2509495747794740764">স্কেলৰ মান ১০ আৰু ২০০ৰ ভিতৰৰ কোনো সংখ্যা হ’বই লাগিব।</translation>
 <translation id="2509566264613697683">৮x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (বাছনি কৰা হৈছে)</translation>
 <translation id="2513904627589542105">নিজেই পৰীক্ষণ কৰা</translation>
 <translation id="251425554130284360">আপোনাৰ একেবাৰে শেহতীয়া কাৰ্যকলাপলৈ সহজে ঘূৰি যোৱাত সহায় কৰিবলৈ আপুনি আগতে চোৱা পৃষ্ঠা আৰু সন্ধানৰ পৰামৰ্শসমূহ দেখিছে।
@@ -5006,6 +5010,7 @@
 <translation id="4831226137013573603">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="483262387981411190">মুখাৱয়বৰ জৰিয়তে নিয়ন্ত্ৰণ কৰাটো পজ কৰক বা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4833683849865011483">প্ৰিণ্ট ছার্ভাৰটোৰ পৰা ১ টা প্ৰিণ্টাৰ বিচাৰি পোৱা গৈছে</translation>
+<translation id="4834388789911023644">এটা পৰ্যালোচনা লিখক</translation>
 <translation id="4835598628985424375">ওঁঠ দুটা একেলগে চপাই আনি কোঁচ খুৱাওক</translation>
 <translation id="4835677468087803981">পিন লুকুৱাওক</translation>
 <translation id="4836504898754963407">ফিংগাৰপ্ৰিণ্টবোৰ পৰিচালনা কৰক</translation>
@@ -8569,6 +8574,7 @@
 <translation id="7625823789272218216">বাওঁফালৰ নতুন টেব</translation>
 <translation id="762730429396410864">ৱেবছাইটসমূহক ৰিপ’ৰ্ট কৰা চিপিইউৰ কাৰ্যদক্ষতাৰ স্তৰ মেনুৱেলী ছেট কৰক</translation>
 <translation id="7627749368210392160">আপোনাৰ স্থানীয় নেটৱৰ্কৰ অন্য ডিভাইচ এক্সেছ কৰিবলৈ ছাইটসমূহে এই সুবিধাটো ব্যৱহাৰ কৰিব পাৰে</translation>
+<translation id="7628068697012244394">এটা পৰ্যালোচনা লিখক</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্ৰে’ড <ph name="GRADE" /></translation>
 <translation id="762917478230183172">প্ৰতিটো কীৰ বাবে এটা কাৰ্য বাছনি কৰক</translation>
 <translation id="7629206210984165492">নিৰ্জু</translation>
@@ -8995,6 +9001,7 @@
 <translation id="7949038991703929816">ইতিহাস ল’ড কৰিব পৰা নগ’ল। ফাইলসমূহত মান্য আপডে’টাৰ লগ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="7950629216186736592">কাৰণ: LBSএ কেৱল http://, https:// আৰু file:// URL সমৰ্থন কৰে।</translation>
 <translation id="7950814699499457511">অন • এই এক্সটেনশ্বনে গোপনীয়তাৰ ব্যৱস্থাসমূহ প্ৰকাশ কৰা নাই, যেনে ই কেনেকৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰে</translation>
+<translation id="7951159420392892566">স্ক্ৰ’ল কৰাৰ বুটাম আনপিন কৰক</translation>
 <translation id="795130320946928025">ভাৰ্চুৱেল কাৰ্ড অফ কৰক</translation>
 <translation id="7952708427581814389">ছাইটসমূহে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে</translation>
 <translation id="7953236668995583915">এই ছাইটটোত আপোনাৰ আপডে’ট কৰা ছেটিং প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>

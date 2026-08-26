@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies y datos de sitios</translation>
 <translation id="1312721752506309252">La protección mejorada está activada</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
+<translation id="1322683976135389755">Petición: Resume este artículo, 1 de 3</translation>
 <translation id="1322735045095424339">Tu organización requiere que uses el modo Incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
 <translation id="132683371494960526">Toca dos veces para cambiar la carpeta principal.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Toca Privacidad y seguridad</translation>
 <translation id="3259451381796379533">Esta cuenta no funcionará con Gemini. Inicia sesión con otra cuenta de Google.</translation>
 <translation id="3265736395246760288">Inicia sesión más rápido desde cualquiera de tus dispositivos sincronizados.</translation>
+<translation id="3268166994745151153">Esto significa que perderás tu progreso actual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3272955648592358996">Tus datos mejoran la IA de Google</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla de inicio</translation>
+<translation id="327455571215090823">Función Autocompletar más inteligente y privada</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3289505634533552500">Búsqueda por voz</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Pregunta sobre cualquier cosa que aparezca en tu página con Gemini en Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Autocompleta contraseñas guardadas</translation>
 <translation id="4021447724486050609">Actualiza tu navegador</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Ubicación:</translation>
 <translation id="4517684186578051919">Información del dispositivo</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
+<translation id="4524737913322680818">Compra, planifica y haz mucho más con Gemini en Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="4525629404718770519">Mostrar vistas previas de enlaces</translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, averigua si se han vulnerado y recibe consejos para protegerte en Internet. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Activar la opción de compartir pestañas</translation>
 <translation id="4658335131052370646">Guardar</translation>
+<translation id="465947902531722727">Cambiar de perfil</translation>
 <translation id="466307903888586355">Tu organización ha bloqueado la opción de guardar archivos</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tu organización requiere que navegues de forma privada. Los grupos de pestañas no se sincronizan en el modo Incógnito.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Inicia sesión con tu cuenta de Google para acceder a tus marcadores, contraseñas, historial y otros ajustes desde todos tus dispositivos</translation>
 <translation id="4985921635659180565">Una vez que se ha programado la eliminación de un archivo, no se puede cancelar.</translation>
 <translation id="498624032394115435">Cualquier persona que tenga el enlace puede editar todas las pestañas.</translation>
+<translation id="4986428648020277392">Petición: ¿Qué debería comprar? 2 de 3</translation>
+<translation id="498768198683310172">Empezar a usar Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), gestionado por tu organización.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Color del grupo de pestañas: <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838430324585198889">Disfruta de más funciones para tu iPad con las apps de Google</translation>
 <translation id="583923961930319521">Usar contraseñas en todos tus dispositivos</translation>
+<translation id="5841763734702350465">Petición: Añade esto a mi calendario, 3 de 3</translation>
 <translation id="5843013299019689749">Color de fondo negro</translation>
 <translation id="5844284118433003733">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
 <translation id="5854790677617711513">Más de 30 días</translation>
@@ -1782,6 +1791,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6775952316617222141">Usar Gemini Live en Chrome</translation>
 <translation id="6779455296366983087">Tus datos de navegación se eliminarán</translation>
 <translation id="6782531425936234573">Exportar datos</translation>
+<translation id="6789665473250283877">Quitar <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Toca Añadir pestaña a un nuevo grupo</translation>
 <translation id="6794476726485507147">Elige una fecha y una hora para recibir una notificación de recordatorio para volver a esta página</translation>
 <translation id="6797543908718012274">Activar modo Lectura</translation>
@@ -2153,6 +2163,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8011489434346330032">Inspector web</translation>
 <translation id="8014007212279733632">Verificar que eres tú para autocompletar información sensible</translation>
 <translation id="8015826420689927262">Eliminar archivo adjunto</translation>
+<translation id="8016869623424294549">Vas a cambiar de perfil</translation>
 <translation id="8017015647846870183">Del Gestor de contraseñas de Google, incluidas las contraseñas y las llaves de acceso</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8023170444051056234">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos tus dispositivos</translation>

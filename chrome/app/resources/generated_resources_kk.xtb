@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 бетбелгі және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз. Бұл ретте барлық көшірме де жойылады.}other{{BOOKMARK_COUNT} бетбелгі және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз. Бұл ретте барлық көшірме де жойылады.}}</translation>
 <translation id="125220115284141797">Әдепкі</translation>
 <translation id="1252219782845132919">Топты жасыру</translation>
+<translation id="1252597096488926946">Айналдыру түймелерін босату</translation>
 <translation id="1252987234827889034">Профиль қатесі кетті</translation>
 <translation id="1254034280040157728">Гранд-Каньон</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">Мәтін өлшемі</translation>
 <translation id="1756963401828337401">Түсірілетін экранды таңдаңыз</translation>
 <translation id="17584710573359123">Chrome Web Store дүкенінен көру</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Деректер мен құпиялық параметрлерін<ph name="END_LINK1" /> басқару немесе <ph name="BEGIN_LINK2" />төлеу әдістері<ph name="END_LINK2" /> мен тұрақты клиент карталары және жеке куәліктер сияқты <ph name="BEGIN_LINK3" />билеттерді<ph name="END_LINK3" /> басқару үшін Google Wallet-ке кіріңіз.</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> түймесіне қайта тағайындалды.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> атты пайдаланушының аккаунттары</translation>
 <translation id="176272781006230109">сатып алу ұсыныстары</translation>
@@ -1701,6 +1703,7 @@
 <translation id="2322193970951063277">Үстіңгі және астыңғы деректеме</translation>
 <translation id="2322622365472107569">Аяқталу уақыты: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Сақталған Wi-Fi желілері</translation>
+<translation id="2323685460575935191">Айналдыру түймелерін жасыру</translation>
 <translation id="2325444234681128157">Құпия сөзді есте сақтау</translation>
 <translation id="2326188115274135041">Құлыпты автоматты түрде ашу функциясын қосу үшін PIN кодын растаңыз.</translation>
 <translation id="2326583548923775947">Бұл Google аккаунты емес. Сіз Chrome-ға сақтайтын элементтер басқа құрылғыларда қолжетімді болмайды.</translation>
@@ -1957,6 +1960,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> қолданбасы Google Drive қызметінің қолжетімді болуын қажет етеді.</translation>
 <translation id="2509495747794740764">Масштабтау ауқымы 10-200 арасындағы сан болуы керек.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (таңдалды)</translation>
 <translation id="2513904627589542105">Өзін-өзі тексеру</translation>
 <translation id="251425554130284360">Сізге өзіңіз кірген беттер мен ұсынылған іздеу әдістері көрініп тұр, олар соңғы іс-әрекеттеріңізге оңай қайтып келуге көмектеседі.
@@ -4991,6 +4995,7 @@
 <translation id="4831226137013573603">микрофон дыбысын өшіру</translation>
 <translation id="483262387981411190">"Бет-әлпетімен басқару" функциясын кідірту не жалғастыру</translation>
 <translation id="4833683849865011483">Басып шығару серверінен 1 принтер табылды.</translation>
+<translation id="4834388789911023644">Пікір жазу</translation>
 <translation id="4835598628985424375">Ерніңізді дүрдитіңіз.</translation>
 <translation id="4835677468087803981">PIN кодын жасыру</translation>
 <translation id="4836504898754963407">Саусақ іздерін басқару</translation>
@@ -8547,6 +8552,7 @@
 <translation id="7625823789272218216">Сол жақтан жаңа қойынды ашу</translation>
 <translation id="762730429396410864">Веб-сайттарға хабарланатын орталық процессордың өнімділік деңгейін қолмен орнату</translation>
 <translation id="7627749368210392160">Сайттар бұл функцияны жергілікті желідегі басқа құрылғыларды пайдалану үшін қолдана алады.</translation>
+<translation id="7628068697012244394">Пікір жазу</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> дәрежесі</translation>
 <translation id="762917478230183172">Әрбір перне үшін әрекетті таңдаңыз</translation>
 <translation id="7629206210984165492">Бәсеңдетілген</translation>
@@ -8973,6 +8979,7 @@
 <translation id="7949038991703929816">Тарих жүктелмеді. Файлдарда жаңарту қызметінің жарамды журналдары бар екеніне көз жеткізіңіз.</translation>
 <translation id="7950629216186736592">Себеп: LBS тек http://, https:// және file:// URL мекенжайларына қолдау көрсетеді.</translation>
 <translation id="7950814699499457511">Қосылған • Бұл кеңейтім пайдаланушы деректерін қалай жинап, қолданатыны сияқты құпиялық шараларын жарияламаған.</translation>
+<translation id="7951159420392892566">Айналдыру түймелерін босату</translation>
 <translation id="795130320946928025">Виртуалдық картаны өшіру</translation>
 <translation id="7952708427581814389">Сайттар буфердегі мәтін мен кескіндерді көруге рұқсат сұрай алады.</translation>
 <translation id="7953236668995583915">Бұл сайтқа жаңартылған параметрлерді қолдану үшін осы бетті қайта жүктеңіз.</translation>

@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
 <translation id="1269129608791067105">သင့်မှတ်တမ်းကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="1280921956537356716">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်များ ဖွင့်ရန်</translation>
+<translation id="1287449971634955609">နောက်ဆက်တွဲများကို ဖယ်ရှားပြီး ၎င်းတို့ ဤစက်တွင် သိမ်းထားသည့် ဒေတာကို ဖျက်ရန်</translation>
 <translation id="1289129165308566697">အခြားစက်များတွင် သင့်မှတ်တမ်းကြည့်ခြင်း</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1298077576058087471">ဒေတာ ၆၀ ရာခိုင်နှုန်းအထိ ချွေတာပါ၊ ယနေ့သတင်းများကို ဖတ်ပါ</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">သင့် Google Account တွင် ဒေတာသိမ်းခြင်း</translation>
 <translation id="1414919006379339073">လက်ရှိဝင်းဒိုး ပိတ်ရန်</translation>
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
+<translation id="1426410128494586442">Yes</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1432581352905426595">ရှာဖွေမှုအင်ဂျင်များကို စီမံခန့်ခွဲရန်</translation>
 <translation id="1435593198351412143">PDF များကို အလိုအလျောက်ဖွင့်ခြင်း</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">အကြောင်းကြားချက်များစွာ ပို့သည့် ဝဘ်ဆိုက်များကို စစ်ဆေးနိုင်ပြီး နောက်ထပ်အကြောင်းကြားချက်များပို့ခြင်းမှ ၎င်းတို့ကိုရပ်နိုင်သည်</translation>
 <translation id="2386938421315164605">အကြောင်းအရာများ ဖျောက်ပြီး ပြန်ပြနိုင်သည်</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
+<translation id="2391579633712104609">၁၈၀°</translation>
 <translation id="2392369802118427583">စသုံးရန်</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း ရုပ်ဖျက်တဘ်ကို ရွေးထားသည်</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />၊ ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">ဒီစာမျက်နှာကို စာညှပ်ပေးရန်</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> ၏ စာမျက်နှာအားလုံး</translation>
 <translation id="3268048651973962414">ရှာဖွေမှုရလဒ်များ ကြည့်ရန် အပေါ်ဖိဆွဲပါ</translation>
+<translation id="3268205181992599708">အသံသုံးရန် မိုက်ဖွင့်ပါ</translation>
 <translation id="3269093882174072735">ပုံကူးတင်ရန်</translation>
 <translation id="3280562213547448728">အသံဖြင့် ရှာဖွေခြင်း</translation>
 <translation id="3282801380074962248">ကဏ္ဍကို ပိုပြပါ</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">အဆက်အသွယ်များသို့ ထည့်ရန်</translation>
 <translation id="3560831525486613327">တဘ်စာမျက်နှာ ‘အသစ်’ ဖွင့်ပါ</translation>
 <translation id="3563767357928833671">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြထားသည်</translation>
+<translation id="356407858591811361">ရုပ်ဖျက်ဝင်းဒိုးအသစ် ဖွင့်ခြင်း</translation>
 <translation id="3566639033325271639">ဆက်တင်များ အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="3568945271227339929">ကျိုးပေါက်ထားသည့် စကားဝှက်များ မရှိပါ</translation>
 <translation id="3575464060651642446">ဤစက်ရှိ စကားဝှက်များ စစ်ဆေးနေသည်…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ဤဝဘ်ဆိုက်တွင် သင်သုံးထားသည်</translation>
 <translation id="4214315110991671325">သင်သည် ကွတ်ကီးများကို ခွင့်ပြုပါက Chrome က ကြိုဖွင့်ခြင်းအတွက် ၎င်းတို့ကို သုံးနိုင်ပါသည်။</translation>
 <translation id="421517251707893998">‘ဤဖြတ်လမ်းလင့်ခ် ပင်ထိုးရန်’ ကို တို့ပါ</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">ဤစာမျက်နှာကို နားထောင်ရန်</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း ရုပ်ဖျက်တဘ် တစ်ခုထက်ပိုပြီး ရွေးထားသည်</translation>
 <translation id="4225895483398857530">ကိရိယာဘား ဖြတ်လမ်းလင့်ခ်</translation>
@@ -981,6 +987,7 @@
 <translation id="4961107849584082341">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ပါ</translation>
 <translation id="4964614743143953889">မလုံခြုံသော ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များအကြောင်း Chrome က သင့်ကို သတိပေးသည်</translation>
 <translation id="496607651705915226">သင့် Google Account တွင် စကားဝှက်အသစ် သိမ်းရန်နှင့် အသုံးပြုရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">နောက်ထပ်ရလဒ်များ မြင်ရရန် အခြားတစ်ခုခုကို ရှာကြည့်ပါ (သို့) Chrome မှတ်တမ်းအပြည့်အစုံကို ဖွင့်ပါ။</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
 <translation id="497983151715419057">အသုံးမပြုသော တဘ်နှင့် အုပ်စုများကို ဤနေရာတွင် ကြည့်ပါ</translation>
@@ -1053,6 +1060,7 @@
 <translation id="5267572070504076962">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်များရန်မှ အကာအကွယ် ရယူရန် ‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ကိုဖွင့်ပါ</translation>
 <translation id="5273031377282080577">သင့်စီမံခန့်ခွဲသူက ဤဆက်တင်ကို စီမံသည်။</translation>
 <translation id="5284295735376057059">မှတ်တမ်း သတ်မှတ်ချက်များ</translation>
+<translation id="5286907366254680517">တွေ့ရှိသည်</translation>
 <translation id="5290322819358431297">စကားဝှက်များကို အော်တိုဖြည့်ရန်</translation>
 <translation id="5292796745632149097">အောက်ပါသို့ ပို့ပါ</translation>
 <translation id="5301876394151419436">သင်သည် <ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ စင့်ခ်လုပ်ခြင်းကို ဆက်တင်များတွင် အချိန်မရွေး ရပ်နိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
@@ -1691,6 +1699,7 @@
 <translation id="7714077993070342304">Chrome မီနူး ဖွင့်ရန်</translation>
 <translation id="7733878270780732638">စက်တွင် နေရာမလောက်ပါ။</translation>
 <translation id="7740287852186792672">ရှာဖွေမှု ရလဒ်များ</translation>
+<translation id="7740996059027112821">ပုံမှန်</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="774876555279732384">အော်တိုဖြည့် ဝန်ဆောင်မှုများကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း စီမံနိုင်သည်။</translation>
 <translation id="7758884017823246335">ဝဘ်ဆိုက်ရှာဖွေမှုကို ထည့်ရန်</translation>

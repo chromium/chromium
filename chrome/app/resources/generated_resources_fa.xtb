@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{‏‫۱ نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}one{‏‫{BOOKMARK_COUNT} نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}other{‏‫{BOOKMARK_COUNT} نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}}</translation>
 <translation id="125220115284141797">پیش‌فرض</translation>
 <translation id="1252219782845132919">پنهان کردن گروه</translation>
+<translation id="1252597096488926946">برداشتن سنجاق دکمه‌های پیمایش</translation>
 <translation id="1252987234827889034">خطای نمایه رخ داد</translation>
 <translation id="1254034280040157728">گرند کنیون</translation>
 <translation id="1254593899333212300">اتصال اینترنتی مستقیم</translation>
@@ -985,6 +986,7 @@
 <translation id="1755601632425835748">اندازه نوشتار</translation>
 <translation id="1756963401828337401">انتخاب کردن صفحه برای ضبط کردن</translation>
 <translation id="17584710573359123">‏مشاهده در «نت‌بازار Chrome»</translation>
+<translation id="176013700366797492">‏برای کنترل <ph name="BEGIN_LINK1" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK1" /> یا مدیریت <ph name="BEGIN_LINK2" />روش‌های پرداخت<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />مجوزها<ph name="END_LINK3" /> مثل کارت‌های وفاداری و مدارک شناسایی، از «کیف پول Google» بازدید کنید.</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> به <ph name="REMAPPING_OPTION" /> بازنگاری شد.</translation>
 <translation id="1761845175367251960">حساب‌های <ph name="NAME" /></translation>
 <translation id="176272781006230109">پیشنهادهای خرید</translation>
@@ -1713,6 +1715,7 @@
 <translation id="2322193970951063277">سرصفحه‌ها و پانویس‌ها</translation>
 <translation id="2322622365472107569">زمان پایان <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏شبکه‌های Wi-Fi ذخیره‌شده</translation>
+<translation id="2323685460575935191">پنهان کردن «دکمه‌های پیمایش»</translation>
 <translation id="2325444234681128157">گذرواژه به خاطر سپرده شود</translation>
 <translation id="2326188115274135041">برای اینکه باز شدن خودکار قفل روشن شود، پین را تأیید کنید</translation>
 <translation id="2326583548923775947">‏این «حساب Google» نیست. مواردی که در Chrome ذخیره می‌کنید در دستگاه‌های دیگر دردسترس نخواهد بود.</translation>
@@ -1786,7 +1789,7 @@
 <translation id="237828693408258535">این صفحه ترجمه شود؟</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{ممکن است در آینده نزدیک دیگر از این افزونه پشتیبانی نشود}one{ممکن است در آینده نزدیک دیگر از این افزونه‌ها پشتیبانی نشود}other{ممکن است در آینده نزدیک دیگر از این افزونه‌ها پشتیبانی نشود}}</translation>
 <translation id="2378982052244864789">دایرکتوری برنامهٔ افزودنی را انتخاب کنید.</translation>
-<translation id="2379111564446699251">برای مرتب‌سازی مجدد دکمه‌ها در نوارابزار، آن‌ها را بکشید</translation>
+<translation id="2379111564446699251">برای بازآرایی دکمه‌ها در نوارابزار، آن‌ها را بکشید</translation>
 <translation id="2379281330731083556">چاپ با استفاده از گفتگوی سیستم... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">این کار ممکن است باعث شود شبکه تلفن همراهتان برای چند دقیقه قطع شود</translation>
 <translation id="2381499968174336913">پیش‌نمای زبانه هم‌رسانی‌شده</translation>
@@ -1969,6 +1972,7 @@
 <translation id="2508747373511408451">‏برنامه <ph name="APPLICATION_NAME" /> برای دردسترس بودن به Google Drive نیاز دارد.</translation>
 <translation id="2509495747794740764">مقیاس باید عددی بین ۱۰ تا ۲۰۰ باشد.</translation>
 <translation id="2509566264613697683">۸ برابر</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (انتخاب شده است)</translation>
 <translation id="2513904627589542105">خودآزمایی</translation>
 <translation id="251425554130284360">‏صفحه‌هایی را که بازدید کرده‌اید و جستجوهای پیشنهادی را در اینجا می‌بینید تا به شما کمک کند به‌راحتی به فعالیت اخیر خود برگردید.
@@ -5006,6 +5010,7 @@
 <translation id="4831226137013573603">صامت کردن میکروفون</translation>
 <translation id="483262387981411190">موقتاً متوقف کردن یا ازسر گرفتن کنترل چهره</translation>
 <translation id="4833683849865011483">۱ چاپگر از این سرور چاپ پیدا شد</translation>
+<translation id="4834388789911023644">نوشتن مرور</translation>
 <translation id="4835598628985424375">غنچه کردن لب‌ها با فشردن آن‌ها به هم</translation>
 <translation id="4835677468087803981">پنهان کردن پین</translation>
 <translation id="4836504898754963407">مدیریت اثر انگشت</translation>
@@ -8570,6 +8575,7 @@
 <translation id="7625823789272218216">زبانه جدید در سمت چپ</translation>
 <translation id="762730429396410864">تنظیم دستی سطح عملکرد واحد پردازش مرکزی گزارش‌شده به وب‌سایت‌ها</translation>
 <translation id="7627749368210392160">سایت‌ها می‌توانند از این ویژگی برای دسترسی به دستگاه‌های دیگر در شبکه محلی‌تان استفاده کنند</translation>
+<translation id="7628068697012244394">نوشتن مرور</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، درجه <ph name="GRADE" /></translation>
 <translation id="762917478230183172">کنشی برای هر کلید انتخاب کنید</translation>
 <translation id="7629206210984165492">تسکین‌یافته</translation>
@@ -8996,6 +9002,7 @@
 <translation id="7949038991703929816">سابقه بار نشد. مطمئن شوید فایل‌ها حاوی گزارش‌های به‌روزرسان معتبر باشند.</translation>
 <translation id="7950629216186736592">‏دلیل: LBS فقط از نشانی‌های وب http://‎،‏ https://‎، و file://‎ پشتیبانی می‌کند.</translation>
 <translation id="7950814699499457511">روشن • این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است.</translation>
+<translation id="7951159420392892566">برداشتن سنجاق دکمه‌های پیمایش</translation>
 <translation id="795130320946928025">خاموش کردن کارت مجازی</translation>
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
 <translation id="7953236668995583915">برای اعمال تنظیمات به‌روزشده در این سایت، این صفحه را مجدداً بار کنید</translation>

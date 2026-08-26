@@ -83,6 +83,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> uygulamasının artırılmış gerçekliği (AR) kullanması için <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kamerayı da açın.</translation>
 <translation id="1822318649925991542">Göz atma deneyiminizi özelleştirmek için konumu değiştirin</translation>
 <translation id="1848033246551405023">Sans Serif yazı tipi</translation>
+<translation id="1861244985839668297">Bu işlev etkinken siteler HID cihazları kullanmak için izin isteyebilir. Kapalıyken siteler HID cihazları kullanamaz.</translation>
 <translation id="1861262398884155592">Bu klasör boş</translation>
 <translation id="1881806992065048905">Yeni sekme sayfası görünümü alt sayfası</translation>
 <translation id="1887786770086287077">Konum erişimi bu cihaz için kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>

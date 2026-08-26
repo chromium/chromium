@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Колачиња, податоци за локација</translation>
 <translation id="1312721752506309252">Вклучена е „Подобрената заштита“</translation>
 <translation id="1321993286294231467">Грешка при зачувувањето на сликата.</translation>
+<translation id="1322683976135389755">Барање: Резимирај ја статијава, 1 од 3</translation>
 <translation id="1322735045095424339">Вашата организација бара режим „Инкогнито“</translation>
 <translation id="1323735185997015385">Избриши</translation>
 <translation id="132683371494960526">Допрете двапати за променување на изворна папка.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Допрете „Приватност и безбедност“</translation>
 <translation id="3259451381796379533">Сметкава нема да функционира со Gemini. Најавете се со друга сметка на Google.</translation>
 <translation id="3265736395246760288">Најавувајте се побрзо од кој било од синхронизираните уреди.</translation>
+<translation id="3268166994745151153">Ова значи дека ќе го изгубите тековниот напредок</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3272955648592358996">Вашите податоци ја подобруваат Google AI</translation>
 <translation id="3273510436356991673">Приспособете го почетниот екран</translation>
+<translation id="327455571215090823">Попаметно автоматско пополнување што се чува приватно</translation>
 <translation id="3277021493514034324">Адресата на сајтот е копирана</translation>
 <translation id="3280562213547448728">Гласовно пребарување</translation>
 <translation id="3289505634533552500">Гласовно пребарување</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред.</translation>
 <translation id="4007463141047732631">Изменете ја групата</translation>
 <translation id="4011489366247192265">Од</translation>
+<translation id="4014099645251211155">Прашувајте за што било на вашата страница со Gemini во Chrome</translation>
 <translation id="4017599800655151880">Сликичка</translation>
 <translation id="4018440314314549819">Автоматско пополнување зачувани лозинки</translation>
 <translation id="4021447724486050609">Ажурирајте го вашиот прелистувач</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Локација:</translation>
 <translation id="4517684186578051919">Податоци за уредот</translation>
 <translation id="4520798012560649652">Дознајте повеќе за режимот „Инкогнито“</translation>
+<translation id="4524737913322680818">Купувајте, планирајте и завршувајте повеќе нешта со Gemini во Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
 <translation id="4525629404718770519">Прикажувај прегледи на линковите</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Погрижете се лозинките да ви бидат безбедни, дознајте дали се компромитирани и добијте совет како да се заштитите себеси онлајн. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Вклучете споделување картички</translation>
 <translation id="4658335131052370646">Зачувај</translation>
+<translation id="465947902531722727">Смени го профилот</translation>
 <translation id="466307903888586355">Вашата организација го блокирала зачувувањето датотеки</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Вашата организација бара да прелистувате приватно. Групите картички не се синхронизираат во режимот „Инкогнито“.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Најавете се со сметката на Google за да ги добиете обележувачите, лозинките, историјата и другите поставки на сите ваши уреди.</translation>
 <translation id="4985921635659180565">Штом некоја датотека ќе се закаже за бришење, тоа не може да се откаже.</translation>
 <translation id="498624032394115435">Секој што го има линкот може да ги изменува сите картички.</translation>
+<translation id="4986428648020277392">Барање: Која ставка да ја купам? 2 од 3</translation>
+<translation id="498768198683310172">Започнете да го користите Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, управувана од вашата организација.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Боја на групата картички: <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5838430324585198889">Отклучете повеќе функции за вашиот iPad со апликациите на Google</translation>
 <translation id="583923961930319521">Користете ги лозинките на сите ваши уреди</translation>
+<translation id="5841763734702350465">Барање: Додај го ова во мојот календар, 3 од 3</translation>
 <translation id="5843013299019689749">Боја на заднината – црна</translation>
 <translation id="5844284118433003733">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="5854790677617711513">Постари од 30 дена</translation>
@@ -1782,6 +1791,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6775952316617222141">Користете ја Live со Gemini во Chrome</translation>
 <translation id="6779455296366983087">Податоци од прелистување ќе се избришат</translation>
 <translation id="6782531425936234573">Извези ги податоците</translation>
+<translation id="6789665473250283877">Отстрани <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Допрете „Додајте картичка во нова група“</translation>
 <translation id="6794476726485507147">Изберете датум и време за да добиете известување со потсетник да ја отворите страницава повторно</translation>
 <translation id="6797543908718012274">Вклучи Reading Mode</translation>
@@ -2153,6 +2163,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Потврдете дека сте вие за да се пополнуваат автоматски чувствителните податоци</translation>
 <translation id="8015826420689927262">Избриши го прилогот</translation>
+<translation id="8016869623424294549">Ќе го смените профилот</translation>
 <translation id="8017015647846870183">Од Google Password Manager, вклучувајќи лозинки и криптографски клучеви</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8023170444051056234">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>

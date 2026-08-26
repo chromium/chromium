@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
 <translation id="1822318649925991542">Personoi selauskokemusta vaihtamalla osoitepalkin paikkaa</translation>
 <translation id="1848033246551405023">Sans Serif ‑fontti</translation>
+<translation id="1861244985839668297">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää HID-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää HID-laitteita.</translation>
 <translation id="1861262398884155592">Tämä kansio on tyhjä</translation>
 <translation id="1881806992065048905">Uusi välilehti ‐sivun ulkoasun alapaneeli</translation>
 <translation id="1887786770086287077">Sijainti on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>

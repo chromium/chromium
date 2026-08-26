@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">دیگر برای این برنامه نپرسیدن</translation>
 <translation id="132301787627749051">جستجوی تصویر بریده‌دان</translation>
 <translation id="1323433172918577554">بیشتر نشان دادن</translation>
+<translation id="1326962902431997202">خط‌خورده</translation>
 <translation id="1330449323196174374">سمت چپ تاخوردگی دروازه‌ای</translation>
 <translation id="1330952240988133220">‏ذخیره کردن ‹شناسه جبران خطای تطبیق› در «کیف پول Google»</translation>
 <translation id="133173645041092770">بستن وب‌سایت</translation>
@@ -465,6 +466,7 @@
 <translation id="1757773103848038814">قلم تک‌فاصله</translation>
 <translation id="1757935267918149452">‏دکمه تغییر گذرواژه Google؛ برای تغییر گذرواژه «حساب Google»، آن را فعال کنید</translation>
 <translation id="1759776526873274358">‏تکمیل خودکار کدهای درستی‌سنجی‌ای که سایت‌ها برای بهبود امنیت شما استفاده می‌کنند. Chrome می‌تواند این کدها را از Gmail شما دریافت کند. <ph name="BEGIN_LINK" />درباره این ویژگی بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">‏برای کنترل <ph name="BEGIN_LINK1" />اولویت‌های حریم خصوصی و داده‌ها<ph name="END_LINK1" /> یا مدیریت <ph name="BEGIN_LINK2" />روش‌های پرداخت<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />مجوزها<ph name="END_LINK3" /> مثل کارت‌های وفاداری و مدارک شناسایی، از «کیف پول Google» بازدید کنید.</translation>
 <translation id="1763864636252898013">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل دستگاه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows Network Diagnostics را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
@@ -632,6 +634,7 @@
 <translation id="2090451897496479509">برای اطلاعات بیشتر با ارائه‌دهنده تماس بگیرید</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">صدا</translation>
+<translation id="2092361763640578821">اطلاعات بیشتر درباره</translation>
 <translation id="2093184051799735948">جستجو در <ph name="ENGINE_NAME" /> یا تایپ کردن نشانی وب</translation>
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
@@ -789,6 +792,7 @@
 <translation id="2321291402658100099">مدیریت اطلاعات</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{‫۱ پنجره}one{‫# پنجره}other{‫# پنجره}}</translation>
 <translation id="232390861414237658">‏تکمیل خودکار این کارت برای خریدهایی که در Chrome انجام می‌شود، وقتی برای استفاده با Google Pay ذخیره شده است</translation>
+<translation id="2325722389016720813">پیکان بالا یا پایین را برای تکمیل خودکار فشار دهید. برای تکمیل خودکار، تایپ کنید.</translation>
 <translation id="2326283484705860548">‏اکنون می‌توانید اطلاعات بیشتری را از «کیف پول Google» به‌طور خودکار تکمیل کنید</translation>
 <translation id="2326747055382936979">مدیریت «تکمیل خودکار بهبودیافته»</translation>
 <translation id="2328651992442742497">مجاز است (پیش‌فرض)</translation>
@@ -1543,6 +1547,7 @@
 <translation id="3642638418806704195">برنامه:</translation>
 <translation id="3647286794400715637">هر ورودی رشته نشانی وب باید بین ۱ تا ۲ نشانی وب داشته باشد.</translation>
 <translation id="3647400963805615193">‏دکمه «بستن نکته Chrome»، برای بستن، کلید «ورود» را فشار دهید، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">نظارت داشتن بر فعالیت</translation>
 <translation id="3648667207586409316">چه کارهایی می‌توانم برای کاهش استرس انجام دهم؟</translation>
 <translation id="3650584904733503804">ارزیابی موفق بود</translation>
 <translation id="3650594806107685466">‏برای کمک به حفظ ایمنی کارتتان، کد تأیید کارت (CVC) را از <ph name="SIDE_OF_CARD" /> وارد کنید</translation>
@@ -2005,6 +2010,7 @@
 <translation id="4377869186417956230">تغییر به همه کارت‌های وفاداری در این گزینه منو.</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4378221908737133050">بازبینه نظافت عمیق برای خانه من بسازید</translation>
+<translation id="4379357028567121852">از <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">می‌توانید از جایی که رها کرده‌اید ادامه دهید یا درحال حرکت گروه‌های زبانه جدید ایجاد کنید</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ازاین‌پس فایل‌هایتان را در فضای ذخیره‌سازی ابری ذخیره کنید</translation>
@@ -2174,6 +2180,7 @@
 <translation id="4711628883879888561">مشارکت کردن در گروه زبانه</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">معدل من را با وزن‌دهی به ساعات اعتباری، سطوح دوره، و مقادیر نمره محاسبه کنید</translation>
+<translation id="4717533164160330041">‏روشن کردن «ویژگی‌های هوشمند» در Gmail در ابتدا، برای استفاده از این ویژگی</translation>
 <translation id="471880041731876836">برای بازدید کردن از این سایت، مجوز لازم ندارید</translation>
 <translation id="4718897478554657123">۹۰۰ × ۶۰۰ میلی‌متر</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -2394,6 +2401,7 @@
 <translation id="5061227663725596739">منظورتان <ph name="LOOKALIKE_DOMAIN" /> بود؟</translation>
 <translation id="5066056036849835175">سابقه چاپ</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">‏ممکن است برخی از فعالیت‌های مرور شما برای جلوگیری از فقدان داده ها توسط سازمانتان نظارت شود؛ برای جزئیات بیشتر به <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> بروید</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />بررسی آدرس پروکسی<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">رول دهم</translation>
 <translation id="507130231501693183">صندوق پست ۴</translation>
@@ -2758,6 +2766,7 @@
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5660122698869360728">پوشه هوشمند جدیدی که به شما کمک می‌کند همه صفحه‌های خریدتان را در یک مکان ذخیره کنید، و به‌طور خودکار قیمت‌ها را پیگیری کنید، اطلاعات آماری قیمت را دریافت کنید، و کارهای دیگری انجام دهید.</translation>
 <translation id="5663955426505430495">سرپرست این دستگاه، افزونه‌هایی را برای عملکردهای اضافی نصب کرده است. افزونه‌ها به برخی از داده‌های شما دسترسی دارند.</translation>
+<translation id="5664075349639500330">اطلاعات بیشتر درباره مرور در حالت مجزا</translation>
 <translation id="5675650730144413517">این صفحه کار نمی‌کند</translation>
 <translation id="5675959228867414813">نمایش براساس تاریخ</translation>
 <translation id="567604591393105935">برگ زیرین تجارت به‌صورت نیمه باز شده است</translation>
@@ -2829,6 +2838,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
 <translation id="5794065675298686371">روشن کردن اعلان‌های پیگیری قیمت</translation>
+<translation id="5796050750059455142">‏روشن کردن «<ph name="BEGIN_LINK" />ویژگی‌های هوشمند در سایر محصولات Google<ph name="LINK_END" />»</translation>
 <translation id="5797984091151707075">توسط خط‌مشی سرپرست مسدود شده است</translation>
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5806871454498484178">پیمایش و بزرگ‌نمایی مسدود شده است</translation>
@@ -3136,6 +3146,7 @@
 <translation id="6329742260390895689">‏برای تکمیل خودکار اطلاعات، «استفاده از مجوزها در سراسر Google» را در تنظیمات «کیف پول» روشن کنید</translation>
 <translation id="6329815962353376655">&lt;سؤالی تایپ کنید&gt;</translation>
 <translation id="633348045801643466">نمایش گزینه‌های <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />بعداً پرداخت شود<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> هنگام تسویه‌حساب</translation>
+<translation id="6335364777769284858">‏«ویژگی‌های هوشمند» را در <ph name="BEGIN_LINK" />تنظیمات Gmail<ph name="LINK_END" /> روشن کنید</translation>
 <translation id="6336948221660696475">«واقعیت مجازی» مجاز نشد</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
 <translation id="633770708279464947">مقدار <ph name="SECURE_DNS_SALT" /> نامعتبر است و استفاده نخواهد شد.</translation>
@@ -3270,6 +3281,7 @@
 <translation id="6547208576736763147">دو سوراخ در چپ</translation>
 <translation id="6550245281449521513">قفل موشواره مجاز نیست</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />، جدید</translation>
+<translation id="6552244083450538912">فعالیت شما ممکن است برای موارد زیر قابل‌رؤیت باشد: وب‌سایت‌هایی که بازدید می‌کنید، کارفرما یا مدرسه‌تان، فراهم‌ساز خدمات اینترنتی شما</translation>
 <translation id="6552566579578780089">پرداخت</translation>
 <translation id="6553777254569586547">‫<ph name="SUGGESTION_TITLE" />‏. <ph name="SUGGESTION_TYPE" />. ‫<ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES_IN_GROUP" /> در گروه <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
@@ -3504,6 +3516,7 @@
 <translation id="6972867931824045907">‏برای استفاده از بریده‌دان، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="6973656660372572881">‏هم سرورهای پروکسی ثابت و هم آدرس اسکریپت pac. مشخص شده‌اند.</translation>
 <translation id="6973988895180423160">۵ × ۳٫۵ اینچ</translation>
+<translation id="6976229914347655621">‏افزونه‌های موردنیاز سازمانتان روشن باقی خواهد ماند؛ برای جزئیات بیشتر به <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> بروید</translation>
 <translation id="6978236010531171013">به‌هرحال هم‌رسانی شود</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">صامت (پیش‌فرض)</translation>
@@ -3670,6 +3683,7 @@
 <translation id="7269151392155523061">میان‌بر نباید با کلیدواژه جمع‌کننده جستجو که <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏فایل‌هایی که بارگیری می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="7275334191706090484">نشانک‌های مدیریت شده</translation>
+<translation id="7278933725460302617">اکنون در حالت «ایزوله‌شده» هستید</translation>
 <translation id="7282894295403887199">نمی‌توانید در «حالت ناشناس» از این صفحه بازدید کنید</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای تغییر گذرواژه «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="7286908876112207905">جای‌گذاری کردن این محتوا در این سایت مجاز نیست</translation>
@@ -3688,6 +3702,7 @@
 <translation id="7308436126008021607">همگام‌سازی پس‌زمینه</translation>
 <translation id="7310392214323165548">دستگاه به‌زودی بازراه‌اندازی خواهد شد</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
+<translation id="7311565174465466858">‏<ph name="TAB_KEY" /> برای پرسیدن از <ph name="AI_ENGINE_NAME" />، کلید Tab و سپس کلید Enter را فشار دهید</translation>
 <translation id="7313107491291103073">سازمانتان این سایت را پرچم‌گذاری کرده است، زیرا ممکن است یکی از خط‌مشی‌ها را نقض کند.</translation>
 <translation id="7315372670898739748">پیوند دادن انجام نشد، بعداً دوباره امتحان کنید</translation>
 <translation id="7316521168101843192">‏درحال ذخیره کردن فایل در Microsoft OneDrive</translation>
@@ -3842,6 +3857,7 @@
 <translation id="7554791636758816595">زبانه جدید</translation>
 <translation id="7556328470713619625">استفاده از گذرکلید</translation>
 <translation id="7559278538486662777">اندازه این برنامه را نمی‌توان تغییر داد.</translation>
+<translation id="7561202748196702434">مرور در حالت «مجزا»</translation>
 <translation id="7561784249784255101">لوح چندمنظوره دیجیتال</translation>
 <translation id="7564049878696755256">‏ممکن است دسترسی به حساب <ph name="ORG_NAME" /> را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="7567204685887185387">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن به صورت تقلبی صادر شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
@@ -4377,6 +4393,7 @@
 <translation id="8473626140772740486">۴۵۰ × ۳۰۰ میلی‌متر</translation>
 <translation id="8473863474539038330">نشانی‌ها و غیره</translation>
 <translation id="8474910779563686872">نمایش جزئیات برنامه‌نویس</translation>
+<translation id="84764251640219124">استفاده سایت‌ها از کوکی‌های طرف سوم مسدود شده است. اگر سایتی که به این کوکی‌ها متکی است کار نمی‌کند، می‌توانید <ph name="BEGIN_LINK" />به آن سایت اجازه دهید موقتاً به کوکی‌های طرف سوم دسترسی داشته باشد<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">منگنه در پایین سمت چپ</translation>
 <translation id="8483229036294884935">‏این نشانی از «حساب Google» شما (<ph name="ACCOUNT" />) حذف خواهد شد</translation>
 <translation id="8488350697529856933">اعمال برای</translation>
@@ -4443,6 +4460,7 @@
 <translation id="8619130384334725124">برنامه پیش‌فرض فعلی</translation>
 <translation id="8620276786115098679">پاکت کاکو ۷</translation>
 <translation id="8622864575115813231">درحال برقراری ارتباط با مؤسسه مالی شما…</translation>
+<translation id="8632584659860846053">با بستن تمامی پنجره‌های «مجزا»، سابقه مرور، کوکی‌ها و داده‌های سایت، حافظه نهان، و اطلاعات واردشده در فرم‌ها حذف خواهند شد</translation>
 <translation id="8634957317623797170">۸۶ × ۵۴ میلی‌متر</translation>
 <translation id="8637362707224133343">‏‫Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواستید بازدید کنید <ph name="BEGIN_LINK" />رمزگیری پیدا کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند که سایت‌های دیگری هستند تا شما را فریب دهند.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">‏برای هم‌رسانی زبانه‌ها و مشارکت کردن با دیگران، باید بتوانید به سیستم Chrome وارد شوید</translation>

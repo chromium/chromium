@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">คุกกี้ ข้อมูลเว็บไซต์</translation>
 <translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1321993286294231467">เกิดข้อผิดพลาดในการบันทึกรูปภาพ</translation>
+<translation id="1322683976135389755">พรอมต์: สรุปบทความนี้, 1 จาก 3</translation>
 <translation id="1322735045095424339">องค์กรกำหนดให้ใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="1323735185997015385">ลบ</translation>
 <translation id="132683371494960526">แตะ 2 ครั้งเพื่อเปลี่ยนโฟลเดอร์ระดับบนสุด</translation>
@@ -699,6 +700,7 @@
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3272955648592358996">ข้อมูลของคุณจะปรับปรุง Google AI</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
+<translation id="327455571215090823">การป้อนข้อความอัตโนมัติที่ชาญฉลาดยิ่งขึ้นและเป็นส่วนตัว</translation>
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="3280562213547448728">ค้นหาด้วยเสียง</translation>
 <translation id="3289505634533552500">ค้นหาด้วยเสียง</translation>
@@ -912,6 +914,7 @@
 <translation id="4004204301268239848">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="4007463141047732631">แก้ไขกลุ่ม</translation>
 <translation id="4011489366247192265">จาก</translation>
+<translation id="4014099645251211155">ถามเกี่ยวกับสิ่งต่างๆ บนหน้าเว็บด้วย Gemini ใน Chrome</translation>
 <translation id="4017599800655151880">ภาพขนาดย่อ</translation>
 <translation id="4018440314314549819">ป้อนรหัสผ่านที่บันทึกไว้โดยอัตโนมัติ</translation>
 <translation id="4021447724486050609">อัปเดตเบราว์เซอร์ของคุณ</translation>
@@ -1054,6 +1057,7 @@
 <translation id="4509345063551561634">สถานที่ตั้ง:</translation>
 <translation id="4517684186578051919">ข้อมูลอุปกรณ์</translation>
 <translation id="4520798012560649652">ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดไม่ระบุตัวตน</translation>
+<translation id="4524737913322680818">เลือกซื้อ วางแผน และทำสิ่งต่างๆ ได้มากขึ้นด้วย Gemini ใน Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{บุ๊กมาร์ก {count} รายการ}other{บุ๊กมาร์ก {count} รายการ}}</translation>
 <translation id="4525629404718770519">แสดงตัวอย่างลิงก์</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
@@ -1210,6 +1214,7 @@
 <translation id="4979397965658815378">ลงชื่อเข้าใช้บัญชี Google เพื่อรับบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
+<translation id="4986428648020277392">พรอมต์: ฉันควรซื้ออันไหนดี 2 จาก 3</translation>
 <translation id="498768198683310172">เริ่มใช้งาน Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" /> <ph name="AI_TIER" /></translation>
@@ -1476,6 +1481,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5838430324585198889">ปลดล็อกฟีเจอร์เพิ่มเติมสำหรับ iPad ด้วยแอป Google</translation>
 <translation id="583923961930319521">ใช้รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="5841763734702350465">พรอมต์: เพิ่มรายการนี้ลงในปฏิทินของฉัน, 3 จาก 3</translation>
 <translation id="5843013299019689749">สีพื้นหลังสีดำ</translation>
 <translation id="5844284118433003733">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="5854790677617711513">เกิน 30 วัน</translation>
@@ -1785,6 +1791,7 @@
 <translation id="6775952316617222141">ใช้ฟีเจอร์ Live กับ Gemini ใน Chrome</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="6782531425936234573">ส่งออกข้อมูล</translation>
+<translation id="6789665473250283877">นำ <ph name="TOOL_NAME" /> ออก</translation>
 <translation id="6791425686608802741">แตะ "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
 <translation id="6794476726485507147">เลือกวันที่และเวลาที่จะรับการแจ้งเตือนเกี่ยวกับการช่วยเตือนให้กลับมาดูหน้านี้</translation>
 <translation id="6797543908718012274">เปิดโหมดการอ่าน</translation>

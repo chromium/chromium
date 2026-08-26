@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">Monospace տառատեսակ</translation>
 <translation id="1757935267918149452">«Փոխել Google-ի գաղտնաբառը» կոճակ․ ակտիվացրեք՝ Google հաշվի գաղտնաբառը փոխելու համար</translation>
 <translation id="1759776526873274358">Ավտոմատ լրացնել հաստատման կոդերը, որոնք կայքերն օգտագործում են՝ ձեր անվտանգությունը բարելավելու համար։ Chrome-ը կարող է վերցնել այս կոդերը ձեր Gmail-ից։ <ph name="BEGIN_LINK" />Իմանալ ավելին այս գործառույթի մասին<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Այցելեք Google Wallet՝ <ph name="BEGIN_LINK1" />տվյալների և գաղտնիության կարգավորումները<ph name="END_LINK1" /> ստուգելու կամ <ph name="BEGIN_LINK2" />վճարման եղանակները<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />անցաքարտերը<ph name="END_LINK3" />, օրինակ՝ մշտական հաճախորդի քարտերը և անձը հաստատող փաստաթղթերը, կառավարելու համար</translation>
 <translation id="1763864636252898013">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Ձեր սարքի օպերացիոն համակարգը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Գործարկեք Windows-ի ցանցի ախտորոշումը<ph name="END_LINK" />:</translation>
 <translation id="1777422078676229054">Ֆոտոթուղթ (արխիվային)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">Կառավարել տեղեկատվությունը</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 պատուհան}one{# պատուհան}other{# պատուհան}}</translation>
 <translation id="232390861414237658">Երբ պահեք այս քարտը ձեր սարքում, քարտի տվյալներն ավտոմատ կլրացվեն, երբ Google Pay-ի միջոցով գնումներ կատարեք Chrome-ում</translation>
+<translation id="2325722389016720813">Ինքնալրացման համար սեղմեք վերև կամ ներքև սլաքը։ Սկսեք տեքստ մուտքագրել ինքնալրացման հուշումներ ստանալու համար։</translation>
 <translation id="2326283484705860548">Այժմ կարող եք ավտոմատ լրացնել ձեր տեղեկությունները Google Wallet-ից</translation>
 <translation id="2326747055382936979">Կառավարել բարելավված ինքնալրացումը</translation>
 <translation id="2328651992442742497">Թույլատրված է (կանխադրված)</translation>
@@ -2171,6 +2173,7 @@
 <translation id="4711628883879888561">Համատեղ աշխատեք ներդիրների խմբի վրա</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Հաշվարկիր իմ GPA գնահատականը՝ հաշվի առնելով կրեդիտային ժամերը, դասընթացների մակարդակները և ստացած առավելագույն միավորները</translation>
+<translation id="4717533164160330041">Այս գործառույթն օգտագործելու համար նախ միացրեք խելացի գործառույթները Gmail-ում</translation>
 <translation id="471880041731876836">Դուք այս կայք այցելելու թույլտվություն չունեք</translation>
 <translation id="4718897478554657123">600 x 900 մմ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Գործարկել Windows-ի ցանցի ախտորոշումը<ph name="END_LINK" /></translation>
@@ -2827,6 +2830,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
 <translation id="5794065675298686371">Միացրեք գների հետագծման ծանուցումները</translation>
+<translation id="5796050750059455142">Միացրեք <ph name="BEGIN_LINK" />Խելացի գործառույթներ Google-ի այլ պրոդուկտներում<ph name="LINK_END" /> կարգավորումը</translation>
 <translation id="5797984091151707075">Արգելափակված է ադմինիստրատորի սահմանած կանոնների հիման վրա</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5806871454498484178">Ոլորումով մասշտաբի փոփոխումն արգելափակված է</translation>
@@ -3134,6 +3138,7 @@
 <translation id="6329742260390895689">Ձեր տեղեկություններն ավտոմատ լրացնելու համար Wallet-ի կարգավորումներում միացրեք «Օգտագործել անցաքարտերը Google-ում» կարգավորումը</translation>
 <translation id="6329815962353376655">&lt;Մուտքագրեք հարց&gt;</translation>
 <translation id="633348045801643466">Վճարելիս ցույց տալ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ապառիկ գնման<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> տարբերակները</translation>
+<translation id="6335364777769284858">Միացրեք «Խելացի գործառույթներ» պարամետրը <ph name="BEGIN_LINK" />Gmail-ի կարգավորումներում<ph name="LINK_END" /></translation>
 <translation id="6336948221660696475">VR-ի օգտագործման թույլտվությունը մերժվել է</translation>
 <translation id="6337534724793800597">Զտել կանոններն ըստ անվան</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը անվավեր է և չի կարող օգտագործվել։</translation>

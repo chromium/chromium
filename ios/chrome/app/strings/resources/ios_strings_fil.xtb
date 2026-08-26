@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies, data ng site</translation>
 <translation id="1312721752506309252">Naka-on ang pinaigting na proteksyon</translation>
 <translation id="1321993286294231467">Nagka-error sa pag-save ng larawan.</translation>
+<translation id="1322683976135389755">Prompt: Ibuod ang artikulong ito, 1 sa 3</translation>
 <translation id="1322735045095424339">Ipinag-aatas ng iyong organisasyon na mag-browse sa Incognito mode</translation>
 <translation id="1323735185997015385">I-delete</translation>
 <translation id="132683371494960526">I-double tap upang baguhin ang parent folder.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">I-tap ang "Privacy at Seguridad"</translation>
 <translation id="3259451381796379533">Hindi gagana ang account na ito sa Gemini. Mag-sign in gamit ang ibang Google Account.</translation>
 <translation id="3265736395246760288">Mas mabilis na mag-sign in mula sa alinman sa iyong mga naka-sync na device.</translation>
+<translation id="3268166994745151153">Ibig sabihin, mawawala ang kasalukuyan mong progress</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3272955648592358996">Pinapahusay ng iyong data ang Google AI</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
+<translation id="327455571215090823">Mas smart na autofill, pinapanatiling pribado</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
 <translation id="3280562213547448728">Paghahanap gamit ang boses</translation>
 <translation id="3289505634533552500">Voice Search</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Sine-save ang mga password sa iyong Google Account para magamit mo ang mga ito sa anumang device.</translation>
 <translation id="4007463141047732631">I-edit ang Grupo</translation>
 <translation id="4011489366247192265">Mula</translation>
+<translation id="4014099645251211155">Magtanong tungkol sa kahit ano sa iyong page gamit ang Gemini sa Chrome</translation>
 <translation id="4017599800655151880">Thumbnail</translation>
 <translation id="4018440314314549819">I-autofill ang Mga Naka-save na Password</translation>
 <translation id="4021447724486050609">I-update ang iyong Browser</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Lokasyon:</translation>
 <translation id="4517684186578051919">Impormasyon ng Device</translation>
 <translation id="4520798012560649652">Matuto pa tungkol sa Incognito mode</translation>
+<translation id="4524737913322680818">Mamili, magplano, at makagawa nang higit pa gamit ang Gemini sa Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}one{{count} bookmark}other{{count} na bookmark}}</translation>
 <translation id="4525629404718770519">Ipakita ang mga preview ng link</translation>
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Tiyaking ligtas ang iyong mga password, alamin kung nakompromiso ang mga ito, at makakuha ng payo para matulungang protektahan ang sarili mo online. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">I-on ang pag-share ng tab</translation>
 <translation id="4658335131052370646">I-save</translation>
+<translation id="465947902531722727">Lumipat ng Profile</translation>
 <translation id="466307903888586355">Na-block ng iyong organisasyon ang pag-save ng mga file</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Nire-require sa iyo ng organisasyon mo na mag-browse nang pribado. Hindi naka-sync sa Incognito mode ang mga grupo ng tab.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Mag-sign in gamit ang Google Account mo para makuha ang iyong mga bookmark, password, history at iba pang mga setting sa lahat ng device mo</translation>
 <translation id="4985921635659180565">Kapag naiskedyul nang i-delete ang isang file, hindi na ito makakansela.</translation>
 <translation id="498624032394115435">Mae-edit ng sinumang may link ang lahat ng tab.</translation>
+<translation id="4986428648020277392">Prompt: Alin ang dapat kong bilhin? 2 sa 3</translation>
+<translation id="498768198683310172">Simulang gamitin ang Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kulay <ph name="COLOR" /> na grupo ng tab</translation>
@@ -1473,6 +1481,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5838430324585198889">Mag-unlock ng higit pang feature para sa iyong iPad sa pamamagitan ng mga Google app</translation>
 <translation id="583923961930319521">Gamitin ang mga password sa lahat ng iyong device</translation>
+<translation id="5841763734702350465">Prompt: Idagdag ito sa aking kalendaryo, 3 sa 3</translation>
 <translation id="5843013299019689749">Itim na kulay ng background</translation>
 <translation id="5844284118433003733">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
@@ -1782,6 +1791,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6775952316617222141">Mag-live gamit ang Gemini sa Chrome</translation>
 <translation id="6779455296366983087">Ide-delete ang iyong data mula sa pag-browse</translation>
 <translation id="6782531425936234573">Mag-export ng data</translation>
+<translation id="6789665473250283877">Alisin ang <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">I-tap ang "Idagdag ang Tab sa Bagong Grupo"</translation>
 <translation id="6794476726485507147">Pumili ng petsa at oras para makatanggap ng notification ng paalalang bisitahin ulit ang page na ito</translation>
 <translation id="6797543908718012274">I-on ang Reading Mode</translation>
@@ -2153,6 +2163,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">I-verify na ikaw ito para mag-autofill ng sensitibong impormasyon</translation>
 <translation id="8015826420689927262">I-delete ang attachment</translation>
+<translation id="8016869623424294549">Lilipat ka ng profile</translation>
 <translation id="8017015647846870183">Mula sa Google Password Manager, kabilang ang mga password at passkey</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8023170444051056234">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />," at ide-delete ito sa lahat ng device mo</translation>

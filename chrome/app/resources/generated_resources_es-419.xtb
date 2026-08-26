@@ -354,6 +354,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 favorito y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}other{{BOOKMARK_COUNT} favoritos y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google. Esto también borrará cualquier duplicado.}}</translation>
 <translation id="125220115284141797">Predeterminado</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
+<translation id="1252597096488926946">Dejar de fijar los botones de desplazamiento</translation>
 <translation id="1252987234827889034">Se produjo un error en el perfil</translation>
 <translation id="1254034280040157728">Gran Cañón</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -976,6 +977,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1756963401828337401">Elige una pantalla para capturar</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="176013700366797492">Visita la Billetera de Google para controlar las <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o administrar las <ph name="BEGIN_LINK2" />formas de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" />, como las tarjetas de lealtad y los documentos de identidad</translation>
 <translation id="1761402971842586829">Se reasignó <ph name="BUTTON_NAME" /> a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugerencias de compras</translation>
@@ -1701,6 +1703,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2322193970951063277">Encabezados y pies de página</translation>
 <translation id="2322622365472107569">Hora de finalización <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
+<translation id="2323685460575935191">Ocultar botones de desplazamiento</translation>
 <translation id="2325444234681128157">Recordar contraseña</translation>
 <translation id="2326188115274135041">Confirma el PIN para activar el desbloqueo automático</translation>
 <translation id="2326583548923775947">Esta no es una Cuenta de Google. Los elementos que guardes en Chrome no estarán disponibles en otros dispositivos.</translation>
@@ -1957,6 +1960,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2508747373511408451">La app <ph name="APPLICATION_NAME" /> requiere que Google Drive esté disponible.</translation>
 <translation id="2509495747794740764">El valor de la escala debe ser un número entre 10 y 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
 <translation id="2513904627589542105">Autoevaluación</translation>
 <translation id="251425554130284360">Estás viendo páginas que visitaste y búsquedas sugeridas para ayudarte a volver fácilmente a tu actividad más reciente.
@@ -4994,6 +4998,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4831226137013573603">micrófono silenciado</translation>
 <translation id="483262387981411190">Pausar o reanudar el control facial</translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
+<translation id="4834388789911023644">Escribir una opinión</translation>
 <translation id="4835598628985424375">Apretar los labios y fruncirlos</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Administrar huellas dactilares</translation>
@@ -8556,6 +8561,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="762730429396410864">Configura manualmente el nivel de rendimiento de la CPU que se informa a los sitios web</translation>
 <translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
+<translation id="7628068697012244394">Escribir una opinión</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -8982,6 +8988,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7949038991703929816">No se pudo cargar el historial. Asegúrate de que los archivos contengan registros de actualización válidos.</translation>
 <translation id="7950629216186736592">Motivo: LBS solo admite URLs con http://, https:// y file://.</translation>
 <translation id="7950814699499457511">Activada • Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos</translation>
+<translation id="7951159420392892566">Dejar de fijar los botones de desplazamiento</translation>
 <translation id="795130320946928025">Desactivar la tarjeta virtual</translation>
 <translation id="7952708427581814389">Permitir que los sitios soliciten permiso para ver imágenes y texto del portapapeles</translation>
 <translation id="7953236668995583915">Vuelve a cargar esta página para aplicar la configuración actualizada en este sitio</translation>

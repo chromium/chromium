@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1269129608791067105">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="1280921956537356716">팁 알림 사용 설정</translation>
+<translation id="1287449971634955609">확장 프로그램을 삭제하고 해당 확장 프로그램에서 이 기기에 저장한 데이터 삭제</translation>
 <translation id="1289129165308566697">다른 기기에서의 방문 기록 보기</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1298077576058087471">데이터 최대 60% 절약 및 오늘의 뉴스 읽기</translation>
@@ -115,6 +116,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1413446866325418126">Google 계정에 데이터 저장</translation>
 <translation id="1414919006379339073">현재 창을 닫습니다.</translation>
 <translation id="1416550906796893042">애플리케이션 버전</translation>
+<translation id="1426410128494586442">예</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1435593198351412143">자동으로 PDF 열기</translation>
@@ -342,6 +344,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2385605401818128172">알림을 많이 보내는 사이트를 검토하고, 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, 선택된 PIP 모드 시크릿 탭</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, 녹화 중인 시크릿 탭</translation>
@@ -627,6 +630,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3557336313807607643">주소록에 추가</translation>
 <translation id="3560831525486613327">새 탭 페이지를 엽니다.</translation>
 <translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
+<translation id="356407858591811361">새 시크릿 창 열기</translation>
 <translation id="3566639033325271639">설정 업데이트</translation>
 <translation id="3568945271227339929">유출된 비밀번호 없음</translation>
 <translation id="3575464060651642446">이 기기의 비밀번호를 확인하는 중…</translation>
@@ -786,6 +790,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 이 사이트에서 사용</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="421517251707893998">이 바로가기 고정을 탭합니다.</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, 선택되고 고정된 PIP 모드 시크릿 탭</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
@@ -982,6 +987,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
 <translation id="4964614743143953889">안전하지 않은 사이트 및 다운로드에 관해 Chrome에서 경고를 표시합니다</translation>
 <translation id="496607651705915226">Google 계정에서 새 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">다른 검색어로 검색하거나 전체 Chrome 방문 기록을 열어 더 많은 검색결과를 확인하세요.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
 <translation id="497983151715419057">여기에서 비활성 탭 및 그룹을 검토하세요.</translation>
@@ -1054,6 +1060,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
 <translation id="5273031377282080577">관리자가 이 설정을 관리합니다.</translation>
 <translation id="5284295735376057059">문서 속성</translation>
+<translation id="5286907366254680517">감지됨</translation>
 <translation id="5290322819358431297">비밀번호 자동 완성</translation>
 <translation id="5292796745632149097">전송할 기기</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
@@ -1386,7 +1393,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="6594347733515723558">정렬 및 보기 옵션</translation>
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
-<translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
+<translation id="6602173570135186741">자동 완성 및 암호</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
@@ -1693,6 +1700,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7714077993070342304">Chrome 메뉴 열기</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>
 <translation id="7740287852186792672">검색결과</translation>
+<translation id="7740996059027112821">표준</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, 선택되고 공유 중인 시크릿 탭</translation>
 <translation id="774876555279732384">자동 완성 서비스는 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 관리할 수 있습니다.</translation>
 <translation id="7758884017823246335">사이트 검색 추가</translation>

@@ -354,6 +354,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}other{{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
 <translation id="125220115284141797">Default</translation>
 <translation id="1252219782845132919">Hide group</translation>
+<translation id="1252597096488926946">Unpin scroll buttons</translation>
 <translation id="1252987234827889034">Profile error occurred</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
@@ -985,6 +986,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1755601632425835748">Text size</translation>
 <translation id="1756963401828337401">Choose a screen to capture</translation>
 <translation id="17584710573359123">View in Chrome Web Store</translation>
+<translation id="176013700366797492">Visit Google Wallet to control <ph name="BEGIN_LINK1" />data and privacy preferences<ph name="END_LINK1" /> or manage <ph name="BEGIN_LINK2" />payment methods<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" /> like loyalty cards and IDs</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remapped to <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />'s accounts</translation>
 <translation id="176272781006230109">shopping suggestions</translation>
@@ -1714,6 +1716,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2322193970951063277">Headers and footers</translation>
 <translation id="2322622365472107569">End time <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
+<translation id="2323685460575935191">Hide scroll buttons</translation>
 <translation id="2325444234681128157">Remember password</translation>
 <translation id="2326188115274135041">Confirm PIN to turn on automatic unlock</translation>
 <translation id="2326583548923775947">This isn't a Google Account. Items that you save to Chrome won't be available on other devices.</translation>
@@ -1970,6 +1973,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2508747373511408451">The application <ph name="APPLICATION_NAME" /> requires Google Drive to be available.</translation>
 <translation id="2509495747794740764">Scale amount must be a number between 10 and 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selected)</translation>
 <translation id="2513904627589542105">Self Test</translation>
 <translation id="251425554130284360">You’re seeing pages you've visited and suggested searches to help you easily get back to your most recent activity.
@@ -5007,6 +5011,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4831226137013573603">Microphone mute</translation>
 <translation id="483262387981411190">Pause or resume face control</translation>
 <translation id="4833683849865011483">Found one printer from the print server</translation>
+<translation id="4834388789911023644">Write a review</translation>
 <translation id="4835598628985424375">Pucker by squeezing lips together</translation>
 <translation id="4835677468087803981">Hide PIN</translation>
 <translation id="4836504898754963407">Manage fingerprints</translation>
@@ -8569,6 +8574,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7625823789272218216">New Tab to the Left</translation>
 <translation id="762730429396410864">Manually set the CPU performance tier reported to websites</translation>
 <translation id="7627749368210392160">Sites can use this feature to access other devices on your local network</translation>
+<translation id="7628068697012244394">Write a review</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grade <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Select an action for each key</translation>
 <translation id="7629206210984165492">Subdued</translation>
@@ -8995,6 +9001,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7949038991703929816">Failed to load history. Ensure that files contain valid updater logs.</translation>
 <translation id="7950629216186736592">Reason: LBS only supports http://, https:// and file:// URLs.</translation>
 <translation id="7950814699499457511">On • This extension hasn't published privacy practices, such as how it collects and uses data</translation>
+<translation id="7951159420392892566">Unpin scroll buttons</translation>
 <translation id="795130320946928025">Turn off virtual card</translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
 <translation id="7953236668995583915">Reload this page to apply your updated settings on this site</translation>

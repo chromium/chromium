@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">कुकीज, साइट डेटा</translation>
 <translation id="1312721752506309252">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="1321993286294231467">इमेज सेव्ह करताना एरर आली.</translation>
+<translation id="1322683976135389755">प्रॉम्प्ट: या लेखाचा सारांश दे, ३ पैकी १</translation>
 <translation id="1322735045095424339">तुमच्या संस्थेनुसार गुप्त मोड वापरणे आवश्यक आहे</translation>
 <translation id="1323735185997015385">हटवा</translation>
 <translation id="132683371494960526">मुख्य फोल्डर बदलण्यासाठी दोनदा टॅप करा.</translation>
@@ -699,6 +700,7 @@
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3272955648592358996">तुमच्या डेटामुळे Google AI मध्ये सुधारणा होते</translation>
 <translation id="3273510436356991673">तुमची होम स्क्रीन कस्टमाइझ करा</translation>
+<translation id="327455571215090823">अधिक स्मार्ट ऑटोफिल, खाजगी ठेवले</translation>
 <translation id="3277021493514034324">साइट अ‍ॅड्रेस कॉपी केला</translation>
 <translation id="3280562213547448728">व्हॉइस शोध</translation>
 <translation id="3289505634533552500">व्हॉइस शोध</translation>
@@ -912,6 +914,7 @@
 <translation id="4004204301268239848">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावेत म्हणून तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात.</translation>
 <translation id="4007463141047732631">गट संपादित करा</translation>
 <translation id="4011489366247192265">यामधून</translation>
+<translation id="4014099645251211155">Chrome मधील Gemini वापरून तुमच्या पेजवरील कोणत्याही गोष्टीबद्दल विचारा</translation>
 <translation id="4017599800655151880">थंबनेल</translation>
 <translation id="4018440314314549819">सेव्ह केलेले पासवर्ड ऑटोफिल करा</translation>
 <translation id="4021447724486050609">तुमचा ब्राउझर अपडेट करा</translation>
@@ -1054,6 +1057,7 @@
 <translation id="4509345063551561634">स्थान:</translation>
 <translation id="4517684186578051919">डिव्हाइसची माहिती</translation>
 <translation id="4520798012560649652">गुप्त मोडबद्दल अधिक जाणून घ्‍या</translation>
+<translation id="4524737913322680818">Chrome मधील Gemini सह खरेदी करा, योजना आखा आणि आणखी बऱ्याच गोष्टी करा</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} बुकमार्क}other{{count} बुकमार्क}}</translation>
 <translation id="4525629404718770519">लिंकची पूर्वावलोकने दाखवा</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
@@ -1210,6 +1214,7 @@
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="4985921635659180565">फाइल हटवली जाण्यासाठी शेड्यूल केल्यानंतर, ती रद्द केली जाऊ शकत नाही.</translation>
 <translation id="498624032394115435">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते.</translation>
+<translation id="4986428648020277392">प्रॉम्प्ट: मी कोणते खरेदी करावे? ३ पैकी २</translation>
 <translation id="498768198683310172">Gemini वापरण्यास सुरुवात करा</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
@@ -1476,6 +1481,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5838430324585198889">Google अ‍ॅप्स वापरून तुमच्या iPad साठी आणखी वैशिष्ट्ये अनलॉक करा</translation>
 <translation id="583923961930319521">तुमच्या सर्व डिव्हाइसवर पासवर्ड वापरा</translation>
+<translation id="5841763734702350465">प्रॉम्प्ट: हे माझ्या कॅलेंडरमध्ये जोड, ३ पैकी ३</translation>
 <translation id="5843013299019689749">बॅकग्राउंडचा काळा रंग</translation>
 <translation id="5844284118433003733">तुम्ही साइन इन केले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करण्यासाठी हा डेटा तुमच्या Google खाते शी लिंक केला जातो, उदाहरणार्थ सुरक्षेशी संबंधित घटनेनंतर Gmail मध्ये संरक्षण वाढवणे.</translation>
 <translation id="5854790677617711513">30 दिवसांपेक्षा जुना</translation>
@@ -1786,6 +1792,7 @@
 <translation id="6775952316617222141">Chrome मधील Gemini सह लाइव्ह जा</translation>
 <translation id="6779455296366983087">तुमचा ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="6782531425936234573">डेटा एक्सपोर्ट करा</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> काढून टाका</translation>
 <translation id="6791425686608802741">"नवीन टॅब गटामध्ये जोडा" वर टॅप करा</translation>
 <translation id="6794476726485507147">या पेजला पुन्हा भेट देण्यासाठी रिमाइंडर नोटिफिकेशन मिळविण्याकरिता तारीख आणि वेळ निवडा.</translation>
 <translation id="6797543908718012274">वाचन मोड सुरू करा</translation>

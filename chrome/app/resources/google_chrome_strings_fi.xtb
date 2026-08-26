@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome suosittelee selainta hidastavan välilehden keskeyttämistä}other{Chrome suosittelee selainta hidastavien välilehtien keskeyttämistä}}</translation>
 <translation id="1832046143430087831">Nopeuttaa sivustoja Chromen V8-moottorilla, mutta heikentää Chromen suojaa hyökkäyksiä vastaan. Tämä asetus on poissa päältä.</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
+<translation id="1842869163383855194">Haku Chromessa on helposti käytettävissä laitteella, vaikka Chrome olisi pienennettynä.</translation>
 <translation id="1843347690926158494">Hae tältä välilehdeltä Google Lensilla</translation>
 <translation id="1849248141818021764">Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, sinun on <ph name="BEGIN_LINK" />poistettava tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Jatka selaamista missä tahansa Chrome-sovelluksella</translation>
@@ -325,6 +326,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4173512894976930765">Sivustot toimivat todennäköisesti odotetulla tavalla. Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chrome-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromeen.</translation>
 <translation id="4175922240926474352">Chrome on estänyt tämän latauksen, koska sivusto ei käytä suojattua yhteyttä ja tiedostoa on ehkä peukaloitu</translation>
 <translation id="4191857738314598978">{0,plural, =1{Käynnistä Chrome uudelleen vuorokauden kuluessa}other{Käynnistä Chrome uudelleen # vuorokauden kuluessa}}</translation>
+<translation id="4222394563269716113">Avaa Haku Chromessa pikanäppäinyhdistelmällä.</translation>
 <translation id="4222932583846282852">Peruutetaan…</translation>
 <translation id="4224210481850767180">Asennus on peruutettu.</translation>
 <translation id="4242034826641750751">Chrome tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
@@ -350,6 +352,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="4434353761996769206">Asennusohjelman virhe: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Jaa dokumentti Gemini in Chromelle, niin saat nopean yleiskatsauksen ja voit esittää jatkokysymyksiä</translation>
+<translation id="4447327682081576371">Näytä Haku Chromessa Macin valikkopalkissa ja laita pikanäppäinyhdistelmä päälle</translation>
 <translation id="4450664632294415862">Chrome – Kirjautuminen verkkoon – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Toinen Google Chrome ‑prosessi on jo käynnissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4493028449971051158">Käynnistysvirhe: Suorita asennusohjelma järjestelmänvalvojana.</translation>
@@ -435,6 +438,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5402307365844630024">Gemini in Chrome Beta päälle/pois</translation>
 <translation id="541844421954567481">Chrome-sovelluksella voit käyttää esimerkiksi salasanoja ja välilehtiä missä tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
+<translation id="545114101312117217">Helppo pääsy pikanäppäimiin Haku Chromessa -ominaisuudesta</translation>
 <translation id="5465210843490471889">Valitse Chrome-profiili, jota haluat käyttää <ph name="START_GLIC_STYLING" />Geminin<ph name="END_GLIC_STYLING" /> kanssa</translation>
 <translation id="547202872422499512">Chrome käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="5486346529181556467">Auta parantamaan kaikkien verkkoturvallisuutta ilmoittamalla sivustosta, jonka uskot olevan haitallinen. Lue lisää <ph name="BEGIN_LINK" />Googlen vaarallisia sivustoja koskevasta käytännöstä<ph name="END_LINK" />.</translation>
@@ -720,6 +724,8 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8074398340364918139">Etsi tiettyä Chromen ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
+<translation id="8093772166980702367">Näytä Haku Chromessa ilmaisinalueella ja laita pikanäppäinyhdistelmä päälle</translation>
+<translation id="8110438089258398864">Voit avata Google Haun tekoälytilan uudelleen, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="8113883687556086139">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tehdään Chromesta näköisesi…</translation>
 <translation id="8118331347066725040">Lähetä palautetta Lensillä hakemisesta</translation>
@@ -769,6 +775,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="856656450041460113">Hakukielilista</translation>
 <translation id="8575047640889685742">Salaa kaikki Google-tilisi Chrome-data <ph name="BEGIN_LINK" />omalla tunnuslauseella<ph name="END_LINK" />. Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.</translation>
 <translation id="8590782867495422699">Avaa Google Haun tekoälytila uudelleen</translation>
+<translation id="8598779894319572882">Työkalupalkin "Google Haun tekoälytila" ‑painikkeella voit avata Google Haun tekoälytilan uudelleen ja esittää kysymyksiä selailun aikana</translation>
 <translation id="8601359445272098721">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat valitsemalla "Käännä näyttö" ‑painikkeen</translation>
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="8623450603356630491">Kirjaudu Chromeen puhelimella</translation>

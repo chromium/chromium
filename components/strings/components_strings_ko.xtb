@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">이 앱에 대해 다시 묻지 않음</translation>
 <translation id="132301787627749051">클립보드 이미지 검색</translation>
 <translation id="1323433172918577554">더보기</translation>
+<translation id="1326962902431997202">취소선</translation>
 <translation id="1330449323196174374">왼쪽 게이트 폴드</translation>
 <translation id="1330952240988133220">Google 월렛에 안전하게 리드레스 번호 저장하기</translation>
 <translation id="133173645041092770">웹사이트 닫기</translation>
@@ -401,7 +402,7 @@
 <translation id="1656024727720460136">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 보안 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="1656489000284462475">수령</translation>
 <translation id="1658918301167915956">블루투스 기기</translation>
-<translation id="1662550410081243962">결제 수단 저장 및 자동 입력</translation>
+<translation id="1662550410081243962">결제 수단 저장 및 자동 완성</translation>
 <translation id="1662980953334786797">동일한 주문</translation>
 <translation id="1663578299724791827">안전하게 KTN 저장하기</translation>
 <translation id="1663943134801823270">카드와 주소는 Chrome에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
@@ -465,6 +466,7 @@
 <translation id="1757773103848038814">고정폭 글꼴</translation>
 <translation id="1757935267918149452">Google 비밀번호 변경 버튼, Google 계정 비밀번호를 변경하려면 활성화하세요.</translation>
 <translation id="1759776526873274358">사이트에서 보안 강화를 위해 사용하는 인증 코드를 자동 완성합니다. Chrome이 Gmail에서 이 코드를 가져올 수 있습니다. <ph name="BEGIN_LINK" />이 기능에 대해 자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Google 월렛으로 이동하여 <ph name="BEGIN_LINK1" />데이터 및 개인 정보 보호 환경설정<ph name="END_LINK1" />을 제어하거나 포인트 카드, 신분증 같은 <ph name="BEGIN_LINK3" />패스<ph name="END_LINK3" />와 <ph name="BEGIN_LINK2" />결제 수단<ph name="END_LINK2" />을 관리하세요.</translation>
 <translation id="1763864636252898013">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 기기의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="1777422078676229054">사진(보관용)</translation>
@@ -762,7 +764,7 @@
 <translation id="2277753418458118549">연결 세부정보 표시</translation>
 <translation id="2277949605527755300"><ph name="URL" />에서 손을 추적하려고 합니다.</translation>
 <translation id="22792995594807632">다운로드하기 전에 검토 필요</translation>
-<translation id="2283340219607151381">주소 저장 및 자동 입력</translation>
+<translation id="2283340219607151381">주소 저장 및 자동 완성</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' 삭제됨</translation>
 <translation id="2283599456633275070">여행</translation>
 <translation id="2285709459648658719">여권</translation>
@@ -789,6 +791,7 @@
 <translation id="2321291402658100099">정보 관리</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{창 1개}other{창 #개}}</translation>
 <translation id="232390861414237658">Google Pay에서 사용하도록 저장하면 Chrome에서 구매 시 이 카드를 자동 완성합니다.</translation>
+<translation id="2325722389016720813">자동 완성을 사용하려면 위쪽 또는 아래쪽 화살표를 누르세요. 자동 완성하려면 입력하세요.</translation>
 <translation id="2326283484705860548">이제 Google 월렛에서 더 많은 정보를 자동 완성할 수 있습니다</translation>
 <translation id="2326747055382936979">향상된 자동 완성 관리</translation>
 <translation id="2328651992442742497">허용(기본값)</translation>
@@ -1736,7 +1739,7 @@
 <translation id="3965672182149944205">주소를 저장하시겠습니까?</translation>
 <translation id="3966044442021752214">제품 안전</translation>
 <translation id="396761677631735618">터치하여 입력할 수 있는 포인트 카드가 절반 높이로 열렸습니다.</translation>
-<translation id="3970239200223030389">발행일</translation>
+<translation id="3970239200223030389">발급일</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3984581365661308170">봉투 #11</translation>
@@ -2176,6 +2179,7 @@
 <translation id="4711628883879888561">탭 그룹에서 공동작업하기</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">학점 시간, 과정 수준, 학점 가중치를 적용해서 내 GPA를 계산해 줘.</translation>
+<translation id="4717533164160330041">이 기능을 사용하려면 먼저 Gmail에서 스마트 기능을 사용 설정하세요</translation>
 <translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
 <translation id="4718897478554657123">600x900mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows 네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
@@ -2833,6 +2837,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
+<translation id="5796050750059455142">“<ph name="BEGIN_LINK" />다른 Google 제품의 스마트 기능<ph name="LINK_END" />”을 사용 설정합니다.</translation>
 <translation id="5797984091151707075">관리자 정책에 따라 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5806871454498484178">스크롤 및 확대/축소 차단됨</translation>
@@ -3140,6 +3145,7 @@
 <translation id="6329742260390895689">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에 패스 사용'을 사용 설정하세요</translation>
 <translation id="6329815962353376655">&lt;질문 입력&gt;</translation>
 <translation id="633348045801643466">결제 시 <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />나중에 결제<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> 옵션 표시</translation>
+<translation id="6335364777769284858"><ph name="BEGIN_LINK" />Gmail 설정<ph name="LINK_END" />에서 '스마트 기능'을 사용 설정합니다.</translation>
 <translation id="6336948221660696475">VR 허용되지 않음</translation>
 <translation id="6337534724793800597">이름별로 정책 필터링</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 값이 잘못되었으므로 사용되지 않습니다.</translation>
@@ -3695,6 +3701,7 @@
 <translation id="7308436126008021607">백그라운드 동기화</translation>
 <translation id="7310392214323165548">기기가 곧 다시 시작됩니다</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Tab 키를 누른 후 Enter 키를 눌러 <ph name="AI_ENGINE_NAME" />에 질문하세요</translation>
 <translation id="7313107491291103073">정책 위반 가능성이 있는 사이트이므로 조직에서 신고했습니다.</translation>
 <translation id="7315372670898739748">연결할 수 없습니다. 나중에 다시 시도해 주세요</translation>
 <translation id="7316521168101843192">Microsoft OneDrive에 파일 저장 중</translation>
@@ -4370,7 +4377,7 @@
 <translation id="8449155699563577224">17x24인치</translation>
 <translation id="8449513475775663994">인증된 이메일을 삭제하시겠습니까?</translation>
 <translation id="8449836157089738489">새로운 탭 그룹에서 모두 열기</translation>
-<translation id="8451518040456311377">신원 확인 문서 저장 및 자동 입력</translation>
+<translation id="8451518040456311377">신원 확인 문서 저장 및 자동 완성</translation>
 <translation id="84561192812921051">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">하단 시트가 닫혔습니다.</translation>
 <translation id="8456775115498700722">이제 <ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 <ph name="CARD_ISSUER_NAME" /> 카드를 자동 완성할 수 있습니다.</translation>
@@ -4541,7 +4548,7 @@
 <translation id="8781233757384402598">향상된 자동 완성을 요청하면 자동 완성 경험을 개선하기 위해 사용 데이터, 요청, 페이지 세부정보를 Google과 공유하게 됩니다.</translation>
 <translation id="8781278378794969337">페이지 번역 버튼, Google 번역으로 이 페이지를 번역하려면 활성화하세요.</translation>
 <translation id="8790007591277257123">삭제 다시 실행(&amp;R)</translation>
-<translation id="8790668801880409584">여행 정보 저장 및 입력</translation>
+<translation id="8790668801880409584">여행 정보 저장 및 자동 완성</translation>
 <translation id="8792272652220298572">플라스틱(유광)</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="8792626944327216835">마이크</translation>

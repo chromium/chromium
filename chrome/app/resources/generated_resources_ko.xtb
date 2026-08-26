@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{북마크 {BOOKMARK_COUNT}개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
 <translation id="125220115284141797">기본</translation>
 <translation id="1252219782845132919">그룹 숨기기</translation>
+<translation id="1252597096488926946">스크롤 버튼 고정 해제</translation>
 <translation id="1252987234827889034">프로필 오류가 발생했습니다.</translation>
 <translation id="1254034280040157728">그랜드캐니언</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -985,6 +986,7 @@
 <translation id="1755601632425835748">텍스트 크기</translation>
 <translation id="1756963401828337401">캡처할 화면 선택</translation>
 <translation id="17584710573359123">Chrome 웹 스토어에서 보기</translation>
+<translation id="176013700366797492">Google 월렛으로 이동하여 <ph name="BEGIN_LINK1" />데이터 및 개인 정보 보호 환경설정<ph name="END_LINK1" />을 제어하거나 포인트 카드, 신분증 같은 <ph name="BEGIN_LINK3" />패스<ph name="END_LINK3" />와 <ph name="BEGIN_LINK2" />결제 수단<ph name="END_LINK2" />을 관리하세요.</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> 버튼이 <ph name="REMAPPING_OPTION" />에 다시 매핑되었습니다.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />님의 계정</translation>
 <translation id="176272781006230109">쇼핑 추천</translation>
@@ -1715,6 +1717,7 @@
 <translation id="2322193970951063277">머리글과 바닥글</translation>
 <translation id="2322622365472107569">종료 시간: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">저장된 Wi-Fi 네트워크</translation>
+<translation id="2323685460575935191">스크롤 버튼 숨기기</translation>
 <translation id="2325444234681128157">비밀번호 저장</translation>
 <translation id="2326188115274135041">자동 잠금 해제를 사용 설정하려면 PIN을 확인하세요.</translation>
 <translation id="2326583548923775947">Google 계정이 아닙니다. Chrome에 저장한 항목은 다른 기기에서 사용할 수 없습니다.</translation>
@@ -1971,6 +1974,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 Google Drive를 사용할 수 있어야 합니다.</translation>
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
 <translation id="2513904627589542105">자동 테스트</translation>
 <translation id="251425554130284360">최근 활동으로 쉽게 돌아갈 수 있도록 방문한 페이지와 추천 검색어가 표시됩니다.
@@ -5006,6 +5010,7 @@
 <translation id="4831226137013573603">마이크 음소거</translation>
 <translation id="483262387981411190">얼굴 제어 일시중지 또는 재개</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
+<translation id="4834388789911023644">리뷰 작성</translation>
 <translation id="4835598628985424375">양 입술 오므리기</translation>
 <translation id="4835677468087803981">PIN 숨기기</translation>
 <translation id="4836504898754963407">지문 관리</translation>
@@ -7243,7 +7248,7 @@
 <translation id="659894938503552850">가장 최근 날짜</translation>
 <translation id="6599829027342135752"><ph name="APP_NAME" />에서 사용하려면 보안 키를 삽입하고 터치하세요</translation>
 <translation id="6601262427770154296">사용자 사전 관리</translation>
-<translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
+<translation id="6602173570135186741">자동 완성 및 암호</translation>
 <translation id="6602173667290651224">사이트 바로가기를 찾을 수 없음</translation>
 <translation id="6602336931411102724">북마크바에 탭 그룹 표시</translation>
 <translation id="6602937173026466876">프린터에 액세스</translation>
@@ -8567,6 +8572,7 @@
 <translation id="7625823789272218216">새 좌측 탭</translation>
 <translation id="762730429396410864">웹사이트에 보고되는 CPU 성능 등급을 수동으로 설정합니다.</translation>
 <translation id="7627749368210392160">사이트에서 이 기능을 사용하여 로컬 네트워크의 다른 기기에 액세스할 수 있습니다.</translation>
+<translation id="7628068697012244394">리뷰 작성</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
 <translation id="762917478230183172">키별로 작업 선택</translation>
 <translation id="7629206210984165492">차분함</translation>
@@ -8993,6 +8999,7 @@
 <translation id="7949038991703929816">기록을 로드할 수 없습니다. 파일에 유효한 업데이터 로그가 포함되어 있는지 확인하세요.</translation>
 <translation id="7950629216186736592">이유: LBS는 http://, https:// 및 file:// URL만 지원합니다.</translation>
 <translation id="7950814699499457511">사용 • 이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다.</translation>
+<translation id="7951159420392892566">스크롤 버튼 고정 해제</translation>
 <translation id="795130320946928025">가상 카드 사용 중지</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
 <translation id="7953236668995583915">이 페이지를 새로고침하여 이 사이트에 업데이트된 설정 적용</translation>

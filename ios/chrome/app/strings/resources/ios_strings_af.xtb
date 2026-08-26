@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Webkoekies, werfdata</translation>
 <translation id="1312721752506309252">Verbeterde Beskerming is aan</translation>
 <translation id="1321993286294231467">Kon nie prent stoor nie.</translation>
+<translation id="1322683976135389755">Instruksieteks: Som hierdie artikel op, 1 van 3</translation>
 <translation id="1322735045095424339">Jou organisasie vereis Incognitomodus</translation>
 <translation id="1323735185997015385">Vee uit</translation>
 <translation id="132683371494960526">Dubbeltik om die moedervouer te verander.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Tik op “Privaatheid en sekuriteit”</translation>
 <translation id="3259451381796379533">Hierdie rekening sal nie met Gemini werk nie. Meld aan met ’n ander Google-rekening.</translation>
 <translation id="3265736395246760288">Meld vinniger aan vanaf enige van jou gesinkroniseerde toestelle.</translation>
+<translation id="3268166994745151153">Dit beteken dat jy jou huidige vordering sal verloor</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
 <translation id="3272955648592358996">Jou data verbeter Google KI</translation>
 <translation id="3273510436356991673">Pasmaak jou tuisskerm</translation>
+<translation id="327455571215090823">Slimmer outovul, privaat gehou</translation>
 <translation id="3277021493514034324">Werfadres is gekopieer</translation>
 <translation id="3280562213547448728">Stemsoektog</translation>
 <translation id="3289505634533552500">Stemsoektog</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
 <translation id="4007463141047732631">Wysig groep</translation>
 <translation id="4011489366247192265">Vanaf</translation>
+<translation id="4014099645251211155">Vra oor enigiets op jou bladsy met Gemini in Chrome</translation>
 <translation id="4017599800655151880">Miniprent</translation>
 <translation id="4018440314314549819">Outovul gestoorde wagwoorde</translation>
 <translation id="4021447724486050609">Dateer jou blaaier op</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Ligging:</translation>
 <translation id="4517684186578051919">Toestelinligting</translation>
 <translation id="4520798012560649652">Kom meer te wete oor Incognitomodus</translation>
+<translation id="4524737913322680818">Koop, beplan en doen meer met Gemini in Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} boekmerk}other{{count} boekmerke}}</translation>
 <translation id="4525629404718770519">Wys skakelvoorskoue</translation>
 <translation id="452750746583162491">Gaan jou gesinkroniseerde data na</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Maak seker dat jou wagwoorde veilig is, vind uit of hulle gekompromitteer is, en kry advies om jouself aanlyn te beskerm. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Skakel oortjiedeling aan</translation>
 <translation id="4658335131052370646">Stoor</translation>
+<translation id="465947902531722727">Wissel profiele</translation>
 <translation id="466307903888586355">Die stoor van lêers word deur jou organisasie geblokkeer</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Jou organisasie vereis dat jy privaat blaai. Oortjiegroepe word nie in Incognito-modus gesinkroniseer nie.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Meld met jou Google-rekening aan om jou boekmerke, wagwoorde, geskiedenis en ander instellings op al jou toestelle te kry</translation>
 <translation id="4985921635659180565">Nadat ’n lêer geskeduleer is om uitgevee te word, kan dit nie gekanselleer word nie.</translation>
 <translation id="498624032394115435">Enigiemand met die skakel kan alle oortjies wysig.</translation>
+<translation id="4986428648020277392">Instruksieteks: Watter een moet ek koop? 2 van 3</translation>
+<translation id="498768198683310172">Begin om Gemini te gebruik</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kleur van oortjiegroep is <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5838430324585198889">Ontsluit meer kenmerke vir jou iPad met Google-apps</translation>
 <translation id="583923961930319521">Gebruik wagwoorde op al jou toestelle</translation>
+<translation id="5841763734702350465">Instruksieteks: Voeg dit by my kalender, 3 van 3</translation>
 <translation id="5843013299019689749">Swart agtergrondkleur</translation>
 <translation id="5844284118433003733">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="5854790677617711513">Ouer as 30 dae</translation>
@@ -1782,6 +1791,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6775952316617222141">Go Live met Gemini in Chrome</translation>
 <translation id="6779455296366983087">Jou blaaierdata sal uitgevee word</translation>
 <translation id="6782531425936234573">Voer data uit</translation>
+<translation id="6789665473250283877">Verwyder <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tik op “Voeg oortjie by nuwe groep”</translation>
 <translation id="6794476726485507147">Kies ’n datum en tyd om ’n onthounotakennisgewing te kry om hierdie bladsy weer te besoek</translation>
 <translation id="6797543908718012274">Skakel Leesmodus aan</translation>
@@ -2153,6 +2163,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8011489434346330032">Webinspekteur</translation>
 <translation id="8014007212279733632">Verifieer dat dit jy is om sensitiewe inligting te outovul</translation>
 <translation id="8015826420689927262">Vee aanhegsel uit</translation>
+<translation id="8016869623424294549">Jy staan op die punt om profiele te wissel</translation>
 <translation id="8017015647846870183">Van Google Wagwoordbestuurder af, insluitend wagwoorde en toegangsleutels</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8023170444051056234">Jy sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor en dit sal van al jou toestelle uitgevee word</translation>

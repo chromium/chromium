@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">Не прашувај повторно за апликацијава</translation>
 <translation id="132301787627749051">Пребарајте слика од привремената меморија</translation>
 <translation id="1323433172918577554">Прикажи повеќе</translation>
+<translation id="1326962902431997202">Прецртување</translation>
 <translation id="1330449323196174374">Лево превиткување како брошура</translation>
 <translation id="1330952240988133220">Зачувајте го бројот за ревизија безбедно во Google Wallet</translation>
 <translation id="133173645041092770">Затворете го вебсајтот</translation>
@@ -465,6 +466,7 @@
 <translation id="1757773103848038814">Фонт Monospace</translation>
 <translation id="1757935267918149452">Копче за промена на лозинката на Google, активирајте го за да ја промените лозинката за сметката на Google</translation>
 <translation id="1759776526873274358">Автоматско пополнување на кодовите за потврда што ги користат сајтовите за да ја подобрат вашата безбедност. Chrome може да ги добива кодовиве од вашата Gmail. <ph name="BEGIN_LINK" />Дознајте повеќе за функцијава<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Одете во Google Wallet за да ги контролирате <ph name="BEGIN_LINK1" />поставките за податоци и приватност<ph name="END_LINK1" /> или да управувате со <ph name="BEGIN_LINK2" />начините на плаќање<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />пропусниците<ph name="END_LINK3" /> како картички за лојалност и документи за идентификација</translation>
 <translation id="1763864636252898013">Серверот не може да докаже дека е <ph name="DOMAIN" />; oперативниот систем на уредот не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата на Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Фотографија (архивска)</translation>
@@ -632,6 +634,7 @@
 <translation id="2090451897496479509">За повеќе детали, контактирајте со давателот на услугата</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2092361763640578821">Дознајте повеќе за</translation>
 <translation id="2093184051799735948">Пребарајте <ph name="ENGINE_NAME" /> или внесете URL-адреса</translation>
 <translation id="2093982008204312032">Google Chrome се обидува да го исклучи Windows Hello за пополнување лозинки.</translation>
 <translation id="2094505752054353250">Несовпаѓање на домени</translation>
@@ -788,6 +791,7 @@
 <translation id="2321291402658100099">Управувајте со податоците</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}one{# прозорец}other{# прозорци}}</translation>
 <translation id="232390861414237658">Автоматско пополнување на картичкава за купувањата извршени во Chrome кога е зачувана за да се користи со Google Pay</translation>
+<translation id="2325722389016720813">Притиснете ја стрелката нагоре или стрелката надолу за автоматски довршувања. Пишувајте за да се доврши автоматски.</translation>
 <translation id="2326283484705860548">Отсега може да пополнувате автоматски повеќе податоци од Google Wallet</translation>
 <translation id="2326747055382936979">Управувајте со „Подобрено автоматско пополнување“</translation>
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
@@ -1542,6 +1546,7 @@
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3647286794400715637">Секој запис во низата со URL-адреси мора да содржи помеѓу 1 и 2 URL-адреси.</translation>
 <translation id="3647400963805615193">Копче за отфрлање совет на Chrome, притиснете го копчето Enter за да отфрлите, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">Набљудување на активноста</translation>
 <translation id="3648667207586409316">Што може да направам за да го намалам стресот?</translation>
 <translation id="3650584904733503804">Потврдувањето е успешно</translation>
 <translation id="3650594806107685466">За зачувување на безбедноста на вашата картичка, внесете го CVC на <ph name="SIDE_OF_CARD" /></translation>
@@ -2004,6 +2009,7 @@
 <translation id="4377869186417956230">Промена во сите картички за лојалност под оваа ставка на менито.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4378221908737133050">Создај контролен список за темелно чистење на мојот дом</translation>
+<translation id="4379357028567121852">Од <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Може да продолжувате од каде што сте застанале или да создавате нови групи картички во движење</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Отсега, зачувувајте ги датотеките во просторот во облак</translation>
@@ -2173,6 +2179,7 @@
 <translation id="4711628883879888561">Соработувајте на група картички</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Пресметај го мојот GPA со пондерирање на кредитните часови, нивоата на курсот и бројот на поените за оценки</translation>
+<translation id="4717533164160330041">За да ја користите функцијава, прво вклучете „Паметни функции“ во Gmail</translation>
 <translation id="471880041731876836">Немате дозвола за посета на сајтов</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата на Windows<ph name="END_LINK" /></translation>
@@ -2393,6 +2400,7 @@
 <translation id="5061227663725596739">Дали мислевте на <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја на печатење</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">Вашата организација може да набљудува одредена активност од прелистување за да спречи загуба на податоци; одете на <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> за повеќе детали</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Да ја проверите адресата на проксито<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Десетта ролна</translation>
 <translation id="507130231501693183">Поштенско сандаче 4</translation>
@@ -2757,6 +2765,7 @@
 <translation id="5659593005791499971">Е-пошта</translation>
 <translation id="5660122698869360728">Нова паметна папка што ви помага да ги зачувате сите ваши страници за купување на едно место и автоматски да ги следите цените, да добивате увиди во цените и друго.</translation>
 <translation id="5663955426505430495">Администраторот на уредов инсталирал екстензии за дополнителни функции. Екстензиите имаат пристап до некои од податоците.</translation>
+<translation id="5664075349639500330">Дознајте повеќе за прелистувањето во „Изолиран режим“.</translation>
 <translation id="5675650730144413517">Страницава не функционира</translation>
 <translation id="5675959228867414813">Прикажи резултати според датум</translation>
 <translation id="567604591393105935">Долниот лист за трговија е отворен на половина висина</translation>
@@ -2828,6 +2837,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
 <translation id="5794065675298686371">Вклучете известувања за следење цена</translation>
+<translation id="5796050750059455142">Вклучете „<ph name="BEGIN_LINK" />Паметни функции во други производи на Google<ph name="LINK_END" />“</translation>
 <translation id="5797984091151707075">Блокирано од администраторски правила</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5806871454498484178">„Лизгањето и зумирањето“ е блокирано</translation>
@@ -3135,6 +3145,7 @@
 <translation id="6329742260390895689">За автоматско пополнување на податоците, вклучете „Користете пропусници на Google“ во поставките за Wallet</translation>
 <translation id="6329815962353376655">&lt;Внесете прашање&gt;</translation>
 <translation id="633348045801643466">Прикажувај ги опциите за <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />плаќање подоцна<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> при плаќањето</translation>
+<translation id="6335364777769284858">Вклучете „Паметни функции“ во <ph name="BEGIN_LINK" />поставките за Gmail<ph name="LINK_END" /></translation>
 <translation id="6336948221660696475">VR не е дозволена</translation>
 <translation id="6337534724793800597">Филтрирај правила по име</translation>
 <translation id="633770708279464947">Вредноста <ph name="SECURE_DNS_SALT" /> е неважечка и нема да се користи.</translation>
@@ -3269,6 +3280,7 @@
 <translation id="6547208576736763147">Две дупки лево</translation>
 <translation id="6550245281449521513">Заклучувањето на глувчето не е дозволено</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, ново</translation>
+<translation id="6552244083450538912">Вашата активност може да биде видлива за: вебсајтовите што ги посетувате, вашиот работодавач или училиште, вашиот интернет-оператор</translation>
 <translation id="6552566579578780089">Плаќања</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> од <ph name="NUM_MATCHES_IN_GROUP" /> во групата <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
@@ -3503,6 +3515,7 @@
 <translation id="6972867931824045907">За да ја користи привремената меморија, доделете му пристап на Chrome во <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Одредени се и фиксните прокси-сервери и URL-адресата на скриптата .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 инчи</translation>
+<translation id="6976229914347655621">Екстензиите што ги бара вашата организација ќе останат вклучени; одете на <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> за повеќе детали</translation>
 <translation id="6978236010531171013">Сепак сподели</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
@@ -3668,6 +3681,7 @@
 <translation id="7269151392155523061">Кратенката не може да биде иста со клучниот збор на агрегаторот за пребарување дефиниран од <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Датотеките што ги преземате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер. Можеби ќе се складираат согласно со правилата на компанијата и ќе бидат видливи за администраторот.</translation>
 <translation id="7275334191706090484">Управувани обележувачи</translation>
+<translation id="7278933725460302617">Сега сте во „Изолиран режим“</translation>
 <translation id="7282894295403887199">Не може да ја посетите страницава во режим „Инкогнито“</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да ја промените лозинката за сметката на Google</translation>
 <translation id="7286908876112207905">Не е дозволено лепење на содржиниве на сајтов</translation>
@@ -3686,6 +3700,7 @@
 <translation id="7308436126008021607">синхронизација во заднина</translation>
 <translation id="7310392214323165548">Уредот ќе се рестартира наскоро</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Притиснете Tab, па Enter за да ја прашате <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Вашата организација го означи сајтов бидејќи можеби прекршува правило.</translation>
 <translation id="7315372670898739748">Поврзувањето не успеа, обидете се повторно подоцна</translation>
 <translation id="7316521168101843192">Датотеката се зачувува во Microsoft OneDrive</translation>
@@ -3840,6 +3855,7 @@
 <translation id="7554791636758816595">Нова картичка</translation>
 <translation id="7556328470713619625">Користете криптографски клуч</translation>
 <translation id="7559278538486662777">Не може да се промени големината на апликацијава.</translation>
+<translation id="7561202748196702434">прелистувањето во „Изолиран режим“</translation>
 <translation id="7561784249784255101">Дигитален версатилен диск</translation>
 <translation id="7564049878696755256">Може да го изгубите пристапот до вашата сметка на <ph name="ORG_NAME" /> или да ви го украдат идентитетот. Chrome препорачува да ја смените лозинката веднаш.</translation>
 <translation id="7567204685887185387">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е издаден лажно. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
@@ -4375,6 +4391,7 @@
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474910779563686872">Прикажи ги деталите за програмерот</translation>
+<translation id="84764251640219124">Сајтовите се блокирани да користат колачиња од трети страни. Ако некој сајт што зависи од овие колачиња не функционира, може <ph name="BEGIN_LINK" />да се обидете со доделување привремен пристап на тој сајт до колачиња од трети страни<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">Спојување долу лево</translation>
 <translation id="8483229036294884935">Адресава ќе биде избришана од вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Се однесува на</translation>
@@ -4441,6 +4458,7 @@
 <translation id="8619130384334725124">Стандарден пребарувач во моментов</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
 <translation id="8622864575115813231">Се контактира со вашата финансиска институција…</translation>
+<translation id="8632584659860846053">Вашата историја на прелистувањето, колачиња и податоци од сајтовите, кеш и податоци внесени во формуларите ќе се избришат откако ќе ги затворите сите изолирани прозорци</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како „Безбедно прелистување со Google“, што <ph name="BEGIN_LINK" />неодамна најде фишинг<ph name="END_LINK" /> на сајтот што се обидовте да го отворите. Сајтовите за фишинг се преправаат дека се други сајтови за да ве измамат.<ph name="NEW_LINE" />Дури и сајтовите што се обично безбедни понекогаш се компромитирани од напаѓачи. <ph name="BEGIN_ERROR_LINK" />Известете нѐ<ph name="END_ERROR_LINK" /> ако сметате дека сме погрешиле и дека сајтов не е опасен.</translation>
 <translation id="8640996933372643759">За да споделувате картички и да соработувате со други, мора да може да се најавите на Chrome</translation>

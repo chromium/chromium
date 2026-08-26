@@ -194,6 +194,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1319245136674974084">Daugiau neklausti dėl šios programos</translation>
 <translation id="132301787627749051">Ieškoti iškarpinės vaizdo</translation>
 <translation id="1323433172918577554">Rodyti daugiau</translation>
+<translation id="1326962902431997202">Perbraukimas</translation>
 <translation id="1330449323196174374">Atvartas kairėje</translation>
 <translation id="1330952240988133220">Patikimai išsaugokite skundo numerį „Google Wallet“</translation>
 <translation id="133173645041092770">Uždaryti svetainę</translation>
@@ -465,6 +466,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1757773103848038814">Lygiaplotis šriftas</translation>
 <translation id="1757935267918149452">Mygtukas „Keisti „Google“ slaptažodį; suaktyvinkite, jei norite pakeisti „Google“ paskyros slaptažodį</translation>
 <translation id="1759776526873274358">Automatiškai užpildykite patvirtinimo kodus, kuriuos svetainės naudoja siekdamos pagerinti jūsų saugą. „Chrome“ gali gauti šiuos kodus iš jūsų „Gmail“. <ph name="BEGIN_LINK" />Sužinokite daugiau apie šią funkciją<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">„Google Wallet“ galite valdyti <ph name="BEGIN_LINK1" />duomenų ir privatumo nuostatas<ph name="END_LINK1" />, tvarkyti <ph name="BEGIN_LINK2" />mokėjimo metodus<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />korteles bei bilietus<ph name="END_LINK3" />, pvz., lojalumo korteles, asmens tapatybės dokumentus</translation>
 <translation id="1763864636252898013">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas įrenginio operacinei sistemai. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Pabandykite paleisti „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotopopierius (archyvinis)</translation>
@@ -789,6 +791,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2321291402658100099">Tvarkyti informaciją</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{vieno lango}one{# lango}few{# langų}many{# lango}other{# langų}}</translation>
 <translation id="232390861414237658">Automatiškai užpildyti šios kortelės duomenis „Chrome“ atliekamiems pirkiniams, kai ji išsaugoma naudoti su „Google Pay“</translation>
+<translation id="2325722389016720813">Kad pasirinktumėte automatinį užbaigimą, paspauskite rodyklę aukštyn arba žemyn. Veskite tekstą, kad būtų rodomas automatinis užbaigimas.</translation>
 <translation id="2326283484705860548">Dabar galite automatiškai pildyti daugiau informacijos iš „Google Wallet“</translation>
 <translation id="2326747055382936979">Tvarkyti išmanųjį automatinį pildymą</translation>
 <translation id="2328651992442742497">Leidžiama (numatytasis nustatymas)</translation>
@@ -2177,6 +2180,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4711628883879888561">Bendradarbiavimas naudojant skirtukų grupę</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Apskaičiuok mano GPA, įvertindamas kreditų valandas, kursų lygius ir įvertinimų vertes taškais</translation>
+<translation id="4717533164160330041">Jei norite naudoti šią funkciją, pirmiausia įjunkite išmaniąsias funkcijas sistemoje „Gmail“</translation>
 <translation id="471880041731876836">Neturite leidimo, kad galėtumėte apsilankykite šioje svetainėje</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Paleistas įrankis „Windows Network Diagnostics“<ph name="END_LINK" />.</translation>
@@ -2834,6 +2838,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Šis mokėjimo metodas bus ištrintas iš šio įrenginio</translation>
 <translation id="5794065675298686371">Įjunkite kainų stebėjimo pranešimus</translation>
+<translation id="5796050750059455142">Įjunkite parinktį „<ph name="BEGIN_LINK" />Išmaniosios funkcijos kituose „Google“ produktuose<ph name="LINK_END" />“.</translation>
 <translation id="5797984091151707075">Užblokuota vadovaujantis administratoriaus politika</translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5806871454498484178">Slinkimas ir mastelio keitimas užblokuotas</translation>
@@ -3141,6 +3146,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6329742260390895689">Jei norite automatiškai užpildyti informaciją, „Wallet“ nustatymuose įjunkite parinktį „Naudoti korteles sistemoje „Google“</translation>
 <translation id="6329815962353376655">&lt;Įveskite klausimą&gt;</translation>
 <translation id="633348045801643466">Rodyti <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />mokėjimo vėliau<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> parinktis atsiskaitant</translation>
+<translation id="6335364777769284858">Įjunkite parinktį „Išmaniosios funkcijos“ <ph name="BEGIN_LINK" />„Gmail“ nustatymuose<ph name="LINK_END" />.</translation>
 <translation id="6336948221660696475">VR neleidžiama</translation>
 <translation id="6337534724793800597">Filtruoti politiką pagal pavadinimą</translation>
 <translation id="633770708279464947">„<ph name="SECURE_DNS_SALT" />“ vertė yra netinkama ir nebus naudojama.</translation>
@@ -3696,6 +3702,7 @@ Papildoma išsami informacija:
 <translation id="7308436126008021607">fono sinchronizavimas</translation>
 <translation id="7310392214323165548">Įrenginys netrukus bus paleistas iš naujo</translation>
 <translation id="7311244614769792472">Rezultatų nerasta</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Paspauskite tabuliavimo klavišą, tada „Enter“, kad užduotumėte klausimą „<ph name="AI_ENGINE_NAME" />“</translation>
 <translation id="7313107491291103073">Jūsų organizacija pažymėjo šią svetainę, nes ji gali pažeisti politiką.</translation>
 <translation id="7315372670898739748">Nepavyko susieti, vėliau bandykite dar kartą</translation>
 <translation id="7316521168101843192">Failas išsaugomas sistemoje „Microsoft OneDrive“</translation>

@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">इस ऐप्लिकेशन के लिए फिर से न पूछें</translation>
 <translation id="132301787627749051">क्लिपबोर्ड इमेज खोजें</translation>
 <translation id="1323433172918577554">और दिखाएं</translation>
+<translation id="1326962902431997202">टेक्स्ट पर लाइन खींचें</translation>
 <translation id="1330449323196174374">बांया गेट फ़ोल्ड</translation>
 <translation id="1330952240988133220">Google Wallet में रीड्रेस नंबर को सुरक्षित तरीके से सेव करें</translation>
 <translation id="133173645041092770">वेबसाइट बंद करें</translation>
@@ -634,6 +635,7 @@
 <translation id="2090451897496479509">ज़्यादा जानकारी के लिए, सेवा देने वाली कंपनी से संपर्क करें</translation>
 <translation id="2090686487550343086">आईबीएएन</translation>
 <translation id="2091887806945687916">आवाज़</translation>
+<translation id="2092361763640578821">इस बारे में ज़्यादा जानें</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> पर खोजें या यूआरएल टाइप करें</translation>
 <translation id="2093982008204312032">Google Chrome, Windows Hello को बंद करने की कोशिश कर रहा है, ताकि पासवर्ड डाला जा सके.</translation>
 <translation id="2094505752054353250">डोमेन का गलत-मिलान</translation>
@@ -1544,6 +1546,7 @@
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
 <translation id="3647286794400715637">हर यूआरएल स्ट्रिंग में, यूआरएल की संख्या एक से दो के बीच होनी चाहिए.</translation>
 <translation id="3647400963805615193">Chrome से जुड़ी सलाह खारिज करने के लिए बटन. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> को खारिज करने के लिए Enter दबाएं</translation>
+<translation id="3647730822767756911">गतिविधि की निगरानी करना</translation>
 <translation id="3648667207586409316">तनाव कम करने के लिए, मुझे क्या करना चाहिए?</translation>
 <translation id="3650584904733503804">मान्यकरण सफल</translation>
 <translation id="3650594806107685466">अपने कार्ड को सुरक्षित रखने के लिए, <ph name="SIDE_OF_CARD" /> मौजूद सीवीसी डालें</translation>
@@ -2006,6 +2009,7 @@
 <translation id="4377869186417956230">इस मेन्यू आइटम में जाकर, सभी लॉयल्टी कार्ड चुनें.</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="4378221908737133050">घर की अच्छी तरह से सफ़ाई करने के लिए चेकलिस्ट बनाओ</translation>
+<translation id="4379357028567121852"><ph name="APP_NAME" /> से</translation>
 <translation id="4381997246130185847">आप चाहें, तो वहीं से काम शुरू करें जहां आपने छोड़ा था या कभी भी, कहीं भी नए टैब ग्रुप बनाएं</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
 <translation id="4382833368532556056">अब से, अपनी फ़ाइलों को क्लाउड स्टोरेज में सेव करें</translation>
@@ -2396,6 +2400,7 @@
 <translation id="5061227663725596739">क्या आपका मतलब <ph name="LOOKALIKE_DOMAIN" /> से है?</translation>
 <translation id="5066056036849835175">प्रिंट करने का इतिहास</translation>
 <translation id="5068524481479508725">ए10</translation>
+<translation id="5068915318814087203">डेटा के नुकसान को रोकने के लिए, आपका संगठन कुछ ब्राउज़िंग गतिविधियों पर नज़र रख सकता है. ज़्यादा जानकारी के लिए, <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> पर जाएं</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रॉक्सी पते की जाँच करें<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">दसवां रोल</translation>
 <translation id="507130231501693183">मेलबॉक्स 4</translation>
@@ -2760,6 +2765,7 @@
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5660122698869360728">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है.</translation>
 <translation id="5663955426505430495">इस डिवाइस के एडमिन ने और फ़ंक्शन के एक्सटेंशन इंस्टॉल किए हैं. एक्सटेंशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
+<translation id="5664075349639500330">आइसोलेटेड मोड में ब्राउज़ करने के बारे में ज़्यादा जानें.</translation>
 <translation id="5675650730144413517">यह पेज काम नहीं कर रहा है</translation>
 <translation id="5675959228867414813">तारीख के हिसाब से दिखाएं</translation>
 <translation id="567604591393105935">कॉमर्स बॉटम शीट, आधी स्क्रीन पर खोल दी गई है</translation>
@@ -3274,6 +3280,7 @@
 <translation id="6547208576736763147">बाईं ओर ड्युएल पंच</translation>
 <translation id="6550245281449521513">माउस लॉक इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, नया</translation>
+<translation id="6552244083450538912">आपकी गतिविधि इन्हें दिख सकती है: आपकी विज़िट की गई वेबसाइटें, आपका स्कूल या आपको नौकरी देने वाली कंपनी, और इंटरनेट सेवा देने वाली कंपनी</translation>
 <translation id="6552566579578780089">पेमेंट</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="GROUP_HEADER" /> ग्रुप में <ph name="NUM_MATCHES_IN_GROUP" /> में से <ph name="MATCH_POSITION" />.</translation>
 <translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
@@ -3508,6 +3515,7 @@
 <translation id="6972867931824045907">क्लिपबोर्ड इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="6973656660372572881">फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर और .pac स्‍क्रिप्‍ट URL दोनों ही बताए गए हैं.</translation>
 <translation id="6973988895180423160">3.5 x 5 इंच</translation>
+<translation id="6976229914347655621">आपके संगठन के लिए ज़रूरी एक्सटेंशन चालू रहेंगे. ज़्यादा जानकारी के लिए, <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> पर जाएं</translation>
 <translation id="6978236010531171013">फिर भी शेयर करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
@@ -3674,6 +3682,7 @@
 <translation id="7269151392155523061">शॉर्टकट और <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> की ओर से तय किया गया सर्च एग्रीगेटर कीवर्ड, दोनों एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">डाउनलोड की गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी या मैलवेयर का पता लगाने के लिए, उन फ़ाइलों को स्कैन किया जा सकता है. साथ ही, उन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और ये आपके एडमिन को दिख सकती हैं.</translation>
 <translation id="7275334191706090484">मैनेज किए गए बुकमार्क</translation>
+<translation id="7278933725460302617">अब आप आइसोलेटेड मोड में हैं</translation>
 <translation id="7282894295403887199">गुप्त मोड में, इस पेज पर नहीं जाया जा सकता</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने Google खाते का पासवर्ड बदलने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="7286908876112207905">इस कॉन्टेंट को इस साइट पर चिपकाने की अनुमति नहीं है</translation>
@@ -3692,6 +3701,7 @@
 <translation id="7308436126008021607">बैकग्राउंड सिंक</translation>
 <translation id="7310392214323165548">डिवाइस जल्द ही रीस्टार्ट होगा</translation>
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> में सवाल पूछने के लिए, पहले tab और फिर enter दबाएं</translation>
 <translation id="7313107491291103073">आपके संगठन ने इस साइट को फ़्लैग किया है, क्योंकि यह किसी नीति का उल्लंघन कर सकती है.</translation>
 <translation id="7315372670898739748">खाता लिंक नहीं किया जा सका. कुछ देर बाद कोशिश करें</translation>
 <translation id="7316521168101843192">फ़ाइल को Microsoft OneDrive में सेव किया जा रहा है</translation>
@@ -3846,6 +3856,7 @@
 <translation id="7554791636758816595">नया टैब</translation>
 <translation id="7556328470713619625">पासकी का इस्तेमाल करें</translation>
 <translation id="7559278538486662777">इस ऐप्लिकेशन का आकार नहीं बदला जा सकता.</translation>
+<translation id="7561202748196702434">आइसोलेटेड मोड में ब्राउज़ करना</translation>
 <translation id="7561784249784255101">डिजिटल वर्सेटिल डिस्क</translation>
 <translation id="7564049878696755256">आपके <ph name="ORG_NAME" /> खाते का एक्सेस खो सकता है या पहचान चोरी हो सकती है. Chrome आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="7567204685887185387">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; हो सकता है इसका सुरक्षा प्रमाणपत्र धोखे से जारी किया गया हो. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
@@ -4381,6 +4392,7 @@
 <translation id="8473626140772740486">300 x 450 मि॰मी॰</translation>
 <translation id="8473863474539038330">पते और अन्य जानकारी</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
+<translation id="84764251640219124">साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से ब्लॉक किया गया है. अगर इन कुकी का इस्तेमाल करने वाली कोई साइट काम नहीं करती है, तो <ph name="BEGIN_LINK" />उस साइट को कुछ समय के लिए, तीसरे पक्ष की कुकी का ऐक्सेस देकर देखें<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>
 <translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
@@ -4448,6 +4460,7 @@
 <translation id="8619130384334725124">मौजूदा डिफ़ॉल्ट सर्च इंजन</translation>
 <translation id="8620276786115098679">काकू 7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8622864575115813231">आपके वित्तीय संस्थान से संपर्क किया जा रहा है...</translation>
+<translation id="8632584659860846053">सभी आइसोलेटेड विंडो बंद करने पर, आपका ब्राउज़िंग इतिहास, कुकी और साइट डेटा, कैश मेमोरी, और फ़ॉर्म में डाली गई जानकारी मिटा दी जाएगी</translation>
 <translation id="8634957317623797170">54 x 86 मि॰मी॰</translation>
 <translation id="8637362707224133343">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. इसने उस साइट पर <ph name="BEGIN_LINK" />हाल ही में फ़िशिंग का पता लगाया है<ph name="END_LINK" /> जिस पर आपने जाने की कोशिश है. आपको धोखा देने के लिए फ़िशिंग साइटें, ऐसा दिखावा करती हैं कि वे बिलकुल असली मालूम हों.<ph name="NEW_LINE" />आम तौर पर सुरक्षित रहने वाली साइटों के साथ भी, कभी-कभी हमलावर छेड़छाड़ कर देते हैं. अगर आपको लगता है कि हमारी जांच में कोई गलती हुई है और इस साइट से कोई खतरा नहीं है, तो <ph name="BEGIN_ERROR_LINK" />हमें बताएं<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">टैब शेयर करने और दूसरों के साथ मिलकर काम करने के लिए, आपको Chrome में साइन इन करना होगा</translation>

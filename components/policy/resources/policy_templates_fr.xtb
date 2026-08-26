@@ -1386,6 +1386,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
         |TIME_LIMITS| permet d'appliquer une durée d'utilisation maximale, et de bloquer l'accès à l'application une fois que l'utilisateur a atteint cette limite journalière. Vous pouvez indiquer une limite d'utilisation dans la propriété |daily_limit_mins|. Le compteur est remis à zéro à l'heure UTC que vous avez définie dans la propriété |reset_at|.
         Cette règle s'applique uniquement aux utilisateurs mineurs.
         Elle complète la règle "UsageTimeLimit". Les restrictions que vous indiquez dans la règle "UsageTimeLimit" telles que le temps d'utilisation et l'heure du coucher s'appliquent indépendamment de la règle "PerAppTimeLimits".</translation>
+<translation id="1911003883066847257">Contrôle les paramètres permettant de relancer et de redémarrer le navigateur.</translation>
 <translation id="19133869326547269">Cette règle est obsolète et n'a aucun effet, car la fonctionnalité Appel direct a été supprimée de Chrome.
 
 Description d'origine :
@@ -3300,6 +3301,19 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
 <translation id="3036271748813538143">Détermine si le nouveau comportement de l'analyseur HTML pour l'élément &lt;select&gt; est activé</translation>
 <translation id="3038323923255997294">Poursuivre l'exécution des applications en arrière-plan après la fermeture de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3039862327847526651">Contrôler l'utilisation des optimiseurs JavaScript</translation>
+<translation id="3040510138377915303">Détermine si l'agent <ph name="GEMINI_SPARK_PRODUCT_NAME" /> est autorisé à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique. <ph name="GEMINI_SPARK_PRODUCT_NAME" /> n'est peut-être pas disponible pour votre organisation.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> est autorisé à se connecter à la navigation automatique de <ph name="PRODUCT_NAME" /> et à l'utiliser
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> n'est pas autorisé à se connecter à la navigation automatique de <ph name="PRODUCT_NAME" /> ni à l'utiliser
+
+Avertissement : Autoriser <ph name="GEMINI_SPARK_PRODUCT_NAME" /> à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique permet à l'agent <ph name="GEMINI_SPARK_PRODUCT_NAME" /> d'effectuer des actions autonomes en plusieurs étapes sur les clients <ph name="PRODUCT_NAME" /> depuis la session de navigateur active. Cela implique des risques de sécurité importants, y compris liés aux identifiants, à l'accès au réseau local et à la perte de signaux contextuels. Il se pourrait que les contrôles de gestion et de sécurité existants ne soient pas respectés.
+
+Les administrateurs sont invités à évaluer attentivement le modèle de menace réseau, ainsi que les consignes en matière de conformité et de confidentialité de leur organisation avant d'activer cette fonctionnalité.
+
+Cette règle n'a aucun effet lorsque les règles de navigation automatique de l'appli <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> ou <ph name="PRODUCT_NAME" /> sont désactivées. Par exemple, l'appli <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> peut être désactivée par la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Pour en savoir plus sur <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />, veuillez consulter https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+<ph name="GEMINI_SPARK_PRODUCT_NAME" /> et la navigation automatique de <ph name="PRODUCT_NAME" /> ne sont pas disponibles dans tous les pays ni dans toutes les langues. Définir cette règle sur 0 - Activée ne garantit pas que la fonctionnalité sera activée. Elle reste soumise à disponibilité. Pour en savoir plus sur le déploiement, consultez les notes de version d'Enterprise : https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, des recommandations de contenus générées automatiquement sont proposées sur la page "Nouvel onglet", en fonction de l'historique de navigation, des centres d'intérêt ou de la position de l'utilisateur.
 
       Si cette règle est définie sur "False", aucune recommandation de ce type n'est affichée sur la page "Nouvel onglet".</translation>
@@ -8074,6 +8088,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la version maximale par défaut.
 
       Sinon, il est possible de définir l'une des valeurs suivantes : "tls1.2" ou "tls1.3". Une fois cette option définie, <ph name="PRODUCT_NAME" /> n'utilise pas les versions SSL/TLS supérieures à la version spécifiée. Une valeur non reconnue sera ignorée.</translation>
+<translation id="6120465104321378808">Autorise <ph name="GEMINI_SPARK_PRODUCT_NAME" /> à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique via Gemini dans Chrome</translation>
 <translation id="6120909112796019291">Autoriser la retouche photo par IA générative et améliorer les modèles d'IA.</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6128539430475678271">Bloquer l'API Controlled Frame sur ces sites</translation>

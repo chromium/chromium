@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">কুকিজ, সাইট ডেটা</translation>
 <translation id="1312721752506309252">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="1321993286294231467">ছবি সেভ করার সময় কোনও সমস্যা হয়েছে।</translation>
+<translation id="1322683976135389755">প্রম্পট: এই নিবন্ধের সারসংক্ষেপ করো, ৩টির মধ্যে ১টি</translation>
 <translation id="1322735045095424339">আপনার সংস্থা আপনাকে 'ছদ্মবেশী মোড' ব্যবহার করতে বলছে</translation>
 <translation id="1323735185997015385">মুছুন</translation>
 <translation id="132683371494960526">মূল ফোল্ডার পরিবর্তন করতে দুবার আলতো চাপুন।</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন</translation>
 <translation id="3259451381796379533">এই অ্যাকাউন্ট Gemini-তে কাজ করবে না। অন্য একটি Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
 <translation id="3265736395246760288">আপনার সিঙ্ক করা যেকোনও ডিভাইস থেকে আরও দ্রুত সাইন-ইন করুন।</translation>
+<translation id="3268166994745151153">এর অর্থ হল, আপনার বর্তমান প্রোগ্রেস সেভ হবে না</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3272955648592358996">আপনার ডেটা Google AI-কে আরও উন্নত করে</translation>
 <translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
+<translation id="327455571215090823">আরও স্মার্ট অটোফিল, ব্যক্তিগত রাখা হয়েছে</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3289505634533552500">ভয়েস সার্চ</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করা থাকে যাতে আপনি যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন।</translation>
 <translation id="4007463141047732631">গ্রুপ এডিট করুন</translation>
 <translation id="4011489366247192265">থেকে</translation>
+<translation id="4014099645251211155">Chrome-এ Gemini ব্যবহার করে আপনার পৃষ্ঠায় থাকা যেকোনও জিনিস সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="4017599800655151880">থাম্বনেল</translation>
 <translation id="4018440314314549819">সেভ করা পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="4021447724486050609">আপনার ব্রাউজার আপডেট করুন</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">লোকেশন:</translation>
 <translation id="4517684186578051919">ডিভাইসের তথ্য</translation>
 <translation id="4520798012560649652">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
+<translation id="4524737913322680818">Chrome-এ Gemini ব্যবহার করে কেনাকাটা, প্ল্যান ও আরও অনেক কিছু করুন</translation>
 <translation id="452503091941773389">{count,plural, =1{{count}টি বুকমার্ক}one{{count}টি বুকমার্ক}other{{count}টি বুকমার্ক}}</translation>
 <translation id="4525629404718770519">লিঙ্কের প্রিভিউ দেখুন</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">আপনার পাসওয়ার্ড সুরক্ষিত আছে কিনা তা ভালভাবে দেখে নিন, হ্যাক হয়েছে কিনা তা দেখুন এবং অনলাইনে নিজেকে নিরাপদে রাখতে পরামর্শ পান। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">ট্যাব শেয়ারিং চালু করুন</translation>
 <translation id="4658335131052370646">সেভ করুন</translation>
+<translation id="465947902531722727">প্রোফাইল পরিবর্তন করুন</translation>
 <translation id="466307903888586355">আপনার প্রতিষ্ঠানের মাধ্যমে ফাইল সেভ করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">আপনার সংস্থার নিয়ম অনুযায়ী আপনাকে ব্যক্তিগত মোডে ব্রাউজ করতে হবে। ছদ্মবেশী মোডে ট্যাব গ্রুপ সিঙ্ক করা হয় না।
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">আপনার সব ডিভাইসে আপনার বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং অন্যান্য সেটিংস পেতে আপনার Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4985921635659180565">কোনও একটি ফাইল মুছে ফেলার জন্য শিডিউল করা হলে, এটি বাতিল করা যাবে না।</translation>
 <translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
+<translation id="4986428648020277392">প্রম্পট: আমি কোনটি কেনা উচিত? ৩টির মধ্যে ২টি</translation>
+<translation id="498768198683310172">Gemini ব্যবহার করা শুরু করুন</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> আপনার সংস্থা এটি ম্যানেজ করে।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ট্যাব গ্রুপের রঙ <ph name="COLOR" /></translation>
@@ -1474,6 +1482,7 @@
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5838430324585198889">Google apps ব্যবহার করে আপনার iPad-এ আরও ফিচার আনলক করুন</translation>
 <translation id="583923961930319521">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="5841763734702350465">প্রম্পট: এটি আমার ক্যালেন্ডারে যোগ করো, ৩টির মধ্যে ৩ নম্বর</translation>
 <translation id="5843013299019689749">ব্যাকগ্রাউন্ডের কালো রঙ</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
@@ -1783,6 +1792,7 @@
 <translation id="6775952316617222141">Chrome-এ Gemini Live উপভোগ করুন</translation>
 <translation id="6779455296366983087">আপনার ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="6782531425936234573">ডেটা এক্সপোর্ট করুন</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> সরান</translation>
 <translation id="6791425686608802741">"নতুন গ্রুপে ট্যাব যোগ করুন" বিকল্পে ট্যাপ করুন</translation>
 <translation id="6794476726485507147">এই পৃষ্ঠা আবার ঘুরে দেখতে তারিখ ও সময় বেছে নিয়ে একটি রিমাইন্ডার বিজ্ঞপ্তি পান</translation>
 <translation id="6797543908718012274">রিডিং মোড চালু করুন</translation>
@@ -2154,6 +2164,7 @@
 <translation id="8011489434346330032">ওয়েব ইন্সপেক্টর</translation>
 <translation id="8014007212279733632">সংবেদনশীল তথ্য অটোফিল করতে, আপনার পরিচয় যাচাই করান</translation>
 <translation id="8015826420689927262">অ্যাটাচমেন্ট মুছে দিন</translation>
+<translation id="8016869623424294549">আপনি প্রোফাইল পরিবর্তন করতে চলেছেন</translation>
 <translation id="8017015647846870183">Google Password Manager-এ, সেভ করা পাসওয়ার্ড ও পাসকী</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8023170444051056234">আপনি অবিলম্বে “<ph name="GROUP_NAME" />” ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং আপনার সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>

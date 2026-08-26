@@ -194,6 +194,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1319245136674974084">Não voltar a perguntar para esta app</translation>
 <translation id="132301787627749051">Pesquisar imagem da área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
+<translation id="1326962902431997202">Rasurado</translation>
 <translation id="1330449323196174374">Dobra simétrica à esquerda</translation>
 <translation id="1330952240988133220">Guarde o número de reparação em segurança na Carteira do Google</translation>
 <translation id="133173645041092770">Fechar Website</translation>
@@ -465,6 +466,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1757773103848038814">Tipo de letra de monoespaço</translation>
 <translation id="1757935267918149452">Botão Alterar palavra-passe Google; ative para alterar a palavra-passe da sua Conta Google</translation>
 <translation id="1759776526873274358">Preencha automaticamente os códigos de validação que os sites usam para melhorar a sua segurança. O Chrome pode extrair estes códigos do seu Gmail. <ph name="BEGIN_LINK" />Saiba mais sobre esta funcionalidade<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Visite a Carteira do Google para controlar as <ph name="BEGIN_LINK1" />preferências de privacidade e dados<ph name="END_LINK1" /> ou gerir <ph name="BEGIN_LINK2" />métodos de pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" />, como cartões de fidelidade e documentos de identificação</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu dispositivo não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Experimente executar o Diagnóstico de rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (de arquivo)</translation>
@@ -789,6 +791,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2321291402658100099">Gerir informações</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}other{# janelas}}</translation>
 <translation id="232390861414237658">Preencha automaticamente este cartão para compras feitas no Chrome quando este estiver guardado para utilização com o Google Pay</translation>
+<translation id="2325722389016720813">Prima a seta para cima ou para baixo para os preenchimentos automáticos. Escreva para preencher automaticamente.</translation>
 <translation id="2326283484705860548">Agora, pode preencher automaticamente mais informações da Carteira do Google</translation>
 <translation id="2326747055382936979">Faça a gestão do preenchimento automático melhorado</translation>
 <translation id="2328651992442742497">Permitido (predefinição)</translation>
@@ -2176,6 +2179,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4711628883879888561">Colabore no grupo de separadores</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Calcula a minha média ponderando as horas de crédito, os níveis das disciplinas e o valor das notas</translation>
+<translation id="4717533164160330041">Para usar esta funcionalidade, ative primeiro as funcionalidades inteligentes no Gmail</translation>
 <translation id="471880041731876836">Não tem autorização para aceder a este site</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de rede do Windows<ph name="END_LINK" /></translation>
@@ -2833,6 +2837,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de acompanhamento de preço</translation>
+<translation id="5796050750059455142">Ative as "<ph name="BEGIN_LINK" />Funcionalidades inteligentes noutros produtos Google<ph name="LINK_END" />"</translation>
 <translation id="5797984091151707075">Bloqueado pela política do administrador</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5806871454498484178">Deslocar e fazer zoom bloqueados</translation>
@@ -3140,6 +3145,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6329742260390895689">Para preencher automaticamente as suas informações, ative a opção "Usar passes na rede Google" nas definições da Carteira</translation>
 <translation id="6329815962353376655">&lt;Escreva uma pergunta&gt;</translation>
 <translation id="633348045801643466">Apresente opções para <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pagar depois<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> no ato do pagamento</translation>
+<translation id="6335364777769284858">Ative a opção "Funcionalidades inteligentes" nas <ph name="BEGIN_LINK" />definições do Gmail<ph name="LINK_END" /></translation>
 <translation id="6336948221660696475">RV não permitida</translation>
 <translation id="6337534724793800597">Filtrar políticas pelo nome</translation>
 <translation id="633770708279464947">O valor de <ph name="SECURE_DNS_SALT" /> é inválido e não vai ser usado.</translation>
@@ -3695,6 +3701,7 @@ Detalhes adicionais:
 <translation id="7308436126008021607">sincronização em segundo plano</translation>
 <translation id="7310392214323165548">O dispositivo será reiniciado em breve</translation>
 <translation id="7311244614769792472">Não foram encontrados resultados</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Prima Tab e, de seguida, Enter para pedir ao <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">A sua organização denunciou este site porque pode violar uma política.</translation>
 <translation id="7315372670898739748">A associação falhou. Tente mais tarde</translation>
 <translation id="7316521168101843192">A guardar ficheiro no Microsoft OneDrive</translation>

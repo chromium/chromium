@@ -90,6 +90,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="1832046143430087831">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is off.</translation>
 <translation id="1838374766361614909">Clear search</translation>
+<translation id="1842869163383855194">Easy access to use Search in Chrome across your device, even if Chrome is minimised.</translation>
 <translation id="1843347690926158494">Search this tab with Google Lens</translation>
 <translation id="1849248141818021764">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Use the Chrome app to keep browsing on the go</translation>
@@ -329,6 +330,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4173512894976930765">Sites will probably work as expected. You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome.</translation>
 <translation id="4175922240926474352">Chrome blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relaunch Chrome within a day}other{Relaunch Chrome within # days}}</translation>
+<translation id="4222394563269716113">Open Search in Chrome with a keyboard shortcut.</translation>
 <translation id="4222932583846282852">Cancelling...</translation>
 <translation id="4224210481850767180">The installation has been cancelled.</translation>
 <translation id="4242034826641750751">Chrome needs camera and microphone permissions for this site</translation>
@@ -354,6 +356,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Share this document with Gemini in Chrome to get a quick overview and ask follow-up questions</translation>
+<translation id="4447327682081576371">Show Search in Chrome in Mac menu bar and turn on keyboard shortcut</translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
@@ -443,6 +446,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
+<translation id="545114101312117217">Easy access to your shortcuts from Search in Chrome</translation>
 <translation id="5465210843490471889">Choose a Chrome profile to use with <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome now launches when Windows starts so that you can begin browsing instantly. You can turn this off in settings.</translation>
 <translation id="5486346529181556467">Improve online safety for everyone when you report a site that you think is harmful. Learn more about <ph name="BEGIN_LINK" />Google's unsafe site policy.<ph name="END_LINK" /></translation>
@@ -728,6 +732,8 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8074398340364918139">To search a specific Chrome feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
+<translation id="8093772166980702367">Show Search in Chrome in system tray and turn on keyboard shortcut</translation>
+<translation id="8110438089258398864">You can reopen Google Search AI Mode to ask questions while you browse</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Making Chrome yours…</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
@@ -777,6 +783,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
 <translation id="8590782867495422699">Reopen Google Search AI Mode</translation>
+<translation id="8598779894319572882">From the 'Google Search AI Mode' button on the toolbar, you can reopen Google Search AI Mode to ask questions while you browse</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="8623450603356630491">Sign in to Chrome on your phone</translation>

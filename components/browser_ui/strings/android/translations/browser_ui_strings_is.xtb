@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Til að leyfa <ph name="APP_NAME" /> að nota AR þarftu einnig að kveikja á myndavél í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Breyttu staðsetningunni til að sérsníða vafraupplifunina</translation>
 <translation id="1848033246551405023">Leturgerð Sans Serif</translation>
+<translation id="1861244985839668297">Þegar kveikt er á þessu geta vefsvæði sent beiðni um að fá að nota HID-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað HID-tæki.</translation>
 <translation id="1861262398884155592">Mappan er tóm</translation>
 <translation id="1881806992065048905">Neðsta blað nýrrar flipasíðu</translation>
 <translation id="1887786770086287077">Slökkt er á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>

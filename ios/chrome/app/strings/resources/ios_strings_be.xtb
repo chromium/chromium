@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Файлы cookie, даныя сайтаў</translation>
 <translation id="1312721752506309252">Палепшаная абарона ўключана</translation>
 <translation id="1321993286294231467">Памылка пры захаванні фота.</translation>
+<translation id="1322683976135389755">Запыт: падсумуй гэты артыкул, 1 з 3</translation>
 <translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
 <translation id="132683371494960526">Каб змяніць бацькоўскую папку, націсніце двойчы.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Націсніце "Прыватнасць і бяспека".</translation>
 <translation id="3259451381796379533">Гэты ўліковы запіс не будзе працаваць з Gemini. Увайдзіце з дапамогай іншага Уліковага запісу Google.</translation>
 <translation id="3265736395246760288">Выконвайце ўваход хутчэй з любой сінхранізаванай прылады.</translation>
+<translation id="3268166994745151153">Гэта азначае, што вы страціце вынікі бягучага працэсу</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3272955648592358996">Вашы даныя паляпшаюць AI ад Google</translation>
 <translation id="3273510436356991673">Наладзіць галоўны экран</translation>
+<translation id="327455571215090823">Больш разумнае аўтазапаўненне, з поўнай прыватнасцю</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
 <translation id="3280562213547448728">Галасавы пошук</translation>
 <translation id="3289505634533552500">Галасавы пошук</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады.</translation>
 <translation id="4007463141047732631">Змяніць групу</translation>
 <translation id="4011489366247192265">З</translation>
+<translation id="4014099645251211155">Задавайце Gemini ў Chrome пытанні пра любое змесціва на старонцы</translation>
 <translation id="4017599800655151880">Мініяцюра</translation>
 <translation id="4018440314314549819">Аўтазапаўненне захаваных пароляў</translation>
 <translation id="4021447724486050609">Абнавіце браўзер</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Месцазнаходжанне:</translation>
 <translation id="4517684186578051919">Звесткі пра прыладу</translation>
 <translation id="4520798012560649652">Даведацца больш пра рэжым інкогніта</translation>
+<translation id="4524737913322680818">Gemini ў Chrome дапамагае рабіць куплі, складаць планы і выконваць іншыя задачы</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладкі}many{{count} закладак}other{{count} закладкі}}</translation>
 <translation id="4525629404718770519">Паказваць перадпрагляд спасылак</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Уключыце абагульванне ўкладкі</translation>
 <translation id="4658335131052370646">Захаваць</translation>
+<translation id="465947902531722727">Пераключыць профілі</translation>
 <translation id="466307903888586355">Захоўванне файлаў заблакіравана вашай арганізацыяй</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта. Групы ўкладак у рэжыме інкогніта не сінхранізуюцца.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
 <translation id="4985921635659180565">Запланаванае выдаленне файла нельга адмяніць.</translation>
 <translation id="498624032394115435">Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі.</translation>
+<translation id="4986428648020277392">Запыт: што мне купіць? 2 з 3</translation>
+<translation id="498768198683310172">Выкарыстоўваць Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />: <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колер групы ўкладак <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5838430324585198889">Атрымайце доступ да большай колькасці функцый iPad з дапамогай праграм Google</translation>
 <translation id="583923961930319521">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
+<translation id="5841763734702350465">Запыт: дадай гэта ў мой каляндар, 3 з 3</translation>
 <translation id="5843013299019689749">Чорны колер фону</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
@@ -1782,6 +1791,7 @@
 <translation id="6775952316617222141">Выкарыстоўваць рэжым Live ў Gemini ў Chrome</translation>
 <translation id="6779455296366983087">Даныя пра работу ў браўзеры будуць выдалены</translation>
 <translation id="6782531425936234573">Экспартаваць даныя</translation>
+<translation id="6789665473250283877">Выдаліць інструмент "<ph name="TOOL_NAME" />"</translation>
 <translation id="6791425686608802741">Націсніце "Дадаць укладку ў новую групу".</translation>
 <translation id="6794476726485507147">Выберыце дату і час для атрымання апавяшчэння з напамінам паўторна наведаць гэту старонку</translation>
 <translation id="6797543908718012274">Уключыць рэжым чытання</translation>
@@ -2153,6 +2163,7 @@
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Каб выкарыстоўваць функцыю аўтаматычнага запаўнення канфідэнцыяльнай інфармацыі, вам трэба пацвердзіць сваю асобу</translation>
 <translation id="8015826420689927262">Выдаліць далучэнне</translation>
+<translation id="8016869623424294549">Вы збіраецеся пераключыць профілі</translation>
 <translation id="8017015647846870183">З Менеджара пароляў Google, у тым ліку паролі і ключы доступу</translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8023170444051056234">Вы адразу страціце доступ да групы ўкладак "<ph name="GROUP_NAME" />", і яна будзе выдалена з усіх вашых прылад</translation>

@@ -354,6 +354,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 marcador e outros itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google. Esta ação também limpa todos os duplicados.}other{{BOOKMARK_COUNT} marcadores e outros itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google. Esta ação também limpa todos os duplicados.}}</translation>
 <translation id="125220115284141797">Predefinidas</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
+<translation id="1252597096488926946">Desafixar botões de deslocamento</translation>
 <translation id="1252987234827889034">Ocorreu um erro do perfil</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
@@ -976,6 +977,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1755601632425835748">Tamanho do texto</translation>
 <translation id="1756963401828337401">Escolha um ecrã para capturar</translation>
 <translation id="17584710573359123">Ver na Web Store do Chrome</translation>
+<translation id="176013700366797492">Visite a Carteira do Google para controlar as <ph name="BEGIN_LINK1" />preferências de privacidade e dados<ph name="END_LINK1" /> ou gerir <ph name="BEGIN_LINK2" />métodos de pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" />, como cartões de fidelidade e documentos de identificação</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remapeado para <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Contas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugestões de compras</translation>
@@ -1701,6 +1703,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2322193970951063277">Cabeçalhos e rodapés</translation>
 <translation id="2322622365472107569">Hora de fim: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
+<translation id="2323685460575935191">Ocultar botões de deslocamento</translation>
 <translation id="2325444234681128157">Memorizar palavra-passe</translation>
 <translation id="2326188115274135041">Confirme o PIN para ativar o desbloqueio automático.</translation>
 <translation id="2326583548923775947">Esta não é uma Conta Google. Os itens que guardar no Chrome não vão estar disponíveis noutros dispositivos.</translation>
@@ -1957,6 +1960,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2508747373511408451">A aplicação <ph name="APPLICATION_NAME" /> precisa que o Google Drive esteja disponível.</translation>
 <translation id="2509495747794740764">O valor de dimensionamento tem de ser um número entre 10 e 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selecionado)</translation>
 <translation id="2513904627589542105">Teste automático</translation>
 <translation id="251425554130284360">Está a ver páginas que visitou e pesquisas sugeridas para ajudar a voltar facilmente à sua atividade mais recente.
@@ -4995,6 +4999,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4831226137013573603">desativação do som do microfone</translation>
 <translation id="483262387981411190">Pausar ou retomar o controlo facial</translation>
 <translation id="4833683849865011483">Foi encontrada 1 impressora no servidor de impressão.</translation>
+<translation id="4834388789911023644">Escrever uma crítica</translation>
 <translation id="4835598628985424375">Franzir os lábios pressionando-os juntos</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Faça a gestão das impressões digitais</translation>
@@ -8558,6 +8563,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7625823789272218216">Novo separador à esquerda</translation>
 <translation id="762730429396410864">Defina manualmente o nível de desempenho da CPU comunicado aos Websites</translation>
 <translation id="7627749368210392160">Os sites podem usar esta funcionalidade para aceder a outros dispositivos na sua rede local</translation>
+<translation id="7628068697012244394">Escrever uma crítica</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecionar uma ação para cada tecla</translation>
 <translation id="7629206210984165492">Delicado</translation>
@@ -8984,6 +8990,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7949038991703929816">Falha ao carregar o histórico. Certifique-se de que os ficheiros contêm registos do atualizador válidos.</translation>
 <translation id="7950629216186736592">Motivo: a LBS (Compatibilidade com o navegador antigo) apenas suporta URLs http://, https:// e file://.</translation>
 <translation id="7950814699499457511">Ativada • Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados</translation>
+<translation id="7951159420392892566">Desafixar botões de deslocamento</translation>
 <translation id="795130320946928025">Desativar cartão virtual</translation>
 <translation id="7952708427581814389">Os sites podem solicitar a visualização de texto e imagens na sua área de transferência</translation>
 <translation id="7953236668995583915">Atualize esta página para aplicar as definições atualizadas neste site</translation>

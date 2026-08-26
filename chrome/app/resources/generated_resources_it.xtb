@@ -354,6 +354,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 preferito e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}other{{BOOKMARK_COUNT} preferiti e altri elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google. Verranno eliminati anche eventuali duplicati.}}</translation>
 <translation id="125220115284141797">Predefiniti</translation>
 <translation id="1252219782845132919">Nascondi gruppo</translation>
+<translation id="1252597096488926946">Stacca pulsanti di scorrimento</translation>
 <translation id="1252987234827889034">Errore con il profilo</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
@@ -976,6 +977,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1755601632425835748">Dimensioni testo</translation>
 <translation id="1756963401828337401">Scegli uno schermo da condividere con Gemini</translation>
 <translation id="17584710573359123">Visualizza nel Chrome Web Store</translation>
+<translation id="176013700366797492">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze relative a dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /> come carte fedeltà e documenti di identità</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> rimappato a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Account di <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggerimenti per gli acquisti</translation>
@@ -1700,6 +1702,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2322193970951063277">Intestazioni e piè di pagina</translation>
 <translation id="2322622365472107569">Ora di fine: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Reti Wi-Fi salvate</translation>
+<translation id="2323685460575935191">Nascondi pulsanti di scorrimento</translation>
 <translation id="2325444234681128157">Memorizza la password</translation>
 <translation id="2326188115274135041">Conferma il PIN per attivare lo sblocco automatico</translation>
 <translation id="2326583548923775947">Questo non è un Account Google. Gli elementi che salvi su Chrome non saranno disponibili su altri dispositivi.</translation>
@@ -1956,6 +1959,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2508747373511408451">L'applicazione <ph name="APPLICATION_NAME" /> richiede che Google Drive sia disponibile.</translation>
 <translation id="2509495747794740764">Il valore Scala deve essere un numero compreso tra 10 e 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (lingua selezionata)</translation>
 <translation id="2513904627589542105">Diagnostica automatica</translation>
 <translation id="251425554130284360">Sono visualizzate pagine che hai visitato e ricerche suggerite per aiutarti a tornare facilmente alla tua attività più recente.
@@ -4992,6 +4996,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4831226137013573603">disattivazione dell'audio del microfono</translation>
 <translation id="483262387981411190">Metti in pausa o riprendi il controllo del volto</translation>
 <translation id="4833683849865011483">1 stampante trovata sul server di stampa</translation>
+<translation id="4834388789911023644">Scrivi una recensione</translation>
 <translation id="4835598628985424375">Protendi insieme le labbra</translation>
 <translation id="4835677468087803981">Nascondi il PIN</translation>
 <translation id="4836504898754963407">Gestisci impronte</translation>
@@ -8551,6 +8556,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7625823789272218216">Posizionamento nuova scheda a sinistra</translation>
 <translation id="762730429396410864">Imposta manualmente il livello di prestazioni della CPU segnalato ai siti web</translation>
 <translation id="7627749368210392160">I siti possono usare questa funzionalità per accedere ad altri dispositivi connessi alla rete locale</translation>
+<translation id="7628068697012244394">Scrivi una recensione</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Seleziona un'azione per ogni tasto</translation>
 <translation id="7629206210984165492">Tenue</translation>
@@ -8977,6 +8983,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7949038991703929816">Impossibile caricare la cronologia. Assicurati che i file contengano log del programma di aggiornamento validi.</translation>
 <translation id="7950629216186736592">Motivo: LBS supporta solo URL http://, https:// e file://.</translation>
 <translation id="7950814699499457511">On • Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati</translation>
+<translation id="7951159420392892566">Stacca pulsanti di scorrimento</translation>
 <translation id="795130320946928025">Disattiva la carta virtuale</translation>
 <translation id="7952708427581814389">I siti possono chiedere di vedere testo e immagini negli appunti</translation>
 <translation id="7953236668995583915">Ricarica la pagina per applicare le impostazioni aggiornate a questo sito</translation>

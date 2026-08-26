@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Листа за читање</translation>
 <translation id="1269129608791067105">Овде ћете пронаћи историју</translation>
 <translation id="1280921956537356716">Укључи обавештења о саветима</translation>
+<translation id="1287449971634955609">Уклони додатке и избриши податке које су сачували на овом уређају</translation>
 <translation id="1289129165308566697">Погледајте историју на другим уређајима</translation>
 <translation id="129553762522093515">Недавно затворено</translation>
 <translation id="1298077576058087471">Уштедите и до 60% података, читајте данашње вести</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Сачувајте податке на Google налогу</translation>
 <translation id="1414919006379339073">Затвори прозор у коме се тренутно ради</translation>
 <translation id="1416550906796893042">Верзија апликације</translation>
+<translation id="1426410128494586442">Да</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
 <translation id="1435593198351412143">Аутоматски отварај PDF-ове</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">Можете да прегледате сајтове који шаљу много обавештења и спречите их да убудуће шаљу још обавештења</translation>
 <translation id="2386938421315164605">Сакријте и откријте теме</translation>
 <translation id="2390510615457643724">Да ли желите поново да преузмете фајл <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Активирај</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, изабрана картица без архивирања у режиму слике у слици</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, картица без архивирања за снимање</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">Обележите ову страницу</translation>
 <translation id="3265093782546847662">Све странице са <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Превуците нагоре да бисте видели резултате претраге</translation>
+<translation id="3268205181992599708">Омогућите микрофон да бисте користили глас</translation>
 <translation id="3269093882174072735">Учитај слику</translation>
 <translation id="3280562213547448728">Гласовна претрага</translation>
 <translation id="3282801380074962248">Прошири одељак</translation>
@@ -786,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Користили сте на овом сајту</translation>
 <translation id="4214315110991671325">Ако дозволите колачиће, Chrome може да их користи за предучитавање.</translation>
 <translation id="421517251707893998">Додирните Закачи ову пречицу</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" />–<ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Слушајте ову страницу</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, изабрана закачена картица без архивирања у режиму слике у слици</translation>
 <translation id="4225895483398857530">Пречица за траку с алаткама</translation>
@@ -982,6 +987,7 @@ Google налог можда има друге облике историје п�
 <translation id="4961107849584082341">Преведите ову страницу на било који језик</translation>
 <translation id="4964614743143953889">Chrome вас упозорава на небезбедне сајтове и преузимања</translation>
 <translation id="496607651705915226">Да бисте сачували и користили нове лозинке на Google налогу, ажурирајте Google Play услуге</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" />–<ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Пробајте да потражите нешто друго или отворите целу историју Chrome-а да бисте видели још резултата.</translation>
 <translation id="497421865427891073">Кретање унапред</translation>
 <translation id="497983151715419057">Прегледајте неактивне картице и групе овде</translation>
@@ -1054,6 +1060,7 @@ Google налог можда има друге облике историје п�
 <translation id="5267572070504076962">Укључите Безбедно прегледање да бисте добили заштиту од опасних сајтова</translation>
 <translation id="5273031377282080577">Администратор управља овим подешавањем.</translation>
 <translation id="5284295735376057059">Својства документа</translation>
+<translation id="5286907366254680517">Откривено</translation>
 <translation id="5290322819358431297">Аутоматски попуњавајте лозинке</translation>
 <translation id="5292796745632149097">Пошаљите на</translation>
 <translation id="5301876394151419436">Пријављени сте као <ph name="EMAIL" />. Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
@@ -1553,7 +1560,6 @@ Google налог можда има друге облике историје п�
 <translation id="7173338713290252554">Историја цена широм веба</translation>
 <translation id="7177466738963138057">То можете да промените касније у подешавањима</translation>
 <translation id="7177873915659574692">Прављење QR кода није успело. URL премашује ограничење за број знакова (<ph name="CHARACTER_LIMIT" />).</translation>
-<translation id="7179032284363038560">Други који користе овај уређај неће видети ваше активности, па можете да прегледате приватније. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Користи други налог</translation>
 <translation id="7182520625618447753">Преместите траку за адресу на врх или дно да бисте имали прилагођени доживљај прегледања</translation>
 <translation id="7183517696921903380">Табела са филтерима апликација је отворена.</translation>
@@ -1694,6 +1700,7 @@ Google налог можда има друге облике историје п�
 <translation id="7714077993070342304">Отворите Chrome мени</translation>
 <translation id="7733878270780732638">Нема довољно простора на уређају.</translation>
 <translation id="7740287852186792672">Резултати претраге</translation>
+<translation id="7740996059027112821">Стандардно</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, изабрана картица без архивирања за дељење</translation>
 <translation id="774876555279732384">Услугама аутоматског попуњавања управља се и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Додајте претрагу веб локација</translation>

@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">Больше не спрашивать для этого приложения</translation>
 <translation id="132301787627749051">Поиск по изображению из буфера обмена</translation>
 <translation id="1323433172918577554">Развернуть</translation>
+<translation id="1326962902431997202">Зачеркнутый</translation>
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
 <translation id="1330952240988133220">Безопасно храните Redress Number в Google Кошельке</translation>
 <translation id="133173645041092770">Закрыть сайт</translation>
@@ -3699,6 +3700,7 @@
 <translation id="7308436126008021607">фоновая синхронизация</translation>
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Чтобы задать вопрос сервису "<ph name="AI_ENGINE_NAME" />", нажмите Tab, а затем Ввод</translation>
 <translation id="7313107491291103073">Возможно, он нарушает правила.</translation>
 <translation id="7315372670898739748">Не удалось связать аккаунты. Повторите попытку позже.</translation>
 <translation id="7316521168101843192">Сохранение файла в Microsoft OneDrive…</translation>

@@ -1387,6 +1387,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
         |TIME_LIMITS| past een dagelijkse gebruikslimiet toe en zorgt dat de app niet beschikbaar is nadat de tijdslimiet voor de betreffende dag is bereikt. De gebruikslimiet wordt opgegeven in |daily_limit_mins|. De gebruikslimiet wordt dagelijks gereset op de UTC-tijd die wordt doorgegeven in |reset_at|.
         Dit beleid wordt alleen gebruikt voor minderjarige gebruikers.
         Dit beleid vormt een aanvulling op 'UsageTimeLimit'. Beperkingen die zijn opgegeven in 'UsageTimeLimit' (zoals schermtijd en bedtijd), worden afgedwongen, ongeacht 'PerAppTimeLimits'.</translation>
+<translation id="1911003883066847257">Beheert de instellingen voor opnieuw starten van de browser.</translation>
 <translation id="19133869326547269">Dit beleid is beëindigd en heeft geen effect omdat de functie 'Klik om te bellen' is verwijderd uit Chrome.
 
 Oorspronkelijke beschrijving:
@@ -3298,6 +3299,19 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
 <translation id="3036271748813538143">Bepaalt of het nieuwe gedrag van de HTML-parser voor het &lt;select&gt;-element aanstaat</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3039862327847526651">Gebruik van JavaScript-optimalisaties beheren</translation>
+<translation id="3040510138377915303">Hiermee bepaal je of de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent verbinding mag maken met <ph name="PRODUCT_NAME" /> en automatisch browsen mag gebruiken. <ph name="GEMINI_SPARK_PRODUCT_NAME" /> is misschien niet beschikbaar voor je organisatie.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag verbinding maken met en automatisch browsen gebruiken in <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag geen verbinding maken met of automatisch browsen gebruiken in <ph name="PRODUCT_NAME" />
+
+Waarschuwing: Als je <ph name="GEMINI_SPARK_PRODUCT_NAME" /> toestaat verbinding te maken met <ph name="PRODUCT_NAME" /> en automatisch browsen te gebruiken, kan de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent zelfstandige acties in meerdere stappen uitvoeren op <ph name="PRODUCT_NAME" />-clients met de actieve browsersessie. Dit brengt aanzienlijke beveiligingsrisico's met zich mee, waaronder risico's voor inloggegevens, toegang tot het lokale netwerk en verlies van contextafhankelijke signalen. Bestaande beheer- en beveiligingsfuncties worden misschien niet gerespecteerd.
+
+We raden beheerders aan het model voor netwerkdreigingen, de nalevingsrichtlijnen en de privacyrichtlijnen van hun organisatie zorgvuldig te evalueren voordat ze deze functie aanzetten.
+
+Dit beleid heeft geen effect als de beleidsregels voor de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app of automatisch browsen in <ph name="PRODUCT_NAME" /> uitstaan. De <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Ga voor meer informatie over <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> naar https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Automatisch browsen in <ph name="PRODUCT_NAME" /> en <ph name="GEMINI_SPARK_PRODUCT_NAME" /> zijn niet in alle landen of alle talen beschikbaar. Als je dit beleid instelt op 0 - Enabled (Aan), garandeert dit niet dat de functie wordt aangezet. De functie blijft afhankelijk van de beschikbaarheid. Check de release-opmerkingen voor Chrome Enterprise voor meer informatie over de uitrol: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Als je het beleid instelt op 'True' of niet instelt, worden automatisch gegenereerde contentsuggesties getoond op de pagina 'Nieuw tabblad', op basis van de browsegeschiedenis, interesses of locatie van de gebruiker.
 
       Als je het beleid instelt op 'False', worden er geen automatisch gegenereerde contentsuggesties getoond op de pagina 'Nieuw tabblad'.</translation>
@@ -8034,6 +8048,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard maximumversie.
 
       Anders kan deze worden ingesteld op een van de volgende waarden: tls1.2 of tls1.3. Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> geen latere SSL/TLS-versies dan de opgegeven versie. Een onbekende waarde wordt genegeerd.</translation>
+<translation id="6120465104321378808">Hiermee kan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> verbinding maken met <ph name="PRODUCT_NAME" /> en automatisch browsen gebruiken via Gemini in Chrome</translation>
 <translation id="6120909112796019291">Fotobewerking met generatieve AI toestaan en AI-modellen verbeteren.</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6128539430475678271">Controlled Frame API blokkeren op deze sites</translation>

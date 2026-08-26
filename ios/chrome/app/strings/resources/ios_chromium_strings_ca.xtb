@@ -253,6 +253,7 @@ Aspectes que cal tenir en compte:
 <translation id="6154098560469640583">Utilitza Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6157162508956739031">Inicia la sessió ràpidament en aplicacions i llocs web emplenant automàticament les contrasenyes i les claus d'accés des de Chromium</translation>
 <translation id="6170619162539716595">Permet que Chromium utilitzi Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
+<translation id="6170834619568075230">Pots utilitzar Google Lens a Chromium per cercar qualsevol cosa que vegis</translation>
 <translation id="6244277266078678766">Les dades es desaran al gestor de contrasenyes per a <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="6301717043141881464">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chromium per a Emplenament automàtic</translation>
@@ -379,6 +380,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium està gestionat.</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Personalitza Chromium</translation>
+<translation id="925642420047255224">Pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="981812233959540767">Juga al joc El dinosaure de Chromium</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 <translation id="986520777495807752">Estableix Chromium com a predeterminat</translation>

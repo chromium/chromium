@@ -194,6 +194,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1319245136674974084">Ne sprašuj več za to aplikacijo</translation>
 <translation id="132301787627749051">Iskanje slike v odložišču</translation>
 <translation id="1323433172918577554">Pokaži več</translation>
+<translation id="1326962902431997202">Prečrtano</translation>
 <translation id="1330449323196174374">Prepogibanje v obliki okna z leve</translation>
 <translation id="1330952240988133220">Varno shranite številko za pritožbo v Google Denarnico</translation>
 <translation id="133173645041092770">Zapiranje spletnega mesta</translation>
@@ -3700,6 +3701,7 @@ Dodatne podrobnosti:
 <translation id="7308436126008021607">sinhronizacija v ozadju</translation>
 <translation id="7310392214323165548">Naprava se bo kmalu znova zagnala</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> Pritisnite tabulatorko in nato Enter, če želite vprašati <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">Vaša organizacija je označila to spletno mesto, ker morda krši pravilnik.</translation>
 <translation id="7315372670898739748">Povezovanje ni uspelo. Poskusite znova pozneje.</translation>
 <translation id="7316521168101843192">Shranjevanje datoteke v storitvi Microsoft OneDrive</translation>

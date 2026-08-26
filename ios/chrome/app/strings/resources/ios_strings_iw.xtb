@@ -695,9 +695,11 @@
 <translation id="325717987950204592">לוחצים על "פרטיות ואבטחה"</translation>
 <translation id="3259451381796379533">‏אי אפשר להשתמש ב-Gemini בחשבון הזה. אפשר להיכנס עם חשבון Google אחר.</translation>
 <translation id="3265736395246760288">אפשר להיכנס לחשבון מהר יותר מכל מכשיר מסונכרן.</translation>
+<translation id="3268166994745151153">זה אומר שיהיה עליך להתחיל את תהליך הבחירה מחדש</translation>
 <translation id="3272527697863656322">ביטול</translation>
 <translation id="3272955648592358996">‏הנתונים שלך עוזרים לשפר את Google AI</translation>
 <translation id="3273510436356991673">התאמה אישית של מסך הבית</translation>
+<translation id="327455571215090823">מילוי אוטומטי חכם יותר, עם שמירה על הפרטיות</translation>
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3289505634533552500">חיפוש קולי</translation>
@@ -1098,6 +1100,7 @@
 <translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">הפעלת שיתוף הכרטיסיות</translation>
 <translation id="4658335131052370646">שמירה</translation>
+<translation id="465947902531722727">החלפת פרופיל</translation>
 <translation id="466307903888586355">הארגון שלך חסם את האפשרות לשמור קבצים</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">לפי דרישת הארגון שלך, עליך לגלוש באופן פרטי. קבוצות הכרטיסיות לא מסונכרנות במצב פרטי.
@@ -1208,6 +1211,7 @@
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4985921635659180565">אחרי שקובעים מועד מחיקה לקובץ, אי אפשר לבטל את המחיקה.</translation>
 <translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
+<translation id="498768198683310172">‏אני רוצה להתחיל להשתמש ב-Gemini</translation>
 <translation id="499122600724363620">‫<ph name="NAME" />, <ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />,‏ <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">הצבע של קבוצת הכרטיסיות <ph name="COLOR" /></translation>
@@ -1782,6 +1786,7 @@
 <translation id="6775952316617222141">‏מעבר למצב Live עם Gemini ב-Chrome</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6782531425936234573">ייצוא נתונים</translation>
+<translation id="6789665473250283877">הסרה של <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">לוחצים על "הוספת הכרטיסייה לקבוצה חדשה"</translation>
 <translation id="6794476726485507147">אפשר לבחור תאריך ושעה לתזכורת לחזור לדף הזה</translation>
 <translation id="6797543908718012274">הפעלת מצב הקריאה</translation>
@@ -2153,6 +2158,7 @@
 <translation id="8011489434346330032">סוקר האינטרנט</translation>
 <translation id="8014007212279733632">כדי למלא אוטומטית מידע רגיש, צריך לאמת את הזהות</translation>
 <translation id="8015826420689927262">מחיקת הקובץ המצורף</translation>
+<translation id="8016869623424294549">בחרת לעבור לפרופיל אחר</translation>
 <translation id="8017015647846870183">‏ממנהל הסיסמאות של Google, כולל סיסמאות ומפתחות גישה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8023170444051056234">הגישה שלך לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />" תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>

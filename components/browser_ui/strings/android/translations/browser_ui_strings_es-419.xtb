@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Para permitir el uso de la RA en <ph name="APP_NAME" />, también debes activar la cámara en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Cambia la posición para personalizar tu experiencia de navegación</translation>
 <translation id="1848033246551405023">Fuente Sans Serif</translation>
+<translation id="1861244985839668297">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos HID. Cuando está desactivada, los sitios no pueden usar dispositivos HID.</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1881806992065048905">Hoja inferior de la apariencia de la página Nueva pestaña</translation>
 <translation id="1887786770086287077">En este dispositivo, el acceso a la ubicación está desactivado. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>

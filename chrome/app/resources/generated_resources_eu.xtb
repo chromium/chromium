@@ -354,6 +354,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 laster-marka eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}other{{BOOKMARK_COUNT} laster-marka eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}}</translation>
 <translation id="125220115284141797">Lehenetsiak</translation>
 <translation id="1252219782845132919">Ezkutatu taldea</translation>
+<translation id="1252597096488926946">Kendu aingura gora eta behera egiteko botoiei</translation>
 <translation id="1252987234827889034">Errore bat gertatu da profilean</translation>
 <translation id="1254034280040157728">Arroila Handia</translation>
 <translation id="1254593899333212300">Interneteko konexio zuzena</translation>
@@ -976,6 +977,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1755601632425835748">Testuaren tamaina</translation>
 <translation id="1756963401828337401">Aukeratu pantaila bat haren argazki bat ateratzeko</translation>
 <translation id="17584710573359123">Ikusi Chrome Web Store-n</translation>
+<translation id="176013700366797492">Joan Google Diru-zorroa zerbitzura <ph name="BEGIN_LINK1" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK1" /> kontrolatzeko edo <ph name="BEGIN_LINK2" />ordainketa-metodoak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />txartelak<ph name="END_LINK3" /> kudeatzeko, hala nola fideltasun-txartelak eta nortasun-agiriak</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> botoiari <ph name="REMAPPING_OPTION" /> ekintza esleitu zaio.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> erabiltzailearen kontuak</translation>
 <translation id="176272781006230109">erosketei buruzko iradokizunak</translation>
@@ -1700,6 +1702,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2322193970951063277">Goiburuak eta orri-oinak</translation>
 <translation id="2322622365472107569">Amaiera-ordua: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gordetako wifi-sareak</translation>
+<translation id="2323685460575935191">Ezkutatu gora eta behera egiteko botoiak</translation>
 <translation id="2325444234681128157">Gogoratu pasahitza</translation>
 <translation id="2326188115274135041">Berretsi PINa desblokeo automatikoa aktibatzeko</translation>
 <translation id="2326583548923775947">Hau ez da Google-ko kontu bat. Chrome-n gordetzen dituzun elementuak ez dira erabilgarri egongo beste gailu batzuetan.</translation>
@@ -1956,6 +1959,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> aplikazioak Google Drive erabilgarri egotea behar du.</translation>
 <translation id="2509495747794740764">10 eta 200 arteko zenbaki bat izan behar da eskalaren balioa.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (hautatuta)</translation>
 <translation id="2513904627589542105">Norberak egiteko proba</translation>
 <translation id="251425554130284360">Bisitatu dituzun orriak eta iradokitako bilaketak ikusten ari zara, azkenaldiko jardueretara itzultzea errazagoa izan dadin.
@@ -4990,6 +4994,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4831226137013573603">mikrofonoa desaktibatzeko botoia</translation>
 <translation id="483262387981411190">Aurpegi-keinuen bidez kontrolatzeko eginbidea pausatzea edo hura erabiltzeari berrekitea</translation>
 <translation id="4833683849865011483">Inprimagailu bat aurkitu da inprimatze-zerbitzarian</translation>
+<translation id="4834388789911023644">Idatzi iritzia</translation>
 <translation id="4835598628985424375">Muxu emateko keinua egitea</translation>
 <translation id="4835677468087803981">Ezkutatu PINa</translation>
 <translation id="4836504898754963407">Kudeatu hatz-markak</translation>
@@ -8546,6 +8551,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7625823789272218216">Fitxa berria ezkerrean</translation>
 <translation id="762730429396410864">Ezarri webguneetan adierazitako PUZaren errendimendu-maila eskuz</translation>
 <translation id="7627749368210392160">Webguneek sare lokaleko beste gailu batzuk erabiltzeko balia dezakete eginbide hau</translation>
+<translation id="7628068697012244394">Idatzi iritzia</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
 <translation id="762917478230183172">Hautatu ekintza bat tekla bakoitzerako</translation>
 <translation id="7629206210984165492">Ahula</translation>
@@ -8972,6 +8978,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7949038991703929816">Ezin izan da kargatu historia. Ziurtatu fitxategiek eguneratzailearen erregistro baliodunak dituztela.</translation>
 <translation id="7950629216186736592">Arrazoia: http://, https:// eta file:// daukaten URLekin soilik da bateragarria LBS.</translation>
 <translation id="7950814699499457511">Aktibatuta • Luzapen honek ez du argitaratu pribatutasun-jardunbiderik (adibidez, datuak biltzeko eta erabiltzeko duen moduari buruz)</translation>
+<translation id="7951159420392892566">Kendu aingura gora eta behera egiteko botoiei</translation>
 <translation id="795130320946928025">Desaktibatu txartel birtuala</translation>
 <translation id="7952708427581814389">Webguneek arbeleko testua eta irudiak ikustea eska dezakete</translation>
 <translation id="7953236668995583915">Kargatu berriro orria ezarpen berriak webgune honetan aplikatzeko</translation>

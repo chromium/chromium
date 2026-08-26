@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}other{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1832046143430087831">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防範攻擊的能力會稍微降低。這項設定已關閉。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
+<translation id="1842869163383855194">即使 Chrome 最小化，也能在裝置上輕鬆使用「在 Chrome 中搜尋」。</translation>
 <translation id="1843347690926158494">使用 Google 智慧鏡頭搜尋這個分頁</translation>
 <translation id="1849248141818021764">只有知道通關密語的人才能讀取你的加密資料。通關密語不會傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1856809424654973980">使用 Chrome 應用程式，隨時隨地接續瀏覽</translation>
@@ -322,6 +323,7 @@
 <translation id="4173512894976930765">網站可能會正常運作。關閉所有 Chrome 視窗後，系統會將你登出大部分網站，但如果你已登入 Chrome，Google 帳戶就會維持登入狀態。</translation>
 <translation id="4175922240926474352">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chrome 已禁止下載</translation>
 <translation id="4191857738314598978">{0,plural, =1{請在 1 天內重新啟動 Chrome}other{請在 # 天內重新啟動 Chrome}}</translation>
+<translation id="4222394563269716113">使用鍵盤快速鍵開啟「在 Chrome 中搜尋」。</translation>
 <translation id="4222932583846282852">取消中…</translation>
 <translation id="4224210481850767180">已取消安裝。</translation>
 <translation id="4242034826641750751">Chrome 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
@@ -347,6 +349,7 @@
 <translation id="4427306783828095590">進階防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">與 Chrome 內建 Gemini 分享這份文件，就能快速取得摘要並提出後續問題</translation>
+<translation id="4447327682081576371">在 Mac 選單列顯示「在 Chrome 中搜尋」，並開啟鍵盤快速鍵</translation>
 <translation id="4450664632294415862">Chrome - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項作業，請稍後再試。</translation>
 <translation id="4493028449971051158">啟動錯誤：請以系統管理員身分執行安裝程式。</translation>
@@ -434,6 +437,7 @@
 <translation id="5430073640787465221">你的偏好設定檔已毀損或無效。
 
 Google Chrome 無法復原你的設定。</translation>
+<translation id="545114101312117217">使用快速鍵即可輕鬆開啟「在 Chrome 中搜尋」</translation>
 <translation id="5465210843490471889">選擇要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="547202872422499512">現在 Windows 啟動時會開啟 Chrome，讓你可以立即開始瀏覽。你可以前往設定頁面關閉這項功能。</translation>
 <translation id="5486346529181556467">回報有害網站，協助提升所有人的網路安全。進一步瞭解 <ph name="BEGIN_LINK" />Google 的不安全網站政策<ph name="END_LINK" />。</translation>
@@ -719,6 +723,8 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充功能，請在網址列輸入其捷徑，然後按下你所選擇的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">安裝失敗，因為電腦不符合最低硬體需求。</translation>
+<translation id="8093772166980702367">在系統匣顯示「在 Chrome 中搜尋」，並開啟鍵盤快速鍵</translation>
+<translation id="8110438089258398864">你可以重新開啟 Google 搜尋 AI 模式，在瀏覽時提問</translation>
 <translation id="8113883687556086139">請驗證身分，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="8115695070094288807">打造個人專屬的 Chrome...</translation>
 <translation id="8118331347066725040">提供你對智慧鏡頭搜尋功能的意見</translation>
@@ -768,6 +774,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
 <translation id="8575047640889685742">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chrome 資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。</translation>
 <translation id="8590782867495422699">重新開啟 Google 搜尋 AI 模式</translation>
+<translation id="8598779894319572882">你可以透過工具列上的「Google 搜尋 AI 模式」按鈕，重新開啟 Google 搜尋 AI 模式，在瀏覽時提問</translation>
 <translation id="8601359445272098721">新功能！點選「翻譯畫面」按鈕即可翻譯畫面上的文字和圖片</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="8623450603356630491">在手機上登入 Chrome</translation>

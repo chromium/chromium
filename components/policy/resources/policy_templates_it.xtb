@@ -1424,6 +1424,7 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> chiude la scheda dopo
         |BLOCK| consente di non rendere disponibile l'app per l'utente. Se viene specificato un valore |daily_limit_mins| con il limite |BLOCK|, il valore |daily_limit_mins| viene ignorato.
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questa policy viene usata soltanto per i bambini ed è complementare alla policy "UsageTimeLimit". I limiti specificati nella policy "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dalla policy "PerAppTimeLimits".</translation>
+<translation id="1911003883066847257">Controlla le impostazioni di riavvio e riapertura del browser.</translation>
 <translation id="19133869326547269">Questa policy è deprecata e non ha più alcun effetto, in quanto la funzionalità Click-to-call è stata rimossa da Chrome.
 
 Attiva la funzionalità Click-to-call, che consente agli utenti di inviare numeri di telefono dalle versioni desktop di Chrome a un dispositivo Android quando hanno fatto l'accesso. Per ulteriori informazioni, leggi l'articolo del Centro assistenza all'indirizzo: https://support.google.com/chrome/answer/9430554?hl=it.
@@ -3356,6 +3357,19 @@ L'utente può impostare l'immagine avatar da una di queste opzioni se questa pol
 <translation id="3036271748813538143">Consente di controllare se il nuovo comportamento del parser HTML per l'elemento &lt;select&gt; è attivato</translation>
 <translation id="3038323923255997294">Continua a eseguire applicazioni in background dopo la chiusura di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3039862327847526651">Controlla l'utilizzo delle ottimizzazioni di JavaScript</translation>
+<translation id="3040510138377915303">Controlla se l'agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> può connettersi a <ph name="PRODUCT_NAME" /> e utilizzare la navigazione automatica. <ph name="GEMINI_SPARK_PRODUCT_NAME" /> potrebbe non essere disponibile per la tua organizzazione.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> può connettersi e utilizzare la navigazione automatica di <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> non può connettersi e utilizzare la navigazione automatica di <ph name="PRODUCT_NAME" />
+
+Avviso: se consenti a <ph name="GEMINI_SPARK_PRODUCT_NAME" /> di connettersi a <ph name="PRODUCT_NAME" /> e di utilizzare la navigazione automatica, l'agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> potrà eseguire azioni autonome in più passaggi sui client <ph name="PRODUCT_NAME" /> utilizzando la sessione del browser attiva. Ciò comporta rischi significativi per la sicurezza, tra cui rischi relativi alle credenziali, l'accesso in ingresso alla rete locale e la perdita di indicatori sensibili al contesto. I controlli di gestione e sicurezza esistenti potrebbero non essere rispettati.
+
+Si consiglia agli amministratori di valutare attentamente il modello di minaccia di rete, la conformità e le indicazioni sulla privacy della propria organizzazione prima di attivare questa funzionalità.
+
+Questa policy non ha effetto se l'app <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> o le policy relative alla navigazione automatica di <ph name="PRODUCT_NAME" /> sono disattivate. Ad esempio, l'app <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> può essere disattivata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Per saperne di più su <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />, visita la pagina https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+La navigazione automatica di <ph name="PRODUCT_NAME" /> e <ph name="GEMINI_SPARK_PRODUCT_NAME" /> non sono disponibili in tutti i paesi o in tutte le lingue. L'impostazione di questa policy su 0 - Attivata non garantisce l'attivazione della funzionalità, che rimane soggetta a disponibilità. Per ulteriori informazioni sul rilascio, consulta le Note di rilascio di Chrome Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Se la policy viene impostata su True o non viene impostata, nella pagina Nuova scheda vengono visualizzati suggerimenti di contenuti generati automaticamente in base alla cronologia di navigazione, agli interessi o alla posizione dell'utente.
 
       Se la policy viene impostata su False, i suggerimenti di contenuti generati automaticamente non vengono visualizzati nella pagina Nuova scheda.</translation>
@@ -8174,6 +8188,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Se questa policy non viene configurata, <ph name="PRODUCT_NAME" /> utilizza la versione massima predefinita.
 
       In caso contrario, la policy potrebbe essere impostata su uno dei seguenti valori: "tls1.2" o "tls1.3". Se viene impostata, <ph name="PRODUCT_NAME" /> non utilizzerà versioni di SSL/TLS successive alla versione specificata. Un valore non riconosciuto verrà ignorato.</translation>
+<translation id="6120465104321378808">Consente a <ph name="GEMINI_SPARK_PRODUCT_NAME" /> di connettersi a <ph name="PRODUCT_NAME" /> e utilizzare la navigazione automatica tramite Gemini in Chrome</translation>
 <translation id="6120909112796019291">Consenti l'editing di foto con AI generativa e migliora i modelli di AI.</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6128539430475678271">Blocca l'API Controlled Frame su questi siti</translation>

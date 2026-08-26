@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}one{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}other{O Chrome recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="1832046143430087831">Deixa os sites mais rápidos com o mecanismo V8 do Chrome, mas o navegador fica um pouco menos resistente a ataques. Esta configuração está desativada.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
+<translation id="1842869163383855194">Acesse a Pesquisa no Chrome com facilidade no dispositivo, mesmo se o Chrome estiver minimizado.</translation>
 <translation id="1843347690926158494">Pesquisar nesta guia com o Google Lens</translation>
 <translation id="1849248141818021764">Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Use o Chrome para continuar navegando em qualquer lugar</translation>
@@ -325,6 +326,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4173512894976930765">Os sites provavelmente funcionarão como esperado. Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chrome, exceto sua Conta do Google, se tiver feito login no Chrome.</translation>
 <translation id="4175922240926474352">O Chrome bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reiniciar o Chrome em 1 dia}one{Reiniciar o Chrome em # dia}other{Reiniciar o Chrome em # dias}}</translation>
+<translation id="4222394563269716113">Abra a Pesquisa no Chrome com um atalho do teclado.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">A instalação foi cancelada.</translation>
 <translation id="4242034826641750751">O Chrome precisa da permissão de acesso ao microfone e à câmera para este site</translation>
@@ -350,6 +352,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4427306783828095590">A Proteção reforçada é mais eficiente no combate a golpes de phishing e malware</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Compartilhe este documento com o Gemini no Chrome para obter uma visão geral rápida e fazer perguntas complementares</translation>
+<translation id="4447327682081576371">Mostrar a Pesquisa no Chrome na barra de menus do Mac e ativar o atalho do teclado</translation>
 <translation id="4450664632294415862">Chrome - Login na rede - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Outra operação está em andamento no Google Chrome. Tente novamente mais tarde.</translation>
 <translation id="4493028449971051158">Erro de inicialização: execute o instalador como admin.</translation>
@@ -435,6 +438,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5402307365844630024">Ativar/desativar o Gemini no Chrome Beta</translation>
 <translation id="541844421954567481">Leve suas senhas, guias e muito mais com você usando o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Seu arquivo de preferências está corrompido ou é inválido. O Google Chrome não foi capaz de recuperar suas configurações.</translation>
+<translation id="545114101312117217">Acesse seus atalhos com facilidade pela Pesquisa no Chrome</translation>
 <translation id="5465210843490471889">Escolha um perfil do Chrome para usar com o <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Agora o Chrome é iniciado junto com o Windows para você começar a navegar na hora. Desative essa opção nas configurações quando quiser.</translation>
 <translation id="5486346529181556467">Ao denunciar sites que podem ser perigosos, você melhora a segurança on-line de todo mundo. Saiba mais sobre a <ph name="BEGIN_LINK" />política do Google para sites não seguros<ph name="END_LINK" />.</translation>
@@ -720,6 +724,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8074398340364918139">Para pesquisar recursos ou extensões específicos do Chrome, digite o atalho na barra de endereço, seguido da tecla escolhida</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="8086881907087796310">A instalação falhou porque o computador não atende aos requisitos mínimos de hardware.</translation>
+<translation id="8093772166980702367">Mostrar a Pesquisa no Chrome na bandeja do sistema e ativar o atalho do teclado</translation>
 <translation id="8110438089258398864">Você pode reabrir o Modo IA da Pesquisa Google para fazer perguntas enquanto navega</translation>
 <translation id="8113883687556086139">Confirme sua identidade para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Deixe o Chrome do seu jeito</translation>
@@ -749,6 +754,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8370748943308169953">QR code para fazer login no Chrome como <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Ativar/desativar o Gemini no Chrome Canary</translation>
+<translation id="8380754585531979907">Use o teclado para navegar entre o Gemini e a guia aberta no Chrome.</translation>
 <translation id="8387459386171870978">Continuar usando o Chrome</translation>
 <translation id="8394720698884623075">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chrome</translation>
 <translation id="8403038600646341038">Logotipo do Chrome na tela de um computador.</translation>

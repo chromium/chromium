@@ -354,6 +354,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{Un marcaj și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}few{{BOOKMARK_COUNT} marcaje și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}other{{BOOKMARK_COUNT} de marcaje și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}}</translation>
 <translation id="125220115284141797">Prestabilită</translation>
 <translation id="1252219782845132919">Ascunde grupul</translation>
+<translation id="1252597096488926946">Anulează fixarea butoanelor de derulare</translation>
 <translation id="1252987234827889034">A apărut o eroare privind profilul</translation>
 <translation id="1254034280040157728">Marele Canion</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
@@ -976,6 +977,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1755601632425835748">Dimensiunea textului</translation>
 <translation id="1756963401828337401">Alege un ecran de capturat</translation>
 <translation id="17584710573359123">Vezi în Magazinul web Chrome</translation>
+<translation id="176013700366797492">Accesează Portofelul Google ca să gestionezi <ph name="BEGIN_LINK1" />datele și preferințele de confidențialitate<ph name="END_LINK1" /> sau <ph name="BEGIN_LINK2" />metodele de plată<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />permisele<ph name="END_LINK3" />, cum ar fi cardurile de fidelitate și actele de identitate</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> a fost remapat la<ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Conturile utilizatorului <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugestii pentru cumpărături</translation>
@@ -1701,6 +1703,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2322193970951063277">Anteturi și subsoluri</translation>
 <translation id="2322622365472107569">Ora de încheiere: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rețele Wi-Fi salvate</translation>
+<translation id="2323685460575935191">Ascunde butoanele de derulare</translation>
 <translation id="2325444234681128157">Reține parola</translation>
 <translation id="2326188115274135041">Confirmă codul PIN pentru a activa deblocarea automată</translation>
 <translation id="2326583548923775947">Acesta nu este un Cont Google. Elementele pe care le salvezi în Chrome nu vor fi disponibile pe alte dispozitive.</translation>
@@ -1957,6 +1960,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2508747373511408451">Aplicația <ph name="APPLICATION_NAME" /> necesită ca Google Drive să fie disponibil.</translation>
 <translation id="2509495747794740764">Valoarea redimensionării trebuie să fie un număr între 10 și 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selectată)</translation>
 <translation id="2513904627589542105">Autotest</translation>
 <translation id="251425554130284360">Vezi paginile pe care le-ai accesat și căutările sugerate pentru a reveni ușor la cea mai recentă activitate.
@@ -4992,6 +4996,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4831226137013573603">dezactivează sunetul microfonului</translation>
 <translation id="483262387981411190">Întrerupe sau reia controlul facial</translation>
 <translation id="4833683849865011483">S-a găsit o imprimantă de la serverul de imprimare</translation>
+<translation id="4834388789911023644">Scrie o recenzie</translation>
 <translation id="4835598628985424375">Strânge buzele</translation>
 <translation id="4835677468087803981">Ascunde codul PIN</translation>
 <translation id="4836504898754963407">Gestionează amprentele digitale</translation>
@@ -8555,6 +8560,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7625823789272218216">Filă nouă în stânga</translation>
 <translation id="762730429396410864">Setează manual nivelul de performanță al procesorului raportat la site-uri</translation>
 <translation id="7627749368210392160">Site-urile pot folosi această funcție pentru a accesa alte dispozitive din rețeaua ta locală.</translation>
+<translation id="7628068697012244394">Scrie o recenzie</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), nivelul <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selectează o acțiune pentru fiecare tastă</translation>
 <translation id="7629206210984165492">Liniștit</translation>
@@ -8981,6 +8987,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7949038991703929816">Istoricul nu s-a încărcat. Asigură-te că fișierele conțin jurnale valide ale instrumentului de actualizări.</translation>
 <translation id="7950629216186736592">Motivul: LBS acceptă numai adresele URL http://, https:// și file://.</translation>
 <translation id="7950814699499457511">Activată • Extensia nu a publicat practici de confidențialitate, cum ar fi modul în care colectează și folosește date</translation>
+<translation id="7951159420392892566">Anulează fixarea butoanelor de derulare</translation>
 <translation id="795130320946928025">Dezactivează cardul virtual</translation>
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
 <translation id="7953236668995583915">Reîncarcă pagina pentru a aplica setările actualizate pe acest site</translation>

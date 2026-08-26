@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">ខូកឃី ទិន្នន័យគេហទំព័រ</translation>
 <translation id="1312721752506309252">ការការពារដែលប្រសើរជាងមុន​ត្រូវបានបើក</translation>
 <translation id="1321993286294231467">មានបញ្ហាក្នុង​ការរក្សាទុករូបភាព។</translation>
+<translation id="1322683976135389755">សារតម្រុយ៖ សង្ខេបអត្ថបទនេះ, 1 នៃ 3</translation>
 <translation id="1322735045095424339">ស្ថាប័នរបស់អ្នកតម្រូវឱ្យប្រើមុខងារ​ឯកជន</translation>
 <translation id="1323735185997015385">លុប</translation>
 <translation id="132683371494960526">ប៉ះពីរដងដើម្បីផ្លាស់ប្តូរថតមេ</translation>
@@ -699,6 +700,7 @@
 <translation id="3272527697863656322">បោះបង់</translation>
 <translation id="3272955648592358996">ទិន្នន័យរបស់អ្នកកែលម្អ Google AI</translation>
 <translation id="3273510436356991673">ប្ដូរ​អេក្រង់ដើម​របស់អ្នក​តាមបំណង</translation>
+<translation id="327455571215090823">ការបំពេញ​ស្វ័យប្រវត្តិ​កាន់តែ​ឆ្លាតវៃ​ដែលរក្សា​ជាឯកជន</translation>
 <translation id="3277021493514034324">បានចម្លង​អាសយដ្ឋាន​ទំព័រ</translation>
 <translation id="3280562213547448728">ស្វែងរក​តាម​សំឡេង</translation>
 <translation id="3289505634533552500">ស្វែងរក​តាម​សំឡេង</translation>
@@ -912,6 +914,7 @@
 <translation id="4004204301268239848">ពាក្យសម្ងាត់​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក ដើម្បី​អាចឱ្យអ្នក​ប្រើវានៅ​លើឧបករណ៍​ទាំងឡាយ។</translation>
 <translation id="4007463141047732631">កែក្រុម</translation>
 <translation id="4011489366247192265">ពី</translation>
+<translation id="4014099645251211155">សួរអំពីអ្វីក៏បាននៅលើទំព័ររបស់អ្នកដោយប្រើ Gemini ក្នុង Chrome</translation>
 <translation id="4017599800655151880">រូបក្រប​តំណាង</translation>
 <translation id="4018440314314549819">បំពេញ​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="4021447724486050609">ដំឡើងកំណែ​កម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នក</translation>
@@ -1054,6 +1057,7 @@
 <translation id="4509345063551561634">ទីតាំង៖</translation>
 <translation id="4517684186578051919">ព័ត៌មានឧបករណ៍</translation>
 <translation id="4520798012560649652">ស្វែងយល់បន្ថែមអំពីមុខងារ​ឯកជន</translation>
+<translation id="4524737913322680818">រកទិញ រៀបគម្រោង និងធ្វើអ្វីៗជាច្រើនទៀតតាមរយៈ Gemini ក្នុង Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{ចំណាំ {count}}other{ចំណាំ {count}}}</translation>
 <translation id="4525629404718770519">បង្ហាញការមើលតំណសាកល្បង</translation>
 <translation id="452750746583162491">ពិនិត្យមើល​ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មរបស់អ្នក</translation>
@@ -1210,6 +1214,7 @@
 <translation id="4979397965658815378">ចូលដោយប្រើគណនី Google របស់អ្នកដើម្បីទទួលយកចំណាំ ពាក្យសម្ងាត់ ប្រវត្តិ និងការកំណត់ផ្សេងទៀតរបស់អ្នកនៅលើឧបករណ៍ទាំងអស់របស់អ្នក</translation>
 <translation id="4985921635659180565">បន្ទាប់ពី​កំណត់ពេល​លុប​ឯកសាររួច នោះមិនអាច​បោះបង់​សកម្មភាពនេះ​បានទេ។</translation>
 <translation id="498624032394115435">គ្រប់គ្នា​ដែលមាន​តំណនេះអាច​កែផ្ទាំង​ទាំងអស់បាន។</translation>
+<translation id="4986428648020277392">សារតម្រុយ៖ តើខ្ញុំគួរទិញមួយណា? 2 នៃ 3</translation>
 <translation id="498768198683310172">ចាប់ផ្ដើមប្រើ Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ដែលស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />។ <ph name="AI_TIER" />។</translation>
@@ -1476,6 +1481,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5838430324585198889">ដោះ​សោ​មុខងារ​ច្រើនទៀត​សម្រាប់ iPad របស់អ្នក​តាមរយៈ​កម្មវិធី Google</translation>
 <translation id="583923961930319521">ប្រើ​ពាក្យសម្ងាត់​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
+<translation id="5841763734702350465">សារតម្រុយ៖ បញ្ចូលព្រឹត្តិការណ៍នេះទៅក្នុងប្រតិទិនរបស់ខ្ញុំ, 3 នៃ 3</translation>
 <translation id="5843013299019689749">ផ្ទៃខាងក្រោយ​ពណ៌ខ្មៅ</translation>
 <translation id="5844284118433003733">នៅពេលអ្នក​ចូលគណនី ទិន្នន័យនេះ​ត្រូវបានភ្ជាប់ទៅ​គណនី Google របស់អ្នក ដើម្បីការពារ​អ្នកនៅលើ​សេវាកម្ម Google ដូចជាបង្កើន​ការការពារ​នៅក្នុង Gmail បន្ទាប់ពី​ហេតុការណ៍សុវត្ថិភាព។</translation>
 <translation id="5854790677617711513">ចាស់ជាង 30 ថ្ងៃ</translation>
@@ -1785,6 +1791,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6775952316617222141">ចូល Live ជាមួយ Gemini ក្នុង Chrome</translation>
 <translation id="6779455296366983087">ទិន្នន័យរុករករបស់អ្នកនឹងត្រូវបានលុប</translation>
 <translation id="6782531425936234573">នាំចេញ​ទិន្នន័យ</translation>
+<translation id="6789665473250283877">ដក <ph name="TOOL_NAME" /> ចេញ</translation>
 <translation id="6791425686608802741">ចុច "បញ្ចូល​ផ្ទាំងទៅ​ក្រុមថ្មី"</translation>
 <translation id="6794476726485507147">ជ្រើសរើស​កាលបរិច្ឆេទ និង​ពេលវេលា​ដែលត្រូវ​ទទួលបាន​ការ​ជូនដំណឹង​អំពីការរំលឹក​ឱ្យចូលមើល​ទំព័រ​នេះឡើងវិញ</translation>
 <translation id="6797543908718012274">បើក​មុខងារអាន</translation>

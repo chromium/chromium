@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1269129608791067105">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
 <translation id="1280921956537356716">ટિપ સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
+<translation id="1287449971634955609">એક્સ્ટેન્શન કાઢી નાખો અને આ ડિવાઇસ પર તેના દ્વારા સાચવવામાં આવેલો ડેટા ડિલીટ કરો</translation>
 <translation id="1289129165308566697">અન્ય ડિવાઇસ પર તમારો ઇતિહાસ જુઓ</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1298077576058087471">60% જેટલો ડેટા બચાવો, આજના સમાચાર વાંચો</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">તમારા Google એકાઉન્ટમાં ડેટા સાચવો</translation>
 <translation id="1414919006379339073">વર્તમાન વિન્ડો બંધ કરો</translation>
 <translation id="1416550906796893042">ઍપ્લિકેશન વર્ઝન</translation>
+<translation id="1426410128494586442">હા</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
 <translation id="1435593198351412143">ઑટોમૅટિક રીતે PDFs ખોલો</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">તમે એવી સાઇટ રિવ્યૂ કરી શકો જે ઘણા નોટિફિકેશન મોકલતી હોય અને ભવિષ્યમાં વધુ નોટિફિકેશન મોકલતા તેમને અટકાવી શકો</translation>
 <translation id="2386938421315164605">વિષયોને છુપાવો અને બતાવો</translation>
 <translation id="2390510615457643724">શું તમે <ph name="FILE_NAME" /><ph name="FILE_SIZE" />ને ફરી ડાઉનલોડ કરવા માગો છો?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">સક્રિય કરો</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, પસંદ કરેલું ચિત્ર-માં-ચિત્રનું છૂપું ટૅબ</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, રેકોર્ડ કરતું છૂપું ટૅબ</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">આ પેજને બુકમાર્ક કરો</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />ના બધા પેજ</translation>
 <translation id="3268048651973962414">શોધ પરિણામો જોવા માટે ઉપર ખેંચો</translation>
+<translation id="3268205181992599708">વૉઇસનો ઉપયોગ કરવા માટે માઇક ચાલુ કરો</translation>
 <translation id="3269093882174072735">છબી લોડ કરો</translation>
 <translation id="3280562213547448728">વૉઇસ શોધ</translation>
 <translation id="3282801380074962248">વિભાગ મોટો કરો</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
 <translation id="3560831525486613327">'નવું ટૅબ' પેજ ખોલો</translation>
 <translation id="3563767357928833671">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવેલું છે</translation>
+<translation id="356407858591811361">નવી છૂપી વિન્ડો ખોલો</translation>
 <translation id="3566639033325271639">સેટિંગ અપડેટ કરો</translation>
 <translation id="3568945271227339929">કોઈ પાસવર્ડ સાથે ચેડાં થયાં નથી</translation>
 <translation id="3575464060651642446">આ ડિવાઇસ પર પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • તમે આ સાઇટ પર ઉપયોગ કર્યો છે</translation>
 <translation id="4214315110991671325">જો તમે કુકીને મંજૂરી આપો, તો Chrome પહેલેથી લોડ કરવા માટે તેમનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="421517251707893998">આ શૉર્ટકટને પિન કરો પર ટૅપ કરો</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">આ પેજને સાંભળો</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું છૂપું ટૅબ</translation>
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
@@ -981,6 +987,7 @@
 <translation id="4961107849584082341">આ પેજનો અનુવાદ કોઈપણ ભાષામાં કરો</translation>
 <translation id="4964614743143953889">અસુરક્ષિત સાઇટ અને ડાઉનલોડ વિશે Chrome તમને ચેતવણી આપે છે</translation>
 <translation id="496607651705915226">તમારા Google એકાઉન્ટમાં નવા પાસવર્ડ સાચવવા અને તેનો ઉપયોગ કરવા માટે, Google Play સેવાઓ અપડેટ કરો</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">વધુ પરિણામો જોવા માટે, બીજું કશુંક શોધવાનો પ્રયાસ કરો અથવા સંપૂર્ણ Chrome ઇતિહાસ ખોલો.</translation>
 <translation id="497421865427891073">આગળ જાઓ</translation>
 <translation id="497983151715419057">તમારા નિષ્ક્રિય ટૅબનો રિવ્યૂ કરો અને અહીં ગ્રૂપ કરો</translation>
@@ -1053,6 +1060,7 @@
 <translation id="5267572070504076962">જોખમી સાઇટ સામે સંરક્ષણ મેળવવા માટે Safe Browsingની સુવિધા ચાલુ કરો</translation>
 <translation id="5273031377282080577">તમારા ઍડમિનિસ્ટ્રેટર આ સેટિંગ મેનેજ કરે છે.</translation>
 <translation id="5284295735376057059">દસ્તાવેજની પ્રોપર્ટી</translation>
+<translation id="5286907366254680517">ભાળ મળી</translation>
 <translation id="5290322819358431297">તમારા પાસવર્ડ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
 <translation id="5301876394151419436">તમે <ph name="EMAIL" /> તરીકે સાઇન ઇન કર્યું છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
@@ -1692,6 +1700,7 @@
 <translation id="7714077993070342304">Chrome મેનૂ ખોલો</translation>
 <translation id="7733878270780732638">ડિવાઇસ પર પર્યાપ્ત સ્પેસ નથી.</translation>
 <translation id="7740287852186792672">શોધ પરિણામો</translation>
+<translation id="7740996059027112821">માનક</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, પસંદ કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="774876555279732384"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ પણ મેનેજ કરવામાં આવે છે.</translation>
 <translation id="7758884017823246335">સાઇટની શોધ ઉમેરો</translation>

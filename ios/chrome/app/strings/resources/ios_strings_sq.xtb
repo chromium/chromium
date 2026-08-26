@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Kukit, të dhënat e sajtit</translation>
 <translation id="1312721752506309252">Mbrojtja e përmirësuar është aktive</translation>
 <translation id="1321993286294231467">Gabim në ruajtjen e imazhit.</translation>
+<translation id="1322683976135389755">Kërkesa: Përmblidhe këtë artikull, 1 nga 3</translation>
 <translation id="1322735045095424339">Organizata jote kërkon modalitetin "e fshehtë"</translation>
 <translation id="1323735185997015385">Fshi</translation>
 <translation id="132683371494960526">Trokit dy herë për të ndryshuar dosjen mëmë.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
 <translation id="3259451381796379533">Kjo llogari nuk do të funksionojë me Gemini. Identifikohu me një "Llogari tjetër të Google".</translation>
 <translation id="3265736395246760288">Identifikohu më shpejt nga çdo pajisje e sinkronizuar.</translation>
+<translation id="3268166994745151153">Kjo do të thotë që do të humbasësh progresin tënd aktual</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3272955648592358996">Të dhënat e tua përmirësojnë IA-në e Google</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
+<translation id="327455571215090823">Plotësim automatik më inteligjent, i mbajtur privat</translation>
 <translation id="3277021493514034324">Adresa e sajtit u kopjua</translation>
 <translation id="3280562213547448728">Kërkimi me zë</translation>
 <translation id="3289505634533552500">Kërkimi me zë</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje.</translation>
 <translation id="4007463141047732631">Redakto grupin</translation>
 <translation id="4011489366247192265">Nga</translation>
+<translation id="4014099645251211155">Pyet për çdo gjë në faqen tënde me Gemini në Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Plotëso automatikisht fjalëkalimet e ruajtura</translation>
 <translation id="4021447724486050609">Përditëso shfletuesin</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Vendndodhja:</translation>
 <translation id="4517684186578051919">Informacioni i pajisjes</translation>
 <translation id="4520798012560649652">Mëso më shumë për modalitetin "e fshehtë"</translation>
+<translation id="4524737913322680818">Bli, planifiko dhe bëj më shumë me Gemini në Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} faqeshënues}other{{count} faqeshënues}}</translation>
 <translation id="4525629404718770519">Shfaq pamjet paraprake të lidhjeve</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde online. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Aktivizo ndarjen e skedave</translation>
 <translation id="4658335131052370646">Ruaj</translation>
+<translation id="465947902531722727">Ndërro profilet</translation>
 <translation id="466307903888586355">Ruajtja e skedarëve është bllokuar nga organizata jote</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organizata jote kërkon që të shfletosh në mënyrë private. Grupet e skedave nuk sinkronizohen në modalitetin "i fshehtë".
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
 <translation id="4985921635659180565">Pasi një skedar të planifikohet për t'u fshirë, kjo nuk mund të anulohet.</translation>
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
+<translation id="4986428648020277392">Kërkesa: Cilin duhet të blej? 2 nga 3</translation>
+<translation id="498768198683310172">Fillo të përdorësh Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5838430324585198889">Shkyç më shumë veçori për iPad me aplikacionet e Google</translation>
 <translation id="583923961930319521">Përdor fjalëkalime në të gjitha pajisjet e tua</translation>
+<translation id="5841763734702350465">Kërkesa: Shtoje këtë te kalendari im, 3 nga 3</translation>
 <translation id="5843013299019689749">Ngjyra e sfondit në të zezë</translation>
 <translation id="5844284118433003733">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
 <translation id="5854790677617711513">Më të vjetra se 30 ditë</translation>
@@ -1782,6 +1791,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6775952316617222141">Përdor Gemini Live në Chrome</translation>
 <translation id="6779455296366983087">Të dhënat e tua të shfletimit do të fshihen</translation>
 <translation id="6782531425936234573">Eksporto të dhënat</translation>
+<translation id="6789665473250283877">Hiq <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Trokit te "Shto skedën te grupi i ri"</translation>
 <translation id="6794476726485507147">Zgjidh një datë dhe orë për të marrë një njoftim rikujtues për të rivizituar këtë faqe</translation>
 <translation id="6797543908718012274">Aktivizo "Modalitetin e leximit"</translation>
@@ -2153,6 +2163,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifiko që je ti për të plotësuar automatikisht informacionet delikate</translation>
 <translation id="8015826420689927262">Fshi bashkëngjitjen</translation>
+<translation id="8016869623424294549">Je gati të ndërrosh profilet</translation>
 <translation id="8017015647846870183">Nga "Menaxheri i fjalëkalimeve i Google", duke përfshirë fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8023170444051056234">Do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>

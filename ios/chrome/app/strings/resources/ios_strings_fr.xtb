@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies et données des sites</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
+<translation id="1322683976135389755">Prompt 1 sur 3 : Résume cet article</translation>
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
 <translation id="132683371494960526">Appuyez deux fois pour modifier le dossier parent.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Appuyez sur "Confidentialité et sécurité"</translation>
 <translation id="3259451381796379533">Ce compte ne fonctionnera pas avec Gemini. Connectez-vous avec un autre compte Google.</translation>
 <translation id="3265736395246760288">Connectez-vous plus rapidement depuis n'importe lequel de vos appareils synchronisés.</translation>
+<translation id="3268166994745151153">Vous perdrez votre progression actuelle</translation>
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3272955648592358996">Vos données améliorent l'IA de Google</translation>
 <translation id="3273510436356991673">Personnaliser votre écran d'accueil</translation>
+<translation id="327455571215090823">Saisie automatique plus intelligente, confidentialité préservée</translation>
 <translation id="3277021493514034324">Adresse du site copiée</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3289505634533552500">Recherche vocale</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils.</translation>
 <translation id="4007463141047732631">Modifier le groupe</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Posez des questions sur n'importe quel élément de votre page avec Gemini dans Chrome</translation>
 <translation id="4017599800655151880">Vignette</translation>
 <translation id="4018440314314549819">Saisir automatiquement les mots de passe enregistrés</translation>
 <translation id="4021447724486050609">Mettre à jour votre navigateur</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Emplacement :</translation>
 <translation id="4517684186578051919">Informations sur l'appareil</translation>
 <translation id="4520798012560649652">En savoir plus sur le mode navigation privée</translation>
+<translation id="4524737913322680818">Achetez, planifiez et faites-en plus avec Gemini dans Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="4525629404718770519">Afficher les aperçus des liens</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont protégés, vérifiez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Activer le partage d'onglet</translation>
 <translation id="4658335131052370646">Enregistrer</translation>
+<translation id="465947902531722727">Changer de profil</translation>
 <translation id="466307903888586355">L'enregistrement de fichiers est bloqué par votre organisation</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Votre organisation exige que vous utilisiez le mode navigation privée. Dans ce mode, les groupes d'onglets ne sont pas synchronisés.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier a été programmée, elle ne peut plus être annulée.</translation>
 <translation id="498624032394115435">Toutes les personnes disposant du lien peuvent modifier tous les onglets.</translation>
+<translation id="4986428648020277392">Prompt 2 sur 3 : Lequel devrais-je acheter ?</translation>
+<translation id="498768198683310172">Commencer à utiliser Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838430324585198889">Profitez de plus de fonctionnalités sur votre iPad avec les applis Google</translation>
 <translation id="583923961930319521">Utiliser des mots de passe sur tous vos appareils</translation>
+<translation id="5841763734702350465">Prompt 3 sur 3 : Ajoute ceci à mon agenda</translation>
 <translation id="5843013299019689749">Couleur d'arrière-plan noire</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
@@ -1782,6 +1791,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6775952316617222141">Échanger de vive voix avec Gemini dans Chrome</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6782531425936234573">Exporter des données</translation>
+<translation id="6789665473250283877">Supprimer <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Appuyez sur "Ajouter l'onglet à un nouveau groupe"</translation>
 <translation id="6794476726485507147">Sélectionnez quand vous envoyer un rappel vous invitant à revenir sur cette page</translation>
 <translation id="6797543908718012274">Activer le mode Lecture</translation>
@@ -2153,6 +2163,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8011489434346330032">Inspecteur Web</translation>
 <translation id="8014007212279733632">Confirmer votre identité pour saisir automatiquement des informations sensibles</translation>
 <translation id="8015826420689927262">Supprimer la pièce jointe</translation>
+<translation id="8016869623424294549">Vous allez changer de profil</translation>
 <translation id="8017015647846870183">Données du Gestionnaire de mots de passe de Google, y compris les mots de passe et les clés d'accès</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8023170444051056234">Vous perdrez immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous vos appareils</translation>

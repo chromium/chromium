@@ -90,6 +90,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}other{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1832046143430087831">使用 Chrome 的 V8 引擎加快網站速度，但 Chrome 防攻擊的能力會略為下降。此設定已關閉。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
+<translation id="1842869163383855194">即使 Chrome 最小化，你亦能輕鬆在裝置上使用 Chrome 的「搜尋」功能。</translation>
 <translation id="1843347690926158494">使用「Google 智能鏡頭」搜尋此分頁</translation>
 <translation id="1849248141818021764">只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，你需要<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" /></translation>
 <translation id="1856809424654973980">Chrome 應用程式讓你隨時隨地繼續瀏覽</translation>
@@ -328,6 +329,7 @@
 <translation id="4173512894976930765">網站可能會正常運作。關閉所有 Chrome 視窗後，系統會將你登出所有網站，但如果你已登入 Chrome，Google 帳戶就會維持登入狀態。</translation>
 <translation id="4175922240926474352">由於此網站未使用安全連線，且檔案可能已被篡改，因此 Chrome 已禁止下載</translation>
 <translation id="4191857738314598978">{0,plural, =1{請在 1 天內重新啟動 Chrome}other{請在 # 天內重新啟動 Chrome}}</translation>
+<translation id="4222394563269716113">使用鍵盤快速鍵開啟 Chrome 的「搜尋」功能。</translation>
 <translation id="4222932583846282852">正在取消…</translation>
 <translation id="4224210481850767180">安裝已取消。</translation>
 <translation id="4242034826641750751">Chrome 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
@@ -353,6 +355,7 @@
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">與 Chrome 版 Gemini 分享此文件即可撮要文件內容並提出後續問題</translation>
+<translation id="4447327682081576371">在 Mac 選單列顯示 Chrome 的「搜尋」功能，並啟用鍵盤快速鍵</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
@@ -442,6 +445,7 @@
 <translation id="5430073640787465221">您的偏好設定檔已損毀或無效。
 
 Google Chrome 無法復原您的設定。</translation>
+<translation id="545114101312117217">透過 Chrome 的「搜尋」功能輕鬆存取捷徑</translation>
 <translation id="5465210843490471889">選擇要配合 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="547202872422499512">Chrome 現在會在 Windows 啟動時開啟，讓你立即開始瀏覽。你可以在設定中關閉此功能。</translation>
 <translation id="5486346529181556467">舉報你認為有害的網站，為所有使用者提高網上安全。進一步瞭解 <ph name="BEGIN_LINK" />Google 的不安全網站政策<ph name="END_LINK" />。</translation>
@@ -727,6 +731,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充程式，請在網址列中輸入捷徑，然後按下你選取的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
+<translation id="8093772166980702367">在系統列顯示 Chrome 的「搜尋」功能，並啟用鍵盤快速鍵</translation>
 <translation id="8110438089258398864">你可重新開啟「Google 搜尋 AI 模式」以在瀏覽時提問</translation>
 <translation id="8113883687556086139">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料</translation>
 <translation id="8115695070094288807">自訂 Chrome…</translation>

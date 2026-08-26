@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
 <translation id="1269129608791067105">Εδώ θα βρείτε το ιστορικό σας</translation>
 <translation id="1280921956537356716">Ενεργοποίηση ειδοποιήσεων συμβουλών</translation>
+<translation id="1287449971634955609">Κατάργηση επεκτάσεων και διαγραφή των δεδομένων που έχουν αποθηκεύσει σε αυτή τη συσκευή</translation>
 <translation id="1289129165308566697">Δείτε το ιστορικό σας σε άλλες συσκευές</translation>
 <translation id="129553762522093515">Έκλεισαν πρόσφατα</translation>
 <translation id="1298077576058087471">Εξοικονομήστε έως και το 60% των δεδομένων, διαβάστε τις σημερινές ειδήσεις</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Αποθήκευση δεδομένων στον Λογαριασμό σας Google</translation>
 <translation id="1414919006379339073">Κλείσιμο τρέχοντος παραθύρου</translation>
 <translation id="1416550906796893042">Έκδοση εφαρμογής</translation>
+<translation id="1426410128494586442">Ναι</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1432581352905426595">Διαχείριση μηχανών αναζήτησης</translation>
 <translation id="1435593198351412143">Αυτόματο άνοιγμα PDF</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">Μπορείτε να ελέγξετε τους ιστοτόπους που στέλνουν πολλές ειδοποιήσεις και να αποτρέψετε την αποστολή περισσότερων στο μέλλον</translation>
 <translation id="2386938421315164605">Απόκρυψη και κατάργηση απόκρυψης θεμάτων</translation>
 <translation id="2390510615457643724">Θέλετε να κατεβάσετε ξανά το αρχείο <ph name="FILE_NAME" /><ph name="FILE_SIZE" />;</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Ενεργοποίηση</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, Καρτέλα ανώνυμης περιήγησης που κάνει εγγραφή</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">Προσθήκη αυτής της σελίδας στους σελιδοδείκτες</translation>
 <translation id="3265093782546847662">Όλες οι σελίδες του τομέα <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Σύρετε προς τα επάνω για να δείτε τα αποτελέσματα αναζήτησης</translation>
+<translation id="3268205181992599708">Ενεργοποιήστε το μικρόφωνο για να χρησιμοποιήσετε φωνή</translation>
 <translation id="3269093882174072735">Φόρτωση εικόνας</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
 <translation id="3282801380074962248">Ανάπτυξη ενότητας</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">Προσθήκη στις επαφές</translation>
 <translation id="3560831525486613327">Ανοίξτε μια σελίδα Νέα καρτέλα</translation>
 <translation id="3563767357928833671">Το περιεχόμενο του προχείρου εμφανίζεται</translation>
+<translation id="356407858591811361">Άνοιγμα νέου παρ. ανών. περιήγ.</translation>
 <translation id="3566639033325271639">Ενημέρωση ρυθμίσεων</translation>
 <translation id="3568945271227339929">Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης</translation>
 <translation id="3575464060651642446">Έλεγχος κωδικών πρόσβασης σε αυτή τη συσκευή…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Χρησιμοποιήθηκε σε αυτόν τον ιστότοπο</translation>
 <translation id="4214315110991671325">Εάν επιτρέψετε τη χρήση cookie, το Chrome μπορεί να τα χρησιμοποιήσει για την προφόρτωση.</translation>
 <translation id="421517251707893998">Πατήστε Καρφίτσωμα αυτής της συντόμευσης</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Ακρόαση αυτής της σελίδας</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="4225895483398857530">Συντόμευση γραμμής εργαλείων</translation>
@@ -981,6 +987,7 @@
 <translation id="4961107849584082341">Μεταφράστε αυτήν τη σελίδα σε οποιαδήποτε γλώσσα</translation>
 <translation id="4964614743143953889">Το Chrome σας προειδοποιεί σχετικά με μη ασφαλείς ιστοτόπους και λήψεις</translation>
 <translation id="496607651705915226">Για να αποθηκεύσετε και να χρησιμοποιήσετε νέους κωδικούς πρόσβασης στον Λογαριασμό σας Google, ενημερώστε τις υπηρεσίες Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Δοκιμάστε να αναζητήσετε κάτι άλλο ή ανοίξτε το πλήρες Ιστορικό Chrome για να δείτε περισσότερα αποτελέσματα.</translation>
 <translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
 <translation id="497983151715419057">Ελέγξτε τις ανενεργές καρτέλες και ομάδες εδώ</translation>
@@ -1053,6 +1060,7 @@
 <translation id="5267572070504076962">Ενεργοποιήστε την Ασφαλή περιήγηση για να προστατευτείτε από επικίνδυνους ιστοτόπους</translation>
 <translation id="5273031377282080577">Ο διαχειριστής σας διαχειρίζεται τη συγκεκριμένη ρύθμιση.</translation>
 <translation id="5284295735376057059">Ιδιότητες εγγράφου</translation>
+<translation id="5286907366254680517">Εντοπίστηκε</translation>
 <translation id="5290322819358431297">Αυτόματη συμπλήρωση κωδικών</translation>
 <translation id="5292796745632149097">Αποστολή προς</translation>
 <translation id="5301876394151419436">Έχετε συνδεθεί ως <ph name="EMAIL" />. Μπορείτε να διακόψετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
@@ -1692,6 +1700,7 @@
 <translation id="7714077993070342304">Άνοιγμα Μενού του Chrome</translation>
 <translation id="7733878270780732638">Δεν υπάρχει αρκετός χώρος στη συσκευή.</translation>
 <translation id="7740287852186792672">Αποτελέσματα αναζήτησης</translation>
+<translation id="7740996059027112821">Τυπική</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα ανώνυμης περιήγησης που κοινοποιεί περιεχόμενο</translation>
 <translation id="774876555279732384">Η διαχείριση των υπηρεσιών αυτόματης συμπλήρωσης γίνεται επίσης στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Προσθήκη αναζήτησης ιστοτόπου</translation>

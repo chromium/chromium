@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1269129608791067105">Her kan du se din historik</translation>
 <translation id="1280921956537356716">Aktivér notifikationer med tips</translation>
+<translation id="1287449971634955609">Fjern udvidelser, og slet de data, de har gemt på denne enhed</translation>
 <translation id="1289129165308566697">Se din historik på andre enheder</translation>
 <translation id="129553762522093515">Senest lukkede</translation>
 <translation id="1298077576058087471">Spar op til 60 % data, og læs dagens nyheder</translation>
@@ -115,6 +116,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1413446866325418126">Gem data på din Google-konto</translation>
 <translation id="1414919006379339073">Luk det aktuelle vindue</translation>
 <translation id="1416550906796893042">Appversion</translation>
+<translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1435593198351412143">Åbn PDF-filer automatisk</translation>
@@ -342,6 +344,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2385605401818128172">Du kan gennemgå websites, der sender mange notifikationer, og forhindre dem i at sende flere i fremtiden</translation>
 <translation id="2386938421315164605">Skjul og vis emner</translation>
 <translation id="2390510615457643724">Vil du downloade <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Aktivér</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, valgt inkognitofane i tilstanden integreret billede</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, inkognitofane, der optager</translation>
@@ -559,6 +562,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3254409185687681395">Tilføj denne side som bogmærke</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Træk opad for at se søgeresultater</translation>
+<translation id="3268205181992599708">Aktivér mikrofonen for at bruge stemmestyring</translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3282801380074962248">Udvid sektion</translation>
@@ -626,6 +630,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3557336313807607643">Føj til kontakter</translation>
 <translation id="3560831525486613327">Åbn siden Ny fane</translation>
 <translation id="3563767357928833671">Indholdet af udklipsholderen vises</translation>
+<translation id="356407858591811361">Åbn et nyt inkognitovindue</translation>
 <translation id="3566639033325271639">Opdater indstillinger</translation>
 <translation id="3568945271227339929">Der er ingen kompromitterede adgangskoder</translation>
 <translation id="3575464060651642446">Tjekker adgangskoder på denne enhed…</translation>
@@ -785,6 +790,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Du har brugt den på dette website</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="421517251707893998">Tryk på Fastgør denne genvej</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" />-<ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, valgt og fastgjort inkognitofane i tilstanden integreret billede</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
@@ -981,6 +987,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
 <translation id="4964614743143953889">Chrome advarer dig om usikre websites og downloads</translation>
 <translation id="496607651705915226">Opdater Google Play-tjenester for at gemme og bruge nye adgangskoder på din Google-konto</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" />-<ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Prøv at søge efter noget andet, eller åbn hele Chrome-historikken for at se flere resultater.</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="497983151715419057">Gennemgå dine inaktive faner og grupper her</translation>
@@ -1053,6 +1060,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5273031377282080577">Din administrator styrer denne indstilling.</translation>
 <translation id="5284295735376057059">Dokumentegenskaber</translation>
+<translation id="5286907366254680517">Registreret</translation>
 <translation id="5290322819358431297">Udfyld dine adgangskoder automatisk</translation>
 <translation id="5292796745632149097">Send til</translation>
 <translation id="5301876394151419436">Du er logget ind som <ph name="EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester til dig personligt baseret på din historik.</translation>
@@ -1692,6 +1700,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7714077993070342304">Åbn Chrome-menuen</translation>
 <translation id="7733878270780732638">Der er ikke nok plads på enheden.</translation>
 <translation id="7740287852186792672">Søgeresultater</translation>
+<translation id="7740996059027112821">Standard</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, valgt inkognitofane, der deler indhold</translation>
 <translation id="774876555279732384">Tjenester til autofyld administreres også i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Tilføj websitesøgning</translation>

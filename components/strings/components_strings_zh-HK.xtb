@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">使用這個應用程式時不要再問我</translation>
 <translation id="132301787627749051">搵剪貼簿嘅圖</translation>
 <translation id="1323433172918577554">顯示更多</translation>
+<translation id="1326962902431997202">刪除線</translation>
 <translation id="1330449323196174374">左半邊對摺</translation>
 <translation id="1330952240988133220">將糾正號碼安全地儲存至「Google 錢包」</translation>
 <translation id="133173645041092770">關閉網站</translation>
@@ -633,6 +634,7 @@
 <translation id="2090451897496479509">詳情請聯絡供應商</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">音效</translation>
+<translation id="2092361763640578821">進一步瞭解</translation>
 <translation id="2093184051799735948">搜尋 <ph name="ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
@@ -1543,6 +1545,7 @@
 <translation id="3642638418806704195">應用程式：</translation>
 <translation id="3647286794400715637">每個網址字串都必須包含 1 至 2 個網址。</translation>
 <translation id="3647400963805615193">閂 Chrome 提示按鈕，㩒 Enter 掣就可以閂，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">監察活動</translation>
 <translation id="3648667207586409316">有什麼方法可以減輕壓力？</translation>
 <translation id="3650584904733503804">驗證成功</translation>
 <translation id="3650594806107685466">為保護信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的 CVC</translation>
@@ -2005,6 +2008,7 @@
 <translation id="4377869186417956230">改為屬於呢個選單項目嘅所有會員卡。</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="4378221908737133050">建立家居大掃除檢查清單</translation>
+<translation id="4379357028567121852">來自「<ph name="APP_NAME" />」</translation>
 <translation id="4381997246130185847">你可隨時隨地繼續未完成的操作或建立新分頁群組</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">由現在起，請將你的檔案儲存到雲端儲存空間</translation>
@@ -2395,6 +2399,7 @@
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">機構可能會監察特定瀏覽活動以防止資料遺失，詳見 <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /></translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 地址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第十卷</translation>
 <translation id="507130231501693183">出紙槽 4</translation>
@@ -2759,6 +2764,7 @@
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5660122698869360728">全新的智能資料夾可集中儲存所有購物頁面，以及自動追蹤價格、取得價格分析資料等。</translation>
 <translation id="5663955426505430495">此裝置的管理員已安裝支援額外功能的擴充程式。擴充程式可存取您的部分資料。</translation>
+<translation id="5664075349639500330">進一步了解點樣以隔離模式瀏覽。</translation>
 <translation id="5675650730144413517">此網頁無法正常運作</translation>
 <translation id="5675959228867414813">按日期顯示</translation>
 <translation id="567604591393105935">商務頁底面板宜家顯示喺畫面下半部</translation>
@@ -3273,6 +3279,7 @@
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6550245281449521513">唔可以鎖定滑鼠</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />，新加入</translation>
+<translation id="6552244083450538912">以下各方可能會看到你的活動：你瀏覽的網站、你的僱主或學校、你的互聯網服務供應商</translation>
 <translation id="6552566579578780089">付款資料</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />，<ph name="SUGGESTION_TYPE" />。群組「<ph name="GROUP_HEADER" />」入面嘅第 <ph name="MATCH_POSITION" /> 項，總共 <ph name="NUM_MATCHES_IN_GROUP" /> 項。</translation>
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
@@ -3507,6 +3514,7 @@
 <translation id="6972867931824045907">如要使用剪貼簿，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="6973656660372572881">已指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
+<translation id="6976229914347655621">機構要求的擴充程式會保持開啟，詳見 <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /></translation>
 <translation id="6978236010531171013">仍要分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
@@ -3673,6 +3681,7 @@
 <translation id="7269151392155523061">快速鍵不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">你下載的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，亦可能會根據公司政策儲存這些檔案或向管理員顯示。</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
+<translation id="7278933725460302617">你現已進入隔離模式</translation>
 <translation id="7282894295403887199">你無法在無痕模式下瀏覽此頁面</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以改 Google 帳戶密碼</translation>
 <translation id="7286908876112207905">不允許將此內容貼到此網站</translation>
@@ -3691,6 +3700,7 @@
 <translation id="7308436126008021607">背景同步處理</translation>
 <translation id="7310392214323165548">裝置即將重新啟動</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> 㩒 Tab 鍵，再㩒 Enter 鍵問 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">你的機構已將此網站標示為可能違反政策。</translation>
 <translation id="7315372670898739748">無法連結，請稍後再試</translation>
 <translation id="7316521168101843192">正在儲存檔案至 Microsoft OneDrive</translation>
@@ -3845,6 +3855,7 @@
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556328470713619625">使用密鑰</translation>
 <translation id="7559278538486662777">此應用程式無法調整大小。</translation>
+<translation id="7561202748196702434">以隔離模式瀏覽</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">您有可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或會遭身份盜用。Chrome 建議您立即變更密碼。</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證或許曾以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
@@ -4380,6 +4391,7 @@
 <translation id="8473626140772740486">300 x 450 毫米</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8474910779563686872">顯示開發人員詳情</translation>
+<translation id="84764251640219124">網站不可使用第三方 Cookie。如果需使用這類 Cookie 的網站無法正常運作，你可以<ph name="BEGIN_LINK" />嘗試暫時允許網站存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
 <translation id="8483229036294884935">此地址將從您的 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
 <translation id="8488350697529856933">適用對象</translation>
@@ -4446,6 +4458,7 @@
 <translation id="8619130384334725124">目前預設</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8622864575115813231">正在聯絡金融機構…</translation>
+<translation id="8632584659860846053">關閉所有隔離視窗後，系統會刪除你的瀏覽記錄、Cookie 和網站資料、快取，以及在表格中輸入的資料</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637362707224133343">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近曾在你嘗試瀏覽的網站上<ph name="BEGIN_LINK" />發現仿冒詐騙內容<ph name="END_LINK" />。仿冒詐騙網站會偽裝成其他網站，藉此欺騙你。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">如想與他人分享分頁和協作，你必須登入 Chrome</translation>

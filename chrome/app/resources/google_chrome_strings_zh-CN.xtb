@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建议您暂停导致浏览器运行缓慢的标签页}other{Chrome 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1832046143430087831">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已关闭。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
+<translation id="1842869163383855194">在设备上轻松使用“在 Chrome 中搜索”，即使 Chrome 已最小化也无妨。</translation>
 <translation id="1843347690926158494">使用 Google 智能镜头搜索此标签页</translation>
 <translation id="1849248141818021764">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1856809424654973980">使用 Chrome 应用，随时随地接续浏览体验</translation>
@@ -324,6 +325,7 @@
 <translation id="4173512894976930765">网站很可能会按预期运行。关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。</translation>
 <translation id="4175922240926474352">由于网站未使用安全连接，且文件可能已被篡改，因此 Chrome 阻止了此次下载</translation>
 <translation id="4191857738314598978">{0,plural, =1{请于 1 天内重新启动 Chrome}other{请于 # 天内重新启动 Chrome}}</translation>
+<translation id="4222394563269716113">使用键盘快捷键打开“在 Chrome 中搜索”。</translation>
 <translation id="4222932583846282852">正在取消…</translation>
 <translation id="4224210481850767180">已取消安装。</translation>
 <translation id="4242034826641750751">Chrome 需要为此网站授予摄像头权限和麦克风权限</translation>
@@ -349,6 +351,7 @@
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">与 Chrome 中的 Gemini 分享此文档，快速了解概要并追问相关问题</translation>
+<translation id="4447327682081576371">在 Mac 菜单栏中显示“在 Chrome 中搜索”并开启键盘快捷键</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
@@ -434,6 +437,7 @@
 <translation id="5402307365844630024">在 Chrome Beta 版中开启/关闭 Gemini</translation>
 <translation id="541844421954567481">密码、标签页及更多内容随身行，尽在 <ph name="DEVICE_TYPE" /> 版 Chrome 应用</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
+<translation id="545114101312117217">通过“在 Chrome 中搜索”轻松访问快捷方式</translation>
 <translation id="5465210843490471889">选择要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 资料</translation>
 <translation id="547202872422499512">现在，Chrome 会在 Windows 启动时启动，让您可以即刻开启浏览之旅。您可在“设置”中关闭此功能。</translation>
 <translation id="5486346529181556467">举报您认为有害的网站，帮助我们为所有人改善网络安全环境。详细了解 <ph name="BEGIN_LINK" />Google 的“不安全网站”政策。<ph name="END_LINK" /></translation>
@@ -719,6 +723,7 @@
 <translation id="8074398340364918139">若要在特定的 Chrome 功能或扩展程序中进行搜索，请先在地址栏中输入相应的快捷字词，然后按下您选择的键盘按键</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
+<translation id="8093772166980702367">在系统任务栏中显示“在 Chrome 中搜索”并开启键盘快捷键</translation>
 <translation id="8110438089258398864">您可以重新打开 Google 搜索 AI 模式，以便在浏览时提问</translation>
 <translation id="8113883687556086139">请验证您的身份，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="8115695070094288807">正在打造您的专属 Chrome…</translation>

@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Čitateľský zoznam</translation>
 <translation id="1269129608791067105">Tu nájdete svoju históriu</translation>
 <translation id="1280921956537356716">Zapnúť upozornenia na tipy</translation>
+<translation id="1287449971634955609">Odstrániť rozšírenia a vymazať údaje, ktoré uložili v tomto zariadení</translation>
 <translation id="1289129165308566697">Zobrazenie histórie v iných zariadeniach</translation>
 <translation id="129553762522093515">Nedávno zatvorené</translation>
 <translation id="1298077576058087471">Ušetrite až 60 % dát, prečítajte si dnešné správy</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Ukladajte si údaje do účtu Google</translation>
 <translation id="1414919006379339073">Zavretie aktuálneho okna</translation>
 <translation id="1416550906796893042">Verzia aplikácie</translation>
+<translation id="1426410128494586442">Áno</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1432581352905426595">Spravovať vyhľadávače</translation>
 <translation id="1435593198351412143">Automaticky otvárať súbory PDF</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">Môžete skontrolovať weby, ktoré odosielajú veľa upozornení, a zabrániť im, aby v budúcnosti odosielali ďalšie</translation>
 <translation id="2386938421315164605">Skryte a zobrazte témy</translation>
 <translation id="2390510615457643724">Chcete znova stiahnuť <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2391579633712104609">180 °</translation>
 <translation id="2392369802118427583">Aktivovať</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, vybraná karta inkognito s obrazom v obraze</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, karta inkognito s nahrávaním</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">Vytvoriť záložku pre túto stránku</translation>
 <translation id="3265093782546847662">Všetky stránky domény <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Výsledky vyhľadávania zobrazíte presunutím nahor</translation>
+<translation id="3268205181992599708">Ak chcete používať hlas, povoľte mikrofón</translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
 <translation id="3282801380074962248">Rozbaliť sekciu</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="3560831525486613327">Otvorte stránku na novej karte.</translation>
 <translation id="3563767357928833671">Zobrazuje sa obsah schránky</translation>
+<translation id="356407858591811361">Otvoriť nové okno inkognito</translation>
 <translation id="3566639033325271639">Aktualizovať nastavenia</translation>
 <translation id="3568945271227339929">Žiadne prelomené heslá</translation>
 <translation id="3575464060651642446">Kontrolujú sa heslá v tomto zariadení…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Použili ste na tomto webe</translation>
 <translation id="4214315110991671325">Keď povolíte súbory cookies, Chrome môže pomocou nich prednačítavať.</translation>
 <translation id="421517251707893998">Klepnite na Pripnúť tento odkaz</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Vypočuť obsah tejto stránky</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, vybraná pripnutá karta inkognito s obrazom v obraze</translation>
 <translation id="4225895483398857530">Skratka panela s nástrojmi</translation>
@@ -981,6 +987,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4961107849584082341">Preložte si túto stránku do ľubovoľného jazyka</translation>
 <translation id="4964614743143953889">Chrome vás upozorňuje na nebezpečné weby a súbory na stiahnutie</translation>
 <translation id="496607651705915226">Ak chcete vo svojom účte Google ukladať a používať nové heslá, aktualizujte Služby Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Ak chcete zobraziť ďalšie výsledky, skúste vyhľadať niečo iné alebo otvorte celú históriu Chromu.</translation>
 <translation id="497421865427891073">Ďalej</translation>
 <translation id="497983151715419057">Tu môžete skontrolovať svoje neaktívne karty a skupiny</translation>
@@ -1053,6 +1060,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5267572070504076962">Ak chcete získať ochranu pred nebezpečnými webmi, zapnite Bezpečné prehliadanie</translation>
 <translation id="5273031377282080577">Toto nastavenie ovláda váš správca.</translation>
 <translation id="5284295735376057059">Vlastnosti dokumentu</translation>
+<translation id="5286907366254680517">Rozpoznané</translation>
 <translation id="5290322819358431297">Dopĺňajte heslá automaticky</translation>
 <translation id="5292796745632149097">Odoslanie do zariadení</translation>
 <translation id="5301876394151419436">Máte prihlásený účet <ph name="EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
@@ -1692,6 +1700,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7714077993070342304">Otvorenie Ponuky Chrome</translation>
 <translation id="7733878270780732638">V zariadení nie je dostatok priestoru.</translation>
 <translation id="7740287852186792672">Výsledky vyhľadávania</translation>
+<translation id="7740996059027112821">Štandardne</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, vybraná karta inkognito na zdieľanie</translation>
 <translation id="774876555279732384">Služby automatického dopĺňania sa dajú spravovať aj v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Pridanie vyhľadávania na webe</translation>

@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Evästeet, sivuston tiedot</translation>
 <translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
 <translation id="1321993286294231467">Virhe tallennettaessa kuvaa</translation>
+<translation id="1322683976135389755">Kehote: Tee yhteenveto tästä artikkelista, 1/3</translation>
 <translation id="1322735045095424339">Organisaatiosi edellyttää incognito-tilaa</translation>
 <translation id="1323735185997015385">Poista</translation>
 <translation id="132683371494960526">Vaihda ylätason kansiota kaksoisnapauttamalla.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Valitse "Yksityisyys ja turvallisuus"</translation>
 <translation id="3259451381796379533">Tämä tili ei toimi Geminin kanssa. Kirjaudu toiselle Google-tilille.</translation>
 <translation id="3265736395246760288">Kirjaudu sisään nopeammin kaikilla synkronoiduilla laitteilla.</translation>
+<translation id="3268166994745151153">Tämä tarkoittaa, että menetät nykyisen edistymisen</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3272955648592358996">Datasi parantaa Googlen tekoälyä</translation>
 <translation id="3273510436356991673">Muokkaa aloitusnäyttöä</translation>
+<translation id="327455571215090823">Fiksumpi automaattinen täyttö yksityisyydestä tinkimättä</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
 <translation id="3280562213547448728">Puhehaku</translation>
 <translation id="3289505634533552500">Puhehaku</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla.</translation>
 <translation id="4007463141047732631">Muokkaa ryhmää</translation>
 <translation id="4011489366247192265">Kielestä</translation>
+<translation id="4014099645251211155">Kysy mitä tahansa sivun sisällöstä Gemini in Chromen avulla</translation>
 <translation id="4017599800655151880">Pikkukuva</translation>
 <translation id="4018440314314549819">Täytä tallennetut salasanat automaattisesti</translation>
 <translation id="4021447724486050609">Päivitä selain</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Sijainti:</translation>
 <translation id="4517684186578051919">Laitteen tiedot</translation>
 <translation id="4520798012560649652">Lue lisää incognito-tilasta</translation>
+<translation id="4524737913322680818">Osta, suunnittele ja tee enemmän Gemini in Chromella</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} kirjanmerkki}other{{count} kirjanmerkkiä}}</translation>
 <translation id="4525629404718770519">Näytä linkkien esikatselut</translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Varmista, että salasanasi ovat turvassa ja selvitä, ovatko ne vaarantuneet. Saat myös ohjeita itsesi suojaamiseen verkossa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Laita välilehden jakaminen päälle</translation>
 <translation id="4658335131052370646">Tallenna</translation>
+<translation id="465947902531722727">Vaihda profiilia</translation>
 <translation id="466307903888586355">Organisaatiosi estää tiedostojen tallentamisen</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisaatiosi edellyttää, että selaat yksityisesti. Välilehtiryhmiä ei synkronoida incognito-tilassa.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Kirjaudu Google-tilillesi, niin voit käyttää kirjanmerkkejäsi, salasanojasi, historiaasi ja muuta Chrome-sisältöäsi kaikilla laitteillasi.</translation>
 <translation id="4985921635659180565">Kun tiedoston poistaminen on ajoitettu, sitä ei voi perua.</translation>
 <translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
+<translation id="4986428648020277392">Kehote: Kumpi minun kannattaa ostaa? 2/3</translation>
+<translation id="498768198683310172">Aloita Geminin käyttö</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5838430324585198889">Hyödynnä iPadin lisäominaisuuksia Google-sovelluksilla</translation>
 <translation id="583923961930319521">Käytä salasanoja kaikilla laitteillasi</translation>
+<translation id="5841763734702350465">Kehote: Lisää tämä kalenteriini, 3/3</translation>
 <translation id="5843013299019689749">Musta taustaväri</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
@@ -1782,6 +1791,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6775952316617222141">Avaa Gemini in Chromen Live-ominaisuus</translation>
 <translation id="6779455296366983087">Selausdatasi poistetaan</translation>
 <translation id="6782531425936234573">Eksportoi data</translation>
+<translation id="6789665473250283877">Poista <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Valitse "Lisää välilehti uuteen ryhmään"</translation>
 <translation id="6794476726485507147">Valitse päivämäärä ja kellonaika, jolloin saat muistutusilmoituksen tälle sivulle palaamisesta</translation>
 <translation id="6797543908718012274">Laita lukutila päälle</translation>
@@ -2153,6 +2163,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8011489434346330032">Web Inspector ‑tarkastustyökalu</translation>
 <translation id="8014007212279733632">Vahvista henkilöllisyytesi, jotta arkaluontoiset tiedot voidaan täyttää automaattisesti</translation>
 <translation id="8015826420689927262">Poista liite</translation>
+<translation id="8016869623424294549">Olet vaihtamassa profiilia</translation>
 <translation id="8017015647846870183">Google Salasanoista, mukaan lukien salasanat ja avainkoodit</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
 <translation id="8023170444051056234">Menetät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja se poistetaan kaikilta laitteiltasi</translation>

@@ -354,6 +354,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 bogmærke og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto. Dette rydder også op i eventuelle dubletter.}one{{BOOKMARK_COUNT} bogmærke og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto. Dette rydder også op i eventuelle dubletter.}other{{BOOKMARK_COUNT} bogmærker og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto. Dette rydder også op i eventuelle dubletter.}}</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
+<translation id="1252597096488926946">Frigør rulleknapper</translation>
 <translation id="1252987234827889034">Der opstod en fejl i forbindelse med profilen</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
@@ -985,6 +986,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1756963401828337401">Vælg en skærm, du vil tage et screenshot af</translation>
 <translation id="17584710573359123">Se i Chrome Webshop</translation>
+<translation id="176013700366797492">Gå til Google Wallet for at styre <ph name="BEGIN_LINK1" />data- og privatlivsindstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmetoder<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort<ph name="END_LINK3" /> som f.eks. loyalitetskort og id'er</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> blev omdefineret til <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konti tilhørende <ph name="NAME" /></translation>
 <translation id="176272781006230109">forslag til shopping</translation>
@@ -1715,6 +1717,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2322193970951063277">Sidehoveder og -fødder</translation>
 <translation id="2322622365472107569">Sluttidspunkt: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gemte Wi-Fi-netværk</translation>
+<translation id="2323685460575935191">Skjul rulleknapper</translation>
 <translation id="2325444234681128157">Husk adgangskoden</translation>
 <translation id="2326188115274135041">Bekræft pinkoden for at aktivere automatisk oplåsning</translation>
 <translation id="2326583548923775947">Dette er ikke en Google-konto. De elementer, du gemmer i Chrome, er ikke tilgængelige på andre enheder.</translation>
@@ -1810,7 +1813,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2405057019351885107">Browseren, der øger din produktivitet</translation>
 <translation id="2405887402346713222">Enheds- og komponentserienumre</translation>
 <translation id="2406153734066939945">Vil du slette denne profil og de tilhørende data?</translation>
-<translation id="2406942743794219791">Bekræft den standardsøgemaskine, du vil bruge</translation>
+<translation id="2406942743794219791">Bekræft, hvilken standardsøgemaskine du vil bruge</translation>
 <translation id="2407671304279211586">Vælg DNS-udbyder</translation>
 <translation id="2408018932941436077">Gemmer kort</translation>
 <translation id="2408601796549249241">Gemini-feltet i bunden er åbent i fuld højde</translation>
@@ -1971,6 +1974,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2508747373511408451">Appen <ph name="APPLICATION_NAME" /> kræver, at Google Drev er tilgængeligt.</translation>
 <translation id="2509495747794740764">Skaleringsværdien skal være et tal mellem 10 og 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (valgt)</translation>
 <translation id="2513904627589542105">Selvtest</translation>
 <translation id="251425554130284360">Du får vist sider, du har besøgt, og foreslåede søgninger, så du nemt kan vende tilbage til din seneste aktivitet.
@@ -5008,6 +5012,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4831226137013573603">slå mikrofonens lyd fra</translation>
 <translation id="483262387981411190">Sæt ansigtsstyring på pause, eller genoptag</translation>
 <translation id="4833683849865011483">Der blev fundet 1 printer på printerserveren</translation>
+<translation id="4834388789911023644">Skriv en anmeldelse</translation>
 <translation id="4835598628985424375">Lav trutmund ved at klemme læberne sammen</translation>
 <translation id="4835677468087803981">Skjul pinkode</translation>
 <translation id="4836504898754963407">Administrer fingeraftryk</translation>
@@ -8572,6 +8577,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="762730429396410864">Angiv manuelt det niveau for CPU-ydeevne, der rapporteres til websites</translation>
 <translation id="7627749368210392160">Websites kan bruge denne funktion til at få adgang til andre enheder på dit lokale netværk</translation>
+<translation id="7628068697012244394">Skriv en anmeldelse</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vælg en handling for hver nøgle</translation>
 <translation id="7629206210984165492">Afdæmpet</translation>
@@ -8998,6 +9004,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7949038991703929816">Historikken kunne ikke indlæses. Sørg for, at filerne indeholder gyldige opdateringslogs.</translation>
 <translation id="7950629216186736592">Årsag: LBS understøtter kun http://-, https://- og file://-webadresser.</translation>
 <translation id="7950814699499457511">Til • Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data</translation>
+<translation id="7951159420392892566">Frigør rulleknapper</translation>
 <translation id="795130320946928025">Deaktiver virtuelt kort</translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
 <translation id="7953236668995583915">Genindlæs denne side for at anvende dine opdaterede indstillinger på dette website</translation>

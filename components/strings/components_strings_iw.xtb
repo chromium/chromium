@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">‏גופן Monospace</translation>
 <translation id="1757935267918149452">‏הכפתור לשינוי הסיסמה ל-Google, מפעילים אותו כדי לשנות את הסיסמה לחשבון Google</translation>
 <translation id="1759776526873274358">‏מילוי אוטומטי של קודי אימות שאתרים משתמשים בהם כדי לשפר את האבטחה שלך. ‫Chrome יכול לקבל את קודי האימות האלה מ-Gmail. <ph name="BEGIN_LINK" />מידע נוסף על התכונה הזו<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">‏כדי לשנות את <ph name="BEGIN_LINK1" />העדפות הנתונים והפרטיות<ph name="END_LINK1" /> או לנהל <ph name="BEGIN_LINK2" />אמצעי תשלום<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />כרטיסים<ph name="END_LINK3" /> כמו כרטיסי מועדון לקוחות ותעודות מזהות, צריך לעבור אל Google Wallet</translation>
 <translation id="1763864636252898013">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי מערכת ההפעלה של המכשיר. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Photo (Archival)</translation>
@@ -632,6 +633,7 @@
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
 <translation id="2090686487550343086">‏מספרי IBAN</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2092361763640578821">למידע נוסף על</translation>
 <translation id="2093184051799735948">‏חיפוש ב-<ph name="ENGINE_NAME" /> או הוספת כתובת URL</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
@@ -788,6 +790,7 @@
 <translation id="2321291402658100099">ניהול המידע</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{חלון אחד}one{‫# חלונות}two{‫# חלונות}other{‫# חלונות}}</translation>
 <translation id="232390861414237658">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chrome כששומרים אותו לשימוש ב-Google Pay</translation>
+<translation id="2325722389016720813">לחיצה על החיצים למעלה או למטה תציג את ההשלמות האוטומטיות. כדי שההשלמה האוטומטית תופעל צריך להתחיל להקליד.</translation>
 <translation id="2326283484705860548">‏עכשיו אפשר למלא אוטומטית מידע נוסף מ-Google Wallet</translation>
 <translation id="2326747055382936979">ניהול המילוי האוטומטי המשופר</translation>
 <translation id="2328651992442742497">יש הרשאה (ברירת מחדל)</translation>
@@ -1542,6 +1545,7 @@
 <translation id="3642638418806704195">אפליקציה:</translation>
 <translation id="3647286794400715637">‏כל רשומת מחרוזת של כתובות URL חייבת להכיל כתובת URL אחת או שתיים.</translation>
 <translation id="3647400963805615193">‏לסגירת הכפתור של הטיפ ל-Chrome, לוחצים על Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">ניטור פעילויות</translation>
 <translation id="3648667207586409316">מה אפשר לעשות כדי להפחית את הלחץ?</translation>
 <translation id="3650584904733503804">האימות בוצע בהצלחה</translation>
 <translation id="3650594806107685466">‏כדי לשמור על אבטחת הכרטיס שלך, עליך להזין את קוד האימות (CVC) שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
@@ -2004,6 +2008,7 @@
 <translation id="4377869186417956230">מעבר לדף עם כל כרטיסי מועדון הלקוחות שמוצעים באפשרות הזו בתפריט.</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4378221908737133050">תיצור רשימת משימות לניקוי יסודי של הבית</translation>
+<translation id="4379357028567121852">מתוך <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">אפשר להמשיך מהמקום שבו הפסקת או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">מעכשיו עליך לשמור את הקבצים באחסון בענן</translation>
@@ -2173,6 +2178,7 @@
 <translation id="4711628883879888561">גישה משותפת לקבוצת הכרטיסיות</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">תחשב את ממוצע הציונים שלי לפי שקלול של שעות הלימוד, רמות הקורסים והציונים</translation>
+<translation id="4717533164160330041">‏כדי להשתמש בתכונה הזו, עליך להפעיל את התכונות החכמות ב-Gmail</translation>
 <translation id="471880041731876836">אין לך הרשאה להיכנס אל האתר הזה</translation>
 <translation id="4718897478554657123">‏600x900 מ"מ</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />להפעיל את הכלי לאבחון רשת של Windows<ph name="END_LINK" /></translation>
@@ -2397,6 +2403,7 @@ Del</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">‏יכול להיות שהארגון עוקב אחרי פעילויות גלישה מסוימות כדי למנוע אובדן נתונים. פרטים נוספים זמינים בכתובת <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /></translation>
 <translation id="5070335125961472645">‏<ph name="BEGIN_LINK" />לבדוק את כתובת שרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">גליל עשירי</translation>
 <translation id="507130231501693183">תיבת דואר 4</translation>
@@ -2762,6 +2769,7 @@ Del</translation>
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5660122698869360728">תיקייה חכמה חדשה שעוזרת לך לשמור את כל דפי הקניות במקום אחד, ולעקוב אחר מחירים, לקבל מדדי מחירים באופן אוטומטי ועוד.</translation>
 <translation id="5663955426505430495">מנהל המערכת של המכשיר הזה התקין תוספים שמאפשרים להשתמש בפונקציות נוספות. לתוספים יש גישה לחלק מהנתונים שלך.</translation>
+<translation id="5664075349639500330">מידע נוסף על גלישה במצב מבודד</translation>
 <translation id="5675650730144413517">הדף הזה לא עובד</translation>
 <translation id="5675959228867414813">הצגה לפי תאריך</translation>
 <translation id="567604591393105935">הגיליון התחתון של המסחר נפתח בחצי מגובה המסך</translation>
@@ -2833,6 +2841,7 @@ Del</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
 <translation id="5794065675298686371">הפעלת התראות על מעקב מחירים</translation>
+<translation id="5796050750059455142">‏מפעילים את ההגדרה <ph name="BEGIN_LINK" />תכונות חכמות במוצרים אחרים של Google<ph name="LINK_END" /></translation>
 <translation id="5797984091151707075">התוכן נחסם בגלל מדיניות האדמין</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5806871454498484178">אי אפשר לגלול ולשנות את מרחק התצוגה</translation>
@@ -3140,6 +3149,7 @@ Del</translation>
 <translation id="6329742260390895689">‏כדי למלא את הפרטים באופן אוטומטי, צריך להפעיל את ההגדרה "שימוש בכרטיסים בשירותי Google" ב-Wallet</translation>
 <translation id="6329815962353376655">&lt;כאן מקלידים שאלה&gt;</translation>
 <translation id="633348045801643466">הצגת אפשרויות <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />לתשלום אחר כך<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> בשלב התשלום בקופה</translation>
+<translation id="6335364777769284858">‏מפעילים את התכונות החכמות ב<ph name="BEGIN_LINK" />הגדרות Gmail<ph name="LINK_END" /></translation>
 <translation id="6336948221660696475">‏אין הרשאה לשימוש ב-VR</translation>
 <translation id="6337534724793800597">סינון מדיניות לפי שם</translation>
 <translation id="633770708279464947">הערך של <ph name="SECURE_DNS_SALT" /> לא חוקי ולא ייעשה בו שימוש.</translation>
@@ -3274,6 +3284,7 @@ Del</translation>
 <translation id="6547208576736763147">שני ניקובים בצד שמאל</translation>
 <translation id="6550245281449521513">אין הרשאה לנעילת העכבר</translation>
 <translation id="6551737294564628267">‫<ph name="ATTRIBUTE_NAME" />, חדש</translation>
+<translation id="6552244083450538912">פעילות הגלישה עשויה להיות גלויה לגורמים הבאים: אתרים שנכנסים אליהם, המעסיק או מוסד הלימודים, ספק האינטרנט</translation>
 <translation id="6552566579578780089">תשלומים</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. ‫<ph name="MATCH_POSITION" /> מתוך <ph name="NUM_MATCHES_IN_GROUP" /> בקבוצה <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
@@ -3508,6 +3519,7 @@ Del</translation>
 <translation id="6972867931824045907">‏כדי להשתמש בלוח העריכה, צריך להיכנס אל <ph name="LINK" /> ולתת ל-Chrome גישה.</translation>
 <translation id="6973656660372572881">‏צוינו שרתי Proxy קבועים וכתובת אתר של הסקריפט מסוג ‎.Pac</translation>
 <translation id="6973988895180423160">‏3.5x5 אינץ'</translation>
+<translation id="6976229914347655621">‏תוספים שהארגון דורש יישארו מופעלים. פרטים נוספים זמינים בכתובת <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /></translation>
 <translation id="6978236010531171013">אני רוצה לשתף בכל זאת</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
@@ -3674,6 +3686,7 @@ Del</translation>
 <translation id="7269151392155523061">קיצור הדרך לא יכול להיות זהה למילת המפתח של אגרגטור החיפוש שהוגדרה על ידי <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: ‏ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏קבצים שמורידים נשלחים אל Google Cloud או אל צדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="7275334191706090484">סימניות מנוהלות</translation>
+<translation id="7278933725460302617">עברת למצב גלישה מבודד</translation>
 <translation id="7282894295403887199">אי אפשר להיכנס לדף הזה במצב פרטי</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לשנות את הסיסמה לחשבון Google</translation>
 <translation id="7286908876112207905">אין לך הרשאה להדביק תוכן באתר הזה</translation>
@@ -3846,6 +3859,7 @@ Del</translation>
 <translation id="7554791636758816595">כרטיסייה חדשה</translation>
 <translation id="7556328470713619625">שימוש במפתח גישה</translation>
 <translation id="7559278538486662777">לא ניתן לשנות את גודל החלון של האפליקציה הזו</translation>
+<translation id="7561202748196702434">גלישה במצב מבודד</translation>
 <translation id="7561784249784255101">Digital Versatile Disc</translation>
 <translation id="7564049878696755256">‏הגישה שלך לחשבון <ph name="ORG_NAME" /> עשויה להישלל והזהות שלך עשויה להיגנב. ההמלצה של Chrome היא לשנות את הסיסמה עכשיו.</translation>
 <translation id="7567204685887185387">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו נופק כהונאה. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
@@ -4381,6 +4395,7 @@ Del</translation>
 <translation id="8473626140772740486">‏300x450 מ"מ</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474910779563686872">הצגת פרטי המפתח</translation>
+<translation id="84764251640219124">‏נמנע מאתרים להשתמש בקובצי Cookie של צד שלישי. אם אתר שמסתמך עליהם לא פועל, אפשר <ph name="BEGIN_LINK" />לנסות לאפשר לו גישה זמנית לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">סיכת הידוק בפינה השמאלית התחתונה</translation>
 <translation id="8483229036294884935">‏הכתובת הזו תימחק מחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">חלה על</translation>
@@ -4447,6 +4462,7 @@ Del</translation>
 <translation id="8619130384334725124">ברירת המחדל הנוכחית</translation>
 <translation id="8620276786115098679">‏מעטפה – Kaku 7</translation>
 <translation id="8622864575115813231">המערכת יוצרת קשר עם המוסד הפיננסי שלך…</translation>
+<translation id="8632584659860846053">‏היסטוריית הגלישה, קובצי Cookie ונתונים מאתרים, הנתונים במטמון והמידע שהוזן בטפסים יימחקו ברגע שכל החלונות המבודדים ייסגרו.</translation>
 <translation id="8634957317623797170">‏54x86 מ"מ</translation>
 <translation id="8637362707224133343">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה פישינג<ph name="END_LINK" /> באתר שבו ניסית לבקר. אתרי פישינג מתחזים לאתרים אחרים כדי להטעות אותך.<ph name="NEW_LINE" />גם אתרים שבדרך כלל נחשבים לבטוחים נפרצים לפעמים על ידי תוקפים. <ph name="BEGIN_ERROR_LINK" />חשוב לנו לדעת<ph name="END_ERROR_LINK" /> אם לדעתך מדובר בטעות והאתר לא מהווה סכנה.</translation>
 <translation id="8640996933372643759">‏כדי לשתף כרטיסיות ולעבוד עם אנשים אחרים, צריכה להיות לך הרשאה להיכנס ל-Chrome</translation>

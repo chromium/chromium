@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">اس ایپ کیلئے دوبارہ نہ پوچھیں</translation>
 <translation id="132301787627749051">کلپ بورڈ کی تصویر تلاش کریں</translation>
 <translation id="1323433172918577554">مزید دکھائیں</translation>
+<translation id="1326962902431997202">بیچ سے خط کشیدہ</translation>
 <translation id="1330449323196174374">بایاں گیٹ فولڈ</translation>
 <translation id="1330952240988133220">‏‫Google والٹ میں ریڈریس نمبر محفوظ کریں</translation>
 <translation id="133173645041092770">ویب سائٹ بند کریں</translation>
@@ -633,6 +634,7 @@
 <translation id="2090451897496479509">مزید معلومات کیلئے فراہم کنندہ سے رابطہ کریں</translation>
 <translation id="2090686487550343086">‫IBANs</translation>
 <translation id="2091887806945687916">آواز</translation>
+<translation id="2092361763640578821">اس کے بارے میں مزید جانیں</translation>
 <translation id="2093184051799735948">‏<ph name="ENGINE_NAME" /> تلاش یا URL ٹائپ کریں</translation>
 <translation id="2093982008204312032">‏Google Chrome پاس ورڈز پُر کرنے کے لیے Windows Hello کو آف کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="2094505752054353250">ڈومین کی عدم مماثلت</translation>
@@ -1545,6 +1547,7 @@
 <translation id="3642638418806704195">ایپلیکیشن:</translation>
 <translation id="3647286794400715637">‏urls اسٹرنگ کے ہر اندراج میں 1 سے 2 کے درمیان URLs کا شامل ہونا ضروری ہے۔</translation>
 <translation id="3647400963805615193">‏‫Chrome کی تجویز کے بٹن کو برخاست کریں، برخاست کرنے کے لیے اینٹر دبائیں، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">سرگرمی کی مانیٹرنگ</translation>
 <translation id="3648667207586409316">تناؤ کو کم کرنے میں مدد کے لیے میں کیا کر سکتا ہوں؟</translation>
 <translation id="3650584904733503804">توثیق کامیاب رہی</translation>
 <translation id="3650594806107685466">‏اپنے کارڈ کو محفوظ رکھنے میں مدد کے لیے، <ph name="SIDE_OF_CARD" /> پر CVC درج کریں</translation>
@@ -2007,6 +2010,7 @@
 <translation id="4377869186417956230">اس مینیو آئٹم کے تحت تمام لائلٹی کارڈز کو تبدیل کریں۔</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4378221908737133050">میرے گھر کے لیے ایک ڈیپ کلین چیک لسٹ بنائیں</translation>
+<translation id="4379357028567121852"><ph name="APP_NAME" /> سے</translation>
 <translation id="4381997246130185847">آپ وہیں سے شروع کر سکتے ہیں جہاں آپ نے چھوڑا تھا یا چلتے پھرتے نئے ٹیب گروپس تخلیق کر سکتے ہیں</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">آئندہ سے، اپنی فائلز کو کلاؤڈ اسٹوریج میں محفوظ کریں</translation>
@@ -2176,6 +2180,7 @@
 <translation id="4711628883879888561">ٹیب گروپ پر اکٹھے کام کریں</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">‏کریڈٹ آورز، کورس لیولز اور گریڈ پوائنٹ ویلیوز کے تناسب سے میرے GPA کا حساب لگائیں</translation>
+<translation id="4717533164160330041">‏اس خصوصیت کا استعمال کرنے کے لیے، پہلے Gmail میں اسمارٹ خصوصیات کو آن کریں</translation>
 <translation id="471880041731876836">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت نہیں ہے</translation>
 <translation id="4718897478554657123">‏‎600 x 900 ملی میٹر</translation>
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
@@ -2396,6 +2401,7 @@
 <translation id="5061227663725596739">کیا آپ کا مطلب <ph name="LOOKALIKE_DOMAIN" /> ہے؟</translation>
 <translation id="5066056036849835175">پرنٹنگ کی سرگزشت</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">‏ڈیٹا کے نقصان کو روکنے کے لیے آپ کی تنظیم کے ذریعے براؤزنگ کی کچھ سرگرمیوں کی نگرانی کی جا سکتی ہے؛ مزید تفصیلات کے لیے <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> پر جائیں</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />پراکسی پتہ چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">دسواں رول</translation>
 <translation id="507130231501693183">میل باکس 4</translation>
@@ -2760,6 +2766,7 @@
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5660122698869360728">ایک ایسا نیا اسمارٹ فولڈر جو آپ کی خریداری کے تمام صفحات کو ایک جگہ محفوظ کرنے میں آپ کی مدد کرتا ہے اور خودکار طور پر قیمتوں کو ٹریک کرتا ہے اور قیمت سے متعلق حقائق وغیرہ حاصل کرتا ہے۔</translation>
 <translation id="5663955426505430495">اس آلے کے منتظم نے اضافی فنکشنز کیلئے ایکسٹینشنز انسٹال کی ہیں۔ ایکسٹینشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
+<translation id="5664075349639500330">علیحدہ وضع میں براؤزنگ کے بارے میں مزید جانیں۔</translation>
 <translation id="5675650730144413517">یہ صفحہ کام نہیں کر رہا ہے</translation>
 <translation id="5675959228867414813">تاریخ کے لحاظ سے دکھائیں</translation>
 <translation id="567604591393105935">کامرس سے متعلق نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے</translation>
@@ -2831,6 +2838,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
 <translation id="5794065675298686371">قیمت کی ٹریکنگ کرنے والی اطلاعات کو آن کریں</translation>
+<translation id="5796050750059455142">‏"<ph name="BEGIN_LINK" />‫Google کے دیگر پروڈکٹس میں اسمارٹ خصوصیات<ph name="LINK_END" />" کو آن کریں</translation>
 <translation id="5797984091151707075">منتظم کی پالیسی کے ذریعے بلاک کردہ</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5806871454498484178">اسکرول اور زوم مسدود ہے</translation>
@@ -3139,6 +3147,7 @@
 <translation id="6329742260390895689">‏اپنی معلومات کو آٹو فل کرنے کیلئے، والٹ کی ترتیبات میں "پورے Google پر پاسز کا استعمال کریں" کو آن کریں</translation>
 <translation id="6329815962353376655">&lt;سوال ٹائپ کریں&gt;</translation>
 <translation id="633348045801643466">چیک آؤٹ پر <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />بعد میں ادائیگی کریں<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> کے اختیارات دکھائیں</translation>
+<translation id="6335364777769284858">‏<ph name="BEGIN_LINK" />‫Gmail کی ترتیبات<ph name="LINK_END" /> میں "اسمارٹ خصوصیات" کو آن کریں</translation>
 <translation id="6336948221660696475">‏‫VR کی اجازت نہیں دی گئی</translation>
 <translation id="6337534724793800597">نام کے لحاظ سے پالیسیاں فلٹر کریں</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> قدر غلط ہے اور استعمال نہیں کی جائے گی۔</translation>
@@ -3273,6 +3282,7 @@
 <translation id="6547208576736763147">بائیں طرف دُہرا سوراخ</translation>
 <translation id="6550245281449521513">ماؤس لاک کی اجازت نہیں ہے</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />، نیا</translation>
+<translation id="6552244083450538912">آپ کی سرگرمی ان کو نظر آ سکتی ہے: آپ کی ملاحظہ کردہ ویب سائٹس، آپ کا آجر یا اسکول، آپ کا انٹرنیٹ سروس پرووائیڈر</translation>
 <translation id="6552566579578780089">ادائیگیاں</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />۔ <ph name="SUGGESTION_TYPE" />۔ <ph name="GROUP_HEADER" /> گروپ میں <ph name="NUM_MATCHES_IN_GROUP" /> میں سے <ph name="MATCH_POSITION" />۔</translation>
 <translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
@@ -3507,6 +3517,7 @@
 <translation id="6972867931824045907">‏اپنے کلپ بورڈ کا استعمال کرنے کے لیے، <ph name="LINK" /> میں Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="6973656660372572881">‏فکس کردہ پراکسی سرورز اور ‎.pac اسکرپٹ URL دونوں کا تعین کیا گیا ہے۔</translation>
 <translation id="6973988895180423160">‏‎3.5 x 5 انچ</translation>
+<translation id="6976229914347655621">‏آپ کی تنظیم کی مطلوبہ ایکسٹینشنز آن رہیں گی؛ مزید تفصیلات کے لیے <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> پر جائیں</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
@@ -3672,6 +3683,7 @@
 <translation id="7269151392155523061">شارٹ کٹ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> کے ذریعہ وضاحت کردہ تلاش کے جمع کنندہ کلیدی لفظ سے مماثل نہیں ہو سکتا: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏جن فائلز کو آپ ڈاؤن لوڈ کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہیں۔</translation>
 <translation id="7275334191706090484">منظم کردہ بُک مارکس</translation>
+<translation id="7278933725460302617">اب آپ علیحدہ وضع میں ہیں</translation>
 <translation id="7282894295403887199">آپ اس صفحہ کو پوشیدگی وضع میں ملاحظہ نہیں کر سکتے</translation>
 <translation id="7285654172857511148">‏<ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="7286908876112207905">اس مواد کو اس سائٹ پر پیسٹ کرنے کی اجازت نہیں ہے</translation>
@@ -3690,6 +3702,7 @@
 <translation id="7308436126008021607">پس منظر کی مطابقت پذیری</translation>
 <translation id="7310392214323165548">آلہ جلدی ہی ری سٹارٹ ہو جائے گا</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
+<translation id="7311565174465466858">‏‫<ph name="TAB_KEY" /> ٹیب پھر Enter دبائیں تاکہ <ph name="AI_ENGINE_NAME" /> سے پوچھ سکیں</translation>
 <translation id="7313107491291103073">آپ کی تنظیم نے اس سائٹ کو پرچم زد کیا ہے کیونکہ یہ پالیسی کی خلاف ورزی کر سکتی ہے۔</translation>
 <translation id="7315372670898739748">لنک کرنا ناکام ہو گیا، بعد میں دوبارہ کوشش کریں</translation>
 <translation id="7316521168101843192">‏‫Microsoft OneDrive میں فائل کو محفوظ کیا جا رہا ہے</translation>
@@ -3844,6 +3857,7 @@
 <translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7556328470713619625">پاس کی استعمال کریں</translation>
 <translation id="7559278538486662777">اس ایپ کا سائز تبدیل نہیں کیا جا سکتا۔</translation>
+<translation id="7561202748196702434">علیحدہ وضع میں براؤزنگ</translation>
 <translation id="7561784249784255101">ڈیجیٹل ورسٹائل ڈسک</translation>
 <translation id="7564049878696755256">‏آپ اپنے <ph name="ORG_NAME" /> اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chrome آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="7567204685887185387">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ فریب کارانہ طور پر جاری کیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
@@ -4379,6 +4393,7 @@
 <translation id="8473626140772740486">‏‎300 x 450 ملی میٹر</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="8474910779563686872">ڈویلپر کی تفصیلات دکھائیں</translation>
+<translation id="84764251640219124">سائٹس کو فریق ثالث کوکیز استعمال کرنے سے مسدود کر دیا گیا ہے۔ اگر ان کوکیز پر انحصار کرنے والی کوئی سائٹ کام نہیں کر رہی ہے تو آپ <ph name="BEGIN_LINK" />اس سائٹ کو فریق ثالث کوکیز تک عارضی رسائی دینے کی کوشش کر سکتے ہیں<ph name="END_LINK" />۔</translation>
 <translation id="8479754468255770962">نیچے بائیں طرف سٹیپل</translation>
 <translation id="8483229036294884935">‏یہ پتہ آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> سے حذف کر دیا جائے گا</translation>
 <translation id="8488350697529856933">اس پر اطلاق ہوتا ہے</translation>
@@ -4445,6 +4460,7 @@
 <translation id="8619130384334725124">موجودہ ڈیفالٹ</translation>
 <translation id="8620276786115098679">‏Kaku 7 لفافہ</translation>
 <translation id="8622864575115813231">آپ کے مالیاتی ادارے سے رابطہ کیا جا رہا ہے...</translation>
+<translation id="8632584659860846053">آپ کی براؤزنگ کی سرگزشت، کوکیز اور سائٹ ڈیٹا، کیش اور فارمز میں درج کردہ معلومات آپ کے تمام الگ تھلگ ونڈوز کو بند کرنے کے بعد حذف کر دی جائیں گی</translation>
 <translation id="8634957317623797170">‏‎54 x 86 ملی میٹر</translation>
 <translation id="8637362707224133343">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />فریب دہی کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ نے ملاحظہ کرنے کی کوشش کی ہے۔ فریب دہی والی سائٹس آپ کو دھوکہ دینے کیلئے دیگر سائٹس ہونے کا دکھاوا کرتی ہیں۔<ph name="NEW_LINE" />یہاں تک کہ ایسی سائٹس بھی جو عموماً محفوظ ہوتی ہیں، کبھی کبھار حملہ آور اس کے ساتھ بھی چھیڑ چھاڑ کر دیتے ہیں۔ اگر آپ کو لگتا ہے کہ ایسا غلطی سے ہوا ہے اور یہ سائٹ خطرناک نہیں ہے تو <ph name="BEGIN_ERROR_LINK" />ہمیں مطلع کریں<ph name="END_ERROR_LINK" />۔</translation>
 <translation id="8640996933372643759">‏ٹیبز کا اشتراک کرنے اور دوسروں کے ساتھ اکٹھے کام کرنے کے لیے، آپ کو Chrome میں سائن ان کرنا ضروری ہے</translation>

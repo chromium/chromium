@@ -354,6 +354,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{Viena žymė ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}one{{BOOKMARK_COUNT} žymė ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}few{{BOOKMARK_COUNT} žymės ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}many{{BOOKMARK_COUNT} žymės ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}other{{BOOKMARK_COUNT} žymių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje. Taip pat bus išvalytos visos tikslios kopijos.}}</translation>
 <translation id="125220115284141797">Numatytoji</translation>
 <translation id="1252219782845132919">Slėpti grupę</translation>
+<translation id="1252597096488926946">Atsegti slinkimo mygtukus</translation>
 <translation id="1252987234827889034">Įvyko profilio klaida</translation>
 <translation id="1254034280040157728">Didysis kanjonas</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
@@ -985,6 +986,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1755601632425835748">Teksto dydis</translation>
 <translation id="1756963401828337401">Pasirinkite norimą užfiksuoti ekraną</translation>
 <translation id="17584710573359123">Žr. „Chrome“ internetinėje parduotuvėje</translation>
+<translation id="176013700366797492">„Google Wallet“ galite valdyti <ph name="BEGIN_LINK1" />duomenų ir privatumo nuostatas<ph name="END_LINK1" />, tvarkyti <ph name="BEGIN_LINK2" />mokėjimo metodus<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />korteles bei bilietus<ph name="END_LINK3" />, pvz., lojalumo korteles, asmens tapatybės dokumentus</translation>
 <translation id="1761402971842586829">„<ph name="BUTTON_NAME" />“ iš naujo susietas su <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> paskyros</translation>
 <translation id="176272781006230109">apsipirkimo pasiūlymai</translation>
@@ -1714,6 +1716,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2322193970951063277">Antraštės ir poraštės</translation>
 <translation id="2322622365472107569">Pabaigos laikas <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Išsaugoti „Wi-Fi“ tinklai</translation>
+<translation id="2323685460575935191">Slėpti slinkimo mygtukus</translation>
 <translation id="2325444234681128157">Atsiminti slaptažodį</translation>
 <translation id="2326188115274135041">Patvirtinkite PIN kodą, kad įjungtumėte automatinio atrakinimo funkciją</translation>
 <translation id="2326583548923775947">Tai nėra „Google“ paskyra. „Chrome“ išsaugoti elementai nebus pasiekiami kituose įrenginiuose.</translation>
@@ -1970,6 +1973,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2508747373511408451">Programai „<ph name="APPLICATION_NAME" />“ reikalingas „Google“ diskas.</translation>
 <translation id="2509495747794740764">Mastelio verčių suma turi būti skaičius nuo 10 iki 200.</translation>
 <translation id="2509566264613697683">8 k.</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (pasirinkta)</translation>
 <translation id="2513904627589542105">Savarankiškas testavimas</translation>
 <translation id="251425554130284360">Matote puslapius, kuriuose lankėtės, ir siūlomas paieškas, kad galėtumėte lengvai grįžti prie naujausios veiklos.
@@ -5007,6 +5011,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4831226137013573603">mikrofono nutildymas</translation>
 <translation id="483262387981411190">Pristabdyti arba atnaujinti veido kontrolę</translation>
 <translation id="4833683849865011483">Rastas vienas spausdintuvas iš spausdinimo serverio</translation>
+<translation id="4834388789911023644">Parašyti atsiliepimą</translation>
 <translation id="4835598628985424375">Suspausti lūpas tarsi vamzdelį</translation>
 <translation id="4835677468087803981">Slėpti PIN kodą</translation>
 <translation id="4836504898754963407">Kontrolinių kodų tvarkymas</translation>
@@ -8576,6 +8581,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7625823789272218216">Naujas skirtukas kairėje</translation>
 <translation id="762730429396410864">Neautomatiškai nustatykite centrinio procesoriaus našumo pakopą, apie kurią pranešama svetainėms</translation>
 <translation id="7627749368210392160">Svetainės gali naudoti šią funkciją, kad galėtų pasiekti kitus įrenginius vietiniame tinkle</translation>
+<translation id="7628068697012244394">Parašyti atsiliepimą</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> klasė</translation>
 <translation id="762917478230183172">Pasirinkite veiksmą kiekvienam klavišui</translation>
 <translation id="7629206210984165492">Santūri</translation>
@@ -9002,6 +9008,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7949038991703929816">Nepavyko įkelti istorijos. Įsitikinkite, kad failuose yra tinkamų atnaujinimo įrankio žurnalų.</translation>
 <translation id="7950629216186736592">Priežastis: LBS palaiko tik „http://“, „https://“ ir „file://“ URL.</translation>
 <translation id="7950814699499457511">Įjungta • Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis</translation>
+<translation id="7951159420392892566">Atsegti slinkimo mygtukus</translation>
 <translation id="795130320946928025">Išjungti virtualią kortelę</translation>
 <translation id="7952708427581814389">Svetainėse gali būti prašoma peržiūrėti tekstą ir vaizdus jūsų iškarpinėje</translation>
 <translation id="7953236668995583915">Įkelkite šį puslapį iš naujo, kad pritaikytumėte atnaujintus nustatymus šioje svetainėje</translation>

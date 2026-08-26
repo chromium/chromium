@@ -354,6 +354,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 bokmerke og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}other{{BOOKMARK_COUNT} bokmerker og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}}</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
+<translation id="1252597096488926946">Løsne rulleknappene</translation>
 <translation id="1252987234827889034">Det oppsto en profilfeil</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direkte internettilkobling</translation>
@@ -983,6 +984,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1756963401828337401">Velg en skjerm du vil ta bilde av</translation>
 <translation id="17584710573359123">Se i Chrome Nettmarked</translation>
+<translation id="176013700366797492">Gå til Google Wallet for å kontrollere <ph name="BEGIN_LINK1" />data- og personverninnstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmåter<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort og billetter<ph name="END_LINK3" />, for eksempel stamkundekort og legitimasjon</translation>
 <translation id="1761402971842586829">Tilordningen for <ph name="BUTTON_NAME" /> er endret til <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Kontoene til <ph name="NAME" /></translation>
 <translation id="176272781006230109">handelsforslag</translation>
@@ -1269,6 +1271,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Klargjør</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogger (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970398335244262442">{COUNT,plural, =0{Åpne alle i &amp;isolerte vinduer}=1{Åpne i &amp;isolert vindu}other{Åpne alle ({COUNT}) i &amp;isolerte vinduer}}</translation>
 <translation id="1971710400942610577">{NUM_EXTENSIONS,plural, =1{Gjennomgå 1 utvidelse som kan være utrygg}other{Gjennomgå {NUM_EXTENSIONS} utvidelser som kan være utrygge}}</translation>
 <translation id="1972313920920745320">Nettsteder du legger til, holdes alltid aktive, og minnet de bruker, blir ikke frigjort. <ph name="BEGIN_LINK" />Finn ut mer om hvordan du holder bestemte nettsteder aktive<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Du kan surfe raskere, siden innholdet lastes inn proaktivt basert på nettsiden du er på for øyeblikket</translation>
@@ -1311,6 +1314,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1998715278591719161">Nettsteder som har lov til å spore hendene dine</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="1999763610967697511">Dra-og-slipp</translation>
+<translation id="2000031673781037314">Åpne alle (<ph name="URL_COUNT" />) i isolerte vinduer</translation>
 <translation id="2002109485265116295">Sanntid</translation>
 <translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et wifi-nettverk</translation>
 <translation id="2003596238737586336">Den nåværende tidsplanen er satt til <ph name="SUNRISE" />–<ph name="SUNSET" />. Denne innstillingen administreres av administratoren.</translation>
@@ -1711,6 +1715,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2322193970951063277">Topp- og bunntekst</translation>
 <translation id="2322622365472107569">Sluttid: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Lagrede Wifi-nettverk</translation>
+<translation id="2323685460575935191">Skjul rulleknappene</translation>
 <translation id="2325444234681128157">Husk passordet</translation>
 <translation id="2326188115274135041">Bekreft PIN-koden for å slå på automatisk opplåsing</translation>
 <translation id="2326583548923775947">Dette er ikke en Google-konto. Elementer du lagrer i Chrome, blir ikke tilgjengelige på andre enheter.</translation>
@@ -1967,6 +1972,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2508747373511408451">Appen <ph name="APPLICATION_NAME" /> krever at Google Disk er tilgjengelig.</translation>
 <translation id="2509495747794740764">Skaleringsverdien må være et tall mellom 10 og 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (valgt)</translation>
 <translation id="2513904627589542105">Self Test</translation>
 <translation id="251425554130284360">Du ser sider du har besøkt, og foreslåtte søk, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din.
@@ -3250,6 +3256,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3491171603443463516">Lokale data kan gjenopprettes hvis du glemmer PIN-koden eller passordet</translation>
 <translation id="3491616972057195633">Filtertaster</translation>
 <translation id="3491678231052507920">Nettsteder bruker vanligvis virtuell virkelighet-enhetene og -dataene dine for å la deg starte VR-økter</translation>
+<translation id="3493069561299219311">Åpne i &amp;isolert vindu</translation>
 <translation id="3493486281776271508">Internettilkobling kreves</translation>
 <translation id="3494893110166252544"><ph name="PERCENTAGE" /> % – Ladingen er satt på vent</translation>
 <translation id="3495496470825196617">Inaktivitet ved lading</translation>
@@ -4912,6 +4919,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} passord for «<ph name="URL" />» er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i kontoen din.}other{{COUNT} passord for «<ph name="URL" />» er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i kontoen din.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Denne enheten blir lagret i 1 måned, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}other{Denne enheten blir lagret i ‏{MONTHS} måneder, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}}</translation>
 <translation id="476563889641554689">Velg området du vil søke i med Lens</translation>
+<translation id="4765852155188807219">{COUNT,plural, =0{Åpne alle i &amp;isolerte vinduer}=1{Åpne i &amp;isolert vindu}other{Åpne alle ({COUNT}) i &amp;isolerte vinduer}}</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Sjekker offentlig nøkkel og integritetsblokk … Mindre enn 1 minutt igjen}=1{Sjekker offentlig nøkkel og integritetsblokk … 1 minutt igjen}other{Sjekker offentlig nøkkel og integritetsblokk … # minutter igjen}}</translation>
 <translation id="4766598565665644999">Alle utvidelser kan lese og endre <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Finn ut mer om deaktiverte utvidelser.</translation>
@@ -5001,6 +5009,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4831226137013573603">slå av mikrofonen</translation>
 <translation id="483262387981411190">Sett ansiktskontroll på pause eller gjenoppta den</translation>
 <translation id="4833683849865011483">Fant én skriver på utskriftstjeneren</translation>
+<translation id="4834388789911023644">Skriv en anmeldelse</translation>
 <translation id="4835598628985424375">Snurp leppene sammen</translation>
 <translation id="4835677468087803981">Skjul PIN-koden</translation>
 <translation id="4836504898754963407">Administrer fingeravtrykk</translation>
@@ -5547,6 +5556,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="523862956770478816">Nettstedstillatelser</translation>
 <translation id="5240247138804326767">Organiser delt visning</translation>
+<translation id="5241361816687301119">Åpne i &amp;isolert vindu</translation>
 <translation id="5244234799035360187">Nå kommer OneDrive til å vises i Filer-appen</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å starten programmet på nytt.</translation>
@@ -8561,6 +8571,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="762730429396410864">Angi ytelsesnivået for prosessoren som rapporteres til nettsteder, manuelt</translation>
 <translation id="7627749368210392160">Nettsteder kan bruke denne funksjonen for å få tilgang til andre enheter på det lokale nettverket ditt</translation>
+<translation id="7628068697012244394">Skriv en anmeldelse</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Velg en handling for hver tast</translation>
 <translation id="7629206210984165492">Dempet</translation>
@@ -8987,6 +8998,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7949038991703929816">Kunne ikke laste inn loggen. Sørg for at filene inneholder gyldige oppdateringslogger.</translation>
 <translation id="7950629216186736592">Årsak: Støtte for eldre nettlesere støtter kun http://-, https://- og file://-nettadresser.</translation>
 <translation id="7950814699499457511">På • Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data</translation>
+<translation id="7951159420392892566">Løsne rulleknappene</translation>
 <translation id="795130320946928025">Slå av virtuelt kort</translation>
 <translation id="7952708427581814389">Nettsteder kan be om å få se tekst og bilder på utklippstavlen din</translation>
 <translation id="7953236668995583915">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet</translation>
@@ -10590,6 +10602,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9169093579080634183">Finn ut mer om faner</translation>
 <translation id="9169496697824289689">Se tastaturets hurtigtaster</translation>
 <translation id="916964310188958970">Hvorfor dette forslaget?</translation>
+<translation id="9169801888716695212">Åpne alle i isolert vindu</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Den gjeldende synlighetsinnstillingen er alle kontakter</translation>
 <translation id="9170766151357647548">Enhets-EID-en din er <ph name="EID_NUMBER" />. Dette nummeret kan brukes til å aktivere tjenesten.</translation>
@@ -10717,6 +10730,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="97381968209917373">Slett sertifikatet <ph name="CERT_NAME" /></translation>
 <translation id="975893173032473675">Språket du vil oversette til</translation>
 <translation id="976572010712028687">Bekreft at du er en forelder</translation>
+<translation id="977175416263153310">Åpne i isolert vindu</translation>
 <translation id="978146274692397928">Opprinnelig tegnsettingsbredde er satt til Full</translation>
 <translation id="978978324795544535">Dobbelttrykk på et element, fortsett å holde inne på det andre trykket, og dra elementet for å flytte det</translation>
 <translation id="981121421437150478">Uten nett</translation>

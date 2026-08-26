@@ -194,6 +194,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1319245136674974084">Bu ilova uchun boshqa soʻralmasin</translation>
 <translation id="132301787627749051">Klipborddagi rasmni qidirish</translation>
 <translation id="1323433172918577554">Yana</translation>
+<translation id="1326962902431997202">Ustiga chizish</translation>
 <translation id="1330449323196174374">Chap tomonni darvozasimon taxlash</translation>
 <translation id="1330952240988133220">Redress raqamini Google Walletga xavfsiz saqlang</translation>
 <translation id="133173645041092770">Veb-saytni yopish</translation>
@@ -464,6 +465,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1757773103848038814">Monospace shrifti</translation>
 <translation id="1757935267918149452">Google parolini oʻzgartirish tugmasi, Google hisobingiz parolini oʻzgartirish uchun faollashtiring</translation>
 <translation id="1759776526873274358">Xavfsizligingizni taʼminlash uchun saytlar yuboradigan tasdiq kodlarini avtomatik kiritish. Chrome bu kodlarni bevosita Gmail hisobingizdan olishi mumkin. <ph name="BEGIN_LINK" />Bu funksiya haqida batafsil<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Maʼlumotlar va maxfiylik sozlamalarini<ph name="END_LINK1" /> sozlash yoki <ph name="BEGIN_LINK2" />toʻlov usullari<ph name="END_LINK2" /> hamda sodiqlik kartalari va ID hujjatlar kabi <ph name="BEGIN_LINK3" />kartalarni<ph name="END_LINK3" /> boshqarish uchun Google Wallet ilovasiga kiring</translation>
 <translation id="1763864636252898013">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati qurilmangizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Fotoqogʻoz (arxiv</translation>
@@ -631,6 +633,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2090451897496479509">Batafsil axborot olish uchun provayderga murojaat qiling</translation>
 <translation id="2090686487550343086">IBAN raqamlari</translation>
 <translation id="2091887806945687916">Tovush</translation>
+<translation id="2092361763640578821">Batafsil</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> orqali qidiring yoki URL kiriting</translation>
 <translation id="2093982008204312032">Google Chrome parollarni kiritishda Windows Hello himoyasini faolsizlantirishga urinmoqda.</translation>
 <translation id="2094505752054353250">Domen noto‘g‘ri kiritildi</translation>
@@ -787,6 +790,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2321291402658100099">Axborot boshqaruvi</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ta oyna}other{# ta oyna}}</translation>
 <translation id="232390861414237658">Bu karta Google Play hisobiga saqlanganidan keyin uning maʼlumotlarini Chrome xaridlarida avtomatik kiritish mumkin</translation>
+<translation id="2325722389016720813">Tepaga va pastga strelkalar yordamida shakllarni avto-to‘ldiring. Avtomatik kiritish uchun yozing.</translation>
 <translation id="2326283484705860548">Endi koʻproq Google Wallet maʼlumotlarini avtomatik kiritish mumkin</translation>
 <translation id="2326747055382936979">Yaxshilangan avtomatik kiritishni boshqarish</translation>
 <translation id="2328651992442742497">Ruxsat etilgan (standart)</translation>
@@ -1537,6 +1541,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3642638418806704195">Ilova:</translation>
 <translation id="3647286794400715637">Har bir URL satrida 1–2 ta URL boʻlishi kerak.</translation>
 <translation id="3647400963805615193">Chrome maslahatini yopish tugmasi, yopish uchun Enter tugmasini bosing, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">Faollik kuzatuvi</translation>
 <translation id="3648667207586409316">Stressni kamaytirish uchun nima qilishim mumkin?</translation>
 <translation id="3650584904733503804">Tekshiruv muvaffaqiyatli bajarildi</translation>
 <translation id="3650594806107685466">Kartani himoyalash uchun uning <ph name="SIDE_OF_CARD" /> tomonidagi CVC kodni kiriting.</translation>
@@ -1999,6 +2004,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4377869186417956230">Bu menyu bandi ostida barcha sodiq mijoz kartalariga oʻzgartirish mumkin.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378221908737133050">Uyimni boshdan-oyoq tozalash uchun nazorat roʻyxatini tuzib ber</translation>
+<translation id="4379357028567121852">Manba: <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Istalgan joyda ishni kelgan joyidan davom ettirish yoki yangi varaqlar guruhini yaratish mumkin</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Endi fayllaringiz bulutli xotirada saqlanadi</translation>
@@ -2168,6 +2174,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4711628883879888561">Varaqlar guruhida birga ishlash</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Kredit soatlari, kurs darajalari va baho ballarini inobatga olgan holda GPA koʻrsatkichimni hisoblab ber</translation>
+<translation id="4717533164160330041">Ushbu imkoniyatdan foydalanish uchun, avval Gmaildagi smart funksiyalarni yoqing</translation>
 <translation id="471880041731876836">Bu sahifani ochishga ruxsatingiz yo‘q</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows tarmoq diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>
@@ -2388,6 +2395,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5061227663725596739">Buni nazarda tutdingizmi: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Chop etish tarixi</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">Maʼlumotlar sizib chiqishining oldini olish maqsadida brauzerdagi ayrim faoliyatlaringiz tashkilotingiz tomonidan kuzatilishi mumkin. Batafsil: <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" />.</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proksi-server manzilini tekshirish<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Oʻninchi oʻram</translation>
 <translation id="507130231501693183">Pochta qutisi 4</translation>
@@ -2752,6 +2760,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5659593005791499971">Email</translation>
 <translation id="5660122698869360728">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild.</translation>
 <translation id="5663955426505430495">Bu qurilma administratori qoʻshimcha funksiyali kengaytmalar oʻrnatdi. Kengaytmalarda ayrim maʼlumotlaringizga ruxsat bor.</translation>
+<translation id="5664075349639500330">Izolatsiyalangan rejimda kezish haqida batafsil.</translation>
 <translation id="5675650730144413517">Bu sahifa ishlamayapti</translation>
 <translation id="5675959228867414813">Sana asosida saralash</translation>
 <translation id="567604591393105935">Mahsulot haqidagi quyi ekran butun yarim ochildi</translation>
@@ -2823,6 +2832,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu toʻlov usuli ushbu qurilmadan olib tashlanadi</translation>
 <translation id="5794065675298686371">Narx kuzatuvi bildirishnomalarini yoqish</translation>
+<translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Boshqa Google mahsulotlaridagi smart funksiyalar<ph name="LINK_END" />” sozlamasini yoqing</translation>
 <translation id="5797984091151707075">Administrator siyosati tomonidan bloklangan</translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5806871454498484178">Zum va varaqlash bloklandi</translation>
@@ -3129,6 +3139,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6329742260390895689">Axborotni avtomatik kiritish uchun Wallet sozlamalarida “Google xizmatlarida talonlardan foydalanish” funksiyasini yoqing</translation>
 <translation id="6329815962353376655">&lt;Savolni yozing&gt;</translation>
 <translation id="633348045801643466">Hisob-kitob sahifasida <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />keyinroq toʻlash<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> usulini chiqarish</translation>
+<translation id="6335364777769284858"><ph name="BEGIN_LINK" />Gmail sozlamalarida<ph name="LINK_END" /> “Smart funksiyalar” sozlamasini yoqing</translation>
 <translation id="6336948221660696475">VR ishlatish rad etildi</translation>
 <translation id="6337534724793800597">Qoidalarni nomi bo‘yicha filtrlash</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> qiymati mos emas va ishlatilmaydi.</translation>
@@ -3263,6 +3274,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6547208576736763147">Chapdan 2 ta teshik ochish</translation>
 <translation id="6550245281449521513">Sichqoncha qulflash taqiqlangan</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, yangi</translation>
+<translation id="6552244083450538912">Faoliyatingizni quyidagilar kuzatishi mumkin: siz tashrif buyurgan saytlar, ishxonangiz yoki oʻquv muassasangiz hamda internet xizmati provayderingiz</translation>
 <translation id="6552566579578780089">Toʻlovlar</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="GROUP_HEADER" /> guruhidagi <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES_IN_GROUP" /></translation>
 <translation id="6554732001434021288">Oxirgi tashrif: <ph name="NUM_DAYS" /> kun oldin</translation>
@@ -3497,6 +3509,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6972867931824045907">Vaqtinchalik xotiradan foydalanishi uchun <ph name="LINK" />da Chromega ruxsat bering.</translation>
 <translation id="6973656660372572881">Sozlangan proksi-serverlar va PAC-skriptlar URL manzillari ko‘rsatilgan</translation>
 <translation id="6973988895180423160">3.5 x 5 in</translation>
+<translation id="6976229914347655621">Tashkilotingiz talab qilgan kengaytmalar yoniq qoladi. Batafsil: <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" />.</translation>
 <translation id="6978236010531171013">Ulashish</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Ovozsiz (birlamchi)</translation>
@@ -3662,6 +3675,7 @@ Batafsil axborot:
 <translation id="7269151392155523061">Buyruq <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> belgilagan qidiruv agregatori kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Siz yuklab oladigan fayllar tekshiruv uchun Google Cloud yoki boshqa tashqi xizmatlarga yuboriladi. Masalan, fayllar tarkibida maxfiy yoki zararli axborotlar mavjudligini aniqlash uchun tekshirilishi mumkin. Ular sizning administratoringiz uchun ham ochiq boʻlishi va kompaniya qoidalari asosida saqlanishi mumkin.</translation>
 <translation id="7275334191706090484">Boshqariladigan xatcho‘plar</translation>
+<translation id="7278933725460302617">Izolyatsiyalangan rejimidasiz</translation>
 <translation id="7282894295403887199">Bu sahifani Inkognito rejimida ochish imkonsiz</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingiz parolini oʻzgartirish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="7286908876112207905">Bu saytga mazkur kontentni joylash mumkin emas</translation>
@@ -3680,6 +3694,7 @@ Batafsil axborot:
 <translation id="7308436126008021607">orqa fonda sinxronlash</translation>
 <translation id="7310392214323165548">Qurilma tez orada qayta ishga tushadi</translation>
 <translation id="7311244614769792472">Hech narsa topilmadi</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" /> yordamini olish uchun Tab tugmasini bosing</translation>
 <translation id="7313107491291103073">Bu sayt tashkilot tomonidan qoidalarni buzishi mumkin deb belgilangan.</translation>
 <translation id="7315372670898739748">Ulanmadi, keyinroq qayta urining</translation>
 <translation id="7316521168101843192">Fayl Microsoft OneDrive omboriga saqlanmoqda</translation>
@@ -3834,6 +3849,7 @@ Batafsil axborot:
 <translation id="7554791636758816595">Yangi varaq</translation>
 <translation id="7556328470713619625">Kalit ishlatish</translation>
 <translation id="7559278538486662777">Bu ilova hajmini oʻzgartirish imkonsiz</translation>
+<translation id="7561202748196702434">Izolatsiyalangan rejimda kezish</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hisobingiz xavf ostida va shaxsiy ma’lumotlaringizni kimdir ko‘rishi mumkin. Parolingizni hoziroq o‘zgartirishni tavsiya etamiz.</translation>
 <translation id="7567204685887185387">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati ishonchli tuyulmayapti. Server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
@@ -4369,6 +4385,7 @@ Batafsil axborot:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8474910779563686872">Dasturchilar uchun tafsilotlarni chiqarish</translation>
+<translation id="84764251640219124">Saytlarning tashqi cookie fayllaridan foydalanishi bloklangan. Tashqi cookie fayl ishlatadigan sayt yaxshi ishlamasa, <ph name="BEGIN_LINK" />bu saytning tashqi cookie fayllaridan foydalanishiga vaqtincha ruxsat bering<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">Quyi chapdan steplerlash</translation>
 <translation id="8483229036294884935">Bu manzil Google hisobingizdan (<ph name="ACCOUNT" />) oʻchirildi</translation>
 <translation id="8488350697529856933">Tatbiq etish obyekti</translation>
@@ -4435,6 +4452,7 @@ Batafsil axborot:
 <translation id="8619130384334725124">Hozirda asosiy ilova</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">Moliyaviy muassasa bilan aloqa oʻrnatilmoqda...</translation>
+<translation id="8632584659860846053">Barcha Izolyatsiyalangan oynalarni yopishingiz bilan brauzer tarixi, cookie fayllar va sayt maʼlumotlari, kesh hamda shakllarga kiritilgan maʼlumotlar oʻchiriladi</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud va bu funksiya siz ochayotgan saytda yaqinda <ph name="BEGIN_LINK" />fishing amaliyotini aniqlagan<ph name="END_LINK" />. Fishing saytlar boshqa saytlar koʻrinishida sizni aldashga urinadi.<ph name="NEW_LINE" />Hatto normal xavfsizlikdagi saytlar ham vaqti-vaqti bilan firibgarlar tomonidan boshqariladi. Agar buni xatolik va bu sayt xavfli emas deb hisoblasangiz, bu haqida <ph name="BEGIN_ERROR_LINK" />bizga xabar qiling<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Varaqlarni ulashish va boshqalar bilan birga ishlash uchun Chrome hisobiga kiring</translation>

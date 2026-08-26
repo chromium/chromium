@@ -1350,6 +1350,7 @@ Manifest V2 を使用した拡張機能はサポートの終了が予定され�
         |TIME_LIMITS| を指定した場合、1 日の使用上限が適用されます。ユーザーは上限に達すると、その日はアプリを使用できません。使用制限は |daily_limit_mins| で指定し、毎日 |reset_at| で渡された UTC 時間になると制限はリセットされます。
         このポリシーは子どものユーザーにのみ使用します。
         このポリシーは、「UsageTimeLimit」を補完するものです。「UsageTimeLimit」で指定された制限（利用時間、おやすみ時間など）は、「PerAppTimeLimits」の設定に関係なく適用されます。</translation>
+<translation id="1911003883066847257">ブラウザの再起動と再起動に関する設定を制御します。</translation>
 <translation id="19133869326547269">このポリシーは非推奨となり、Chrome から Click-to-Call 機能が削除されたため、無視されます。
 
 元の説明:
@@ -3192,6 +3193,19 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="3036271748813538143">HTML パーサーの &lt;select&gt; 要素に対する新しい動作を有効にするかどうかを制御する</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3039862327847526651">JavaScript オプティマイザーの使用を管理する</translation>
+<translation id="3040510138377915303"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントが <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用できるようにするかどうかを制御します。<ph name="GEMINI_SPARK_PRODUCT_NAME" /> は組織で利用できない可能性があります。
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可します
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可しません
+
+警告: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可すると、<ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントはアクティブなブラウザ セッションを使用して、<ph name="PRODUCT_NAME" /> クライアントで自律的なマルチステップのアクションを実行できるようになります。これには、認証情報の漏洩リスク、ローカル ネットワークへの侵入、コンテキストアウェア シグナルの損失など、重大なセキュリティ リスクが伴います。既存の管理設定およびセキュリティの制御が適用されない可能性があります。
+
+管理者は、この機能を有効にする前に、組織のネットワーク脅威モデル、コンプライアンスとプライバシーに関するガイドラインを慎重に検討することが推奨されます。
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリまたは <ph name="PRODUCT_NAME" /> 自動ブラウジング ポリシーが無効になっている場合、このポリシーは無視されます。たとえば、<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。<ph name="PRODUCT_NAME" /> での <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> について詳しくは、https://support.google.com/chrome/a?p=gemini_in_chrome をご覧ください。
+
+国や言語によっては <ph name="PRODUCT_NAME" /> の自動ブラウジングと <ph name="GEMINI_SPARK_PRODUCT_NAME" /> を利用できない場合があります。このポリシーを 0（有効）に設定しても、機能が有効になるかどうかは、国や言語での提供状況に準じて決まります。リリースについて詳しくは、Enterprise リリースノート（https://chromeenterprise.google/resources/release-notes/）をご覧ください。</translation>
 <translation id="3041887182529293512">このポリシーを True に設定するか未設定のままにした場合、ユーザーの閲覧履歴、興味・関心、場所に基づいて自動生成されたおすすめのコンテンツが新しいタブページに表示されます。
 
       このポリシーを False に設定した場合、自動生成されたおすすめのコンテンツは新しいタブページには表示されません。</translation>
@@ -7821,6 +7835,7 @@ false に設定した場合、教師はこの機能にアクセスできませ�
       このポリシーが未設定の場合、<ph name="PRODUCT_NAME" /> ではデフォルトの最大バージョンが使用されます。
 
       このポリシーを設定する場合は、値として「tls1.2」または「tls1.3」を指定できます。このポリシーが設定されている場合、<ph name="PRODUCT_NAME" /> では、指定されたバージョンより大きい SSL / TLS バージョンは使用されません。また、認識できない値は無視されます。</translation>
+<translation id="6120465104321378808"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続し、Gemini in Chrome を介して自動ブラウジングを使用することを許可する</translation>
 <translation id="6120909112796019291">生成 AI 写真編集と AI モデルの改善を許可する。</translation>
 <translation id="6123052603197028610">タイムスタンプを取得するために Google サーバーへクエリを送信することを許可しない</translation>
 <translation id="6128539430475678271">Controlled Frame API をブロックするサイトを指定する</translation>

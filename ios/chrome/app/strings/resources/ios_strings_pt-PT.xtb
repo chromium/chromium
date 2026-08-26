@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies, dados de sites</translation>
 <translation id="1312721752506309252">A proteção melhorada está ativada</translation>
 <translation id="1321993286294231467">Erro ao guardar a imagem.</translation>
+<translation id="1322683976135389755">Comando: resume este artigo, 1 de 3</translation>
 <translation id="1322735045095424339">A sua entidade requer o Modo de navegação anónima</translation>
 <translation id="1323735185997015385">Eliminar</translation>
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta principal.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
 <translation id="3259451381796379533">Esta conta não funciona com o Gemini. Inicie sessão com uma Conta Google diferente.</translation>
 <translation id="3265736395246760288">Inicie sessão mais rapidamente a partir de qualquer um dos seus dispositivos sincronizados.</translation>
+<translation id="3268166994745151153">Isto significa que vai perder o seu progresso atual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3272955648592358996">Os seus dados melhoram a IA da Google</translation>
 <translation id="3273510436356991673">Personalizar o ecrã principal</translation>
+<translation id="327455571215090823">Preenchimento automático mais inteligente, mantido em privado</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3289505634533552500">Pesquisa por voz</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Faça perguntas sobre qualquer coisa na sua página com o Gemini no Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Preencha automaticamente as palavras-passe guardadas</translation>
 <translation id="4021447724486050609">Atualize o navegador</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Localização:</translation>
 <translation id="4517684186578051919">Informações do dispositivo</translation>
 <translation id="4520798012560649652">Saiba mais acerca do Modo de navegação anónima</translation>
+<translation id="4524737913322680818">Compre, planeie e faça mais com o Gemini no Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="4525629404718770519">Mostrar pré-visualizações de links</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Certifique-se de que as suas palavras-passe estão seguras, saiba se ficaram comprometidas e obtenha conselhos para se proteger online. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Ative a partilha de separadores</translation>
 <translation id="4658335131052370646">Guardar</translation>
+<translation id="465947902531722727">Mudar de perfil</translation>
 <translation id="466307903888586355">A sua organização bloqueou a ação de guardar ficheiros</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">A sua organização requer que navegue em privado. Os grupos de separadores não são sincronizados no Modo de navegação anónima.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
 <translation id="4985921635659180565">Quando é agendada a eliminação de um ficheiro, não é possível cancelá-la.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
+<translation id="4986428648020277392">Comando: qual devo comprar? 2 de 3</translation>
+<translation id="498768198683310172">Começar a usar o Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de separadores: <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838430324585198889">Desbloqueie mais funcionalidades para o seu iPad com as apps Google</translation>
 <translation id="583923961930319521">Use palavras-passe em todos os dispositivos</translation>
+<translation id="5841763734702350465">Comando: adiciona isto ao meu calendário, 3 de 3</translation>
 <translation id="5843013299019689749">Cor de fundo preta</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
@@ -1782,6 +1791,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6775952316617222141">Usar Live com o Gemini no Chrome</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
 <translation id="6782531425936234573">Exportar dados</translation>
+<translation id="6789665473250283877">Remover <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>
 <translation id="6794476726485507147">Escolha uma data e uma hora para receber uma notificação de lembrete para consultar esta página novamente</translation>
 <translation id="6797543908718012274">Ativar modo de leitura</translation>
@@ -2153,6 +2163,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Validar a sua identidade para preencher automaticamente informações confidenciais</translation>
 <translation id="8015826420689927262">Eliminar anexo</translation>
+<translation id="8016869623424294549">Está prestes a mudar de perfil</translation>
 <translation id="8017015647846870183">Do Gestor de Palavras-passe da Google, incluindo palavras-passe e chaves de acesso</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8023170444051056234">Vai perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e este vai ser eliminado de todos os seus dispositivos</translation>

@@ -1407,6 +1407,7 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
         |TIME_LIMITS|은(는) 일일 사용 제한을 적용하여 지정된 날짜에서 제한에 도달한 후에는 앱을 사용할 수 없게 합니다. 사용 제한은 |daily_limit_mins|에 지정됩니다. 사용 제한은 매일 |reset_at|(UTC 기준)에 재설정됩니다.
         이 정책은 자녀 사용자에게만 사용됩니다.
         이 정책은 'UsageTimeLimit'을 보완합니다. 기기 사용 시간 및 취침 시간과 같이 'UsageTimeLimit'에 지정된 제한은 'PerAppTimeLimits'와 관계없이 시행됩니다.</translation>
+<translation id="1911003883066847257">브라우저 다시 실행 및 다시 시작 설정을 제어합니다.</translation>
 <translation id="19133869326547269">클릭 투 콜 기능이 Chrome에서 삭제되었으므로 이 정책은 지원 중단되었으며 아무런 영향을 미치지 않습니다.
 
 원래 설명:
@@ -3334,6 +3335,19 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="3036271748813538143">&lt;select&gt; 요소의 새 HTML 파서 동작을 사용 설정할지 여부를 제어합니다.</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3039862327847526651">JavaScript 최적화 도구 사용 제어</translation>
+<translation id="3040510138377915303"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> 에이전트가 <ph name="PRODUCT_NAME" />에 연결하고 자동 탐색을 사용하도록 허용할지 여부를 설정합니다. 조직에서 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 기능을 사용하지 못할 수도 있습니다.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />가 <ph name="PRODUCT_NAME" /> 자동 탐색에 연결하고 이를 사용하도록 허용합니다.
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />가 <ph name="PRODUCT_NAME" /> 자동 탐색에 연결하거나 이를 사용하도록 허용하지 않습니다.
+
+경고: <ph name="GEMINI_SPARK_PRODUCT_NAME" />가 <ph name="PRODUCT_NAME" />에 연결하고 자동 탐색을 사용하도록 허용하면 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 에이전트가 활성 브라우저 세션을 사용하여 <ph name="PRODUCT_NAME" /> 클라이언트에서 자율적인 다단계 작업을 수행할 수 있습니다. 여기에는 사용자 인증 정보 위험, 로컬 네트워크 인그레스, 컨텍스트 인식 신호 손실과 같은 심각한 보안 위험이 수반됩니다. 기존 관리 및 보안 제어가 적용되지 않을 수 있습니다.
+
+관리자는 이 기능을 사용 설정하기 전에 조직의 네트워크 위협 모델, 규정 준수, 개인 정보 보호 가이드라인을 신중하게 평가하시기 바랍니다.
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 앱 또는 <ph name="PRODUCT_NAME" /> 자동 탐색 정책이 사용 중지되어 있는 경우 이 정책은 적용되지 않습니다. 예를 들어 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책에 의해 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 앱이 사용 중지될 수 있습니다. <ph name="PRODUCT_NAME" />의 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />에 대한 자세한 내용은 https://support.google.com/chrome/a?p=gemini_in_chrome 페이지를 참고하세요.
+
+<ph name="PRODUCT_NAME" /> 자동 탐색 및 <ph name="GEMINI_SPARK_PRODUCT_NAME" />는 일부 국가 또는 언어에서만 제공됩니다. 이 정책을 0(사용 설정)으로 설정해도 이 기능이 사용 설정된다는 보장은 없으며, 기능 사용 가능 여부에 따라 달라집니다. 출시에 관한 자세한 내용은 Enterprise 출시 노트(https://chromeenterprise.google/resources/release-notes/)를 참고하세요.</translation>
 <translation id="3041887182529293512">정책을 True로 설정하거나 설정하지 않으면 사용자의 방문 기록, 관심분야 또는 위치를 기반으로 자동 생성된 콘텐츠 추천이 새 탭 페이지에 표시됩니다.
 
       정책을 False로 설정하면 자동 생성된 콘텐츠 추천이 새 탭 페이지에 표시되지 않습니다.</translation>
@@ -8196,6 +8210,7 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
       이 정책이 구성되지 않으면 <ph name="PRODUCT_NAME" />에서 기본 최대 버전을 사용합니다.
 
       그렇지 않은 경우 'tls1.2' 또는 'tls1.3' 값 중 하나로 설정할 수 있습니다. 설정되면 <ph name="PRODUCT_NAME" />에서 지정된 버전보다 높은 SSL/TLS 버전을 사용하지 않습니다. 인식할 수 없는 값은 무시됩니다.</translation>
+<translation id="6120465104321378808"><ph name="GEMINI_SPARK_PRODUCT_NAME" />가 <ph name="PRODUCT_NAME" />에 연결하고 Chrome의 Gemini를 통해 자동 탐색을 사용하도록 허용합니다.</translation>
 <translation id="6120909112796019291">생성형 AI 포토 편집을 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="6123052603197028610">Google 서버로 전송된 쿼리가 타임스탬프를 가져오도록 허용하지 않음</translation>
 <translation id="6128539430475678271">이 사이트에서 Controlled Frame API 차단</translation>

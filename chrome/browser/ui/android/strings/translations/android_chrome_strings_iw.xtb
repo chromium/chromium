@@ -115,6 +115,7 @@
 <translation id="1413446866325418126">‏שמירת נתונים בחשבון שלך ב-Google</translation>
 <translation id="1414919006379339073">סגירת החלון הנוכחי</translation>
 <translation id="1416550906796893042">גרסת אפליקציה</translation>
+<translation id="1426410128494586442">כן</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1435593198351412143">‏פתיחה אוטומטית של קובצי PDF</translation>
@@ -155,6 +156,7 @@
 <translation id="1598163867407640634">יש לך אפשרות להשתמש באתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677">‫<ph name="TAB_TITLE" />, כרטיסייה שהוצמדה והתוכן בה מוקלט</translation>
 <translation id="1600756129506222718">‫<ph name="TAB_TITLE" />, כרטיסייה שהתוכן בה משותף</translation>
+<translation id="1601378265092360672">‏נתוני הגלישה כוללים את היסטוריית הגלישה, קובצי Cookie ונתונים אחרים מאתרים, וגם תמונות וקבצים שנשמרו במטמון וכרטיסיות פתוחות</translation>
 <translation id="160275202205869636">‏כשההגדרה מופעלת, נעשה שימוש בנתונים והם נשמרים בחשבון Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{הסרת פריט אחד שנבחר}one{הסרת # פריטים שנבחרו}two{הסרת # פריטים שנבחרו}other{הסרת # פריטים שנבחרו}}</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">אפשר לבדוק אתרים ששולחים הרבה התראות ולמנוע מהם לשלוח עוד התראות בעתיד</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">הפעלה</translation>
 <translation id="2393980685134835044">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה, במצב "תמונה בתוך תמונה"</translation>
 <translation id="2397175985681716533">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שהתוכן בה מוקלט</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">הוספת הדף לסימניות</translation>
 <translation id="3265093782546847662">כל הדפים של <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">צריך לגרור למעלה כדי לראות את תוצאות החיפוש</translation>
+<translation id="3268205181992599708">כדי להשתמש בקול, צריך להפעיל את המיקרופון</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282801380074962248">הרחבת הקטע</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="3560831525486613327">פותחים את הדף "כרטיסייה חדשה"</translation>
 <translation id="3563767357928833671">מוצג התוכן שבלוח</translation>
+<translation id="356407858591811361">פתיחת חלון פרטי חדש</translation>
 <translation id="3566639033325271639">עדכון ההגדרות</translation>
 <translation id="3568945271227339929">אין סיסמאות שנחשפו</translation>
 <translation id="3575464060651642446">הסיסמאות במכשיר הזה נבדקות…</translation>
@@ -1053,6 +1058,7 @@
 <translation id="5267572070504076962">כדאי להפעיל את הגלישה הבטוחה ולקבל הגנה מפני אתרים מסוכנים</translation>
 <translation id="5273031377282080577">ההגדרה הזו מנוהלת על ידי האדמין.</translation>
 <translation id="5284295735376057059">מאפייני המסמך</translation>
+<translation id="5286907366254680517">זוהתה</translation>
 <translation id="5290322819358431297">מילוי אוטומטי של סיסמאות</translation>
 <translation id="5292796745632149097">שליחה אל</translation>
 <translation id="5301876394151419436">‏נכנסת לחשבון בתור <ph name="EMAIL" />. אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -1533,6 +1539,7 @@
 <translation id="7117485132243600300">ניהול התוכן שבמעקב שלך והמלצות לנושאים ולחיפושים</translation>
 <translation id="7119984597597798764">סגירה של <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">‏כניסה ל-Chrome</translation>
+<translation id="7130633106249192408">מחיקת נתוני הגלישה מהמכשיר הזה</translation>
 <translation id="7136694880210472378">הגדרה כברירת מחדל</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>
 <translation id="7138678301420049075">אחר</translation>
@@ -1692,6 +1699,7 @@
 <translation id="7714077993070342304">‏פתיחת תפריט Chrome</translation>
 <translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>
 <translation id="7740287852186792672">תוצאות חיפוש</translation>
+<translation id="7740996059027112821">רגילה</translation>
 <translation id="774403695779169686">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה והתוכן בה משותף</translation>
 <translation id="774876555279732384">‏אפשר לנהל את שירותי המילוי האוטומטי גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">הוספת חיפוש באתר</translation>

@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez aussi l'accès à l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Changez la position pour personnaliser votre expérience de navigation</translation>
 <translation id="1848033246551405023">Police : Sans Serif</translation>
+<translation id="1861244985839668297">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils HID. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils HID.</translation>
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1881806992065048905">Zone de contenu dans le bas de l'écran concernant l'apparence de la page Nouvel onglet</translation>
 <translation id="1887786770086287077">L'accès à la localisation est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>

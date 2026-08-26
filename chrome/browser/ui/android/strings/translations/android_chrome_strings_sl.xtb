@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Bralni seznam</translation>
 <translation id="1269129608791067105">Tukaj bo prikazana zgodovina</translation>
 <translation id="1280921956537356716">Vklop obvestil z nasveti</translation>
+<translation id="1287449971634955609">Odstrani razširitve in izbriši podatke, ki so jih shranile v tej napravi</translation>
 <translation id="1289129165308566697">Ogled zgodovine v drugih napravah</translation>
 <translation id="129553762522093515">Nedavno zaprto</translation>
 <translation id="1298077576058087471">Prihranite do 60 % pri prenosu podatkov, preberite današnje novice</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Shranjevanje podatkov v račun Google</translation>
 <translation id="1414919006379339073">Zapiranje trenutnega okna</translation>
 <translation id="1416550906796893042">Različica aplikacije</translation>
+<translation id="1426410128494586442">Da</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
 <translation id="1435593198351412143">Samodejno odpiranje datotek PDF</translation>
@@ -342,6 +344,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2385605401818128172">Pregledate lahko spletna mesta, ki pošiljajo veliko obvestil, in preprečite, da bi v prihodnje pošiljala še več obvestil</translation>
 <translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
 <translation id="2390510615457643724">Ali želite znova prenesti datoteko <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, izbrani anonimni zavihek s sliko v sliki</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, anonimni zavihek za snemanje</translation>
@@ -787,6 +790,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Uporabljeno na tem spletnem mestu</translation>
 <translation id="4214315110991671325">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje.</translation>
 <translation id="421517251707893998">Dotaknite se »Pripni to bližnjico«</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Poslušanje te strani</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, izbrani pripeti anonimni zavihek s sliko v sliki</translation>
 <translation id="4225895483398857530">Bližnjica do orodne vrstice</translation>
@@ -983,6 +987,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4961107849584082341">Prevedite to stran v kateri koli jezik</translation>
 <translation id="4964614743143953889">Chrome vas opozori na spletna mesta in prenose, ki niso varni</translation>
 <translation id="496607651705915226">Če želite v računu Google shraniti in uporabljati nova gesla, posodobite storitve Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Poskusite poiskati nekaj drugega ali odprite celotno zgodovino uporabe Chroma, da si ogledate več rezultatov.</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="497983151715419057">Tukaj preglejte neaktivne zavihke in skupine</translation>
@@ -1055,6 +1060,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5267572070504076962">Vklopite Varno brskanje, da si zagotovite zaščito pred nevarnimi spletnimi mesti</translation>
 <translation id="5273031377282080577">To nastavitev upravlja skrbnik.</translation>
 <translation id="5284295735376057059">Lastnosti dokumenta</translation>
+<translation id="5286907366254680517">Zaznano</translation>
 <translation id="5290322819358431297">Samodejno izpolnjevanje gesel</translation>
 <translation id="5292796745632149097">Pošiljanje v napravo</translation>
 <translation id="5301876394151419436">Prijavljeni ste kot <ph name="EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
@@ -1554,7 +1560,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7173338713290252554">Zgodovina cen v spletu</translation>
 <translation id="7177466738963138057">To lahko pozneje spremenite v nastavitvah</translation>
 <translation id="7177873915659574692">Kode QR ni mogoče ustvariti. URL vsebuje več kot toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="7179032284363038560">Drugi, ki uporabljajo to napravo, ne bodo videli vaše dejavnosti, zato lahko brskate bolj zasebno. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Uporabite drug račun</translation>
 <translation id="7182520625618447753">Za prilagojeno izkušnjo brskanja spremenite položaj naslovne vrstice na vrh ali dno</translation>
 <translation id="7183517696921903380">List filtra za aplikacije je odprt.</translation>
@@ -1695,6 +1700,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7714077993070342304">Odpiranje Chromovega menija</translation>
 <translation id="7733878270780732638">V napravi ni dovolj prostora.</translation>
 <translation id="7740287852186792672">Rezultati iskanja</translation>
+<translation id="7740996059027112821">Standardno</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, izbrani anonimni zavihek za deljenje</translation>
 <translation id="774876555279732384">Storitve samodejnega izpolnjevanja lahko upravljate tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Dodajte iskanje po spletnem mestu</translation>

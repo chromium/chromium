@@ -716,6 +716,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1554640914375980459">Il·lumina la pantalla quan reps notificacions. Utilitza les notificacions amb flaix amb precaució si ets sensible a la llum.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556127816860282890">Pot ser que l'activitat en segon pla i alguns efectes visuals, com ara el desplaçament suau, quedin limitats</translation>
+<translation id="1557806604681757705">del teu ordinador</translation>
 <translation id="1557939148300698553">Crea un perfil</translation>
 <translation id="155803912725350982">Tecles lentes</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
@@ -1017,6 +1018,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1784707308176068866">Executa en segon pla quan una aplicació nativa col·laboradora ho sol·liciti</translation>
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Si desinstal·les <ph name="APP_NAME" />, també es desinstal·larà aquesta aplicació:}other{Si desinstal·les <ph name="APP_NAME" />, també es desinstal·laran aquestes aplicacions:}}</translation>
+<translation id="1785698972112179866">Inicia la sessió per obtenir les adreces d'interès i altres dades <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">S'està sol·licitant llegir i canviar</translation>
 <translation id="1789543093145556097">Amaga sempre</translation>
 <translation id="179021551944139249">Afegeix l'enllaç a la llista de lectura</translation>
@@ -1699,6 +1701,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2322193970951063277">Capçalera i peu de pàgina</translation>
 <translation id="2322622365472107569">Hora de finalització: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Xarxes Wi-Fi desades</translation>
+<translation id="2323685460575935191">Amaga els botons de desplaçament</translation>
 <translation id="2325444234681128157">Recorda la contrasenya</translation>
 <translation id="2326188115274135041">Confirma el PIN per activar el desbloqueig automàtic</translation>
 <translation id="2326583548923775947">Aquest no és un Compte de Google. Els elements que desis a Chrome no estaran disponibles en altres dispositius.</translation>
@@ -4300,7 +4303,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4290898381118933198">Llisca per navegar entre les pàgines</translation>
 <translation id="4292613336957320546">Acceleració</translation>
 <translation id="429312253194641664">Un lloc web està reproduint contingut multimèdia</translation>
-<translation id="4293154608148215505">al telèfon</translation>
+<translation id="4293154608148215505">del teu telèfon</translation>
 <translation id="4293219510510666933">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. També pots fer preguntes i obtenir respostes basades en el teu historial de navegació. Aquesta opció de configuració està activada.</translation>
 <translation id="429344752071832554">Treu el focus del grup</translation>
 <translation id="4294392694389031609">S'ha suprimit <ph name="FILE_NAME" /> de l'historial de baixades, però encara és al dispositiu</translation>
@@ -5379,7 +5382,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5125714798187802869">Activa</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
 <translation id="5125967981703109366">Sobre aquesta targeta</translation>
-<translation id="5126335625961252141">la teva tauleta</translation>
+<translation id="5126335625961252141">de la teva tauleta</translation>
 <translation id="512642543295077915">Cerca+retrocés</translation>
 <translation id="5126611267288187364">Mostra els canvis</translation>
 <translation id="5127620150973591153">Identificador de connexió segura: <ph name="TOKEN" /></translation>
@@ -8635,6 +8638,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 que pot incloure dades del programari instal·lat, de fitxers, del navegador, del sistema operatiu i de les adreces IP.</translation>
 <translation id="7683834360226457448">Eines de visualització per a persones amb poca visió</translation>
 <translation id="7684212569183643648">Extensió instal·lada per l'administrador</translation>
+<translation id="7684547908663093354">Inicia la sessió per obtenir les teves contrasenyes i altres dades <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">Per crear aplicacions i provar-les, activa Android Debug Bridge (ADB). Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir la configuració de fàbrica del dispositiu.</translation>
 <translation id="7684803937028953000">La teva organització ha bloquejat la baixada local d'aquest fitxer.</translation>
 <translation id="7684913007876670600">Per mostrar una visualització simplificada d'aquesta pàgina, obre el tauler lateral i selecciona el mode de lectura</translation>
@@ -9055,6 +9059,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8011372169388649948">S'han mogut <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="8012188750847319132">bloq maj</translation>
 <translation id="8013181884974864006">Tasques contextuals</translation>
+<translation id="8013462234418290522">Inicia la sessió per obtenir la informació desada i altres dades <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">Aquests llocs web es troben en un grup definit per <ph name="RWS_OWNER" />. Els llocs web d'un grup poden veure l'activitat que hi dus a terme.</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8014154204619229810">L'actualitzador està en funcionament. Actualitzeu la pantalla d'aquí a un minut per tornar-ho a comprovar.</translation>

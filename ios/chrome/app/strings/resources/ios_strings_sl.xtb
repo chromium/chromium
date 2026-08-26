@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Piškotki, podatki spletnega mesta</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
+<translation id="1322683976135389755">Poziv: Povzemi ta članek, 1 od 3</translation>
 <translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
 <translation id="132683371494960526">Double tap to change the parent folder.</translation>
@@ -699,6 +700,7 @@
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3272955648592358996">Vaši podatki izboljšujejo Googlovo umetno inteligenco</translation>
 <translation id="3273510436356991673">Prilagajanje začetnega zaslona</translation>
+<translation id="327455571215090823">Pametnejše samodejno izpolnjevanje, ki ostane zasebno</translation>
 <translation id="3277021493514034324">Kopiran naslov spletnega mesta</translation>
 <translation id="3280562213547448728">Glasovno iskanje</translation>
 <translation id="3289505634533552500">Glasovno iskanje</translation>
@@ -912,6 +914,7 @@
 <translation id="4004204301268239848">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi.</translation>
 <translation id="4007463141047732631">Urejanje skupine</translation>
 <translation id="4011489366247192265">Iz jezika</translation>
+<translation id="4014099645251211155">Z Geminijem v Chromu lahko vprašate kar koli na strani</translation>
 <translation id="4017599800655151880">Sličica</translation>
 <translation id="4018440314314549819">Samodejno izpolnjevanje shranjenih gesel</translation>
 <translation id="4021447724486050609">Posodobite brskalnik</translation>
@@ -1054,6 +1057,7 @@
 <translation id="4509345063551561634">Lokacija</translation>
 <translation id="4517684186578051919">Podatki o napravi</translation>
 <translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
+<translation id="4524737913322680818">Nakupujte, načrtujte in opravite več z Geminijem v Chromu</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="4525629404718770519">Prikaz predogledov povezav</translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
@@ -1210,6 +1214,7 @@
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4985921635659180565">Ko je datoteka načrtovana za izbris, tega ni mogoče preklicati.</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
+<translation id="4986428648020277392">Poziv: Katerega naj kupim? 2 od 3</translation>
 <translation id="498768198683310172">Začni uporabljati Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, upravlja vaša organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
@@ -1476,6 +1481,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5838430324585198889">Odklenite več funkcij za iPad z Googlovimi aplikacijami</translation>
 <translation id="583923961930319521">Uporaba gesel v vseh napravah</translation>
+<translation id="5841763734702350465">Poziv: Dodaj to v moj koledar, 3 od 3</translation>
 <translation id="5843013299019689749">Ozadje v črni barvi</translation>
 <translation id="5844284118433003733">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="5854790677617711513">Starejše od 30 dni</translation>
@@ -1785,6 +1791,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6775952316617222141">Uporaba izkušnje Live z Geminijem v Chromu</translation>
 <translation id="6779455296366983087">Podatki brskanja bodo izbrisani</translation>
 <translation id="6782531425936234573">Izvoz podatkov</translation>
+<translation id="6789665473250283877">Odstrani <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Dotaknite se »Dodaj zavihek novi skupini«</translation>
 <translation id="6794476726485507147">Izberite datum in uro, ko želite prejeti opomnik za vnovični obisk te strani</translation>
 <translation id="6797543908718012274">Vklop načina za branje</translation>

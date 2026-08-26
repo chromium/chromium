@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
+<translation id="1252597096488926946">取消固定捲動按鈕</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1254034280040157728">大峽谷</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">選擇要擷取的畫面</translation>
 <translation id="17584710573359123">前往 Chrome 線上應用程式商店查看</translation>
+<translation id="176013700366797492">前往 Google 錢包控管<ph name="BEGIN_LINK1" />資料和隱私權偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方式<ph name="END_LINK2" />與會員卡和身分證件等<ph name="BEGIN_LINK3" />票證<ph name="END_LINK3" /></translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -1701,6 +1703,7 @@
 <translation id="2322193970951063277">頁首及頁尾</translation>
 <translation id="2322622365472107569">結束時間 <ph name="TIME" /></translation>
 <translation id="2323018538045954000">已儲存的 Wi-Fi 網路</translation>
+<translation id="2323685460575935191">隱藏捲動按鈕</translation>
 <translation id="2325444234681128157">記住密碼</translation>
 <translation id="2326188115274135041">確認 PIN 碼以開啟自動解鎖功能</translation>
 <translation id="2326583548923775947">這不是 Google 帳戶，因此儲存到 Chrome 的項目將無法在其他裝置上使用。</translation>
@@ -1957,6 +1960,7 @@
 <translation id="2508747373511408451">「<ph name="APPLICATION_NAME" />」應用程式必須搭配 Google 雲端硬碟才能使用。</translation>
 <translation id="2509495747794740764">縮放比例必須為介於 10 和 200 之間的數字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />：<ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (已選取)</translation>
 <translation id="2513904627589542105">自我測試</translation>
 <translation id="251425554130284360">系統會顯示你曾造訪的網頁和建議搜尋項目，方便你回到最近造訪過的頁面。
@@ -4986,6 +4990,7 @@
 <translation id="4831226137013573603">將麥克風設為靜音</translation>
 <translation id="483262387981411190">暫停或繼續使用臉部控制功能</translation>
 <translation id="4833683849865011483">在印表機伺服器上找到 1 台印表機</translation>
+<translation id="4834388789911023644">撰寫評論</translation>
 <translation id="4835598628985424375">噘嘴</translation>
 <translation id="4835677468087803981">隱藏 PIN 碼</translation>
 <translation id="4836504898754963407">管理指紋</translation>
@@ -8543,6 +8548,7 @@
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="762730429396410864">手動設定提供給網站的 CPU 效能級別</translation>
 <translation id="7627749368210392160">網站可透過這項功能存取區域網路上的其他裝置</translation>
+<translation id="7628068697012244394">撰寫評論</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
 <translation id="762917478230183172">選取各個按鍵的動作</translation>
 <translation id="7629206210984165492">柔和</translation>
@@ -8969,6 +8975,7 @@
 <translation id="7949038991703929816">記錄無法載入，請確認檔案內含有效的更新工具記錄。</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 這項擴充功能尚未發布隱私權實務規範，例如擴充功能如何收集和使用資料</translation>
+<translation id="7951159420392892566">取消固定捲動按鈕</translation>
 <translation id="795130320946928025">關閉虛擬卡片</translation>
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="7953236668995583915">重新載入這個頁面，將更新後的設定套用到此網站</translation>

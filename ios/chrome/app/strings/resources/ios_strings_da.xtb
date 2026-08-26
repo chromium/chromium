@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies, websitedata</translation>
 <translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
 <translation id="1321993286294231467">Billedet kunne ikke gemmes.</translation>
+<translation id="1322683976135389755">Prompt: Opsummer denne artikel, 1 af 3</translation>
 <translation id="1322735045095424339">Din organisation kræver inkognitotilstand</translation>
 <translation id="1323735185997015385">Slet</translation>
 <translation id="132683371494960526">Tryk to gange for at ændre den overordnede mappe.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Tryk på "Privatliv og sikkerhed"</translation>
 <translation id="3259451381796379533">Denne konto fungerer ikke med Gemini. Log ind med en anden Google-konto.</translation>
 <translation id="3265736395246760288">Log hurtigere ind fra en hvilken som helst af dine synkroniserede enheder.</translation>
+<translation id="3268166994745151153">Hvis du fortsætter, mister du dine aktuelle fremskridt</translation>
 <translation id="3272527697863656322">Annuller</translation>
 <translation id="3272955648592358996">Dine data forbedrer Google AI</translation>
 <translation id="3273510436356991673">Tilpas din startskærm</translation>
+<translation id="327455571215090823">Smartere autofyld, der holdes privat</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3289505634533552500">Stemmesøgning</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed.</translation>
 <translation id="4007463141047732631">Rediger gruppen</translation>
 <translation id="4011489366247192265">Fra</translation>
+<translation id="4014099645251211155">Spørg Gemini i Chrome om alt på din side</translation>
 <translation id="4017599800655151880">Miniature</translation>
 <translation id="4018440314314549819">Autofyld gemte adgangskoder</translation>
 <translation id="4021447724486050609">Opdater din browser</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Lokation:</translation>
 <translation id="4517684186578051919">Enhedsoplysninger</translation>
 <translation id="4520798012560649652">Få flere oplysninger om inkognitotilstand</translation>
+<translation id="4524737913322680818">Shop, planlæg, og udret mere med Gemini i Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bogmærke}one{{count}bogmærke}other{{count}bogmærker}}</translation>
 <translation id="4525629404718770519">Vis forhåndsvisninger af links</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Aktivér fannedeling</translation>
 <translation id="4658335131052370646">Gem</translation>
+<translation id="465947902531722727">Skift profil</translation>
 <translation id="466307903888586355">Din organisation har blokeret muligheden for at gemme filer</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Din organisation kræver, at du bruger privat browsing. Fanegrupper synkroniseres ikke i inkognitotilstand.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
 <translation id="4985921635659180565">Når en fil er planlagt til at blive slettet, kan den ikke annulleres.</translation>
 <translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
+<translation id="4986428648020277392">Prompt: Hvilken skal jeg købe? 2 af 3</translation>
+<translation id="498768198683310172">Begynd at bruge Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, som administreres af din organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fanegruppens farve <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5838430324585198889">Få adgang til flere iPad-funktioner med Google-apps</translation>
 <translation id="583923961930319521">Brug adgangskoder på alle dine enheder</translation>
+<translation id="5841763734702350465">Prompt: Føj dette til min kalender, 3 af 3</translation>
 <translation id="5843013299019689749">Sort baggrundsfarve</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
@@ -1782,6 +1791,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6775952316617222141">Gå live med Gemini i Chrome</translation>
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
 <translation id="6782531425936234573">Eksportér data</translation>
+<translation id="6789665473250283877">Fjern <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tryk på "Føj fane til ny gruppe"</translation>
 <translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
 <translation id="6797543908718012274">Aktivér Læsetilstand</translation>
@@ -2153,6 +2163,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verificer din identitet for at bruge autofyld til følsomme oplysninger</translation>
 <translation id="8015826420689927262">Slet vedhæftet fil</translation>
+<translation id="8016869623424294549">Du er ved at skifte profil</translation>
 <translation id="8017015647846870183">Fra Google Adgangskodeadministrator, herunder adgangskoder og adgangsnøgler</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8023170444051056234">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>

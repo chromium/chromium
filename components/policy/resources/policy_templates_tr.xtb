@@ -1414,6 +1414,7 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
         |TIME_LIMITS| günlük kullanım sınırı uygular ve belirtilen günde bu sınıra ulaşıldığında uygulamayı kullanılamaz duruma getirir. Kullanım sınırı |daily_limit_mins| cinsinden belirtilir. Kullanım sınırı, |reset_at| ayarında belirtilen UTC saatinde sıfırlanır.
         Bu politika yalnızca çocuk kullanıcılar için kullanılır.
         Bu politika "UsageTimeLimit" için tamamlayıcıdır. "UsageTimeLimit" politikasında belirtilen ekran başında kalma süresi ve uyku vakti gibi kısıtlamalar, "PerAppTimeLimits" politikasından bağımsız olarak uygulanır.</translation>
+<translation id="1911003883066847257">Tarayıcıyı yeniden başlatma ayarlarını kontrol eder.</translation>
 <translation id="19133869326547269">Tıkla ve Ara özelliği Chrome'dan kaldırıldığı için bu politikanın desteği sonlandırıldı ve artık geçerli değil.
 
 Orijinal açıklama:
@@ -3369,6 +3370,19 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
 <translation id="3036271748813538143">&lt;select&gt; öğesi için yeni HTML ayrıştırıcı davranışının etkinleştirilip etkinleştirilmeyeceğini kontrol eder</translation>
 <translation id="3038323923255997294"><ph name="PRODUCT_NAME" /> kapandığında arka plan uygulamalarını çalıştırmaya devam et</translation>
 <translation id="3039862327847526651">JavaScript optimize edicilerin kullanımını denetle</translation>
+<translation id="3040510138377915303"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına ve otomatik gezinme özelliğini kullanmasına izin verilip verilmeyeceğini kontrol eder. <ph name="GEMINI_SPARK_PRODUCT_NAME" />, kuruluşunuzda kullanılamıyor olabilir.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kurabilir ve otomatik gezinme özelliğini kullanabilir
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kuramaz veya otomatik gezinme özelliğini kullanamaz
+
+Uyarı: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasını ve otomatik gezinme özelliğini kullanmasını etkinleştirmek, <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının etkin tarayıcı oturumunu kullanarak <ph name="PRODUCT_NAME" /> istemcilerinde bağımsız, çok adımlı işlemler yapmasına olanak tanır. Bu durum; kimlik bilgisi riskleri, Yerel Ağ Girişi ve içeriğe duyarlı sinyallerin kaybı gibi önemli güvenlik risklerini beraberinde getirir. Mevcut yönetim ve güvenlik denetimlerine uyulmayabilir.
+
+Yöneticilerin bu özelliği etkinleştirmeden önce kuruluşlarının ağ tehdit modelini, uyumluluk ve gizlilik kurallarını dikkatlice değerlendirmeleri önerilir.
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması veya <ph name="PRODUCT_NAME" /> otomatik gezinme politikaları devre dışı bırakıldığında bu politikanın etkisi olmaz. Örneğin, <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından devre dışı bırakılabilir. <ph name="PRODUCT_NAME" /> üzerinde <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=gemini_in_chrome adresine göz atın.
+
+<ph name="PRODUCT_NAME" /> otomatik gezinme ve <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tüm ülkelerde veya dillerde kullanılamaz. Bu politikanın 0 - Etkin değerine ayarlanması, özelliğin etkinleştirileceğini garanti etmez. Bu durum, kullanılabilirliğe bağlıdır. Kullanıma sunmayla ilgili daha fazla bilgi edinmek için Enterprise sürüm notlarını inceleyin: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Politikayı Doğru (True) değerine ayarlar veya ayarlamadan bırakırsanız Yeni Sekme sayfasında, kullanıcının tarama geçmişi, ilgi alanları veya konumuna dayalı otomatik oluşturulan içerik önerileri gösterilir.
 
       Politikayı Yanlış (False) değerine ayarlarsanız Yeni Sekme sayfasında otomatik oluşturulan içerik önerilerinin gösterilmesi engellenir.</translation>
@@ -8204,6 +8218,7 @@ Güvenli Tarama hakkında daha fazla bilgiyi https://developers.google.com/safe-
       Bu politika yapılandırılmazsa <ph name="PRODUCT_NAME" />, varsayılan maksimum sürümü kullanır.
 
       Aksi takdirde, şu değerlerden birine ayarlanabilir: "tls1.2" veya "tls1.3". Ayarlandığında <ph name="PRODUCT_NAME" />, belirtilen sürümden yüksek olan SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yoksayılır.</translation>
+<translation id="6120465104321378808"><ph name="GEMINI_SPARK_PRODUCT_NAME" />, Chrome'da Gemini aracılığıyla <ph name="PRODUCT_NAME" /> ile bağlantı kurabilir ve otomatik gezinme özelliğini kullanabilir</translation>
 <translation id="6120909112796019291">Üretken Yapay Zeka Fotoğraf Düzenleme özelliğine izin ver ve yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="6123052603197028610">Zaman damgalarını almak için Google sunucularına sorgu gönderilmesine izin verme</translation>
 <translation id="6128539430475678271">Bu sitelerde Controlled Frame API'yi engelle</translation>

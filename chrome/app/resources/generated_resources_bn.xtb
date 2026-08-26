@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{১টি বুকমার্ক ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে তা সেভ করুন। এর ফলে, ডুপ্লিকেট কিছু থাকলে তাও মুছে যাবে।}one{{BOOKMARK_COUNT}টি বুকমার্ক ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে তা সেভ করুন। এর ফলে, ডুপ্লিকেট কিছু থাকলে তাও মুছে যাবে।}other{{BOOKMARK_COUNT}টি বুকমার্ক ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে তা সেভ করুন। এর ফলে, ডুপ্লিকেট কিছু থাকলে তাও মুছে যাবে।}}</translation>
 <translation id="125220115284141797">ডিফল্ট</translation>
 <translation id="1252219782845132919">গ্রুপ লুকান</translation>
+<translation id="1252597096488926946">স্ক্রল বোতাম আনপিন করুন</translation>
 <translation id="1252987234827889034">প্রোফাইল ত্রুটি ঘটেছে</translation>
 <translation id="1254034280040157728">গ্র্যান্ড ক্যানিয়ন</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
@@ -985,6 +986,7 @@
 <translation id="1755601632425835748">টেক্সটের সাইজ</translation>
 <translation id="1756963401828337401">ক্যাপচার করার জন্য স্ক্রিন বেছে নিন</translation>
 <translation id="17584710573359123">Chrome ওয়েব স্টোরে দেখুন</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ডেটা ও গোপনীয়তা সংক্রান্ত পছন্দ<ph name="END_LINK1" /> কন্ট্রোল করতে অথবা লয়ালটি কার্ড ও আইডির মতো <ph name="BEGIN_LINK2" />পেমেন্ট পদ্ধতি<ph name="END_LINK2" /> ও <ph name="BEGIN_LINK3" />পাস<ph name="END_LINK3" /> ম্যানেজ করতে Google Wallet দেখুন</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />, <ph name="REMAPPING_OPTION" />-এ রিম্যাপ করা হয়েছে।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-এর অ্যাকাউন্ট</translation>
 <translation id="176272781006230109">শপিং করার জন্য সাজেশন</translation>
@@ -1714,6 +1716,7 @@
 <translation id="2322193970951063277">শিরোলেখ এবং পাদলেখ</translation>
 <translation id="2322622365472107569">শেষ হওয়ার সময় <ph name="TIME" /></translation>
 <translation id="2323018538045954000">সেভ করা ওয়াই-ফাই নেটওয়ার্ক</translation>
+<translation id="2323685460575935191">স্ক্রল বোতাম লুকান</translation>
 <translation id="2325444234681128157">পাসওয়ার্ড মনে রাখুন</translation>
 <translation id="2326188115274135041">অটোমেটিক আনলক চালু করতে পিন কনফার্ম করুন</translation>
 <translation id="2326583548923775947">এটি Google অ্যাকাউন্ট নয়। Chrome-এ আপনার সেভ করা আইটেম অন্য ডিভাইসে উপলভ্য হবে না।</translation>
@@ -1970,6 +1973,7 @@
 <translation id="2508747373511408451">ফাইলটি খুলতে <ph name="APPLICATION_NAME" /> অ্যাপ্লিকেশনের জন্য ডিভাইসে Google Drive উপলভ্য থাকতে হবে।</translation>
 <translation id="2509495747794740764">স্কেলের মাপকে অবশ্যই ১০ থেকে ১০০ এর মধ্যের একটি সংখ্যা হতে হবে।</translation>
 <translation id="2509566264613697683">৮x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (বেছে নেওয়া হয়েছে)</translation>
 <translation id="2513904627589542105">সেল্ফ টেস্ট</translation>
 <translation id="251425554130284360">আপনি ভিজিট করেছেন এমন পেজ এবং সাজেস্ট করা সার্চ দেখতে পাচ্ছেন যাতে আপনার সাম্প্রতিকতম অ্যাক্টিভিটিতে সহজেই ফিরে যেতে পারেন।
@@ -5007,6 +5011,7 @@
 <translation id="4831226137013573603">মাইক্রোফোন মিউট করা</translation>
 <translation id="483262387981411190">ফেস কন্ট্রোল পজ বা আবার শুরু করা</translation>
 <translation id="4833683849865011483">প্রিন্ট সার্ভারে ১টি প্রিন্টার পাওয়া গেছে</translation>
+<translation id="4834388789911023644">রিভিউ লিখুন</translation>
 <translation id="4835598628985424375">ঠোঁট একটির সাথে অপরটি যোগ করে ভিতরের দিকে টানুন</translation>
 <translation id="4835677468087803981">পিন লুকান</translation>
 <translation id="4836504898754963407">ফিঙ্গারপ্রিন্ট ম্যানেজ করুন</translation>
@@ -8572,6 +8577,7 @@
 <translation id="7625823789272218216">বাঁদিকে নতুন ট্যাব</translation>
 <translation id="762730429396410864">ওয়েবসাইটে রিপোর্ট করা সিপিইউ পারফর্ম্যান্স টিয়ার ম্যানুয়ালি সেট করুন</translation>
 <translation id="7627749368210392160">আপনার লোকাল নেটওয়ার্কে অন্যান্য ডিভাইস অ্যাক্সেস করতে সাইট এই ফিচার ব্যবহার করতে পারে</translation>
+<translation id="7628068697012244394">রিভিউ লিখুন</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্রেড <ph name="GRADE" /></translation>
 <translation id="762917478230183172">প্রতিটি 'কী'র জন্য একটি অ্যাকশন বেছে নিন</translation>
 <translation id="7629206210984165492">সাবডিউড</translation>
@@ -8998,6 +9004,7 @@
 <translation id="7949038991703929816">ইতিহাস লোড করা যায়নি। ফাইলের মধ্যে সঠিক আপডেটার লগ রয়েছে কিনা তা নিশ্চিত করুন।</translation>
 <translation id="7950629216186736592">কারণ: LBS-এ শুধু http://, https:// এবং file:// URL ব্যবহার করা যায়।</translation>
 <translation id="7950814699499457511">চালু আছে • এই এক্সটেনশন গোপনীয়তা অনুশীলন প্রকাশ করেনি, যেমন কীভাবে এটি ডেটা সংগ্রহ ও ব্যবহার করে</translation>
+<translation id="7951159420392892566">স্ক্রল বোতাম আনপিন করুন</translation>
 <translation id="795130320946928025">ভার্চুয়াল কার্ড বন্ধ করুন</translation>
 <translation id="7952708427581814389">আপনার ক্লিপবোর্ডে টেক্সট ও ছবি দেখতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="7953236668995583915">এই সাইটে আপডেট করা সেটিংস প্রয়োগ করতে পৃষ্ঠাটি আবার লোড করুন</translation>

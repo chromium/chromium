@@ -1274,6 +1274,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Chuẩn bị sẵn sàng</translation>
 <translation id="1969654639948595766">Nhật ký văn bản WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970398335244262442">{COUNT,plural, =0{Mở tất cả trong &amp;Cửa sổ biệt lập}=1{Mở trong &amp;Cửa sổ biệt lập}other{Mở tất cả ({COUNT}) trong &amp;Cửa sổ biệt lập}}</translation>
 <translation id="1971710400942610577">{NUM_EXTENSIONS,plural, =1{Xem xét 1 tiện ích có thể không an toàn}other{Xem xét {NUM_EXTENSIONS} tiện ích có thể không an toàn}}</translation>
 <translation id="1972313920920745320">Các trang web bạn thêm sẽ luôn hoạt động và trình tiết kiệm bộ nhớ sẽ không giải phóng bộ nhớ khỏi các trang web này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về cách duy trì trạng thái hoạt động của các trang web cụ thể<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Bạn sẽ duyệt web nhanh hơn vì nội dung được tải chủ động dựa trên trang web bạn đang truy cập</translation>
@@ -1316,6 +1317,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1998715278591719161">Được phép theo dõi tay bạn</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
 <translation id="1999763610967697511">Kéo và thả</translation>
+<translation id="2000031673781037314">Mở tất cả (<ph name="URL_COUNT" />) trong Cửa sổ biệt lập</translation>
 <translation id="2002109485265116295">Thời gian thực</translation>
 <translation id="2003130567827682533">Để kích hoạt dữ liệu '<ph name="NAME" />', trước tiên hãy kết nối mạng Wi-Fi</translation>
 <translation id="2003596238737586336">Lịch biểu hiện tại là <ph name="SUNRISE" /> – <ph name="SUNSET" />. Chế độ cài đặt này do quản trị viên của bạn quản lý.</translation>
@@ -1716,6 +1718,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2322193970951063277">Đầu trang và chân trang</translation>
 <translation id="2322622365472107569">Thời gian kết thúc <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Các mạng Wi-Fi đã lưu</translation>
+<translation id="2323685460575935191">Ẩn nút cuộn</translation>
 <translation id="2325444234681128157">Ghi nhớ mật khẩu</translation>
 <translation id="2326188115274135041">Xác nhận mã PIN để bật tính năng tự động mở khóa</translation>
 <translation id="2326583548923775947">Đây không phải là Tài khoản Google. Các mục bạn lưu vào Chrome sẽ không có trên các thiết bị khác.</translation>
@@ -3256,6 +3259,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3491171603443463516">Bạn có thể khôi phục dữ liệu cục bộ nếu quên mã PIN hoặc mật khẩu</translation>
 <translation id="3491616972057195633">Phím nảy</translation>
 <translation id="3491678231052507920">Các trang web thường sử dụng dữ liệu và thiết bị thực tế ảo để cho phép bạn bắt đầu những phiên thực tế ảo</translation>
+<translation id="3493069561299219311">Mở trong &amp;Cửa sổ biệt lập</translation>
 <translation id="3493486281776271508">Cần có kết nối Internet</translation>
 <translation id="3494893110166252544"><ph name="PERCENTAGE" />% – Đang tạm ngưng sạc</translation>
 <translation id="3495496470825196617">Chế độ rảnh khi sạc pin</translation>
@@ -4920,6 +4924,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} mật khẩu cho "<ph name="URL" />" chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào tài khoản của bạn.}other{{COUNT} mật khẩu cho "<ph name="URL" />" chỉ được lưu trên thiết bị này. Để sử dụng các mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào tài khoản của bạn.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="476563889641554689">Chọn khu vực bạn muốn tìm kiếm bằng Ống kính</translation>
+<translation id="4765852155188807219">{COUNT,plural, =0{Mở tất cả trong &amp;Cửa sổ biệt lập}=1{Mở trong &amp;Cửa sổ biệt lập}other{Mở tất cả ({COUNT}) trong &amp;Cửa sổ biệt lập}}</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Đang kiểm tra khoá công khai và khối toàn vẹn... Còn dưới 1 phút}=1{Đang kiểm tra khoá công khai và khối toàn vẹn... Còn 1 phút}other{Đang kiểm tra khoá công khai và khối toàn vẹn... Còn # phút}}</translation>
 <translation id="4766598565665644999">Tất cả tiện ích đều có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Tìm hiểu thêm về các tiện ích bị tắt.</translation>
@@ -5557,6 +5562,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5238301240406177137">Lưu vào tài khoản</translation>
 <translation id="523862956770478816">Quyền cho trang web</translation>
 <translation id="5240247138804326767">Sắp xếp chế độ xem chia đôi màn hình</translation>
+<translation id="5241361816687301119">Mở trong &amp;Cửa sổ biệt lập</translation>
 <translation id="5244234799035360187">Giờ đây, OneDrive sẽ xuất hiện trong ứng dụng Files</translation>
 <translation id="5244474230056479698">Đang đồng bộ hoá với <ph name="EMAIL" /></translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> đã xảy ra lỗi. Nhấp vào bong bóng này để khởi động lại ứng dụng.</translation>
@@ -10606,6 +10612,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9169093579080634183">Tìm hiểu thêm về thẻ</translation>
 <translation id="9169496697824289689">Xem phím tắt</translation>
 <translation id="916964310188958970">Tại sao bạn thấy đề xuất này?</translation>
+<translation id="9169801888716695212">Mở tất cả trong Cửa sổ biệt lập</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Tùy chọn hiển thị hiện tại là tất cả những người liên hệ</translation>
 <translation id="9170766151357647548">Số EID (mã định danh dành cho eSIM) thiết bị của bạn là <ph name="EID_NUMBER" />. Số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
@@ -10733,6 +10740,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="97381968209917373">Xoá chứng chỉ <ph name="CERT_NAME" /></translation>
 <translation id="975893173032473675">Ngôn ngữ cần dịch sang</translation>
 <translation id="976572010712028687">Xác minh bạn là cha/mẹ</translation>
+<translation id="977175416263153310">Mở trong Cửa sổ biệt lập</translation>
 <translation id="978146274692397928">Độ rộng dấu câu ban đầu là Đầy đủ</translation>
 <translation id="978978324795544535">Nhấn đúp vào một mục, giữ ở lần nhấn thứ hai rồi kéo mục đó để di chuyển</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>

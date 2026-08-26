@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">ಈ ಆ್ಯಪ್‌ಗಾಗಿ ಪುನಃ ಕೇಳಬೇಡಿ</translation>
 <translation id="132301787627749051">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಚಿತ್ರಕ್ಕಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="1323433172918577554">ಇನ್ನಷ್ಟು ತೋರಿಸಿ</translation>
+<translation id="1326962902431997202">ಸ್ಟ್ರೈಕ್‌ಥ್ರೂ</translation>
 <translation id="1330449323196174374">ಎಡಭಾಗದ ಗೇಟ್ ಅನ್ನು ಮಡಿಸಿ</translation>
 <translation id="1330952240988133220">Google Wallet ನಲ್ಲಿ ರಿಡ್ರೆಸ್ ನಂಬರ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="133173645041092770">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
@@ -464,6 +465,7 @@
 <translation id="1757773103848038814">ಮೊನೋಸ್ಪೇಸ್ ಫಾಂಟ್</translation>
 <translation id="1757935267918149452">Google ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ ಬಟನ್, ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1759776526873274358">ನಿಮ್ಮ ಭದ್ರತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸೈಟ್‌ಗಳು ಬಳಸುವ ಆಟೋಫಿಲ್ ದೃಢೀಕರಣ ಕೋಡ್‌ಗಳು. Chrome ನಿಮ್ಮ Gmail ನಿಂದ ಈ ಕೋಡ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಬಹುದು. <ph name="BEGIN_LINK" />ಈ ಫೀಚರ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />ಡೇಟಾ ಮತ್ತು ಗೌಪ್ಯತೆ ಆದ್ಯತೆಗಳನ್ನು<ph name="END_LINK1" /> ನಿಯಂತ್ರಿಸಲು ಅಥವಾ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ID ಗಳಂತಹ <ph name="BEGIN_LINK2" />ಪಾವತಿ ವಿಧಾನಗಳು<ph name="END_LINK2" /> ಮತ್ತು <ph name="BEGIN_LINK3" />ಪಾಸ್‌ಗಳನ್ನು<ph name="END_LINK3" /> ನಿರ್ವಹಿಸಲು Google Wallet ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="1763864636252898013">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ನಿಮ್ಮ ಸಾಧನದ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ‌ ಪ್ರಕಾರ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌ ರನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ‌<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">ಫೋಟೋ (ಆರ್ಕೈವಲ್)</translation>
@@ -631,6 +633,7 @@
 <translation id="2090451897496479509">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಪೂರೈಕೆದಾರರನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2090686487550343086">IBAN ಗಳು</translation>
 <translation id="2091887806945687916">ಶಬ್ಧ</translation>
+<translation id="2092361763640578821">ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> ಅನ್ನು ಹುಡುಕಿ ಅಥವಾ URL ಅನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="2093982008204312032">Google Chrome, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ Windows Hello ಅನ್ನು ಆಫ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="2094505752054353250">ಡೊಮೇನ್ ಹೊಂದುತ್ತಿಲ್ಲ</translation>
@@ -787,6 +790,7 @@
 <translation id="2321291402658100099">ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ವಿಂಡೋ}one{# ವಿಂಡೋಗಳು}other{# ವಿಂಡೋಗಳು}}</translation>
 <translation id="232390861414237658">ಈ ಕಾರ್ಡ್ ಅನ್ನು Google Pay ಜೊತೆಗೆ ಬಳಸಲು ಸೇವ್ ಮಾಡಿದಾಗ, Chrome ನಲ್ಲಿ ಮಾಡಿದ ಖರೀದಿಗಳಿಗಾಗಿ ಅದನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
+<translation id="2325722389016720813">ಸ್ವಯಂ ಪೂರ್ಣಗೊಳಿಸುವಿಕೆ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಅಪ್ ಅಥವಾ ಡೌನ್ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಒತ್ತಿರಿ. ಸ್ವಯಂ ಪೂರ್ಣಗೊಳಿಸುವಿಕೆ ಆಯ್ಕೆಗಳನ್ನು ಪಡೆಯಲು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="2326283484705860548">ಈಗ ನೀವು Google Wallet ನಿಂದ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಬಹುದು</translation>
 <translation id="2326747055382936979">ವರ್ಧಿಸಿದ ಆಟೋಫಿಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2328651992442742497">ಅನುಮತಿಸಲಾಗಿದೆ (ಡೀಫಾಲ್ಟ್)</translation>
@@ -1538,6 +1542,7 @@
 <translation id="3642638418806704195">ಅಪ್ಲಿಕೇಶನ್:</translation>
 <translation id="3647286794400715637">ಪ್ರತಿ URL ಗಳ ಸ್ಟ್ರಿಂಗ್ ನಮೂದು 1 ರಿಂದ 2 URL ಗಳ ನಡುವೆ ಇರಬೇಕು.</translation>
 <translation id="3647400963805615193">Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಿ ಬಟನ್, ವಜಾಗೊಳಿಸಲು Enter ಒತ್ತಿರಿ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">ಚಟುವಟಿಕೆ ಮೇಲ್ವಿಚಾರಣೆ</translation>
 <translation id="3648667207586409316">ಒತ್ತಡವನ್ನು ಕಡಿಮೆ ಮಾಡಿಕೊಳ್ಳಲು ನಾನು ಏನೆಲ್ಲಾ ಮಾಡಬಹುದು?</translation>
 <translation id="3650584904733503804">ಊರ್ಜಿತಗೊಳಿಸುವಿಕೆಯು ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="3650594806107685466">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು ಸಹಾಯ ಮಾಡಲು, <ph name="SIDE_OF_CARD" /> ನಲ್ಲಿ CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
@@ -2000,6 +2005,7 @@
 <translation id="4377869186417956230">ಈ ಮೆನು ಐಟಂ ಅಡಿಯಲ್ಲಿರುವ ಎಲ್ಲಾ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳಿಗೆ ಬದಲಾಯಿಸಿ.</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4378221908737133050">ನನ್ನ ಮನೆಯ ಡೀಪ್ ಕ್ಲೀನ್ ಚೆಕ್‌ಲಿಸ್ಟ್ ಅನ್ನು ರಚಿಸು</translation>
+<translation id="4379357028567121852"><ph name="APP_NAME" /> ಇಂದ</translation>
 <translation id="4381997246130185847">ನೀವು ಎಲ್ಲಿ ನಿಲ್ಲಿಸಿದ್ದೀರೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರಿಸಬಹುದು ಅಥವಾ ಪ್ರಯಾಣದಲ್ಲಿರುವಾಗ ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ಇಂದಿನಿಂದ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಕ್ಲೌಡ್ ಸಂಗ್ರಹಣೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
@@ -2169,6 +2175,7 @@
 <translation id="4711628883879888561">ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಿ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">ಕ್ರೆಡಿಟ್ ಅವಧಿಗಳು, ಕೋರ್ಸ್ ಹಂತಗಳು ಮತ್ತು ಗ್ರೇಡ್-ಪಾಯಿಂಟ್ ಮೌಲ್ಯಗಳನ್ನು ಆಧರಿಸಿ ನನ್ನ GPA ಅನ್ನು ಲೆಕ್ಕ ಹಾಕು</translation>
+<translation id="4717533164160330041">ಈ ಫೀಚರ್ ಅನ್ನು ಬಳಸಲು, ಮೊದಲು Gmail ನಲ್ಲಿ ಸ್ಮಾರ್ಟ್ ಫೀಚರ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="471880041731876836">ಈ ಸೈಟ್‌ ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿ ಹೊಂದಿಲ್ಲ</translation>
 <translation id="4718897478554657123">600 x 900 ಮಿಮೀ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ರನ್ ಮಾಡಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
@@ -2389,6 +2396,7 @@
 <translation id="5061227663725596739">ನೀವು ಹುಡುಕುತ್ತಿರುವುದು <ph name="LOOKALIKE_DOMAIN" /> ತಾನೇ?</translation>
 <translation id="5066056036849835175">ಪ್ರಿಂಟಿಂಗ್ ಇತಿಹಾಸ</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">ಡೇಟಾ ಸೋರಿಕೆಯನ್ನು ತಡೆಗಟ್ಟಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಕೆಲವು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು; ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ ವಿಳಾಸವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">ಹತ್ತನೇ ರೋಲ್</translation>
 <translation id="507130231501693183">ಮೇಲ್‌ಬಾಕ್ಸ್ 4</translation>
@@ -2753,6 +2761,7 @@
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5660122698869360728">ನಿಮ್ಮ ಎಲ್ಲಾ ಶಾಪಿಂಗ್ ಪುಟಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಉಳಿಸಲು, ಬೆಲೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಲು, ಬೆಲೆ ಅಂಕಿಅಂಶಗಳನ್ನು ಪಡೆಯಲು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಮಾಡಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಹೊಸ ಸ್ಮಾರ್ಟ್ ಫೋಲ್ಡರ್.</translation>
 <translation id="5663955426505430495">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ ಕಾರ್ಯವಿಧಾನಗಳಿಗಾಗಿ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ. ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ನಿಮ್ಮ ಕೆಲವು ಡೇಟಾಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತವೆ.</translation>
+<translation id="5664075349639500330">ಐಸೊಲೇಟೆಡ್ ಮೋಡ್‌ನಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="5675650730144413517">ಈ ಪುಟ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="5675959228867414813">ದಿನಾಂಕದ ಪ್ರಕಾರ ತೋರಿಸಿ</translation>
 <translation id="567604591393105935">ಕಾಮರ್ಸ್ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -2824,6 +2833,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5794065675298686371">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
+<translation id="5796050750059455142">“<ph name="BEGIN_LINK" />ಇತರ Google ಉತ್ಪನ್ನಗಳಲ್ಲಿ ಸ್ಮಾರ್ಟ್ ಫೀಚರ್‌ಗಳನ್ನು<ph name="LINK_END" />” ಆನ್ ಮಾಡಿ</translation>
 <translation id="5797984091151707075">ನಿರ್ವಾಹಕರ ನೀತಿಯಿಂದ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5806871454498484178">ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -3131,6 +3141,7 @@
 <translation id="6329742260390895689">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು, Wallet ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ "Google ನಾದ್ಯಂತ ಪಾಸ್‌ಗಳನ್ನು ಬಳಸಿ" ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6329815962353376655">&lt;ಪ್ರಶ್ನೆ ಟೈಪ್ ಮಾಡಿ&gt;</translation>
 <translation id="633348045801643466">ಚೆಕ್ ಔಟ್‌ನಲ್ಲಿ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ನಂತರ ಪಾವತಿಸುವ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ಆಯ್ಕೆಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="6335364777769284858"><ph name="BEGIN_LINK" />Gmail ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="LINK_END" /> "ಸ್ಮಾರ್ಟ್ ಫೀಚರ್‌ಗಳನ್ನು" ಆನ್ ಮಾಡಿ</translation>
 <translation id="6336948221660696475">VR ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6337534724793800597">ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ನೀತಿಗಳನ್ನು ಫಿಲ್ಟರ್ ಮಾಡಿ</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಅಮಾನ್ಯವಾಗಿದೆ ಹಾಗೂ ಅದನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -3265,6 +3276,7 @@
 <translation id="6547208576736763147">ಎಡಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6550245281449521513">ಮೌಸ್ ಲಾಕ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, ಹೊಸತು</translation>
+<translation id="6552244083450538912">ನಿಮ್ಮ ಚಟುವಟಿಕೆಗಳು ಇವರಿಗೆ ಕಾಣಿಸಬಹುದು: ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ನಿಮ್ಮ ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆ, ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು</translation>
 <translation id="6552566579578780089">ಪಾವತಿಗಳು</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. ಗುಂಪಿನಲ್ಲಿರುವ <ph name="NUM_MATCHES_IN_GROUP" /> ರಲ್ಲಿ <ph name="MATCH_POSITION" /> <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">ಕೊನೆಯದಾಗಿ <ph name="NUM_DAYS" /> ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
@@ -3499,6 +3511,7 @@
 <translation id="6972867931824045907">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ಬಳಸಲು, <ph name="LINK" /> ಎಂಬಲ್ಲಿ Chrome ಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ.</translation>
 <translation id="6973656660372572881">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಮತ್ತು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಎರಡನ್ನೂ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="6973988895180423160">3.5 x 5 ಇಂಚು</translation>
+<translation id="6976229914347655621">ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಅಗತ್ಯವಿರುವ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಆನ್ ಆಗಿರುತ್ತವೆ; ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6978236010531171013">ಹೇಗಾದರೂ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
@@ -3665,6 +3678,7 @@
 <translation id="7269151392155523061">ಶಾರ್ಟ್‌ಕಟ್ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ದಿಂದ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಹುಡುಕಾಟ ಅಗ್ರಿಗೇಟರ್ ಕೀವರ್ಡ್‌ನಂತೆಯೇ ಇರುವಂತಿಲ್ಲ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್-ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಅವುಗಳನ್ನು ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಹಾಗೂ ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು.</translation>
 <translation id="7275334191706090484">ನಿರ್ವಹಿಸಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
+<translation id="7278933725460302617">ನೀವು ಈಗ ಐಸೊಲೇಟೆಡ್ ಮೋಡ್‌ನಲ್ಲಿದ್ದೀರಿ</translation>
 <translation id="7282894295403887199">ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಈ ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="7286908876112207905">ಈ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಈ ಸೈಟ್‌ನಲ್ಲಿ ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -3683,6 +3697,7 @@
 <translation id="7308436126008021607">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="7310392214323165548">ಸಾಧನವನ್ನು ಶೀಘ್ರದಲ್ಲೇ ಮರುಪ್ರಾರಂಭಿಸಲಾಗುವುದು</translation>
 <translation id="7311244614769792472">ಯಾವ ಫಲಿತಾಂಶಗಳೂ ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> ಕೇಳಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ Enter ಒತ್ತಿರಿ <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="7313107491291103073">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಸೈಟ್ ಅನ್ನು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ, ಏಕೆಂದರೆ ಇದು ನೀತಿಯನ್ನು ಉಲ್ಲಂಘಿಸಬಹುದು.</translation>
 <translation id="7315372670898739748">ಲಿಂಕ್ ಮಾಡುವಿಕೆ ವಿಫಲವಾಗಿದೆ, ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7316521168101843192">Microsoft OneDrive ನಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -3836,6 +3851,7 @@
 <translation id="7554791636758816595">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="7556328470713619625">ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="7559278538486662777">ಈ ಆ್ಯಪ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="7561202748196702434">ಐಸೊಲೇಟೆಡ್ ಮೋಡ್‌ನಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವುದು</translation>
 <translation id="7561784249784255101">ಡಿಜಿಟಲ್ ವರ್ಸಟೈಲ್ ಡಿಸ್ಕ್</translation>
 <translation id="7564049878696755256">ನಿಮ್ಮ <ph name="ORG_NAME" /> ಖಾತೆಗೆ ನೀವು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗುರುತು ಕಳ್ಳತನಕ್ಕೆ ಒಳಗಾಗಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಇದೀಗ ಬದಲಾಯಿಸುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="7567204685887185387">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ವಂಚನೆಯಿಂದ ನೀಡಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
@@ -4371,6 +4387,7 @@
 <translation id="8473626140772740486">300 x 450 ಮಿಮೀ</translation>
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="8474910779563686872">ಡೆವಲಪರ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="84764251640219124">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಈ ಕುಕೀಗಳನ್ನು ಅವಲಂಬಿಸಿರುವ ಸೈಟ್ ಕೆಲಸ ಮಾಡದಿದ್ದರೆ, ನೀವು <ph name="BEGIN_LINK" />ಆ ಸೈಟ್‌ಗೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ತಾತ್ಕಾಲಿಕ ಅನುಮತಿ ನೀಡಿ ಪ್ರಯತ್ನಿಸಬಹುದು<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">ಕೆಳಗಿನ ಎಡಭಾಗದಲ್ಲಿ ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="8483229036294884935">ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ಇದಕ್ಕೆ ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ</translation>
@@ -4438,6 +4455,7 @@
 <translation id="8619130384334725124">ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್</translation>
 <translation id="8620276786115098679">ಎನ್ವಲಪ್ ಕಾಕು 7</translation>
 <translation id="8622864575115813231">ನಿಮ್ಮ ಹಣಕಾಸು ಸಂಸ್ಥೆಯನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="8632584659860846053">ನೀವು ಎಲ್ಲಾ ಐಸೋಲೆಟೆಡ್ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ, ಕ್ಯಾಷ್ ಮತ್ತು ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿಯನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="8634957317623797170">54 x 86 ಮಿಮೀ</translation>
 <translation id="8637362707224133343">ನೀವು ಬ್ರೌಸ್‌ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ಅಂತರ್ನಿರ್ಮಿತ ಸುರಕ್ಷತಾ ಫೀಚರ್‌ಗಳನ್ನು ಹೊಂದಿದೆ — Google Safe Browsing ನಂತಹ, ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸಿದ ಸೈಟ್‌ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಇತ್ತೀಚೆಗೆ ಫಿಶಿಂಗ್‌ ಕಂಡುಬಂದಿದೆ<ph name="END_LINK" />. ಫಿಶಿಂಗ್‌ ಸೈಟ್‌ಗಳು ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಲು ಇತರ ಸೈಟ್‌ಗಳಂತೆ ನಟಿಸುತ್ತವೆ.<ph name="NEW_LINE" />ಸಾಮಾನ್ಯವಾಗಿ ಸುರಕ್ಷಿತವಾಗಿರುವ ಸೈಟ್‌ಗಳು ಸಹ ಕೆಲವೊಮ್ಮೆ ಆಕ್ರಮಣಕಾರರಿಂದ ಧಕ್ಕೆಗೊಳಗಾಗುತ್ತವೆ. ತಪ್ಪು ಸಂಭವಿಸಿದೆ ಮತ್ತು ಈ ಸೈಟ್‌ ಅಪಾಯವನ್ನು ಉಂಟುಮಾಡುವುದಿಲ್ಲ ಎಂದು ನೀವು ಭಾವಿಸಿದರೆ <ph name="BEGIN_ERROR_LINK" />ನಮಗೆ ತಿಳಿಸಿ<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಮತ್ತು ಇತರರೊಂದಿಗೆ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಲು, ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಬೇಕು</translation>

@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1269129608791067105">O seu histórico vai ser apresentado aqui</translation>
 <translation id="1280921956537356716">Ativar notificações de dicas</translation>
+<translation id="1287449971634955609">Remover extensões e eliminar dados que estas tenham guardado neste dispositivo</translation>
 <translation id="1289129165308566697">Veja o seu histórico noutros dispositivos</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
 <translation id="1298077576058087471">Poupe até 60% de dados, leia as notícias de hoje</translation>
@@ -115,6 +116,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1413446866325418126">Guarde os dados na sua Conta Google</translation>
 <translation id="1414919006379339073">Fechar janela atual</translation>
 <translation id="1416550906796893042">Versão da aplicação</translation>
+<translation id="1426410128494586442">Sim</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
@@ -342,6 +344,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2385605401818128172">Pode rever os sites que enviam muitas notificações e impedir que enviem mais no futuro</translation>
 <translation id="2386938421315164605">Oculte e mostre tópicos</translation>
 <translation id="2390510615457643724">Quer transferir <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> novamente?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, separador de navegação anónima no modo ecrã no ecrã selecionado</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar</translation>
@@ -627,6 +630,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
 <translation id="3560831525486613327">Abra uma página Novo separador</translation>
 <translation id="3563767357928833671">Conteúdos de Copiar e colar apresentados</translation>
+<translation id="356407858591811361">Abrir nova janela naveg. anón.</translation>
 <translation id="3566639033325271639">Atualizar definições</translation>
 <translation id="3568945271227339929">Nenhuma palavra-passe comprometida</translation>
 <translation id="3575464060651642446">A verificar as palavras-passe neste dispositivo…</translation>
@@ -786,6 +790,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Usada neste site</translation>
 <translation id="4214315110991671325">Se permitir cookies, o Chrome pode utilizá-los para o pré-carregamento.</translation>
 <translation id="421517251707893998">Toque em Afixar este atalho</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, separador de navegação anónima no modo ecrã no ecrã fixo selecionado</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
@@ -982,6 +987,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4961107849584082341">Traduzir esta página para qualquer idioma</translation>
 <translation id="4964614743143953889">O Chrome avisa sobre transferências e sites inseguros</translation>
 <translation id="496607651705915226">Para guardar e usar novas palavras-passe na sua Conta Google, atualize os Serviços do Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Experimente pesquisar outro conteúdo ou abra o Histórico do Chrome completo para ver mais resultados.</translation>
 <translation id="497421865427891073">Avançar</translation>
 <translation id="497983151715419057">Reveja os seus separadores e grupos inativos aqui</translation>
@@ -1054,6 +1060,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5267572070504076962">Ative a Navegação Segura para se proteger contra sites perigosos</translation>
 <translation id="5273031377282080577">O seu administrador gere esta definição.</translation>
 <translation id="5284295735376057059">Propriedades do documento</translation>
+<translation id="5286907366254680517">Detetado</translation>
 <translation id="5290322819358431297">Preencha autom. palavras-passe</translation>
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5301876394151419436">Tem sessão iniciada como <ph name="EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -1693,6 +1700,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7714077993070342304">Abrir menu do Chrome</translation>
 <translation id="7733878270780732638">Espaço insuficiente no dispositivo.</translation>
 <translation id="7740287852186792672">Resultados de pesquisa</translation>
+<translation id="7740996059027112821">Padrão</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, separador de navegação anónima a partilhar selecionado</translation>
 <translation id="774876555279732384">Os serviços de preenchimento automático também são geridos nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Adicione a pesquisa no site</translation>

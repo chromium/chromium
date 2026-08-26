@@ -1703,6 +1703,7 @@
 <translation id="2322193970951063277">页眉和页脚</translation>
 <translation id="2322622365472107569">结束时间：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
+<translation id="2323685460575935191">隐藏滚动按钮</translation>
 <translation id="2325444234681128157">记住密码</translation>
 <translation id="2326188115274135041">请确认 PIN 码以开启自动解锁功能</translation>
 <translation id="2326583548923775947">这不是 Google 账号。您保存到 Chrome 的内容将无法在其他设备上使用。</translation>
@@ -8955,7 +8956,7 @@
 <translation id="7938881824185772026">Google 实验室</translation>
 <translation id="793923212791838">您的设备无法用于此网站</translation>
 <translation id="7939328347457537652">管理设备证书</translation>
-<translation id="7939918959917132075">由扩展程序更改为此设置</translation>
+<translation id="7939918959917132075">由扩展程序更改为此选项</translation>
 <translation id="7940087892955752820">无法停止共享，因为有一款应用正在使用此文件夹。系统将会在下次关闭 <ph name="SPECIFIC_NAME" /> 时停止共享此文件夹。</translation>
 <translation id="7940265372707990269">排序依据：<ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">网络共享就绪与否：</translation>

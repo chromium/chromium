@@ -354,6 +354,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 záložka a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}few{{BOOKMARK_COUNT} záložky a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}many{{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}other{{BOOKMARK_COUNT} záložiek a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google. Vymažete tým aj všetky duplikáty.}}</translation>
 <translation id="125220115284141797">Predvolené</translation>
 <translation id="1252219782845132919">Skryť skupinu</translation>
+<translation id="1252597096488926946">Odopnúť tlačidlá posúvania</translation>
 <translation id="1252987234827889034">Vyskytla sa chyba profilu</translation>
 <translation id="1254034280040157728">Veľký kaňon</translation>
 <translation id="1254593899333212300">Priame pripojenie k Internetu</translation>
@@ -976,6 +977,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1755601632425835748">Veľkosť textu</translation>
 <translation id="1756963401828337401">Vyberte obrazovku, ktorú chcete nasnímať</translation>
 <translation id="17584710573359123">Zobraziť v Internetovom obchode Chrome</translation>
+<translation id="176013700366797492">Ak chcete spravovať <ph name="BEGIN_LINK1" />predvoľby údajov a ochrany súkromia<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />spôsoby platby<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />karty<ph name="END_LINK3" />, ako sú vernostné karty a preukazy totožnosti, prejdite do Peňaženky Google.</translation>
 <translation id="1761402971842586829">Tlačidlo <ph name="BUTTON_NAME" /> bolo znova namapované na <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Účty používateľa <ph name="NAME" /></translation>
 <translation id="176272781006230109">návrhy nákupov</translation>
@@ -1701,6 +1703,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2322193970951063277">Hlavičky a päty</translation>
 <translation id="2322622365472107569">Čas ukončenia: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Uložené siete Wi-Fi</translation>
+<translation id="2323685460575935191">Skryť tlačidlá posúvania</translation>
 <translation id="2325444234681128157">Zapamätať si heslo</translation>
 <translation id="2326188115274135041">Potvrdením kódu PIN zapnite automatické odomykanie</translation>
 <translation id="2326583548923775947">Toto nie je účet Google. Položky, ktoré uložíte do Chromu, nebudú k dispozícii v iných zariadeniach.</translation>
@@ -1957,6 +1960,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2508747373511408451">Aplikácia <ph name="APPLICATION_NAME" /> vyžaduje, aby bol k dispozícii Disk Google.</translation>
 <translation id="2509495747794740764">Hodnota mierky musí byť v rozsahu od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (vybraný)</translation>
 <translation id="2513904627589542105">Autonómny test</translation>
 <translation id="251425554130284360">Zobrazujú sa vám stránky, ktoré ste navštívili, a navrhované vyhľadávania, pomocou ktorých sa môžete jednoducho vrátiť k poslednej nedávnej aktivite.
@@ -4993,6 +4997,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4831226137013573603">vypnúť zvuk mikrofónu</translation>
 <translation id="483262387981411190">Pozastaviť alebo obnoviť ovládanie tvárou</translation>
 <translation id="4833683849865011483">Na tlačovom serveri bola nájdená jedna tlačiareň</translation>
+<translation id="4834388789911023644">Napísať recenziu</translation>
 <translation id="4835598628985424375">Stlačte pery a našpúľte ich</translation>
 <translation id="4835677468087803981">Skryť PIN</translation>
 <translation id="4836504898754963407">Správa odtlačkov</translation>
@@ -8557,6 +8562,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7625823789272218216">Nová karta vľavo</translation>
 <translation id="762730429396410864">Manuálne nastavte úroveň výkonu procesora nahlasovanú webom</translation>
 <translation id="7627749368210392160">Weby môžu pomocou tejto funkcie získať prístup k iným zariadeniam vo vašej miestnej sieti</translation>
+<translation id="7628068697012244394">Napísať recenziu</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), úroveň <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vyberte akciu pre každý kláves</translation>
 <translation id="7629206210984165492">Utlmená</translation>
@@ -8983,6 +8989,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7949038991703929816">Históriu sa nepodarilo načítať. Uistite sa, že súbory obsahujú platné denníky aktualizátora.</translation>
 <translation id="7950629216186736592">Dôvod: PSP podporuje iba webové adresy http://, https:// a file://.</translation>
 <translation id="7950814699499457511">Zapnuté • Toto rozšírenie nemá zverejnené spôsoby ochrany súkromia, napríklad to, ako zhromažďuje a používa údaje.</translation>
+<translation id="7951159420392892566">Odopnúť tlačidlá posúvania</translation>
 <translation id="795130320946928025">Vypnúť virtuálnu kartu</translation>
 <translation id="7952708427581814389">Weby môžu žiadať o zobrazenie textu a obrázkov vo vašej schránke</translation>
 <translation id="7953236668995583915">Znova načítajte túto stránku, aby sa použili aktualizované nastavenie na tomto webe</translation>

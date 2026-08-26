@@ -354,6 +354,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 zakładka i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}few{{BOOKMARK_COUNT} zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}many{{BOOKMARK_COUNT} zakładek i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}other{{BOOKMARK_COUNT} zakładki i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}}</translation>
 <translation id="125220115284141797">Domyślne</translation>
 <translation id="1252219782845132919">Ukryj grupę</translation>
+<translation id="1252597096488926946">Odepnij przyciski przewijania</translation>
 <translation id="1252987234827889034">Wystąpił błąd profilu</translation>
 <translation id="1254034280040157728">Wielki Kanion</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
@@ -976,6 +977,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1755601632425835748">Rozmiar tekstu</translation>
 <translation id="1756963401828337401">Wybierz ekran do przechwycenia</translation>
 <translation id="17584710573359123">Wyświetl w Chrome Web Store</translation>
+<translation id="176013700366797492">Otwórz Portfel Google, aby kontrolować <ph name="BEGIN_LINK1" />preferencje dotyczące danych i prywatności<ph name="END_LINK1" /> lub zarządzać <ph name="BEGIN_LINK2" />formami płatności<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />kartami<ph name="END_LINK3" />, takimi jak karty lojalnościowe i dokumenty tożsamości</translation>
 <translation id="1761402971842586829">Do przycisku <ph name="BUTTON_NAME" /> przypisano polecenie <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konta użytkownika <ph name="NAME" /></translation>
 <translation id="176272781006230109">propozycje zakupów</translation>
@@ -1261,6 +1263,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Przygotowuję</translation>
 <translation id="1969654639948595766">Logi tekstowe WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970398335244262442">{COUNT,plural, =0{Otwórz wszystkie w oknie przeglądania prywatnego}=1{Otwórz w oknie przeglądania prywatnego}few{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}many{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}other{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}}</translation>
 <translation id="1971710400942610577">{NUM_EXTENSIONS,plural, =1{Sprawdź 1 rozszerzenie, które może być niebezpieczne}few{Sprawdź {NUM_EXTENSIONS} rozszerzenia, które mogą być niebezpieczne}many{Sprawdź {NUM_EXTENSIONS} rozszerzeń, które mogą być niebezpieczne}other{Sprawdź {NUM_EXTENSIONS} rozszerzenia, które mogą być niebezpieczne}}</translation>
 <translation id="1972313920920745320">Dodane witryny będą zawsze aktywne i nie będą usuwane z pamięci w celu zwolnienia w niej miejsca. <ph name="BEGIN_LINK" />Więcej informacji o utrzymaniu aktywności konkretnych witryn<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
@@ -1303,6 +1306,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1998715278591719161">Mogą śledzić Twoje ręce</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="1999763610967697511">Przeciąganie i upuszczanie</translation>
+<translation id="2000031673781037314">Otwórz wszystkie (<ph name="URL_COUNT" />) w oknie przeglądania prywatnego</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
 <translation id="2003130567827682533">Aby włączyć usługę transmisji danych „<ph name="NAME" />”, najpierw połącz się z siecią Wi-Fi</translation>
 <translation id="2003596238737586336">Bieżący harmonogram jest ustawiony na <ph name="SUNRISE" />–<ph name="SUNSET" />. Tym ustawieniem zarządza Twój administrator.</translation>
@@ -1699,6 +1703,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2322193970951063277">Nagłówki i stopki</translation>
 <translation id="2322622365472107569">Czas zakończenia: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Zapisane sieci Wi-Fi</translation>
+<translation id="2323685460575935191">Ukryj przyciski przewijania</translation>
 <translation id="2325444234681128157">Zapamiętaj hasło</translation>
 <translation id="2326188115274135041">Potwierdź kod PIN, by włączyć automatyczne odblokowywanie</translation>
 <translation id="2326583548923775947">To nie jest konto Google. Elementy zapisane w Chrome nie będą dostępne na innych urządzeniach.</translation>
@@ -1953,6 +1958,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2508747373511408451">Aplikacja <ph name="APPLICATION_NAME" /> wymaga dostępu do Dysku Google.</translation>
 <translation id="2509495747794740764">Współczynnik skalowania musi wynosić od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (wybrany)</translation>
 <translation id="2513904627589542105">Autotest</translation>
 <translation id="251425554130284360">Zobaczysz odwiedzone strony i sugerowane wyszukiwania, aby łatwo powrócić do swojej ostatniej aktywności.
@@ -3230,6 +3236,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3491171603443463516">Jeśli zapomnisz hasło lub kod PIN, możesz przywrócić dane lokalne</translation>
 <translation id="3491616972057195633">Klawisze z powtórzeń</translation>
 <translation id="3491678231052507920">Strony zwykle używają urządzeń i danych rzeczywistości wirtualnej, by umożliwić Ci udział w sesjach VR</translation>
+<translation id="3493069561299219311">Otwórz w okn&amp;ie przeglądania prywatnego</translation>
 <translation id="3493486281776271508">Wymagane połączenie z internetem</translation>
 <translation id="3494893110166252544"><ph name="PERCENTAGE" />% – ładowanie wstrzymane</translation>
 <translation id="3495496470825196617">Zasilanie w stanie nieaktywnym podczas ładowania</translation>
@@ -4892,6 +4899,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} hasło do strony „<ph name="URL" />” zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie.}few{{COUNT} hasła do strony „<ph name="URL" />” zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{COUNT} haseł do strony „<ph name="URL" />” zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{COUNT} hasła do strony „<ph name="URL" />” zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{To urządzenie będzie zapisane przez miesiąc. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {MONTHS} miesiące. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {MONTHS} miesięcy. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {MONTHS} miesiąca. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="476563889641554689">Wybierz obszar do wyszukiwania za pomocą Obiektywu</translation>
+<translation id="4765852155188807219">{COUNT,plural, =0{Otwórz wszystkie w oknie przeglądania prywatnego}=1{Otwórz w oknie przeglądania prywatnego}few{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}many{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}other{Otwórz wszystkie ({COUNT}) w oknie przeglądania prywatnego}}</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Sprawdzam klucz publiczny i blokadę integralności… Pozostało mniej niż 1 minuta}=1{Sprawdzam klucz publiczny i blokadę integralności… Pozostała 1 minuta}few{Sprawdzam klucz publiczny i blokadę integralności… Pozostały # minuty}many{Sprawdzam klucz publiczny i blokadę integralności… Pozostało # minut}other{Sprawdzam klucz publiczny i blokadę integralności… Pozostało # minuty}}</translation>
 <translation id="4766598565665644999">Wszystkie rozszerzenia mogą odczytywać i zmieniać dane w witrynie <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Więcej informacji o wyłączonych rozszerzeniach.</translation>
@@ -4981,6 +4989,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4831226137013573603">wyciszenie mikrofonu</translation>
 <translation id="483262387981411190">Wstrzymaj lub wznów kontrolę twarzy</translation>
 <translation id="4833683849865011483">Znaleziono jedną drukarkę na serwerze druku</translation>
+<translation id="4834388789911023644">Napisz opinię</translation>
 <translation id="4835598628985424375">Zaciśnięcie i zmarszczenie warg</translation>
 <translation id="4835677468087803981">Ukryj kod PIN</translation>
 <translation id="4836504898754963407">Zarządzaj odciskami palców</translation>
@@ -5527,6 +5536,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5238301240406177137">Zapisz na koncie</translation>
 <translation id="523862956770478816">Uprawnienia do strony</translation>
 <translation id="5240247138804326767">Uporządkuj widok dzielony</translation>
+<translation id="5241361816687301119">Otwórz w okn&amp;ie przeglądania prywatnego</translation>
 <translation id="5244234799035360187">OneDrive pojawi się w aplikacji Pliki</translation>
 <translation id="5244474230056479698">Synchronizacja z <ph name="EMAIL" /></translation>
 <translation id="5246282308050205996">Aplikacja <ph name="APP_NAME" /> uległa awarii. Kliknij ten dymek, aby uruchomić ją ponownie.</translation>
@@ -8542,6 +8552,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7625823789272218216">Nowa karta po lewej</translation>
 <translation id="762730429396410864">Ręcznie ustaw poziom wydajności procesora zgłaszany witrynom</translation>
 <translation id="7627749368210392160">Strony mogą korzystać z tej funkcji, aby uzyskiwać dostęp do innych urządzeń w sieci lokalnej</translation>
+<translation id="7628068697012244394">Napisz opinię</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klasa <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Wybierz działanie dla każdego klawisza</translation>
 <translation id="7629206210984165492">Przygaszony</translation>
@@ -8968,6 +8979,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7949038991703929816">Nie udało się wczytać historii. Sprawdź, czy pliki zawierają prawidłowe logi aktualizatora.</translation>
 <translation id="7950629216186736592">Przyczyna: obsługa starszych przeglądarek działa tylko z adresami URL http://, https:// i file://.</translation>
 <translation id="7950814699499457511">Włączono • Dla tego rozszerzenia nie opublikowano procedur ochrony prywatności, na przykład informacji o tym, jak zbiera i wykorzystuje ono dane</translation>
+<translation id="7951159420392892566">Odepnij przyciski przewijania</translation>
 <translation id="795130320946928025">Wyłącz kartę wirtualną</translation>
 <translation id="7952708427581814389">Strony mogą prosić o dostęp do tekstu i obrazów w schowku</translation>
 <translation id="7953236668995583915">Załaduj ponownie tę stronę, aby zastosować zaktualizowane ustawienia w tej witrynie</translation>
@@ -10564,6 +10576,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9169093579080634183">Więcej informacji o kartach</translation>
 <translation id="9169496697824289689">Pokaż skróty klawiszowe</translation>
 <translation id="916964310188958970">Dlaczego ta sugestia?</translation>
+<translation id="9169801888716695212">Otwórz wszystkie w oknie przeglądania prywatnego</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Bieżące ustawienie widoczności: wszystkie kontakty</translation>
 <translation id="9170766151357647548">EID urządzenia to <ph name="EID_NUMBER" />. Tego numeru można użyć do aktywowania usługi.</translation>
@@ -10691,6 +10704,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="97381968209917373">Usuń certyfikat <ph name="CERT_NAME" /></translation>
 <translation id="975893173032473675">Język docelowy tłumaczenia</translation>
 <translation id="976572010712028687">Pozwól nam zweryfikować, czy jesteś rodzicem</translation>
+<translation id="977175416263153310">Otwórz w oknie przeglądania prywatnego</translation>
 <translation id="978146274692397928">Początkowa szerokość przestankowania: pełna</translation>
 <translation id="978978324795544535">Kliknij dwukrotnie element, przytrzymaj go przy drugim kliknięciu, a następnie przeciągnij, aby go przenieść</translation>
 <translation id="981121421437150478">Offline</translation>

@@ -354,6 +354,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába. Ezzel az esetleges ismétlődéseket is eltávolítja.}other{{BOOKMARK_COUNT} könyvjelzőt és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába. Ezzel az esetleges ismétlődéseket is eltávolítja.}}</translation>
 <translation id="125220115284141797">Alapértelmezett</translation>
 <translation id="1252219782845132919">Csoport elrejtése</translation>
+<translation id="1252597096488926946">Görgetőgombok rögzítésének feloldása</translation>
 <translation id="1252987234827889034">Profilhiba történt</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
@@ -985,6 +986,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1755601632425835748">Szövegméret</translation>
 <translation id="1756963401828337401">Válassza ki a rögzíteni kívánt képernyőt</translation>
 <translation id="17584710573359123">Megtekintés a Chrome Internetes áruházban</translation>
+<translation id="176013700366797492">A Google Walletben kezelheti az <ph name="BEGIN_LINK1" />adatokat és az adatvédelmi beállításokat<ph name="END_LINK1" />, valamint a <ph name="BEGIN_LINK2" />fizetési módokat<ph name="END_LINK2" /> és a <ph name="BEGIN_LINK3" />kártyákat<ph name="END_LINK3" /> (például a hűségkártyákat és a személyazonosító okmányokat).</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> újratársítva a következőhöz: <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> fiókjai</translation>
 <translation id="176272781006230109">vásárlási javaslatok</translation>
@@ -1712,6 +1714,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2322193970951063277">Fejlécek és láblécek</translation>
 <translation id="2322622365472107569">Befejezési idő: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Mentett Wi-Fi-hálózatok</translation>
+<translation id="2323685460575935191">Görgetőgombok elrejtése</translation>
 <translation id="2325444234681128157">Jelszó megjegyzése</translation>
 <translation id="2326188115274135041">A PIN-kód megerősítése az automatikus feloldás bekapcsolásához</translation>
 <translation id="2326583548923775947">Ez nem Google-fiók. A Chrome-ba mentett elemek nem lesznek hozzáférhetők más eszközökön.</translation>
@@ -1968,6 +1971,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2508747373511408451">A(z) <ph name="APPLICATION_NAME" /> alkalmazás használatához rendelkezésre kell állnia a Google Drive-nak.</translation>
 <translation id="2509495747794740764">Az átméretezési értéknek 10 és 200 közötti számnak kell lennie.</translation>
 <translation id="2509566264613697683">8×</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (kiválasztva)</translation>
 <translation id="2513904627589542105">Önellenőrzés</translation>
 <translation id="251425554130284360">Itt jelennek meg az Ön által felkeresett oldalak, valamint a javasolt keresések, amelyek segítségével könnyen visszatérhet a legutóbbi tevékenységeihez.
@@ -5004,6 +5008,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4831226137013573603">mikrofon némítása</translation>
 <translation id="483262387981411190">Arcvezérlés szüneteltetése vagy folytatása</translation>
 <translation id="4833683849865011483">1 nyomtató található a nyomtatószerveren</translation>
+<translation id="4834388789911023644">Vélemény írása</translation>
 <translation id="4835598628985424375">Ajkak ráncolása az összehúzásukkal</translation>
 <translation id="4835677468087803981">PIN-kód elrejtése</translation>
 <translation id="4836504898754963407">Ujjlenyomatok kezelése</translation>
@@ -8566,6 +8571,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7625823789272218216">Új lap balra</translation>
 <translation id="762730429396410864">A webhelyeknek jelentett CPU-teljesítmény szintjének manuális beállítása</translation>
 <translation id="7627749368210392160">A webhelyek ezt a funkciót használhatják a helyi hálózaton lévő más eszközökhöz való hozzáféréshez</translation>
+<translation id="7628068697012244394">Vélemény írása</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grade <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Válasszon műveletet minden billentyűhöz</translation>
 <translation id="7629206210984165492">Levert</translation>
@@ -8992,6 +8998,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7949038991703929816">Nem sikerült betölteni az előzményeket. Győződjön meg arról, hogy a fájlok érvényes frissítési naplókat tartalmaznak.</translation>
 <translation id="7950629216186736592">Ok: A Régi böngészők támogatása funkció csak a http://, a https:// és a file:// karakterlánccal kezdődő URL-eket támogatja.</translation>
 <translation id="7950814699499457511">Be • Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat.</translation>
+<translation id="7951159420392892566">Görgetőgombok rögzítésének feloldása</translation>
 <translation id="795130320946928025">Virtuális kártya kikapcsolása</translation>
 <translation id="7952708427581814389">A webhelyek engedélyt kérhetnek arra, hogy lássák a vágólapon szereplő szöveget és képeket</translation>
 <translation id="7953236668995583915">Az oldal újratöltésével alkalmazhatja a frissített beállításokat erre a webhelyre</translation>

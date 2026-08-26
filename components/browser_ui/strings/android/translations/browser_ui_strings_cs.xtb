@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1822318649925991542">Přepnutím pozice si můžete přizpůsobit prostředí při procházení</translation>
 <translation id="1848033246551405023">Bezpatkové písmo</translation>
+<translation id="1861244985839668297">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení HID. Když je vypnutá, weby zařízení HID používat nemohou.</translation>
 <translation id="1861262398884155592">Tato složka je prázdná</translation>
 <translation id="1881806992065048905">Spodní panelu vzhledu stránky Nová karta</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>

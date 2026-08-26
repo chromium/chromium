@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Fótspor og gögn vefsvæða</translation>
 <translation id="1312721752506309252">Kveikt er á aukinni vörn</translation>
 <translation id="1321993286294231467">Villa kom upp við að vista mynd.</translation>
+<translation id="1322683976135389755">Skipun: Taktu saman þessa grein, 1 af 3</translation>
 <translation id="1322735045095424339">Fyrirtækið þitt krefst huliðsstillingar</translation>
 <translation id="1323735185997015385">Eyða</translation>
 <translation id="132683371494960526">Ýttu tvisvar til að breyta yfirmöppu.</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">Ýttu á „Persónuvernd og öryggi“</translation>
 <translation id="3259451381796379533">Þessi reikningur mun ekki virka með Gemini. Skráðu þig inn með öðrum Google-reikningi</translation>
 <translation id="3265736395246760288">Skráðu þig inn hraðar úr öllum samstilltu tækjunum þínim.</translation>
+<translation id="3268166994745151153">Þetta þýðir að þú munt glata núverandi framvindu</translation>
 <translation id="3272527697863656322">Hætta við</translation>
 <translation id="3272955648592358996">Gögnin þín bæta gervigreind Google</translation>
 <translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
+<translation id="327455571215090823">Snjallari sjálfvirk útfylling, haldið lokuðu</translation>
 <translation id="3277021493514034324">Veffang afritað</translation>
 <translation id="3280562213547448728">Raddleit</translation>
 <translation id="3289505634533552500">Raddleit</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er.</translation>
 <translation id="4007463141047732631">Breyta hópi</translation>
 <translation id="4011489366247192265">Úr:</translation>
+<translation id="4014099645251211155">Spyrðu Gemini í Chrome um hvað sem er á síðunni þinni</translation>
 <translation id="4017599800655151880">Smámynd</translation>
 <translation id="4018440314314549819">Sjálfvirk útfylling á vistuðum aðgangsorðum</translation>
 <translation id="4021447724486050609">Uppfærðu vafrann þinn</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">Staðsetning:</translation>
 <translation id="4517684186578051919">Upplýsingar um tæki</translation>
 <translation id="4520798012560649652">Nánar um huliðsstillingu</translation>
+<translation id="4524737913322680818">Kauptu, skipuleggðu og gerðu meira með Gemini í Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bókamerki}one{{count} bókamerki}other{{count} bókamerki}}</translation>
 <translation id="4525629404718770519">Sýna forskoðun tengla</translation>
 <translation id="452750746583162491">Fara yfir samstillt gögn</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">Vertu viss um að aðgangsorðin þín séu örugg, fáðu tilkynningar ef þau eru í hættu og ráðleggingar um hvernig þú getur varið þig á netinu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Kveikja á deilingu flipa</translation>
 <translation id="4658335131052370646">Vista</translation>
+<translation id="465947902531722727">Skipta um prófíl</translation>
 <translation id="466307903888586355">Fyrirtækið þitt leyfir ekki vistun skráa</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Fyrirtækið þitt krefst þess að þú vafrir í huliðsstillingu. Flipahópar samstillast ekki í huliðsstillingu.
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
 <translation id="4985921635659180565">Ekki er hægt að afturkalla áætlaða eyðingu skráar.</translation>
 <translation id="498624032394115435">Allir með tengilinn geta breytt öllum flipum.</translation>
+<translation id="4986428648020277392">Skipun: Hvort ætti ég að kaupa? 2 af 3</translation>
+<translation id="498768198683310172">Byrja að nota Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> (stjórnað af fyrirtækinu þínu).</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Litur flipahóps <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5838430324585198889">Fáðu fleiri eiginleika fyrir iPad með Google-forritum</translation>
 <translation id="583923961930319521">Nálgastu aðgangsorðin þín í öllum tækjunum þínum</translation>
+<translation id="5841763734702350465">Skipun: Bæta þessu við dagatalið mitt, 3 af 3</translation>
 <translation id="5843013299019689749">Svartur bakgrunnslitur</translation>
 <translation id="5844284118433003733">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
 <translation id="5854790677617711513">Eldra en 30 dagar</translation>
@@ -1782,6 +1791,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6775952316617222141">Spjallaðu við Gemini í Chrome í rauntíma</translation>
 <translation id="6779455296366983087">Vefskoðunargögnum verður eytt</translation>
 <translation id="6782531425936234573">Flytja út gögn</translation>
+<translation id="6789665473250283877">Fjarlægja <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Ýttu á „Bæta flipa við nýjan hóp“</translation>
 <translation id="6794476726485507147">Veldu dagsetningu og tíma til að fá áminningu um að fara aftur á þessa síðu</translation>
 <translation id="6797543908718012274">Kveikja á lesstillingu</translation>
@@ -2153,6 +2163,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Staðfestu að þetta sért þú til að fylla sjálfkrafa út viðkvæmar upplýsingar</translation>
 <translation id="8015826420689927262">Eyða viðhengi</translation>
+<translation id="8016869623424294549">Þú ert að fara að skipta um prófíl</translation>
 <translation id="8017015647846870183">Úr Google-aðgangsorðastjórnun, þ.m.t. aðgangsorðum og aðgangslyklum</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8023170444051056234">Þú munt umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjunum þínum</translation>

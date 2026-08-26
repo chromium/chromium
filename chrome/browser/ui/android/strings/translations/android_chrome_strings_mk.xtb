@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1269129608791067105">Вашата историја ќе ја најдете тука</translation>
 <translation id="1280921956537356716">Вклучете „Известувања за совети“</translation>
+<translation id="1287449971634955609">Отстранете ги екстензиите и избришете ги податоците што ги зачувале на уредов</translation>
 <translation id="1289129165308566697">Гледајте ја вашата историја на други уреди</translation>
 <translation id="129553762522093515">Неодамна затворено</translation>
 <translation id="1298077576058087471">Прочитајте ги денешните вести и заштедете до 60 % мобилен интернет</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Зачувувајте податоци во вашата сметка на Google</translation>
 <translation id="1414919006379339073">Затворете го тековниот прозорец</translation>
 <translation id="1416550906796893042">Верзија на апликација</translation>
+<translation id="1426410128494586442">Да</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
 <translation id="1435593198351412143">Отворај ги PDF-датотеките автоматски</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">Сајтовите што испраќаат многу известувања може да ги прегледате и да сопрете да испраќаат уште известувања во иднина</translation>
 <translation id="2386938421315164605">Сокривајте и прикажувајте теми</translation>
 <translation id="2390510615457643724">Дали сакате да ја преземете датотеката <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> повторно?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Активирај</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“ со слика во слика</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, картичка „Инкогнито“ за снимање</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">Обележи ја страницата</translation>
 <translation id="3265093782546847662">Сите страници од <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Повлечете нагоре за да ги видите резултатите од пребарување</translation>
+<translation id="3268205181992599708">Овозможете го микрофонот за да користите глас</translation>
 <translation id="3269093882174072735">Вчитај слика</translation>
 <translation id="3280562213547448728">Гласовно пребарување</translation>
 <translation id="3282801380074962248">Прошири го делот</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">Додај во контакти</translation>
 <translation id="3560831525486613327">Отворете страница во нова картичка</translation>
 <translation id="3563767357928833671">Прикажани се содржини од привремената меморија</translation>
+<translation id="356407858591811361">Отворање нов прозорец „Инкогнито“</translation>
 <translation id="3566639033325271639">Ажурирајте ги поставките</translation>
 <translation id="3568945271227339929">Нема компромитирани лозинки</translation>
 <translation id="3575464060651642446">Се проверуваат лозинките на уредов…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Сте користеле на сајтов</translation>
 <translation id="4214315110991671325">Ако ги дозволите колачињата, Chrome може да ги користи за вчитување однапред.</translation>
 <translation id="421517251707893998">Допрете „Закачи ја кратенкава“</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Слушајте ја страницава</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, избрана закачена картичка „Инкогнито“ со слика во слика</translation>
 <translation id="4225895483398857530">Кратенка за алатникот</translation>
@@ -981,6 +987,7 @@
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
 <translation id="4964614743143953889">Chrome ве предупредува за небезбедни сајтови и преземања</translation>
 <translation id="496607651705915226">За да ги зачувувате и користите новите лозинки во вашата сметка на Google, ажурирајте ги „Услуги на Google Play“</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Обидете се да пребарате нешто друго или отворете ја целосната историја во Chrome за да видите повеќе резултати.</translation>
 <translation id="497421865427891073">Оди напред</translation>
 <translation id="497983151715419057">Прегледајте ги неактивните картички и групи овде</translation>
@@ -1053,6 +1060,7 @@
 <translation id="5267572070504076962">Вклучете го „Безбедното прелистување“ за да се заштитите од опасни сајтови</translation>
 <translation id="5273031377282080577">Администраторот управува со поставкава.</translation>
 <translation id="5284295735376057059">Својства на документот</translation>
+<translation id="5286907366254680517">Откриено</translation>
 <translation id="5290322819358431297">Автоматско пополнување на лозинките</translation>
 <translation id="5292796745632149097">Испрати до</translation>
 <translation id="5301876394151419436">Најавени сте како <ph name="EMAIL" />. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
@@ -1692,6 +1700,7 @@
 <translation id="7714077993070342304">Отвори го менито на Chrome</translation>
 <translation id="7733878270780732638">Нема доволно простор на уредот.</translation>
 <translation id="7740287852186792672">Резултати од пребарувањето</translation>
+<translation id="7740996059027112821">Стандарден</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“ за споделување</translation>
 <translation id="774876555279732384">Со услугите за автоматско пополнување се управува и во <ph name="BEGIN_LINK" />Поставките за Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Додајте пребарување сајтови</translation>

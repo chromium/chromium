@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">ለዚህ መተግበሪያ ዳግም አትጠይቅ</translation>
 <translation id="132301787627749051">የቅንጥብ ሰሌዳ ምስልን ይፈልጉ</translation>
 <translation id="1323433172918577554">ተጨማሪ አሳይ</translation>
+<translation id="1326962902431997202">ስርዝ ወገብ</translation>
 <translation id="1330449323196174374">ግራ በር እጠፍ</translation>
 <translation id="1330952240988133220">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ Google Wallet ውስጥ ያስቀምጡ</translation>
 <translation id="133173645041092770">ድር ጣቢያን ዝጋ</translation>
@@ -465,6 +466,7 @@
 <translation id="1757773103848038814">Monospace ቅርጸ-ቁምፊ</translation>
 <translation id="1757935267918149452">የGoogle የይለፍ ቃል አዝራርን ይቀይሩ፣ የGoogle መለያ የይለፍ ቃል ለመቀየር ያግብሩ</translation>
 <translation id="1759776526873274358">ደኅንነትዎን ለማሻሻል ጣቢያዎች የሚጠቀሙባቸውን ማረጋገጫ ኮዶች በራስ-ሙላ። Chrome እነዚህን ኮዶች ከእርስዎ Gmail ማግኘት ይችላል። <ph name="BEGIN_LINK" />ስለዚህ ባህሪ የበለጠ ይወቁ<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />የውሂብ እና የግላዊነት ምርጫዎችን<ph name="END_LINK1" /> ለመቆጣጠር ወይም እንደ የታማኝነት ካርዶች እና መታወቂያዎች ያሉ <ph name="BEGIN_LINK2" />የመክፈያ ዘዴዎችን<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />ይለፎችን<ph name="END_LINK3" /> ለማስተዳደር Google Wallet ይጎብኙ</translation>
 <translation id="1763864636252898013">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በመሣሪያዎ ስርዓተ ክወና የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />የWindows አውታረ መረብ መመርመሪያውን ለማሄድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="1777422078676229054">ፎቶ (በማህደር የሚቀመጥ)</translation>
@@ -789,6 +791,7 @@
 <translation id="2321291402658100099">መረጃ አስተዳድር</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 መስኮት}one{# መስኮት}other{# መስኮቶች}}</translation>
 <translation id="232390861414237658">በGoogle Pay ለመጠቀም ሲቀመጥ Chrome ውስጥ ለተደረጉ ግዢዎች ይህ ካርድ በራስ-ይሙሉ</translation>
+<translation id="2325722389016720813">ለራስ-ሰር ማጠናቀቆች የላይ ወይም የታች ቀስትን ይጫኑ። በራስ-ሰር ለማጠናቀቅ ይተይቡ።</translation>
 <translation id="2326283484705860548">አሁን ተጨማሪ መረጃ ከGoogle Wallet በራስ-መሙላት ይችላሉ</translation>
 <translation id="2326747055382936979">የተሻሻለ ራስ-ሙላን ያስተዳድሩ</translation>
 <translation id="2328651992442742497">ተፈቅዷል (ነባሪ)</translation>
@@ -2175,6 +2178,7 @@
 <translation id="4711628883879888561">የትር ቡድን ላይ ይተባበሩ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">የክሬዲት ሰዓታትን፣ የኮርስ ደረጃዎችን እና የነጥብ እሴቶችን በመመዘን የእኔን GPA አስላ</translation>
+<translation id="4717533164160330041">ይህን ባህሪ ለመጠቀም መጀመሪያ Gmail ውስጥ ዘመናዊ ባህሪያትን ያብሩ</translation>
 <translation id="471880041731876836">ይህን ጣቢያ የመጎብኘት ፈቃድ የለዎትም</translation>
 <translation id="4718897478554657123">600 x 900 ሚሜ</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />የWindows አውታረ መረብ መመርመሪያን በማሄድ ላይ<ph name="END_LINK" /></translation>
@@ -2832,6 +2836,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ይህ የመክፈያ ዘዴ ከዚህ መሣሪያ ላይ ይሰረዛል</translation>
 <translation id="5794065675298686371">የዋጋ ክትትል ማሳወቂያዎችን ያብሩ</translation>
+<translation id="5796050750059455142">«<ph name="BEGIN_LINK" />በሌሎች የGoogle ምርቶች ውስጥ ዘመናዊ ባህሪያት<ph name="LINK_END" />» የሚለውን ያብሩ</translation>
 <translation id="5797984091151707075">በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5806871454498484178">ማሸብለል እና ማጉላት ታግዷል</translation>
@@ -3139,6 +3144,7 @@
 <translation id="6329742260390895689">መረጃዎን በራስ-ለመሙላት በWallet ቅንብሮች ውስጥ «በመላው Google ላይ ይለፎችን ይጠቀሙ» የሚለውን ያብሩ</translation>
 <translation id="6329815962353376655">&lt;ጥያቄ ይተይቡ&gt;</translation>
 <translation id="633348045801643466">ክፍያ ማጠናቀቅ ላይ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />የበኋላ መክፈል አማራጮችን<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> አሳይ</translation>
+<translation id="6335364777769284858"><ph name="BEGIN_LINK" />የGmail ቅንብሮች<ph name="LINK_END" /> ውስጥ «ዘመናዊ ባህሪያት»ን ያብሩ</translation>
 <translation id="6336948221660696475">ምናባዊ እውነታ አይፈቀድም</translation>
 <translation id="6337534724793800597">መምሪያዎችን በስም አጣራ</translation>
 <translation id="633770708279464947">የ<ph name="SECURE_DNS_SALT" /> እሴት ልክ አይደለም እና ሥራ ላይ አይውልም።</translation>
@@ -3694,6 +3700,7 @@
 <translation id="7308436126008021607">የዳራ ስምረት</translation>
 <translation id="7310392214323165548">መሣሪያው በጣም በቅርቡ እንደገና ይጀምራል</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
+<translation id="7311565174465466858"><ph name="TAB_KEY" /> <ph name="AI_ENGINE_NAME" />ን ለመጠየቅ ትርን ከዚያም አስገባ ላይ ይጫኑ</translation>
 <translation id="7313107491291103073">ድርጅትዎ ይህንን ጣቢያ መመሪያ ሊጥስ እንደሚችል ተጠቁሟል።</translation>
 <translation id="7315372670898739748">ማገናኘት አልተሳካም፣ ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="7316521168101843192">ፋይል ወደ Microsoft OneDrive በማስቀመጥ ላይ</translation>

@@ -53,6 +53,7 @@
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
+<translation id="161799137154286472">Chromium이 최소화된 상태에서도 모든 기기에서 Chromium의 검색을 쉽게 사용할 수 있습니다.</translation>
 <translation id="1623563412065267963">휴대전화에서 Chromium 앱을 사용하여 Google 기능을 최대한 활용하세요</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
@@ -156,6 +157,7 @@
 <translation id="2637732208198500597">{COUNT,plural, =0{고급 보호를 사용 설정한 경우 Chromium을 다시 실행하여 업데이트를 적용해야 합니다}=1{고급 보호를 사용 설정한 경우 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{고급 보호를 사용 설정한 경우 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="263863604136125912">Chromium 시작</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
+<translation id="2658491404426988037">키보드 단축키를 사용하여 Chromium에서 검색을 엽니다.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2676569452213089702">Chromium이 최소화된 상태에서도 모든 기기에서 Chromium의 Gemini를 쉽게 사용할 수 있습니다.</translation>
 <translation id="2711502716910134313">Chromium 탭</translation>
@@ -197,6 +199,7 @@
 <translation id="3068515742935458733">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chromium 개선에 참여합니다.</translation>
 <translation id="3071024987058544609">Chromium 앱을 사용하여 이동 중에도 Google의 안전 기능을 활용하세요.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 USB 기기 #대에 액세스 중}}</translation>
+<translation id="3086453456887799749">Chromium의 검색에서 바로가기에 쉽게 액세스할 수 있습니다.</translation>
 <translation id="3095811995836568724">Chromium 방문 기록</translation>
 <translation id="3103660991484857065">설치 프로그램이 보관 파일 압축 풀기에 실패했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="310459126943037700">작업을 종료할 수 없습니다.</translation>
@@ -443,6 +446,7 @@
 <translation id="5977420883993828287">고정되었습니다. 툴바에서 맥락에 맞는 작업을 다시 사용해 보세요.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}}</translation>
 <translation id="5987687638152509985">동기화를 시작하려면 Chromium을 업데이트하세요.</translation>
+<translation id="5990360079535151574">툴바의 '맥락에 맞는 작업' 버튼에서 맥락에 맞는 작업을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
 <translation id="6009821354356307391">이어서 질문하세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -534,6 +538,7 @@
 <translation id="67706546131546258">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
 <translation id="6779406956731413166">ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="6831043979455480757">번역</translation>
+<translation id="683620163760053351">작업 표시줄에 Chromium의 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -584,6 +589,7 @@
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="7252276985725323153">즉시 탐색 시작: 이제 Windows 시작 시 Chromium을 실행할 수 있습니다.</translation>
+<translation id="7254793334142003943">Mac 메뉴 바에 Chromium의 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="7274695763216404502">고정되었습니다. 툴바에서 이미지 검색을 다시 사용해 보세요.</translation>
 <translation id="7288567540154601580">탭 및 확장 프로그램</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium에서 삭제할 것을 권장합니다.}other{Chromium에서 삭제할 것을 권장합니다.}}</translation>
@@ -592,6 +598,7 @@
 <translation id="7318036098707714271">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chromium에서 설정을 복구할 수 없습니다.</translation>
+<translation id="7324051657739063017">맥락에 맞는 작업을 다시 열어 탐색 중에 질문할 수 있습니다,</translation>
 <translation id="734373864078049451">웹, 북마크 및 기타 Chromium 콘텐츠가 여기에 저장됩니다.</translation>
 <translation id="7347827960336370838">암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chromium 데이터를 삭제<ph name="END_LINK" />해야 합니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>

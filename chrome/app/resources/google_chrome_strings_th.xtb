@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chrome แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="1832046143430087831">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้ปิดอยู่</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
+<translation id="1842869163383855194">เข้าถึงและใช้ส่วน "ค้นหาใน Chrome" ในอุปกรณ์ต่างๆ ได้ง่ายๆ แม้ว่าจะย่อ Chrome อยู่ก็ตาม</translation>
 <translation id="1843347690926158494">ค้นหาแท็บนี้ด้วย Google Lens</translation>
 <translation id="1849248141818021764">เฉพาะผู้ที่มีพาสเฟรสของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บพาสเฟรสดังกล่าว หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ คุณจะต้อง<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="1856809424654973980">ใช้แอป Chrome เพื่อท่องเว็บได้ทุกที่ทุกเวลา</translation>
@@ -324,6 +325,7 @@
 <translation id="4173512894976930765">เว็บไซต์อาจทำงานตามที่คาดไว้ คุณจะออกจากระบบของเว็บไซต์ส่วนใหญ่เมื่อปิดหน้าต่าง Chrome ทั้งหมด ยกเว้นบัญชี Google ที่ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="4175922240926474352">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากเว็บไซต์ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัยและไฟล์อาจมีการดัดแปลง</translation>
 <translation id="4191857738314598978">{0,plural, =1{เปิด Chrome ขึ้นมาใหม่ภายใน 1 วัน}other{เปิด Chrome ขึ้นมาใหม่ภายใน # วัน}}</translation>
+<translation id="4222394563269716113">เปิดส่วน "ค้นหาใน Chrome" ด้วยแป้นพิมพ์ลัด</translation>
 <translation id="4222932583846282852">กำลังยกเลิก...</translation>
 <translation id="4224210481850767180">ยกเลิกการติดตั้งแล้ว</translation>
 <translation id="4242034826641750751">Chrome ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
@@ -349,6 +351,7 @@
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4434353761996769206">ข้อผิดพลาดของโปรแกรมติดตั้ง: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">แชร์เอกสารนี้กับ Gemini ใน Chrome เพื่อดูภาพรวมคร่าวๆ และถามคำถามต่อเนื่อง</translation>
+<translation id="4447327682081576371">แสดงส่วน "ค้นหาใน Chrome" ในแถบเมนูของ Mac และเปิดแป้นพิมพ์ลัด</translation>
 <translation id="4450664632294415862">Chrome - หน้าลงชื่อเข้าใช้ของเครือข่าย - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
@@ -434,6 +437,7 @@
 <translation id="5402307365844630024">เปิด/ปิด Gemini ใน Chrome เบต้า</translation>
 <translation id="541844421954567481">เข้าถึงรหัสผ่าน แท็บ และอื่นๆ ได้ทุกที่ทุกเวลาด้วยแอป Chrome ในโทรศัพท์<ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
+<translation id="545114101312117217">เข้าถึงแป้นพิมพ์ลัดได้ง่ายๆ จากส่วน "ค้นหาใน Chrome"</translation>
 <translation id="5465210843490471889">เลือกโปรไฟล์ Chrome ที่จะใช้กับ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">ตอนนี้ระบบจะเปิด Chrome เมื่อ Windows เริ่มทำงาน คุณจึงเริ่มท่องเว็บได้ทันที คุณปิดการดำเนินการนี้ได้ในการตั้งค่า</translation>
 <translation id="5486346529181556467">ช่วยให้ทุกคนบนโลกออนไลน์ปลอดภัยยิ่งขึ้นด้วยการรายงานเว็บไซต์ที่คิดว่าเป็นอันตราย ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />นโยบายของ Google เกี่ยวกับเว็บไซต์ที่ไม่ปลอดภัย<ph name="END_LINK" /></translation>
@@ -719,6 +723,7 @@
 <translation id="8074398340364918139">หากต้องการค้นหาฟีเจอร์หรือส่วนขยาย Chrome ที่เฉพาะเจาะจง ให้พิมพ์ทางลัดของฟีเจอร์หรือส่วนขยายนั้นในแถบที่อยู่ แล้วตามด้วยปุ่มบนแป้นพิมพ์ที่เลือกไว้</translation>
 <translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="8086881907087796310">การติดตั้งไม่สำเร็จเนื่องจากคอมพิวเตอร์ของคุณไม่เป็นไปตามข้อกำหนดขั้นต่ำสำหรับฮาร์ดแวร์</translation>
+<translation id="8093772166980702367">แสดงส่วน "ค้นหาใน Chrome" ในถาดระบบและเปิดแป้นพิมพ์ลัด</translation>
 <translation id="8110438089258398864">คุณเปิดโหมด AI ของ Google Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="8113883687556086139">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">กำลังปรับแต่ง Chrome ในแบบของคุณ...</translation>
@@ -748,6 +753,7 @@
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="8370748943308169953">คิวอาร์โค้ดเพื่อลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">เปิด/ปิด Gemini ใน Chrome Canary</translation>
+<translation id="8380754585531979907">ใช้แป้นพิมพ์เพื่อไปยังส่วนต่างๆ ระหว่าง Gemini ใน Chrome กับแท็บที่เปิดอยู่</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>
 <translation id="8394720698884623075">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome</translation>
 <translation id="8403038600646341038">โลโก้ Chrome ในหน้าจอคอมพิวเตอร์</translation>

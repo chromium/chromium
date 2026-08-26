@@ -354,6 +354,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 boekmerk en ander items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening om hulle op jou ander toestelle te gebruik. Dit sal ook enige duplikate skoonmaak.}other{{BOOKMARK_COUNT} boekmerke en ander items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening om hulle op jou ander toestelle te gebruik. Dit sal ook enige duplikate skoonmaak.}}</translation>
 <translation id="125220115284141797">Verstek</translation>
 <translation id="1252219782845132919">Versteek groep</translation>
+<translation id="1252597096488926946">Ontspeld rolleesknoppies</translation>
 <translation id="1252987234827889034">Profielfout het voorgekom</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
@@ -985,6 +986,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1755601632425835748">Teksgrootte</translation>
 <translation id="1756963401828337401">Kies ’n skerm om vas te vang</translation>
 <translation id="17584710573359123">Bekyk in Chrome Webwinkel</translation>
+<translation id="176013700366797492">Besoek Google Wallet om <ph name="BEGIN_LINK1" />data- en privaatheidvoorkeure<ph name="END_LINK1" /> te beheer of <ph name="BEGIN_LINK2" />betaalmetodes<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />passe<ph name="END_LINK3" />, soos lojaliteitskaarte en ID’s, te bestuur</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> hertoegewys na <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> se rekeninge</translation>
 <translation id="176272781006230109">inkopievoorstelle</translation>
@@ -1714,6 +1716,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2322193970951063277">Opskrifte en voetreëls</translation>
 <translation id="2322622365472107569">Eindtyd <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Gestoorde Wi-Fi-netwerke</translation>
+<translation id="2323685460575935191">Versteek rolleesknoppies</translation>
 <translation id="2325444234681128157">Onthou wagwoord</translation>
 <translation id="2326188115274135041">Bevestig PIN om outomatiese ontsluiting aan te skakel</translation>
 <translation id="2326583548923775947">Dit is nie ’n Google-rekening nie. Items wat jy in Chrome stoor, sal nie op ander toestelle beskikbaar wees nie.</translation>
@@ -1970,6 +1973,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2508747373511408451">Google Drive moet beskikbaar wees om app <ph name="APPLICATION_NAME" /> oop te maak.</translation>
 <translation id="2509495747794740764">Skaalgetal moet 'n getal tussen 10 en 200 wees.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (is gekies)</translation>
 <translation id="2513904627589542105">Selftoets</translation>
 <translation id="251425554130284360">Jy sien tans bladsye wat jy besoek het en voorgestelde soektogte om jou te help om maklik weer by jou mees onlangse aktiwiteit uit te kom.
@@ -5007,6 +5011,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4831226137013573603">demp mikrofoon</translation>
 <translation id="483262387981411190">Onderbreek of hervat gesigbeheer</translation>
 <translation id="4833683849865011483">Het 1 drukker op die drukbediener gekry</translation>
+<translation id="4834388789911023644">Skryf ’n resensie</translation>
 <translation id="4835598628985424375">Tuit deur jou lippe teen mekaar te druk</translation>
 <translation id="4835677468087803981">Versteek PIN</translation>
 <translation id="4836504898754963407">Bestuur vingerafdrukke</translation>
@@ -8569,6 +8574,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7625823789272218216">Nuwe oortjie aan die linkerkant</translation>
 <translation id="762730429396410864">Stel die CPU-prestasievlak wat aan webwerwe gerapporteer word handmatig</translation>
 <translation id="7627749368210392160">Werwe kan hierdie kenmerk gebruik om toegang tot ander toestelle op jou plaaslike netwerk te kry</translation>
+<translation id="7628068697012244394">Skryf ’n resensie</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), graad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Kies ’n handeling vir elke sleutel</translation>
 <translation id="7629206210984165492">Stemmig</translation>
@@ -8995,6 +9001,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7949038991703929816">Kon nie geskiedenis laai nie. Maak seker dat lêers geldige opdateerderloglêers bevat.</translation>
 <translation id="7950629216186736592">Rede: LBS ondersteun net URL'e met http://, https:// en file://.</translation>
 <translation id="7950814699499457511">Aan • Hierdie uitbreiding het nie privaatheidpraktyke gepubliseer nie, soos hoe dit data insamel en gebruik</translation>
+<translation id="7951159420392892566">Ontspeld rolleesknoppies</translation>
 <translation id="795130320946928025">Skakel virtuele kaart af</translation>
 <translation id="7952708427581814389">Werwe kan vra om teks en prente op jou knipbord te sien</translation>
 <translation id="7953236668995583915">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie webwerf toe te pas</translation>

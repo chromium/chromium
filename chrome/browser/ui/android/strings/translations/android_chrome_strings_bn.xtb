@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1269129608791067105">এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="1280921956537356716">পরামর্শ সংক্রান্ত বিজ্ঞপ্তি চালু করুন</translation>
+<translation id="1287449971634955609">এক্সটেনশন সরান এবং এই ডিভাইসে সেভ করা ডেটা মুছে দিন</translation>
 <translation id="1289129165308566697">অন্য ডিভাইসে আপনার ইতিহাস দেখুন</translation>
 <translation id="129553762522093515">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="1298077576058087471">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন, আজকের খবর পড়ুন</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">আপনার Google অ্যাকাউন্টে ডেটা সেভ করুন</translation>
 <translation id="1414919006379339073">বর্তমান উইন্ডো বন্ধ করুন</translation>
 <translation id="1416550906796893042">অ্যাপ্লিকেশন ভার্সন</translation>
+<translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
 <translation id="1435593198351412143">পিডিএফ অটোমেটিক খোলার সুবিধা</translation>
@@ -342,6 +344,7 @@
 <translation id="2385605401818128172">যেসব সাইট অনেক বেশি বিজ্ঞপ্তি পাঠায় আপনি তা পর্যালোচনা করতে এবং ভবিষ্যতে, আরও বেশি যাতে পাঠাতে না পারে তার জন্য আটকাতে পারবেন</translation>
 <translation id="2386938421315164605">বিষয় লুকান বা দেখুন</translation>
 <translation id="2390510615457643724">আপনি কি আবার <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> ডাউনলোড করতে চান?</translation>
+<translation id="2391579633712104609">১৮০°</translation>
 <translation id="2392369802118427583">সক্রিয় করুন</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, বেছে নেওয়া ছবির-মধ্যে-ছবি ছদ্মবেশী ট্যাব</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, রেকর্ডিং ছদ্মবেশী ট্যাব</translation>
@@ -559,6 +562,7 @@
 <translation id="3254409185687681395">এই পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-এর সব পৃষ্ঠা</translation>
 <translation id="3268048651973962414">সার্চ ফলাফল দেখতে, উপরের দিকে টানুন</translation>
+<translation id="3268205181992599708">মাইক চালু করে ভয়েস ব্যবহার করুন</translation>
 <translation id="3269093882174072735">ছবি লোড করুন</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3282801380074962248">বিভাগ বড় করুন</translation>
@@ -626,6 +630,7 @@
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="3560831525486613327">নতুন ট্যাব পৃষ্ঠা খুলুন</translation>
 <translation id="3563767357928833671">ক্লিপবোর্ডের কন্টেন্ট দেখানো হয়েছে</translation>
+<translation id="356407858591811361">নতুন ছদ্মবেশী উইন্ডো খুলুন</translation>
 <translation id="3566639033325271639">সেটিংস আপডেট করুন</translation>
 <translation id="3568945271227339929">কোনও পাসওয়ার্ড চুরি হয়নি</translation>
 <translation id="3575464060651642446">এই ডিভাইসে পাসওয়ার্ড চেক করা হচ্ছে…</translation>
@@ -785,6 +790,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • এই সাইটে আপনি ব্যবহার করেছেন</translation>
 <translation id="4214315110991671325">আপনি কুকি ব্যবহার করার অনুমতি দিলে, প্রিলোড করার জন্য Chrome সেটি ব্যবহার করতে পারে।</translation>
 <translation id="421517251707893998">'এই শর্টকাট পিন করুন' বিকল্পে ট্যাপ করুন</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">এই পৃষ্ঠার কন্টেন্ট শুনুন</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা ছবির-মধ্যে-ছবি ছদ্মবেশী ট্যাব</translation>
 <translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
@@ -981,6 +987,7 @@
 <translation id="4961107849584082341">এই পৃষ্ঠাটি যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="4964614743143953889">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে Chrome আপনাকে সতর্ক করে দেয়</translation>
 <translation id="496607651705915226">আপনার Google অ্যাকাউন্টে নতুন পাসওয়ার্ড সেভ ও ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> - <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">অন্য কিছু সার্চ করে দেখুন বা আরও ফলাফল দেখতে সম্পূর্ণ Chrome ইতিহাস খুলুন।</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="497983151715419057">এখানে আপনার ইনঅ্যাক্টিভ ট্যাব ও গ্রুপগুলি সম্পর্কে রিভিউ করুন</translation>
@@ -1053,6 +1060,7 @@
 <translation id="5267572070504076962">বিপজ্জনক সাইট থেকে সুরক্ষার জন্য Safe Browsing চালু করুন</translation>
 <translation id="5273031377282080577">আপনার অ্যাডমিনিস্ট্রেটর এই সেটিং ম্যানেজ করে।</translation>
 <translation id="5284295735376057059">ডকুমেন্ট প্রপার্টি</translation>
+<translation id="5286907366254680517">শনাক্ত করা হয়েছে</translation>
 <translation id="5290322819358431297">আপনার পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="5292796745632149097">এতে পাঠান:</translation>
 <translation id="5301876394151419436">আপনি <ph name="EMAIL" /> হিসেবে সাইন-ইন করেছেন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
@@ -1692,6 +1700,7 @@
 <translation id="7714077993070342304">Chrome মেনু খুলুন</translation>
 <translation id="7733878270780732638">ডিভাইসে পর্যাপ্ত জায়গা নেই।</translation>
 <translation id="7740287852186792672">সার্চ ফলাফল</translation>
+<translation id="7740996059027112821">মানক</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, বেছে নেওয়া শেয়ারিং ছদ্মবেশী ট্যাব</translation>
 <translation id="774876555279732384">এছাড়াও, অটোফিল পরিষেবা <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে ম্যানেজ করা হয়।</translation>
 <translation id="7758884017823246335">সাইট সার্চ যোগ করুন</translation>

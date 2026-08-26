@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1269129608791067105">Ваша гісторыя знаходзіцца тут</translation>
 <translation id="1280921956537356716">Уключыць апавяшчэнні з парадамі</translation>
+<translation id="1287449971634955609">Выдаліць пашырэнні і даныя, якія яны захавалі на гэтай прыладзе</translation>
 <translation id="1289129165308566697">Паглядзець гісторыю на іншых прыладах</translation>
 <translation id="129553762522093515">Нядаўна закрытыя</translation>
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
@@ -115,6 +116,7 @@
 <translation id="1413446866325418126">Захоўвайце даныя ва Уліковым запісе Google</translation>
 <translation id="1414919006379339073">Закрыць бягучае акно</translation>
 <translation id="1416550906796893042">Версія праграмы</translation>
+<translation id="1426410128494586442">Так</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1432581352905426595">Кіраваць пошукавымі сістэмамі</translation>
 <translation id="1435593198351412143">Адкрываць PDF аўтаматычна</translation>
@@ -155,6 +157,7 @@
 <translation id="1598163867407640634">Выкарыстоўвайце вэб-сайт <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, укладка, змесціва якой абагульваецца</translation>
+<translation id="1601378265092360672">Даныя пра работу ў браўзеры ўключаюць гісторыю прагляду сайтаў, файлы cookie і іншыя даныя сайтаў, кэшаваныя відарысы і файлы, а таксама адкрытыя ўкладкі</translation>
 <translation id="160275202205869636">Калі параметр уключаны, даныя можна выкарыстоўваць і захоўваць ва Уліковым запісе Google. Калі выключаны – даныя захоўваюцца толькі на гэтай прыладзе.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Выдаліць 1 выбраны элемент}one{Выдаліць # выбраны элемент}few{Выдаліць # выбраныя элементы}many{Выдаліць # выбраных элементаў}other{Выдаліць # выбранага элемента}}</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
@@ -342,6 +345,7 @@
 <translation id="2385605401818128172">Вы можаце праглядзець сайты, які адпраўляюць зашмат апавяшчэнняў, і адклікаць дазвол на адпраўку новых апавяшчэнняў</translation>
 <translation id="2386938421315164605">Хавайце і рабіце бачнымі тэмы</translation>
 <translation id="2390510615457643724">Спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) зноў?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Уключыць</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, выбраная ўкладка "Відарыс у відарысе" ў рэжыме інкогніта</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
@@ -559,6 +563,7 @@
 <translation id="3254409185687681395">Дадаць гэту старонку ў закладкі</translation>
 <translation id="3265093782546847662">Усе старонкі дамена <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Перацягніце ўверх, каб убачыць вынікі пошуку</translation>
+<translation id="3268205181992599708">Каб выкарыстоўваць галасавы ўвод, уключыце мікрафон</translation>
 <translation id="3269093882174072735">Загрузіць відарыс</translation>
 <translation id="3280562213547448728">Галасавы пошук</translation>
 <translation id="3282801380074962248">Разгарнуць раздзел</translation>
@@ -786,6 +791,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Вы выкарыстоўвалі на гэтым сайце</translation>
 <translation id="4214315110991671325">Калі вы дазволіце прымяняць файлы cookie, Chrome зможа выкарыстоўваць іх для перадзагрузкі.</translation>
 <translation id="421517251707893998">Націсніце "Замацаваць гэты ярлык".</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Агучыць гэту старонку</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка "Відарыс у відарысе" ў рэжыме інкогніта</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
@@ -982,6 +988,7 @@
 <translation id="4961107849584082341">Гэту старонку можна перакласці на любую мову</translation>
 <translation id="4964614743143953889">Chrome папярэджвае пра небяспечныя сайты і спампоўкі</translation>
 <translation id="496607651705915226">Каб захоўваць і выкарыстоўваць новыя паролі ва Уліковым запісе Google, абнавіце сэрвісы Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Паспрабуйце змяніць пошукавы запыт або адкрыць поўную гісторыю Chrome, каб убачыць больш вынікаў.</translation>
 <translation id="497421865427891073">Наперад</translation>
 <translation id="497983151715419057">Тут вы можаце праглядзець неактыўныя ўкладкі і групы ўкладак</translation>
@@ -1054,6 +1061,7 @@
 <translation id="5267572070504076962">Каб абараніцца ад небяспечных сайтаў, уключыце Бяспечны прагляд</translation>
 <translation id="5273031377282080577">Гэтай наладай кіруе адміністратар.</translation>
 <translation id="5284295735376057059">Параметры дакумента</translation>
+<translation id="5286907366254680517">Выяўлена</translation>
 <translation id="5290322819358431297">Аўтаматычна запаўняйце паролі</translation>
 <translation id="5292796745632149097">Адпраўка на прыладу</translation>
 <translation id="5301876394151419436">Вы ўвайшлі як <ph name="EMAIL" />. Вы можаце ў любы час спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
@@ -1534,6 +1542,7 @@
 <translation id="7117485132243600300">Кіруйце змесцівам, на якое вы падпісаны, а таксама прапанаванымі тэмамі і пошукам</translation>
 <translation id="7119984597597798764">Закрыць: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Увайсці ў Chrome</translation>
+<translation id="7130633106249192408">Выдаліць даныя пра работу ў браўзеры з гэтай прылады</translation>
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Разгледжаны дазволы для 1 сайта}one{Разгледжаны дазволы для # сайта}few{Разгледжаны дазволы для # сайтаў}many{Разгледжаны дазволы для # сайтаў}other{Разгледжаны дазволы для # сайта}}</translation>
 <translation id="7138678301420049075">Іншыя</translation>
@@ -1553,7 +1562,6 @@
 <translation id="7173338713290252554">Гісторыя цаны ў інтэрнэце</translation>
 <translation id="7177466738963138057">Вы можаце змяніць гэта пазней у Наладах</translation>
 <translation id="7177873915659574692">Не ўдалося стварыць QR-код. URL-адрас перавышае дапушчальную колькасць знакаў (<ph name="CHARACTER_LIMIT" />).</translation>
-<translation id="7179032284363038560">Іншыя карыстальнікі гэтай прылады не змогуць убачыць, што вы рабілі. Гісторыя прагляду застанецца прыватнай. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Выкарыстаць іншы ўліковы запіс</translation>
 <translation id="7182520625618447753">Вы можаце перамясціць адрасны радок уверх або ўніз для больш зручнага прагляду</translation>
 <translation id="7183517696921903380">Аркуш фільтрацыі па праграме адкрыты.</translation>
@@ -1694,6 +1702,7 @@
 <translation id="7714077993070342304">Адкрыць меню Chrome</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>
 <translation id="7740287852186792672">Вынікі пошуку</translation>
+<translation id="7740996059027112821">Стандартны</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="774876555279732384">Кіраваць службамі аўтазапаўнення таксама можна ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Дадайце магчымасць пошуку па сайце</translation>

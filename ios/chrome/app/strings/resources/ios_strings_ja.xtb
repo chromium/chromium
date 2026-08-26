@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookie、サイトデータ</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
+<translation id="1322683976135389755">プロンプト: この記事を要約して、3 つのうちの 1 つ目</translation>
 <translation id="1322735045095424339">組織がシークレット モードを使用するよう求めています</translation>
 <translation id="1323735185997015385">削除</translation>
 <translation id="132683371494960526">ダブルタップして親フォルダを変更。</translation>
@@ -695,9 +696,11 @@
 <translation id="325717987950204592">[プライバシーとセキュリティ] をタップします</translation>
 <translation id="3259451381796379533">このアカウントでは Gemini を使用できません。別の Google アカウントでログインしてください。</translation>
 <translation id="3265736395246760288">同期しているすべてのデバイスからすばやくログインできます。</translation>
+<translation id="3268166994745151153">現在の選択内容は失われます</translation>
 <translation id="3272527697863656322">キャンセル</translation>
 <translation id="3272955648592358996">お客様のデータは Google AI の改善に役立てられます</translation>
 <translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
+<translation id="327455571215090823">プライバシーを保護してスマートに自動入力</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
 <translation id="3280562213547448728">音声検索</translation>
 <translation id="3289505634533552500">音声検索</translation>
@@ -911,6 +914,7 @@
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
 <translation id="4007463141047732631">グループを編集</translation>
 <translation id="4011489366247192265">原文の言語</translation>
+<translation id="4014099645251211155">Gemini in Chrome でページ上のあらゆることについて質問</translation>
 <translation id="4017599800655151880">サムネイル</translation>
 <translation id="4018440314314549819">保存したパスワードを自動入力</translation>
 <translation id="4021447724486050609">ブラウザを更新してください</translation>
@@ -1053,6 +1057,7 @@
 <translation id="4509345063551561634">地域:</translation>
 <translation id="4517684186578051919">デバイス情報</translation>
 <translation id="4520798012560649652">シークレット モードの詳細を表示します</translation>
+<translation id="4524737913322680818">買い物、計画など、Gemini in Chrome でもっと便利に</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 個のブックマーク}other{{count} 個のブックマーク}}</translation>
 <translation id="4525629404718770519">リンク プレビューを表示する</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
@@ -1098,6 +1103,7 @@
 <translation id="4652817563047461855">パスワードを安全に保管し、不正使用の有無を確認し、オンラインでご自身を守るためのアドバイスを得ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">タブの共有をオンにする</translation>
 <translation id="4658335131052370646">保存</translation>
+<translation id="465947902531722727">プロファイルを切り替える</translation>
 <translation id="466307903888586355">ファイルの保存は組織によってブロックされています</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブグループは同期されません。
@@ -1208,6 +1214,8 @@
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4985921635659180565">ファイルの削除をスケジュール設定すると、後からキャンセルできません。</translation>
 <translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
+<translation id="4986428648020277392">プロンプト: どちらを買うべき？3 つのうちの 2 つ目</translation>
+<translation id="498768198683310172">Gemini の使用を開始</translation>
 <translation id="499122600724363620"><ph name="NAME" />（<ph name="EMAIL" />）、組織によって管理されています。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />、<ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">タブグループの色 <ph name="COLOR" /></translation>
@@ -1473,6 +1481,7 @@
 <translation id="583281660410589416">不明</translation>
 <translation id="5838430324585198889">Google のアプリをインストールして iPad をさらに活用しましょう</translation>
 <translation id="583923961930319521">すべてのデバイスでパスワードを使用する</translation>
+<translation id="5841763734702350465">プロンプト: これをカレンダーに追加して、3 つのうちの 3 つ目</translation>
 <translation id="5843013299019689749">黒の背景色</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
@@ -1782,6 +1791,7 @@
 <translation id="6775952316617222141">Chrome で Gemini と Live で会話する</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6782531425936234573">データをエクスポート</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> を削除</translation>
 <translation id="6791425686608802741">[新しいグループに追加] をタップします</translation>
 <translation id="6794476726485507147">このページに再度アクセスするリマインダーの通知を受け取る日時を選択してください</translation>
 <translation id="6797543908718012274">リーディング モードをオンにする</translation>
@@ -2142,7 +2152,7 @@
 <translation id="797824194429476746">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="798299424881500862">オレンジのテーマ</translation>
-<translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
+<translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="798991908416757345">タブグループは使用できません</translation>
 <translation id="7993170188789685695">この通知を閉じるにはダブルタップします。</translation>
 <translation id="7996239959906074962">設定…</translation>
@@ -2153,6 +2163,7 @@
 <translation id="8011489434346330032">ウェブ インスペクタ</translation>
 <translation id="8014007212279733632">機密情報を自動入力する際に本人確認を行う</translation>
 <translation id="8015826420689927262">添付ファイルを削除</translation>
+<translation id="8016869623424294549">プロファイルを切り替えようとしています</translation>
 <translation id="8017015647846870183">対象: Google パスワード マネージャー（パスワードとパスキーを含む）</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8023170444051056234">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>

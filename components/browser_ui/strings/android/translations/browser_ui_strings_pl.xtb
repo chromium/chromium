@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Zmień położenie, aby dostosować przeglądanie do własnych potrzeb</translation>
 <translation id="1848033246551405023">Czcionka Sans Serif</translation>
+<translation id="1861244985839668297">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń HID. Gdy jest wyłączona, strony nie mogą korzystać z urządzeń HID.</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1881806992065048905">Plansza dolna wyglądu strony nowej karty</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>

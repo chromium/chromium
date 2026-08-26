@@ -354,6 +354,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}one{{BOOKMARK_COUNT} favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}other{{BOOKMARK_COUNT} favoris et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google. Cela permettra également de supprimer les doublons.}}</translation>
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252219782845132919">Masquer le groupe</translation>
+<translation id="1252597096488926946">Annuler l'épinglage des boutons de défilement</translation>
 <translation id="1252987234827889034">Une erreur liée au profil est survenue</translation>
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -976,6 +977,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1755601632425835748">Taille du texte</translation>
 <translation id="1756963401828337401">Choisir un écran à capturer</translation>
 <translation id="17584710573359123">Afficher dans la boutique en ligne Chrome Web Store</translation>
+<translation id="176013700366797492">Accédez à Google Portefeuille pour contrôler les <ph name="BEGIN_LINK1" />données et les préférences de confidentialité<ph name="END_LINK1" /> ou gérer les <ph name="BEGIN_LINK2" />modes de paiement<ph name="END_LINK2" /> et les <ph name="BEGIN_LINK3" />cartes<ph name="END_LINK3" />, comme les cartes de fidélité et les pièces d'identité</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remappé à <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Comptes de <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggestions de magasinage</translation>
@@ -1701,6 +1703,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2322193970951063277">En-têtes et pieds de page</translation>
 <translation id="2322622365472107569">Heure de fin : <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Réseaux Wi-Fi enregistrés</translation>
+<translation id="2323685460575935191">Masquer les boutons de défilement</translation>
 <translation id="2325444234681128157">Mémoriser le mot de passe</translation>
 <translation id="2326188115274135041">Entrez de nouveau votre NIP pour activer le déverrouillage automatique</translation>
 <translation id="2326583548923775947">Ceci n'est pas un compte Google. Les éléments que vous enregistrez sur Chrome ne seront pas accessibles sur d'autres appareils.</translation>
@@ -1957,6 +1960,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2508747373511408451">L'application <ph name="APPLICATION_NAME" /> nécessite que Google Disque soit accessible.</translation>
 <translation id="2509495747794740764">La valeur de l'échelle doit être comprise entre 10 et 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" /> : <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (sélectionné)</translation>
 <translation id="2513904627589542105">Autotest</translation>
 <translation id="251425554130284360">Vous voyez des pages que vous avez visitées et des recherches suggérées pour vous aider à revenir facilement à votre activité la plus récente.
@@ -4995,6 +4999,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4831226137013573603">désactiver le son du microphone</translation>
 <translation id="483262387981411190">Mettre en pause ou reprendre le contrôle par le visage</translation>
 <translation id="4833683849865011483">1 imprimante a été trouvée sur le serveur d'impression</translation>
+<translation id="4834388789911023644">Rédiger un avis</translation>
 <translation id="4835598628985424375">Plissez les lèvres en les serrant</translation>
 <translation id="4835677468087803981">Masquer le NIP</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
@@ -8557,6 +8562,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7625823789272218216">Nouvel onglet à gauche</translation>
 <translation id="762730429396410864">Définissez manuellement le niveau de performance du processeur signalé aux sites Web</translation>
 <translation id="7627749368210392160">Les sites peuvent utiliser cette fonctionnalité pour accéder à d'autres appareils sur votre réseau local</translation>
+<translation id="7628068697012244394">Rédiger un avis</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Sélectionnez une action pour chaque touche</translation>
 <translation id="7629206210984165492">Tamisé</translation>
@@ -8983,6 +8989,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7949038991703929816">Échec du chargement de l'historique. Assurez-vous que les fichiers contiennent des journaux du service de mise à jour valides.</translation>
 <translation id="7950629216186736592">Motif : LBS ne prend en charge que les URL http://, https:// et file://.</translation>
 <translation id="7950814699499457511">Activée • Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données</translation>
+<translation id="7951159420392892566">Annuler l'épinglage des boutons de défilement</translation>
 <translation id="795130320946928025">Désactiver la carte virtuelle</translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images de votre presse-papiers</translation>
 <translation id="7953236668995583915">Actualisez cette page pour appliquer vos paramètres mis à jour sur ce site</translation>

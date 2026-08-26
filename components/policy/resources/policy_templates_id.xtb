@@ -1437,6 +1437,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
         |TIME_LIMITS| menerapkan batas penggunaan harian dan membuat aplikasi menjadi tidak tersedia setelah batas tersebut tercapai pada hari yang sudah ditentukan. Batas penggunaan ditentukan dalam |daily_limit_mins|. Batas penggunaan direset setiap hari pada waktu UTC yang dilewati dalam |reset_at|.
         Kebijakan ini hanya digunakan untuk anak-anak sebagai pengguna.
         Kebijakan ini bersifat komplementer terhadap 'UsageTimeLimit'. Pembatasan yang ditentukan dalam 'UsageTimeLimit' seperti waktu pemakaian perangkat dan waktu tidur akan diterapkan tanpa memandang 'PerAppTimeLimits'.</translation>
+<translation id="1911003883066847257">Mengontrol setelan peluncuran kembali dan mulai ulang browser.</translation>
 <translation id="19133869326547269">Kebijakan ini tidak lagi digunakan dan tidak berpengaruh karena fitur Klik untuk Menelepon telah dihapus dari Chrome.
 
 Deskripsi asli:
@@ -3428,6 +3429,19 @@ Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan in
 <translation id="3036271748813538143">Mengontrol apakah perilaku baru parser HTML untuk elemen &lt;select&gt; akan diaktifkan</translation>
 <translation id="3038323923255997294">Terus jalankan aplikasi latar belakang saat <ph name="PRODUCT_NAME" /> ditutup</translation>
 <translation id="3039862327847526651">Mengontrol penggunaan pengoptimal JavaScript</translation>
+<translation id="3040510138377915303">Mengontrol apakah agen <ph name="GEMINI_SPARK_PRODUCT_NAME" /> diizinkan untuk terhubung ke <ph name="PRODUCT_NAME" /> dan menggunakan fitur penjelajahan otomatis. <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mungkin tidak tersedia untuk organisasi Anda.
+
+Nilai 0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> diizinkan untuk terhubung ke dan menggunakan fitur penjelajahan otomatis <ph name="PRODUCT_NAME" />
+
+Nilai 1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tidak diizinkan untuk terhubung ke atau menggunakan fitur penjelajahan otomatis <ph name="PRODUCT_NAME" />
+
+Peringatan: Mengizinkan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> terhubung ke <ph name="PRODUCT_NAME" /> dan menggunakan fitur penjelajahan otomatis akan mengizinkan agen <ph name="GEMINI_SPARK_PRODUCT_NAME" /> melakukan tindakan multilangkah otonom di klien <ph name="PRODUCT_NAME" /> menggunakan sesi penjelajahan aktif. Hal ini menimbulkan risiko keamanan yang signifikan, termasuk risiko kredensial, Ingress Jaringan Lokal, dan hilangnya sinyal kontekstual. Kontrol pengelolaan dan keamanan yang ada mungkin tidak dipatuhi.
+
+Administrator disarankan untuk mengevaluasi dengan cermat model ancaman jaringan, kepatuhan, dan panduan privasi organisasi sebelum mengaktifkan fitur ini.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan aplikasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> atau penjelajahan otomatis <ph name="PRODUCT_NAME" /> dinonaktifkan. Misalnya, aplikasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Untuk mengetahui informasi selengkapnya tentang <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />, lihat https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Penjelajahan otomatis <ph name="PRODUCT_NAME" /> dan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> hanya tersedia di negara atau bahasa tertentu. Jika kebijakan ini disetel ke nilai 0 - Aktif, tidak ada jaminan bahwa fitur akan diaktifkan; fitur tetap bergantung pada ketersediaan. Untuk mengetahui info selengkapnya tentang peluncuran, baca Catatan Rilis Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, saran konten yang dihasilkan otomatis akan ditampilkan di halaman Tab Baru, berdasarkan histori penjelajahan, minat, atau lokasi pengguna.
 
       Jika kebijakan ditetapkan ke Salah (False), saran konten yang dihasilkan otomatis tidak akan muncul di halaman Tab Baru.</translation>
@@ -8363,6 +8377,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
       Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan menggunakan versi maksimum default.
 
       Jika kebijakan dikonfigurasi, kebijakan dapat disetel ke salah satu nilai berikut: "tls1.2" atau "tls1.3". Jika disetel, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS yang lebih besar dari versi yang ditentukan. Nilai yang tidak dikenali akan diabaikan.</translation>
+<translation id="6120465104321378808">Mengizinkan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> terhubung ke <ph name="PRODUCT_NAME" /> dan menggunakan fitur penjelajahan otomatis melalui Gemini di Chrome</translation>
 <translation id="6120909112796019291">Izinkan Pengeditan Foto AI Generatif dan tingkatkan kualitas model AI.</translation>
 <translation id="6123052603197028610">Jangan izinkan kueri ke server Google untuk mengambil stempel waktu</translation>
 <translation id="6128539430475678271">Memblokir Controlled Frame API di situs ini</translation>

@@ -78,6 +78,7 @@
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1269129608791067105">Aquí atoparás o teu historial</translation>
 <translation id="1280921956537356716">Activar notificacións de consellos</translation>
+<translation id="1287449971634955609">Quitar extensións e eliminar os datos que gardasen neste dispositivo</translation>
 <translation id="1289129165308566697">Consulta o teu historial noutros dispositivos</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1298077576058087471">Le as noticias do día e aforra ata un 60 % de datos</translation>
@@ -115,6 +116,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1413446866325418126">Gardar datos na túa Conta de Google</translation>
 <translation id="1414919006379339073">Pechar ventá actual</translation>
 <translation id="1416550906796893042">Versión da aplicación</translation>
+<translation id="1426410128494586442">Si</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
 <translation id="1435593198351412143">Abrir PDF automaticamente</translation>
@@ -342,6 +344,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2385605401818128172">Podes revisar os sitios que envían moitas notificacións e impedir que o sigan facendo no futuro</translation>
 <translation id="2386938421315164605">Ocultar e mostrar temas</translation>
 <translation id="2390510615457643724">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de novo?</translation>
+<translation id="2391579633712104609">180°</translation>
 <translation id="2392369802118427583">Activar</translation>
 <translation id="2393980685134835044"><ph name="TAB_TITLE" />, pestana do modos de incógnito e pantalla superposta seleccionada</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, pestana do modo de incógnito con gravación en curso</translation>
@@ -559,6 +562,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3254409185687681395">Engadir esta páxina aos marcadores</translation>
 <translation id="3265093782546847662">Todas as páxinas de <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Arrastra o panel cara arriba para ver os resultados da busca</translation>
+<translation id="3268205181992599708">Activar o micrófono para usar a voz</translation>
 <translation id="3269093882174072735">Cargar imaxe</translation>
 <translation id="3280562213547448728">Busca por voz</translation>
 <translation id="3282801380074962248">Despregar a sección</translation>
@@ -786,6 +790,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Usáchela neste sitio</translation>
 <translation id="4214315110991671325">Se permites o uso de cookies, Chrome poderá utilizalas para as precargas.</translation>
 <translation id="421517251707893998">Toca Fixar este atallo</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" />: <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Escoitar esta páxina</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, pestana dos modos de incógnito e pantalla superposta fixada e seleccionada</translation>
 <translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
@@ -982,6 +987,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
 <translation id="4964614743143953889">Chrome avísate sobre descargas e sitios pouco seguros</translation>
 <translation id="496607651705915226">Para gardar e usar contrasinais novos na túa Conta de Google, actualiza os servizos de Google Play</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" />: <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Proba a buscar outra cousa ou abre todo o historial de Chrome para ver máis resultados.</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="497983151715419057">Revisa as pestanas e grupos de pestanas inactivos</translation>
@@ -1054,6 +1060,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
 <translation id="5273031377282080577">A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="5284295735376057059">Propiedades do documento</translation>
+<translation id="5286907366254680517">Detectado</translation>
 <translation id="5290322819358431297">Autocompleta os contrasinais</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Tes a sesión iniciada como <ph name="EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
@@ -1553,7 +1560,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7173338713290252554">Historial de prezos na web</translation>
 <translation id="7177466738963138057">Podes cambiar esta opción máis tarde en Configuración</translation>
 <translation id="7177873915659574692">Non se puido crear o código QR. O URL contén máis de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
-<translation id="7179032284363038560">As demais persoas que usen este dispositivo non verán a túa actividade, polo que podes navegar de forma máis privada. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Usar unha conta distinta</translation>
 <translation id="7182520625618447753">Cambia a posición da barra de enderezos á parte superior ou á inferior para desfrutar dunha experiencia de navegación personalizada</translation>
 <translation id="7183517696921903380">A folla para filtrar por aplicación está aberta.</translation>
@@ -1694,6 +1700,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7714077993070342304">Abrir o Menú de Chrome</translation>
 <translation id="7733878270780732638">Non hai suficiente espazo no dispositivo.</translation>
 <translation id="7740287852186792672">Resultados da busca</translation>
+<translation id="7740996059027112821">Estándar</translation>
 <translation id="774403695779169686"><ph name="TAB_TITLE" />, pestana do modo de incógnito de uso compartido seleccionada</translation>
 <translation id="774876555279732384">Os servizos de autocompletar tamén se xestionan na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="7758884017823246335">Engadir unha busca do sitio</translation>

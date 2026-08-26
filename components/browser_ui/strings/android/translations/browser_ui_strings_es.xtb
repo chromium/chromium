@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Para que <ph name="APP_NAME" /> pueda usar la realidad aumentada, activa la cámara también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Cambia la posición para personalizar tu experiencia de navegación</translation>
 <translation id="1848033246551405023">Fuente Sans Serif</translation>
+<translation id="1861244985839668297">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos HID. Si está desactivada, los sitios no pueden usar dispositivos HID.</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1881806992065048905">Hoja inferior de apariencia de la página Nueva pestaña</translation>
 <translation id="1887786770086287077">El acceso a la ubicación está desactivado en este dispositivo. Actívalo en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
