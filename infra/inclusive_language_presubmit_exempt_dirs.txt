@@ -766,7 +766,6 @@ third_party/rust/chromium_crates_io/vendor/static_assertions-v1/src
 third_party/rust/chromium_crates_io/vendor/strum-v0_28/src
 third_party/rust/chromium_crates_io/vendor/subtle-v2
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src
-third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_6
 third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_6/src
 third_party/rust/chromium_crates_io/vendor/symphonia-metadata-v0_6/src/utils
 third_party/rust/chromium_crates_io/vendor/syn-v2
