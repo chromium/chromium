@@ -13,6 +13,7 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/eventpair.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -452,7 +453,11 @@ class CastRunnerIntegrationTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
   }
 
-  void TearDown() override { crash_observer_.VerifyNoCrashes(); }
+  void TearDown() override {
+    if (crash_observer_) {
+      crash_observer_->VerifyNoCrashes();
+    }
+  }
 
   // Returns the services exposed by the `CastRunnerLauncher` test Realm,
   // including those exposed by the `cast_runner` component under test.
@@ -470,6 +475,8 @@ class CastRunnerIntegrationTest : public testing::Test {
     return cast_runner_.fake_cast_agent().app_config_manager();
   }
 
+  void DisableCrashObserver() { crash_observer_.reset(); }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -482,7 +489,8 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   test::CastRunnerLauncher cast_runner_;
   net::EmbeddedTestServer test_server_;
-  test::TestComponentCrashObserver crash_observer_;
+  std::optional<test::TestComponentCrashObserver> crash_observer_{
+      std::in_place};
 };
 
 }  // namespace
@@ -1051,8 +1059,10 @@ TEST_F(CastRunnerIntegrationTest,
 
 // Verifies that starting a component fails if CORS exempt headers cannot be
 // fetched.
-// TODO(crbug.com/551893385): Test fails flakily.
-TEST_F(CastRunnerIntegrationTest, DISABLED_MissingCorsExemptHeaderProvider) {
+TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
+  // CastRunner is expected to exit when CorsExemptHeaderProvider is missing.
+  DisableCrashObserver();
+
   // Prevent the FakeCastAgent from publishing the
   // chromium.cast.CorsExemptHeaderProvider service.
   cast_runner_launcher().fake_cast_agent().RegisterOnConnectClosure(
