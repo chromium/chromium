@@ -157,9 +157,9 @@
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/browser/pdf/pdf_help_bubble_handler_factory.h"
@@ -748,7 +748,7 @@ void MaybeRegisterChromeFeaturePromos(
                        "Attempts to trigger when a user is on the NTP and the "
                        "Realbox contextual entrypoint button is displayed.")));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(
@@ -838,7 +838,7 @@ void MaybeRegisterChromeFeaturePromos(
                   ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
       break;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // kIPHTabAudioMutingFeature:
   registry.RegisterFeature(std::move(

@@ -257,11 +257,11 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     &kEsbDownloadRowPromoFeature,
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     &kIPHExtensionsMenuFeature,
     &kIPHExtensionsRequestAccessButtonFeature,
     &kIPHExtensionsZeroStatePromoFeature,
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // keep-sorted start case=no
     &kIPHBackNavigationMenuFeature,
     &kIPHBatterySaverModeFeature,

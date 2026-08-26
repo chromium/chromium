@@ -383,7 +383,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (kIPHExtensionsMenuFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -414,7 +414,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   if (kIPHCompanionSidePanelFeature.name == feature->name) {
     FeatureConfig config;
