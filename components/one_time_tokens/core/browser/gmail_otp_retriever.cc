@@ -132,11 +132,16 @@ void GmailOtpRetriever::Start() {
   // for the new one. This relies on the assumption that previously sent tokens
   // typically remain valid for the duration of the cache.
   std::vector<OneTimeToken> cached_tokens;
-  for (const auto& token : one_time_token_service_->GetCachedOneTimeTokens()) {
-    if (token.type() == OneTimeTokenType::kGmail) {
-      cached_tokens.push_back(token);
-    }
-  }
+  // `GetRecentOneTimeTokens()` is synchronous, making it safe to pass a
+  // reference to the local `cached_tokens` stack variable.
+  one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
+      [](std::vector<OneTimeToken>& tokens, OneTimeTokenSource source,
+         base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
+        if (source == OneTimeTokenSource::kGmail && result.has_value()) {
+          tokens.push_back(std::move(*result));
+        }
+      },
+      std::ref(cached_tokens)));
 
   // The cache checking is async, so also listen to the service in the meantime
   // in case the matching token is not in the cache. The tokens arriving from

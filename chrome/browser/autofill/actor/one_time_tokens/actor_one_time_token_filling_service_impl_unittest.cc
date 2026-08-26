@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,11 +81,24 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
   one_time_tokens::OneTimeTokenLogSink* log_sink() override { return nullptr; }
 
   void GetRecentOneTimeTokens(
-      one_time_tokens::OneTimeTokenService::Callback callback) override {}
+      one_time_tokens::OneTimeTokenService::Callback callback) override {
+    get_recent_tokens_call_count_++;
+    for (const auto& token : base::Reversed(cached_tokens_)) {
+      one_time_tokens::OneTimeTokenSource source;
+      switch (token.type()) {
+        case one_time_tokens::OneTimeTokenType::kSmsOtp:
+          source = one_time_tokens::OneTimeTokenSource::kOnDeviceSms;
+          break;
+        case one_time_tokens::OneTimeTokenType::kGmail:
+          source = one_time_tokens::OneTimeTokenSource::kGmail;
+          break;
+      }
+      callback.Run(source, base::ok(token));
+    }
+  }
 
   std::vector<one_time_tokens::OneTimeToken> GetCachedOneTimeTokens()
       const override {
-    get_cached_tokens_call_count_++;
     return cached_tokens_;
   }
 
@@ -119,8 +133,8 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
   }
 
   int subscribe_call_count() const { return subscribe_call_count_; }
-  int get_cached_tokens_call_count() const {
-    return get_cached_tokens_call_count_;
+  int get_recent_tokens_call_count() const {
+    return get_recent_tokens_call_count_;
   }
 
  private:
@@ -129,7 +143,7 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
       subscription_manager_;
   std::vector<one_time_tokens::OneTimeToken> cached_tokens_;
   mutable int subscribe_call_count_ = 0;
-  mutable int get_cached_tokens_call_count_ = 0;
+  mutable int get_recent_tokens_call_count_ = 0;
 };
 
 class TestActorContentAutofillDriver : public TestContentAutofillDriver {
@@ -294,7 +308,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, future.GetCallback());
   EXPECT_EQ(future.Get().value(), kMockOtp);
-  EXPECT_EQ(otp_service().get_cached_tokens_call_count(), 0);
+  EXPECT_EQ(otp_service().get_recent_tokens_call_count(), 0);
   EXPECT_EQ(otp_service().subscribe_call_count(), 0);
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
@@ -971,7 +985,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   NavigateAndCommit(GURL("data:text/html,<html></html>"));
   ASSERT_TRUE(main_rfh()->GetLastCommittedOrigin().opaque());
 
-  EXPECT_EQ(otp_service().get_cached_tokens_call_count(), 0);
+  EXPECT_EQ(otp_service().get_recent_tokens_call_count(), 0);
   EXPECT_EQ(otp_service().subscribe_call_count(), 0);
 
   base::test::TestFuture<
