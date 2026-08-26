@@ -68,13 +68,15 @@ class FromWrappedKeyTask
       PreReplyCallback pre_reply);
 };
 
-// A `BackgroundTask` to sign data with `crypto::UnexportableSigningKey`.
+// A `BackgroundTask` to sign data with `crypto::UnexportableSigningKey` or
+// `crypto::UnexportableAttestationKey`.
 class SignTask : public internal::BackgroundTaskImpl<
                      ServiceErrorOr<std::vector<uint8_t>>> {
  public:
   SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
            base::span<const uint8_t> data,
            BackgroundTaskPriority priority,
+           BackgroundTaskType type,
            size_t max_retries,
            base::OnceCallback<void(ReturnType)> callback,
            PreReplyCallback pre_reply);

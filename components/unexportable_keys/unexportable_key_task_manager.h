@@ -18,6 +18,7 @@
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -107,9 +108,13 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // task with `signing_key` and `data` arguments. Might return a cached result
   // if a task with the same combination of `signing_key` and `data` has been
   // completed recently.
+  // `task_type` must be either `BackgroundTaskType::kSign` or
+  // `BackgroundTaskType::kSignWithAttestationKey` to distinguish regular
+  // signing from attestation key signing for metrics.
   // Invokes `callback` with a signature of `data`, or `ServiceError` if an
   // error occurs during signing.
   void SignSlowlyAsync(
+      BackgroundTaskType task_type,
       BackgroundTaskOrigin origin,
       scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
       base::span<const uint8_t> data,

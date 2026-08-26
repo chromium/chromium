@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -824,9 +825,17 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
-  if (auto* key = GetKey(kSigningAndAttestationKeyMaps, key_id)) {
+  if (auto* key = signing_keys_->GetKey(key_id)) {
     task_manager_->SignSlowlyAsync(
-        task_origin_, base::WrapRefCounted(key), data, priority,
+        BackgroundTaskType::kSign, task_origin_, base::WrapRefCounted(key),
+        data, priority, WrapCallbackWithErrorIfCancelled(std::move(callback)));
+    return;
+  }
+  if (auto* key =
+          attestation_keys_->GetKey(UnexportableAttestationKeyId(key_id))) {
+    task_manager_->SignSlowlyAsync(
+        BackgroundTaskType::kSignWithAttestationKey, task_origin_,
+        base::WrapRefCounted(key), data, priority,
         WrapCallbackWithErrorIfCancelled(std::move(callback)));
     return;
   }

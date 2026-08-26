@@ -230,6 +230,7 @@ FromWrappedKeyTask::FromWrappedKeyTask(
 SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
                    base::span<const uint8_t> data,
                    BackgroundTaskPriority priority,
+                   BackgroundTaskType type,
                    size_t max_retries,
                    base::OnceCallback<void(SignTask::ReturnType)> callback,
                    PreReplyCallback pre_reply)
@@ -241,7 +242,7 @@ SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
           std::move(callback),
           std::move(pre_reply),
           priority,
-          BackgroundTaskType::kSign,
+          type,
           max_retries) {}
 
 bool SignTask::ShouldRetryBasedOnResult(

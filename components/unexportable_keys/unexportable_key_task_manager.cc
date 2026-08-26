@@ -206,13 +206,16 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
 }
 
 void UnexportableKeyTaskManager::SignSlowlyAsync(
+    BackgroundTaskType task_type,
     BackgroundTaskOrigin origin,
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
-  auto metrics_callback = CreateMetricsCallback<std::vector<uint8_t>>(
-      BackgroundTaskType::kSign, origin);
+  CHECK(task_type == BackgroundTaskType::kSign ||
+        task_type == BackgroundTaskType::kSignWithAttestationKey);
+  auto metrics_callback =
+      CreateMetricsCallback<std::vector<uint8_t>>(task_type, origin);
 
   // TODO(alexilin): convert this to a CHECK().
   if (!signing_key) {
@@ -225,7 +228,7 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
   auto task = std::make_unique<SignTask>(
-      std::move(signing_key), data, priority, kSignTaskMaxRetries,
+      std::move(signing_key), data, priority, task_type, kSignTaskMaxRetries,
       std::move(callback), std::move(metrics_callback));
   task_scheduler_.PostTask(std::move(task));
 }

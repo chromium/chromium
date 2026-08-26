@@ -39,6 +39,8 @@
 
 namespace unexportable_keys {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::AtLeast;
@@ -49,6 +51,7 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -130,6 +133,11 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     auto key = generate_key_future.Get();
     CHECK(key.has_value());
     return *key;
+  }
+
+  void reset_histogram_tester() {
+    std::destroy_at(&histogram_tester_);
+    std::construct_at(&histogram_tester_);
   }
 
  protected:
@@ -741,6 +749,10 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId key_id, generate_future.Get());
 
+  // Reset `histogram_tester_` before signing to ignore samples recorded during
+  // key generation and only capture metrics from the signing operation.
+  reset_histogram_tester();
+
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
   service().SignSlowlyAsync(key_id, data, kTaskPriority,
@@ -749,6 +761,16 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.IsReady());
   EXPECT_OK(sign_future.Get());
+
+  // Verify that the `.Sign` metric was recorded, while explicitly asserting the
+  // absence of unexercised operations like `.SignWithAttestationKey`.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamplesForPrefix(
+          "Crypto.UnexportableKeys.BackgroundTaskResult.DeviceBoundSessions."),
+      ElementsAre(Pair(
+          "Crypto.UnexportableKeys.BackgroundTaskResult.DeviceBoundSessions."
+          "Sign",
+          BucketsAre(Bucket(kNoServiceErrorForMetrics, 1)))));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, SignSlowlyAsyncWithAttestationKey) {
@@ -760,11 +782,25 @@ TEST_F(UnexportableKeyServiceImplTest, SignSlowlyAsyncWithAttestationKey) {
   ASSERT_OK_AND_ASSIGN(UnexportableAttestationKeyId key_id,
                        generate_future.Get());
 
+  // Reset `histogram_tester_` before signing to ignore samples recorded during
+  // key generation and only capture metrics from the signing operation.
+  reset_histogram_tester();
+
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   service().SignSlowlyAsync(key_id, {1, 2, 3, 4}, kTaskPriority,
                             sign_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_OK(sign_future.Get());
+
+  // Verify that the `.SignWithAttestationKey` metric was recorded, while
+  // explicitly asserting the absence of unexercised operations like `.Sign`.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamplesForPrefix(
+          "Crypto.UnexportableKeys.BackgroundTaskResult.DeviceBoundSessions."),
+      ElementsAre(Pair(
+          "Crypto.UnexportableKeys.BackgroundTaskResult.DeviceBoundSessions."
+          "SignWithAttestationKey",
+          BucketsAre(Bucket(kNoServiceErrorForMetrics, 1)))));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
