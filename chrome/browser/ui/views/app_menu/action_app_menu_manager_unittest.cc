@@ -28,6 +28,8 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
                                              .children()[3]
                                              ->GetChildren()
                                              .children()[0]
+                                             ->GetChildren()
+                                             .children()[0]
                                              ->GetActionItem();
 
   // Test dynamic synchronization.

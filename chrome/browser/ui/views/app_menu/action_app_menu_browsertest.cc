@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
 
   // Verify that the Action items have been converted into visual menu items.
   views::MenuItemView* password_item =
-      root->GetMenuItemByID(kActionShowPasswordManager);
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
   ASSERT_TRUE(password_item);
 
   views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);

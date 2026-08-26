@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -21,6 +22,11 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
@@ -108,9 +114,10 @@ class AppMenuBuilder {
   // Adds a static submenu via lambda.
   AppMenuBuilder& AddSubmenu(
       actions::ActionId id,
-      base::FunctionRef<void(AppMenuBuilder&)> build_submenu) {
-    auto item = ActionAppMenuManager::CreateIndirectActionItem(
-        id, DisplayType::kRow, bg_color_);
+      base::FunctionRef<void(AppMenuBuilder&)> build_submenu,
+      DisplayType type = DisplayType::kRow) {
+    auto item =
+        ActionAppMenuManager::CreateIndirectActionItem(id, type, bg_color_);
     if (!item || !parent_) {
       return *this;
     }
@@ -249,15 +256,28 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
 }
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
-  AppMenuBuilder(root, kColorAppMenuYourChromeBackground)
-      .AddSectionHeader(IDS_APP_MENU_YOUR_CHROME_HEADER)
-      .AddAction(kActionShowPasswordManager)
+  auto builder = AppMenuBuilder(root, kColorAppMenuYourChromeBackground);
+  builder.AddSectionHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
+
+  Profile* profile = browser_window_interface_->GetProfile();
+
+  if (!profile->IsGuestSession()) {
+    builder.AddSubmenu(kActionPasswordsAndAutofillSubmenu,
+                       [](AppMenuBuilder& sub) {
+                         sub.AddAction(kActionShowPasswordManager)
+                             .AddAction(kActionShowPaymentMethods)
+                             .AddAction(kActionShowContactInfo)
+                             .AddAction(kActionShowIdentityDocs)
+                             .AddAction(kActionShowTravel);
+                       });
+  }
+
+  builder
       .AddDynamicSubmenu(
           kActionRecentTabsSubmenu,
           base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
                               recent_tabs_menu_->GetWeakPtr()))
       .AddAction(kActionShowDownloads)
-      .AddAction(kActionManageExtensions)
       .AddDynamicSubmenu(
           kActionBookmarksSubmenu,
           base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
@@ -265,8 +285,14 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
           [](AppMenuBuilder& sub_builder) {
             sub_builder.AddAction(kActionBookmarkThisTab)
                 .AddAction(kActionBookmarkAllTabs);
-          })
-      .AddAction(kActionClearBrowsingData);
+          });
+
+  builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
+    sub.AddAction(kActionExtensionsSubmenuManageExtensions)
+        .AddAction(kActionExtensionsSubmenuVisitChromeWebStore);
+  });
+
+  builder.AddAction(kActionClearBrowsingData);
 }
 
 void ActionAppMenuManager::AddToolsAndActionsActions(
@@ -291,10 +317,9 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         .AddAction(actions::kActionPaste);
   });
 
-  Profile* profile = browser_window_interface_->GetProfile();
-
   builder.AddSubmenu(
-      kActionSaveAndShareSubmenu, [profile](AppMenuBuilder& sub) {
+      kActionSaveAndShareSubmenu, [this](AppMenuBuilder& sub) {
+        Profile* profile = browser_window_interface_->GetProfile();
         if (media_router::MediaRouterEnabled(profile)) {
           sub.AddAction(kActionRouteMedia);
         }
@@ -333,8 +358,34 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 }
 
 void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
-  AppMenuBuilder(root)
-      .AddAction(kActionOptions, DisplayType::kFooter)
-      .AddAction(kActionHelpSubmenu, DisplayType::kFooter)
-      .AddAction(kActionExit, DisplayType::kFooter);
+  auto builder = AppMenuBuilder(root);
+  builder.AddAction(kActionOptions, DisplayType::kFooter);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  builder.AddSubmenu(
+      kActionHelpSubmenu,
+      [this](AppMenuBuilder& sub) {
+        sub.AddAction(kActionAbout);
+
+        if (whats_new::IsEnabled()) {
+          sub.AddAction(kActionChromeWhatsNew);
+        }
+
+        sub.AddAction(kActionHelpPageViaMenu);
+
+        Profile* profile = browser_window_interface_->GetProfile();
+        if (chrome::CanShowFeedback(profile)) {
+          sub.AddAction(kActionFeedback);
+
+          if (feedback::ReportUnsafeSiteDialog::IsEnabled(*profile)) {
+            sub.AddAction(kActionReportUnsafeSite);
+          }
+        }
+      },
+      DisplayType::kFooter);
+#else
+  builder.AddAction(kActionAbout, DisplayType::kFooter);
+#endif
+
+  builder.AddAction(kActionExit, DisplayType::kFooter);
 }

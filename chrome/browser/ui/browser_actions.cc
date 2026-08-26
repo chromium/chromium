@@ -1704,6 +1704,14 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionExtensionsSubmenuManageExtensions)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kChromeExtensionIcon
+                  : vector_icons::kExtensionChromeRefreshOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -1715,6 +1723,14 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionExtensionsSubmenuVisitChromeWebStore)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kGoogleChromeWebstoreIcon, ui::kColorIcon))
+#endif
           .Build());
 }
 
@@ -4187,6 +4203,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionAbout)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_ABOUT)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_ABOUT)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kInfoIcon
+                  : vector_icons::kInfoRefreshOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4292,6 +4316,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionFeedback)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_FEEDBACK)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_FEEDBACK)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kFeedbackIcon
+                                                : kReportOldIcon))
           .Build());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -4344,6 +4375,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionHelpPageViaKeyboard)
           .Build());
 
+#if BUILDFLAG(IS_CHROMEOS) && defined(OFFICIAL_BUILD)
+  int help_string_id = IDS_GET_HELP;
+#else
+  int help_string_id = IDS_HELP_PAGE;
+#endif
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -4353,6 +4389,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionHelpPageViaMenu)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(help_string_id)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(help_string_id)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kHelpCustomIcon
+                                                : kHelpMenuOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4548,6 +4591,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionChromeWhatsNew)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kReleaseAlertIcon
+                                                : kReleaseAlertOldIcon))
           .Build());
 #endif
 
@@ -4967,6 +5017,20 @@ void BrowserActions::InitializeSubmenuActions() {
           kActionDeveloperSubmenu, IDS_MORE_TOOLS_MENU, IDS_MORE_TOOLS_MENU,
           features::IsRoundedIconsEnabled() ? kHomeRepairServiceIcon
                                             : kMoreToolsMenuOldIcon,
+          /*is_pinnable=*/false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {},
+              bwi),
+          kActionExtensionsSubmenu, IDS_EXTENSIONS_SUBMENU,
+          IDS_EXTENSIONS_SUBMENU,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kChromeExtensionIcon
+              : vector_icons::kExtensionChromeRefreshOldIcon,
           /*is_pinnable=*/false)
           .Build());
 }

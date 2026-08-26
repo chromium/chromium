@@ -73,7 +73,7 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
 
   // Check if the menu contains section menu items.
   views::MenuItemView* password_item =
-      root->GetMenuItemByID(kActionShowPasswordManager);
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
   ASSERT_TRUE(password_item);
 
   views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
