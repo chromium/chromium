@@ -360,6 +360,86 @@ pub mod compact {
     }
 }
 
+/// Serialize a [`Uuid`] as a byte string.
+///
+/// Unlike [`compact`](crate::serde::compact), which serializes a [`Uuid`] as a
+/// `[u8; 16]` array, this module uses the serializer's dedicated byte string
+/// support through [`serialize_bytes`]. Formats that distinguish byte strings
+/// from sequences, such as CBOR or MessagePack, can then encode the [`Uuid`] as
+/// a single 16 byte string instead of a sequence of 16 individually encoded
+/// integers.
+///
+/// [`Uuid`]: ../../struct.Uuid.html
+/// [`serialize_bytes`]: serde_core::Serializer::serialize_bytes
+///
+/// ## Examples
+///
+/// ```
+/// # use uuid::Uuid;
+/// #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
+/// struct Container {
+///     #[serde(with = "uuid::serde::bytes")]
+///     id: Uuid,
+/// }
+/// ```
+pub mod bytes {
+    use super::*;
+
+    /// Serialize from a [`Uuid`] as a byte string.
+    ///
+    /// [`Uuid`]: ../../struct.Uuid.html
+    pub fn serialize<S>(u: &crate::Uuid, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde_core::Serializer,
+    {
+        serializer.serialize_bytes(u.as_bytes())
+    }
+
+    /// Deserialize a byte string as a [`Uuid`].
+    ///
+    /// [`Uuid`]: ../../struct.Uuid.html
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<crate::Uuid, D::Error>
+    where
+        D: serde_core::Deserializer<'de>,
+    {
+        deserializer.deserialize_bytes(UuidBytesVisitor {
+            _marker: PhantomData::<crate::Uuid>,
+        })
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use serde_derive::*;
+
+        #[test]
+        fn test_serialize_bytes() {
+            #[derive(Serialize, Debug, Deserialize, PartialEq)]
+            struct UuidContainer {
+                #[serde(with = "crate::serde::bytes")]
+                u: crate::Uuid,
+            }
+
+            let uuid_bytes = b"F9168C5E-CEB2-4F";
+            let container = UuidContainer {
+                u: crate::Uuid::from_slice(uuid_bytes).unwrap(),
+            };
+
+            serde_test::assert_tokens(
+                &container,
+                &[
+                    serde_test::Token::Struct {
+                        name: "UuidContainer",
+                        len: 1,
+                    },
+                    serde_test::Token::Str("u"),
+                    serde_test::Token::Bytes(uuid_bytes),
+                    serde_test::Token::StructEnd,
+                ],
+            )
+        }
+    }
+}
+
 /// Serialize a [`Uuid`] as [`uuid::fmt::Simple`](crate::fmt::Simple).
 ///
 /// [`Uuid`]: ../../struct.Uuid.html
