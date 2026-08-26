@@ -4023,7 +4023,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         Profile profile = mTabModelProfileSupplier.get();
         MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(getWindowAndroid());
 
-        LauncherShortcutActivity.updateIncognitoShortcut(profile);
+        LauncherShortcutActivity.updateDynamicLauncherShortcuts(profile);
 
         ChromeSurveyController.initialize(
                 mTabModelSelector, getLifecycleDispatcher(), activity, messageDispatcher, profile);

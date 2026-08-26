@@ -18,6 +18,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -134,7 +135,7 @@ public class LauncherShortcutActivity extends Activity {
     }
 
     /**
-     * Updates the dynamic launcher shortcut based on whether incognito mode is enabled.
+     * Updates the dynamic launcher shortcuts based on whether incognito mode is enabled.
      *
      * <p>This method performs the ShortcutManager updates asynchronously on a background thread to
      * avoid blocking the main thread. However, the shortcut info itself is pre-built on the UI
@@ -142,33 +143,35 @@ public class LauncherShortcutActivity extends Activity {
      *
      * @param profile The profile used to check whether incognito mode is enabled.
      */
-    public static void updateIncognitoShortcut(Profile profile) {
+    public static void updateDynamicLauncherShortcuts(Profile profile) {
         boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled(profile);
-        ShortcutInfo shortcut = incognitoEnabled ? getExtraLauncherShortcut() : null;
+        List<ShortcutInfo> shortcuts = incognitoEnabled ? getExtraLauncherShortcuts() : null;
         sTaskRunner.execute(
                 () -> {
                     SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
                     boolean incognitoShortcutAdded =
                             preferences.readBoolean(
                                     ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
-                    // Re-add the shortcut regardless of whether it was previously added, in
+
+                    // Re-add the shortcuts regardless of whether they were previously added, in
                     // case the locale has changed since the last addition.
                     // TODO(crbug.com/40125673): Investigate better locale change handling.
                     if (incognitoEnabled) {
-                        assumeNonNull(shortcut);
+                        assumeNonNull(shortcuts);
                         ShortcutManager shortcutManager =
                                 ContextUtils.getApplicationContext()
                                         .getSystemService(ShortcutManager.class);
 
                         List<String> idsToRemove = new ArrayList<>(ALL_DYNAMIC_SHORTCUT_IDS);
-                        idsToRemove.remove(shortcut.getId());
-
+                        for (ShortcutInfo s : shortcuts) {
+                            idsToRemove.remove(s.getId());
+                        }
                         try {
                             if (!idsToRemove.isEmpty()) {
                                 shortcutManager.disableShortcuts(idsToRemove);
                                 shortcutManager.removeDynamicShortcuts(idsToRemove);
                             }
-                            if (shortcutManager.addDynamicShortcuts(List.of(shortcut))) {
+                            if (shortcutManager.addDynamicShortcuts(shortcuts)) {
                                 preferences.writeBoolean(
                                         ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
                             } else {
@@ -200,44 +203,64 @@ public class LauncherShortcutActivity extends Activity {
     }
 
     /**
-     * Builds a "New incognito tab" or "New incognito window" dynamic launcher shortcut based on
-     * whether mixed windows are supported.
+     * Builds a list of "New incognito tab" or "New window" and "New incognito window" dynamic
+     * launcher shortcuts based on whether mixed windows are supported.
      *
-     * @return Shortcut to be set.
+     * @return List of shortcuts to be set.
      */
-    private static ShortcutInfo getExtraLauncherShortcut() {
+    private static List<ShortcutInfo> getExtraLauncherShortcuts() {
+        List<ShortcutInfo> shortcuts = new ArrayList<>();
+        int nextRank = 0;
         boolean supportedMixedWindows = !IncognitoUtils.shouldOpenIncognitoAsWindow();
-        return buildLauncherShortcut(
-                DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
-                supportedMixedWindows
-                        ? LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB
-                        : LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW,
-                supportedMixedWindows
-                        ? R.string.menu_new_incognito_tab
-                        : R.string.menu_new_incognito_window,
-                R.drawable.shortcut_incognito);
+        if (supportedMixedWindows) {
+            shortcuts.add(
+                    buildLauncherShortcut(
+                            DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
+                            LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB,
+                            R.string.menu_new_incognito_tab,
+                            R.drawable.shortcut_incognito,
+                            nextRank++));
+        } else {
+            if (!DeviceInfo.isDesktop()) {
+                shortcuts.add(
+                        buildLauncherShortcut(
+                                DYNAMIC_OPEN_NEW_WINDOW_ID,
+                                LauncherShortcutActivity.ACTION_OPEN_NEW_WINDOW,
+                                R.string.menu_new_window,
+                                R.drawable.shortcut_newwindow,
+                                nextRank++));
+            }
+            shortcuts.add(
+                    buildLauncherShortcut(
+                            DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
+                            LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW,
+                            R.string.menu_new_incognito_window,
+                            R.drawable.shortcut_incognito,
+                            nextRank++));
+        }
+        return shortcuts;
     }
 
     private static ShortcutInfo buildLauncherShortcut(
-            String shortcutId, String action, int labelResId, int iconResId) {
+            String shortcutId, String action, int labelResId, int iconResId, int rank) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(action);
         intent.setPackage(context.getPackageName());
         intent.setClass(context, LauncherShortcutActivity.class);
 
-        // Note: setRank(0) ensures this shortcut appears before shortcuts added by
-        // OtherDevicesShortcutController.
+        // Note: The rank determines the order of shortcuts. We start from 0 to ensure these
+        // appear before shortcuts added by OtherDevicesShortcutController.
         return new ShortcutInfo.Builder(context, shortcutId)
                 .setShortLabel(context.getString(labelResId))
                 .setLongLabel(
                         sLabelForTesting != null ? sLabelForTesting : context.getString(labelResId))
                 .setIcon(Icon.createWithResource(context, iconResId))
-                .setRank(0)
+                .setRank(rank)
                 .setIntent(intent)
                 .build();
     }
 
-    /** Removes the dynamic launcher shortcuts. */
+    /** Removes the dynamic "New incognito tab" and "New window" launcher shortcut. */
     private static void removeLauncherShortcuts() {
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);

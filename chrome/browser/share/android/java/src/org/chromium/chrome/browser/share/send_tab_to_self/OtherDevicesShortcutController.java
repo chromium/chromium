@@ -250,9 +250,9 @@ public class OtherDevicesShortcutController implements Destroyable {
                     identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
             String givenName = accountInfo != null ? accountInfo.getGivenName() : null;
 
-            // LauncherShortcutActivity may create a dynamic shortcut (with rank 0), which should
-            // always appear before the STTS shortcuts, so start at rank 1 here.
-            int nextRank = 1;
+            // LauncherShortcutActivity may create up to 2 dynamic shortcuts (with ranks 0 and 1),
+            // which should always appear before the STTS shortcuts, so start at rank 2 here.
+            int nextRank = 2;
             // Limit the number of devices to avoid overcrowding the share sheet and the launcher.
             // The list of devices is sorted, so the most-recently-used devices will be used for
             // shortcuts.
