@@ -599,12 +599,18 @@ bool IsTbsAvailable() {
   return is_available;
 }
 
+// Maps a TPM operation (represented by a TPM command) to a TPMOperation enum.
+//
+// NOTE: Right now only restricted signing keys directly issue commands to the
+// TPM. Regular signing keys are completely supported by the higher level NCrypt
+// library. The mapping here needs to be changed should this cease to be the
+// case.
 std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   switch (command) {
     case tpm::TpmCommand::kCertify:
       return TPMOperation::kKeyCertification;
     case tpm::TpmCommand::kSign:
-      return TPMOperation::kMessageSigning;
+      return TPMOperation::kRestrictedMessageSigning;
 
     case tpm::TpmCommand::kHash:
     case tpm::TpmCommand::kHashSequenceStart:
