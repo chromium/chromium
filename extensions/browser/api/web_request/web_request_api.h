@@ -292,6 +292,10 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // 'declarativeNetRequest' permission, or if proxying is forced for testing.
   bool HasWebRequestOrDeclarativeWebRequestExtension() const;
 
+  // Returns true if any installed extension has the 'webRequest' permission,
+  // or if proxying is forced for testing.
+  bool HasWebRequestExtension() const;
+
   // Returns true if requests from the given `render_frame_host` should be
   // proxied by the WebRequestAPI. If kOptimizeWebRequestProxy is enabled,
   // this performs a strict check based on whether the frame is a guest
