@@ -27,22 +27,22 @@ TEST_F(ClassificationRequestTrackerTest, EnqueueAndDrainPending) {
   GURL url2("https://example.com/2");
 
   bool callback1_called = false;
-  tracker.EnqueuePending({
-      url1,
-      "Title 1",
-      "Content 1",
-      ukm::SourceId(),
-      base::BindLambdaForTesting(
+  tracker.EnqueuePending(ClassificationRequestTracker::PendingClassification{
+      .url = url1,
+      .title = "Title 1",
+      .page_content = "Content 1",
+      .source_id = ukm::SourceId(),
+      .callback = base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {
             callback1_called = true;
           }),
   });
-  tracker.EnqueuePending({
-      url2,
-      "Title 2",
-      "Content 2",
-      ukm::SourceId(),
-      base::BindLambdaForTesting(
+  tracker.EnqueuePending(ClassificationRequestTracker::PendingClassification{
+      .url = url2,
+      .title = "Title 2",
+      .page_content = "Content 2",
+      .source_id = ukm::SourceId(),
+      .callback = base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {}),
   });
 
@@ -105,12 +105,12 @@ TEST_F(ClassificationRequestTrackerTest, CancelAll) {
 
   bool pending_callback_called = false;
   std::vector<page_content_annotations::Category> pending_results;
-  tracker.EnqueuePending({
-      url1,
-      "Title",
-      "Content",
-      ukm::SourceId(),
-      base::BindLambdaForTesting(
+  tracker.EnqueuePending(ClassificationRequestTracker::PendingClassification{
+      .url = url1,
+      .title = "Title",
+      .page_content = "Content",
+      .source_id = ukm::SourceId(),
+      .callback = base::BindLambdaForTesting(
           [&](const std::vector<page_content_annotations::Category>& res) {
             pending_callback_called = true;
             pending_results = res;
@@ -145,12 +145,12 @@ TEST_F(ClassificationRequestTrackerTest, EnqueuePendingCapped) {
 
   for (size_t i = 0;
        i < ClassificationRequestTracker::kMaxPendingClassifications + 2; ++i) {
-    tracker.EnqueuePending({
-        GURL("https://example.com/" + base::NumberToString(i)),
-        "Title " + base::NumberToString(i),
-        "Content " + base::NumberToString(i),
-        ukm::SourceId(),
-        base::BindLambdaForTesting(
+    tracker.EnqueuePending(ClassificationRequestTracker::PendingClassification{
+        .url = GURL("https://example.com/" + base::NumberToString(i)),
+        .title = "Title " + base::NumberToString(i),
+        .page_content = "Content " + base::NumberToString(i),
+        .source_id = ukm::SourceId(),
+        .callback = base::BindLambdaForTesting(
             [&](const std::vector<page_content_annotations::Category>& res) {
               EXPECT_TRUE(res.empty());
               dropped_callbacks_called++;

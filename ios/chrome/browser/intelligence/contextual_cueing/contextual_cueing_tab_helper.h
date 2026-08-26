@@ -21,8 +21,8 @@
 namespace contextual_cueing {
 
 // Tab helper that orchestrates contextual cueing classification for a WebState.
-// It stores page categories and word count for downstream contextual cue
-// evaluations and notifies observers when classification completes.
+// It requests page classification from OnDevicePageClassificationService and
+// stores the result for downstream contextual cue evaluations.
 class ContextualCueingTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<ContextualCueingTabHelper> {
@@ -32,8 +32,7 @@ class ContextualCueingTabHelper
     virtual void OnPageClassificationCompleted(
         web::WebState* web_state,
         const std::optional<std::vector<page_content_annotations::Category>>&
-            categories,
-        size_t word_count) {}
+            categories) {}
   };
 
   ~ContextualCueingTabHelper() override;
@@ -49,9 +48,6 @@ class ContextualCueingTabHelper
   // std::nullopt if classification has not completed.
   const std::optional<std::vector<page_content_annotations::Category>>&
   GetCategories() const;
-
-  // Returns the word count of the extracted page text for the current page.
-  size_t GetExtractedWordCount() const;
 
   // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
@@ -71,18 +67,19 @@ class ContextualCueingTabHelper
   // Initiates classification for the current page.
   void StartClassification();
 
-  // Callback invoked when page classification finishes.
+  // Cancels any in-flight classification request.
+  void CancelClassification();
+
+  // Callback invoked when OnDevicePageClassificationService finishes.
   void OnPageClassified(
       const GURL& expected_url,
       const std::optional<std::vector<page_content_annotations::Category>>&
-          categories,
-      size_t word_count);
+          categories);
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   GURL current_url_;
 
   std::optional<std::vector<page_content_annotations::Category>> categories_;
-  size_t word_count_ = 0;
 
   base::ObserverList<Observer> observers_;
 

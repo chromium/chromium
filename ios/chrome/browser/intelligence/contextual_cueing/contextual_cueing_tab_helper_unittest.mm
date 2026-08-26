@@ -9,8 +9,12 @@
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -23,23 +27,37 @@ namespace contextual_cueing {
 
 namespace {
 
+std::unique_ptr<KeyedService> BuildTestInProcessClassificationService(
+    ProfileIOS* profile) {
+  static base::NoDestructor<
+      optimization_guide::TestOptimizationGuideModelProvider>
+      test_model_provider;
+  return std::make_unique<InProcessCategoryClassificationService>(
+      test_model_provider.get());
+}
+
+std::unique_ptr<KeyedService> BuildTestPageClassificationService(
+    ProfileIOS* profile) {
+  InProcessCategoryClassificationService* in_process_service =
+      InProcessCategoryClassificationService::GetForProfile(profile);
+  return std::make_unique<OnDevicePageClassificationService>(
+      in_process_service);
+}
+
 class TestCueingObserver : public ContextualCueingTabHelper::Observer {
  public:
   void OnPageClassificationCompleted(
       web::WebState* web_state,
       const std::optional<std::vector<page_content_annotations::Category>>&
-          categories,
-      size_t word_count) override {
+          categories) override {
     notified_web_state_ = web_state;
     notified_categories_ = categories;
-    notified_word_count_ = word_count;
     call_count_++;
   }
 
   raw_ptr<web::WebState> notified_web_state_ = nullptr;
   std::optional<std::vector<page_content_annotations::Category>>
       notified_categories_;
-  size_t notified_word_count_ = 0;
   int call_count_ = 0;
 };
 
@@ -54,6 +72,12 @@ class ContextualCueingTabHelperTest : public PlatformTest {
         {{kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"}});
 
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        InProcessCategoryClassificationService::GetFactory(),
+        base::BindRepeating(&BuildTestInProcessClassificationService));
+    builder.AddTestingFactory(
+        OnDevicePageClassificationServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildTestPageClassificationService));
     profile_ = std::move(builder).Build();
 
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -91,7 +115,6 @@ TEST_F(ContextualCueingTabHelperTest, IgnoresOffTheRecordProfile) {
                          web::PageLoadCompletionStatus::SUCCESS);
 
   EXPECT_FALSE(tab_helper->GetCategories().has_value());
-  EXPECT_EQ(tab_helper->GetExtractedWordCount(), 0u);
 }
 
 // Tests that classification is ignored for non-HTTP/HTTPS URLs.
@@ -105,7 +128,6 @@ TEST_F(ContextualCueingTabHelperTest, IgnoresNonHttpUrls) {
                          web::PageLoadCompletionStatus::SUCCESS);
 
   EXPECT_FALSE(tab_helper->GetCategories().has_value());
-  EXPECT_EQ(tab_helper->GetExtractedWordCount(), 0u);
 }
 
 // Tests that navigation resets classification state.
@@ -124,12 +146,11 @@ TEST_F(ContextualCueingTabHelperTest, NavigationResetsState) {
   tab_helper->DidFinishNavigation(web_state_.get(), &nav_context);
 
   EXPECT_FALSE(tab_helper->GetCategories().has_value());
-  EXPECT_EQ(tab_helper->GetExtractedWordCount(), 0u);
 
   tab_helper->RemoveObserver(&observer);
 }
 
-// Tests that hiding a tab resets callbacks.
+// Tests that hiding a tab cancels classification.
 TEST_F(ContextualCueingTabHelperTest, WasHiddenCancelsClassification) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
   ContextualCueingTabHelper::CreateForWebState(web_state_.get());
@@ -137,7 +158,6 @@ TEST_F(ContextualCueingTabHelperTest, WasHiddenCancelsClassification) {
 
   tab_helper->WasHidden(web_state_.get());
   EXPECT_FALSE(tab_helper->GetCategories().has_value());
-  EXPECT_EQ(tab_helper->GetExtractedWordCount(), 0u);
 }
 
 }  // namespace contextual_cueing

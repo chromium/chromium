@@ -14,6 +14,7 @@ source_set("contextual_cueing") {
     "//components/contextual_cueing",
     "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/on_device_category_classifier",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//url",
@@ -29,7 +30,10 @@ source_set("unit_tests") {
   deps = [
     ":contextual_cueing",
     "//base/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/on_device_category_classifier",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

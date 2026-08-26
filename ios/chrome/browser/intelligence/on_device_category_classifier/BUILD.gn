@@ -10,8 +10,10 @@ source_set("on_device_category_classifier") {
     "in_process_category_classification_service.mm",
     "in_process_passage_embedder_wrapper.h",
     "in_process_passage_embedder_wrapper.mm",
-    "on_device_category_classifier_tab_helper.h",
-    "on_device_category_classifier_tab_helper.mm",
+    "on_device_page_classification_service.h",
+    "on_device_page_classification_service.mm",
+    "on_device_page_classification_service_factory.h",
+    "on_device_page_classification_service_factory.mm",
     "passage_embedder_model_loader.h",
     "passage_embedder_model_loader.mm",
   ]
@@ -45,7 +47,8 @@ source_set("unit_tests") {
   sources = [
     "classification_request_tracker_unittest.mm",
     "in_process_category_classification_service_unittest.mm",
-    "on_device_category_classifier_tab_helper_unittest.mm",
+    "on_device_page_classification_service_factory_unittest.mm",
+    "on_device_page_classification_service_unittest.mm",
     "passage_embedder_model_loader_unittest.mm",
   ]
   deps = [
