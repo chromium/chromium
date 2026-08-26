@@ -3327,4 +3327,94 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(createAutocompleteResult(), /* isFinal= */ true);
         assertTrue(mListModel.get(SuggestionListProperties.APPLY_VERTICAL_PADDING));
     }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_aimInIncognito_cancelsRequestsAndRendersEmpty() {
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
+
+        session.getAutocompleteInput().setUserText("new query");
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, atLeastOnce()).stop(AutocompleteStopReason.CLOBBERED);
+        assertEquals(0, mSuggestionModels.size());
+    }
+
+    @Test
+    @SmallTest
+    public void beginInput_aimInIncognito_doesNotTriggerZeroSuggest() {
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, "");
+        mMediator.beginInput(session);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+        assertEquals(0, mSuggestionModels.size());
+    }
+
+    @Test
+    @SmallTest
+    public void requestTypeChange_toAimInIncognito_clearsSuggestions() {
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
+
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
+        verify(mAutocompleteController, atLeastOnce()).stop(AutocompleteStopReason.CLOBBERED);
+        assertEquals(0, mSuggestionModels.size());
+    }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_aimNonIncognito_triggersAutocomplete() {
+        doReturn(false).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+
+        session.getAutocompleteInput().setUserText("aim search query");
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController)
+                .start(any(), mAutocompleteInputCaptor.capture(), anyInt(), anyBoolean());
+        assertEquals("aim search query", mAutocompleteInputCaptor.getValue().getUserText());
+    }
+
+    @Test
+    @SmallTest
+    public void beginInput_aimNonIncognito_triggersZeroSuggest() {
+        doReturn(false).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, "");
+        mMediator.beginInput(session);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController).startZeroSuggest(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_nonAimIncognito_triggersAutocomplete() {
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+
+        session.getAutocompleteInput().setUserText("incognito search query");
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mAutocompleteController)
+                .start(any(), mAutocompleteInputCaptor.capture(), anyInt(), anyBoolean());
+        assertEquals("incognito search query", mAutocompleteInputCaptor.getValue().getUserText());
+    }
 }

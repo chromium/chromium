@@ -1123,6 +1123,18 @@ class AutocompleteMediator
             return;
         }
 
+        if (ToolModeUtils.isAimRequest(mAutocompleteInput.getRequestType())
+                && mDataProvider.isIncognitoBranded()) {
+            stopAutocomplete(AutocompleteStopReason.CLOBBERED);
+
+            // Since we are not querying native autocomplete, onSuggestionsReceived() will not be
+            // called. Explicitly push an empty result to clear any existing suggestions and
+            // remove inline autocompletion from the URL bar.
+            showSuggestions(
+                    mAutocompleteInput, AutocompleteResult.EMPTY_RESULT, /* isFinal= */ true);
+            return;
+        }
+
         // Always re-set the list's final state when we're about to request new suggestions.
         // This avoids a problem, where the property does not get an explicit update that the list
         // is final, which, in turn, may suppress certain functionality from getting invoked if the

@@ -51,6 +51,10 @@ public class AutocompleteResult {
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
 
+    /** An empty AutocompleteResult object. */
+    public static final AutocompleteResult EMPTY_RESULT =
+            AutocompleteResult.fromCache(List.of(), GroupsInfo.getDefaultInstance());
+
     private final GroupsInfo mGroupsInfo;
     private final List<AutocompleteMatch> mSuggestions;
     private final boolean mIsFromCachedResult;
