@@ -55,7 +55,7 @@ bool JourneysSyncMetadataDatabase::Init() {
   if (!db_->DoesTableExist(kSyncMetadataTableName)) {
     if (!db_->Execute(
             base::StrCat({"CREATE TABLE ", kSyncMetadataTableName,
-                          " (storage_key VARCHAR PRIMARY KEY NOT NULL, "
+                          " (storage_key TEXT PRIMARY KEY NOT NULL, "
                           "value BLOB NOT NULL)"}))) {
       return false;
     }
