@@ -1460,6 +1460,101 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('test', inputEl.value);
  });
 
+ test('CmdCtrlL_SelectsTextWhenUserInputInProgress', async () => {
+   const draftQuery = 'chrome query';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: draftQuery,
+     userInputInProgress: true,
+     isFocused: true,
+     queryZps: false,
+   }));
+   await microtasksFinished();
+
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.setSelectionRange(2, 2);
+   testProxy.handler.resetResolver('queryAutocomplete');
+
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'l',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(0, inputEl.selectionStart);
+   assertEquals(draftQuery.length, inputEl.selectionEnd);
+   assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+ });
+
+ test(
+     'CmdCtrlL_SelectsTextAndQueriesZpsWhenUserInputNotInProgress',
+     async () => {
+       const testUrl = 'https://example.com';
+       callbackRouter.setInputState(createDefaultOmniboxInputState({
+         text: testUrl,
+         userInputInProgress: false,
+         isFocused: true,
+         queryZps: false,
+       }));
+       await microtasksFinished();
+
+       searchbox.clearAutocompleteMatches();
+       assertFalse(searchbox.dropdownIsVisible);
+       testProxy.handler.resetResolver('queryAutocomplete');
+
+       const inputEl = searchbox.getInputElement().inputElement;
+       inputEl.setSelectionRange(3, 3);
+
+       inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+         key: 'l',
+         ctrlKey: !isMac,
+         metaKey: isMac,
+         bubbles: true,
+         composed: true,
+       }));
+       await microtasksFinished();
+
+       assertEquals(0, inputEl.selectionStart);
+       assertEquals(testUrl.length, inputEl.selectionEnd);
+       assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+       const [, , queryText, , , , isOnFocus] =
+           testProxy.handler.getArgs('queryAutocomplete')[0];
+       assertEquals(testUrl, queryText);
+       assertTrue(isOnFocus);
+     });
+
+ test('CmdCtrlL_DoesNotRequeryZpsWhenDropdownAlreadyOpen', async () => {
+   const testUrl = 'https://example.com';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: testUrl,
+     userInputInProgress: false,
+     isFocused: true,
+     queryZps: false,
+   }));
+   await microtasksFinished();
+
+   searchbox.dropdownIsVisible = true;
+   testProxy.handler.resetResolver('queryAutocomplete');
+
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.setSelectionRange(3, 3);
+
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'l',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(0, inputEl.selectionStart);
+   assertEquals(testUrl.length, inputEl.selectionEnd);
+   assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+ });
+
  test('UndoRedoBeforeInput', async () => {
    const inputEl = searchbox.getInputElement().inputElement;
    inputEl.focus();

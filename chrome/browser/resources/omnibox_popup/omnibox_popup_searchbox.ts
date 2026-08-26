@@ -589,6 +589,20 @@ export class OmniboxPopupSearchboxElement extends
         this.redo_();
         return;
       }
+      if (key === 'l' && !e.shiftKey && !e.altKey) {
+        // Cmd/Ctrl + L -> Select omnibox text & query ZPS if no user input in
+        // progress.
+        e.preventDefault();
+        e.stopPropagation();
+        this.getInputElement().select();
+        if (!this.userInputInProgress_ && !this.dropdownIsVisible) {
+          this.queryAutocomplete(
+              this.getInputElement().inputElement.value,
+              /*preventInlineAutocomplete=*/ false,
+              /*isOnFocus=*/ true);
+        }
+        return;
+      }
     }
 
     // If the input is already selected, 'ArrowLeft', 'ArrowRight', 'Home',
