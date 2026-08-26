@@ -45,6 +45,7 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -66,6 +67,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -712,7 +714,7 @@ gfx::NativeWindow LaunchFilesAppAndWait(Profile* profile) {
   params.url = files_swa_url;
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                params);
-  Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* files_app = ui_test_utils::WaitForBrowserToOpen();
   return files_app->GetWindow()->GetNativeWindow();
 }
 
@@ -1510,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Launch a settings page.
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::SETTINGS);
-  Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* files_app = ui_test_utils::WaitForBrowserToOpen();
   gfx::NativeWindow settings = files_app->GetWindow()->GetNativeWindow();
 
   auto* modal_parent_widget =

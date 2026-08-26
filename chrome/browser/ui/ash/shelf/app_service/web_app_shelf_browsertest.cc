@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -29,6 +30,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -53,7 +55,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
     proxy->LaunchAppWithParams(apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOmnibox));
-    Browser* app_browser = browser_created_observer.Wait();
+    BrowserWindowInterface* app_browser = browser_created_observer.Wait();
     ash::ShelfModel::Get()->PinExistingItemWithID(app_id);
     app_browser->GetWindow()->Close();
   }
@@ -92,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
     proxy->Launch(app_a,
                   /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
     waiter.Wait();
-    contents_a = browser()->tab_strip_model()->GetActiveWebContents();
+    contents_a = browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::WebContents* contents_b;
@@ -101,10 +103,10 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
     proxy->Launch(app_b,
                   /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
     waiter.Wait();
-    contents_b = browser()->tab_strip_model()->GetActiveWebContents();
+    contents_b = browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
-  Browser* browser_c;
+  BrowserWindowInterface* browser_c;
   content::WebContents* contents_c;
   {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -122,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
     waiter.Wait();
-    contents_d = browser()->tab_strip_model()->GetActiveWebContents();
+    contents_d = browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // The Shelf model contains 3 web apps, and the Chrome browser.

@@ -44,6 +44,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/base_window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -70,14 +71,15 @@ void ClickButton(const views::Button* button) {
 // by releasing the left mouse button when a tab strip is removed from a window.
 class TabRemoveObserver : public TabStripModelObserver {
  public:
-  TabRemoveObserver(Browser* browser, ui::test::EventGenerator* event_generator)
+  TabRemoveObserver(BrowserWindowInterface* browser,
+                    ui::test::EventGenerator* event_generator)
       : browser_(browser), event_generator_(event_generator) {
-    browser_->tab_strip_model()->AddObserver(this);
+    browser_->GetTabStripModel()->AddObserver(this);
   }
   TabRemoveObserver(const TabRemoveObserver&) = delete;
   TabRemoveObserver& operator=(const TabRemoveObserver&) = delete;
   ~TabRemoveObserver() override {
-    browser_->tab_strip_model()->RemoveObserver(this);
+    browser_->GetTabStripModel()->RemoveObserver(this);
   }
 
   // TabStripModelObserver:
@@ -88,7 +90,7 @@ class TabRemoveObserver : public TabStripModelObserver {
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<ui::test::EventGenerator> event_generator_;
 };
 
@@ -116,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
   ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
 
   // Open a new browser window. Test it gets auto-snapped.
-  Browser* browser3 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser3 = CreateBrowser(browser()->GetProfile());
   aura::Window* window3 = browser3->GetWindow()->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window3)->IsSnapped());
   EXPECT_FALSE(ash::OverviewController::Get()->InOverviewSession());
@@ -373,9 +375,9 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
       ash::DesksMoveWindowFromActiveDeskSource::kShortcut);
 
   // Create a Snap Group with two incognito browser windows.
-  Browser* incognito_browser1 = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser1 = CreateIncognitoBrowser();
   aura::Window* window1 = incognito_browser1->GetWindow()->GetNativeWindow();
-  Browser* incognito_browser2 = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser2 = CreateIncognitoBrowser();
   aura::Window* window2 = incognito_browser2->GetWindow()->GetNativeWindow();
 
   ui::test::EventGenerator event_generator(root_window);

@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -1433,8 +1434,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   extensions::TriggerPostInstallDialog(
       browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
-          [](Browser* b) {
-            return b->tab_strip_model()->GetActiveWebContents();
+          [](BrowserWindowInterface* b) {
+            return b->GetTabStripModel()->GetActiveWebContents();
           },
           browser()));
 
@@ -1529,8 +1530,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   extensions::TriggerPostInstallDialog(
       browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
-          [](Browser* b) {
-            return b->tab_strip_model()->GetActiveWebContents();
+          [](BrowserWindowInterface* b) {
+            return b->GetTabStripModel()->GetActiveWebContents();
           },
           browser()));
 
@@ -1554,7 +1555,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // Check that there is no helper attached to the sign in tab, because the
   // extension was already moved.
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
-                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   *browser()->GetTabStripModel()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
   // Check that the sign in was successful.
@@ -1627,8 +1628,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   extensions::TriggerPostInstallDialog(
       browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
-          [](Browser* b) {
-            return b->tab_strip_model()->GetActiveWebContents();
+          [](BrowserWindowInterface* b) {
+            return b->GetTabStripModel()->GetActiveWebContents();
           },
           browser()));
   // Click the sign in button.
@@ -1652,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Check that there is a helper attached to the sign in tab.
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
-                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  *browser()->GetTabStripModel()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
   // Set a new refresh token for the primary account, which verifies the
@@ -1714,8 +1715,8 @@ IN_PROC_BROWSER_TEST_F(
   extensions::TriggerPostInstallDialog(
       browser()->GetProfile(), extension, SkBitmap(),
       base::BindOnce(
-          [](Browser* b) {
-            return b->tab_strip_model()->GetActiveWebContents();
+          [](BrowserWindowInterface* b) {
+            return b->GetTabStripModel()->GetActiveWebContents();
           },
           browser()));
 

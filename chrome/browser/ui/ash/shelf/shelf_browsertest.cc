@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -112,7 +113,8 @@ IN_PROC_BROWSER_TEST_P(ShelfBrowserTest, AutoHideSmoke) {
   shelf_waiter.WaitForState(SHELF_AUTO_HIDE_SHOWN);
 
   // Open a browser window.
-  Browser* browser = CreateBrowser(ProfileManager::GetLastUsedProfile());
+  BrowserWindowInterface* browser =
+      CreateBrowser(ProfileManager::GetLastUsedProfile());
   ASSERT_TRUE(browser);
 
   // The shelf auto-hides.

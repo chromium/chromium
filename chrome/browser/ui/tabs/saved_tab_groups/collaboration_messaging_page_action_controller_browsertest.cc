@@ -68,26 +68,27 @@ class CollaborationMessagingPageActionControllerBrowserTest
   ~CollaborationMessagingPageActionControllerBrowserTest() override = default;
 
  protected:
-  tabs::TabInterface* GetTabInterface(Browser* target_browser, int index) {
-    return target_browser->tab_strip_model()->GetTabAtIndex(index);
+  tabs::TabInterface* GetTabInterface(BrowserWindowInterface* target_browser,
+                                      int index) {
+    return target_browser->GetTabStripModel()->GetTabAtIndex(index);
   }
 
   CollaborationMessagingPageActionController* GetControllerAtIndex(
-      Browser* target_browser,
+      BrowserWindowInterface* target_browser,
       int index) {
     return CollaborationMessagingPageActionController::From(
         GetTabInterface(target_browser, index));
   }
 
   tab_groups::CollaborationMessagingTabData* GetTabDataAtIndex(
-      Browser* target_browser,
+      BrowserWindowInterface* target_browser,
       int index) {
     return tab_groups::CollaborationMessagingTabData::From(
         GetTabInterface(target_browser, index));
   }
 
   RecentActivityBubbleCoordinator* GetBubbleCoordinator(
-      Browser* target_browser) {
+      BrowserWindowInterface* target_browser) {
     return RecentActivityBubbleCoordinator::From(target_browser);
   }
 

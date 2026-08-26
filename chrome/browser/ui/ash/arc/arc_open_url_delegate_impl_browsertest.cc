@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
   }
 }
 
-void TestOpenSettingFromArc(Browser* browser,
+void TestOpenSettingFromArc(BrowserWindowInterface* browser,
                             ChromePage page,
                             const GURL& expected_url,
                             bool expected_setting_window) {

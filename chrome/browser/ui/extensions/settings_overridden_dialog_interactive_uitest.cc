@@ -199,7 +199,8 @@ class SettingsOverriddenDialogInteractiveUiTest
     });
   }
 
-  auto PerformSearchFromOmnibox(Browser* target_browser = nullptr) {
+  auto PerformSearchFromOmnibox(
+      BrowserWindowInterface* target_browser = nullptr) {
     return Do([this, target_browser]() {
       ui_test_utils::SendToOmniboxAndSubmit(
           target_browser ? target_browser : browser(), "Penguin",
@@ -461,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                        OnlyOneDialogShownAtATimeAcrossWindows) {
   // Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondWebContentsId);
