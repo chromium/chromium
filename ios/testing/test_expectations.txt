@@ -106,3 +106,5 @@ crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClos
 # Gardening suppression 2026-08-26
 crbug.com/552774721 GeminiEGTest/testAcceptPromoAndConsent [ Pass Failure ]
 crbug.com/552774721 GeminiEGTest/testAcceptPromoDeclineConsent [ Pass Failure ]
+crbug.com/552978116 GeminiPageContextWithMigrationTestCase/testPageSharingDisabledThenEnabledInFloaty [ Pass Failure ]
+crbug.com/552978116 GeminiPageContextWithoutMigrationTestCase/testPageSharingDisabledThenEnabledInFloaty [ Pass Failure ]
