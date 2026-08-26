@@ -37,7 +37,7 @@ TEST(AiModeContextLibraryConverterTest,
 
   ASSERT_EQ(url_resources.size(), 1u);
   EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page1"));
-  EXPECT_EQ(url_resources[0].title, "Example Page 1");
+  EXPECT_EQ(url_resources[0].title, "Local Title 1");
   EXPECT_TRUE(url_resources[0].tab_id.has_value());
   EXPECT_EQ(url_resources[0].tab_id->id(), 10);
   EXPECT_EQ(url_resources[0].context_id, 123u);
@@ -95,7 +95,7 @@ TEST(AiModeContextLibraryConverterTest, ConvertWebpageWithoutChromeTabData) {
 
   ASSERT_EQ(url_resources.size(), 1u);
   EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page3"));
-  EXPECT_EQ(url_resources[0].title, "Example Page 3");
+  EXPECT_EQ(url_resources[0].title, "Local Title 3");
   EXPECT_FALSE(url_resources[0].has_chrome_tab_data);
 }
 
@@ -176,7 +176,7 @@ TEST(AiModeContextLibraryConverterTest,
 
   ASSERT_EQ(url_resources.size(), 1u);
   EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page.html"));
-  EXPECT_EQ(url_resources[0].title, "Image Document");
+  EXPECT_EQ(url_resources[0].title, "Webpage Title");
   EXPECT_TRUE(url_resources[0].tab_id.has_value());
   EXPECT_EQ(url_resources[0].tab_id->id(), 30);
   EXPECT_EQ(url_resources[0].context_id, 101u);
@@ -255,7 +255,7 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   // Check Webpage
   EXPECT_EQ(result[0].context_id, 1u);
   EXPECT_EQ(result[0].url, GURL("http://web.com"));
-  EXPECT_EQ(result[0].title, "Webpage");
+  EXPECT_EQ(result[0].title, "Web Title");
   EXPECT_TRUE(result[0].tab_id.has_value());
   EXPECT_EQ(result[0].tab_id->id(), 50);
   EXPECT_TRUE(result[0].has_chrome_tab_data);
@@ -273,6 +273,37 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   EXPECT_EQ(result[2].title, "Image");
   EXPECT_TRUE(result[2].tab_id.has_value());
   EXPECT_EQ(result[2].tab_id->id(), 52);
+}
+
+TEST(AiModeContextLibraryConverterTest,
+     ConvertWebpagePreservesLocalTabTitleOverServerTitle) {
+  lens::UpdateThreadContextLibrary message;
+  auto* context = message.add_contexts();
+  context->set_context_id(999);
+  auto* webpage = context->mutable_webpage();
+  webpage->set_url("https://example.com/stale");
+  webpage->set_title("Stale Server Title");
+  context->set_has_chrome_tab_data(true);
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(999);
+  file_info.tab_url = GURL("https://example.com/actual");
+  file_info.tab_title = "Actual Tab Title";
+  file_info.tab_session_id = SessionID::FromSerializedValue(42);
+  local_contexts.push_back(file_info);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 1u);
+  EXPECT_EQ(url_resources[0].url, GURL("https://example.com/actual"));
+  EXPECT_EQ(url_resources[0].title, "Actual Tab Title");
+  EXPECT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 42);
+  EXPECT_EQ(url_resources[0].context_id, 999u);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
 }
 
 }  // namespace contextual_tasks
