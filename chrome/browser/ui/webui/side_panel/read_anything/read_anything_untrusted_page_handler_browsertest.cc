@@ -322,13 +322,6 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 #endif
   }
 
-  ReadAnythingSidePanelController* side_panel_controller() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->read_anything_side_panel_controller();
-  }
-
   SidePanelEntry* read_anything_entry() {
     return SidePanelRegistry::From(browser()->GetActiveTabInterface())
         ->GetEntryForKey(
