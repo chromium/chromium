@@ -15,6 +15,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getDimensionDp;
+
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.res.Resources;
@@ -84,7 +86,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.base.TestActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -152,7 +153,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
 
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
@@ -203,6 +204,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @After
     public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
         CompositorAnimationHandler.setTestingMode(false);
         if (mCoordinator != null) {
             mCoordinator.destroy();
@@ -631,6 +633,42 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertTrue("Glic context menu should be showing.", mCoordinator.isMenuShowing());
     }
 
+    @Test
+    public void testGlicButtonWidth_NoText_DesktopDensity() {
+        doTestButtonWidthNoText(/* isActor= */ false, /* isDesktopDensity= */ true);
+    }
+
+    @Test
+    public void testGlicButtonWidth_NoText_NonDesktopDensity() {
+        doTestButtonWidthNoText(/* isActor= */ false, /* isDesktopDensity= */ false);
+    }
+
+    @Test
+    public void testGlicButton_PrefChangeUpdatesVisibility_Incognito() {
+        mCoordinator.onTabModelSwitched(true);
+        assertTrue(
+                "Glic button should initially be visible when pinned.",
+                mCoordinator.shouldGlicBeVisible());
+
+        // Simulate unpinning in preferences.
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
+        mCoordinator.onGlicPrefChanged();
+
+        assertFalse(
+                "Glic button should be hidden after unpinning.",
+                mCoordinator.shouldGlicBeVisible());
+        assertFalse("Glic button visible property should be false.", mGlicButton.isVisible());
+
+        // Simulate re-pinning in preferences.
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
+        mCoordinator.onGlicPrefChanged();
+
+        assertTrue(
+                "Glic button should be visible again after pinning.",
+                mCoordinator.shouldGlicBeVisible());
+        assertTrue("Glic button visible property should be true.", mGlicButton.isVisible());
+    }
+
     // =========================================================================================
     // Glic Actor Button Unit Tests
     // =========================================================================================
@@ -884,6 +922,16 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 0.65f,
                 mGlicActorButton.getClickableOpacityThreshold(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testGlicActorButtonWidth_NoText_DesktopDensity() {
+        doTestButtonWidthNoText(/* isActor= */ true, /* isDesktopDensity= */ true);
+    }
+
+    @Test
+    public void testGlicActorButtonWidth_NoText_NonDesktopDensity() {
+        doTestButtonWidthNoText(/* isActor= */ true, /* isDesktopDensity= */ false);
     }
 
     @Test
@@ -1183,14 +1231,28 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 0.0);
     }
 
+    @Test
+    public void testSetGlicPanelIsOpen_notifiesObserver() {
+        GlicSplitButtonDelegate splitButtonDelegate =
+                mCoordinator.getGlicSplitButtonDelegateForTesting();
+        assertNotNull("Split button delegate should be created.", splitButtonDelegate);
+
+        // Open the panel.
+        splitButtonDelegate.setGlicPanelIsOpen(true);
+        verify(mGlicPanelStateObserver).onResult(true);
+
+        // Close the panel.
+        splitButtonDelegate.setGlicPanelIsOpen(false);
+        verify(mGlicPanelStateObserver).onResult(false);
+    }
+
     // =========================================================================================
     // Private Helper Methods
     // =========================================================================================
 
     private void showGlicButton() {
         mCoordinator.setGlicButtonVisible(true);
-        mGlicButton.setWidth(
-                mActivity.getResources().getDimension(R.dimen.tab_strip_glic_button_bg_width));
+        mGlicButton.setWidth(getDimensionDp(mActivity, R.dimen.tab_strip_glic_button_bg_width));
         mGlicButton.setOpacity(1.0f);
         mCoordinator.updateButtonPositions();
     }
@@ -1198,7 +1260,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private void showGlicActorButton() {
         mCoordinator.setGlicActorButtonVisible(true, /* animate= */ false);
         mGlicActorButton.setWidth(
-                mActivity.getResources().getDimension(R.dimen.tab_strip_glic_button_bg_width));
+                getDimensionDp(mActivity, R.dimen.tab_strip_glic_button_bg_width));
         mGlicActorButton.setOpacity(1.0f);
         mCoordinator.updateButtonPositions();
     }
@@ -1247,44 +1309,27 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 MathUtils.EPSILON);
     }
 
-    @Test
-    public void testGlicButton_PrefChangeUpdatesVisibility_Incognito() {
-        mCoordinator.onTabModelSwitched(true);
-        assertTrue(
-                "Glic button should initially be visible when pinned.",
-                mCoordinator.shouldGlicBeVisible());
+    private void doTestButtonWidthNoText(boolean isActor, boolean isDesktopDensity) {
+        DeviceInfo.setIsDesktopForTesting(isDesktopDensity);
+        mCoordinator = createCoordinator();
+        TintedCompositorTextButton button =
+                isActor ? mCoordinator.getGlicActorButton() : mCoordinator.getGlicButton();
+        assertNotNull("Button should be created.", button);
 
-        // Simulate unpinning in preferences.
-        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
-        mCoordinator.onGlicPrefChanged();
+        button.setText(null);
+        mCoordinator.updateButtonTextProperties(button);
 
-        assertFalse(
-                "Glic button should be hidden after unpinning.",
-                mCoordinator.shouldGlicBeVisible());
-        assertFalse("Glic button visible property should be false.", mGlicButton.isVisible());
-
-        // Simulate re-pinning in preferences.
-        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
-        mCoordinator.onGlicPrefChanged();
-
-        assertTrue(
-                "Glic button should be visible again after pinning.",
-                mCoordinator.shouldGlicBeVisible());
-        assertTrue("Glic button visible property should be true.", mGlicButton.isVisible());
-    }
-
-    @Test
-    public void testSetGlicPanelIsOpen_notifiesObserver() {
-        GlicSplitButtonDelegate splitButtonDelegate =
-                mCoordinator.getGlicSplitButtonDelegateForTesting();
-        assertNotNull("Split button delegate should be created.", splitButtonDelegate);
-
-        // Open the panel.
-        splitButtonDelegate.setGlicPanelIsOpen(true);
-        verify(mGlicPanelStateObserver).onResult(true);
-
-        // Close the panel.
-        splitButtonDelegate.setGlicPanelIsOpen(false);
-        verify(mGlicPanelStateObserver).onResult(false);
+        float expectedWidth =
+                isDesktopDensity
+                        ? getDimensionDp(mActivity, R.dimen.tab_strip_button_bg_size)
+                        : getDimensionDp(mActivity, R.dimen.tab_strip_glic_button_bg_width);
+        String densityDesc = isDesktopDensity ? "desktop" : "non-desktop";
+        assertEquals(
+                "Button width without text should match expected width on "
+                        + densityDesc
+                        + " density.",
+                expectedWidth,
+                button.getWidth(),
+                MathUtils.EPSILON);
     }
 }

@@ -446,7 +446,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             int dismissIconDefaultColor = SemanticColorUtils.getDefaultIconColor(mContext);
             mGlicDismissNudgeButton.setTint(dismissIconDefaultColor);
 
-            float bgWidthDp = getDimensionDp(mContext, R.dimen.tab_strip_glic_button_bg_width);
+            float bgWidthDp = getGlicButtonBgWidthDp();
             float bgHeightDp = getDimensionDp(mContext, R.dimen.tab_strip_button_bg_size);
             mGlicButton =
                     new TintedCompositorTextButton(
@@ -821,7 +821,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private float calculateGlicButtonWidth(
             TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
         String text = button.getText();
-        float width = getDimensionDp(mContext, R.dimen.tab_strip_glic_button_bg_width);
+        float width = getGlicButtonBgWidthDp();
 
         if (!TextUtils.isEmpty(text) && titleCache != null) {
             width =
@@ -1558,6 +1558,12 @@ public class StripLayoutTrailingButtonsCoordinator {
                 + (shouldShowDivider()
                         ? getDimensionDp(mContext, R.dimen.tab_strip_window_controls_divider_width)
                         : 0.f);
+    }
+
+    private float getGlicButtonBgWidthDp() {
+        return StyleUtils.shouldApplyDesktopDensity()
+                ? getDimensionDp(mContext, R.dimen.tab_strip_button_bg_size)
+                : getDimensionDp(mContext, R.dimen.tab_strip_glic_button_bg_width);
     }
 
     private float getGlicDismissButtonClickSlopDp() {
