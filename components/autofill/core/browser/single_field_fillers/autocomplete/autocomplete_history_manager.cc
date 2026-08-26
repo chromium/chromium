@@ -55,8 +55,7 @@ namespace autofill {
 namespace {
 // Returns true if the field type is eligible to be saved in the autocomplete
 // history. Some types (promo codes, IBANs, CCs, CVCs) are excluded.
-bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
-  const AutofillField* field = form ? form->GetFieldById(field_id) : nullptr;
+bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
   if (!field) {
     return true;
   }
@@ -204,6 +203,69 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
   return true;
 }
 
+// An equivalent of `IsPredictedFieldTypeSaveable` that operates on the values
+// of the HTML autocomplete attribute. It serves as an additional validation
+// e.g. for cases when predicted type is `UNKNOWN_TYPE`.
+bool IsHtmlFieldTypeSaveable(const AutofillField* field) {
+  if (!field) {
+    return true;
+  }
+  switch (field->html_type()) {
+    case HtmlFieldType::kCreditCardVerificationCode:
+    case HtmlFieldType::kCreditCardNumber:
+    case HtmlFieldType::kIban:
+    case HtmlFieldType::kMerchantPromoCode:
+      return false;
+    case HtmlFieldType::kUnspecified:
+    case HtmlFieldType::kName:
+    case HtmlFieldType::kHonorificPrefix:
+    case HtmlFieldType::kGivenName:
+    case HtmlFieldType::kAdditionalName:
+    case HtmlFieldType::kFamilyName:
+    case HtmlFieldType::kOrganization:
+    case HtmlFieldType::kStreetAddress:
+    case HtmlFieldType::kAddressLine1:
+    case HtmlFieldType::kAddressLine2:
+    case HtmlFieldType::kAddressLine3:
+    case HtmlFieldType::kAddressLevel1:
+    case HtmlFieldType::kAddressLevel2:
+    case HtmlFieldType::kAddressLevel3:
+    case HtmlFieldType::kCountryCode:
+    case HtmlFieldType::kCountryName:
+    case HtmlFieldType::kPostalCode:
+    case HtmlFieldType::kCreditCardNameFull:
+    case HtmlFieldType::kCreditCardNameFirst:
+    case HtmlFieldType::kCreditCardNameLast:
+    case HtmlFieldType::kCreditCardExp:
+    case HtmlFieldType::kCreditCardExpMonth:
+    case HtmlFieldType::kCreditCardExpYear:
+    case HtmlFieldType::kCreditCardType:
+    case HtmlFieldType::kTel:
+    case HtmlFieldType::kTelCountryCode:
+    case HtmlFieldType::kTelNational:
+    case HtmlFieldType::kTelAreaCode:
+    case HtmlFieldType::kTelLocal:
+    case HtmlFieldType::kTelLocalPrefix:
+    case HtmlFieldType::kTelLocalSuffix:
+    case HtmlFieldType::kTelExtension:
+    case HtmlFieldType::kEmail:
+    case HtmlFieldType::kBirthdateDay:
+    case HtmlFieldType::kBirthdateMonth:
+    case HtmlFieldType::kBirthdateYear:
+    case HtmlFieldType::kTransactionAmount:
+    case HtmlFieldType::kTransactionCurrency:
+    case HtmlFieldType::kAdditionalNameInitial:
+    case HtmlFieldType::kCreditCardExpDate2DigitYear:
+    case HtmlFieldType::kCreditCardExpDate4DigitYear:
+    case HtmlFieldType::kCreditCardExp2DigitYear:
+    case HtmlFieldType::kCreditCardExp4DigitYear:
+    case HtmlFieldType::kOneTimeCode:
+    case HtmlFieldType::kUnrecognized:
+      return true;
+  }
+  NOTREACHED();
+}
+
 // Returns true if the given `field` in `form` and its value are valid to be
 // saved as a new or updated Autocomplete entry.
 // We put the following restriction on stored FormFields:
@@ -247,14 +309,20 @@ bool IsFieldValueSaveable(const FormFieldData& field,
     return false;
   }
 
+  const AutofillField* autofill_field =
+      form ? form->GetFieldById(field.global_id()) : nullptr;
+
   // Reject fields with types that are ineligible for autocomplete such as
   // credit card numbers, CVCs, IBANs, or promo codes.
-  if (!IsFieldTypeSaveable(form, field.global_id())) {
+  if (!IsPredictedFieldTypeSaveable(autofill_field)) {
     return false;
   }
 
-  const AutofillField* autofill_field =
-      form ? form->GetFieldById(field.global_id()) : nullptr;
+  // Reject fields with HTML types that are ineligible for autocomplete.
+  if (!IsHtmlFieldTypeSaveable(autofill_field)) {
+    return false;
+  }
+
   if (autofill_field &&
       autofill_field->all_modifiers().contains(FieldModifier::kAutofill) &&
       (autofill_field->last_modifier() != FieldModifier::kUser ||

@@ -34,6 +34,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
@@ -1048,6 +1049,33 @@ TEST_F(AutocompleteHistoryManagerTest, ClassificationBasedFiltering) {
   EXPECT_CALL(*(web_data_service_.get()),
               AddFormFields(testing::ElementsAre(
                   testing::Property(&FormFieldData::value, u"John"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
+}
+
+// Tests that CVC fields tagged through autocomplete attribute are not saved in
+// history even when the type wasn't predicted.
+TEST_F(AutocompleteHistoryManagerTest,
+       AutocompleteAttributeBasedFiltering_CvcWithoutTypePrediction) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_VERIFICATION_CODE,
+                                     .name = u"Name not matching CC regex",
+                                     .value = u"000",
+                                     .autocomplete_attribute = "cc-csc"},
+                                    {.role = CREDIT_CARD_VERIFICATION_CODE,
+                                     .name = u"Name not matching CC regex",
+                                     .value = u"111"}}});
+  FormStructure form_structure{form};
+  // Simulate rationalizing the types to UNKNOWN_TYPE.
+  form_structure.field(0)->SetTypeTo(
+      AutofillType(UNKNOWN_TYPE), AutofillPredictionSource::kRationalization);
+  form_structure.field(1)->SetTypeTo(
+      AutofillType(UNKNOWN_TYPE), AutofillPredictionSource::kRationalization);
+
+  EXPECT_CALL(*(web_data_service_.get()),
+              AddFormFields(testing::ElementsAre(
+                  testing::Property(&FormFieldData::value, u"111"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);
