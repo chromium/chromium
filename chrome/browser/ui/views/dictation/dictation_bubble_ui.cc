@@ -148,6 +148,7 @@ void DictationToastView::Init() {
   close_button->SetBorder(views::CreateEmptyBorder(insets));
   views::InstallCircleHighlightPathGenerator(close_button);
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
   close_button->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(
