@@ -25,7 +25,6 @@ _default_allowed_violations = [
   "../../chrome/common/request_header_integrity/internal/*",
   "../../components/autofill/core/browser/form_parsing/internal_resources/0_default_regex_patterns.json",
   "../../components/internal/components_variant_internal_strings.grd",
-  "../../components/plus_addresses/core/browser/resources/internal/*",
   "../../components/vector_icons/google_chrome/*",
   "../../google_apis/internal/generate_metrics_key.py",
   "../../third_party/search_engines_data/resources_internal/*",

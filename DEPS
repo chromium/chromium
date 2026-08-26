@@ -4031,12 +4031,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/components/plus_addresses/core/browser/resources/internal': {
-      'url': Var('chrome_git') + '/chrome/components/plus_addresses/resources.git' + '@' +
-        '29d0d43a7adc0619ff902f05a3aae0f9512efa36',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/components/record_replay/internal': {
       'url': Var('chrome_git') + '/chrome/components/record_replay.git' + '@' +
         '0b41acf3313cd01d274d997287e0fec258bd5016',

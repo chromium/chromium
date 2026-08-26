@@ -149,20 +149,11 @@ enum DataType {
   // the client.
   COLLABORATION_GROUP,
 
-  // Origin-specific email addresses forwarded from the user's account.
-  // Read-only on the client.
-  PLUS_ADDRESS,
-
   // Product comparison groups.
   PRODUCT_COMPARISON,
 
   // Browser cookies, ChromeOS only.
   COOKIES,
-
-  // Settings for PLUS_ADDRESS forwarded from the user's account. Since the
-  // settings originate from the user's account, this is not reusing any of the
-  // standard syncable prefs.
-  PLUS_ADDRESS_SETTING,
 
   // Valuables stored in the Google Wallet.
   // Read-only on the client.
@@ -307,10 +298,10 @@ enum class DataTypeForHistograms {
   kWebApks = 62,
   kSharedTabGroupData = 63,
   kCollaborationGroup = 64,
-  kPlusAddresses = 65,
+  // kDeprecatedPlusAddresses = 65,
   kProductComparison = 66,
   kCookies = 67,
-  kPlusAddressSettings = 68,
+  // kDeprecatedPlusAddressSettings = 68,
   kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
   kSharedComment = 71,
@@ -355,8 +346,6 @@ inline constexpr DataTypeSet AlwaysPreferredUserTypes() {
   return {ACCOUNT_SETTING,
           DEVICE_INFO,
           USER_CONSENTS,
-          PLUS_ADDRESS,
-          PLUS_ADDRESS_SETTING,
           PRIORITY_PREFERENCES,
           SECURITY_EVENTS,
           SEND_TAB_TO_SELF,

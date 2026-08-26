@@ -24,7 +24,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
-#include "components/plus_addresses/core/common/plus_address_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/sharing_message/pref_names.h"
@@ -126,8 +125,8 @@ enum {
   kAutoPinNewTabGroups = 74,
   kShowGoogleLensShortcut = 75,
   // kSharingVapidKey = 76, (deprecated)
-  kFirstPlusAddressCreationTime = 77,
-  kLastPlusAddressFillingTime = 78,
+  // kFirstPlusAddressCreationTime = 77, (deprecated)
+  // kLastPlusAddressFillingTime = 78, (deprecated)
   kSafeBrowsingEnhanced = 79,
   kFacilitatedPaymentsEwallet = 80,
   kAutofillBnplEnabled = 81,
@@ -420,12 +419,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {autofill::prefs::kAutofillPaymentCardBenefits,
          {syncable_prefs_ids::kAutofillPaymentCardBenefits, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {plus_addresses::prefs::kFirstPlusAddressCreationTime,
-         {syncable_prefs_ids::kFirstPlusAddressCreationTime,
-          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {plus_addresses::prefs::kLastPlusAddressFillingTime,
-         {syncable_prefs_ids::kLastPlusAddressFillingTime, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {prefs::kSafeBrowsingEnhanced,
          {syncable_prefs_ids::kSafeBrowsingEnhanced, syncer::PREFERENCES,

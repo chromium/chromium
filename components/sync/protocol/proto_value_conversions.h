@@ -58,8 +58,6 @@ class PasswordSpecifics;
 class PasswordSpecificsData;
 class PaymentInstrument;
 class PaymentsCustomerData;
-class PlusAddressSettingSpecifics;
-class PlusAddressSpecifics;
 class PowerBookmarkSpecifics;
 class PreferenceSpecifics;
 class PrinterPPDReference;
@@ -239,12 +237,6 @@ base::Value PaymentInstrumentToValue(
 
 base::Value PaymentsCustomerDataToValue(
     const sync_pb::PaymentsCustomerData& payments_customer_data);
-
-base::Value PlusAddressSettingSpecificsToValue(
-    const sync_pb::PlusAddressSettingSpecifics& plus_address_setting_specifics);
-
-base::Value PlusAddressSpecificsToValue(
-    const sync_pb::PlusAddressSpecifics& plus_address_specifics);
 
 base::Value PowerBookmarkSpecificsToValue(
     const sync_pb::PowerBookmarkSpecifics& power_bookmark_specifics);

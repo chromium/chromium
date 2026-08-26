@@ -118,7 +118,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(67 == syncer::GetNumDataTypes(),
+    static_assert(65 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -229,10 +229,6 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::WEB_APKS);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    // syncer::PLUS_ADDRESS and syncer::PLUS_ADDRESS_SETTING are excluded
-    // because GoogleGroupsManagerFactory is null for testing and hence no
-    // controller gets instantiated for the type.
 
     datatypes.Put(syncer::AUTOFILL_VALUABLE);
 

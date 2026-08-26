@@ -349,8 +349,8 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
   <int value="76" label="(obsolete) SharingVapidKey2"/>
-  <int value="77" label="FirstPlusAddressCreationTime"/>
-  <int value="78" label="LastPlusAddressFillingTime"/>
+  <int value="77" label="(obsolete) FirstPlusAddressCreationTime"/>
+  <int value="78" label="(obsolete) LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>
   <int value="80" label="FacilitatedPaymentsEwallet"/>
   <int value="81" label="AutofillBnplEnabled"/>
@@ -1042,10 +1042,10 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="WebAPKs"/>
   <int value="63" label="Shared Tab Group Data"/>
   <int value="64" label="Collaboration Groups"/>
-  <int value="65" label="Plus Address"/>
+  <int value="65" label="(Obsolete) Plus Address"/>
   <int value="66" label="Product Comparison"/>
   <int value="67" label="Cookies"/>
-  <int value="68" label="Plus Address Settings"/>
+  <int value="68" label="(Obsolete) Plus Address Settings"/>
   <int value="69" label="Autofill Valuable"/>
   <int value="70" label="Shared Tab Group Account Data"/>
   <int value="71" label="SharedComment"/>
@@ -1631,17 +1631,21 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="kNigoriMissingKeystoreKeysDuringInitialSync"/>
   <int value="107" label="kNigoriMissingLastTrustedVaultKeyInKeybag"/>
   <int value="108" label="kNigoriMissingNewDefaultKeyInKeybag"/>
-  <int value="121" label="kPlusAddressAddOrUpdateProfileFailed"/>
-  <int value="122" label="kPlusAddressClearProfilesFailed"/>
-  <int value="123" label="kPlusAddressDatabaseInitFailed"/>
-  <int value="124" label="kPlusAddressMetadataReadFailed"/>
-  <int value="125" label="kPlusAddressRemoveProfileFailed"/>
-  <int value="126" label="kPlusAddressSettingFailedToParseSpecifics"/>
-  <int value="127" label="kPlusAddressTransactionBeginFailedOnDisableSync"/>
-  <int value="128" label="kPlusAddressTransactionBeginFailedOnIncrementalSync"/>
-  <int value="129" label="kPlusAddressTransactionCommitFailedOnDisableSync"/>
+  <int value="121" label="(Obsolete) kPlusAddressAddOrUpdateProfileFailed"/>
+  <int value="122" label="(Obsolete) kPlusAddressClearProfilesFailed"/>
+  <int value="123" label="(Obsolete) kPlusAddressDatabaseInitFailed"/>
+  <int value="124" label="(Obsolete) kPlusAddressMetadataReadFailed"/>
+  <int value="125" label="(Obsolete) kPlusAddressRemoveProfileFailed"/>
+  <int value="126"
+      label="(Obsolete) kPlusAddressSettingFailedToParseSpecifics"/>
+  <int value="127"
+      label="(Obsolete) kPlusAddressTransactionBeginFailedOnDisableSync"/>
+  <int value="128"
+      label="(Obsolete) kPlusAddressTransactionBeginFailedOnIncrementalSync"/>
+  <int value="129"
+      label="(Obsolete) kPlusAddressTransactionCommitFailedOnDisableSync"/>
   <int value="130"
-      label="kPlusAddressTransactionCommitFailedOnIncrementalSync"/>
+      label="(Obsolete) kPlusAddressTransactionCommitFailedOnIncrementalSync"/>
   <int value="131" label="(Obsolete) kPowerBookmarkDatabaseCommitFailed"/>
   <int value="132" label="(Obsolete) kPowerBookmarkDatabaseInitFailed"/>
   <int value="133" label="(Obsolete) kPowerBookmarkFailedToBeginTransaction"/>

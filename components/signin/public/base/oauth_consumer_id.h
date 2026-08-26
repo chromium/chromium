@@ -8,8 +8,6 @@
 namespace signin {
 
 namespace oauth_consumer_name {
-inline extern const char kEnterprisePlusAddressName[] =
-    "enterprise_plus_address";
 inline extern const char kGlicUserStatusName[] = "glic_user_status";
 inline extern const char kIndigoName[] = "indigo";
 inline extern const char kDrivePickerHostName[] = "drive_picker_host";
@@ -106,7 +104,7 @@ enum class OAuthConsumerId {
   kAuthServiceTasksClient = 76,
   kYouTubeMusic = 77,
   kContextualTasks = 78,
-  kEnterprisePlusAddress = 79,
+  // kEnterprisePlusAddress = 79,  // Removed due to deprecation.
   kGlicUserStatus = 80,
   kDevtoolsGdp = 81,
   kAshDriveIntegration = 82,

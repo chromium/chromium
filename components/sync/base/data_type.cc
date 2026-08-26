@@ -889,24 +889,6 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
         },
         {
-            .type = PLUS_ADDRESS,
-            .specifics_field_number =
-                sync_pb::EntitySpecifics::kPlusAddressFieldNumber,
-            .debug_string = "Plus Address",
-            .histogram_suffix = "PLUS_ADDRESS",
-            .stable_lowercase_string = "plus_address",
-            // Plus addresses and their settings are never encrypted because
-            // they originate from outside Chrome.
-            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
-            .priority = DataTypePriority::kRegular,
-            .communication_direction = CommunicationDirection::kRegularTwoWay,
-            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
-            .unsynced_data_check_on_signout_policy =
-                UnsyncedDataCheckOnSignoutPolicy::kNone,
-            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
-            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
-        },
-        {
             .type = PRODUCT_COMPARISON,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
@@ -931,24 +913,6 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .histogram_suffix = "COOKIE",
             .stable_lowercase_string = "cookies",
             .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
-            .priority = DataTypePriority::kRegular,
-            .communication_direction = CommunicationDirection::kRegularTwoWay,
-            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
-            .unsynced_data_check_on_signout_policy =
-                UnsyncedDataCheckOnSignoutPolicy::kNone,
-            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
-            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
-        },
-        {
-            .type = PLUS_ADDRESS_SETTING,
-            .specifics_field_number =
-                sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
-            .debug_string = "Plus Address Setting",
-            .histogram_suffix = "PLUS_ADDRESS_SETTING",
-            .stable_lowercase_string = "plus_address_setting",
-            // Plus addresses and their settings are never encrypted because
-            // they originate from outside Chrome.
-            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
             .priority = DataTypePriority::kRegular,
             .communication_direction = CommunicationDirection::kRegularTwoWay,
             .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
@@ -1232,7 +1196,7 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 67,
+static_assert(GetNumDataTypes() == 65,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1413,17 +1377,11 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case COLLABORATION_GROUP:
       specifics->mutable_collaboration_group();
       break;
-    case PLUS_ADDRESS:
-      specifics->mutable_plus_address();
-      break;
     case PRODUCT_COMPARISON:
       specifics->mutable_product_comparison();
       break;
     case COOKIES:
       specifics->mutable_cookie();
-      break;
-    case PLUS_ADDRESS_SETTING:
-      specifics->mutable_plus_address_setting();
       break;
     case AUTOFILL_VALUABLE:
       specifics->mutable_autofill_valuable();
@@ -1769,14 +1727,10 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kSharedTabGroupData;
     case COLLABORATION_GROUP:
       return DataTypeForHistograms::kCollaborationGroup;
-    case PLUS_ADDRESS:
-      return DataTypeForHistograms::kPlusAddresses;
     case PRODUCT_COMPARISON:
       return DataTypeForHistograms::kProductComparison;
     case COOKIES:
       return DataTypeForHistograms::kCookies;
-    case PLUS_ADDRESS_SETTING:
-      return DataTypeForHistograms::kPlusAddressSettings;
     case AUTOFILL_VALUABLE:
       return DataTypeForHistograms::kAutofillValuable;
     case AUTOFILL_VALUABLE_METADATA:

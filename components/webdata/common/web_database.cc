@@ -263,6 +263,9 @@ bool WebDatabase::MigrateToVersion(int version,
     case 105:
       *update_compatible_version = true;
       return MigrateToVersion105DropIbansTable();
+    case 154:
+      *update_compatible_version = true;
+      return MigrateToVersion154DropPlusAddressTables();
   }
 
   return true;
@@ -286,4 +289,15 @@ bool WebDatabase::MigrateToVersion79DropLoginsTable() {
 
 bool WebDatabase::MigrateToVersion105DropIbansTable() {
   return db_.Execute("DROP TABLE IF EXISTS ibans");
+}
+
+bool WebDatabase::MigrateToVersion154DropPlusAddressTables() {
+  sql::Transaction transaction(&db_);
+  return transaction.Begin() &&
+         db_.Execute("DROP TABLE IF EXISTS plus_addresses") &&
+         db_.Execute(
+             "DROP TABLE IF EXISTS plus_address_sync_model_type_state") &&
+         db_.Execute(
+             "DROP TABLE IF EXISTS plus_address_sync_entity_metadata") &&
+         transaction.Commit();
 }

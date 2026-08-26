@@ -33,8 +33,6 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/plus_addresses/core/browser/webdata/plus_address_table.h"
-#include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -170,8 +168,6 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       std::make_unique<payments::WebAppManifestSectionTable>());
   profile_database_->AddTable(std::make_unique<payments::WebPaymentsTable>());
 #endif
-  profile_database_->AddTable(
-      std::make_unique<plus_addresses::PlusAddressTable>());
   profile_database_->AddTable(std::make_unique<autofill::ValuablesTable>());
   profile_database_->LoadDatabase(os_crypt);
 
@@ -185,12 +181,6 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       profile_database_, ui_task_runner);
   keyword_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_KEYWORD));
-
-  plus_address_web_data_ =
-      base::MakeRefCounted<plus_addresses::PlusAddressWebDataService>(
-          profile_database_, ui_task_runner);
-  plus_address_web_data_->Init(
-      base::BindOnce(show_error_callback, ERROR_LOADING_PLUS_ADDRESS));
 
   token_web_data_ =
       base::MakeRefCounted<TokenWebData>(profile_database_, ui_task_runner);
@@ -302,11 +292,6 @@ WebDataServiceWrapper::GetAccountAutofillWebData() {
 scoped_refptr<KeywordWebDataService>
 WebDataServiceWrapper::GetKeywordWebData() {
   return keyword_web_data_;
-}
-
-scoped_refptr<plus_addresses::PlusAddressWebDataService>
-WebDataServiceWrapper::GetPlusAddressWebData() {
-  return plus_address_web_data_;
 }
 
 scoped_refptr<TokenWebData> WebDataServiceWrapper::GetTokenWebData() {

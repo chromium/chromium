@@ -71,7 +71,7 @@ using ::testing::Pointee;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(67 == syncer::GetNumDataTypes(),
+static_assert(65 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -114,8 +114,6 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(os_preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(os_priority_preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(outgoing_password_sharing_invitation)
 DEFINE_SPECIFICS_TO_VALUE_TEST(password)
-DEFINE_SPECIFICS_TO_VALUE_TEST(plus_address)
-DEFINE_SPECIFICS_TO_VALUE_TEST(plus_address_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(printer)
 DEFINE_SPECIFICS_TO_VALUE_TEST(printers_authorization_server)

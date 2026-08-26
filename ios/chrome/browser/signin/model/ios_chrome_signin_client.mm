@@ -24,11 +24,6 @@ namespace {
 
 class IOSChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
  protected:
-  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
-      const override {
-    NOTREACHED();
-  }
-
   signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
     NOTREACHED();
   }

@@ -36,7 +36,6 @@ class OAuthConsumerRegistry {
   OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) const;
 
  protected:
-  virtual OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForGlicUserStatus() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForGlicInvokeApi() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForSkillsService() const = 0;

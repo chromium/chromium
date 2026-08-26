@@ -44,9 +44,6 @@ ProfileErrorType ProfileErrorFromWebDataServiceWrapperError(
     case WebDataServiceWrapper::ERROR_LOADING_PAYMENT_MANIFEST:
       return ProfileErrorType::DB_PAYMENT_MANIFEST_WEB_DATA;
 
-    case WebDataServiceWrapper::ERROR_LOADING_PLUS_ADDRESS:
-      return ProfileErrorType::DB_WEB_DATA;
-
     default:
       NOTREACHED() << "Unknown WebDataServiceWrapper::ErrorType: "
                    << error_type;

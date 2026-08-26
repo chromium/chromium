@@ -255,11 +255,9 @@ IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest, PRE_EnableAndRestart) {
   // user types are also excluded in this test, because the account being used
   // isn't supervised. Finally, a few types aren't launched so they should also
   // be excluded.
-  const DataTypeSet types_without_updates =
-      Union(Union(syncer::CommitOnlyTypes(),
-                  {syncer::SUPERVISED_USER_SETTINGS, syncer::PLUS_ADDRESS,
-                   syncer::PLUS_ADDRESS_SETTING}),
-            UnsupportedTypes());
+  const DataTypeSet types_without_updates = Union(
+      Union(syncer::CommitOnlyTypes(), {syncer::SUPERVISED_USER_SETTINGS}),
+      UnsupportedTypes());
 
   // High priority types in this test are a subset of
   // syncer::HighPriorityUserTypes(), excluding those identified earlier.

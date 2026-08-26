@@ -71,7 +71,6 @@ typedef enum {
   SECURE_PAYMENT_CONFIRMATION,  // WDResult<std::vector<std::unique_ptr<
                                 //     SecurePaymentConfirmationInstrument>>>
 #endif                          //
-  PLUS_ADDRESS_RESULT,          // WDResult<std::vector<PlusProfile>>
 } WDResultType;
 
 //

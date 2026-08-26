@@ -109,8 +109,6 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case WORKSPACE_DESK:
     case NIGORI:
     case WEBAUTHN_CREDENTIAL:
-    case PLUS_ADDRESS:
-    case PLUS_ADDRESS_SETTING:
     case AUTOFILL_VALUABLE:
     case AUTOFILL_VALUABLE_METADATA:
     case ACCOUNT_SETTING:
@@ -189,8 +187,6 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARED_TAB_GROUP_DATA:
     case COLLABORATION_GROUP:
-    case PLUS_ADDRESS:
-    case PLUS_ADDRESS_SETTING:
     case PRODUCT_COMPARISON:
     case COOKIES:
     case AUTOFILL_VALUABLE:

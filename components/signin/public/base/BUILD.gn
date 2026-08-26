@@ -161,7 +161,6 @@ static_library("test_support") {
 
     # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled
     # launches.
-    "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/wallet/core/common:features",
     "//crypto",

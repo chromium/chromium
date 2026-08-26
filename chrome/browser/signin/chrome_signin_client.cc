@@ -45,7 +45,6 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
@@ -187,15 +186,6 @@ std::string HatsSurveyTriggerForAccessPoint(
 
 class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
  protected:
-  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
-      const override {
-    CHECK(base::FeatureList::IsEnabled(
-        plus_addresses::features::kPlusAddressesEnabled));
-    return signin::OAuthConsumer(
-        signin::oauth_consumer_name::kEnterprisePlusAddressName,
-        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
-  }
-
   signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
     CHECK(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
     return signin::OAuthConsumer(

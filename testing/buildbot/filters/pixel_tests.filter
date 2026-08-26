@@ -136,11 +136,7 @@ PermissionChipKombuchaInteractiveUITest.QuietestPermissionChipClickTest
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*
-*PlusAddressCreationDialogUiVariationsTest*
-*PlusAddressCreationDialogUiVariationsOnboardingTest*
-PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
-*PopupViewViewsPlusAddressSuggestionBrowsertest*
 PriceTrackingBubbleDialogViewBrowserTest.*
 ProfileMenuViewPixelTest.*
 ProfilePickerSigninToolbarUIPixelTest.*

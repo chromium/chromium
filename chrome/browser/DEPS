@@ -282,7 +282,6 @@ include_rules = [
   "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",
-  "+components/plus_addresses/core/common/features.h",
   "+components/policy",
   "+components/power_bookmarks",
   "+components/power_metrics",

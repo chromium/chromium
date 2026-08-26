@@ -687,8 +687,6 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{kYouTubeMusicOAuth2Scope});
     case OAuthConsumerId::kContextualTasks:
       return GetOAuthConsumerForContextualTasks();
-    case OAuthConsumerId::kEnterprisePlusAddress:
-      return GetOAuthConsumerForEnterprisePlusAddress();
     case OAuthConsumerId::kGlicUserStatus:
       return GetOAuthConsumerForGlicUserStatus();
     case OAuthConsumerId::kIndigo:

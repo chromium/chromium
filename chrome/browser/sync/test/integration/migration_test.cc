@@ -234,12 +234,11 @@ class MigrationTest : public SyncTest,
     // should not request that they be migrated.
     preferred_data_types.Remove(syncer::SUPERVISED_USER_SETTINGS);
 
-    // Autofill wallet and plus address will be unready during this test, so we
+    // Autofill wallet will be unready during this test, so we
     // should not request that it be migrated.
-    preferred_data_types.RemoveAll(
-        {syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
-         syncer::AUTOFILL_WALLET_OFFER, syncer::PLUS_ADDRESS,
-         syncer::PLUS_ADDRESS_SETTING});
+    preferred_data_types.RemoveAll({syncer::AUTOFILL_WALLET_DATA,
+                                    syncer::AUTOFILL_WALLET_METADATA,
+                                    syncer::AUTOFILL_WALLET_OFFER});
 
     // ARC package will be unready during this test, so we should not request
     // that it be migrated.

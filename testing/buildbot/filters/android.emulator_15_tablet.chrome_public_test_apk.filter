@@ -47,8 +47,5 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
 
-# crbug.com/409145689
--org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testPlusAddressesEnabled
-
 # crbug.com/409581327
 -org.chromium.chrome.browser.webid.DigitalCredentialProviderTest.testRequestMDoc

@@ -10,8 +10,6 @@ include_rules = [
   "+components/omnibox/common",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
-  "+components/plus_addresses/core/browser",
-  "+components/plus_addresses/core/common",
   "+components/prefs",
   "+components/private_verification_tokens/common",
   "+components/webapps/isolated_web_apps/key_distribution",

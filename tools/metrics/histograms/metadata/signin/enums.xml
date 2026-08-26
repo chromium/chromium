@@ -900,7 +900,7 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="Auth Service (Tasks Client)"/>
   <int value="77" label="YouTube Music"/>
   <int value="78" label="Contextual Tasks"/>
-  <int value="79" label="Enterprise Plus Address"/>
+  <int value="79" label="(Obsolete) Enterprise Plus Address"/>
   <int value="80" label="Glic User Status"/>
   <int value="81" label="Devtools Gdp"/>
   <int value="82" label="Ash Drive Integration"/>

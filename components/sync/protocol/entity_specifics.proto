@@ -47,8 +47,6 @@ import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
 import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
-import "components/sync/protocol/plus_address_setting_specifics.proto";
-import "components/sync/protocol/plus_address_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
 import "components/sync/protocol/printers_authorization_server_specifics.proto";
@@ -168,9 +166,7 @@ message EntitySpecifics {
     SharedTabGroupDataSpecifics shared_tab_group_data = 1239418;
     CollaborationGroupSpecifics collaboration_group = 1259076;
     ProductComparisonSpecifics product_comparison = 1329438;
-    PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
-    PlusAddressSettingSpecifics plus_address_setting = 1303742;
     AutofillValuableSpecifics autofill_valuable = 1419865;
     SharedTabGroupAccountDataSpecifics shared_tab_group_account_data = 1429255;
     SharedCommentSpecifics shared_comment = 1484017;
@@ -218,6 +214,10 @@ message EntitySpecifics {
   reserved "segmentation";
   reserved 1073150;
   reserved "power_bookmark";
+  reserved 1267844;
+  reserved "plus_address";
+  reserved 1303742;
+  reserved "plus_address_setting";
 }
 
 message EmptySpecifics {}
