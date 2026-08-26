@@ -72,6 +72,12 @@ class Profile : public content::BrowserContext {
     kAsynchronous,
   };
 
+  enum class LifecycleState {
+    kNotRegistered,
+    kRegistered,
+    kPendingDestruction,
+  };
+
   // Defines an ID to distinguish different off-the-record profiles of a regular
   // profile.
   class OTRProfileID {
@@ -511,6 +517,12 @@ class Profile : public content::BrowserContext {
   // the definition of `ProfileLoadTracker`.
   virtual void AckCrashForTracking() = 0;
 #endif
+
+  LifecycleState lifecycle_state() const { return lifecycle_state_; }
+  void set_lifecycle_state(LifecycleState lifecycle_state) {
+    lifecycle_state_ = lifecycle_state;
+  }
+
  protected:
   // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
@@ -542,6 +554,8 @@ class Profile : public content::BrowserContext {
 #endif
 
  private:
+  LifecycleState lifecycle_state_ = LifecycleState::kNotRegistered;
+
   bool restored_last_session_ = false;
 
   // Used to prevent the notification that this Profile is destroyed from

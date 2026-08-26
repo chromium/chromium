@@ -281,6 +281,9 @@ TestingProfile::TestingProfile(
 #endif
 {
   set_allows_browser_windows_for_testing(allows_browser_windows);
+  // TestingProfile is not registered with ProfileManager in most unit tests,
+  // but AddKeepAlive() should still work on it without failing CHECK().
+  set_lifecycle_state(LifecycleState::kRegistered);
 #if BUILDFLAG(IS_CHROMEOS)
   user_cloud_policy_manager_ = std::move(policy_manager);
 #else

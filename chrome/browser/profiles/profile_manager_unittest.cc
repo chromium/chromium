@@ -2441,3 +2441,17 @@ TEST_F(ProfileManagerDeferredAsyncLoadingTest, DifferentProfiles) {
                                            loaded_profiles.end());
   EXPECT_EQ(unique_elements.size(), kAsyncLoadCount);
 }
+
+TEST_F(ProfileManagerTest, LifecycleStateTracking) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Profile 1"));
+
+  TestingProfile testing_profile;
+  EXPECT_EQ(testing_profile.lifecycle_state(),
+            Profile::LifecycleState::kRegistered);
+
+  Profile* profile = profile_manager->GetProfile(dest_path);
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(profile->lifecycle_state(), Profile::LifecycleState::kRegistered);
+}

@@ -228,6 +228,7 @@ class ProfileBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<Profile> profile =
         Profile::CreateProfile(path, delegate, create_mode);
     EXPECT_TRUE(profile.get());
+    profile->set_lifecycle_state(Profile::LifecycleState::kRegistered);
 
     // Store the Profile's IO task runner so we can wind it down.
     profile_io_task_runner_ = profile->GetIOTaskRunner();
