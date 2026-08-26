@@ -871,7 +871,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   if (browser_view) {
     omnibox_popup_closer_ =
-        std::make_unique<omnibox::OmniboxPopupCloser>(browser_view);
+        GetUserDataFactory().CreateInstance<omnibox::OmniboxPopupCloser>(
+            *browser, browser_view, browser->GetUnownedUserDataHost());
   }
 
   profile_menu_coordinator_ =

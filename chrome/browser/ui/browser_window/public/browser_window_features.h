@@ -411,10 +411,6 @@ class BrowserWindowFeatures {
     return most_recent_shared_tab_update_store_.get();
   }
 
-  omnibox::OmniboxPopupCloser* omnibox_popup_closer() {
-    return omnibox_popup_closer_.get();
-  }
-
   PinnedToolbarActions* pinned_toolbar_actions() {
     return pinned_toolbar_actions_;
   }

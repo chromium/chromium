@@ -390,11 +390,7 @@ omnibox::OmniboxPopupCloser* ChromeOmniboxClient::GetOmniboxPopupCloser() {
   if (!browser_) {
     return nullptr;
   }
-  auto* bwf = &browser_->GetFeatures();
-  if (!bwf) {
-    return nullptr;
-  }
-  return bwf->omnibox_popup_closer();
+  return omnibox::OmniboxPopupCloser::From(browser_);
 }
 
 bool ChromeOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {

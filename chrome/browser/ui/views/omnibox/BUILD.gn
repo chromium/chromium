@@ -67,6 +67,7 @@ source_set("omnibox") {
     "//ui/base",
     "//ui/base/interaction",
     "//ui/base/metadata",
+    "//ui/base/unowned_user_data",
     "//ui/compositor",
     "//ui/events",
     "//ui/gfx",

@@ -256,7 +256,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   omnibox::OmniboxPopupCloser* GetOmniboxPopupCloser() {
-    return browser()->GetFeatures().omnibox_popup_closer();
+    return omnibox::OmniboxPopupCloser::From(browser());
   }
 
   static void SendKeyForBrowser(const BrowserWindowInterface* browser,
