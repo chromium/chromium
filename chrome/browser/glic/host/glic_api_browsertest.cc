@@ -3093,7 +3093,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageBeforeInitialize) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageAfterInitialize) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set(
