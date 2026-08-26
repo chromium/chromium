@@ -28,6 +28,7 @@ GetPlatformManagementSatusProviders() {
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
 #endif
 #if BUILDFLAG(IS_WIN)
+  providers.push_back(std::make_unique<AzureActiveDirectoryStatusProvider>());
   providers.push_back(
       std::make_unique<AzureActiveDirectoryDeviceStatusProvider>());
 #endif

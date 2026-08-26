@@ -40,6 +40,12 @@ enum class DownloadRestriction {
 namespace policy_prefs {
 
 #if BUILDFLAG(IS_WIN)
+// Integer pref that stores Azure Active Directory management authority.
+inline constexpr char kAzureActiveDirectoryManagement[] =
+    "management.platform.azure_active_directory";
+
+// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
+// complete.
 // Integer pref that stores Azure Active Directory device management authority.
 inline constexpr char kAzureActiveDirectoryDeviceManagement[] =
     "management.platform.azure_active_directory_device";

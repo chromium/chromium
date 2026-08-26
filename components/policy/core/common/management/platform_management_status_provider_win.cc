@@ -31,6 +31,13 @@ EnterpriseMDMManagementStatusProvider::FetchAuthority() {
   return base::win::IsDeviceRegisteredWithManagement() ? CLOUD : NONE;
 }
 
+AzureActiveDirectoryStatusProvider::AzureActiveDirectoryStatusProvider()
+    : ManagementStatusProvider(policy_prefs::kAzureActiveDirectoryManagement) {}
+
+EnterpriseManagementAuthority
+AzureActiveDirectoryStatusProvider::FetchAuthority() {
+  return base::win::IsJoinedToAzureAD() ? CLOUD_DOMAIN : NONE;
+}
 
 AzureActiveDirectoryDeviceStatusProvider::
     AzureActiveDirectoryDeviceStatusProvider()

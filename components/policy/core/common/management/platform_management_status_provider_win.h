@@ -46,6 +46,23 @@ class POLICY_EXPORT EnterpriseMDMManagementStatusProvider final
 
 // TODO (crbug/1300217): Handle management state changing while the browser is
 // running.
+class POLICY_EXPORT AzureActiveDirectoryStatusProvider final
+    : public ManagementStatusProvider {
+ public:
+  AzureActiveDirectoryStatusProvider();
+
+  AzureActiveDirectoryStatusProvider(
+      const AzureActiveDirectoryStatusProvider&) = delete;
+  AzureActiveDirectoryStatusProvider& operator=(
+      const AzureActiveDirectoryStatusProvider&) = delete;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() override;
+};
+
+// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
+// complete.
 class POLICY_EXPORT AzureActiveDirectoryDeviceStatusProvider final
     : public ManagementStatusProvider {
  public:
