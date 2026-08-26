@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -349,7 +350,7 @@ public class BookmarkManagerCoordinator
                                 this::openSettings));
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SIGNIN_PROMO,
-                mSigninPromoCoordinator::buildPromoView,
+                this::buildSigninPromoView,
                 // SigninPromoCoordinator owns the model and keys for the promo inside it.
                 // The PropertyModel and BookmarkManagerProperties key passed to this binder
                 // method are thus not needed.
@@ -538,6 +539,19 @@ public class BookmarkManagerCoordinator
      */
     private boolean onBackPressed() {
         return mMediator.onBackPressed();
+    }
+
+    @VisibleForTesting
+    View buildSigninPromoView(ViewGroup parent) {
+        View view = mSigninPromoCoordinator.buildPromoView(parent);
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            PersonalizedSigninPromoView promoView =
+                    view.findViewById(R.id.signin_promo_view_container);
+            if (promoView != null) {
+                promoView.setCardBackgroundResource(R.drawable.bookmark_promo_desktop_background);
+            }
+        }
+        return view;
     }
 
     @VisibleForTesting

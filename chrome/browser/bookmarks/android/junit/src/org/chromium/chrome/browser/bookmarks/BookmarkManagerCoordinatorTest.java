@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -39,7 +41,6 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -200,6 +202,39 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
         assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));
+        assertNotNull(mCoordinator.buildSigninPromoView(parent));
+    }
+
+    @Test
+    public void testBuildSigninPromoView_default() {
+        FrameLayout parent = new FrameLayout(mActivity);
+        View view = mCoordinator.buildSigninPromoView(parent);
+        assertNotNull(view);
+        PersonalizedSigninPromoView promoView = view.findViewById(R.id.signin_promo_view_container);
+        assertNotNull(promoView);
+        View cardWrapper = promoView.findViewById(R.id.signin_promo_view_wrapper);
+        assertNotNull(cardWrapper);
+        if (cardWrapper.getBackground() != null) {
+            assertNotEquals(
+                    R.drawable.bookmark_promo_desktop_background,
+                    Shadows.shadowOf(cardWrapper.getBackground()).getCreatedFromResId());
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testBuildSigninPromoView_desktop() {
+        recreateCoordinatorForDesktop();
+        FrameLayout parent = new FrameLayout(mActivity);
+        View view = mCoordinator.buildSigninPromoView(parent);
+        assertNotNull(view);
+        PersonalizedSigninPromoView promoView = view.findViewById(R.id.signin_promo_view_container);
+        assertNotNull(promoView);
+        View cardWrapper = promoView.findViewById(R.id.signin_promo_view_wrapper);
+        assertNotNull(cardWrapper);
+        assertEquals(
+                R.drawable.bookmark_promo_desktop_background,
+                Shadows.shadowOf(cardWrapper.getBackground()).getCreatedFromResId());
     }
 
     @Test

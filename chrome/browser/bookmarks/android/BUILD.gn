@@ -42,6 +42,7 @@ source_set("impl") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/bookmark_promo_desktop_background.xml",
     "java/res/layout/bookmark_popup.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
