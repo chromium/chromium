@@ -1116,6 +1116,51 @@ TEST_F(DownloadItemTest, KeepReceivedSliceIfNetworkError) {
   CleanupItem(item, download_file, DownloadItem::IN_PROGRESS);
 }
 
+// When an interrupted download with non-contiguous received slices is resumed,
+// the resume offset is the start of the first hole, which is smaller than the
+// total number of received bytes. The hash state from the previous attempt
+// covers the total received bytes and therefore must not be propagated as the
+// hash of the prefix up to the resume offset.
+TEST_F(DownloadItemTest, ResumeWithNonContiguousSlicesClearsHashState) {
+  const DownloadItem::ReceivedSlices kReceivedSlices = {
+      DownloadItem::ReceivedSlice(0, 10), DownloadItem::ReceivedSlice(100, 50)};
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  item->DestinationObserverAsWeakPtr()->DestinationUpdate(60, 100,
+                                                          kReceivedSlices);
+  EXPECT_EQ(kReceivedSlices, item->GetReceivedSlices());
+  EXPECT_EQ(60, item->GetReceivedBytes());
+
+  int64_t captured_offset = -1;
+  bool captured_has_hash_state = true;
+  std::string captured_hash_of_partial_file = "unset";
+  EXPECT_CALL(*mock_delegate(), MockResumeInterruptedDownload(_))
+      .WillOnce([&](DownloadUrlParameters* params) {
+        captured_offset = params->offset();
+        DownloadSaveInfo save_info = params->TakeSaveInfo();
+        captured_has_hash_state = (save_info.hash_state != nullptr);
+        captured_hash_of_partial_file = save_info.hash_of_partial_file;
+      });
+  EXPECT_CALL(*download_file, Detach());
+
+  std::unique_ptr<crypto::SecureHash> hash_state =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  hash_state->Update(kTestData1);
+  item->DestinationObserverAsWeakPtr()->DestinationError(
+      DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH, 60,
+      std::move(hash_state));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(10, captured_offset);
+  EXPECT_FALSE(captured_has_hash_state);
+  EXPECT_TRUE(captured_hash_of_partial_file.empty());
+  EXPECT_TRUE(item->GetHash().empty());
+
+  CleanupItem(item, nullptr, DownloadItem::IN_PROGRESS);
+}
+
 // Test that resumption uses the final URL in a URL chain when resuming.
 TEST_F(DownloadItemTest, ResumeUsesFinalURL) {
   create_info()->save_info->prompt_for_save_location = false;

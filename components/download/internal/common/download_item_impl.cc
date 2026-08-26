@@ -2661,6 +2661,15 @@ void DownloadItemImpl::ResumeInterruptedDownload(
     offset = GetReceivedBytes();
   }
 
+  // The previous hash state covers GetReceivedBytes() bytes of the partial
+  // file. If the resume offset is smaller (i.e. there were non-contiguous
+  // received slices), it no longer matches the prefix up to |offset| and must
+  // be dropped so that BaseFile re-derives it from the partial file.
+  if (offset != GetReceivedBytes()) {
+    hash_state_.reset();
+    destination_info_.hash.clear();
+  }
+
   download_params->set_offset(offset);
   download_params->set_last_modified(GetLastModifiedTime());
   download_params->set_etag(GetETag());
