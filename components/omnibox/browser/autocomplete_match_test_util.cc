@@ -12,22 +12,6 @@
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
-namespace {
-
-bool ParseAnswer(const std::string& answer_json,
-                 omnibox::AnswerType answer_type,
-                 omnibox::RichAnswerTemplate* answer) {
-  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
-      answer_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!value) {
-    return false;
-  }
-
-  return omnibox::answer_data_parser::ParseJsonToAnswerData(*value, answer);
-}
-
-}  // namespace
-
 AutocompleteMatch CreateHistoryURLMatch(std::string destination_url,
                                         bool is_zero_prefix) {
   AutocompleteMatch match;
@@ -179,16 +163,12 @@ AutocompleteMatch CreateHistoryUrlMlScoredMatch(
 
 AutocompleteMatch CreateAnswerMlScoredMatch(std::string name,
                                             omnibox::AnswerType answer_type,
-                                            std::string answer_json,
                                             bool allowed_to_be_default_match,
                                             int traditional_relevance,
                                             float ml_output) {
   AutocompleteMatch match = CreateSearchMlScoredMatch(
       name, allowed_to_be_default_match, traditional_relevance, ml_output);
   match.answer_type = answer_type;
-  omnibox::RichAnswerTemplate answer;
-  EXPECT_TRUE(ParseAnswer(answer_json, match.answer_type, &answer));
-  match.answer_template = answer;
   return match;
 }
 

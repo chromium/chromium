@@ -7,7 +7,6 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
-#include "third_party/omnibox_proto/answer_data.pb.h"
 
 // Translates a FormattedString into ACMatchClassifications based on the
 // fragments' bolding status.

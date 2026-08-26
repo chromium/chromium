@@ -195,15 +195,6 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
     case IDS_ACC_AUTOCOMPLETE_SEARCH:
     case IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH:
       // Search match.
-      // If additional descriptive text exists with a search, treat as search
-      // with immediate answer, such as Weather in Boston: 53 degrees.
-      if (match.answer_template.has_value()) {
-        omnibox::FormattedString subhead =
-            match.answer_template->answers(0).subhead();
-        description = base::UTF8ToUTF16(
-            subhead.has_a11y_text() ? subhead.a11y_text() : subhead.text());
-        message = IDS_ACC_AUTOCOMPLETE_QUICK_ANSWER;
-      }
       break;
     case IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH_ENTITY:
       if (match.description.empty()) {

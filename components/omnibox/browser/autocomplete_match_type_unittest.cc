@@ -89,56 +89,8 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelPedal) {
 
 namespace {
 
-bool ParseJsonToAnswerData(const std::string& answer_json,
-                           omnibox::RichAnswerTemplate* answer_template) {
-  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
-      answer_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!value) {
-    return false;
-  }
-
-  return omnibox::answer_data_parser::ParseJsonToAnswerData(*value,
-                                                            answer_template);
-}
-
 }  // namespace
 
-TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
-  const std::u16string& kSearch = u"weather";
-  const std::u16string& kSearchDesc = u"Google Search";
-
-  AutocompleteMatch match;
-  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
-  match.description = kSearchDesc;
-
-  // No addititional accessibility text found in the answer data.
-  std::string answer_json =
-      "{ \"l\": ["
-      "  { \"il\": { \"t\": [{ \"t\": \"text\", \"tt\": 8 }] } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"sunny with a chance of hail\", \"tt\": "
-      "5 }] } }] }";
-
-  omnibox::RichAnswerTemplate answer_template;
-  ASSERT_TRUE(ParseJsonToAnswerData(answer_json, &answer_template));
-  ASSERT_FALSE(answer_template.answers(0).subhead().has_a11y_text());
-  match.answer_template = answer_template;
-  EXPECT_EQ(
-      kSearch + u", answer, sunny with a chance of hail, 4 of 6",
-      AutocompleteMatchType::ToAccessibilityLabel(match, u"", kSearch, 3, 6));
-
-  answer_template.Clear();
-  // Accessibility text found in the answer data.
-  omnibox::AnswerData* answer_data = answer_template.add_answers();
-  answer_data->mutable_headline()->set_text("headline");
-  answer_data->mutable_subhead()->set_text("subhead");
-  answer_data->mutable_subhead()->set_a11y_text("accessibility text");
-  match.answer_template = answer_template;
-
-  EXPECT_EQ(
-      kSearch + u", answer, accessibility text, 4 of 6",
-      AutocompleteMatchType::ToAccessibilityLabel(match, u"", kSearch, 3, 6));
-}
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelThreadsHistory) {
   AutocompleteMatch match;

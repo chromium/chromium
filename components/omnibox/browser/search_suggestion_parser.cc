@@ -228,16 +228,6 @@ bool DecodeProtoFromBase64(const std::string* encoded_data, T& result_proto) {
 // Format template image URLs that do not contain a scheme.
 // The call to GetFormattedURL() will return the URL with a scheme added or
 // return the same URL if no formatting is necessary.
-void FormatAnswerTemplateImageURL(
-    omnibox::RichAnswerTemplate* answer_template) {
-  if (!(answer_template->answers_size() > 0)) {
-    return;
-  }
-  std::string* url_string =
-      answer_template->mutable_answers(0)->mutable_image()->mutable_url();
-  answer_template->mutable_answers(0)->mutable_image()->set_url(
-      omnibox::answer_data_parser::GetFormattedURL(url_string).spec());
-}
 
 std::u16string GetAnnotation(
     const omnibox::EntityInfo& entity_info,
@@ -1156,14 +1146,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           // omnibox::RichAnswerTemplate is preferred to "ansa" if available.
           if (suggest_template.has_rich_answer_template()) {
             answer_template = suggest_template.rich_answer_template();
-            FormatAnswerTemplateImageURL(&answer_template);
-            // Ensure `answer_template` has an answer.
-            answer_parsed_successfully = answer_template.answers_size() > 0;
-          } else if (const auto* answer_json =
-                         suggestion_detail.FindDict("ansa")) {
-            answer_parsed_successfully =
-                omnibox::answer_data_parser::ParseJsonToAnswerData(
-                    *answer_json, &answer_template);
+            answer_parsed_successfully = true;
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
                                     answer_parsed_successfully);
@@ -1191,8 +1174,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
               : std::nullopt));
 
       if (answer_parsed_successfully) {
-        // Ensure `answer_template` has an answer.
-        DCHECK(answer_template.answers_size() > 0);
         results->suggest_results.back().SetAnswerType(answer_type);
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       }

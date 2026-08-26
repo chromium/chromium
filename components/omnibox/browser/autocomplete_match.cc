@@ -1482,9 +1482,7 @@ template_url_starter_pack_data::StarterPackId AutocompleteMatch::StarterPackId(
 }
 
 GURL AutocompleteMatch::ImageUrl() const {
-  return answer_template.has_value()
-             ? GURL(answer_template->answers(0).image().url())
-             : image_url;
+  return image_url;
 }
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,

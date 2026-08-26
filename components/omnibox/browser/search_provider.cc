@@ -1692,14 +1692,6 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
     if (entity_image_url.is_valid()) {
       prefetch_image_urls.push_back(std::move(entity_image_url));
     }
-
-    GURL answer_image_url =
-        suggestion.answer_template()
-            ? GURL(suggestion.answer_template()->answers(0).image().url())
-            : GURL();
-    if (answer_image_url.is_valid()) {
-      prefetch_image_urls.push_back(std::move(answer_image_url));
-    }
   }
 
   for (const GURL& url : prefetch_image_urls)

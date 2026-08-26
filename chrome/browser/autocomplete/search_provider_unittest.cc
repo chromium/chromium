@@ -4094,7 +4094,6 @@ TEST_F(SearchProviderTest, CopyAnswerToVerbatim) {
   AutocompleteMatch match;
   match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
   match.answer_template = omnibox::RichAnswerTemplate();
-  match.answer_template->add_answers();
   match.fill_into_edit = u"weather los angeles";
   match.type = AutocompleteMatchType::SEARCH_HISTORY;
   provider_->matches_.push_back(match);

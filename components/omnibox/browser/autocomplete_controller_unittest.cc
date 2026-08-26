@@ -1189,18 +1189,12 @@ TEST_F(AutocompleteControllerTest, MlRanking_PiecewiseMappedSearchBlending) {
   // Calculator and Answer suggestions should not be ML scored at this time,
   // since the ML model doesn't assign accurate scores to such suggestions
   // (due to the fact that they have a low click-through rate).
-  std::string answer_json =
-      "{ \"l\": ["
-      "  { \"il\": { \"t\": [{ \"t\": \"text\", \"tt\": 8 }] } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"sunny with a chance of hail\", "
-      "\"tt\": "
-      "5 }] } }] }";
   EXPECT_THAT(
       controller_.SimulateCleanAutocompletePass({
           // Final score: 1100 (!= 1300)
           CreateAnswerMlScoredMatch("answer 1100 0.75",
-                                    omnibox::ANSWER_TYPE_WEATHER, answer_json,
-                                    false, 1100, 0.75),
+                                    omnibox::ANSWER_TYPE_WEATHER, false, 1100,
+                                    0.75),
           // Final score: 1000 (!= 1500)
           CreateMlScoredMatch("calculator 1000 0.95",
                               AutocompleteMatchType::CALCULATOR, false, 1000,

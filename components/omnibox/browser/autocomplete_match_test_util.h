@@ -60,7 +60,6 @@ AutocompleteMatch CreateHistoryUrlMlScoredMatch(
 
 AutocompleteMatch CreateAnswerMlScoredMatch(std::string name,
                                             omnibox::AnswerType answer_type,
-                                            std::string answer_json,
                                             bool allowed_to_be_default_match,
                                             int traditional_relevance,
                                             float ml_output);
