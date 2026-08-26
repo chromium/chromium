@@ -630,9 +630,8 @@ TEST_P(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
                          form_id, field_id, Eq(u"2024-06-07 3:30 PM"),
                          FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 }
 
 // Tests that Autofill-sourced data displays ONLY the local settings manage link
@@ -845,9 +844,9 @@ TEST_P(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                            FillingProduct::kAtMemory, _));
   }
 
-  EXPECT_EQ(manager().FillOrPreviewSearchResult(
-                autofill_manager(), mojom::ActionPersistence::kFill, form_id,
-                field_id, final_suggestions[0]),
+  EXPECT_EQ(manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                                       final_suggestions[0],
+                                       /*metadata=*/std::nullopt),
             IsAsync(true));
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
@@ -919,9 +918,9 @@ TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
             FillingProduct::kAtMemory, std::optional<FieldType>()));
   }
 
-  EXPECT_EQ(manager().FillOrPreviewSearchResult(
-                autofill_manager(), mojom::ActionPersistence::kFill, form_id,
-                field_id, final_suggestions[0]),
+  EXPECT_EQ(manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                                       final_suggestions[0],
+                                       /*metadata=*/std::nullopt),
             IsAsync(true));
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
@@ -983,9 +982,9 @@ TEST_P(AtMemoryManagerTest,
             FillingProduct::kAtMemory, std::optional<FieldType>()));
   }
 
-  EXPECT_EQ(manager().FillOrPreviewSearchResult(
-                autofill_manager(), mojom::ActionPersistence::kFill, form_id,
-                field_id, final_suggestions[0]),
+  EXPECT_EQ(manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                                       final_suggestions[0],
+                                       /*metadata=*/std::nullopt),
             IsAsync(true));
 
   std::move(captured_callback).Run(u"unmasked_passport_1234");
@@ -1026,9 +1025,8 @@ TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
               ShowAtMemoryFetchFailureNotification(Eq(std::nullopt)));
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -1074,9 +1072,8 @@ TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
               IDS_AUTOFILL_AT_MEMORY_REAUTH_IN_PROGRESS_ERROR_NOTIFICATION))));
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 }
 
 // Tests that when fetching the unmasked entity instance fails, the manager
@@ -1132,9 +1129,8 @@ TEST_P(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
               ShowAutofillAiFetchEntityFailureNotification());
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -1193,9 +1189,9 @@ TEST_P(AtMemoryManagerTest, FillCreditCard_Success) {
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  EXPECT_EQ(manager().FillOrPreviewSearchResult(
-                autofill_manager(), mojom::ActionPersistence::kFill, form_id,
-                field_id, final_suggestions[0]),
+  EXPECT_EQ(manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                                       final_suggestions[0],
+                                       /*metadata=*/std::nullopt),
             IsAsync(false));
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
@@ -1255,9 +1251,9 @@ TEST_P(AtMemoryManagerTest, FillIban_Success) {
                            _, _, iban.value(), FillingProduct::kAtMemory, _));
   }
 
-  EXPECT_EQ(manager().FillOrPreviewSearchResult(
-                autofill_manager(), mojom::ActionPersistence::kFill, form_id,
-                field_id, final_suggestions[0]),
+  EXPECT_EQ(manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                                       final_suggestions[0],
+                                       /*metadata=*/std::nullopt),
             IsAsync(false));
 
   std::move(fetch_callback).Run(iban.value());
@@ -1644,9 +1640,8 @@ TEST_P(AtMemoryManagerTest, FillNonSensitiveData_Success) {
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -1692,9 +1687,8 @@ TEST_P(AtMemoryManagerTest, FillOverlappingPopups) {
       });
 
   // 2. Accept async suggestion on Popup 1.
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   // 3. Hide Popup 1.
   manager().OnPopupHidden();
@@ -2120,17 +2114,6 @@ TEST_P(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   EXPECT_EQ(primary_payload.value, u"987654321");
 
   // 3. Verify Preview and Fill of the Primary Suggestion.
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(
-                  mojom::ActionPersistence::kPreview,
-                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
-                  GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
-                  FillingProduct::kAtMemory, _));
-
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kPreview,
-                                      form_id, field_id, final_suggestions[0]);
-
   EXPECT_CALL(mock_query_service(), AuthenticateAndFetchPiiEntity(
                                         Ref(autofill_client()),
                                         GetAuthenticationMessage(form_origin()),
@@ -2144,9 +2127,8 @@ TEST_P(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
                   mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 }
 
 // Tests that CVC (`kCreditCardSecurityCode`) in metadata is excluded from the
@@ -2260,17 +2242,6 @@ TEST_P(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
   EXPECT_EQ(child_payload.value, u"987654321");
 
   // 4. Verify Preview and Fill of the Child Suggestion.
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(
-                  mojom::ActionPersistence::kPreview,
-                  mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
-                  GetObfuscatedValue(u"987654321", kVisibleSuffixLength),
-                  FillingProduct::kAtMemory, _));
-
-  manager().FillOrPreviewSearchResult(
-      autofill_manager(), mojom::ActionPersistence::kPreview, form_id, field_id,
-      final_suggestions[0].children[0]);
-
   EXPECT_CALL(mock_query_service(), AuthenticateAndFetchPiiEntity(
                                         Ref(autofill_client()),
                                         GetAuthenticationMessage(form_origin()),
@@ -2290,9 +2261,9 @@ TEST_P(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                   mojom::FieldActionType::kReplaceSelectionForAtMemory, _, _,
                   std::u16string(u"987654321"), FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(
-      autofill_manager(), mojom::ActionPersistence::kFill, form_id, field_id,
-      final_suggestions[0].children[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0].children[0],
+                             /*metadata=*/std::nullopt);
 }
 
 TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
@@ -2376,9 +2347,8 @@ TEST_P(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -2428,9 +2398,8 @@ TEST_P(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -2566,9 +2535,8 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
   payload.identifier = Iban::Guid("guid");
   suggestion.payload = std::move(payload);
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, suggestion);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, suggestion,
+                             /*metadata=*/std::nullopt);
   EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
 
   // 3. Hovering/showing a sub-popup after recorder was moved out should NOT
@@ -2631,9 +2599,9 @@ TEST_P(AtMemoryManagerTest,
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"1234"));
 
-  manager().FillOrPreviewSearchResult(
-      autofill_manager(), mojom::ActionPersistence::kFill, uncached_form_id,
-      uncached_field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), uncached_form_id,
+                             uncached_field_id, final_suggestions[0],
+                             /*metadata=*/std::nullopt);
 }
 
 // Tests that when target field origin is opaque, filling sensitive data falls
@@ -2678,9 +2646,9 @@ TEST_P(AtMemoryManagerTest,
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"1234"));
 
-  manager().FillOrPreviewSearchResult(
-      autofill_manager(), mojom::ActionPersistence::kFill, uncached_form_id,
-      uncached_field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), uncached_form_id,
+                             uncached_field_id, final_suggestions[0],
+                             /*metadata=*/std::nullopt);
 }
 
 // Tests that when search statefulness is enabled, search results are persisted
@@ -2776,9 +2744,8 @@ TEST_F(AtMemoryManagerTestBase,
   manager().OnSearchSubmitted(u"john");
   ASSERT_FALSE(final_suggestions.empty());
 
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
 
   // After suggestion acceptance, state for field_id is reset.
   EXPECT_TRUE(manager()
@@ -2805,17 +2772,15 @@ TEST_F(AtMemoryManagerTestBase,
   Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
   s1.payload =
       Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, s1);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
+                             /*metadata=*/std::nullopt);
 
   // Accept suggestion 2.
   Suggestion s2(u"Suggestion 2", SuggestionType::kAtMemorySearchResult);
   s2.payload = Suggestion::AtMemoryPayload(u"Suggestion 2",
                                            MemoryDataType::kAddressFull);
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, s2);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, s2,
+                             /*metadata=*/std::nullopt);
 
   // Verify empty query suggestions contain header followed by s2 then s1
   // (newest to oldest).
@@ -2841,9 +2806,8 @@ TEST_F(AtMemoryManagerTestBase,
   Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
   s1.payload =
       Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, s1);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
+                             /*metadata=*/std::nullopt);
 
   EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
 }
@@ -2862,9 +2826,8 @@ TEST_F(AtMemoryManagerTestBase,
   Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
   s1.payload =
       Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, s1);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
+                             /*metadata=*/std::nullopt);
 
   EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
 }
@@ -2884,9 +2847,8 @@ TEST_F(AtMemoryManagerTestBase,
   Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
   s1.payload =
       Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
-  manager().FillOrPreviewSearchResult(autofill_manager(),
-                                      mojom::ActionPersistence::kFill, form_id,
-                                      field_id, s1);
+  manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
+                             /*metadata=*/std::nullopt);
 
   EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
 }

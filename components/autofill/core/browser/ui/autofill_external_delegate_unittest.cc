@@ -4769,16 +4769,10 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   suggestion.payload =
       Suggestion::AtMemoryPayload(u"pasted text", MemoryDataType::kUnknown);
 
-  // 1. Test Preview
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
-                         _, _, std::u16string(u"pasted text"),
-                         FillingProduct::kAtMemory, _));
+  // 1. There is currently no Preview.
   external_delegate().DidSelectSuggestion(suggestion);
 
-  // 2. Test Fill
+  // 2. Test Fill.
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
