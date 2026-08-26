@@ -1,7 +1,7 @@
 Name: Benchmark - Macrobenchmark JUnit4
 Short Name: benchmark-macro-junit4
-URL: https://androidx.dev/snapshots/builds/16173798/artifacts/repository/androidx/benchmark/benchmark-macro-junit4/1.5.0-SNAPSHOT/benchmark-macro-junit4-1.5.0-20260825.200610-1.aar
-Version: 1.5.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/16176711/artifacts/repository/androidx/benchmark/benchmark-macro-junit4/1.6.0-SNAPSHOT/benchmark-macro-junit4-1.6.0-20260826.023742-1.aar
+Version: 1.6.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Android Benchmark - Macrobenchmark JUnit4
 
-See also: https://developer.android.com/jetpack/androidx/releases/benchmark#1.5.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/benchmark#1.6.0-SNAPSHOT
 
 
 Local Modifications:
