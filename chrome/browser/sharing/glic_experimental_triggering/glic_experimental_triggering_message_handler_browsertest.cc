@@ -84,8 +84,8 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
     : public GlicApiBrowserTest {
  public:
   GlicExperimentalTriggeringMessageHandlerBrowserTest()
-      : GlicApiBrowserTest(
-            "./glic_experimental_triggering_message_handler_browsertest.js") {
+      : GlicApiBrowserTest(GlicTestJsPath(
+            "./glic_experimental_triggering_message_handler_browsertest.js")) {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicExperimentalTriggering, {}},
          {features::kGlicExperimentalTriggeringScreenshot, {}},
@@ -183,15 +183,6 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
   std::optional<GlicEnabling::ScopedBypassEnablementChecksForTesting>
       scoped_glic_bypass_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       testAllTestsAreRegistered) {
-  AssertAllTestsRegistered(
-      {"GlicExperimentalTriggeringMessageHandlerBrowserTest",
-       "GlicExperimentalTriggeringMetadataEnabledBrowserTest",
-       "GlicExperimentalTriggeringMetadataDisabledBrowserTest",
-       "GlicExperimentalTriggeringOpenWindowTest"});
-}
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testGetExperimentalTriggeringUpdates) {

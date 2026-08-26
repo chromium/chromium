@@ -55,7 +55,7 @@ class GlicActorAttemptOtpFillingBrowserTest
  public:
   GlicActorAttemptOtpFillingBrowserTest()
       : GlicActorFunctionalBrowserTestBase(
-            "./glic_actor_attempt_otp_filling_browsertest.js") {
+            GlicTestJsPath("./glic_actor_attempt_otp_filling_browsertest.js")) {
     scoped_feature_list_.InitWithFeatures(
         {autofill::features::kGlicActorAutofill,
          features::kGlicActorAutofillOneTimePassword,
@@ -221,11 +221,6 @@ class GlicActorAttemptOtpFillingBrowserTest
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
-                       testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({"GlicActorAttemptOtpFillingBrowserTest"});
-}
 
 IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
                        testOptInDeclined) {

@@ -204,50 +204,6 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
-std::vector<std::string> GetTestSuiteNames() {
-  std::vector<std::string> names = {
-      "GlicApiTest",
-      "GlicApiTestNoFloatyOrLiveMode",
-      "GlicApiTestForNoWebUiLoader",
-      "GlicApiTestWithFastTimeout",
-      "GlicApiTestWithWebContentsWarming",
-      "GlicApiTestWithPixelOutput",
-      "GlicApiTestWithContextualCueing",
-      "GlicApiTestWithGeminiActOnWebPolicy",
-      "GlicApiMultiProfileTest",
-      "GlicApiTestWithDefaultTabContextDisabled",
-      "GlicApiTestWithBlankInstanceDelay",
-      "GlicApiTestWithDefaultTabContextEnabled",
-      "GlicApiTestWithWebActuationSettingDisabled",
-      "GlicApiTestWithWebActuationSettingEnabled",
-      "GlicApiTestWithProcessCounterAbuseVerdictDisabled",
-      "GlicApiScrollToTest",
-      "GlicApiTestWithExperimentalTriggeringScreenshot",
-      "GlicApiUnresponsiveTest",
-      "GlicApiTestGeminiEnterpriseSettingsOverride",
-      "GlicApiTestGeminiEnterpriseSettingsDisabled",
-      "GlicApiTestGeminiEnterpriseSettingsPolicy",
-      "GlicApiTestGeminiEnterpriseSettingsPolicyUnset",
-      "GlicApiTestWithMqlsIdGetterDisabled",
-      "GlicApiTestWithSkills",
-      "GlicApiTestWithSkillsDisabled",
-      "GlicApiTestWithMqlsIdGetterEnabled",
-      "GlicApiTestWithCachedUserProfile",
-      "GlicApiTestRuntimeFeatureOff",
-      "GlicOnboardingApiTest",
-      "GlicApiTestSystemSettingsTest",
-      "GlicGetHostCapabilityApiTest",
-      "GlicApiTestUserStatusCheckTest",
-      "GlicApiTestWithPixelOutput",
-      "GlicApiTestWithNewTabDaisyChain",
-#if !BUILDFLAG(IS_ANDROID)
-      "GlicApiTestWithFileUploadPolicyEnabled",
-#endif
-  };
-
-  return names;
-}
-
 std::string GlicTabId(tabs::TabHandle tab_handle) {
   return base::NumberToString(tab_handle.raw_value());
 }
@@ -320,7 +276,8 @@ class GlicApiTest : public GlicApiBrowserTest,
                     public WithTestParams,
                     public GlicApiTestPasskeys {
  public:
-  GlicApiTest() : GlicApiBrowserTest("./glic_api_browsertest.js") {
+  GlicApiTest()
+      : GlicApiBrowserTest(GlicTestJsPath("./glic_api_browsertest.js")) {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&SorryPageRequestHandler));
     scoped_vmodule_switches_.InitWithSwitches("*glic*=1");
@@ -3259,7 +3216,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
                                      public GlicApiTestPasskeys {
  public:
   GlicGetHostCapabilityApiTest()
-      : GlicApiBrowserTest("./glic_api_browsertest.js") {
+      : GlicApiBrowserTest(GlicTestJsPath("./glic_api_browsertest.js")) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
         {features::kGlicProcessCounterAbuseVerdict, {}},
@@ -3501,21 +3458,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
     return instance->host().GetPageHandlersForTesting().size() == 1;
   }));
   ASSERT_TRUE(instance->host().GetPrimaryPageHandlerForTesting());
-}
-
-// Checks that all tests in glic_api_browsertest.ts have a corresponding
-// test case in this file.
-// TODO(crbug.com/460826483): Enable on CrOS.
-// TODO(crbug.com/508123456): Enable on Android once all disabled createTab
-// tests are fixed and re-enabled.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_testAllTestsAreRegistered DISABLED_testAllTestsAreRegistered
-#else
-#define MAYBE_testAllTestsAreRegistered testAllTestsAreRegistered
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
-  ASSERT_OK(OpenGlicForActiveTab());
-  AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDoNothing) {

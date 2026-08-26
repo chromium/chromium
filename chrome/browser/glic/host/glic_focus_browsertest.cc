@@ -18,12 +18,9 @@ namespace {
 
 class GlicFocusBrowserTest : public GlicApiBrowserTest {
  public:
-  GlicFocusBrowserTest() : GlicApiBrowserTest("./glic_focus_browsertest.js") {}
+  GlicFocusBrowserTest()
+      : GlicApiBrowserTest(GlicTestJsPath("./glic_focus_browsertest.js")) {}
 };
-
-IN_PROC_BROWSER_TEST_F(GlicFocusBrowserTest, testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({"GlicFocusBrowserTest"});
-}
 
 // Regression test for b/475260887. The autofocus <input> element in the client
 // page does not receive focus on opening the side panel.

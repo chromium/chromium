@@ -222,7 +222,7 @@ class GlicActorTaskLifecycleFunctionalBrowserTest
  public:
   GlicActorTaskLifecycleFunctionalBrowserTest()
       : GlicActorFunctionalBrowserTestBase(
-            "./glic_actor_task_lifecycle_browsertest.js") {
+            GlicTestJsPath("./glic_actor_task_lifecycle_browsertest.js")) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
@@ -378,14 +378,6 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
-                       testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({
-      "GlicActorTaskLifecycleFunctionalBrowserTest",
-      "GlicActorTaskLifecycleGmailOtpEnabledBrowserTest",
-  });
-}
 
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
                        testPauseAndResumeCreatedTask) {

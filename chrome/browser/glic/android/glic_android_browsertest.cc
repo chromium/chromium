@@ -22,13 +22,8 @@ namespace {
 class GlicAndroidMojoBrowserTest : public GlicApiBrowserTest {
  public:
   GlicAndroidMojoBrowserTest()
-      : GlicApiBrowserTest("./glic_android_browsertest.js") {}
+      : GlicApiBrowserTest(GlicTestJsPath("./glic_android_browsertest.js")) {}
 };
-
-IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest, testAllTestsAreRegistered) {
-  ASSERT_OK(OpenGlicForActiveTab());
-  AssertAllTestsRegistered({"GlicAndroidMojoBrowserTest"});
-}
 
 // Tests that page context fetching can query the URL of the focused browser
 // tab.

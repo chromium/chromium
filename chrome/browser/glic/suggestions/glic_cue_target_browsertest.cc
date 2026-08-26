@@ -28,7 +28,8 @@ namespace glic {
 class GlicCueTargetBrowserTest : public GlicApiBrowserTest {
  public:
   GlicCueTargetBrowserTest()
-      : GlicApiBrowserTest("./glic_cue_target_browsertest.js") {}
+      : GlicApiBrowserTest(GlicTestJsPath("./glic_cue_target_browsertest.js")) {
+  }
   ~GlicCueTargetBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -99,17 +100,6 @@ class GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled
  private:
   base::test::ScopedFeatureList features_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({
-      "GlicCueTargetBrowserTest",
-      "GlicCueTargetBrowserTestAutoSubmitEnabled",
-      "GlicCueTargetBrowserTestAutoSubmitDisabled",
-      "GlicCueTargetBrowserTestMessageFirstFreEnabled",
-      "GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled",
-  });
-}
-
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
   GlicCueTarget target(*service(), nullptr,
                        *GetTabListInterface()->GetActiveTab());

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// cc_file_path: chrome/browser/glic/host/glic_drag_and_drop_browsertest.cc
+
 import {InvocationSource} from '/glic/glic_api/glic_api.js';
 import type {InvokeOptions} from '/glic/glic_api/glic_api.js';
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// cc_file_path: chrome/browser/glic/host/glic_focus_browsertest.cc
+
 import {ApiTestFixtureBase, runUntil, testMain} from './browser_test_base.js';
 
 class GlicFocusBrowserTest extends ApiTestFixtureBase {

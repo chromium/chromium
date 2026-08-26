@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// cc_file_path:
+// chrome/browser/glic/actor/glic_actor_attempt_otp_filling_browsertest.cc
+
 import {ActorTaskStopReason} from '/glic/glic_api/glic_api.js';
 import type {GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
 

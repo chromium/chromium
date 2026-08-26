@@ -71,7 +71,8 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
   using InProcessBrowserTest::browser;
 
   GlicDragAndDropPolicyTest()
-      : GlicApiBrowserTest("./glic_drag_and_drop_browsertest.js") {
+      : GlicApiBrowserTest(
+            GlicTestJsPath("./glic_drag_and_drop_browsertest.js")) {
     feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                     features::kGlicWebDragAndDropFileUpload},
                                    {});
@@ -287,10 +288,6 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({"GlicDragAndDropPolicyTest"});
-}
 
 IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(

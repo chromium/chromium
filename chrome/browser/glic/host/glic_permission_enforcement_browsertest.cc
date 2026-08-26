@@ -15,7 +15,8 @@ namespace glic {
 class GlicPermissionEnforcementBrowserTest : public GlicApiBrowserTest {
  public:
   GlicPermissionEnforcementBrowserTest()
-      : GlicApiBrowserTest("./glic_permission_enforcement_browsertest.js") {
+      : GlicApiBrowserTest(
+            GlicTestJsPath("./glic_permission_enforcement_browsertest.js")) {
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(fake_latitude_,
                                                              fake_longitude_);
@@ -27,11 +28,6 @@ class GlicPermissionEnforcementBrowserTest : public GlicApiBrowserTest {
   double fake_longitude_ = 4.56;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementBrowserTest,
-                       testAllTestsAreRegistered) {
-  AssertAllTestsRegistered({"GlicPermissionEnforcementBrowserTest"});
-}
 
 // TODO(crbug.com/409118577): Microphone permissions are not actually gated by
 // the microphone permission yet.

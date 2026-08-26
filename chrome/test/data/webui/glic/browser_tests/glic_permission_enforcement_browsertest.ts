@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// cc_file_path:
+// chrome/browser/glic/host/glic_permission_enforcement_browsertest.cc
+
 import {ApiTestFixtureBase, assertEquals, assertRejects, assertTrue, testMain} from './browser_test_base.js';
 
 class GlicPermissionEnforcementApiTest extends ApiTestFixtureBase {

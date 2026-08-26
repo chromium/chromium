@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// cc_file_path:
+// chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler_browsertest.cc
+
 import {ActuationTarget, ExperimentalTriggeringUpdateType} from '/glic/glic_api/glic_api.js';
 import type {ExperimentalTriggeringUpdate, Observable2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';

@@ -408,15 +408,6 @@ export class ApiTestFixtureBase {
     return this.getUrl('/test_data/' + path);
   }
 
-  async testAllTestsAreRegistered() {
-    const allNames = [];
-    for (const fixture of testRunner.testFixtures) {
-      allNames.push(...Object.getOwnPropertyNames(fixture.prototype)
-                        .filter(name => name.startsWith('test')));
-    }
-    await this.advanceToNextStep(allNames);
-  }
-
   protected async doBrowserCommand(command: BrowserCommand) {
     return this.testStepper.doCommand(command);
   }
@@ -429,10 +420,6 @@ function findTestFixture(
     if (Object.getOwnPropertyNames(fixture.prototype).includes(testName)) {
       return fixture;
     }
-  }
-  // testAllTestsAreRegistered is provided by the fixture base class.
-  if (testName === 'testAllTestsAreRegistered') {
-    return testFixtures[0];
   }
   return undefined;
 }

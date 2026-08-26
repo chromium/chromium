@@ -32,6 +32,14 @@
 
 namespace glic {
 
+// Strongly-typed wrapper for the WebUI JS test bundle path.
+// Required when instantiating GlicApiBrowserTest fixtures.
+struct GlicTestJsPath {
+  template <size_t N>
+  explicit consteval GlicTestJsPath(const char (&path)[N]) : value(path) {}
+  std::string_view value;
+};
+
 // This file defines Glic API test fixture GlicApiBrowserTest (and
 // GlicApiBrowserTestMixin).
 // These fixtures configure a Glic client that runs test code. Each .cc test
@@ -45,20 +53,15 @@ namespace glic {
 //   MyNewGlicTest() :
 //     // Make a new .ts file in chrome/test/data/webui/glic/browser_tests
 //     // update build rules, and point to the generated .js file here.
-//     GlicApiBrowserTest("./my_new_glic_test_browsertest.js") {}
+//     GlicApiBrowserTest(GlicTestJsPath("./my_new_glic_test_browsertest.js"))
+//     {}
 // };
 //
-// // Always include this test in one fixture of your test file. It ensures
-// // the set of tests in the .ts file match the set of tests in the .cc file.
-// IN_PROC_BROWSER_TEST_F(MyNewGlicTest, testAllTestsAreRegistered) {
-//   // Include all test fixture names here.
-//   AssertAllTestsRegistered({
-//       "MyNewGlicTest",
-//   });
-// }
 // // Add test cases...
 //
 // Next, here's boilerplate for the my_new_glic_test_browsertest.ts file:
+//
+// // cc_file_path: chrome/browser/glic/my_new_glic_test_browsertest.cc
 //
 // import {ApiTestFixtureBase, testMain} from './browser_test_base.js';
 //
@@ -193,7 +196,7 @@ class GlicApiBrowserTestMixin : public T {
 
  public:
   template <typename... Args>
-  explicit GlicApiBrowserTestMixin(std::string_view js_source_path,
+  explicit GlicApiBrowserTestMixin(GlicTestJsPath js_source_path,
                                    Args&&... args)
       : Base(std::forward<Args>(args)...) {
     Base::AddMockGlicQueryParam(
@@ -203,7 +206,7 @@ class GlicApiBrowserTestMixin : public T {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     Base::SetGlicPagePath("/glic/browser_tests/test.html");
-    Base::AddMockGlicQueryParam("testsrc", js_source_path);
+    Base::AddMockGlicQueryParam("testsrc", js_source_path.value);
 
     Base::embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler,
@@ -392,45 +395,6 @@ class GlicApiBrowserTestMixin : public T {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), duration);
     run_loop.Run();
-  }
-
-  void AssertAllTestsRegistered(
-      std::vector<std::string> gunit_test_suite_names) {
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-    GTEST_SKIP() << "AssertAllTestsRegistered not processed for slow binaries.";
-#else
-    ASSERT_OK(Base::OpenGlicForActiveTab());
-    ExecuteJsTest();
-    ASSERT_TRUE(step_data());
-    ASSERT_TRUE(step_data()->is_list());
-    ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();
-    std::set<std::string> test_suites;
-    std::set<std::string> js_test_names, cc_test_names;
-    for (const auto& test_name : step_data()->GetList()) {
-      js_test_names.insert(test_name.GetString());
-    }
-    for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
-      const auto* test_suite = unit_test->GetTestSuite(i);
-      if (!std::ranges::contains(gunit_test_suite_names,
-                                 std::string(test_suite->name()))) {
-        continue;
-      }
-      for (int j = 0; j < test_suite->total_test_count(); ++j) {
-        std::string name = test_suite->GetTestInfo(j)->name();
-        // Strips out the test variants suffix.
-        name = name.substr(0, name.find_last_of('/'));
-        if (name.starts_with("DISABLED_")) {
-          cc_test_names.insert(name.substr(9));
-        } else {
-          cc_test_names.insert(name);
-        }
-      }
-    }
-    ASSERT_THAT(js_test_names, testing::IsSubsetOf(cc_test_names))
-        << "Test cases in js, but not cc";
-    ContinueJsTest();
-#endif
   }
 
   const std::optional<base::Value>& step_data() const { return step_data_; }
