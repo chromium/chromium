@@ -16,6 +16,8 @@
   border: none;
   color: var(--color-omnibox-text);
   display: flex;
+  /* Absorbs available free space. This mathematically isolates layout changes
+   * on the left/right sides. */
   flex: 1;
   font-family: var(--omnibox-primary-font-family);
   font-size: var(--omnibox-primary-font-size);

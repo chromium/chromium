@@ -1343,10 +1343,9 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ClickLocationIcon) {
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
       FocusWebContents(kWebUIToolbarId),
-      ExecuteJsAt(
-          kWebUIToolbarId,
-          {"toolbar-app", "location-bar", "location-icon", "#container"},
-          "el => el.click()"),
+      ExecuteJsAt(kWebUIToolbarId,
+                  {"toolbar-app", "location-bar", "location-icon", "#button"},
+                  "el => el.click()"),
       WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }
 
@@ -1372,10 +1371,9 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
       // Close the popup
       RemoveFocusFromPopup(),
       // Now the location icon should be clickable.
-      ExecuteJsAt(
-          kWebUIToolbarId,
-          {"toolbar-app", "location-bar", "location-icon", "#container"},
-          "el => el.click()"),
+      ExecuteJsAt(kWebUIToolbarId,
+                  {"toolbar-app", "location-bar", "location-icon", "#button"},
+                  "el => el.click()"),
       WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }
 

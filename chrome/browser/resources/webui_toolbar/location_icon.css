@@ -4,28 +4,36 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
 :host {
   display: inline-flex;
+  interpolate-size: allow-keywords;
+  /* Prevents the default flex 'auto' min-width from resisting compression. If
+   * the omnibox space shrinks (e.g., small browser window), this enables the
+   * chip to safely shrink and crop instead of overflowing the flex layout.
+   *
+   * Note: Native C++ LocationIconView strictly enforces a compression floor
+   * of 10 characters. We map this to 0 instead, because applying a CSS
+   * min-width: min(10ch, max-content) floor would instantly snap the element
+   * to full width upon rendering, irreparably breaking the smooth 150ms
+   * expanding width animation sequence. */
+  min-width: 0;
 }
 
 /* The base layer of the chip, defining its shape, size, and base background
    color. */
-#container {
+#button {
   appearance: none;
   background: none;
   border: none;
-  box-sizing: content-box;
   display: inline-flex;
   font: inherit;
   margin: 0;
   padding: 0;
   align-items: center;
-  justify-content: center;
-  height: var(--location-bar-leading-icon-size);
-  width: var(--location-bar-leading-icon-size);
   border-radius: calc((var(--location-bar-leading-icon-size) +
                        var(--location-bar-page-info-icon-padding-top) +
                        var(--location-bar-page-info-icon-padding-bottom)) / 2);
@@ -39,11 +47,6 @@
 
   /* Ensure the ::after overlay does not spill outside the rounded corners. */
   position: relative;
-
-  /* Enforces a strict boundary so that the .text span truncates with an
-     ellipsis instead of overflowing the chip's width. */
-  overflow: hidden;
-
   outline: none;
   user-select: none; /* Disables text selection on double-click/drag */
 
@@ -52,13 +55,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-#container:focus-visible:focus {
+#button:focus-visible:focus {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: 2px;
 }
 
 @media (forced-colors: active) {
-  #container:focus-visible:focus {
+  #button:focus-visible:focus {
     /* Use outline instead of box-shadow (which does not work) in Windows
        HCM. */
     outline: var(--cr-focus-outline-hcm, 2px solid transparent);
@@ -67,7 +70,7 @@
 
 /* An invisible overlay that mimics the native views::InkDrop highlight
    (hover state). */
-#container::before {
+#button::before {
   background-color: var(--color-omnibox-icon-hover, transparent);
   border-radius: inherit;
   content: '';
@@ -81,7 +84,7 @@
 
 /* An invisible overlay that mimics the native views::InkDrop ripple
    (pressed state). */
-#container::after {
+#button::after {
   background-color: var(--color-omnibox-icon-pressed, transparent);
   border-radius: inherit;
   content: '';
@@ -93,49 +96,31 @@
   transition: opacity 300ms ease-in-out;
 }
 
-:host([has-text]) #container {
-  /* Overrides the fixed width of the icon-only state, allowing the chip to
-     stretch naturally and become a pill shape that fits the text inside. */
-  width: auto;
-  min-width: var(--location-bar-leading-icon-size);
-  /* Extra right padding added to the base padding */
-  padding-inline-end: calc(
-      var(--location-bar-page-info-icon-padding-right) +
-      var(--location-bar-page-info-icon-label-extra-trailing-padding));
-}
-
-:host([has-text][is-dangerous]) #container {
-  padding-inline-start:
-      var(--location-bar-page-info-icon-dangerous-leading-padding);
-  padding-inline-end:
-      var(--location-bar-page-info-icon-dangerous-trailing-padding);
-}
-
 /* --- HOVER LAYER (HOVER HIGHLIGHT) ---
    Native Views applies the highlight on hover AND when the ripple is active
    (SHOW_ON_RIPPLE mode). */
-:host([clickable]:hover) #container::before,
-:host([clickable]:active) #container::before,
-:host([clickable][anchor-highlighted]) #container::before {
+:host([clickable]:hover) #button::before,
+:host([clickable]:active) #button::before,
+:host([clickable][anchor-highlighted]) #button::before {
   /* The alpha value is baked directly into the color variable in C++. */
   opacity: 1;
 }
 
-:host([is-text-dangerous]) #container::before {
+:host([is-text-dangerous]) #button::before {
   background-color:
       var(--color-omnibox-security-chip-ink-drop-hover, transparent);
 }
 
 /* --- PRESSED LAYER (RIPPLE) ---
    Native Views composites the ripple on top of the hover highlight. */
-:host([clickable]:not([glow-up-active]):active) #container::after,
-:host([clickable][anchor-highlighted]) #container::after {
+:host([clickable]:not([glow-up-active]):active) #button::after,
+:host([clickable][anchor-highlighted]) #button::after {
   /* The alpha value is baked directly into the color variable in C++. */
   opacity: 1;
   transition: none; /* Instant press */
 }
 
-:host([is-text-dangerous]) #container::after {
+:host([is-text-dangerous]) #button::after {
   background-color:
       var(--color-omnibox-security-chip-ink-drop-ripple, transparent);
 }
@@ -149,11 +134,18 @@ icon-from-table {
   height: var(--location-bar-leading-icon-size);
 }
 
-:host([is-dangerous]) #container {
+:host([is-dangerous]) #button {
   color: var(--color-omnibox-security-chip-dangerous, currentColor);
 }
 
-:host([is-text-dangerous]) #container {
+:host([has-text][is-dangerous]) #button {
+  padding-inline-start:
+      var(--location-bar-page-info-icon-dangerous-leading-padding);
+  padding-inline-end:
+      var(--location-bar-page-info-icon-dangerous-trailing-padding);
+}
+
+:host([is-text-dangerous]) #button {
   background-color: var(
       --color-omnibox-security-chip-dangerous-background,
       var(--color-omnibox-icon-background));
@@ -161,15 +153,6 @@ icon-from-table {
 }
 
 #text {
-  /* text-overflow: ellipsis only applies to block containers. While being a
-     flex item implicitly blockifies this span, we make it explicit here to
-     prevent future confusion and guarantee the ellipsis behavior. */
-  display: block;
-
-  /* Adds space between the icon and the text */
-  margin-inline-start: var(--location-bar-child-internal-spacing);
-
-  /* Inherits the exact typography (STYLE_BODY_4_EMPHASIS) from location bar */
   font-family: var(--omnibox-chip-font-family);
   font-size: var(--omnibox-chip-font-size);
   font-weight: var(--omnibox-chip-font-weight);
@@ -177,22 +160,51 @@ icon-from-table {
   /* Prevents the text from wrapping to a second line */
   white-space: nowrap;
 
-  /* If the text is too long to fit in the available space,
-     these two rules chop it off and add an ellipsis (...) */
   overflow: hidden;
-  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
 
-  /* Matches the C++ GetMinimumSizeForPreferredSize logic: clamps the minimum
-     width of the chip to the width of 10 characters (10ch), allowing it to
-     squash down when space is tight, but no smaller than 10 characters wide. */
-  min-width: min(10ch, max-content);
+  /* Closed State: completely crushed and invisible */
+  width: 0;
+  opacity: 0;
+
+  /* Shrink margin to 0 when closed. */
+  margin-inline-start: 0;
+  padding-inline-end: 0;
+
+  /* Instant collapse */
+  transition: width 0ms, opacity 0ms, margin-inline-start 0ms,
+              padding-inline-end 0ms;
 }
 
-#container.help-anchor-highlight {
+:host([has-text]) #text {
+  /* Interpolates smoothly up to max-content */
+  width: max-content;
+  opacity: 1;
+
+  /* Text sits 8px away from the icon */
+  margin-inline-start: var(--location-bar-child-internal-spacing);
+
+  /* Some expanded states require overriding trailing margin */
+  padding-inline-end:
+      var(--location-bar-page-info-icon-label-extra-trailing-padding);
+
+  transition: width 150ms var(--ease-out-cubic-bezier),
+              opacity 150ms var(--ease-out-cubic-bezier),
+              margin-inline-start 150ms var(--ease-out-cubic-bezier),
+              padding-inline-end 150ms var(--ease-out-cubic-bezier);
+}
+
+:host([has-text][is-dangerous]) #text {
+  /* Prevent mathematically double-applying the extra trailing pad */
+  padding-inline-end: 0;
+}
+
+#button.help-anchor-highlight {
   background-color: transparent;
 }
 
-#container.help-anchor-highlight::before {
+#button.help-anchor-highlight::before {
   animation: pulse 1600ms infinite;
   background-color: var(--color-button-feature-attention-highlight);
   opacity: 1;
@@ -213,8 +225,10 @@ icon-from-table {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #container::before,
-  #container::after {
+  #button,
+  #text,
+  #button::before,
+  #button::after {
     animation: none !important;
     transition: none !important;
   }

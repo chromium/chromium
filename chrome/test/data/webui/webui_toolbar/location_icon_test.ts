@@ -104,7 +104,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
     assertEquals('View site information', container.title);
   });
 
@@ -134,7 +134,7 @@ suite('LocationIconTest', function() {
     assertTrue(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
     assertTrue(hasStyle(container, 'background-color', 'rgb(0, 0, 255)'));
     assertTrue(hasStyle(container, 'color', 'rgb(0, 255, 0)'));
   });
@@ -163,7 +163,7 @@ suite('LocationIconTest', function() {
     assertFalse(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
     assertTrue(hasStyle(container, 'color', 'rgb(255, 0, 0)'));
   });
 
@@ -209,7 +209,7 @@ suite('LocationIconTest', function() {
 
     assertFalse(locationIcon.hasAttribute('clickable'));
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
     container.dispatchEvent(new PointerEvent('pointerdown'));
     assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
 
@@ -235,7 +235,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
 
     // Simulate normal click pointerdown
     container.dispatchEvent(new PointerEvent('pointerdown', {button: 0}));
@@ -297,7 +297,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
 
     // Initial touch
     container.dispatchEvent(
@@ -481,7 +481,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.container;
+    const container = locationIcon.$.button;
     assertEquals('img', container.getAttribute('role'));
     assertEquals('Search icon', container.getAttribute('aria-label'));
     assertEquals(

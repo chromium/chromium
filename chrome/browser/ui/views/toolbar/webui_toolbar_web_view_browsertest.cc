@@ -5653,7 +5653,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
       "document.querySelector('toolbar-app')?.shadowRoot?"
       ".querySelector('location-bar')?.shadowRoot?"
       ".querySelector('location-icon')?.shadowRoot?"
-      ".querySelector('#container')";
+      ".querySelector('#button')";
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_contents,

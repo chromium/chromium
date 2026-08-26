@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, MiddleClickPasteAndGo) {
         const locationIcon = document.querySelector('toolbar-app')?.
             shadowRoot?.querySelector('location-bar')?.
             shadowRoot?.querySelector('location-icon');
-        const container = locationIcon?.shadowRoot?.querySelector('#container');
+        const container = locationIcon?.shadowRoot?.querySelector('#button');
         if (!container) {
           return false;
         }
