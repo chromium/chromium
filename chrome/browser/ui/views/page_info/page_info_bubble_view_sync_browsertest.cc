@@ -9,8 +9,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -50,12 +49,7 @@ void PerformMouseClickOnView(views::View* view) {
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  LocationIconView* location_icon_view =
-      browser_view->toolbar()->location_bar_view()->location_icon_view();
-  ASSERT_TRUE(location_icon_view);
-  ui::test::TestEvent event;
-  location_icon_view->ShowBubble(event);
+  LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleView::GetPageInfoBubbleForTesting();
   EXPECT_NE(nullptr, page_info);

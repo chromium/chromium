@@ -370,3 +370,22 @@ source_set("interactive_ui_tests") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "location_icon_test_accessor.cc" ]
+  public = [ "location_icon_test_accessor.h" ]
+
+  deps = [
+    ":location_bar",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:bubble_anchor_util",
+    "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/page_info",
+    "//chrome/browser/ui/views/toolbar",
+    "//ui/events:test_support",
+  ]
+  public_deps = [ "//base" ]
+}

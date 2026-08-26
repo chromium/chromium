@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
@@ -755,12 +756,18 @@ void WebUILocationBar::ShowPageInfoBubble() {
     anchor_element = GetAnchorOrNull();
   }
 
+  base::OnceClosure initialized_callback =
+      GetPageInfoDialogCreatedCallbackForTesting()                   // IN-TEST
+          ? std::move(GetPageInfoDialogCreatedCallbackForTesting())  // IN-TEST
+          : base::DoNothing();
+
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
           anchor_element ? views::BubbleAnchor(anchor_element)
                          : views::BubbleAnchor(toolbar_delegate_->GetView()),
           toolbar_delegate_->GetView()->GetWidget()->GetNativeWindow(),
           contents, entry->GetVirtualURL())
+          .AddInitializedCallback(std::move(initialized_callback))
           .AddPageInfoClosingCallback(
               base::BindOnce(&WebUILocationBar::OnPageInfoBubbleClosed,
                              weak_ptr_factory_.GetWeakPtr()))
