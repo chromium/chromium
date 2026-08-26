@@ -9,7 +9,7 @@ import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest} from './iwa_dev.mojom-webui.js';
+import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from './iwa_dev.mojom-webui.js';
 import {getCss as getSharedCss} from './shared_style.css.js';
 import {getCss} from './update_options_dialog.css.js';
 import {getHtml} from './update_options_dialog.html.js';
@@ -17,6 +17,7 @@ import {getHtml} from './update_options_dialog.html.js';
 export interface UpdateOptionsSavedEventDetail {
   app: IwaDevModeAppInfo;
   selectedChannel?: string;
+  pinnedVersion?: string|null;
 }
 
 export interface IwaDevUpdateOptionsDialogElement {
@@ -44,10 +45,13 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   static override get properties() {
     return {
       app: {type: Object},
+      currentPinnedVersion: {type: String},
       isFetching_: {type: Boolean, state: true},
       fetchError_: {type: String, state: true},
       channels_: {type: Array, state: true},
       selectedChannel_: {type: String, state: true},
+      versions_: {type: Array, state: true},
+      selectedPinnedVersion_: {type: String, state: true},
     };
   }
 
@@ -59,14 +63,19 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     installedVersion: '',
   };
 
+  accessor currentPinnedVersion: string|null = null;
+
   protected accessor isFetching_: boolean = true;
   protected accessor fetchError_: string = '';
   protected accessor channels_: ChannelMetadata[] = [];
   protected accessor selectedChannel_: string = '';
+  protected accessor versions_: VersionEntry[] = [];
+  protected accessor selectedPinnedVersion_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
     this.selectedChannel_ = this.getCurrentChannel_();
+    this.selectedPinnedVersion_ = this.getCurrentPinnedVersion_() || '';
   }
 
   protected onCrDialogOpen_() {
@@ -82,19 +91,31 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     this.selectedChannel_ = (e.target as HTMLInputElement).value;
   }
 
+  protected onPinnedVersionInput_(e: Event) {
+    this.selectedPinnedVersion_ = (e.target as HTMLInputElement).value;
+  }
+
   protected getCurrentChannel_(): string {
     return this.app.source.updateInfo?.updateChannel || 'default';
+  }
+
+  protected getCurrentPinnedVersion_(): string|null {
+    return this.currentPinnedVersion;
   }
 
   protected getChannelPlaceholder_(): string {
     return this.isFetching_ ? 'Loading channels...' : 'Select or enter channel';
   }
 
+  protected getVersionPlaceholder_(): string {
+    return this.isFetching_ ? 'Loading versions...' : 'Select or enter version';
+  }
+
   protected isSaveDisabled_(): boolean {
     if (this.isFetching_) {
       return true;
     }
-    return !this.hasChannelChange_();
+    return !this.hasChannelChange_() && !this.hasPinnedVersionChange_();
   }
 
   protected onSaveClick_() {
@@ -106,6 +127,11 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
     if (this.hasChannelChange_()) {
       detail.selectedChannel = this.selectedChannel_.trim();
+    }
+
+    if (this.hasPinnedVersionChange_()) {
+      const version = this.selectedPinnedVersion_.trim();
+      detail.pinnedVersion = version.length === 0 ? null : version;
     }
 
     this.fire('update-options-saved', detail);
@@ -127,6 +153,7 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
               'Failed to fetch suggestions from update manifest.';
         } else if (result.success) {
           this.channels_ = result.success.channels || [];
+          this.versions_ = result.success.versions || [];
         }
       },
     });
@@ -135,6 +162,12 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   private hasChannelChange_(): boolean {
     const channel = this.selectedChannel_.trim();
     return channel.length > 0 && channel !== this.getCurrentChannel_();
+  }
+
+  private hasPinnedVersionChange_(): boolean {
+    const version = this.selectedPinnedVersion_.trim();
+    const current = this.getCurrentPinnedVersion_() || '';
+    return version !== current;
   }
 }
 

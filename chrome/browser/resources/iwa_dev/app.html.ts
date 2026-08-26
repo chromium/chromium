@@ -68,6 +68,8 @@ ${!this.devModeEnabled_ ? html`
       ${this.selectedAppForUpdateOptions_ ? html`
         <iwa-dev-update-options-dialog id="updateOptionsDialog"
             .app="${this.selectedAppForUpdateOptions_}"
+            .currentPinnedVersion="${
+              this.getPinnedVersion_(this.selectedAppForUpdateOptions_.appId)}"
             @close="${this.onUpdateOptionsDialogClose_}"
             @request-parse-update-manifest-from-url="${
               this.onRequestParseUpdateManifestFromUrl_}"

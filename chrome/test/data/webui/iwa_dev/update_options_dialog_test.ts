@@ -4,7 +4,7 @@
 
 import 'chrome://iwa-dev/update_options_dialog.js';
 
-import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
+import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -14,6 +14,7 @@ suite('<iwa-dev-update-options-dialog>', () => {
   let saveButton: HTMLButtonElement;
   let cancelButton: HTMLButtonElement;
   let channelInput: HTMLInputElement;
+  let pinnedVersionInput: HTMLInputElement;
 
   function createAppInfo(updateChannel: string = 'default'): IwaDevModeAppInfo {
     return {
@@ -30,10 +31,12 @@ suite('<iwa-dev-update-options-dialog>', () => {
     };
   }
 
-  async function createDialog(app: IwaDevModeAppInfo) {
+  async function createDialog(
+      app: IwaDevModeAppInfo, currentPinnedVersion: string|null = null) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('iwa-dev-update-options-dialog');
     dialog.app = app;
+    dialog.currentPinnedVersion = currentPinnedVersion;
 
     const fetchPromise =
         eventToPromise('request-parse-update-manifest-from-url', dialog);
@@ -49,6 +52,9 @@ suite('<iwa-dev-update-options-dialog>', () => {
     channelInput =
         dialog.shadowRoot.querySelector<HTMLInputElement>('#channelInput')!;
     assertTrue(!!channelInput);
+    pinnedVersionInput = dialog.shadowRoot.querySelector<HTMLInputElement>(
+        '#pinnedVersionInput')!;
+    assertTrue(!!pinnedVersionInput);
 
     const event = await fetchPromise as CustomEvent<{
                     url: string,
@@ -65,50 +71,97 @@ suite('<iwa-dev-update-options-dialog>', () => {
         '#channelList option');
   }
 
-  async function openDialog(
-      currentChannel: string = 'default',
-      channels: ChannelMetadata[] = [{channel: 'beta', displayName: 'Beta'}]) {
-    const callback = await createDialog(createAppInfo(currentChannel));
-    callback({success: {versions: [], channels}});
+  function getPinnedVersionOptions(): NodeListOf<HTMLOptionElement> {
+    return dialog.shadowRoot.querySelectorAll<HTMLOptionElement>(
+        '#pinnedVersionList option');
+  }
+
+  interface OpenDialogOptions {
+    currentChannel?: string;
+    currentPinnedVersion?: string|null;
+    channels?: ChannelMetadata[];
+    versions?: VersionEntry[];
+  }
+
+  async function openDialog(options: OpenDialogOptions = {}) {
+    const currentChannel = options.currentChannel || 'default';
+    const currentPinnedVersion = options.currentPinnedVersion ?? null;
+    const channels =
+        options.channels || [{channel: 'beta', displayName: 'Beta'}];
+    const versions = options.versions || [];
+
+    const callback =
+        await createDialog(createAppInfo(currentChannel), currentPinnedVersion);
+    callback({success: {versions, channels}});
     await microtasksFinished();
   }
 
-  async function openDialogWithError(
-      currentChannel: string = 'default', error: string = 'Network error') {
-    const callback = await createDialog(createAppInfo(currentChannel));
+  interface OpenDialogWithErrorOptions {
+    currentChannel?: string;
+    currentPinnedVersion?: string|null;
+    error?: string;
+  }
+
+  async function openDialogWithError(options: OpenDialogWithErrorOptions = {}) {
+    const currentChannel = options.currentChannel || 'default';
+    const currentPinnedVersion = options.currentPinnedVersion ?? null;
+    const error = options.error || 'Network error';
+
+    const callback =
+        await createDialog(createAppInfo(currentChannel), currentPinnedVersion);
     callback({error});
     await microtasksFinished();
   }
 
   test(
       'fetches manifest on open, pre-fills current channel, and populates ' +
-          'datalist with all channels',
+          'datalists with all options',
       async () => {
-        await openDialog('default', [
-          {channel: 'default', displayName: 'Default'},
-          {channel: 'beta', displayName: 'Beta Channel'},
-          {channel: 'canary', displayName: 'Canary'},
-        ]);
+        await openDialog({
+          currentChannel: 'default',
+          currentPinnedVersion: '1.0.0',
+          channels: [
+            {channel: 'default', displayName: 'Default'},
+            {channel: 'beta', displayName: 'Beta Channel'},
+            {channel: 'canary', displayName: 'Canary'},
+          ],
+          versions: [
+            {version: '1.0.0', src: '', channels: ['default']},
+            {version: '2.0.0', src: '', channels: ['beta']},
+            {version: '3.0.0', src: '', channels: ['canary']},
+          ],
+        });
 
         assertTrue(dialog.$.dialog.open);
         assertEquals('default', channelInput.value);
+        assertEquals('1.0.0', pinnedVersionInput.value);
 
-        const options = getChannelOptions();
-        assertEquals(3, options.length);
-        assertEquals('default', options[0]!.value);
-        assertEquals('Default', options[0]!.textContent?.trim());
-        assertEquals('beta', options[1]!.value);
-        assertEquals('Beta Channel', options[1]!.textContent?.trim());
-        assertEquals('canary', options[2]!.value);
-        assertEquals('Canary', options[2]!.textContent?.trim());
+        const channelOptions = getChannelOptions();
+        assertEquals(3, channelOptions.length);
+        assertEquals('default', channelOptions[0]!.value);
+        assertEquals('Default', channelOptions[0]!.textContent?.trim());
+        assertEquals('beta', channelOptions[1]!.value);
+        assertEquals('Beta Channel', channelOptions[1]!.textContent?.trim());
+        assertEquals('canary', channelOptions[2]!.value);
+        assertEquals('Canary', channelOptions[2]!.textContent?.trim());
+
+        const versionOptions = getPinnedVersionOptions();
+        assertEquals(3, versionOptions.length);
+        assertEquals('1.0.0', versionOptions[0]!.value);
+        assertEquals('2.0.0', versionOptions[1]!.value);
+        assertEquals('3.0.0', versionOptions[2]!.value);
+
         assertTrue(saveButton.hasAttribute('disabled'));
       });
 
   test(
-      'displays error message and allows saving custom channel when manifest ' +
+      'displays error message and allows saving custom values when manifest ' +
           'fetch fails',
       async () => {
-        await openDialogWithError('default', 'Failed to fetch manifest');
+        await openDialogWithError({
+          currentChannel: 'default',
+          error: 'Failed to fetch manifest',
+        });
 
         const errorDiv =
             dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
@@ -120,6 +173,8 @@ suite('<iwa-dev-update-options-dialog>', () => {
 
         channelInput.value = 'beta';
         channelInput.dispatchEvent(new Event('input'));
+        pinnedVersionInput.value = '2.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
         await microtasksFinished();
 
         assertFalse(saveButton.hasAttribute('disabled'));
@@ -129,15 +184,20 @@ suite('<iwa-dev-update-options-dialog>', () => {
 
         const saveEvent = await savePromise as CustomEvent<{
                             selectedChannel: string,
+                            pinnedVersion: string,
                           }>;
         assertEquals('beta', saveEvent.detail.selectedChannel);
+        assertEquals('2.0.0', saveEvent.detail.pinnedVersion);
         assertFalse(dialog.$.dialog.open);
       });
 
   test(
       'disables save button until a different valid channel is entered',
       async () => {
-        await openDialog('default', [{channel: 'beta', displayName: 'Beta'}]);
+        await openDialog({
+          currentChannel: 'default',
+          channels: [{channel: 'beta', displayName: 'Beta'}],
+        });
         assertEquals('default', channelInput.value);
         assertTrue(saveButton.hasAttribute('disabled'));
 
@@ -167,25 +227,95 @@ suite('<iwa-dev-update-options-dialog>', () => {
       });
 
   test(
-      'emits update-options-saved on save click and closes dialog',
+      'disables save button until a different pinned version is entered',
       async () => {
-        await openDialog('default', [{channel: 'beta', displayName: 'Beta'}]);
+        await openDialog({
+          currentPinnedVersion: '1.0.0',
+          versions: [{version: '2.0.0', src: '', channels: ['default']}],
+        });
+        assertEquals('1.0.0', pinnedVersionInput.value);
+        assertTrue(saveButton.hasAttribute('disabled'));
 
-        channelInput.value = '  beta  ';
-        channelInput.dispatchEvent(new Event('input'));
+        // Entering current pinned version keeps save disabled
+        pinnedVersionInput.value = '1.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
         await microtasksFinished();
+        assertTrue(saveButton.hasAttribute('disabled'));
 
-        const savePromise = eventToPromise('update-options-saved', dialog);
-        saveButton.click();
+        // Entering a new pinned version enables save
+        pinnedVersionInput.value = '2.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+        assertFalse(saveButton.hasAttribute('disabled'));
 
-        const saveEvent = await savePromise as CustomEvent<{
-                            app: IwaDevModeAppInfo,
-                            selectedChannel: string,
-                          }>;
-        assertEquals('test-app-id', saveEvent.detail.app.appId);
-        assertEquals('beta', saveEvent.detail.selectedChannel);
-        assertFalse(dialog.$.dialog.open);
+        // Resetting pinned version to current disables save again
+        pinnedVersionInput.value = '1.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+        assertTrue(saveButton.hasAttribute('disabled'));
+
+        // Clearing pinned version (unpinning) enables save
+        pinnedVersionInput.value = '';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+        assertFalse(saveButton.hasAttribute('disabled'));
+
+        // Resetting to current version disables save again
+        pinnedVersionInput.value = '1.0.0';
+        pinnedVersionInput.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+        assertTrue(saveButton.hasAttribute('disabled'));
       });
+
+  test('emits update-options-saved on save click', async () => {
+    await openDialog({
+      currentChannel: 'default',
+      currentPinnedVersion: '1.0.0',
+      channels: [{channel: 'beta', displayName: 'Beta'}],
+      versions: [{version: '2.0.0', src: '', channels: ['beta']}],
+    });
+
+    channelInput.value = '  beta  ';
+    channelInput.dispatchEvent(new Event('input'));
+    pinnedVersionInput.value = '  2.0.0  ';
+    pinnedVersionInput.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const savePromise = eventToPromise('update-options-saved', dialog);
+    saveButton.click();
+
+    const saveEvent = await savePromise as CustomEvent<{
+                        app: IwaDevModeAppInfo,
+                        selectedChannel?: string,
+                        pinnedVersion?: string,
+                      }>;
+    assertEquals('test-app-id', saveEvent.detail.app.appId);
+    assertEquals('beta', saveEvent.detail.selectedChannel);
+    assertEquals('2.0.0', saveEvent.detail.pinnedVersion);
+    assertFalse(dialog.$.dialog.open);
+  });
+
+  test('emits null pinned version when input is cleared', async () => {
+    await openDialog({
+      currentChannel: 'default',
+      currentPinnedVersion: '1.0.0',
+      channels: [{channel: 'beta', displayName: 'Beta'}],
+    });
+
+    pinnedVersionInput.value = '';
+    pinnedVersionInput.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+    assertFalse(saveButton.hasAttribute('disabled'));
+
+    const savePromise = eventToPromise('update-options-saved', dialog);
+    saveButton.click();
+
+    const saveEvent = await savePromise as CustomEvent<{
+                        pinnedVersion?: string | null,
+                      }>;
+    assertEquals(null, saveEvent.detail.pinnedVersion);
+    assertFalse(dialog.$.dialog.open);
+  });
 
   test('closes dialog on cancel click', async () => {
     await openDialog();
@@ -214,8 +344,11 @@ suite('<iwa-dev-update-options-dialog>', () => {
 
     channelInput =
         dialog.shadowRoot.querySelector<HTMLInputElement>('#channelInput')!;
+    pinnedVersionInput = dialog.shadowRoot.querySelector<HTMLInputElement>(
+        '#pinnedVersionInput')!;
 
     assertEquals('Loading channels...', channelInput.placeholder);
+    assertEquals('Loading versions...', pinnedVersionInput.placeholder);
 
     const event =
         await manifestRequestPromise as CustomEvent<{
@@ -232,15 +365,20 @@ suite('<iwa-dev-update-options-dialog>', () => {
     await microtasksFinished();
 
     assertEquals('Select or enter channel', channelInput.placeholder);
+    assertEquals('Select or enter version', pinnedVersionInput.placeholder);
   });
 
-  test('allows saving a custom channel not present in manifest', async () => {
-    await openDialog('default', [
-      {channel: 'default', displayName: 'Default'},
-    ]);
+  test('allows saving custom values not present in manifest', async () => {
+    await openDialog({
+      currentChannel: 'default',
+      channels: [{channel: 'default', displayName: 'Default'}],
+      versions: [{version: '1.0.0', src: '', channels: ['default']}],
+    });
 
     channelInput.value = 'custom-channel';
     channelInput.dispatchEvent(new Event('input'));
+    pinnedVersionInput.value = '99.0.0';
+    pinnedVersionInput.dispatchEvent(new Event('input'));
     await microtasksFinished();
 
     assertFalse(saveButton.hasAttribute('disabled'));
@@ -249,9 +387,11 @@ suite('<iwa-dev-update-options-dialog>', () => {
     saveButton.click();
 
     const saveEvent = await savePromise as CustomEvent<{
-                        selectedChannel: string,
+                        selectedChannel?: string,
+                        pinnedVersion?: string,
                       }>;
     assertEquals('custom-channel', saveEvent.detail.selectedChannel);
+    assertEquals('99.0.0', saveEvent.detail.pinnedVersion);
   });
 
   test('ignores manifest fetch callback if dialog is closed', async () => {
@@ -263,13 +403,14 @@ suite('<iwa-dev-update-options-dialog>', () => {
 
     callback({
       success: {
-        versions: [],
+        versions: [{version: '1.0.0', src: '', channels: ['beta']}],
         channels: [{channel: 'beta', displayName: 'Beta'}],
       },
     });
     await microtasksFinished();
 
     assertEquals(0, getChannelOptions().length);
+    assertEquals(0, getPinnedVersionOptions().length);
   });
 
   test('ignores fetch callback from previous dialog instance', async () => {
@@ -285,17 +426,18 @@ suite('<iwa-dev-update-options-dialog>', () => {
     // Stale callback for app 1 arrives
     callback1({
       success: {
-        versions: [],
+        versions: [{version: '1.0.0', src: '', channels: ['app-1-channel']}],
         channels: [{channel: 'app-1-channel', displayName: 'App 1'}],
       },
     });
     await microtasksFinished();
     assertEquals(0, getChannelOptions().length);
+    assertEquals(0, getPinnedVersionOptions().length);
 
     // Active callback for app 2 arrives
     callback2({
       success: {
-        versions: [],
+        versions: [{version: '2.0.0', src: '', channels: ['app-2-channel']}],
         channels: [{channel: 'app-2-channel', displayName: 'App 2'}],
       },
     });
@@ -304,5 +446,8 @@ suite('<iwa-dev-update-options-dialog>', () => {
     const channelOptions = getChannelOptions();
     assertEquals(1, channelOptions.length);
     assertEquals('app-2-channel', channelOptions[0]!.value);
+    const versionOptions = getPinnedVersionOptions();
+    assertEquals(1, versionOptions.length);
+    assertEquals('2.0.0', versionOptions[0]!.value);
   });
 });

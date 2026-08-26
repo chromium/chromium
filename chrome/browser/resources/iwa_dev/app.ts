@@ -20,10 +20,44 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {IwaDevInstallDialogElement} from './install_dialog.js';
-import type {BrowserProxy, IwaDevModeAppInfo, UpdateInfo, UpdateManifest} from './iwa_dev.mojom-webui.js';
+import type {BrowserProxy, IwaDevModeAppInfo, UpdateInfo, UpdateManifest, UpdateManifestOptions} from './iwa_dev.mojom-webui.js';
 import {browserProxyFactory} from './iwa_dev.mojom-webui.js';
+import type {UpdateOptionsSavedEventDetail} from './update_options_dialog.js';
 
 export const MIN_UPDATE_DELAY_MS = 750;
+
+export const DEFAULT_UPDATE_OPTIONS: UpdateManifestOptions = {
+  allowDowngrades: false,
+  pinnedVersion: null,
+};
+
+export function getUpdateOptionsStorageKey(appId: string): string {
+  return `iwa-dev-update-options-${appId}`;
+}
+
+export function getStoredUpdateOptions(appId: string): UpdateManifestOptions {
+  try {
+    const raw = window.localStorage.getItem(getUpdateOptionsStorageKey(appId));
+    return raw ? {...DEFAULT_UPDATE_OPTIONS, ...JSON.parse(raw)} :
+                 {...DEFAULT_UPDATE_OPTIONS};
+  } catch {
+    return {...DEFAULT_UPDATE_OPTIONS};
+  }
+}
+
+export function removeStoredUpdateOptions(appId: string) {
+  window.localStorage.removeItem(getUpdateOptionsStorageKey(appId));
+}
+
+export function saveStoredUpdateOptions(
+    appId: string, options: UpdateManifestOptions) {
+  if (!options.pinnedVersion && !options.allowDowngrades) {
+    removeStoredUpdateOptions(appId);
+    return;
+  }
+  window.localStorage.setItem(
+      getUpdateOptionsStorageKey(appId), JSON.stringify(options));
+}
 
 export interface IwaDevAppElement {
   $: {
@@ -82,11 +116,8 @@ export class IwaDevAppElement extends CrLitElement {
           this.browserProxy_.handler.selectAndUpdateAppFromLocalWebBundle(
               app.appId);
     } else if (app.source.updateInfo) {
-      updatePromise =
-          this.browserProxy_.handler.updateManifestInstalledApp(app.appId, {
-            allowDowngrades: false,
-            pinnedVersion: null,
-          });
+      updatePromise = this.browserProxy_.handler.updateManifestInstalledApp(
+          app.appId, getStoredUpdateOptions(app.appId));
     } else {
       assertNotReached();
     }
@@ -109,7 +140,11 @@ export class IwaDevAppElement extends CrLitElement {
 
   protected async onRequestUninstall_(
       e: CustomEvent<{app: IwaDevModeAppInfo}>) {
-    await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
+    const result =
+        await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
+    if (result.success) {
+      removeStoredUpdateOptions(e.detail.app.appId);
+    }
   }
 
   protected onRequestUpdateOptions_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
@@ -120,13 +155,25 @@ export class IwaDevAppElement extends CrLitElement {
     this.selectedAppForUpdateOptions_ = null;
   }
 
-  protected async onUpdateOptionsSaved_(e: CustomEvent<{
-    app: IwaDevModeAppInfo,
-    selectedChannel: string,
-  }>) {
+  protected getPinnedVersion_(appId: string): string|null {
+    return getStoredUpdateOptions(appId).pinnedVersion;
+  }
+
+  protected async onUpdateOptionsSaved_(
+      e: CustomEvent<UpdateOptionsSavedEventDetail>) {
+    const {app, selectedChannel, pinnedVersion} = e.detail;
+
+    if (pinnedVersion !== undefined) {
+      const options = getStoredUpdateOptions(app.appId);
+      options.pinnedVersion = pinnedVersion;
+      saveStoredUpdateOptions(app.appId, options);
+    }
+
     try {
-      await this.browserProxy_.handler.setUpdateChannel(
-          e.detail.app.appId, e.detail.selectedChannel);
+      if (selectedChannel) {
+        await this.browserProxy_.handler.setUpdateChannel(
+            app.appId, selectedChannel);
+      }
       this.toastMessage_ = 'Update options saved';
     } catch (err) {
       const errorMsg = (err as {message?: string})?.message || String(err);
