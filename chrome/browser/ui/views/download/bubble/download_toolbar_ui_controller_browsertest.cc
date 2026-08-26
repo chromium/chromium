@@ -31,10 +31,8 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 
@@ -274,22 +272,6 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return controller(browser())->bubble_contents_for_testing() == nullptr;
   }));
-}
-
-IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
-                       AutoCloseDelayDefaultAndScreenReader) {
-  EXPECT_EQ(controller(browser())->GetAutoCloseDelayForTesting(),
-            base::Seconds(10));
-
-  {
-    content::ScopedAccessibilityModeOverride ax_mode_override(
-        ui::AXMode::kScreenReader);
-    EXPECT_EQ(controller(browser())->GetAutoCloseDelayForTesting(),
-              base::Seconds(20));
-  }
-
-  EXPECT_EQ(controller(browser())->GetAutoCloseDelayForTesting(),
-            base::Seconds(10));
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,

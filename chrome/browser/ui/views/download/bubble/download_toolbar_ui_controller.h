@@ -130,10 +130,6 @@ class DownloadToolbarUIController
     return &auto_close_bubble_timer_;
   }
 
-  base::TimeDelta GetAutoCloseDelayForTesting() const {
-    return GetAutoCloseDelay();
-  }
-
   bool IsProgressRingInDownloadingStateForTesting();
   bool IsProgressRingInDormantStateForTesting();
   views::ImageView* GetImageBadgeForTesting();
@@ -207,9 +203,6 @@ class DownloadToolbarUIController
   // Called to automatically close the partial view, if such closing has not
   // been deactivated.
   void AutoClosePartialView();
-
-  // Returns the delay after which the partial view automatically closes.
-  base::TimeDelta GetAutoCloseDelay() const;
 
   // Get the models for the primary view, which may be the full or the partial
   // view.

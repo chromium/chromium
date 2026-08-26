@@ -48,9 +48,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,13 +85,9 @@ constexpr int kProgressRingRadius = 9;
 constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 2.0f;
 
-// Close the partial bubble after 10 seconds if the user doesn't interact with
+// Close the partial bubble after 5 seconds if the user doesn't interact with
 // it.
-constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(10);
-// Longer delay when a screen reader is active, giving users enough time to hear
-// the accessibility announcement and press the keyboard shortcut.
-constexpr base::TimeDelta kAutoClosePartialViewDelayScreenReader =
-    base::Seconds(20);
+constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 
 PinnedToolbarActions* GetPinnedToolbarActions(BrowserView* browser_view) {
   auto* toolbar_button_provider = browser_view->toolbar_button_provider();
@@ -625,10 +619,7 @@ void DownloadToolbarUIController::ShowDetails() {
     return;
   }
   if (use_auto_close_bubble_timer_) {
-    auto_close_bubble_timer_.Start(
-        FROM_HERE, GetAutoCloseDelay(),
-        base::BindRepeating(&DownloadToolbarUIController::AutoClosePartialView,
-                            base::Unretained(this)));
+    auto_close_bubble_timer_.Reset();
   }
   ShowBubble(DownloadBubbleMode::kPartial);
 }
@@ -1134,15 +1125,6 @@ void DownloadToolbarUIController::AutoClosePartialView() {
     return;
   }
   HideDetails();
-}
-
-base::TimeDelta DownloadToolbarUIController::GetAutoCloseDelay() const {
-  if (content::BrowserAccessibilityState::GetInstance()
-          ->GetAccessibilityMode()
-          .has_mode(ui::AXMode::kScreenReader)) {
-    return kAutoClosePartialViewDelayScreenReader;
-  }
-  return kAutoClosePartialViewDelay;
 }
 
 std::vector<DownloadUIModel::DownloadUIModelPtr>
