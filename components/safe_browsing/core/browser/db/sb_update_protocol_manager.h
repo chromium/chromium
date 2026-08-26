@@ -34,9 +34,17 @@ namespace safe_browsing {
 
 // Minimum time, in seconds, from start up before we must issue an update query.
 static const int kTimerStartIntervalSecMin = 60;
-
 // Maximum time, in seconds, from start up before we must issue an update query.
 static const int kTimerStartIntervalSecMax = 300;
+
+// The two below apply when using the --safebrowsing-fast-initial-lists-update
+// command line manual testing flag.
+// Minimum time, in seconds, from start up before we must issue an update query
+// when the fast update switch is specified.
+static const int kTimerStartIntervalSecMinFastUpdate = 10;
+// Maximum time, in seconds, from start up before we must issue an update query
+// when the fast update switch is specified.
+static const int kTimerStartIntervalSecMaxFastUpdate = 20;
 
 // Maximum time, in seconds, to wait for a response to an update request.
 // If updating this value, any histograms using this must be renamed.

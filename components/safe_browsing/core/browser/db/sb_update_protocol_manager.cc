@@ -8,16 +8,40 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using base::Time;
+
+namespace {
+
+int GetTimerStartIntervalSecMin() {
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          safe_browsing::switches::kSbFastInitialListsUpdate)) {
+    return safe_browsing::kTimerStartIntervalSecMinFastUpdate;
+  }
+  return safe_browsing::kTimerStartIntervalSecMin;
+}
+
+int GetTimerStartIntervalSecMax() {
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          safe_browsing::switches::kSbFastInitialListsUpdate)) {
+    return safe_browsing::kTimerStartIntervalSecMaxFastUpdate;
+  }
+  return safe_browsing::kTimerStartIntervalSecMax;
+}
+
+}  // namespace
 
 // TODO(crbug.com/362791941): Update/extract v4-specific parts of this file.
 namespace safe_browsing {
@@ -28,8 +52,8 @@ SBUpdateProtocolManager::SBUpdateProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config)
     : next_update_interval_(
-          base::Seconds(base::RandIntInclusive(kTimerStartIntervalSecMin,
-                                               kTimerStartIntervalSecMax))),
+          base::Seconds(base::RandIntInclusive(GetTimerStartIntervalSecMin(),
+                                               GetTimerStartIntervalSecMax()))),
       config_(config),
       url_loader_factory_(url_loader_factory),
       update_error_count_(0),

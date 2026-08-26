@@ -44,6 +44,10 @@ const char kSkipHighConfidenceAllowlist[] =
 // Alternate URL to use for ChromeEnterpriseRealTimeUrlLookupService real-time
 // lookups.
 const char kUrlFilteringEndpointFlag[] = "url-filtering-endpoint";
+// Command-line flag that reduces the initial delay for Safe Browsing database
+// updates for manual testing purposes.
+const char kSbFastInitialListsUpdate[] =
+    "safebrowsing-fast-initial-lists-update";
 
 //
 // Client side detection switches

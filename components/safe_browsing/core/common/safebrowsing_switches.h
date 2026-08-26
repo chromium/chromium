@@ -28,6 +28,7 @@ extern const char kSbManualDownloadBlocklist[];
 extern const char kSbEnableEnhancedProtection[];
 extern const char kForceTreatUserAsAdvancedProtection[];
 extern const char kScamDetectionKeyboardLockTriggerAndroid[];
+extern const char kSbFastInitialListsUpdate[];
 
 }  // namespace safe_browsing::switches
 

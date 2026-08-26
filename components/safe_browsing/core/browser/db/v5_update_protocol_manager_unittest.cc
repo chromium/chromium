@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/browser/db/v5_rice.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -1061,6 +1063,25 @@ TEST_F(V5UpdateProtocolManagerTest, TestResponseParsingInvalidChecksumSize) {
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V5Update.Result",
       V5UpdateProtocolManager::V5OperationResult::kParseError, 1);
+}
+
+TEST_F(V5UpdateProtocolManagerTest, FastUpdateCommandLineSwitch) {
+  {
+    auto pm = CreateProtocolManager({});
+    base::TimeDelta interval = GetNextUpdateInterval(pm.get());
+    EXPECT_GE(interval, base::Seconds(kTimerStartIntervalSecMin));
+    EXPECT_LE(interval, base::Seconds(kTimerStartIntervalSecMax));
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kSbFastInitialListsUpdate);
+    auto pm = CreateProtocolManager({});
+    base::TimeDelta interval = GetNextUpdateInterval(pm.get());
+    EXPECT_GE(interval, base::Seconds(kTimerStartIntervalSecMinFastUpdate));
+    EXPECT_LE(interval, base::Seconds(kTimerStartIntervalSecMaxFastUpdate));
+  }
 }
 
 }  // namespace safe_browsing
