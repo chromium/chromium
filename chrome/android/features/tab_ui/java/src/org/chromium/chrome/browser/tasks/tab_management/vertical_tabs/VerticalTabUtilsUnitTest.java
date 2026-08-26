@@ -144,22 +144,6 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testIsAutoResizeEnabled_DefaultDisabled() {
-        assertFalse(VerticalTabUtils.isAutoResizeEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsAutoResizeEnabled_EnabledViaOverride() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ true);
-        assertTrue(VerticalTabUtils.isAutoResizeEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testIsGroupHoverCardEnabled_DefaultDisabled() {
         assertFalse(VerticalTabUtils.isGroupHoverCardEnabled());
     }
@@ -362,26 +346,7 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testIsWindowNarrow_AutoResizeDisabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ false);
-
-        assertTrue(VerticalTabUtils.isWindowNarrow(651));
-        assertFalse(VerticalTabUtils.isWindowNarrow(652));
-        assertFalse(VerticalTabUtils.isWindowNarrow(800));
-    }
-
-    @Test
-    @SmallTest
-    public void testIsWindowNarrow_AutoResizeEnabled() {
-        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ true);
-
+    public void testIsWindowNarrow() {
         // Threshold is max(412 + 92, round(92 / 0.33)) = max(504, 279) = 504dp.
         assertTrue(VerticalTabUtils.isWindowNarrow(503));
         assertFalse(VerticalTabUtils.isWindowNarrow(504));
@@ -390,38 +355,7 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testGetWindowWidthBoundary_AutoResizeDisabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ false);
-
-        // < 488dp (412 + 76): NOT_SHOWABLE
-        assertEquals(
-                WindowWidthBoundary.NOT_SHOWABLE, VerticalTabUtils.getWindowWidthBoundary(487));
-
-        // [488dp, 652dp): FORCED_COLLAPSED
-        assertEquals(
-                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(488));
-        assertEquals(
-                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(651));
-
-        // >= 652dp: FULLY_EXPANDABLE
-        assertEquals(
-                WindowWidthBoundary.FULLY_EXPANDABLE, VerticalTabUtils.getWindowWidthBoundary(652));
-        assertEquals(
-                WindowWidthBoundary.FULLY_EXPANDABLE, VerticalTabUtils.getWindowWidthBoundary(800));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetWindowWidthBoundary_AutoResizeEnabled() {
-        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ true);
-
+    public void testGetWindowWidthBoundary() {
         // < 488dp (412 + 76): NOT_SHOWABLE
         assertEquals(
                 WindowWidthBoundary.NOT_SHOWABLE, VerticalTabUtils.getWindowWidthBoundary(487));
@@ -451,12 +385,6 @@ public class VerticalTabUtilsUnitTest {
     @Test
     @SmallTest
     public void testGetWindowWidthBoundary_CustomAvailableWidth() {
-        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                VerticalTabUtils.AUTO_RESIZE_PARAM,
-                /* testValue= */ true);
-
         // Available width < 76dp -> NOT_SHOWABLE regardless of window width
         assertEquals(
                 WindowWidthBoundary.NOT_SHOWABLE,

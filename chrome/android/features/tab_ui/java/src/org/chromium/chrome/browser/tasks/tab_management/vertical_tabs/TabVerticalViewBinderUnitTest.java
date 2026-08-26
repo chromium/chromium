@@ -48,13 +48,11 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
@@ -1972,71 +1970,7 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindPinnedTab_RailExpanded_AutoResizeEnabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
-        ViewGroup pinnedView = inflatePinnedTabView();
-        pinnedView.setLayoutParams(
-                new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
-
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
-
-        int expectedHeight =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(
-                                VerticalTabUtils.isTablet(pinnedView.getContext())
-                                        ? R.dimen.vertical_tab_pinned_item_height_tablet
-                                        : R.dimen.vertical_tab_pinned_item_height);
-        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, pinnedView.getLayoutParams().width);
-        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
-
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
-        assertEquals(0, lp.getMarginStart());
-    }
-
-    @Test
-    @SmallTest
-    public void testBindPinnedTab_RailExpanded_AutoResizeDisabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, false);
-        ViewGroup pinnedView = inflatePinnedTabView();
-        pinnedView.setLayoutParams(
-                new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
-
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
-
-        int expectedWidth =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
-        int expectedHeight =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(
-                                VerticalTabUtils.isTablet(pinnedView.getContext())
-                                        ? R.dimen.vertical_tab_pinned_item_height_tablet
-                                        : R.dimen.vertical_tab_pinned_item_height);
-        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
-        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
-
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
-        assertEquals(0, lp.getMarginStart());
-    }
-
-    @Test
-    @SmallTest
-    public void testBindPinnedTab_InitialBinding_AutoResizeEnabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
+    public void testBindPinnedTab_InitialBinding() {
         ViewGroup pinnedView = inflatePinnedTabView();
         int defaultXmlWidth =
                 pinnedView
@@ -2056,32 +1990,6 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
 
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, pinnedView.getLayoutParams().width);
-        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
-    }
-
-    @Test
-    @SmallTest
-    public void testBindPinnedTab_InitialBinding_AutoResizeDisabled() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, false);
-        ViewGroup pinnedView = inflatePinnedTabView();
-        int expectedWidth =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
-        int expectedHeight =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(
-                                VerticalTabUtils.isTablet(pinnedView.getContext())
-                                        ? R.dimen.vertical_tab_pinned_item_height_tablet
-                                        : R.dimen.vertical_tab_pinned_item_height);
-        pinnedView.setLayoutParams(new ViewGroup.MarginLayoutParams(expectedWidth, expectedHeight));
-
-        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
-
-        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
         assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
     }
 
@@ -2549,9 +2457,7 @@ public class TabVerticalViewBinderUnitTest {
 
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
 
-        int expectedWidth =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int expectedWidth = ViewGroup.LayoutParams.MATCH_PARENT;
         int expectedHeight =
                 context.getResources()
                         .getDimensionPixelSize(

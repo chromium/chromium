@@ -122,29 +122,6 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDetermineShowableSize_isAutoHiddenSupplierWhenHiddenDueToNarrow() {
-        // When Vertical Tabs is ON (mManualVisible = true) and determineShowableSize calculates
-        // shouldHide = true
-        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
-        mCoordinator.determineShowableSize(
-                mExpandedRailWidth - 1, mWideWindowWidth, /* isFullscreen= */ false);
-
-        assertTrue(mCoordinator.getIsAutoHiddenSupplier().get());
-
-        // When Vertical Tabs gets shown again (shouldHide = false)
-        mCoordinator.determineShowableSize(
-                mExpandedRailWidth, mWideWindowWidth, /* isFullscreen= */ false);
-
-        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
-
-        // When Vertical Tabs is turned off
-        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
-        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
-    public void testDetermineShowableSize_isAutoHiddenSupplierWhenHiddenDueToNarrow_autoResize() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.determineShowableSize(
                 mCollapsedRailWidth - 1, mWideWindowWidth, /* isFullscreen= */ false);
@@ -229,7 +206,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ mExpandedRailWidth - 1,
+                        /* availableWidth= */ mCollapsedRailWidth - 1,
                         /* windowWidth= */ mWideWindowWidth,
                         /* isFullscreen= */ false));
         assertEquals(
@@ -242,7 +219,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testDetermineShowableSize_collapsedState_autoResizeDisabled() {
+    public void testDetermineShowableSize_collapsedState() {
         mCollapseController.requestRailCollapseStateChangeByUser(
                 RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
 
@@ -252,24 +229,6 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 new SideUiSize(mCollapsedRailWidth, HeightType.TOOLBAR),
                 mCoordinator.determineShowableSize(
                         /* availableWidth= */ mCollapsedRailWidth + 10,
-                        /* windowWidth= */ mWideWindowWidth,
-                        /* isFullscreen= */ false));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
-    public void testDetermineShowableSize_autoResize() {
-        assertEquals(
-                new SideUiSize(0, HeightType.NOT_APPLICABLE),
-                mCoordinator.determineShowableSize(
-                        /* availableWidth= */ mCollapsedRailWidth - 1,
-                        /* windowWidth= */ mWideWindowWidth,
-                        /* isFullscreen= */ false));
-        assertEquals(
-                new SideUiSize(mExpandedRailWidth, HeightType.TOOLBAR),
-                mCoordinator.determineShowableSize(
-                        /* availableWidth= */ mExpandedRailWidth,
                         /* windowWidth= */ mWideWindowWidth,
                         /* isFullscreen= */ false));
     }
@@ -547,7 +506,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_ScalesWidthWithWindow() {
         setWindowWidthPx(mMediumWindowWidth);
         int minWebContentsWidthPx =
@@ -568,7 +527,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_BelowMinWebContents_HidesVerticalTabs() {
         @Px int hiddenWindowWidth = ViewUtils.dpToPx(mActivity, 400);
         setWindowWidthPx(hiddenWindowWidth);
@@ -579,7 +538,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_NarrowWindowThreshold_CollapsesRail() {
         // Threshold: max(412 + 92, round(92 / 0.2)) = 504dp.
         // 503dp (< 504dp) -> Narrow: Rail collapses and collapse button is disabled.

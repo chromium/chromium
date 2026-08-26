@@ -203,12 +203,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         int boundary = VerticalTabUtils.getWindowWidthBoundary(windowWidthDp, availableWidthDp);
 
         int targetWidth = calculateWidthPx(boundary, windowWidth, availableWidth);
-        boolean shouldHide;
-        if (VerticalTabUtils.isAutoResizeEnabled()) {
-            shouldHide = boundary == WindowWidthBoundary.NOT_SHOWABLE;
-        } else {
-            shouldHide = availableWidth < targetWidth;
-        }
+        boolean shouldHide = boundary == WindowWidthBoundary.NOT_SHOWABLE;
 
         updateAutoHiddenState(mManualVisible && shouldHide);
         if (isFullscreen || shouldHide) {

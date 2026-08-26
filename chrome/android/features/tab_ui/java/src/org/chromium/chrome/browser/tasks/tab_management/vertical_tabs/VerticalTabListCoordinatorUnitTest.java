@@ -1848,8 +1848,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDynamicSpanCountOnWidthChange() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
         int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
         assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
@@ -1933,31 +1931,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testDynamicSpanCount_AutoResizeDisabled() {
-        createCoordinator();
-        assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
-                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
-
-        // Simulate measuring container with a narrow width.
-        View containerView = mCoordinator.getView();
-        int narrowWidthPx = 100;
-        containerView.measure(
-                View.MeasureSpec.makeMeasureSpec(narrowWidthPx, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
-        containerView.layout(0, 0, narrowWidthPx, 1000);
-
-        // Should remain default span count (4) when auto_resize is disabled.
-        assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
-                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
-    }
-
-    @Test
-    @SmallTest
     public void testDynamicSpanCount_GridOptimizationWithPinnedTabs() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
 
         View containerView = mCoordinator.getView();
@@ -2023,8 +1997,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDynamicSpanCount_WideContainer_CappedAtMaxSpan() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
 
         View containerView = mCoordinator.getView();
@@ -2067,8 +2039,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDynamicSpanCount_NarrowContainer_TwoColumnCap() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
 
         View containerView = mCoordinator.getView();
@@ -2112,8 +2082,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows() {
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
         RecyclerView pinnedRecyclerView =
                 mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
@@ -2142,8 +2110,6 @@ public class VerticalTabListCoordinatorUnitTest {
     @SmallTest
     public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
         RecyclerView pinnedRecyclerView =
                 mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);

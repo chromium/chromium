@@ -115,6 +115,7 @@ public class VerticalTabListRenderTest {
     private final boolean mIsIncognito;
     private Activity mActivity;
     private FrameLayout mRenderView;
+    private int mPinnedItemWidthPx;
 
     public VerticalTabListRenderTest(boolean isNightModeEnabled, boolean isIncognito) {
         mIsIncognito = isIncognito;
@@ -127,9 +128,17 @@ public class VerticalTabListRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mPinnedItemWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
     }
 
     private ViewGroup inflateAndAttachView(int layoutResId) {
+        return inflateAndAttachView(layoutResId, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    private ViewGroup inflateAndAttachView(int layoutResId, int contentWidthPx) {
         FrameLayout parent = new FrameLayout(mActivity);
         mActivity.setContentView(
                 parent,
@@ -148,7 +157,10 @@ public class VerticalTabListRenderTest {
 
         ViewGroup view = inflateView(layoutResId, mRenderView);
         mRenderView.addView(view);
-        int width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        int width =
+                contentWidthPx == ViewGroup.LayoutParams.WRAP_CONTENT
+                        ? ViewGroup.LayoutParams.WRAP_CONTENT
+                        : contentWidthPx + 2 * padding;
 
         parent.addView(
                 mRenderView,
@@ -471,7 +483,9 @@ public class VerticalTabListRenderTest {
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    view[0] = inflateAndAttachView(R.layout.vertical_tab_pinned_item);
+                    view[0] =
+                            inflateAndAttachView(
+                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             (mIsIncognito ? "Incognito " : "") + "Pinned Tab",
@@ -488,7 +502,7 @@ public class VerticalTabListRenderTest {
                 mIsIncognito
                         ? "pinned_tab_glic_indicator_active_incognito"
                         : "pinned_tab_glic_indicator_active";
-        mRenderTestRule.render(view[0], finalGoldenName);
+        mRenderTestRule.render(mRenderView, finalGoldenName);
     }
 
     @Test
@@ -867,7 +881,9 @@ public class VerticalTabListRenderTest {
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    view[0] = inflateAndAttachView(R.layout.vertical_tab_pinned_item);
+                    view[0] =
+                            inflateAndAttachView(
+                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             (mIsIncognito ? "Incognito " : "") + title,

@@ -1720,10 +1720,6 @@ public class VerticalTabListCoordinator {
             }
         }
 
-        if (!VerticalTabUtils.isAutoResizeEnabled()) {
-            return DEFAULT_GRID_SPAN_COUNT;
-        }
-
         int containerWidth = mContainerView.getWidth();
         if (containerWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
 
@@ -1766,10 +1762,7 @@ public class VerticalTabListCoordinator {
      * ensuring identical visual item widths since RecyclerView does not support layout_weight.
      */
     private void calculatePinnedTabItemOffsets(Rect outRect, View view, RecyclerView parent) {
-        if (!VerticalTabUtils.isAutoResizeEnabled()) {
-            outRect.set(0, 0, 0, 0);
-            return;
-        }
+
         int position = parent.getChildAdapterPosition(view);
         if (position == RecyclerView.NO_POSITION) {
             position = parent.indexOfChild(view);

@@ -44,12 +44,6 @@ public class VerticalTabUtils {
     public static final int SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP = 76;
 
     /**
-     * Minimum window width threshold in dp required to allow expanding vertical tabs rail and
-     * enable collapse button when auto-resize is disabled.
-     */
-    public static final int MIN_EXPAND_WINDOW_WIDTH_DP = 652;
-
-    /**
      * Minimum width in dp required for the expanded vertical tabs rail before snapping to collapsed
      * state.
      */
@@ -132,9 +126,6 @@ public class VerticalTabUtils {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsWindowWidthBoundary)
-
-    /** Feature parameter name for enabling auto-resize. */
-    public static final String AUTO_RESIZE_PARAM = "auto_resize";
 
     /** Feature parameter name for enabling Vertical Tabs by default. */
     public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
@@ -273,14 +264,6 @@ public class VerticalTabUtils {
                 /* defaultValue= */ false);
     }
 
-    /** Returns whether auto-resize behavior is enabled for Vertical Tabs. */
-    public static boolean isAutoResizeEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                AUTO_RESIZE_PARAM,
-                /* defaultValue= */ false);
-    }
-
     /** Returns whether tab group hover cards are enabled for Vertical Tabs. */
     public static boolean isGroupHoverCardEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -414,11 +397,6 @@ public class VerticalTabUtils {
             return WindowWidthBoundary.FORCED_COLLAPSED;
         }
 
-        // When auto-resize is disabled, wide windows are fully expandable.
-        if (!isAutoResizeEnabled()) {
-            return WindowWidthBoundary.FULLY_EXPANDABLE;
-        }
-
         // 3. Dynamic Expandable: Auto-resized width is strictly less than full container width.
         int ratioWidthDp = Math.round(windowWidthDp * EXPANDED_WINDOW_WIDTH_RATIO);
         int targetWidthDp =
@@ -446,12 +424,9 @@ public class VerticalTabUtils {
      */
     @VisibleForTesting
     public static boolean isWindowNarrow(int windowWidthDp) {
-        if (isAutoResizeEnabled()) {
-            int minWidthByWebContents =
-                    SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP + MIN_EXPANDED_WIDTH_DP;
-            int minWidthByRatio = Math.round(MIN_EXPANDED_WIDTH_DP / EXPANDED_WINDOW_WIDTH_RATIO);
-            return windowWidthDp < Math.max(minWidthByWebContents, minWidthByRatio);
-        }
-        return windowWidthDp < MIN_EXPAND_WINDOW_WIDTH_DP;
+        int minWidthByWebContents =
+                SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP + MIN_EXPANDED_WIDTH_DP;
+        int minWidthByRatio = Math.round(MIN_EXPANDED_WIDTH_DP / EXPANDED_WINDOW_WIDTH_RATIO);
+        return windowWidthDp < Math.max(minWidthByWebContents, minWidthByRatio);
     }
 }
