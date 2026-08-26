@@ -75,7 +75,7 @@ ServiceVideoCaptureDeviceLauncher::ServiceVideoCaptureDeviceLauncher(
 
 ServiceVideoCaptureDeviceLauncher::~ServiceVideoCaptureDeviceLauncher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == State::READY_TO_LAUNCH);
+  CHECK(state_ == State::READY_TO_LAUNCH, base::NotFatalUntil::M158);
 }
 
 void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
@@ -87,7 +87,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == State::READY_TO_LAUNCH);
+  CHECK(state_ == State::READY_TO_LAUNCH, base::NotFatalUntil::M158);
 
   auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled(
       "ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync");
@@ -210,8 +210,8 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
     video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
     const media::VideoCaptureParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callbacks_);
-  DCHECK(done_cb_);
+  CHECK(callbacks_, base::NotFatalUntil::M158);
+  CHECK(done_cb_, base::NotFatalUntil::M158);
   subscription.set_disconnect_handler(base::DoNothing());
   const bool abort_requested = (state_ == State::DEVICE_START_ABORTING);
   state_ = State::READY_TO_LAUNCH;
@@ -235,7 +235,8 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
     case video_capture::mojom::CreatePushSubscriptionResultCode::Tag::
         kErrorCode:
       media::VideoCaptureError error = result_code->get_error_code();
-      DCHECK_NE(error, media::VideoCaptureError::kNone);
+      CHECK_NE(error, media::VideoCaptureError::kNone,
+               base::NotFatalUntil::M158);
       ConcludeLaunchDeviceWithFailure(abort_requested, error,
                                       std::move(service_connection_), callbacks,
                                       std::move(done_cb_));
@@ -246,7 +247,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
 void ServiceVideoCaptureDeviceLauncher::
     OnConnectionLostWhileWaitingForCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callbacks_);
+  CHECK(callbacks_, base::NotFatalUntil::M158);
   const bool abort_requested = (state_ == State::DEVICE_START_ABORTING);
   state_ = State::READY_TO_LAUNCH;
   Callbacks* callbacks = callbacks_;

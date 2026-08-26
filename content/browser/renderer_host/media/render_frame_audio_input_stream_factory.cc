@@ -50,7 +50,7 @@ namespace {
 AudioStreamBroker::LoopbackSource* GetLoopbackSourceOnUIThread(
     int render_process_id,
     int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   auto* source = ForwardingAudioStreamFactory::CoreForFrame(
       (RenderFrameHost::FromID(render_process_id, render_frame_id)));
   if (!source) {
@@ -65,7 +65,7 @@ AudioStreamBroker::LoopbackSource* GetLoopbackSourceOnUIThread(
 
 void EnumerateOutputDevices(MediaStreamManager* media_stream_manager,
                             MediaDevicesManager::EnumerationCallback cb) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   MediaDevicesManager::BoolDeviceTypes device_types;
   device_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] = true;
   media_stream_manager->media_devices_manager()->EnumerateDevices(
@@ -76,7 +76,7 @@ void TranslateDeviceId(const std::string& device_id,
                        const MediaDeviceSaltAndOrigin& salt_and_origin,
                        base::RepeatingCallback<void(const std::string&)> cb,
                        const MediaDeviceEnumeration& device_array) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   for (const auto& device_info :
        device_array[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {
     if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, device_id,
@@ -179,11 +179,11 @@ RenderFrameAudioInputStreamFactory::RenderFrameAudioInputStreamFactory(
     : core_(new Core(std::move(receiver),
                      media_stream_manager,
                      render_frame_host)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 }
 
 RenderFrameAudioInputStreamFactory::~RenderFrameAudioInputStreamFactory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   // Ensure |core_| is deleted on the right thread. DeleteOnIOThread isn't used
   // as it doesn't post in case it is already executed on the right thread. That
   // causes issues in unit tests where the UI thread and the IO thread are the
@@ -203,7 +203,7 @@ RenderFrameAudioInputStreamFactory::Core::Core(
       frame_id_(render_frame_host->GetRoutingID()),
       main_frame_token_(
           render_frame_host->GetMainFrame()->GetGlobalFrameToken()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
       ForwardingAudioStreamFactory::CoreForFrame(render_frame_host);
@@ -225,13 +225,13 @@ RenderFrameAudioInputStreamFactory::Core::Core(
 }
 
 RenderFrameAudioInputStreamFactory::Core::~Core() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 }
 
 void RenderFrameAudioInputStreamFactory::Core::Init(
     mojo::PendingReceiver<blink::mojom::RendererAudioInputStreamFactory>
         receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   receiver_.Bind(std::move(receiver));
 }
 
@@ -243,7 +243,7 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
     bool automatic_gain_control,
     uint32_t shared_memory_count,
     media::mojom::AudioProcessingConfigPtr processing_config) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT1("audio", "RenderFrameAudioInputStreamFactory::CreateStream",
                "session id", session_id.ToString());
 
@@ -322,7 +322,7 @@ void RenderFrameAudioInputStreamFactory::Core::CreateLoopbackStream(
 void RenderFrameAudioInputStreamFactory::Core::AssociateInputAndOutputForAec(
     const base::UnguessableToken& input_stream_id,
     const std::string& output_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (!IsValidDeviceId(output_device_id))
     return;
 
@@ -342,7 +342,7 @@ void RenderFrameAudioInputStreamFactory::Core::
         const std::string& output_device_id,
         const MediaDeviceSaltAndOrigin& salt_and_origin,
         bool access_granted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (!forwarding_factory_ || !access_granted)
     return;
@@ -377,7 +377,7 @@ void RenderFrameAudioInputStreamFactory::Core::
     AssociateTranslatedOutputDeviceForAec(
         const base::UnguessableToken& input_stream_id,
         const std::string& raw_output_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (!forwarding_factory_)
     return;
   forwarding_factory_->AssociateInputAndOutputForAec(input_stream_id,
