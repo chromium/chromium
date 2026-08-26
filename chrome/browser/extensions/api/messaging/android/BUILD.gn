@@ -20,7 +20,10 @@ android_aidl("aidl") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessageAndroidPort.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessageAndroidPort.java",
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/NativeMessagingManager.java",
+  ]
 }
 
 android_library("java") {

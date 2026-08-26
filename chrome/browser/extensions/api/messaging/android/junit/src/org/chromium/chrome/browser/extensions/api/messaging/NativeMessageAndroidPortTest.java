@@ -48,6 +48,8 @@ public class NativeMessageAndroidPortTest {
 
     @Mock private Profile mProfile;
     @Mock private IExtensionNativeMessageService mMockExtensionService;
+    // Mocks the C++ bridge for NativeMessagingManager to prevent an UnsatisfiedLinkError.
+    @Mock private NativeMessagingManager.Natives mNativeMessagingManagerJni;
 
     private TestContext mTestContext;
     private IBrowserNativeMessageService mFakeBrowserService;
@@ -120,6 +122,7 @@ public class NativeMessageAndroidPortTest {
 
     @Before
     public void setUp() {
+        NativeMessagingManagerJni.setInstanceForTesting(mNativeMessagingManagerJni);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mTestContext = new TestContext(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mTestContext);

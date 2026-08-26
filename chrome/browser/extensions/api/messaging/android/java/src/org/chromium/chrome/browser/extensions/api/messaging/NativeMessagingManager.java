@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.extensions.api.messaging;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -19,10 +24,12 @@ import java.util.Map;
  * Profile-scoped manager for Android Native Messaging. Maintains a map of package names to
  * ServiceConnections.
  */
+@JNINamespace("extensions")
 @NullMarked
 public class NativeMessagingManager implements Destroyable, NativeMessagingConnection.Observer {
     private static @Nullable ProfileKeyedMap<NativeMessagingManager> sProfileMap;
 
+    private long mNativePtr;
     private final Map<String, NativeMessagingConnection> mConnections = new HashMap<>();
 
     /** Return the {@link NativeMessagingManager} associated with the passed in {@link Profile}. */
@@ -36,16 +43,30 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
         return sProfileMap.getForProfile(profile, NativeMessagingManager::new);
     }
 
-    private NativeMessagingManager(Profile profile) {}
+    private NativeMessagingManager(Profile profile) {
+        mNativePtr = NativeMessagingManagerJni.get().initialize(this, profile);
+    }
 
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        if (mNativePtr != 0) {
+            NativeMessagingManagerJni.get().destroy(mNativePtr);
+            mNativePtr = 0;
+        }
         // Snapshot to a list so mConnections.remove() inside onUnbound doesn't break iteration:
         for (NativeMessagingConnection connection : new ArrayList<>(mConnections.values())) {
             connection.unbind();
         }
         mConnections.clear();
+    }
+
+    @CalledByNative
+    void onExtensionUnloaded(@JniType("std::string") String extensionId) {
+        ThreadUtils.assertOnUiThread();
+        for (NativeMessagingConnection connection : new ArrayList<>(mConnections.values())) {
+            connection.onExtensionUnloaded(extensionId);
+        }
     }
 
     // NativeMessagingConnection.Observer
@@ -79,5 +100,12 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
 
     @Nullable NativeMessagingConnection getConnectionForTesting(String packageName) {
         return mConnections.get(packageName);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long initialize(NativeMessagingManager javaObject, @JniType("Profile*") Profile profile);
+
+        void destroy(long nativeNativeMessagingManager);
     }
 }

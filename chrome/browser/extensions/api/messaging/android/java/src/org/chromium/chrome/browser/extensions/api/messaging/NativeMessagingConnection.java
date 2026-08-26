@@ -166,6 +166,13 @@ public class NativeMessagingConnection implements ServiceConnection {
         }
     }
 
+    public void onExtensionUnloaded(String extensionId) {
+        ExtensionSession session = mSessions.get(extensionId);
+        if (session != null) {
+            session.onExtensionUnloaded();
+        }
+    }
+
     @Nullable ExtensionSession getSessionForTesting(String extensionId) {
         return mSessions.get(extensionId);
     }
@@ -302,8 +309,17 @@ public class NativeMessagingConnection implements ServiceConnection {
         private void onConnectExtensionResult(
                 ConnectionResult<IExtensionNativeMessageService> result) {
             if (mState != ConnectionState.PENDING) {
-                // Connection was closed/unbound while background task was in
-                // flight.
+                // This can happen if the extension was unloaded after
+                // IBrowserNativeMessageService.connectExtension was called but before the external
+                // app returned with the result. In this case, call closeConnection() right when the
+                // connectExtension call finishes.
+                if (result.remote != null) {
+                    try {
+                        result.remote.closeConnection();
+                    } catch (RemoteException e) {
+                        Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
+                    }
+                }
                 return;
             }
 
@@ -431,6 +447,18 @@ public class NativeMessagingConnection implements ServiceConnection {
             mActivePorts.clear();
 
             mConnection.onSessionDisconnected(mExtensionId);
+        }
+
+        public void onExtensionUnloaded() {
+            if (mExtensionService != null) {
+                try {
+                    mExtensionService.closeConnection();
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
+                }
+            }
+
+            disconnect(null);
         }
 
         @Nullable IExtensionNativeMessageService getServiceForTesting() {

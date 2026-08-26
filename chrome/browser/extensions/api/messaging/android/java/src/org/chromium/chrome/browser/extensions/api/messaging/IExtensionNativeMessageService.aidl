@@ -8,8 +8,9 @@ import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMess
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessagePort;
 
 interface IExtensionNativeMessageService {
-  // TODO(crbug.com/515159909): Add more methods here as more native messaging
-  // functionality is implemented.
+  // Called by the browser when the extension is no longer enabled (i.e. it is
+  // disabled or uninstalled).
+  oneway void closeConnection();
 
   // Connects a message port to the external Android app. Any messages that the
   // external Android app sends back to the browser later will be sent through

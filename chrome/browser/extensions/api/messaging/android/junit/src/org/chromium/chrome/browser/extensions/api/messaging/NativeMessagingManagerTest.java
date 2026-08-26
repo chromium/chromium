@@ -38,6 +38,8 @@ public class NativeMessagingManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
+    // Mocks the C++ bridge for NativeMessagingManager to prevent an UnsatisfiedLinkError.
+    @Mock private NativeMessagingManager.Natives mNativeMessagingManagerJni;
 
     private TestContext mTestContext;
     private NativeMessagingManager mManager;
@@ -80,6 +82,7 @@ public class NativeMessagingManagerTest {
 
     @Before
     public void setUp() {
+        NativeMessagingManagerJni.setInstanceForTesting(mNativeMessagingManagerJni);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mTestContext = new TestContext(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mTestContext);
@@ -162,5 +165,26 @@ public class NativeMessagingManagerTest {
         Assert.assertNotNull(error);
         Assert.assertEquals("Unable to connect to com.nonexistent.app.", error);
         Assert.assertNull(mManager.getConnectionForTesting("com.nonexistent.app"));
+    }
+
+    @Test
+    public void testOnExtensionUnloaded() {
+        String error =
+                mManager.addPort(
+                        TARGET_PACKAGE,
+                        EXTENSION_ID,
+                        /* isVerifiedExtension= */ true,
+                        new NativeMessageAndroidPort());
+        Assert.assertNull(error);
+
+        NativeMessagingConnection connection = mManager.getConnectionForTesting(TARGET_PACKAGE);
+        Assert.assertNotNull(connection);
+        Assert.assertNotNull(connection.getSessionForTesting(EXTENSION_ID));
+
+        mManager.onExtensionUnloaded(EXTENSION_ID);
+
+        // Check that unloading an extension means the connection has no more
+        // active sub-sessions so it disconnects.
+        Assert.assertNull(mManager.getConnectionForTesting(TARGET_PACKAGE));
     }
 }

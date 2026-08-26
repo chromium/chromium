@@ -251,4 +251,48 @@ public class NativeMessagingConnectionTest {
         Assert.assertEquals(
                 NativeMessagingConnection.getUnableToConnectError(TARGET_PACKAGE), error);
     }
+
+    // Test that onExtensionUnloaded calls closeConnection() and removes the session.
+    @Test
+    public void testOnExtensionUnloadedCallsCloseConnection() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        Assert.assertNull(connectExtension(connection, EXT_1));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
+
+        connection.onExtensionUnloaded(EXT_1);
+
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Assert.assertFalse(connection.isBound());
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
+
+    // Test that if an extension is unloaded while authentication is still in-flight,
+    // when the external app returns the IExtensionNativeMessageService, closeConnection()
+    // is called on it to avoid leaking the session.
+    @Test
+    public void testOnExtensionUnloadedWhileAuthenticationInFlight() throws RemoteException {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+
+        // Initiate connection, but do not run background tasks yet.
+        Assert.assertNull(connectExtension(connection, EXT_1));
+
+        // Extension is unloaded while connectExtension is in-flight on the background thread.
+        connection.onExtensionUnloaded(EXT_1);
+
+        // Run background and UI tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify the app's returned session stub received closeConnection().
+        Mockito.verify(mMockExtensionService1).closeConnection();
+        Assert.assertNull(connection.getSessionForTesting(EXT_1));
+        Assert.assertFalse(connection.isBound());
+        Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
 }

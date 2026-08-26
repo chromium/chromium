@@ -4,9 +4,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
@@ -96,6 +99,91 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
   dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
 
   ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
+}
+
+// Test that disabling an extension triggers closeConnection() on the external
+// Android service.
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
+                       ExtensionUnloadNotifiesApp) {
+  // Load an extension that just calls connectNative to keep a port open.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.DirName()
+                        .AppendASCII("native_messaging")
+                        .AppendASCII("connect_native"));
+  ASSERT_TRUE(extension);
+  const auto extension_id = extension->id();
+
+  // Load an observer extension which sends a message to the app and waits for
+  // when the app has connected or disconnected with another extension.
+  constexpr char kObserverExtensionManifest[] = R"(
+      {
+        "name": "ObserverExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": ["nativeMessaging"],
+        "background": {
+          "service_worker": "background.js"
+        }
+      })";
+
+  TestExtensionDir observer_extension_dir;
+  observer_extension_dir.WriteManifest(kObserverExtensionManifest);
+  observer_extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                                   "// Empty background script");
+  const Extension* observer_ext =
+      LoadExtension(observer_extension_dir.UnpackedPath());
+  ASSERT_TRUE(observer_ext);
+
+  // Through `observer_ext`, wait for the app to connect to `extension`.
+  {
+    std::string load_wait_script = base::StringPrintf(
+        R"(
+          chrome.runtime.sendNativeMessage(
+              'org.chromium.chrome.tests.support',
+              {request: 'waitForExtensionConnected', extensionId: '%s'},
+              (response) => {
+                chrome.test.sendScriptResult(response);
+              });
+        )",
+        extension_id);
+
+    base::Value load_result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), observer_ext->id(), load_wait_script,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    EXPECT_THAT(load_result, base::test::IsJson(base::StringPrintf(
+                                 R"({"status": "loaded", "extensionId": "%s"})",
+                                 extension_id)));
+  }
+
+  // `observer_ext` sends "waitForExtensionUnloaded" to wait for `extension`'s
+  // unload notification.
+  std::string unload_wait_script = base::StringPrintf(
+      R"(
+        chrome.runtime.sendNativeMessage(
+            'org.chromium.chrome.tests.support',
+            {request: 'waitForExtensionUnloaded', extensionId: '%s'},
+            (response) => {
+              chrome.test.sendScriptResult(response);
+            });
+      )",
+      extension_id);
+
+  BackgroundScriptExecutor unload_executor(profile());
+  unload_executor.ExecuteScriptAsync(
+      observer_ext->id(), unload_wait_script,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  // Disable `extension`. This will be propagated to the app via an
+  // IExtensionNativeMessageService.closeConnection() IPC.
+  DisableExtension(extension_id);
+
+  // Wait for the app to receive the IPC and reply to the sendNativeMessage call
+  // in `unload_wait_script`.
+  base::Value unload_result = unload_executor.WaitForResult();
+  EXPECT_THAT(
+      unload_result,
+      base::test::IsJson(base::StringPrintf(
+          R"({"status": "unloaded", "extensionId": "%s"})", extension_id)));
 }
 
 // A sub-test which tests that the browser sends information on whether the
