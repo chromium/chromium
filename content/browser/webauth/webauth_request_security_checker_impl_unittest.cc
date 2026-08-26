@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/webauthn/core/browser/remote_validation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,6 +40,20 @@ namespace {
 
 using ::testing::_;
 
+// A minimal WebAuthenticationDelegate that authorizes a single caller origin to
+// use the remote desktop client override, so tests can exercise the delegated
+// (remoteClientDataJSON) RP ID validation path.
+class FakeWebAuthenticationDelegate : public WebAuthenticationDelegate {
+ public:
+  bool OriginMayUseRemoteDesktopClientOverride(
+      BrowserContext* browser_context,
+      const url::Origin& caller_origin) override {
+    return authorized_origin.has_value() && caller_origin == *authorized_origin;
+  }
+
+  std::optional<url::Origin> authorized_origin;
+};
+
 class MockWebAuthnContentBrowserClient : public ContentBrowserClient {
  public:
   MockWebAuthnContentBrowserClient() = default;
@@ -58,6 +73,12 @@ class MockWebAuthnContentBrowserClient : public ContentBrowserClient {
       scoped_refptr<network::SharedURLLoaderFactory> factory) {
     shared_url_loader_factory_ = std::move(factory);
   }
+
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate;
+  }
+
+  FakeWebAuthenticationDelegate web_authentication_delegate;
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -493,7 +514,7 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   auto validation1 = checker->ValidateDomainAndRelyingPartyID(
       url::Origin::Create(GURL("https://example.com")), "allowed.com",
       WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
-      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*remote_desktop_client_override=*/std::nullopt,
       base::BindLambdaForTesting(
           [&](blink::mojom::AuthenticatorStatus status) { run_loop1.Quit(); }));
   test_url_loader_factory.AddResponse(
@@ -512,7 +533,7 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   auto validation2 = checker->ValidateDomainAndRelyingPartyID(
       url::Origin::Create(GURL("https://example.com")), "disallowed.com",
       WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
-      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*remote_desktop_client_override=*/std::nullopt,
       base::BindLambdaForTesting(
           [&](blink::mojom::AuthenticatorStatus status) { run_loop2.Quit(); }));
   test_url_loader_factory.AddResponse(
@@ -523,6 +544,45 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
 
   WebAuthRequestSecurityCheckerImpl::
       UseSystemSharedURLLoaderFactoryForTesting() = false;
+  SetBrowserClientForTesting(old_client);
+}
+
+// When `skip_rp_id_validation` is true, RP ID validation is delegated to the
+// remote client and no related-origin request is attempted.
+TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
+       ValidateDomainAndRelyingPartyID_DelegatedSkipsRpIdValidation) {
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  navigation->Commit();
+  RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
+
+  MockWebAuthnContentBrowserClient mock_client;
+  mock_client.web_authentication_delegate.authorized_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl> checker =
+      static_cast<RenderFrameHostImpl*>(frame)
+          ->GetWebAuthRequestSecurityCheckerImpl();
+
+  // A non-matching RP ID would normally trigger the related-origin request;
+  // with delegation it must not.
+  EXPECT_CALL(mock_client, LogWebFeatureForCurrentPage(_, _)).Times(0);
+  std::optional<blink::mojom::AuthenticatorStatus> result;
+  auto validation = checker->ValidateDomainAndRelyingPartyID(
+      url::Origin::Create(GURL("https://example.com")), "unrelated.example",
+      WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+      WebAuthRequestSecurityChecker::RemoteDesktopParams{
+          .origin = url::Origin::Create(GURL("https://remote-host.example")),
+          .skip_rp_id_validation = true},
+      base::BindLambdaForTesting(
+          [&](blink::mojom::AuthenticatorStatus status) { result = status; }));
+
+  // Resolves synchronously to SUCCESS with no pending remote validation.
+  EXPECT_EQ(validation, nullptr);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, blink::mojom::AuthenticatorStatus::SUCCESS);
+
   SetBrowserClientForTesting(old_client);
 }
 

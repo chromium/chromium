@@ -51,24 +51,42 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     kReport
   };
 
+  // Overrides to RP ID validation for requests by remote desktop clients,
+  // passed via the remoteDesktopClientOverride or remoteClientDataJSON
+  // extensions.
+  struct RemoteDesktopParams {
+    // The origin provided by the remote desktop client.
+    url::Origin origin;
+    // Whether the remote desktop client has performed RP ID validation steps.
+    // This is true for remoteClientDataJSON only.
+    bool skip_rp_id_validation;
+  };
+
   // Runs the given callback with AuthenticatorStatus::SUCCESS if the origin
   // domain is valid under the referenced definitions, and also the requested
   // RP ID is a registrable domain suffix of, or is equal to, the origin's
   // effective domain. In this case the callback will be called before this
   // function returns.
   //
-  // If `remote_desktop_client_override_origin` is present, this method
-  // validates whether `caller_origin` is authorized to use that extension
-  // through enterprise policy allowlists. This prevents untrusted renderer
-  // processes from being able to impersonate arbitrary origins for WebAuthn
-  // operations. The `remote_desktop_client_override_origin` comes from the
-  // renderer and must not be trusted without this validation.
+  // If `remote_desktop_client_override` is present, this method validates
+  // whether `caller_origin` is authorized to use that extension through
+  // enterprise policy allowlists. This prevents untrusted renderer processes
+  // from being able to impersonate arbitrary origins for WebAuthn operations.
+  // The override origin comes from the renderer and must not be trusted
+  // without this validation.
   //
   // If the RP ID cannot be validated using the rule above then a remote
   // validation will be attempted by fetching `.well-known/webauthn`
   // from the RP ID. In this case the return value will be non-null and the
   // caller needs to retain it. If the return value is deleted then the
   // operation will be canceled.
+  //
+  // If `remote_desktop_client_override.skip_rp_id_validation` is true, RP ID
+  // validation is delegated to the remote client: both the registrable-suffix
+  // check and the `.well-known/webauthn` related-origin request are skipped and
+  // the method resolves to SUCCESS. This does not affect the legacy
+  // `remoteDesktopClientOverride` path, which continues to perform both.
+  // https://w3c.github.io/webauthn/#sctn-remote-clientdatajson-security
   //
   // References:
   //   https://url.spec.whatwg.org/#valid-domain-string
@@ -79,7 +97,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,
-      const std::optional<url::Origin>& remote_desktop_client_override_origin,
+      const std::optional<RemoteDesktopParams>& remote_desktop_client_override,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) = 0;
 
  protected:

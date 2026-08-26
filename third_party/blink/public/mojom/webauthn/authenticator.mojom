@@ -51,6 +51,13 @@ enum AuthenticatorStatus {
   DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
   CERTIFICATE_ERROR,
 
+  // The `remoteClientDataJSON` extension input failed to parse as JSON, was
+  // missing required fields (`type`, `origin`), had a wrong `type` for the
+  // operation, or had a non-boolean `crossOrigin`. Maps to a JS-side
+  // `EncodingError` DOMException.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  REMOTE_CLIENT_DATA_JSON_INVALID,
+
   // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
   // described in a `WebAuthnDOMExceptionDetails` structure.
   ERROR_WITH_DOM_EXCEPTION_DETAILS,
@@ -446,6 +453,16 @@ struct AuthenticationExtensionsClientInputs {
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
 
+  // Provides a complete clientDataJSON for the request, overriding the
+  // browser-constructed version. Used by remote desktop clients.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  //
+  // SECURITY: This field comes from the renderer process and MUST NOT be
+  // trusted without validation. The browser process will only honor this
+  // override if the caller origin is explicitly allowlisted via an enterprise
+  // policy.
+  string? remote_client_data_json;
+
   // Parameters defining the type of browser bound keys that the relying party
   // would accept.
   array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
@@ -593,6 +610,16 @@ struct PublicKeyCredentialCreationOptions {
   // Indicates that a remote desktop client is making a forwarded request on
   // behalf of another origin.
   RemoteDesktopClientOverride? remote_desktop_client_override;
+
+  // Provides a complete clientDataJSON for the request, overriding the
+  // browser-constructed version. Used by remote desktop clients.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  //
+  // SECURITY: This field comes from the renderer process and MUST NOT be
+  // trusted without validation. The browser process will only honor this
+  // override if the caller origin is explicitly allowlisted via an enterprise
+  // policy.
+  string? remote_client_data_json;
 
   // Parameters defining the type of browser bound keys that the relying party
   // would accept.

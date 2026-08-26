@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -98,6 +99,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/pki/input.h"
@@ -153,6 +155,7 @@ using GetCredentialCallback =
 using ReportCallback = blink::mojom::Authenticator::ReportCallback;
 using UIPresentation = AuthenticatorRequestClientDelegate::UIPresentation;
 using Mediation = blink::mojom::Mediation;
+using RemoteDesktopParams = WebAuthRequestSecurityChecker::RemoteDesktopParams;
 
 namespace {
 
@@ -161,6 +164,35 @@ const char kImmediateTimeoutWhileWaitingForUi[] =
 
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
+}
+
+// Parses and validates a `clientDataJSON` string supplied by the renderer via
+// the `remoteClientDataJSON` extension and returns the `origin` it carries.
+std::optional<url::Origin> ExtractOriginFromClientDataJSON(
+    const std::string& client_data_json,
+    std::string_view expected_type) {
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(client_data_json, base::JSON_PARSE_RFC);
+  if (!dict) {
+    return std::nullopt;
+  }
+
+  const std::string* type = dict->FindString("type");
+  if (!type || *type != expected_type) {
+    return std::nullopt;
+  }
+
+  // Sanity-check `crossOrigin` if present.
+  if (const base::Value* cross_origin = dict->Find("crossOrigin");
+      cross_origin && !cross_origin->is_bool()) {
+    return std::nullopt;
+  }
+
+  const std::string* origin_str = dict->FindString("origin");
+  if (!origin_str) {
+    return std::nullopt;
+  }
+  return url::Origin::Create(GURL(*origin_str));
 }
 
 // The application parameter is the SHA-256 hash of the UTF-8 encoding of
@@ -1106,22 +1138,61 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
 
+  if (options->remote_client_data_json &&
+      (!base::FeatureList::IsEnabled(device::kWebAuthnRemoteClientDataJson) ||
+       options->is_conditional)) {
+    mojo::ReportBadMessage("invalid remoteClientDataJSON request");
+    req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   const std::string relying_party_id = options->relying_party.id;
   const blink::mojom::RemoteDesktopClientOverridePtr&
       remote_desktop_client_override = options->remote_desktop_client_override;
-  std::optional<url::Origin> remote_desktop_override_origin;
-  if (remote_desktop_client_override) {
-    // SECURITY: RemoteDesktopClientOverride comes from the renderer process and
-    // is untrusted. This `remote_desktop_override_origin` is only used after
+  std::optional<RemoteDesktopParams> remote_desktop_override;
+  // The `remoteClientDataJSON` extension takes precedence over the older
+  // `remoteDesktopClientOverride`.
+  if (options->remote_client_data_json) {
+    // Reject empty `rp.id` with NotAllowedError. The IDL declares `rp.id` as
+    // a USVString with no presence requirement, so a missing one would
+    // otherwise be silently treated as empty and only fail at later RP ID
+    // validation.
+    if (relying_party_id.empty()) {
+      req_state_->request_outcome = MakeCredentialOutcome::kSecurityError;
+      CompleteMakeCredentialRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    }
+    // RemoteClientDataJSON comes from the renderer process and is untrusted.
+    // Extract the origin from the provided clientDataJSON for RP ID validation.
+    // The origin is only used after ValidateDomainAndRelyingPartyID verifies
+    // that the caller_origin is explicitly allowlisted.
+    std::optional<url::Origin> extracted = ExtractOriginFromClientDataJSON(
+        *options->remote_client_data_json, "webauthn.create");
+    if (!extracted.has_value()) {
+      req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
+      CompleteMakeCredentialRequest(
+          blink::mojom::AuthenticatorStatus::REMOTE_CLIENT_DATA_JSON_INVALID);
+      return;
+    }
+    remote_desktop_override = RemoteDesktopParams{
+        .origin = *extracted, .skip_rp_id_validation = true};
+  } else if (remote_desktop_client_override) {
+    // RemoteDesktopClientOverride comes from the renderer process and is
+    // untrusted. This `remote_desktop_override` is only used after
     // ValidateDomainAndRelyingPartyID verifies that the `caller_origin` is
     // explicitly allowlisted via enterprise policy in
     // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
-    remote_desktop_override_origin = remote_desktop_client_override->origin;
+    remote_desktop_override =
+        RemoteDesktopParams{.origin = remote_desktop_client_override->origin,
+                            .skip_rp_id_validation = false};
   }
   std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
-          remote_desktop_override_origin,
+          remote_desktop_override,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck,
               weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
@@ -1177,9 +1248,22 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   std::optional<std::string> appid_exclude;
   if (options->appid_exclude) {
     appid_exclude = "";
+    std::optional<RemoteDesktopParams> remote_desktop_override;
+    if (options->remote_client_data_json) {
+      auto origin = ExtractOriginFromClientDataJSON(
+          *options->remote_client_data_json, "webauthn.create");
+      if (origin.has_value()) {
+        remote_desktop_override = RemoteDesktopParams{
+            .origin = *origin, .skip_rp_id_validation = true};
+      }
+    } else if (options->remote_desktop_client_override) {
+      remote_desktop_override = RemoteDesktopParams{
+          .origin = options->remote_desktop_client_override->origin,
+          .skip_rp_id_validation = false};
+    }
     auto add_id_status = security_checker_->ValidateAppIdExtension(
-        *options->appid_exclude, caller_origin,
-        options->remote_desktop_client_override, &appid_exclude.value());
+        *options->appid_exclude, caller_origin, remote_desktop_override,
+        &appid_exclude.value());
     if (add_id_status != blink::mojom::AuthenticatorStatus::SUCCESS) {
       req_state_->request_outcome = MakeCredentialOutcome::kSecurityError;
       CompleteMakeCredentialRequest(add_id_status);
@@ -1195,7 +1279,8 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   WebAuthenticationRequestProxy* proxy =
       GetWebAuthnRequestProxyIfActive(caller_origin);
   if (proxy) {
-    if (options->remote_desktop_client_override) {
+    if (options->remote_desktop_client_override ||
+        options->remote_client_data_json) {
       // Don't allow proxying of an already proxied request.
       req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
       CompleteMakeCredentialRequest(
@@ -1322,20 +1407,25 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
   // Assemble clientDataJSON.
-  webauthn::ClientDataJsonParams client_data_json_params(
-      webauthn::ClientDataRequestType::kWebAuthnCreate,
-      req_state_->caller_origin,
-      GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
-      options->challenge, is_cross_origin_iframe);
-  if (options->remote_desktop_client_override) {
-    client_data_json_params.origin =
-        options->remote_desktop_client_override->origin;
-    client_data_json_params.is_cross_origin_iframe =
-        !options->remote_desktop_client_override->same_origin_with_ancestors;
+  if (options->remote_client_data_json) {
+    // Use the provided clientDataJSON directly instead of building one.
+    req_state_->client_data_json = *options->remote_client_data_json;
+  } else {
+    webauthn::ClientDataJsonParams client_data_json_params(
+        webauthn::ClientDataRequestType::kWebAuthnCreate,
+        req_state_->caller_origin,
+        GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
+        options->challenge, is_cross_origin_iframe);
+    if (options->remote_desktop_client_override) {
+      client_data_json_params.origin =
+          options->remote_desktop_client_override->origin;
+      client_data_json_params.is_cross_origin_iframe =
+          !options->remote_desktop_client_override->same_origin_with_ancestors;
+    }
+    req_state_->client_data_json = BuildClientDataJsonWithPayment(
+        std::move(client_data_json_params), std::move(payment_options),
+        /*payment_rp=*/"");
   }
-  req_state_->client_data_json = BuildClientDataJsonWithPayment(
-      std::move(client_data_json_params), std::move(payment_options),
-      /*payment_rp=*/"");
 
   req_state_->ctap_request = device::CtapMakeCredentialRequest(
       req_state_->client_data_json, options->relying_party, options->user,
@@ -1503,6 +1593,17 @@ void AuthenticatorCommonImpl::GetCredential(
   }
   req_state_->hints = public_key_options->hints;
 
+  if (public_key_options->extensions->remote_client_data_json &&
+      !base::FeatureList::IsEnabled(device::kWebAuthnRemoteClientDataJson)) {
+    mojo::ReportBadMessage(
+        "remoteClientDataJSON sent without the "
+        "WebAuthenticationRemoteClientDataJson feature enabled");
+    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   if (options->mediation != Mediation::CONDITIONAL &&
       options->mediation != Mediation::AMBIENT) {
     BeginRequestTimeout(public_key_options->timeout);
@@ -1518,10 +1619,27 @@ void AuthenticatorCommonImpl::GetCredential(
     return;
   }
 
-  if (public_key_options->extensions->remote_desktop_client_override &&
+  if ((public_key_options->extensions->remote_desktop_client_override ||
+       public_key_options->extensions->remote_client_data_json) &&
       options->mediation == Mediation::IMMEDIATE) {
     mojo::ReportBadMessage(
         "Immediate mediation cannot be used with a remote desktop override "
+        "request");
+    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
+  // remoteClientDataJSON forwards a verbatim clientDataJSON from a remote
+  // desktop session. Conditional mediation (autofill UI) is incompatible with
+  // that passthrough model, so the renderer should never combine them. Scoped
+  // to remoteClientDataJSON only; the legacy remoteDesktopClientOverride
+  // extension is unaffected.
+  if (public_key_options->extensions->remote_client_data_json &&
+      options->mediation == Mediation::CONDITIONAL) {
+    mojo::ReportBadMessage(
+        "Conditional mediation cannot be used with a remoteClientDataJSON "
         "request");
     req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
     CompleteGetAssertionRequest(
@@ -1577,19 +1695,49 @@ void AuthenticatorCommonImpl::GetCredential(
   const blink::mojom::RemoteDesktopClientOverridePtr&
       remote_desktop_client_override =
           public_key_options->extensions->remote_desktop_client_override;
-  std::optional<url::Origin> remote_desktop_override_origin;
-  if (remote_desktop_client_override) {
-    // SECURITY: RemoteDesktopClientOverride comes from the renderer process and
-    // is untrusted. This `remote_desktop_override_origin` is only used after
+  std::optional<RemoteDesktopParams> remote_desktop_override;
+  // The `remoteClientDataJSON` extension takes precedence over the older
+  // `remoteDesktopClientOverride`.
+  if (public_key_options->extensions->remote_client_data_json) {
+    // Reject empty `rp.id` with NotAllowedError, mirroring the create() path.
+    // The IDL declares `rp.id` as a USVString with no presence requirement, so
+    // a missing one would otherwise be silently treated as empty. The spec
+    // requires `rp.id` to be present for both registration and authentication.
+    if (relying_party_id.empty()) {
+      req_state_->request_outcome = GetAssertionOutcome::kSecurityError;
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    }
+    // RemoteClientDataJSON comes from the renderer process and is untrusted.
+    // Extract the origin from the provided clientDataJSON for RP ID validation.
+    // The origin is only used after ValidateDomainAndRelyingPartyID verifies
+    // that the caller_origin is explicitly allowlisted.
+    std::optional<url::Origin> extracted = ExtractOriginFromClientDataJSON(
+        *public_key_options->extensions->remote_client_data_json,
+        "webauthn.get");
+    if (!extracted.has_value()) {
+      req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::REMOTE_CLIENT_DATA_JSON_INVALID);
+      return;
+    }
+    remote_desktop_override = RemoteDesktopParams{
+        .origin = *extracted, .skip_rp_id_validation = true};
+  } else if (remote_desktop_client_override) {
+    // RemoteDesktopClientOverride comes from the renderer process and is
+    // untrusted. This `remote_desktop_override` is only used after
     // ValidateDomainAndRelyingPartyID verifies that the `caller_origin` is
     // explicitly allowlisted via enterprise policy in
     // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
-    remote_desktop_override_origin = remote_desktop_client_override->origin;
+    remote_desktop_override =
+        RemoteDesktopParams{.origin = remote_desktop_client_override->origin,
+                            .skip_rp_id_validation = false};
   }
   std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
-          remote_desktop_override_origin,
+          remote_desktop_override,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck,
               weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
@@ -1764,10 +1912,24 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   if (public_key_options->extensions->appid) {
     req_state_->requested_extensions.insert(RequestExtension::kAppID);
     std::string app_id;
+    std::optional<RemoteDesktopParams> remote_desktop_override;
+    if (public_key_options->extensions->remote_client_data_json) {
+      auto origin = ExtractOriginFromClientDataJSON(
+          *public_key_options->extensions->remote_client_data_json,
+          "webauthn.get");
+      if (origin.has_value()) {
+        remote_desktop_override = RemoteDesktopParams{
+            .origin = *origin, .skip_rp_id_validation = true};
+      }
+    } else if (public_key_options->extensions->remote_desktop_client_override) {
+      remote_desktop_override = RemoteDesktopParams{
+          .origin = public_key_options->extensions
+                        ->remote_desktop_client_override->origin,
+          .skip_rp_id_validation = false};
+    }
     auto add_id_status = security_checker_->ValidateAppIdExtension(
         *public_key_options->extensions->appid, caller_origin,
-        public_key_options->extensions->remote_desktop_client_override,
-        &app_id);
+        remote_desktop_override, &app_id);
     if (add_id_status != blink::mojom::AuthenticatorStatus::SUCCESS) {
       req_state_->request_outcome = GetAssertionOutcome::kSecurityError;
       CompleteGetAssertionRequest(add_id_status);
@@ -1783,7 +1945,8 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       GetWebAuthnRequestProxyIfActive(caller_origin);
   if (proxy) {
     if (options->mediation == Mediation::CONDITIONAL ||
-        (public_key_options->extensions->remote_desktop_client_override)) {
+        public_key_options->extensions->remote_desktop_client_override ||
+        public_key_options->extensions->remote_client_data_json) {
       // Don't allow proxying of an already proxied or conditional request.
       req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
       CompleteGetAssertionRequest(
@@ -1837,23 +2000,30 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
   // Assemble clientDataJSON.
-  webauthn::ClientDataJsonParams client_data_json_params(
-      webauthn::ClientDataRequestType::kWebAuthnGet, caller_origin,
-      GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
-      public_key_options->challenge, is_cross_origin_iframe);
-  if (payment_options) {
-    client_data_json_params.type = webauthn::ClientDataRequestType::kPaymentGet;
-  } else if (public_key_options->extensions->remote_desktop_client_override) {
-    client_data_json_params.origin =
-        public_key_options->extensions->remote_desktop_client_override->origin;
-    client_data_json_params.is_cross_origin_iframe =
-        !public_key_options->extensions->remote_desktop_client_override
-             ->same_origin_with_ancestors;
-  }
+  if (public_key_options->extensions->remote_client_data_json) {
+    req_state_->client_data_json =
+        *public_key_options->extensions->remote_client_data_json;
+  } else {
+    webauthn::ClientDataJsonParams client_data_json_params(
+        webauthn::ClientDataRequestType::kWebAuthnGet, caller_origin,
+        GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
+        public_key_options->challenge, is_cross_origin_iframe);
+    if (payment_options) {
+      client_data_json_params.type =
+          webauthn::ClientDataRequestType::kPaymentGet;
+    } else if (public_key_options->extensions->remote_desktop_client_override) {
+      client_data_json_params.origin =
+          public_key_options->extensions->remote_desktop_client_override
+              ->origin;
+      client_data_json_params.is_cross_origin_iframe =
+          !public_key_options->extensions->remote_desktop_client_override
+               ->same_origin_with_ancestors;
+    }
 
-  req_state_->client_data_json = BuildClientDataJsonWithPayment(
-      std::move(client_data_json_params), std::move(payment_options),
-      req_state_->relying_party_id);
+    req_state_->client_data_json = BuildClientDataJsonWithPayment(
+        std::move(client_data_json_params), std::move(payment_options),
+        req_state_->relying_party_id);
+  }
 
   if (options->mediation == Mediation::CONDITIONAL ||
       options->mediation == Mediation::AMBIENT ||
@@ -2204,7 +2374,7 @@ void AuthenticatorCommonImpl::Report(
       security_checker_->ValidateDomainAndRelyingPartyID(
           req_state_->caller_origin, req_state_->relying_party_id,
           WebAuthRequestSecurityChecker::RequestType::kReport,
-          /*remote_desktop_client_override_origin=*/std::nullopt,
+          /*remote_desktop_client_override=*/std::nullopt,
           base::BindOnce(&AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck,
                          weak_factory_.GetWeakPtr(), GetRequestKey(),
                          std::move(options)));

@@ -179,7 +179,7 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
               origin(), rp_id,
               content::WebAuthRequestSecurityChecker::RequestType::
                   kMakePaymentCredential,
-              /*remote_desktop_client_override_origin=*/std::nullopt,
+              /*remote_desktop_client_override=*/std::nullopt,
               base::BindOnce(&SecurePaymentConfirmationService::
                                  ContinueStorePaymentCredentialAfterRpIdCheck,
                              weak_this, mojo::GetBadMessageCallback(),

@@ -47,7 +47,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityCheckerImpl
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,
-      const std::optional<url::Origin>& remote_desktop_client_override_origin,
+      const std::optional<RemoteDesktopParams>& remote_desktop_client_override,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback)
       override;
 
@@ -58,8 +58,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityCheckerImpl
   blink::mojom::AuthenticatorStatus ValidateAppIdExtension(
       std::string appid,
       url::Origin caller_origin,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override,
+      const std::optional<RemoteDesktopParams>& remote_desktop_override,
       std::string* out_app_id);
 
   [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(

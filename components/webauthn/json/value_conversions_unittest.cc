@@ -141,6 +141,9 @@ TEST(WebAuthenticationJSONConversionTest,
       blink::mojom::RemoteDesktopClientOverride::New(
           url::Origin::Create(GURL(kOrigin)),
           /*same_origin_with_ancestors=*/true),
+      // TODO(crbug.com/506062130): Implement base::Value serialization for
+      // RemoteClientDataJSON in //components/webauthn/json/value_conversions.h.
+      /*remote_client_data_json=*/std::nullopt,
       /*payment_browser_bound_key_parameters=*/std::nullopt,
       std::vector<std::string>{"attfmt1", "attfmt2"}, /*is_conditional=*/false,
       /*cmtg_key=*/true);
@@ -181,6 +184,7 @@ TEST(WebAuthenticationJSONConversionTest,
       /*cred_blob=*/std::nullopt,
       /*min_pin_length_requested=*/false,
       /*remote_desktop_client_override=*/nullptr,
+      /*remote_client_data_json=*/std::nullopt,
       /*payment_browser_bound_key_parameters=*/std::nullopt,
       /*attestation_formats=*/std::vector<std::string>(),
       /*is_conditional=*/false,
@@ -240,6 +244,10 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::RemoteDesktopClientOverride::New(
               url::Origin::Create(GURL(kOrigin)),
               /*same_origin_with_ancestors=*/true),
+          // TODO(crbug.com/506062130): Implement base::Value serialization for
+          // RemoteClientDataJSON in
+          // //components/webauthn/json/value_conversions.h.
+          /*remote_client_data_json=*/std::nullopt,
           std::vector<device::PublicKeyCredentialParams::CredentialInfo>(),
           /*cmtg_key=*/true,
           /*cross_device_fallback_url=*/GURL("https://example.test/fallback")));

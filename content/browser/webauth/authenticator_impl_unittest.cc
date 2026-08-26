@@ -122,6 +122,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -2636,11 +2637,14 @@ TEST_F(AuthenticatorContentBrowserClientTest,
   ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
 }
 
-// AuthenticatorImplRemoteDesktopClientOverrideTest exercises the
-// RemoteDesktopClientOverride extension, which is used by remote desktop
-// applications exercising requests on behalf of other origins.
-class AuthenticatorImplRemoteDesktopClientOverrideTest
+class AuthenticatorImplRemoteDesktopTestBase
     : public AuthenticatorContentBrowserClientTest {
+ public:
+  enum class RemoteDesktopExtension {
+    kRemoteDesktopClientOverride,
+    kRemoteClientDataJSON,
+  };
+
  protected:
   static constexpr char kOtherRdpOrigin[] = "https://myrdp.test";
   static constexpr char kExampleOrigin[] = "https://example.test";
@@ -2651,24 +2655,69 @@ class AuthenticatorImplRemoteDesktopClientOverrideTest
 
   void SetUp() override {
     AuthenticatorContentBrowserClientTest::SetUp();
-    // Authorize `kCorpCrdOrigin` to exercise the extension. In //chrome, this
-    // is controlled by the `WebAuthenticationRemoteProxiedRequestsAllowed`
-    // enterprise policy.
+    // Simulate enterprise-policy authorization for `kCorpCrdOrigin`.
     test_client_.GetTestWebAuthenticationDelegate()
         ->remote_desktop_client_override_origin =
         url::Origin::Create(GURL(kCorpCrdOrigin));
-    // Controls the Blink feature gating the extension.
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kWebAuthRemoteDesktopSupport);
   }
 
+  static std::string MakeClientDataJSON(const std::string& origin) {
+    return R"({"type":"webauthn.create","challenge":"dGVzdA","origin":")" +
+           origin + R"(","crossOrigin":false})";
+  }
+
+  static std::string MakeGetClientDataJSON(const std::string& origin) {
+    return R"({"type":"webauthn.get","challenge":"dGVzdA","origin":")" +
+           origin + R"(","crossOrigin":false})";
+  }
+
+  static void SetRemoteDesktopExtension(
+      blink::mojom::PublicKeyCredentialCreationOptions& options,
+      const std::string& origin,
+      RemoteDesktopExtension extension) {
+    if (extension == RemoteDesktopExtension::kRemoteClientDataJSON) {
+      options.remote_client_data_json = MakeClientDataJSON(origin);
+      return;
+    }
+    options.remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(origin)), true);
+  }
+
+  static void SetRemoteDesktopExtension(
+      blink::mojom::PublicKeyCredentialRequestOptions& options,
+      const std::string& origin,
+      RemoteDesktopExtension extension) {
+    if (extension == RemoteDesktopExtension::kRemoteClientDataJSON) {
+      options.extensions->remote_client_data_json =
+          MakeGetClientDataJSON(origin);
+      return;
+    }
+    options.extensions->remote_desktop_client_override =
+        RemoteDesktopClientOverride::New(url::Origin::Create(GURL(origin)),
+                                         true);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
 };
 
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
-  // Verify that an authorized origin may use the extension. Regular RP ID
-  // processing applies, i.e. the origin override must be authorized to claim
-  // the specified RP ID.
+// Tests both remote-desktop extension encodings.
+class AuthenticatorImplRemoteDesktopExtensionTest
+    : public AuthenticatorImplRemoteDesktopTestBase,
+      public testing::WithParamInterface<
+          AuthenticatorImplRemoteDesktopTestBase::RemoteDesktopExtension> {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        device::kWebAuthnRemoteClientDataJson,
+        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON);
+    AuthenticatorImplRemoteDesktopTestBase::SetUp();
+  }
+};
+
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, MakeCredential) {
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -2690,20 +2739,23 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
     options->relying_party.id = test.rp_id;
-    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
-        url::Origin::Create(GURL(test.remote_origin)), true);
+    SetRemoteDesktopExtension(*options, test.remote_origin, GetParam());
 
-    EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status,
               test.success ? AuthenticatorStatus::SUCCESS
                            : AuthenticatorStatus::
                                  REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+    // remoteClientDataJSON must reach the authenticator unchanged.
+    if (test.success && result.response &&
+        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON) {
+      EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
+                MakeClientDataJSON(test.remote_origin));
+    }
   }
 }
 
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
-  // Verify that an authorized origin may use the extension. Regular RP ID
-  // processing applies, i.e. the origin override must be authorized to claim
-  // the specified RP ID.
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, GetAssertion) {
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -2726,24 +2778,26 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
     options->relying_party_id = test.rp_id;
-    options->extensions->remote_desktop_client_override =
-        RemoteDesktopClientOverride::New(
-            url::Origin::Create(GURL(test.remote_origin)), true);
+    SetRemoteDesktopExtension(*options, test.remote_origin, GetParam());
 
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
         options->allow_credentials[0].id, test.rp_id));
 
-    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+    auto result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status,
               test.success ? AuthenticatorStatus::SUCCESS
                            : AuthenticatorStatus::
                                  REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+    // remoteClientDataJSON must reach the authenticator unchanged.
+    if (test.success && result.response &&
+        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON) {
+      EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
+                MakeGetClientDataJSON(test.remote_origin));
+    }
   }
 }
 
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredentialAppid) {
-  // Verify that origin overriding extends to the appidExclude extension. If the
-  // caller origin is authorized to use the extension, App ID processing is
-  // applied to the overridden origin.
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, MakeCredentialAppid) {
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -2776,18 +2830,21 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredentialAppid) {
         GetTestPublicKeyCredentialCreationOptions();
     options->relying_party.id = test.rp_id;
     options->appid_exclude = test.app_id;
-    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
-        url::Origin::Create(GURL(test.remote_origin)), true);
+    SetRemoteDesktopExtension(*options, test.remote_origin, GetParam());
 
     auto result = AuthenticatorMakeCredential(std::move(options));
-    EXPECT_EQ(result.status, test.expected);
+    // remoteClientDataJSON delegates AppID validation to the remote client;
+    // both extensions still require caller authorization.
+    const AuthenticatorStatus expected =
+        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON &&
+                test.local_origin == kCorpCrdOrigin
+            ? AuthenticatorStatus::SUCCESS
+            : test.expected;
+    EXPECT_EQ(result.status, expected);
   }
 }
 
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
-  // Verify that origin overriding extends to the appid extension. If the
-  // caller origin is authorized to use the extension, App ID processing is
-  // applied to the overridden origin.
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, GetAssertionAppid) {
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -2821,32 +2878,36 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
         GetTestPublicKeyCredentialRequestOptions();
     options->relying_party_id = test.rp_id;
     options->extensions->appid = test.app_id;
-    options->extensions->remote_desktop_client_override =
-        RemoteDesktopClientOverride::New(
-            url::Origin::Create(GURL(test.remote_origin)), true);
+    SetRemoteDesktopExtension(*options, test.remote_origin, GetParam());
 
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
         options->allow_credentials[0].id, test.rp_id));
 
     auto result = AuthenticatorGetAssertion(std::move(options));
-    EXPECT_EQ(result.status, test.expected);
+    // remoteClientDataJSON delegates AppID validation to the remote client;
+    // both extensions still require caller authorization.
+    const AuthenticatorStatus expected =
+        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON &&
+                test.local_origin == kCorpCrdOrigin
+            ? AuthenticatorStatus::SUCCESS
+            : test.expected;
+    EXPECT_EQ(result.status, expected);
   }
 }
 
 // A Chrome extension should not be authorized to use the
-// remoteDesktopClientOverride request extension.
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
-       ExtensionCallerOrigin) {
+// remote-desktop request extensions.
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, ExtensionCallerOrigin) {
   static const std::string kExtensionOrigin =
       base::StrCat({kExtensionScheme, "://abcdefg"});
   test_client_.GetTestWebAuthenticationDelegate()->permit_extensions = true;
+  NavigateAndCommit(GURL(kExtensionOrigin + "/test.html"));
 
   {
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
     options->relying_party.id = kExampleRpId;
-    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
-        url::Origin::Create(GURL(kExampleOrigin)), true);
+    SetRemoteDesktopExtension(*options, kExampleOrigin, GetParam());
     EXPECT_EQ(
         AuthenticatorMakeCredential(std::move(options)).status,
         AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
@@ -2856,9 +2917,7 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
     options->relying_party_id = kExampleRpId;
-    options->extensions->remote_desktop_client_override =
-        RemoteDesktopClientOverride::New(
-            url::Origin::Create(GURL(kExampleOrigin)), true);
+    SetRemoteDesktopExtension(*options, kExampleOrigin, GetParam());
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
         options->allow_credentials[0].id, kExtensionOrigin));
     EXPECT_EQ(
@@ -2867,19 +2926,15 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
   }
 }
 
-TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
+TEST_P(AuthenticatorImplRemoteDesktopExtensionTest,
        GetAssertionImmediateMediation) {
-  // Verify that an authorized origin may not use the extension with immediate
-  // mediation.
   NavigateAndCommit(GURL(kCorpCrdOrigin));
 
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
   options->allow_credentials.clear();
   options->relying_party_id = kExampleRpId;
-  options->extensions->remote_desktop_client_override =
-      RemoteDesktopClientOverride::New(
-          url::Origin::Create(GURL(kExampleOrigin)), true);
+  SetRemoteDesktopExtension(*options, kExampleOrigin, GetParam());
 
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
@@ -2897,6 +2952,319 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
   authenticator->GetCredential(std::move(get_credential_options),
                                base::DoNothing());
   EXPECT_TRUE(mojo_error_future.Wait());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AuthenticatorImplRemoteDesktopExtensionTest,
+    testing::Values(AuthenticatorImplRemoteDesktopTestBase::
+                        RemoteDesktopExtension::kRemoteDesktopClientOverride,
+                    AuthenticatorImplRemoteDesktopTestBase::
+                        RemoteDesktopExtension::kRemoteClientDataJSON));
+
+// Tests behavior specific to the RemoteClientDataJSON extension.
+class AuthenticatorImplRemoteClientDataJSONTest
+    : public AuthenticatorImplRemoteDesktopTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        device::kWebAuthnRemoteClientDataJson);
+    AuthenticatorImplRemoteDesktopTestBase::SetUp();
+  }
+
+  // Verifies that MakeCredential rejects malformed clientDataJSON.
+  void ExpectMakeCredentialRejectsBadJson(const std::string& bad_json) {
+    NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = kExampleRpId;
+    options->remote_client_data_json = bad_json;
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status,
+              AuthenticatorStatus::REMOTE_CLIENT_DATA_JSON_INVALID);
+  }
+};
+
+// The renderer gates this field, so receiving it with the browser feature
+// disabled is treated as a bad message.
+class AuthenticatorImplRemoteClientDataJSONDisabledTest
+    : public AuthenticatorImplRemoteDesktopTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnRemoteClientDataJson);
+    AuthenticatorImplRemoteDesktopTestBase::SetUp();
+  }
+};
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONDisabledTest,
+       MakeCredentialRejectsExtensionWhenFeatureDisabled) {
+  NavigateAndCommit(GURL(kExampleOrigin));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = kExampleRpId;
+  options->remote_client_data_json = MakeClientDataJSON(kExampleOrigin);
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error, "invalid remoteClientDataJSON request");
+    mojo_error_future.SetValue();
+  }));
+
+  authenticator->MakeCredential(std::move(options), base::DoNothing());
+  EXPECT_TRUE(mojo_error_future.Wait());
+}
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONDisabledTest,
+       GetAssertionRejectsExtensionWhenFeatureDisabled) {
+  NavigateAndCommit(GURL(kExampleOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->relying_party_id = kExampleRpId;
+  options->extensions->remote_client_data_json =
+      MakeGetClientDataJSON(kExampleOrigin);
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error,
+              "remoteClientDataJSON sent without the "
+              "WebAuthenticationRemoteClientDataJson feature enabled");
+    mojo_error_future.SetValue();
+  }));
+
+  auto get_credential_options = GetCredentialOptions::New();
+  get_credential_options->public_key = std::move(options);
+  authenticator->GetCredential(std::move(get_credential_options),
+                               base::DoNothing());
+  EXPECT_TRUE(mojo_error_future.Wait());
+}
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest, PrecedenceOverOldExtension) {
+  // When both remoteClientDataJSON and remoteDesktopClientOverride are
+  // provided, remoteClientDataJSON takes precedence.
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = kExampleRpId;
+  std::string expected_json = MakeClientDataJSON(kExampleOrigin);
+  options->remote_client_data_json = expected_json;
+  // Also set the old extension with a different origin. remoteClientDataJSON
+  // should win.
+  options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+      url::Origin::Create(GURL("https://other-ignored.test")), true);
+
+  auto result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+  // Verify the clientDataJSON matches what we provided, not what
+  // remoteDesktopClientOverride would have produced.
+  ASSERT_TRUE(result.response);
+  EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
+            expected_json);
+}
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       GetAssertionConditionalMediation) {
+  // Verify that remoteClientDataJSON rejects conditional mediation.
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->relying_party_id = kExampleRpId;
+  options->extensions->remote_client_data_json =
+      MakeGetClientDataJSON(kExampleOrigin);
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error,
+              "Conditional mediation cannot be used with a "
+              "remoteClientDataJSON request");
+    mojo_error_future.SetValue();
+  }));
+
+  auto get_credential_options = GetCredentialOptions::New();
+  get_credential_options->public_key = std::move(options);
+  get_credential_options->mediation = blink::mojom::Mediation::CONDITIONAL;
+  authenticator->GetCredential(std::move(get_credential_options),
+                               base::DoNothing());
+  EXPECT_TRUE(mojo_error_future.Wait());
+}
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialConditionalMediation) {
+  // Verify that remoteClientDataJSON rejects conditional mediation (the
+  // passkey upgrade flow) on create.
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = kExampleRpId;
+  options->remote_client_data_json = MakeClientDataJSON(kExampleOrigin);
+  options->is_conditional = true;
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error, "invalid remoteClientDataJSON request");
+    mojo_error_future.SetValue();
+  }));
+
+  authenticator->MakeCredential(std::move(options), base::DoNothing());
+  EXPECT_TRUE(mojo_error_future.Wait());
+}
+
+// Verifies that JSON containing a `// comment` (a
+// `JSON_PARSE_CHROMIUM_EXTENSIONS` extension that the browser previously
+// accepted) is rejected by the strict `JSON_PARSE_RFC` parser
+// (RFC 8259 strict).
+// https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsJsonWithComments) {
+  ExpectMakeCredentialRejectsBadJson(
+      R"({"type":"webauthn.create","challenge":"dGVzdA",)"
+      R"("origin":"https://example.test","crossOrigin":false // comment
+        })");
+}
+
+// Verifies that a clientDataJSON with the wrong `type` (e.g., `webauthn.get`
+// in a create flow) is rejected.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsWrongType) {
+  ExpectMakeCredentialRejectsBadJson(
+      R"({"type":"webauthn.get","challenge":"dGVzdA",)"
+      R"("origin":"https://example.test","crossOrigin":false})");
+}
+
+// Verifies that a clientDataJSON missing the `type` field is rejected.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsMissingType) {
+  ExpectMakeCredentialRejectsBadJson(
+      R"({"challenge":"dGVzdA","origin":"https://example.test","crossOrigin":false})");
+}
+
+// Verifies that a clientDataJSON missing the `origin` field is rejected.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsMissingOrigin) {
+  ExpectMakeCredentialRejectsBadJson(
+      R"({"type":"webauthn.create","challenge":"dGVzdA","crossOrigin":false})");
+}
+
+// Verifies that a clientDataJSON with a non-boolean `crossOrigin` is rejected
+// (sanity check that the field, if present, has the spec-required type).
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsNonBoolCrossOrigin) {
+  ExpectMakeCredentialRejectsBadJson(
+      R"({"type":"webauthn.create","challenge":"dGVzdA",)"
+      R"("origin":"https://example.test","crossOrigin":"not_a_bool"})");
+}
+
+// Verifies that completely malformed JSON (unclosed brace, etc.) is rejected.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsMalformedJson) {
+  ExpectMakeCredentialRejectsBadJson("not valid json {{{ ");
+}
+
+// Verifies that an empty `rp.id` is rejected with NotAllowedError when the
+// extension is present. The Blink IDL allows `rp.id` to be absent (USVString
+// with no presence requirement); the browser explicitly rejects empty values.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialRejectsEmptyRpId) {
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = "";  // Empty.
+  options->remote_client_data_json = MakeClientDataJSON(kExampleOrigin);
+
+  auto result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+// Verifies the get() flow also rejects an empty `rp.id` with NotAllowedError
+// when the extension is present, mirroring the create() guard. The spec
+// requires `rp.id` to be present for both registration and authentication.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       GetAssertionRejectsEmptyRpId) {
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->relying_party_id = "";  // Empty.
+  options->extensions->remote_client_data_json =
+      MakeGetClientDataJSON(kExampleOrigin);
+
+  auto result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+// Verifies the same parse rejection in the GetAssertion flow. webauthn.create
+// in a get flow is rejected with REMOTE_CLIENT_DATA_JSON_INVALID (mapped to
+// EncodingError at the renderer boundary).
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       GetAssertionRejectsWrongType) {
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->relying_party_id = kExampleRpId;
+  // webauthn.create instead of webauthn.get for a get flow.
+  options->extensions->remote_client_data_json =
+      MakeClientDataJSON(kExampleOrigin);
+
+  auto result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(result.status,
+            AuthenticatorStatus::REMOTE_CLIENT_DATA_JSON_INVALID);
+}
+
+// Verifies that a clientDataJSON whose `origin` is a non-web format (as a
+// native app on another platform might supply) is accepted: origin validation
+// is delegated to the remote client, so the browser does not reject opaque or
+// otherwise non-URL origins.
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       MakeCredentialAcceptsNonWebOrigin) {
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = kExampleRpId;
+  // A non-web origin format parses to an opaque origin; it must still be
+  // accepted because origin validation is delegated to the remote client.
+  options->remote_client_data_json =
+      MakeClientDataJSON("android:apk-key-hash:abc123");
+
+  auto result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(AuthenticatorImplRemoteClientDataJSONTest,
+       GetAssertionAcceptsNonWebOrigin) {
+  ResetVirtualDevice();
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->relying_party_id = kExampleRpId;
+  // A non-web origin format parses to an opaque origin; it must still be
+  // accepted because origin validation is delegated to the remote client.
+  options->extensions->remote_client_data_json =
+      MakeGetClientDataJSON("android:apk-key-hash:abc123");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, kExampleRpId));
+
+  auto result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
 }
 
 TEST_F(AuthenticatorImplRequestDelegateTest,
@@ -4504,6 +4872,34 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
       url::Origin::Create(GURL(kTestOrigin1));
   expected->remote_desktop_client_override->same_origin_with_ancestors = true;
   EXPECT_EQ(request_proxy().observations().create_requests.at(0), expected);
+}
+
+// remoteClientDataJSON is mutually exclusive with an active request proxy: an
+// already-proxied request must not be re-proxied, so a request carrying the
+// extension is rejected with NOT_ALLOWED_ERROR and never forwarded to the
+// proxy.
+TEST_F(AuthenticatorImplWithRequestProxyTest, RemoteClientDataJsonNotProxied) {
+  // remoteClientDataJSON is gated by a browser-side feature check; enable it so
+  // the request reaches the proxy mutual-exclusion logic under test.
+  base::test::ScopedFeatureList scoped_feature_list(
+      device::kWebAuthnRemoteClientDataJson);
+  request_proxy().config().is_active = true;
+  // Authorize the caller to use the override extensions so the request passes
+  // RP ID validation and reaches the proxy mutual-exclusion check.
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->remote_desktop_client_override_origin =
+      url::Origin::Create(GURL(kTestOrigin1));
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  auto request = GetTestPublicKeyCredentialCreationOptions();
+  request->remote_client_data_json =
+      R"({"type":"webauthn.create","challenge":"dGVzdA",)"
+      R"("origin":"https://example.test","crossOrigin":false})";
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(request));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  // The proxy must never have been asked to handle the request.
+  EXPECT_EQ(request_proxy().observations().create_requests.size(), 0u);
 }
 
 // Verify requests with an attached proxy run RP ID checks.

@@ -97,6 +97,11 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
 
+// Support the WebAuthn remoteClientDataJSON extension, which lets an authorized
+// remote desktop client supply the clientDataJSON for a request.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnRemoteClientDataJson);
+
 // Enables support for the WebAuthenticationRemoteDesktopAllowedOrigins
 // enterprise policy for Isolated Web Apps.
 COMPONENT_EXPORT(FIDO_PUBLIC)

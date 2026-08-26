@@ -1440,6 +1440,12 @@ DOMException* AuthenticatorStatusToDOMException(
           DOMExceptionCode::kNotAllowedError,
           "This origin is not permitted to use the "
           "'remoteDesktopClientOverride' extension.");
+    case AuthenticatorStatus::REMOTE_CLIENT_DATA_JSON_INVALID:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kEncodingError,
+          "The 'remoteClientDataJSON' extension input could not be parsed "
+          "as a valid clientDataJSON: missing or invalid 'type', 'origin', "
+          "or 'crossOrigin' field, or the JSON is not well-formed.");
     case AuthenticatorStatus::CERTIFICATE_ERROR:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,

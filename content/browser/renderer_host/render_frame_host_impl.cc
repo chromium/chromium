@@ -19227,17 +19227,19 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
   }
 
   if (app_id.has_value()) {
-    blink::mojom::RemoteDesktopClientOverridePtr remote_desktop_client_override;
+    std::optional<WebAuthRequestSecurityChecker::RemoteDesktopParams>
+        remote_desktop_override;
     if (remote_desktop_client_override_origin) {
-      remote_desktop_client_override =
-          blink::mojom::RemoteDesktopClientOverride::New(
-              *remote_desktop_client_override_origin, !is_cross_origin);
+      remote_desktop_override =
+          WebAuthRequestSecurityChecker::RemoteDesktopParams{
+              .origin = *remote_desktop_client_override_origin,
+              .skip_rp_id_validation = false};
     }
     // `out_app_id` is ignored because the original string is passed to the
     // credential provider on Android.
     std::string out_app_id;
     status = GetWebAuthRequestSecurityCheckerImpl()->ValidateAppIdExtension(
-        *app_id, effective_origin, remote_desktop_client_override, &out_app_id);
+        *app_id, effective_origin, remote_desktop_override, &out_app_id);
     if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
       std::move(callback).Run(status, is_cross_origin);
       return;
@@ -19251,10 +19253,21 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     return;
   }
 
+  // TODO(crbug.com/506062130): Add Android support for remoteClientDataJSON. It
+  // is desktop-only today and never reaches this path, so RP ID validation is
+  // not delegated here.
+  std::optional<WebAuthRequestSecurityChecker::RemoteDesktopParams>
+      remote_desktop_client_override;
+  if (remote_desktop_client_override_origin) {
+    remote_desktop_client_override =
+        WebAuthRequestSecurityChecker::RemoteDesktopParams{
+            .origin = *remote_desktop_client_override_origin,
+            .skip_rp_id_validation = false};
+  }
   std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       GetWebAuthRequestSecurityCheckerImpl()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id, request_type,
-          remote_desktop_client_override_origin,
+          remote_desktop_client_override,
           base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          is_cross_origin));
@@ -19289,17 +19302,19 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   }
 
   if (app_id.has_value()) {
-    blink::mojom::RemoteDesktopClientOverridePtr remote_desktop_client_override;
+    std::optional<WebAuthRequestSecurityChecker::RemoteDesktopParams>
+        remote_desktop_override;
     if (remote_desktop_client_override_origin) {
-      remote_desktop_client_override =
-          blink::mojom::RemoteDesktopClientOverride::New(
-              *remote_desktop_client_override_origin, !is_cross_origin);
+      remote_desktop_override =
+          WebAuthRequestSecurityChecker::RemoteDesktopParams{
+              .origin = *remote_desktop_client_override_origin,
+              .skip_rp_id_validation = false};
     }
     // `out_app_id` is ignored because the original string is passed to the
     // credential provider on Android.
     std::string out_app_id;
     status = GetWebAuthRequestSecurityCheckerImpl()->ValidateAppIdExtension(
-        *app_id, effective_origin, remote_desktop_client_override, &out_app_id);
+        *app_id, effective_origin, remote_desktop_override, &out_app_id);
     if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
       std::move(callback).Run(status, is_cross_origin);
       return;
@@ -19313,10 +19328,21 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     return;
   }
 
+  // TODO(crbug.com/506062130): Add Android support for remoteClientDataJSON. It
+  // is desktop-only today and never reaches this path, so RP ID validation is
+  // not delegated here.
+  std::optional<WebAuthRequestSecurityChecker::RemoteDesktopParams>
+      remote_desktop_client_override;
+  if (remote_desktop_client_override_origin) {
+    remote_desktop_client_override =
+        WebAuthRequestSecurityChecker::RemoteDesktopParams{
+            .origin = *remote_desktop_client_override_origin,
+            .skip_rp_id_validation = false};
+  }
   std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       GetWebAuthRequestSecurityCheckerImpl()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id, request_type,
-          remote_desktop_client_override_origin,
+          remote_desktop_client_override,
           base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          is_cross_origin));
@@ -19355,7 +19381,7 @@ void RenderFrameHostImpl::PerformReportWebAuthSecurityChecks(
       GetWebAuthRequestSecurityCheckerImpl()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id,
           WebAuthRequestSecurityChecker::RequestType::kReport,
-          /*remote_desktop_client_override_origin=*/std::nullopt,
+          /*remote_desktop_client_override=*/std::nullopt,
           base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          is_cross_origin));
