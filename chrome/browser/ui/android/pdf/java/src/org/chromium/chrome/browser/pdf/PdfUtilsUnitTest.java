@@ -87,7 +87,6 @@ public class PdfUtilsUnitTest {
             "chrome-native://pdf/link?url=chrome%3A%2F%2Fversion";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
-    private static final String IMAGE_FILE_URL = "file:///media/external/downloads/sample.jpg";
 
     @Before
     public void setUp() {

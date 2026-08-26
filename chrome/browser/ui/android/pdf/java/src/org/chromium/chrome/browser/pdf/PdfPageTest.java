@@ -34,8 +34,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.INLINE_PDF_V2_INCOGNITO})
 @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
 public class PdfPageTest {
-    private static final long TIMEOUT_MS = 8000;
-
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();

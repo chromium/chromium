@@ -91,7 +91,6 @@ public class PdfPageUnitTest {
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
     private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
-    private static final String EXAMPLE_URL = "https://www.example.com/";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
 
