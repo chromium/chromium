@@ -428,6 +428,15 @@ bool SharedContextState::IsGraphiteDawnD3D11() const {
 #endif
 }
 
+bool SharedContextState::IsGraphiteDawnD3D12() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->backend_type() == wgpu::BackendType::D3D12;
+#else
+  return false;
+#endif
+}
+
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return IsGraphiteDawn() &&
@@ -1457,6 +1466,16 @@ Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
     default:
       NOTREACHED();
   }
+}
+
+Microsoft::WRL::ComPtr<ID3D12CommandQueue>
+SharedContextState::GetD3D12CommandQueue() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (IsGraphiteDawnD3D12()) {
+    return dawn_context_provider_->GetD3D12CommandQueue();
+  }
+#endif
+  return nullptr;
 }
 #endif
 

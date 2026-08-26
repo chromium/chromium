@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 #endif
 
@@ -137,6 +138,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool IsGraphiteDawnMetal() const;
   bool IsGraphiteDawnD3D() const;
   bool IsGraphiteDawnD3D11() const;
+  bool IsGraphiteDawnD3D12() const;
   bool IsGraphiteDawnVulkan() const;
   bool IsGraphiteDawnVulkanSwiftShader() const;
 
@@ -308,8 +310,9 @@ class GPU_GLES2_EXPORT SharedContextState
   int32_t GetMaxTextureSize();
 
 #if BUILDFLAG(IS_WIN)
-  // Get the D3D11 device used for the compositing.
+  // Get the D3D device and command queue used for compositing.
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
+  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetD3D12CommandQueue() const;
 #endif
 
  private:

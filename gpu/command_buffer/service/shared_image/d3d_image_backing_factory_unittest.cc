@@ -182,32 +182,26 @@ class D3DImageBackingFactoryTest
           DawnContextProvider::Create(GpuPreferences(), GpuFeatureInfo());
     }
 
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue;
-    if (skia_backend_type == SkiaBackendType::kGraphiteDawnD3D12) {
-      d3d11_device = dawn_context_provider_->GetD3D11Device();
-      d3d12_command_queue = dawn_context_provider_->GetD3D12CommandQueue();
-    } else {
-      d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-    }
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        std::move(share_group), surface_, context_,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        gr_context_type, /*vulkan_context_provider=*/nullptr,
+        dawn_context_provider_.get());
+
+    auto d3d11_device = context_state_->GetD3D11Device();
+    auto d3d12_command_queue = context_state_->GetD3D12CommandQueue();
     ASSERT_TRUE(d3d11_device);
 
     gl::InitializeDirectComposition(
         d3d11_device, d3d12_command_queue,
         gl::CreateDCSurfaceSolidColorPoolFactory(d3d11_device));
-    if (skia_backend_type == SkiaBackendType::kGraphiteDawnD3D12) {
+    if (context_state_->IsGraphiteDawnD3D12()) {
       if (!gl::DirectCompositionTextureSupported() ||
           !gl::GetDirectCompositionD3D12CommandQueue()) {
         GTEST_SKIP() << "IDCompositionTexture backed by a D3D12 resource is "
                         "not supported on this machine";
       }
     }
-
-    context_state_ = base::MakeRefCounted<SharedContextState>(
-        std::move(share_group), surface_, context_,
-        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
-        gr_context_type, /*vulkan_context_provider=*/nullptr,
-        dawn_context_provider_.get());
 
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         d3d11_device, shared_image_manager_.dxgi_shared_handle_manager(),
@@ -230,16 +224,12 @@ class D3DImageBackingFactoryTest
   }
 
  protected:
-  bool IsGraphiteDawnD3D12() const {
-    return GetParam().second == SkiaBackendType::kGraphiteDawnD3D12;
-  }
-
   gpu::SharedImageUsageSet GetDisplayReadUsage() const {
     // SCANOUT is needed for D3D12 to trigger DComp texture path which creates a
     // shared handle required for cross-device (D3D11->D3D12) resource sharing.
     return SHARED_IMAGE_USAGE_DISPLAY_READ |
-           (IsGraphiteDawnD3D12() ? SHARED_IMAGE_USAGE_SCANOUT
-                                  : SharedImageUsageSet());
+           (context_state_->IsGraphiteDawnD3D12() ? SHARED_IMAGE_USAGE_SCANOUT
+                                                  : SharedImageUsageSet());
   }
 
   bool ReadPixels(const sk_sp<SkImage>& sk_image,
@@ -1189,7 +1179,7 @@ TEST_P(D3DImageBackingFactoryTest, SkiaWriteReadWithSharedHandle) {
   // shared handle with D3D12 is supported for the Graphite-Dawn D3D12 backend.
   // D3D11On12 cannot unwrap a texture it did not create, so the unwrap fails
   // with E_INVALIDARG.
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     GTEST_SKIP() << "Sharing a texture opened from a DXGI shared handle with "
                     "D3D12 is not implemented";
   }
@@ -1491,7 +1481,7 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
   if (FAILED(hr))
     return {};
 
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     // The texture is created and filled on Graphite's D3D11On12 device, which
     // is not the device that reads it back (e.g. ANGLE reads it through the
     // shared handle). The initial data upload is only queued on this device's
@@ -1587,6 +1577,7 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
   // is only possible when the texture belongs to ANGLE's D3D11 device, which is
   // not the case when Graphite runs on D3D12 and the factory uses a D3D11On12
   // device.
+  // TODO(crbug.com/425864542): Enable this case without a shared handle.
   if (!use_shared_handle && shared_image_factory_->GetDeviceForTesting() !=
                                 gl::QueryD3D11DeviceObjectFromANGLE()) {
     GTEST_SKIP() << "Video texture is not accessible from ANGLE's D3D11 device "
@@ -1823,7 +1814,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
 TEST_P(D3DImageBackingFactoryTest, CreateFromVideoTextureOverlay) {
   // TODO(crbug.com/542565485): Enable once overlay access to a video texture is
   // supported for the Graphite-Dawn D3D12 backend.
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     GTEST_SKIP() << "Overlay access to video is not implemented.";
   }
 
@@ -2138,7 +2129,7 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback() {
 TEST_P(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   // TODO(crbug.com/544806581): Enable once CPU upload/readback is supported for
   // the Graphite-Dawn D3D12 backend.
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     GTEST_SKIP() << "CPU upload/readback of a D3D11On12 texture is under "
                     "development";
   }
@@ -2151,7 +2142,7 @@ TEST_P(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
 TEST_P(D3DImageBackingFactoryTest, UploadAfterSkiaWrite) {
   // TODO(crbug.com/544806581): Enable once CPU upload/readback is supported for
   // the Graphite-Dawn D3D12 backend.
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     GTEST_SKIP() << "CPU upload/readback of a D3D11On12 texture is under "
                     "development";
   }
@@ -2220,7 +2211,7 @@ TEST_P(D3DImageBackingFactoryTest, UploadAfterSkiaWrite) {
 TEST_P(D3DImageBackingFactoryTest, ReadbackAfterSkiaWrite) {
   // TODO(crbug.com/544806581): Enable once CPU upload/readback is supported for
   // the Graphite-Dawn D3D12 backend.
-  if (IsGraphiteDawnD3D12()) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
     GTEST_SKIP() << "CPU upload/readback of a D3D11On12 texture is under "
                     "development";
   }
