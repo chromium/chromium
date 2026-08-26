@@ -443,14 +443,26 @@ public class SettingsPageFragmentDelegateImpl
         }
 
         if (mSettingsHostFragment != null) {
-            mSettingsHostFragment.setSaveInstanceStateCallback(null);
-            if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
-                mSettingsHostFragment.setSettingsNavigation(null);
+            boolean isUrlNavEnabled = ChromeFeatureList.sSettingsInTabUrlNav.isEnabled();
+            // Because the SettingsHostFragment is identified by mFragmentTag (derived from Tab ID),
+            // a new SettingsPage instantiated for the same Tab will adopt this fragment. If the
+            // Tab's current native page is a SettingsPage, it means this Tab has already
+            // transitioned to a new SettingsPage instance that has adopted our fragment. This can
+            // happen during url navigation after a chrome session has been restored (e.g.,
+            // navigating to a previous page in the Chrome navigation stack). In that case, do not
+            // destroy the shared host fragment or clear its callbacks.
+            boolean isAdoptedByNewPage =
+                    isUrlNavEnabled && mTab.getNativePage() instanceof SettingsPage;
+            if (!isAdoptedByNewPage) {
+                mSettingsHostFragment.setSaveInstanceStateCallback(null);
+                if (isUrlNavEnabled) {
+                    mSettingsHostFragment.setSettingsNavigation(null);
+                }
+                fragmentManager
+                        .beginTransaction()
+                        .remove(mSettingsHostFragment)
+                        .commitAllowingStateLoss();
             }
-            fragmentManager
-                    .beginTransaction()
-                    .remove(mSettingsHostFragment)
-                    .commitAllowingStateLoss();
         }
         mSettingsHostFragment = null;
         mToolbar = null;
