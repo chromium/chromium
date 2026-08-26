@@ -9,7 +9,7 @@ use crate::common::SideData;
 
 use super::{MapResult, Mapper, PacketParser};
 
-use symphonia_core::audio::{Channels, Position};
+use symphonia_common::xiph::audio::opus;
 use symphonia_core::codecs::CodecParameters;
 use symphonia_core::codecs::audio::AudioCodecParameters;
 use symphonia_core::codecs::audio::well_known::CODEC_ID_OPUS;
@@ -26,9 +26,6 @@ use log::warn;
 /// The minimum expected size of an Opus identification packet.
 const OGG_OPUS_MIN_IDENTIFICATION_PACKET_SIZE: usize = 19;
 
-/// The signature for an Opus identification packet.
-const OGG_OPUS_MAGIC_SIGNATURE: &[u8] = b"OpusHead";
-
 /// The signature for an Opus metadata packet.
 const OGG_OPUS_COMMENT_SIGNATURE: &[u8] = b"OpusTags";
 
@@ -43,94 +40,9 @@ pub fn detect(serial: u32, buf: &[u8]) -> Result<Option<Box<dyn Mapper>>> {
 
     let mut reader = BufReader::new(buf);
 
-    // The first 8 bytes are the magic signature ASCII bytes.
-    let mut magic = [0; 8];
-    reader.read_buf_exact(&mut magic)?;
-
-    if magic != *OGG_OPUS_MAGIC_SIGNATURE {
+    let Ok(opus_head) = opus::OpusHead::read(&mut reader, OGG_OPUS_MAPPING_VERSION_MAX)
+    else {
         return Ok(None);
-    }
-
-    // The next byte is the OGG Opus encapsulation version. The version is split into two
-    // sub-fields: major and minor. These fields are stored in the upper and lower 4-bit,
-    // respectively.
-    if reader.read_byte()? > OGG_OPUS_MAPPING_VERSION_MAX {
-        return Ok(None);
-    }
-
-    // The next byte is the number of channels and must not be 0.
-    let channel_count = reader.read_byte()?;
-
-    if channel_count == 0 {
-        return Ok(None);
-    }
-
-    // The next 16-bit integer is the pre-skip padding (# of samples at 48kHz to subtract from the
-    // OGG granule position to obtain the PCM sample position).
-    let pre_skip = reader.read_u16()?;
-
-    // The next 32-bit integer is the sample rate of the original audio.
-    let _ = reader.read_u32()?;
-
-    // Next, the 16-bit gain value.
-    let _ = reader.read_u16()?;
-
-    // The next byte indicates the channel mapping. Most of these values are reserved.
-    let channel_mapping = reader.read_byte()?;
-
-    let positions = match channel_mapping {
-        // RTP Mapping
-        0 if channel_count == 1 => Position::FRONT_LEFT,
-        0 if channel_count == 2 => Position::FRONT_LEFT | Position::FRONT_RIGHT,
-        // Vorbis Mapping
-        1 => match channel_count {
-            1 => Position::FRONT_LEFT,
-            2 => Position::FRONT_LEFT | Position::FRONT_RIGHT,
-            3 => Position::FRONT_LEFT | Position::FRONT_CENTER | Position::FRONT_RIGHT,
-            4 => {
-                Position::FRONT_LEFT
-                    | Position::FRONT_RIGHT
-                    | Position::REAR_LEFT
-                    | Position::REAR_RIGHT
-            }
-            5 => {
-                Position::FRONT_LEFT
-                    | Position::FRONT_CENTER
-                    | Position::FRONT_RIGHT
-                    | Position::REAR_LEFT
-                    | Position::REAR_RIGHT
-            }
-            6 => {
-                Position::FRONT_LEFT
-                    | Position::FRONT_CENTER
-                    | Position::FRONT_RIGHT
-                    | Position::REAR_LEFT
-                    | Position::REAR_RIGHT
-                    | Position::LFE1
-            }
-            7 => {
-                Position::FRONT_LEFT
-                    | Position::FRONT_CENTER
-                    | Position::FRONT_RIGHT
-                    | Position::SIDE_LEFT
-                    | Position::SIDE_RIGHT
-                    | Position::REAR_CENTER
-                    | Position::LFE1
-            }
-            8 => {
-                Position::FRONT_LEFT
-                    | Position::FRONT_CENTER
-                    | Position::FRONT_RIGHT
-                    | Position::SIDE_LEFT
-                    | Position::SIDE_RIGHT
-                    | Position::REAR_LEFT
-                    | Position::REAR_RIGHT
-                    | Position::LFE1
-            }
-            _ => return Ok(None),
-        },
-        // Reserved, and should NOT be supported for playback.
-        _ => return Ok(None),
     };
 
     // Populate the codec parameters with the information read from identification header.
@@ -139,13 +51,15 @@ pub fn detect(serial: u32, buf: &[u8]) -> Result<Option<Box<dyn Mapper>>> {
     codec_params
         .for_codec(CODEC_ID_OPUS)
         .with_sample_rate(48_000)
-        .with_channels(Channels::Positioned(positions))
+        .with_channels(opus_head.channels)
         .with_extra_data(Box::from(buf));
 
     // Create the track.
     let mut track = Track::new(serial);
 
-    track.with_codec_params(CodecParameters::Audio(codec_params)).with_delay(u32::from(pre_skip));
+    track
+        .with_codec_params(CodecParameters::Audio(codec_params))
+        .with_delay(u32::from(opus_head.pre_skip));
 
     // Instantiate the Opus mapper.
     let mapper = Box::new(OpusMapper { track, need_comment: true });

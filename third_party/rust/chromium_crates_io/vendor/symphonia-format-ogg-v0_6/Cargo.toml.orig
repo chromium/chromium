@@ -15,14 +15,14 @@ version.workspace = true
 
 [dependencies]
 log = { workspace = true }
-symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
-symphonia-common = { version = "0.6.0", path = "../symphonia-common" }
+symphonia-core = { version = "0.6.1", path = "../symphonia-core" }
+symphonia-common = { version = "0.6.1", path = "../symphonia-common" }
 
 [dependencies.symphonia-metadata]
-version = "0.6.0"
+version = "0.6.1"
 path = "../symphonia-metadata"
 default-features = false
 features = ["vorbis"]
 
-[lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(fuzzing)'] }
+[lints]
+workspace = true

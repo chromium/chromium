@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 use std::io::{Seek, SeekFrom};
 
 use symphonia_core::errors::{Error, Result, SeekErrorKind};
-use symphonia_core::errors::{reset_error, seek_error, unsupported_error};
+use symphonia_core::errors::{decode_error, reset_error, seek_error, unsupported_error};
 use symphonia_core::formats::prelude::*;
 use symphonia_core::formats::probe::{ProbeFormatData, ProbeableFormat, Score, Scoreable};
 use symphonia_core::formats::well_known::FORMAT_ID_OGG;
@@ -162,7 +162,10 @@ impl<'s> OggReader<'s> {
 
     fn do_seek(&mut self, serial: u32, required_ts: Timestamp) -> Result<SeekedTo> {
         // The stream being seeked.
-        let stream = self.streams.get_mut(&serial).unwrap();
+        let stream = match self.streams.get_mut(&serial) {
+            Some(s) => s,
+            None => return decode_error("ogg: serial not found in streams"),
+        };
 
         // Subtract the maximum duration between random access points from the required timestamp.
         // This ensures any frames that need to be consumed or discarded by the decoder on reset
@@ -177,7 +180,10 @@ impl<'s> OggReader<'s> {
             // Bisection method byte ranges. When these two values are equal, the bisection has
             // converged on the position of the correct page.
             let mut start_byte_pos = self.phys_byte_range_start;
-            let mut end_byte_pos = self.phys_byte_range_end.unwrap();
+            let mut end_byte_pos = match self.phys_byte_range_end {
+                Some(v) => v,
+                None => return decode_error("ogg: physical byte range end is unknown"),
+            };
 
             // Bisect the stream while the byte range is large. For smaller ranges, a linear scan is
             // faster than having the the binary search converge.
