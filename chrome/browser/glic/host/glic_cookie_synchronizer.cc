@@ -112,8 +112,11 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
     cookie_options.set_do_not_update_access_time();
     // Cookies we need to set are HttpOnly.
     cookie_options.set_include_httponly();
-    for (const GURL& url : {GURL("https://login.corp.google.com"),
-                            GURL("https://googleplex.com")}) {
+    for (const GURL& url :
+         {GURL("https://login.corp.google.com"), GURL("https://googleplex.com"),
+          GURL("https://corp.google.com"),
+          GURL("https://sslproxy.corp.google.com"),
+          GURL("https://proxy.googleprod.com")}) {
       ++get_cookie_list_request_count_;
       cookie_manager->GetCookieList(
           url, cookie_options, {},
