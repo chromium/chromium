@@ -137,9 +137,8 @@ void LocalTabGroupListener::AddTabFromLocal(
                    relative_index_of_tab_in_group);
 
   MostRecentSharedTabUpdateStore* most_recent_shared_tab_update_store =
-      local_tab->GetBrowserWindowInterface()
-          ->GetFeatures()
-          .most_recent_shared_tab_update_store();
+      MostRecentSharedTabUpdateStore::From(
+          local_tab->GetBrowserWindowInterface());
   if (most_recent_shared_tab_update_store) {
     most_recent_shared_tab_update_store->SetLastUpdatedTab(local_id_,
                                                            local_tab_id);
@@ -199,10 +198,9 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   service_->MoveTab(local_id_, local_tab_id, index_in_group);
 
   MostRecentSharedTabUpdateStore* most_recent_shared_tab_update_store =
-      tab_strip_model->GetTabForWebContents(web_contents)
-          ->GetBrowserWindowInterface()
-          ->GetFeatures()
-          .most_recent_shared_tab_update_store();
+      MostRecentSharedTabUpdateStore::From(
+          tab_strip_model->GetTabForWebContents(web_contents)
+              ->GetBrowserWindowInterface());
   if (most_recent_shared_tab_update_store) {
     most_recent_shared_tab_update_store->SetLastUpdatedTab(local_id_,
                                                            local_tab_id);
@@ -241,9 +239,8 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
 
   // Get controller before tab is removed.
   MostRecentSharedTabUpdateStore* most_recent_shared_tab_update_store =
-      local_tab->GetBrowserWindowInterface()
-          ->GetFeatures()
-          .most_recent_shared_tab_update_store();
+      MostRecentSharedTabUpdateStore::From(
+          local_tab->GetBrowserWindowInterface());
 
   // This object is deleted by the time we have reached here. This means
   // saved_guid_ gives us a garbage value and cannot be used anymore to query.

@@ -1496,9 +1496,8 @@ void MaybeRegisterChromeFeaturePromos(
 
                   tab_groups::MostRecentSharedTabUpdateStore*
                       most_recent_shared_tab_update_store =
-                          browser_view->browser()
-                              ->GetFeatures()
-                              .most_recent_shared_tab_update_store();
+                          tab_groups::MostRecentSharedTabUpdateStore::From(
+                              browser_view->browser());
 
                   if (!most_recent_shared_tab_update_store ||
                       !most_recent_shared_tab_update_store->HasUpdate()) {

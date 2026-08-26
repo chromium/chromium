@@ -611,7 +611,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       most_recent_shared_tab_update_store_ =
-          std::make_unique<tab_groups::MostRecentSharedTabUpdateStore>(browser);
+          GetUserDataFactory()
+              .CreateInstance<tab_groups::MostRecentSharedTabUpdateStore>(
+                  *browser, browser);
 
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(

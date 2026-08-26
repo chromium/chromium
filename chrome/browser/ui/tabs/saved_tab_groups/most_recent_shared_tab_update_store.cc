@@ -17,9 +17,19 @@
 
 namespace tab_groups {
 
+DEFINE_USER_DATA(MostRecentSharedTabUpdateStore);
+
+// static
+MostRecentSharedTabUpdateStore* MostRecentSharedTabUpdateStore::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 MostRecentSharedTabUpdateStore::MostRecentSharedTabUpdateStore(
     BrowserWindowInterface* browser_window)
-    : browser_window_(browser_window) {}
+    : browser_window_(browser_window),
+      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {}
 MostRecentSharedTabUpdateStore::~MostRecentSharedTabUpdateStore() = default;
 
 void MostRecentSharedTabUpdateStore::SetLastUpdatedTab(

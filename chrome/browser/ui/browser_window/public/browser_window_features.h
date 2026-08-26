@@ -396,11 +396,6 @@ class BrowserWindowFeatures {
   }
 #endif
 
-  tab_groups::MostRecentSharedTabUpdateStore*
-  most_recent_shared_tab_update_store() {
-    return most_recent_shared_tab_update_store_.get();
-  }
-
   PinnedToolbarActions* pinned_toolbar_actions() {
     return pinned_toolbar_actions_;
   }

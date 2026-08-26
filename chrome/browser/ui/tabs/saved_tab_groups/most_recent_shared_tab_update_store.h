@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserView;
 
@@ -28,7 +29,14 @@ using TabIdentifiers = std::pair<LocalTabGroupID, std::optional<LocalTabID>>;
 // from the store in order to know where to anchor.
 class MostRecentSharedTabUpdateStore {
  public:
+  DECLARE_USER_DATA(MostRecentSharedTabUpdateStore);
+
   explicit MostRecentSharedTabUpdateStore(
+      BrowserWindowInterface* browser_window);
+
+  // Returns the store for `browser_window`, or null if it does not have one
+  // (e.g. tab groups unsupported for this window/profile).
+  static MostRecentSharedTabUpdateStore* From(
       BrowserWindowInterface* browser_window);
   MostRecentSharedTabUpdateStore(const MostRecentSharedTabUpdateStore&) =
       delete;
@@ -58,6 +66,9 @@ class MostRecentSharedTabUpdateStore {
   void MaybeShowPromo(const base::Feature& feature);
 
   const raw_ptr<BrowserWindowInterface> browser_window_;
+
+  ui::ScopedUnownedUserData<MostRecentSharedTabUpdateStore>
+      scoped_unowned_user_data_;
 
   // The most recent local update to a tab within this browser window.
   // LocalTabID will be null in the case where the user removed the tab.
