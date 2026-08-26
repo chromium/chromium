@@ -233,6 +233,30 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   WaitForNoOpText();
 }
 
+// Tests that calling window.history.pushState() with a cross-origin blob URL is
+// a no-op.
+TEST_F(HistoryStateOperationsTest, NoOpPushCrossOriginBlobUrl) {
+  std::string empty_state;
+  std::string empty_title;
+  GURL cross_origin_blob_url("blob:https://accounts.google.com/signin");
+  ASSERT_TRUE(IsOnLoadTextVisible());
+  SetStateParams(empty_state, empty_title, cross_origin_blob_url);
+  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), kPushStateId));
+  WaitForNoOpText();
+}
+
+// Tests that calling window.history.replaceState() with a cross-origin blob URL
+// is a no-op.
+TEST_F(HistoryStateOperationsTest, NoOpReplaceCrossOriginBlobUrl) {
+  std::string empty_state;
+  std::string empty_title;
+  GURL cross_origin_blob_url("blob:https://accounts.google.com/signin");
+  ASSERT_TRUE(IsOnLoadTextVisible());
+  SetStateParams(empty_state, empty_title, cross_origin_blob_url);
+  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), kReplaceStateId));
+  WaitForNoOpText();
+}
+
 // Tests that calling window.history.replaceState() with a new state object
 // replaces the state object for the current NavigationItem.
 TEST_F(HistoryStateOperationsTest, StateReplacement) {
