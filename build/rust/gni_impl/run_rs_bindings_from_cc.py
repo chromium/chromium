@@ -13,7 +13,7 @@ import sys
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 CHROMIUM_SRC_DIR = os.path.relpath(os.path.join(THIS_DIR, os.pardir, os.pardir))
 sys.path.append(THIS_DIR)
-from run_bindgen import filter_clang_args
+from filter_clang_args import filter_clang_args
 
 RUST_TOOLCHAIN_DIR = os.path.join(
     CHROMIUM_SRC_DIR, "third_party", "rust-toolchain"
@@ -22,6 +22,9 @@ RUSTFMT_EXE_PATH = os.path.join(RUST_TOOLCHAIN_DIR, "bin", "rustfmt")
 RUSTFMT_CONFIG_PATH = os.path.join(CHROMIUM_SRC_DIR, ".rustfmt.toml")
 RS_BINDINGS_FROM_CC_EXE_PATH = os.path.join(
     RUST_TOOLCHAIN_DIR, "bin", "rs_bindings_from_cc"
+)
+CRUBIT_SUPPORT_PATH = os.path.join(
+    "third_party", "crubit", "src", "rs_bindings_from_cc", "support"
 )
 
 
@@ -113,12 +116,11 @@ def main():
     # All Crubit invocations in Chromium share the following cmdline args.
     generator_args.append(f"--rustfmt_exe_path={RUSTFMT_EXE_PATH}")
     generator_args.append(f"--rustfmt_config_path={RUSTFMT_CONFIG_PATH}")
-    generator_args.append(
-        "--crubit_support_path=third_party/crubit/src/rs_bindings_from_cc/support"
-    )
+    generator_args.append(f"--crubit_support_path={CRUBIT_SUPPORT_PATH}")
 
-    # Long cmdlines may not work - work around that by using Abseil's `--flagfile`
-    # https://abseil.io/docs/python/guides/flags#a-note-about---flagfile
+    # Long cmdlines may not work - work around that by using Abseil's
+    # `--flagfile` (see also
+    # https://abseil.io/docs/python/guides/flags#a-note-about---flagfile).
     #
     # Note that `clang_args` are not written to the flag file, because Abseil's
     # flag parsing code is only aware of `ABSL_FLAG`-declared flags and doesn't
@@ -129,18 +131,8 @@ def main():
             print(line, file=f)
 
     # Clang arguments.
-    #
-    # The call to `filter_clang_args` is needed to avoid the following error:
-    # error: unable to find plugin 'find-bad-constructs'
     clang_args = []
     clang_args.extend(filter_clang_args(args.clang_args))
-    # TODO(crbug.com/40226863): This warning needs to be suppressed, because
-    # otherwise Crubit/Clang complains as follows:
-    #     error: .../third_party/rust-toolchain/bin/rs_bindings_from_cc:
-    #     'linker' input unused [-Werror,-Wunused-command-line-argument]
-    # Maybe `build/rust/rs_bindings_from_cc.gni` gives too much in `args`?  But
-    # then `{{cflags}}` seems perfectly reasonable...
-    clang_args += ["-Wno-unused-command-line-argument"]
 
     # Print a copy&pastable final cmdline when asked for debugging help.
     cmdline = [RS_BINDINGS_FROM_CC_EXE_PATH, f"--flagfile={params_file_path}"]

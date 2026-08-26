@@ -276,17 +276,11 @@ template("rust_bindgen_generator") {
       # told explicitly to accept them.
       args += [ "--driver-mode=cl" ]
 
-      # On Windows, libclang adds arguments that it then fails to understand.
-      # -fno-spell-checking
-      # -fallow-editor-placeholders
-      # These should not cause bindgen to fail.
-      args += [ "-Wno-unknown-argument" ]
-
-      # C++ mode makes bindgen pass /TP to libclang (to parse as C++) which
-      # then libclang says is unused.
-      args += [ "-Wno-unused-command-line-argument" ]
-
+      # On Windows, libclang adds arguments that it then fails to understand
+      # (-fno-spell-checking, -fallow-editor-placeholders).
       # Replace these two arguments with a version that clang-cl can parse.
+      # (Diagnostic flags like -Wno-unknown-argument and
+      # -Wno-unused-command-line-argument are handled by filter_clang_args.py).
       args += [
         "/clang:-fno-spell-checking",
         "/clang:-fallow-editor-placeholders",
