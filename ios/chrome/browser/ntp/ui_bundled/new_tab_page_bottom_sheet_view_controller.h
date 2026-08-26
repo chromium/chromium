@@ -61,6 +61,10 @@
 // Updates whether the omnibox is in the bottom position.
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
 
+// Returns the total height of the header (MVT + Magic Stack + spacing) above
+// the feed content.
+- (CGFloat)headerHeight;
+
 // Returns the expanded offset of the bottom sheet.
 - (CGFloat)expandedOffset;
 

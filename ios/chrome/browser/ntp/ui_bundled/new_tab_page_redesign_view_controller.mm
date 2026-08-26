@@ -47,9 +47,6 @@ namespace {
 // Animation duration for wallpaper transition.
 constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
 
-// Spacing from the top of the bottom sheet to the omnibox when expanded.
-constexpr CGFloat kExpandedSheetOmniboxTopMargin = 16.0;
-
 // Spacing from the top of the bottom sheet to the MVTs container when
 // resting/collapsed.
 constexpr CGFloat kRestingSheetMVTTopMargin = 12.0;
@@ -196,12 +193,8 @@ const CGFloat kMinDragHandleHeight = 24.0;
              forControlEvents:UIControlEventTouchUpInside];
   _fakeLocationBar.isAccessibilityElement = YES;
   _fakeLocationBar.accessibilityIdentifier = @"ntp-redesign-fake-omnibox";
-  if (IsNTPRedesignStaticFakeboxEnabled()) {
-    [self.view insertSubview:_fakeLocationBar
-                belowSubview:_bottomSheetViewController.view];
-  } else {
-    [self.view addSubview:_fakeLocationBar];
-  }
+  [self.view insertSubview:_fakeLocationBar
+              belowSubview:_bottomSheetViewController.view];
 
   _hintLabel = [[UILabel alloc] init];
   _hintLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -270,21 +263,11 @@ const CGFloat kMinDragHandleHeight = 24.0;
         constraintEqualToAnchor:self.view.centerXAnchor],
     _fakeLocationBarWidthConstraint,
     _fakeLocationBarHeightConstraint,
-
     [_buttonStack.trailingAnchor
         constraintEqualToAnchor:_fakeLocationBar.trailingAnchor],
     [_buttonStack.centerYAnchor
         constraintEqualToAnchor:_fakeLocationBar.centerYAnchor],
   ]];
-
-  if (!IsMVTInBottomSheetEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [_mostVisitedContainerView.widthAnchor
-          constraintEqualToAnchor:_fakeLocationBar.widthAnchor],
-      [_mostVisitedContainerView.centerXAnchor
-          constraintEqualToAnchor:_fakeLocationBar.centerXAnchor],
-    ]];
-  }
 
   if (IsAimEnabledInNtp()) {
     _qaTopConstraint = [_quickActionsViewController.view.topAnchor
@@ -301,6 +284,13 @@ const CGFloat kMinDragHandleHeight = 24.0;
   }
 
   if (!IsMVTInBottomSheetEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_mostVisitedContainerView.widthAnchor
+          constraintEqualToAnchor:_fakeLocationBar.widthAnchor],
+      [_mostVisitedContainerView.centerXAnchor
+          constraintEqualToAnchor:_fakeLocationBar.centerXAnchor],
+    ]];
+
     UIView* anchorView = self.quickActionsVisible
                              ? _quickActionsViewController.view
                              : _fakeLocationBar;
@@ -395,8 +385,6 @@ const CGFloat kMinDragHandleHeight = 24.0;
   }
 }
 
-#pragma mark - Private Helper
-
 - (void)handleTraitChanges {
   [self updateLogoConstraints];
   [self refreshFakeboxContent];
@@ -476,9 +464,6 @@ const CGFloat kMinDragHandleHeight = 24.0;
 - (CGFloat)expandedOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController {
   CGFloat safeAreaTop = self.view.safeAreaInsets.top;
-  if (!IsNTPRedesignStaticFakeboxEnabled()) {
-    return safeAreaTop + 20.0;
-  }
   if (_isBottomOmnibox && !CanShowTabStrip(self)) {
     return safeAreaTop;
   }
@@ -497,30 +482,20 @@ const CGFloat kMinDragHandleHeight = 24.0;
     progress = MIN(1.0, MAX(0.0, progress));
   }
 
-  if (IsNTPRedesignStaticFakeboxEnabled()) {
-    if (topOffset > restingOffset) {
-      // Collapsed range: Move top content down with sheet
-      CGFloat downwardDelta = topOffset - restingOffset;
-      _fakeLocationBarTopConstraint.constant =
-          [self centeredFakeOmniboxTop] + downwardDelta;
-      _fakeLocationBar.alpha = 1.0;
-      [self.NTPContentDelegate didUpdateNTPTabOmniboxScrollProgress:0.0];
-    } else {
-      // Expanded range: Fakebox stays static at centered position & fades out
-      _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
-      _fakeLocationBar.alpha = progress;
-      CGFloat expansionProgress = 1.0 - progress;
-      [self.NTPContentDelegate
-          didUpdateNTPTabOmniboxScrollProgress:expansionProgress];
-    }
-  } else {
-    // Default legacy behavior: Shift fakebox to the top of the sheet
-    CGFloat restingOffsetFromSheet =
-        -([self topContentHeight] + kRestingSheetMVTTopMargin);
-    CGFloat offsetFromSheet = progress * restingOffsetFromSheet +
-                              (1.0 - progress) * kExpandedSheetOmniboxTopMargin;
-    _fakeLocationBarTopConstraint.constant = topOffset + offsetFromSheet;
+  if (topOffset > restingOffset) {
+    // Collapsed range: Move top content down with sheet
+    CGFloat downwardDelta = topOffset - restingOffset;
+    _fakeLocationBarTopConstraint.constant =
+        [self centeredFakeOmniboxTop] + downwardDelta;
     _fakeLocationBar.alpha = 1.0;
+    [self.NTPContentDelegate didUpdateNTPTabOmniboxScrollProgress:0.0];
+  } else {
+    // Expanded range: Fakebox stays static at centered position & fades out
+    _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
+    _fakeLocationBar.alpha = progress;
+    CGFloat expansionProgress = 1.0 - progress;
+    [self.NTPContentDelegate
+        didUpdateNTPTabOmniboxScrollProgress:expansionProgress];
   }
 
   // Opacity for Logo, MVT, Identity Disc, and Quick Actions
@@ -934,9 +909,6 @@ const CGFloat kMinDragHandleHeight = 24.0;
 }
 
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
-  if (!IsNTPRedesignStaticFakeboxEnabled()) {
-    return;
-  }
   if (_isBottomOmnibox == isBottomOmnibox) {
     return;
   }

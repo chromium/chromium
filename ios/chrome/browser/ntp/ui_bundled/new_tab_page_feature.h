@@ -120,10 +120,6 @@ extern const char kNewTabPageUICleanupArmParam[];
 // Parameter to indicate which arm of the feature kAimButtonRefactor is enabled.
 extern const char kAimButtonRefactorArmParam[];
 
-// Feature parameter for kNewTabPageRedesign to enable static fakebox on expand
-// and revealing the toolbar view controller.
-extern const char kNewTabPageRedesignStaticFakeboxParam[];
-
 #pragma mark - Helpers
 
 // Whether the sync promo should be shown on top of the feed.
@@ -153,10 +149,6 @@ BASE_DECLARE_FEATURE(kNewTabPageRedesign);
 
 // Whether the New Tab Page Redesign is enabled.
 bool IsNTPRedesignEnabled();
-
-// Returns whether the static fakebox / reveal toolbar behavior is enabled for
-// NTP redesign.
-bool IsNTPRedesignStaticFakeboxEnabled();
 
 // Whether the full New Tab Page UI cleanup is enabled. This cleanup includes
 // all color, sizing, and padding updates.
