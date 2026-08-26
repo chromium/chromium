@@ -478,9 +478,9 @@ bool AppBrowserController::IsFirstLaunchAfterInstall() const {
   return false;
 }
 
-std::unique_ptr<TabMenuModelFactory>
-AppBrowserController::GetTabMenuModelFactory() const {
-  return nullptr;
+std::optional<base::flat_set<tabs::TabContextMenuCommand>>
+AppBrowserController::GetAllowedTabMenuCommands() const {
+  return std::nullopt;
 }
 
 bool AppBrowserController::AppUsesWindowControlsOverlay() const {

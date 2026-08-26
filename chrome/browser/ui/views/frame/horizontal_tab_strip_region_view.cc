@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -141,17 +140,8 @@ void UpdateBorderInsetsIfNeeded(views::View* view,
 std::unique_ptr<TabStrip> CreateTabStrip(
     TabStripRegionView* tab_strip_region_view,
     BrowserView* browser_view) {
-  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view &&
-      web_app::AppBrowserController::From(browser_view->browser())) {
-    tab_menu_model_factory =
-        web_app::AppBrowserController::From(browser_view->browser())
-            ->GetTabMenuModelFactory();
-  }
-
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
-      browser_view->browser()->GetTabStripModel(), browser_view,
-      std::move(tab_menu_model_factory));
+      browser_view->browser()->GetTabStripModel(), browser_view);
 
   std::unique_ptr<TabHoverCardController> hover_card_controller(
       std::make_unique<TabHoverCardController>(tab_strip_region_view,

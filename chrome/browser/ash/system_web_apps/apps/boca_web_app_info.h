@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
-#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -36,13 +35,12 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;
-  bool HasCustomTabMenuModel() const override;
   bool ShouldShowInSearchAndShelf() const override;
   bool ShouldShowInLauncher() const override;
 
   gfx::Size GetMinimumWindowSize() const override;
-  std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
-      ui::SimpleMenuModel::Delegate* delegate) const override;
+  std::optional<base::flat_set<tabs::TabContextMenuCommand>>
+  GetAllowedTabMenuCommands() const override;
   ash::BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,

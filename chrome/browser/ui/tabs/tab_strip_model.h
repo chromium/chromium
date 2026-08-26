@@ -37,6 +37,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
@@ -766,43 +767,8 @@ class TabStripModel {
 
   // View API //////////////////////////////////////////////////////////////////
 
-  // LINT.IfChange(TabContextMenuCommand)
-  // Context menu functions. Tab groups uses command ids following CommandLast
-  // for entries in the 'Add to existing group' submenu.
-  enum ContextMenuCommand {
-    CommandFirst,
-    CommandNewTabToRight,
-    CommandReload,
-    CommandDuplicate,
-    CommandCloseTab,
-    CommandCloseOtherTabs,
-    CommandCloseTabsToRight,
-    CommandTogglePinned,
-    CommandToggleGrouped,
-    CommandToggleSiteMuted,
-    CommandSendTabToSelf,
-    CommandAddNote,
-    CommandAddToReadLater,
-    CommandAddToNewGroup,
-    CommandAddToExistingGroup,
-    CommandAddToNewGroupFromMenuItem,
-    CommandAddToSplit,
-    CommandSwapWithActiveSplit,
-    CommandArrangeSplit,
-    CommandRemoveFromGroup,
-    CommandMoveToExistingWindow,
-    CommandMoveTabsToNewWindow,
-    CommandCopyURL,
-    CommandGoBack,
-    CommandCloseAllTabs,
-    CommandToggleVertical,
-    CommandGlicShare,
-    CommandGlicCreateNewChat,
-    CommandGlicSwitchToRecentConversation,
-    CommandGlicUnshare,
-    CommandLast
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabContextMenuCommand)
+  using ContextMenuCommand = tabs::TabContextMenuCommand;
+  using enum tabs::TabContextMenuCommand;
 
   // Returns true if the specified command is enabled. If `context_index` is
   // selected the response applies to all selected tabs.

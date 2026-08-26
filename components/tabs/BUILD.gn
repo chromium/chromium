@@ -12,6 +12,7 @@ assert(use_blink)
 source_set("enum") {
   sources = [
     "public/tab_alert.h",
+    "public/tab_context_menu_command.h",
     "public/tab_network_state.h",
   ]
 }

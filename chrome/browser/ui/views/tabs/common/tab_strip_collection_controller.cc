@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -545,7 +546,8 @@ bool TabStripCollectionController::GetContextMenuAccelerator(
           ? web_app::AppBrowserController::From(browser)->system_app()
           : nullptr;
   if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
-                        browser->GetProfile(), command_id)) {
+                        browser->GetProfile(),
+                        static_cast<tabs::TabContextMenuCommand>(command_id))) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

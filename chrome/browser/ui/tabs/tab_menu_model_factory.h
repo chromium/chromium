@@ -13,6 +13,7 @@ class TabStripModel;
 class TabMenuModelDelegate;
 class TabMenuModel;
 
+// TODO(neis): Remove TabMenuModelFactory now that there are no subclasses.
 // A factory to create menu models for tab menu.
 class TabMenuModelFactory {
  public:

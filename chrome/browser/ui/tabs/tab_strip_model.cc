@@ -2587,9 +2587,6 @@ tabs::TabCollectionHandle TabStripModel::GetUnpinnedTabsCollectionHandle(
 bool TabStripModel::IsContextMenuCommandEnabled(
     int context_index,
     ContextMenuCommand command_id) const {
-  // Command must be valid.
-  DCHECK(command_id > CommandFirst && command_id < CommandLast);
-
   // Context Index having an index greater than tab strip model doesnt make
   // sense since this context menu must target a tab.
   if (!ContainsIndex(context_index)) {
@@ -2687,18 +2684,13 @@ bool TabStripModel::IsContextMenuCommandEnabled(
 
     case CommandToggleVertical:
       return true;
-
-    default:
-      SCOPED_CRASH_KEY_NUMBER("TabStripModel", "command_id", command_id);
-      NOTREACHED() << "Unsupported command: " << command_id;
   }
+  SCOPED_CRASH_KEY_NUMBER("TabStripModel", "command_id", command_id);
+  NOTREACHED() << "Unsupported command: " << command_id;
 }
 
 void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                               ContextMenuCommand command_id) {
-  // This should have been tested by IsContextMenuCommandEnabled.
-  CHECK(command_id > CommandFirst && command_id < CommandLast);
-
   // The tab strip may have been modified while the context menu was open,
   // including closing the tab originally at `context_index`.
   if (!ContainsIndex(context_index)) {
@@ -3109,10 +3101,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       AddToNewGroupFromContextIndex(context_index);
       break;
     }
-    case CommandFirst:
-    case CommandAddNote:
-    case CommandLast:
-      NOTREACHED();
   }
 }
 

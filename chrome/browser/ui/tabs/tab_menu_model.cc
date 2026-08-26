@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
@@ -52,6 +54,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/context_menu_params.h"
@@ -100,41 +103,99 @@ TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
 TabMenuModel::~TabMenuModel() = default;
 
 void TabMenuModel::BuildForWebApp(int index) {
-  AddItemWithStringId(TabStripModel::CommandCopyURL, IDS_COPY_URL);
-  AddItemWithStringId(TabStripModel::CommandReload, IDS_TAB_CXMENU_RELOAD);
-  AddItemWithStringId(TabStripModel::CommandGoBack, IDS_CONTENT_CONTEXT_BACK);
+  auto* browser = tab_strip_->delegate()->GetBrowserWindowInterface();
+  auto* app_controller =
+      browser ? web_app::AppBrowserController::From(browser) : nullptr;
+  const std::optional<base::flat_set<tabs::TabContextMenuCommand>> allowed =
+      app_controller ? app_controller->GetAllowedTabMenuCommands()
+                     : std::nullopt;
 
-  if (!web_app::IsPinnedHomeTab(tab_strip_, index) &&
-      (!web_app::HasPinnedHomeTab(tab_strip_) ||
-       !tab_strip_->selection_model().IsSelected(*tab_strip_->begin()))) {
+  // 1. Resolve the set of commands upfront.
+  base::flat_set<tabs::TabContextMenuCommand> commands;
+  if (allowed.has_value()) {
+    commands = *allowed;
+  } else {
+    commands = {
+        tabs::CommandCopyURL,
+        tabs::CommandReload,
+        tabs::CommandGoBack,
+        tabs::CommandMoveToExistingWindow,
+        tabs::CommandMoveTabsToNewWindow,
+        tabs::CommandCloseTab,
+        tabs::CommandCloseOtherTabs,
+        tabs::CommandCloseAllTabs,
+    };
+  }
+
+  // 2. Add common creation & navigation actions (available to all tabs).
+  if (commands.contains(tabs::CommandNewTabToRight)) {
+    AddItemWithStringId(TabStripModel::CommandNewTabToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
+                                            : IDS_TAB_CXMENU_NEWTABTORIGHT);
+  }
+  if (commands.contains(tabs::CommandCopyURL)) {
+    AddItemWithStringId(TabStripModel::CommandCopyURL, IDS_COPY_URL);
+  }
+  if (commands.contains(tabs::CommandReload)) {
+    AddItemWithStringId(TabStripModel::CommandReload, IDS_TAB_CXMENU_RELOAD);
+  }
+  if (commands.contains(tabs::CommandGoBack)) {
+    AddItemWithStringId(TabStripModel::CommandGoBack, IDS_CONTENT_CONTEXT_BACK);
+  }
+
+  // 3. Add "Move" actions (not available to pinned home tab).
+  const bool has_pinned_home = web_app::HasPinnedHomeTab(tab_strip_);
+  const bool pinned_home_is_part_of_selection =
+      has_pinned_home &&
+      tab_strip_->selection_model().IsSelected(*tab_strip_->begin());
+  const bool is_pinned_home = web_app::IsPinnedHomeTab(tab_strip_, index);
+  if (!is_pinned_home && !pinned_home_is_part_of_selection) {
     int num_tabs = tab_strip_->selection_model().size();
-    if (ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
+    if (commands.contains(tabs::CommandMoveToExistingWindow) &&
+        ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
             tab_menu_model_delegate_)) {
-      // Create submenu with existing windows
       add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
           delegate(), tab_menu_model_delegate_, tab_strip_, index);
       AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                  l10n_util::GetPluralStringFUTF16(
                      IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
                  add_to_existing_window_submenu_.get());
-    } else {
+    } else if (commands.contains(tabs::CommandMoveTabsToNewWindow)) {
       AddItem(TabStripModel::CommandMoveTabsToNewWindow,
               l10n_util::GetPluralStringFUTF16(
                   IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
     }
   }
 
-  AddSeparator(ui::NORMAL_SEPARATOR);
-
-  if (!web_app::IsPinnedHomeTab(tab_strip_, index)) {
+  // 4. Add "Close" actions.
+  const bool add_close_tab =
+      !is_pinned_home && commands.contains(tabs::CommandCloseTab);
+  const bool add_close_other_tabs =
+      !is_pinned_home && commands.contains(tabs::CommandCloseOtherTabs);
+  const bool add_close_all_tabs =
+      has_pinned_home && commands.contains(tabs::CommandCloseAllTabs);
+  const bool add_close_tabs_to_right =
+      commands.contains(tabs::CommandCloseTabsToRight);
+  if (GetItemCount() > 0 && (add_close_tab || add_close_other_tabs ||
+                             add_close_all_tabs || add_close_tabs_to_right)) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+  if (add_close_tab) {
     AddItemWithStringId(TabStripModel::CommandCloseTab,
                         IDS_TAB_CXMENU_CLOSETAB);
+  }
+  if (add_close_other_tabs) {
     AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                         IDS_TAB_CXMENU_CLOSEOTHERTABS);
   }
-  if (web_app::HasPinnedHomeTab(tab_strip_)) {
+  if (add_close_all_tabs) {
     AddItemWithStringId(TabStripModel::CommandCloseAllTabs,
                         IDS_TAB_CXMENU_CLOSEALLTABS);
+  }
+  if (add_close_tabs_to_right) {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
   }
 }
 

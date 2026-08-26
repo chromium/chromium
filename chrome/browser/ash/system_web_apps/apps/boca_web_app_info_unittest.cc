@@ -7,19 +7,19 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/boca_ui/url_constants.h"
+#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/menus/simple_menu_model.h"
 
 namespace {
 
@@ -144,7 +144,7 @@ TEST_F(BocaSystemAppProviderDelegateTest, HasMinimalSize) {
 }
 
 TEST_F(BocaSystemAppProviderDelegateTest, UsesDefaultTabMenuModel) {
-  EXPECT_FALSE(delegate()->HasCustomTabMenuModel());
+  EXPECT_FALSE(delegate()->GetAllowedTabMenuCommands().has_value());
 }
 
 class BocaSystemAppConsumerDelegateTest : public BocaSystemAppDelegateTest {
@@ -186,14 +186,12 @@ TEST_F(BocaSystemAppConsumerDelegateTest, HasMinimalSize) {
   EXPECT_EQ(gfx::Size(500, 500), delegate()->GetMinimumWindowSize());
 }
 
-TEST_F(BocaSystemAppConsumerDelegateTest, UsesCustomTabMenuModel) {
-  ASSERT_TRUE(delegate()->HasCustomTabMenuModel());
-
-  const std::unique_ptr<ui::SimpleMenuModel> tab_menu =
-      delegate()->GetTabMenuModel(nullptr);
-  ASSERT_EQ(2u, tab_menu->GetItemCount());
-  EXPECT_EQ(TabStripModel::CommandReload, tab_menu->GetCommandIdAt(0));
-  EXPECT_EQ(TabStripModel::CommandGoBack, tab_menu->GetCommandIdAt(1));
+TEST_F(BocaSystemAppConsumerDelegateTest, AllowedTabMenuCommands) {
+  auto commands = delegate()->GetAllowedTabMenuCommands();
+  ASSERT_TRUE(commands.has_value());
+  EXPECT_EQ((base::flat_set<tabs::TabContextMenuCommand>{tabs::CommandReload,
+                                                         tabs::CommandGoBack}),
+            *commands);
 }
 
 }  // namespace

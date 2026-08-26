@@ -163,6 +163,7 @@ static_library("apps") {
     "//components/services/app_service",
     "//components/services/app_service/public/cpp:app_types",
     "//components/supervised_user/core/browser",
+    "//components/tabs:enum",
     "//components/version_info:channel",
     "//components/webapps/common",
     "//content/public/common",
@@ -313,10 +314,9 @@ source_set("unit_tests") {
     "//ash/webui/boca_ui:constants",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper:test_support",
+    "//components/tabs:enum",
     "//testing/gtest",
 
     # Tests from subdirectories:

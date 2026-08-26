@@ -8,6 +8,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -18,16 +19,15 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
-#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -103,29 +103,16 @@ gfx::Rect TerminalSystemAppDelegate::GetDefaultBounds(
   return TERMINAL_DEFAULT_BOUNDS;
 }
 
-bool TerminalSystemAppDelegate::HasCustomTabMenuModel() const {
-  return true;
-}
-
-std::unique_ptr<ui::SimpleMenuModel> TerminalSystemAppDelegate::GetTabMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate) const {
-  auto result = std::make_unique<ui::SimpleMenuModel>(delegate);
-  result->AddItemWithStringId(TabStripModel::CommandNewTabToRight,
-                              IDS_TAB_CXMENU_NEWTABTORIGHT);
-  result->AddSeparator(ui::NORMAL_SEPARATOR);
-  result->AddItemWithStringId(TabStripModel::CommandCloseTab,
-                              IDS_TAB_CXMENU_CLOSETAB);
-  result->AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
-                              IDS_TAB_CXMENU_CLOSEOTHERTABS);
-  result->AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                              IDS_TAB_CXMENU_CLOSETABSTORIGHT);
-  return result;
+std::optional<base::flat_set<tabs::TabContextMenuCommand>>
+TerminalSystemAppDelegate::GetAllowedTabMenuCommands() const {
+  return {{tabs::CommandNewTabToRight, tabs::CommandCloseTab,
+           tabs::CommandCloseOtherTabs, tabs::CommandCloseTabsToRight}};
 }
 
 bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(
     Profile* profile,
-    int command_id) const {
-  if (command_id == TabStripModel::CommandCloseTab) {
+    tabs::TabContextMenuCommand command) const {
+  if (command == tabs::CommandCloseTab) {
     return guest_os::GetTerminalSettingPassCtrlW(profile);
   }
   return true;

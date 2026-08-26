@@ -69,6 +69,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_context_menu_command.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_network_state.h"
@@ -912,9 +913,9 @@ bool BrowserTabStripController::GetContextMenuAccelerator(
   auto* const app_controller =
       web_app::AppBrowserController::From(GetBrowserWindowInterface());
   auto* system_app = app_controller ? app_controller->system_app() : nullptr;
-  if (system_app &&
-      !system_app->ShouldShowTabContextMenuShortcut(
-          GetBrowserWindowInterface()->GetProfile(), command_id)) {
+  if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
+                        GetBrowserWindowInterface()->GetProfile(),
+                        static_cast<tabs::TabContextMenuCommand>(command_id))) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

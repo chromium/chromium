@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ToggleVertical" summary="the Toggle Vertical tabs command"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_strip_model.h:TabContextMenuCommand) -->
+<!-- LINT.ThenChange(//components/tabs/public/tab_context_menu_command.h:TabContextMenuCommand) -->
 
 <variants name="TabDiscardReason">
   <variant name=".External"

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -87,14 +86,6 @@ void BaseTabStripRegionView::InitializeTabStrip() {
                           base::Unretained(this)),
       orientation_);
 
-  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view_ &&
-      web_app::AppBrowserController::From(browser_view_->browser())) {
-    tab_menu_model_factory =
-        web_app::AppBrowserController::From(browser_view_->browser())
-            ->GetTabMenuModelFactory();
-  }
-
   TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();
   CHECK(tab_strip_model);
   auto drag_handler = std::make_unique<TabDragHandlerImpl>(
@@ -105,7 +96,7 @@ void BaseTabStripRegionView::InitializeTabStrip() {
   tab_strip_controller_ = std::make_unique<TabStripCollectionController>(
       tab_strip_model, browser_view_, *root_node_.get(),
       *AddChildView(std::move(drag_handler)), hover_card_controller_.get(),
-      orientation_, std::move(tab_menu_model_factory));
+      orientation_);
 
   root_node_->SetController(tab_strip_controller_.get());
 

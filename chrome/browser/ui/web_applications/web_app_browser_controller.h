@@ -106,7 +106,10 @@ class WebAppBrowserController : public AppBrowserController,
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
   bool IsFirstLaunchAfterInstall() const override;
-  std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::optional<base::flat_set<tabs::TabContextMenuCommand>>
+  GetAllowedTabMenuCommands() const override;
+#endif
   bool AppUsesWindowControlsOverlay() const override;
   bool AppUsesTabbed() const override;
   bool IsWindowControlsOverlayEnabled() const override;
