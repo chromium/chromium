@@ -39,6 +39,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -206,6 +207,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     // =========================================================================================
@@ -1134,6 +1136,51 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse(
                 "Divider should not be shown when Glic button is not visible.",
                 mCoordinator.shouldShowDivider());
+    }
+
+    @Test
+    public void testGetTrailingButtonsWidthWithPadding() {
+        // 1. No buttons visible.
+        mCoordinator.setGlicButtonVisible(false);
+        assertEquals(
+                "Width should be 0 when no buttons visible.",
+                0.0f,
+                mCoordinator.getTrailingButtonsWidthWithPadding(),
+                0.0);
+
+        // 2. MSB only (Tablet desired touch target = 48).
+        showModelSelectorButton();
+        assertEquals(
+                "Width should match MSB touch target size on tablet.",
+                48.0f,
+                mCoordinator.getTrailingButtonsWidthWithPadding(),
+                0.0);
+
+        // 3. MSB (48) + Glic (width(42) + startSlop(4) + endOffset(6)) = 100.
+        showGlicButton();
+        assertEquals(
+                "Width should match MSB + Glic.",
+                100.0f,
+                mCoordinator.getTrailingButtonsWidthWithPadding(),
+                0.0);
+
+        // 4. MSB (48) + Glic (52) + gap(2) + Actor(42) = 144.
+        showGlicActorButton();
+        assertEquals(
+                "Width should match MSB + Glic + Actor with gap.",
+                144.0f,
+                mCoordinator.getTrailingButtonsWidthWithPadding(),
+                0.0);
+
+        // 5. Desktop density (MSB touch target shrinks to 32).
+        DeviceInfo.setIsDesktopForTesting(true);
+        mCoordinator.setGlicButtonVisible(false);
+        mCoordinator.setGlicActorButtonVisible(false, /* animate= */ false);
+        assertEquals(
+                "Width should match MSB touch target size on desktop.",
+                32.0f,
+                mCoordinator.getTrailingButtonsWidthWithPadding(),
+                0.0);
     }
 
     // =========================================================================================

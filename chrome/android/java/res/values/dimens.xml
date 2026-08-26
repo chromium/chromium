@@ -110,6 +110,8 @@ found in the LICENSE file.
     <item name="tab_strip_button_bg_hover_alpha" format="float" type="dimen">0.08</item>
     <item name="tab_strip_button_bg_peripheral_pressed_alpha" format="float" type="dimen">0.12</item>
     <item name="tab_strip_button_bg_pressed_alpha" format="float" type="dimen">0.2</item>
+    <dimen name="tab_strip_ntb_with_strip_button_padding">8dp</dimen>
+    <dimen name="tab_strip_ntb_with_strip_button_padding_desktop">24dp</dimen>
 
     <!-- Tab strip Glic buttons -->
     <!-- vertical margin = tab strip height - glic background height = 40 - 32 = 8dp. -->

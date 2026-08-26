@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
@@ -50,20 +51,11 @@ public class StripLayoutUtils {
     // Tab width constants.
     public static final float MIN_TAB_WIDTH_DESKTOP_DP = 68f;
     private static final float MIN_TAB_WIDTH_TABLET_DP = 108f;
-    public static final float MIN_TAB_WIDTH_DP =
-            StyleUtils.shouldApplyDesktopDensity()
-                    ? MIN_TAB_WIDTH_DESKTOP_DP
-                    : MIN_TAB_WIDTH_TABLET_DP;
     public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     public static final float TAB_OVERLAP_WIDTH_DP = 28f;
 
     // Pinned tab width.
     public static final float PINNED_TAB_WIDTH_DP = MIN_TAB_WIDTH_DESKTOP_DP;
-
-    // Button size constants.
-    public static final float BUTTON_BACKGROUND_SIZE_DP = 32f;
-    public static final float BUTTON_TOUCH_TARGET_SIZE_DP =
-            StyleUtils.shouldApplyDesktopDensity() ? BUTTON_BACKGROUND_SIZE_DP : 48f;
 
     // Animation Constants.
     public static final int ANIM_TAB_MOVE_MS = 125;
@@ -232,6 +224,33 @@ public class StripLayoutUtils {
     // ============================================================================================
     // Tab util methods
     // ============================================================================================
+
+    /** Returns the minimum tab width based on device density. */
+    public static float getMinTabWidthDp() {
+        return StyleUtils.shouldApplyDesktopDensity()
+                ? MIN_TAB_WIDTH_DESKTOP_DP
+                : MIN_TAB_WIDTH_TABLET_DP;
+    }
+
+    /** Returns the touch target size for tab strip buttons based on device density. */
+    public static float getButtonTouchTargetSizeDp(Context context) {
+        return StyleUtils.shouldApplyDesktopDensity()
+                ? getDimensionDp(context, R.dimen.tab_strip_button_bg_size)
+                : getDimensionDp(context, R.dimen.min_touch_target_size);
+    }
+
+    /**
+     * Converts a dimension resource to DP.
+     *
+     * @param context The {@link Context} to retrieve resources.
+     * @param id The dimension resource ID.
+     * @return The dimension in DP.
+     */
+    public static float getDimensionDp(Context context, @DimenRes int id) {
+        return Math.round(
+                context.getResources().getDimension(id)
+                        / context.getResources().getDisplayMetrics().density);
+    }
 
     /**
      * @param tabWidthSupplier supplies the cached tab width for non-pinned tabs

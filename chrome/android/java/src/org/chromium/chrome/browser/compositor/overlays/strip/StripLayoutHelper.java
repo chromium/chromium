@@ -7,13 +7,12 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_BACKGROUND_SIZE_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_TOUCH_TARGET_SIZE_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getButtonTouchTargetSizeDp;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getDimensionDp;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.animation.Animator;
@@ -204,12 +203,6 @@ public class StripLayoutHelper
     // Desired spacing between new tab button and tabs when tab strip is not full.
     private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
-
-    // Values adapt based on whether the device is desktop or tablet.
-    private static final float BUTTON_CLICK_SLOP_DP =
-            (BUTTON_TOUCH_TARGET_SIZE_DP - BUTTON_BACKGROUND_SIZE_DP) / 2;
-    private static final float NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING =
-            StyleUtils.shouldApplyDesktopDensity() ? 24.f : 8.f;
 
     private static final int MESSAGE_UPDATE_SPINNER = 1;
     private static final int MESSAGE_HOVER_CARD = 2;
@@ -561,7 +554,7 @@ public class StripLayoutHelper
     // Strip State
     /**
      * The {@link Supplier} for the width of a tab based on the number of tabs and the available
-     * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
+     * space on the tab strip. Constricted by minimum tab width and MAX_TAB_WIDTH_DP.
      */
     private final SettableNonNullObservableSupplier<Float> mCachedTabWidthSupplier =
             ObservableSuppliers.createNonNull(0f);
@@ -775,9 +768,11 @@ public class StripLayoutHelper
             SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+        mContext = context;
+        mIncognito = incognito;
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
-        mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
+        mNewTabButtonWidth = getDimensionDp(context, R.dimen.tab_strip_button_bg_size);
         mControlContainer = controlContainerView;
         mTabStripDragHandler = tabStripDragHandler;
         mWindowAndroid = windowAndroid;
@@ -820,14 +815,14 @@ public class StripLayoutHelper
                         incognito,
                         ButtonType.NEW_TAB,
                         null,
-                        BUTTON_BACKGROUND_SIZE_DP,
-                        BUTTON_BACKGROUND_SIZE_DP,
+                        mNewTabButtonWidth,
+                        mNewTabButtonWidth,
                         mControlContainer::setTooltipText,
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
                         R.drawable.bg_circle_tab_strip_button,
-                        BUTTON_CLICK_SLOP_DP);
+                        getButtonClickSlopDp(context));
 
         @ColorRes
         int iconTintRes = incognito ? R.color.modern_white : R.color.default_icon_color_tint_list;
@@ -846,8 +841,6 @@ public class StripLayoutHelper
                 incognito
                         ? res.getString(R.string.accessibility_toolbar_btn_new_incognito_tab)
                         : res.getString(R.string.accessibility_toolbar_btn_new_tab));
-        mContext = context;
-        mIncognito = incognito;
 
         mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addSyncObserverAndPostIfNonNull(
@@ -936,10 +929,8 @@ public class StripLayoutHelper
 
     private TintedCompositorButton createTabSearchButton(
             Context context, boolean incognito, Resources res) {
-        float width =
-                ChromeFeatureList.sTabSearchForDesktop.isEnabled()
-                        ? BUTTON_BACKGROUND_SIZE_DP
-                        : 0.f;
+        float buttonBgSize = getDimensionDp(context, R.dimen.tab_strip_button_bg_size);
+        float width = ChromeFeatureList.sTabSearchForDesktop.isEnabled() ? buttonBgSize : 0.f;
         TintedCompositorButton button =
                 new TintedCompositorButton(
                         context,
@@ -947,13 +938,13 @@ public class StripLayoutHelper
                         ButtonType.TAB_SEARCH,
                         /* parentView= */ null,
                         width,
-                        BUTTON_BACKGROUND_SIZE_DP,
+                        buttonBgSize,
                         mControlContainer::setTooltipText,
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_manage_search_16dp,
                         R.drawable.bg_square_rounded_tab_strip_button,
-                        BUTTON_CLICK_SLOP_DP);
+                        getButtonClickSlopDp(context));
 
         // Set an off-color background for the tab search button to distinguish it in the strip.
         // Note that if this is not set, it will match the color of the background around it.
@@ -1082,6 +1073,18 @@ public class StripLayoutHelper
         return getCachedTabWidth(/* isPinned= */ false) < MAX_TAB_WIDTH_DP;
     }
 
+    private static float getButtonClickSlopDp(Context context) {
+        return (getButtonTouchTargetSizeDp(context)
+                        - getDimensionDp(context, R.dimen.tab_strip_button_bg_size))
+                / 2;
+    }
+
+    private float getNewTabButtonWithStripButtonPadding() {
+        return StyleUtils.shouldApplyDesktopDensity()
+                ? getDimensionDp(mContext, R.dimen.tab_strip_ntb_with_strip_button_padding_desktop)
+                : getDimensionDp(mContext, R.dimen.tab_strip_ntb_with_strip_button_padding);
+    }
+
     /**
      * Determine how far to shift new tab button icon visually towards the tab in order to achieve
      * the desired spacing between new tab button and tabs when tab strip is not full.
@@ -1090,7 +1093,7 @@ public class StripLayoutHelper
      */
     protected float getNtbVisualOffsetHorizontal() {
         return Math.max(
-                (BUTTON_TOUCH_TARGET_SIZE_DP - mNewTabButtonWidth) / 2
+                (getButtonTouchTargetSizeDp(mContext) - mNewTabButtonWidth) / 2
                         - DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS,
                 0);
     }
@@ -1264,7 +1267,7 @@ public class StripLayoutHelper
         // here.
         float padding =
                 trailingButtonsTouchTargetSize > 0
-                        ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
+                        ? getNewTabButtonWithStripButtonPadding()
                         : mFixedEndPadding;
         mReservedEndMargin = trailingButtonsTouchTargetSize + mNewTabButtonWidth + padding;
 
@@ -1274,12 +1277,12 @@ public class StripLayoutHelper
 
     private void updateMargins(boolean recalculateTabWidth) {
         // Reserve space for tab search button if it is visible at the start of the strip.
-        // Subtracting 10dp from BUTTON_TOUCH_TARGET_SIZE_DP guarantees a touch target gap of
+        // Subtracting 10dp from buttonTouchTargetSize guarantees a touch target gap of
         // exactly 6dp between the button and the first tab on both desktop and non-desktop:
-        // (BUTTON_TOUCH_TARGET_SIZE_DP - 10dp) + FOLIO_FOOT_LENGTH_DP (16dp tab start touch target
-        // inset) - BUTTON_TOUCH_TARGET_SIZE_DP = 6dp.
-        mReservedStartMargin =
-                mTabSearchButton.isVisible() ? BUTTON_TOUCH_TARGET_SIZE_DP - 10.f : 0.f;
+        // (buttonTouchTargetSize - 10dp) + FOLIO_FOOT_LENGTH_DP (16dp tab start touch target
+        // inset) - buttonTouchTargetSize = 6dp.
+        float buttonTouchTargetSize = getButtonTouchTargetSizeDp(mContext);
+        mReservedStartMargin = mTabSearchButton.isVisible() ? buttonTouchTargetSize - 10.f : 0.f;
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftMargin = mReservedEndMargin + mLeftPadding;
             mRightMargin = mReservedStartMargin + mRightPadding;
@@ -1301,9 +1304,10 @@ public class StripLayoutHelper
 
         float startFadeWidth;
         if (mTabSearchButton.isVisible()) {
-            // BUTTON_TOUCH_TARGET_SIZE_DP represents the Tab Search button's touch target size.
+            // getButtonTouchTargetSizeDp(mContext) represents the Tab Search button's touch target
+            // size.
             startFadeWidth =
-                    BUTTON_TOUCH_TARGET_SIZE_DP
+                    getButtonTouchTargetSizeDp(mContext)
                             + mButtonSideFadePadding
                             + BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
         } else {
@@ -3151,7 +3155,8 @@ public class StripLayoutHelper
 
     @VisibleForTesting
     int getHoverCardDelay(float tabWidth) {
-        return TabHoverCardView.getHoverCardDelay(tabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP);
+        return TabHoverCardView.getHoverCardDelay(
+                tabWidth, StripLayoutUtils.getMinTabWidthDp(), MAX_TAB_WIDTH_DP);
     }
 
     private void showTabHoverCardView(boolean isDelayedCall) {
@@ -4665,7 +4670,8 @@ public class StripLayoutHelper
 
         // 4. Calculate the realistic tab width.
         mCachedTabWidthSupplier.set(
-                MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
+                MathUtils.clamp(
+                        optimalTabWidth, StripLayoutUtils.getMinTabWidthDp(), MAX_TAB_WIDTH_DP));
     }
 
     /**

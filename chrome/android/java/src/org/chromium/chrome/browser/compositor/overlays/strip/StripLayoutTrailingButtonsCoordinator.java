@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getButtonTouchTargetSizeDp;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getDimensionDp;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -16,7 +19,6 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -374,7 +376,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mToolbarControlContainer = toolbarControlContainer;
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            float bgSizeDp = getDimensionDp(R.dimen.tab_strip_button_bg_size);
+            float bgSizeDp = getDimensionDp(mContext, R.dimen.tab_strip_button_bg_size);
             mModelSelectorButton =
                     new TintedCompositorButton(
                             mContext,
@@ -394,7 +396,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                             R.drawable.bg_circle_tab_strip_button,
                             getModelSelectorButtonClickSlopDp());
 
-            mModelSelectorButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+            mModelSelectorButton.setDrawY(
+                    getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
             updateModelSelectorButtonProperties();
             mModelSelectorButton.setVisible(false);
         }
@@ -412,7 +415,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                     (time, view, motionEventButtonState, modifiers) ->
                             handleGlicButtonClick(/* preventClose= */ false);
 
-            float dismissIconWidthDp = getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width);
+            float dismissIconWidthDp =
+                    getDimensionDp(mContext, R.dimen.tab_strip_glic_dismiss_icon_width);
             // TODO(crbug.com/541373786) Replace GLIC close button PNG assets with vector drawables
             //  and remove unused PNGs.
             mGlicDismissNudgeButton =
@@ -434,7 +438,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* hasLongClickAction= */ false);
 
             mGlicDismissNudgeButton.setDrawY(
-                    getDimensionDp(R.dimen.tab_strip_glic_dismiss_button_y_offset));
+                    getDimensionDp(mContext, R.dimen.tab_strip_glic_dismiss_button_y_offset));
             mGlicDismissNudgeButton.setVisible(false);
             mGlicDismissNudgeButton.setAccessibilityDescription(
                     mContext.getString(R.string.tooltip_glic_close));
@@ -442,8 +446,8 @@ public class StripLayoutTrailingButtonsCoordinator {
             int dismissIconDefaultColor = SemanticColorUtils.getDefaultIconColor(mContext);
             mGlicDismissNudgeButton.setTint(dismissIconDefaultColor);
 
-            float bgWidthDp = getDimensionDp(R.dimen.tab_strip_glic_button_bg_width);
-            float bgHeightDp = getDimensionDp(R.dimen.tab_strip_button_bg_size);
+            float bgWidthDp = getDimensionDp(mContext, R.dimen.tab_strip_glic_button_bg_width);
+            float bgHeightDp = getDimensionDp(mContext, R.dimen.tab_strip_button_bg_size);
             mGlicButton =
                     new TintedCompositorTextButton(
                             mContext,
@@ -476,7 +480,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicButtonContextMenuCoordinator =
                     new GlicButtonContextMenuCoordinator(mContext, TabStripLayoutType.HORIZONTAL);
 
-            mGlicButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+            mGlicButton.setDrawY(getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
             mGlicButton.setVisible(false);
             mGlicButton.setHighlighted(mIsGlicUiVisible);
 
@@ -501,7 +505,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* hasLongClickAction= */ false,
                             /* dismissButton= */ null);
 
-            mGlicActorButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+            mGlicActorButton.setDrawY(getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
             // Set width and opacity to 0 when hidden to prepare state for animations.
             mGlicActorButton.setWidth(0.0f);
             mGlicActorButton.setOpacity(0.0f);
@@ -817,21 +821,26 @@ public class StripLayoutTrailingButtonsCoordinator {
     private float calculateGlicButtonWidth(
             TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
         String text = button.getText();
-        float width = getDimensionDp(R.dimen.tab_strip_glic_button_bg_width);
+        float width = getDimensionDp(mContext, R.dimen.tab_strip_glic_button_bg_width);
 
         if (!TextUtils.isEmpty(text) && titleCache != null) {
             width =
-                    getDimensionDp(R.dimen.tab_strip_glic_button_start_padding)
-                            + getDimensionDp(R.dimen.tab_strip_glic_icon_width)
-                            + getDimensionDp(R.dimen.tab_strip_glic_icon_text_padding)
+                    getDimensionDp(mContext, R.dimen.tab_strip_glic_button_start_padding)
+                            + getDimensionDp(mContext, R.dimen.tab_strip_glic_icon_width)
+                            + getDimensionDp(mContext, R.dimen.tab_strip_glic_icon_text_padding)
                             + (titleCache.getButtonTextWidth(text) / mDensity);
 
             if (isGlicDismissNudgeButtonVisible() && button.getType() == ButtonType.GLIC) {
                 width +=
-                        getDimensionDp(R.dimen.tab_strip_glic_button_shortened_end_padding)
-                                + getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width);
+                        getDimensionDp(
+                                        mContext,
+                                        R.dimen.tab_strip_glic_button_shortened_end_padding)
+                                + getDimensionDp(
+                                        mContext, R.dimen.tab_strip_glic_dismiss_icon_width);
             } else {
-                width += getDimensionDp(R.dimen.tab_strip_glic_button_standard_end_padding);
+                width +=
+                        getDimensionDp(
+                                mContext, R.dimen.tab_strip_glic_button_standard_end_padding);
             }
         }
 
@@ -1196,14 +1205,17 @@ public class StripLayoutTrailingButtonsCoordinator {
                     mGlicActorButton.setDrawX(rightSideAnchor - mGlicActorButton.getWidth());
                     rightSideAnchor -=
                             mGlicActorButton.getWidth()
-                                    + getDimensionDp(R.dimen.tab_strip_glic_actor_button_gap);
+                                    + getDimensionDp(
+                                            mContext, R.dimen.tab_strip_glic_actor_button_gap);
                 }
                 if (isGlicDismissNudgeButtonVisible()) {
                     mGlicDismissNudgeButton.setDrawX(
                             rightSideAnchor
                                     - getDimensionDp(
+                                            mContext,
                                             R.dimen.tab_strip_glic_button_shortened_end_padding)
-                                    - getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width)
+                                    - getDimensionDp(
+                                            mContext, R.dimen.tab_strip_glic_dismiss_icon_width)
                                     + mDismissButtonXOffset);
                 }
                 mGlicButton.setDrawX(rightSideAnchor - mGlicButton.getWidth());
@@ -1223,12 +1235,14 @@ public class StripLayoutTrailingButtonsCoordinator {
                     mGlicActorButton.setDrawX(leftSideAnchor);
                     leftSideAnchor +=
                             mGlicActorButton.getWidth()
-                                    + getDimensionDp(R.dimen.tab_strip_glic_actor_button_gap);
+                                    + getDimensionDp(
+                                            mContext, R.dimen.tab_strip_glic_actor_button_gap);
                 }
                 if (isGlicDismissNudgeButtonVisible()) {
                     mGlicDismissNudgeButton.setDrawX(
                             leftSideAnchor
                                     + getDimensionDp(
+                                            mContext,
                                             R.dimen.tab_strip_glic_button_shortened_end_padding)
                                     - mDismissButtonXOffset);
                 }
@@ -1243,13 +1257,14 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         // 2. Y Positions
         if (mModelSelectorButton != null) {
-            mModelSelectorButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+            mModelSelectorButton.setDrawY(
+                    getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
         }
         if (mGlicButton != null && mGlicDismissNudgeButton != null && mGlicActorButton != null) {
-            mGlicButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+            mGlicButton.setDrawY(getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
             mGlicDismissNudgeButton.setDrawY(
-                    getDimensionDp(R.dimen.tab_strip_glic_dismiss_button_y_offset));
-            mGlicActorButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
+                    getDimensionDp(mContext, R.dimen.tab_strip_glic_dismiss_button_y_offset));
+            mGlicActorButton.setDrawY(getDimensionDp(mContext, R.dimen.tab_strip_button_y_offset));
         }
 
         // 3. Touch Targets
@@ -1290,10 +1305,11 @@ public class StripLayoutTrailingButtonsCoordinator {
         } else {
             float endInset =
                     GLIC_BUTTON_END_SLOP_DP
-                            + getDimensionDp(R.dimen.tab_strip_glic_button_shortened_end_padding);
+                            + getDimensionDp(
+                                    mContext, R.dimen.tab_strip_glic_button_shortened_end_padding);
             float startInset =
-                    StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE
-                            - getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width)
+                    getButtonTouchTargetSizeDp(mContext)
+                            - getDimensionDp(mContext, R.dimen.tab_strip_glic_dismiss_icon_width)
                             - endInset;
             mGlicDismissNudgeButton.setTouchTargetInsets(
                     -(isRtl ? endInset : startInset),
@@ -1329,14 +1345,14 @@ public class StripLayoutTrailingButtonsCoordinator {
     public float getTrailingButtonsWidthWithPadding() {
         float width = 0.0f;
         if (isModelSelectorButtonVisible()) {
-            width += StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE;
+            width += getButtonTouchTargetSizeDp(mContext);
         }
         if (isGlicButtonVisible()) {
             width += mGlicButton.getWidth() + GLIC_BUTTON_START_SLOP_DP + getGlicButtonEndOffset();
 
             if (isGlicActorButtonVisible()) {
                 width +=
-                        getDimensionDp(R.dimen.tab_strip_glic_actor_button_gap)
+                        getDimensionDp(mContext, R.dimen.tab_strip_glic_actor_button_gap)
                                 + mGlicActorButton.getWidth();
             }
         }
@@ -1540,23 +1556,19 @@ public class StripLayoutTrailingButtonsCoordinator {
     private float getGlicButtonEndOffset() {
         return GLIC_BUTTON_END_SLOP_DP
                 + (shouldShowDivider()
-                        ? getDimensionDp(R.dimen.tab_strip_window_controls_divider_width)
+                        ? getDimensionDp(mContext, R.dimen.tab_strip_window_controls_divider_width)
                         : 0.f);
     }
 
-    private float getDimensionDp(@DimenRes int id) {
-        return Math.round(mContext.getResources().getDimension(id) / mDensity);
-    }
-
     private float getGlicDismissButtonClickSlopDp() {
-        return (StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE
-                        - getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width))
+        return (getButtonTouchTargetSizeDp(mContext)
+                        - getDimensionDp(mContext, R.dimen.tab_strip_glic_dismiss_icon_width))
                 / 2;
     }
 
     private float getModelSelectorButtonClickSlopDp() {
-        return (StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE
-                        - getDimensionDp(R.dimen.tab_strip_button_bg_size))
+        return (getButtonTouchTargetSizeDp(mContext)
+                        - getDimensionDp(mContext, R.dimen.tab_strip_button_bg_size))
                 / 2;
     }
 

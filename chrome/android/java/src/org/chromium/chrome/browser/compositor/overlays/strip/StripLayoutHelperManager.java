@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_TOUCH_TARGET_SIZE_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
@@ -124,7 +122,6 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
-import org.chromium.ui.util.StyleUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -185,10 +182,6 @@ public class StripLayoutHelperManager
                     return object.mStripTransitionScrimOpacity;
                 }
             };
-
-    // Shared button constants (Model selector and Glic).
-    static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
-            StyleUtils.shouldApplyDesktopDensity() ? 32.f : 48.f;
 
     // Tab strip transition constants.
     @VisibleForTesting
@@ -1153,19 +1146,20 @@ public class StripLayoutHelperManager
         // The threshold is the minimum width required to start showing fade.
         // Base = 2 * minTabWidth - tabOverlap + newTabButton:
         //   Tablet Base: 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) = 236dp
-        //   Desktop Base: 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) = 156dp
+        //   Desktop Base: 2 * minTabWidth(68) - tabOverlap(28) + newTabButton (32) = 140dp
         // Optional Additions:
         //   + Tab Search Button: 48dp (Tablet) / 32dp (Desktop)
         //   + Trailing Buttons (Glic, Glic actor, MSB): Dynamic (e.g. ~109dp in default state with
         //     only Glic showing, ~96dp in collapsed state with both Glic and Glic actor showing,
         //     +48dp (Tablet) / 32dp (Desktop) when MSB is showing)
 
+        float buttonTouchTargetSize = StripLayoutUtils.getButtonTouchTargetSizeDp(mContext);
         float thresholdDp =
-                (2 * MIN_TAB_WIDTH_DP)
+                (2 * StripLayoutUtils.getMinTabWidthDp())
                         - TAB_OVERLAP_WIDTH_DP
-                        + BUTTON_TOUCH_TARGET_SIZE_DP
+                        + buttonTouchTargetSize
                         + (getActiveStripLayoutHelper().getTabSearchButton().isVisible()
-                                ? BUTTON_TOUCH_TARGET_SIZE_DP
+                                ? buttonTouchTargetSize
                                 : 0.f)
                         + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding();
         return Math.round(thresholdDp);

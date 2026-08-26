@@ -33,7 +33,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
@@ -884,7 +883,7 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "Tabs should be at minimum width for this test to be valid",
-                MIN_TAB_WIDTH_DP,
+                StripLayoutUtils.getMinTabWidthDp(),
                 mStripLayoutHelper.getUnpinnedTabWidth(),
                 EPSILON);
 
@@ -1906,15 +1905,14 @@ public class StripLayoutHelperTest {
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify mReservedStartMargin is 38.f (BUTTON_TOUCH_TARGET_SIZE_DP (48) - 10.f)
+        // Verify mReservedStartMargin is 38.f (buttonTouchTargetSize (48) - 10.f)
         assertEquals(
                 "Reserved start margin should be 38.f",
                 38.f,
                 mStripLayoutHelper.getReservedStartMarginForTesting(),
                 EPSILON);
 
-        // Verify left fade opaque width: BUTTON_TOUCH_TARGET_SIZE_DP (48) + mButtonSideFadePadding
-        // (8)
+        // Verify left fade opaque width: buttonTouchTargetSize (48) + mButtonSideFadePadding (8)
         assertEquals(
                 "Left fade opaque width should be 56.f",
                 56.f,
@@ -1931,15 +1929,14 @@ public class StripLayoutHelperTest {
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify mReservedStartMargin is 38.f (BUTTON_TOUCH_TARGET_SIZE_DP (48) - 10.f)
+        // Verify mReservedStartMargin is 38.f (buttonTouchTargetSize (48) - 10.f)
         assertEquals(
                 "Reserved start margin should be 38.f",
                 38.f,
                 mStripLayoutHelper.getReservedStartMarginForTesting(),
                 EPSILON);
 
-        // Verify right fade opaque width: BUTTON_TOUCH_TARGET_SIZE_DP (48) + mButtonSideFadePadding
-        // (8)
+        // Verify right fade opaque width: buttonTouchTargetSize (48) + mButtonSideFadePadding (8)
         assertEquals(
                 "Right fade opaque width should be 56.f",
                 56.f,

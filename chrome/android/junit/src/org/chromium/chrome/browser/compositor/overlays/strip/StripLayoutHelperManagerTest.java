@@ -260,6 +260,7 @@ public class StripLayoutHelperManagerTest {
         }
         TabStripSceneLayer.setTestFlag(false);
         CompositorAnimationHandler.setTestingMode(false);
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     private void initializeTest() {
@@ -632,6 +633,25 @@ public class StripLayoutHelperManagerTest {
     public void testGetFadeTransitionThresholdDp_TabSearchEnabled() {
         // Base (236) + Tab Search Button (48) = 284
         int expectedThresholdDp = 284;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
+    public void testGetFadeTransitionThresholdDp_DesktopDensity() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        initializeTest();
+        // Base Desktop threshold: 2 * minTabWidth(68) - tabOverlap(28) + newTabButton(32) = 140dp.
+        int expectedThresholdDp = 140;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testGetFadeTransitionThresholdDp_DesktopDensity_TabSearchEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        initializeTest();
+        // Base (140) + Tab Search Button (32) = 172
+        int expectedThresholdDp = 172;
         assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
     }
 
