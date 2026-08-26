@@ -535,6 +535,7 @@ chromium-metrics-reviews@google.com.
   <int value="94"
       label="UMA_FACILITATED_PAYMENTS_PIX_ACCOUNT_LINKING_FAILURE_NOTIFICATION"/>
   <int value="95" label="UMA_GLIC_UNPIN_UNDO"/>
+  <int value="96" label="UMA_GLIC_MIC_DISABLED"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->

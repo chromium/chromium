@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/glic/android/glic_helper_android.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -32,6 +33,8 @@
 #include "content/public/common/drop_data.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/android/accelerator_manager_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
@@ -43,6 +46,26 @@
 #endif
 
 namespace glic {
+
+namespace {
+
+void OnMediaAccessPermissionResult(
+    base::WeakPtr<content::WebContents> web_contents,
+    blink::mojom::MediaStreamType audio_type,
+    content::MediaResponseCallback callback,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<content::MediaStreamUI> ui) {
+  if (result != blink::mojom::MediaStreamRequestResult::OK &&
+      blink::IsAudioInputMediaType(audio_type)) {
+    if (web_contents) {
+      ShowMicDisabledSnackbar(web_contents->GetTopLevelNativeWindow());
+    }
+  }
+  std::move(callback).Run(stream_devices_set, result, std::move(ui));
+}
+
+}  // namespace
 
 GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
@@ -300,7 +323,11 @@ void GlicSidePanelUi::RequestMediaAccessPermission(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), nullptr);
+      web_contents, request,
+      base::BindOnce(&OnMediaAccessPermissionResult,
+                     web_contents ? web_contents->GetWeakPtr() : nullptr,
+                     request.audio_type, std::move(callback)),
+      nullptr);
 }
 
 bool GlicSidePanelUi::CheckMediaAccessPermission(
