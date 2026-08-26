@@ -511,7 +511,8 @@ class MediaDevicesManagerTest : public ::testing::Test {
     media_devices_manager_->video_capture_service_device_changed_observer_ =
         std::make_unique<
             MediaDevicesManager::VideoCaptureDevicesChangedObserver>(
-            /*disconnect_cb=*/base::BindRepeating([]() {}),
+            /*invalidate_cache_cb=*/base::BindRepeating([]() {}),
+            /*enumerate_system_devices_cb=*/base::BindRepeating([]() {}),
             /*listener_cb=*/base::BindRepeating([]() {}));
   }
 

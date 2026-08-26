@@ -275,12 +275,19 @@ class CONTENT_EXPORT MediaDevicesManager
     friend class MockVideoCaptureDevicesChangedObserver;
 
    public:
+    enum class ConnectType {
+      kNormal,
+      kReconnect,
+    };
+
     explicit VideoCaptureDevicesChangedObserver(
-        base::RepeatingClosure disconnect_cb,
+        base::RepeatingClosure invalidate_cache_cb,
+        base::RepeatingClosure enumerate_system_devices_cb,
         base::RepeatingClosure listener_cb);
     ~VideoCaptureDevicesChangedObserver() override;
 
-    void EnsureConnectedToService();
+    void EnsureConnectedToService(
+        ConnectType connect_type = ConnectType::kNormal);
     void DisconnectVideoSourceProvider();
 
    private:
@@ -289,10 +296,12 @@ class CONTENT_EXPORT MediaDevicesManager
 
     void OnConnectionError();
 
-    // |disconnect_cb_| is a callback used to invalidate the cache and do a
-    // fresh enumeration to avoid losing out on the changes that might happen
-    // when the video capture service is not active.
-    const base::RepeatingClosure disconnect_cb_;
+    // |invalidate_cache_cb_| is a callback used to invalidate the cache upon
+    // disconnection.
+    const base::RepeatingClosure invalidate_cache_cb_;
+    // |enumerate_system_devices_cb_| is a callback used to force a fresh
+    // enumeration upon successful reconnection.
+    const base::RepeatingClosure enumerate_system_devices_cb_;
     const base::RepeatingClosure listener_cb_;
     mojo::Receiver<video_capture::mojom::DevicesChangedObserver> receiver_{
         this};

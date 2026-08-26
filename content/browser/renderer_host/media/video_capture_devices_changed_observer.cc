@@ -10,9 +10,12 @@
 namespace content {
 
 MediaDevicesManager::VideoCaptureDevicesChangedObserver::
-    VideoCaptureDevicesChangedObserver(base::RepeatingClosure disconnect_cb,
-                                       base::RepeatingClosure listener_cb)
-    : disconnect_cb_(std::move(disconnect_cb)),
+    VideoCaptureDevicesChangedObserver(
+        base::RepeatingClosure invalidate_cache_cb,
+        base::RepeatingClosure enumerate_system_devices_cb,
+        base::RepeatingClosure listener_cb)
+    : invalidate_cache_cb_(std::move(invalidate_cache_cb)),
+      enumerate_system_devices_cb_(std::move(enumerate_system_devices_cb)),
       listener_cb_(std::move(listener_cb)) {}
 
 MediaDevicesManager::VideoCaptureDevicesChangedObserver::
@@ -24,7 +27,7 @@ void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
 }
 
 void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
-    EnsureConnectedToService() {
+    EnsureConnectedToService(ConnectType connect_type) {
   if (mojo_device_notifier_ && receiver_.is_bound()) {
     return;
   }
@@ -38,6 +41,10 @@ void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
                      base::Unretained(this)));
   mojo_device_notifier_->RegisterDevicesChangedObserver(
       receiver_.BindNewPipeAndPassRemote());
+
+  if (connect_type == ConnectType::kReconnect && enumerate_system_devices_cb_) {
+    enumerate_system_devices_cb_.Run();
+  }
 }
 
 void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
@@ -45,10 +52,10 @@ void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
   mojo_device_notifier_.reset();
   receiver_.reset();
 
-  if (disconnect_cb_) {
-    disconnect_cb_.Run();
+  if (invalidate_cache_cb_) {
+    invalidate_cache_cb_.Run();
   }
-  EnsureConnectedToService();
+  EnsureConnectedToService(ConnectType::kReconnect);
 }
 
 void MediaDevicesManager::VideoCaptureDevicesChangedObserver::
