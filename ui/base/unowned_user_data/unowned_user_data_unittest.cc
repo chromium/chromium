@@ -95,7 +95,7 @@ TEST(UnownedUserDataTest, CannotSetATypeTwiceOnTheSameHost) {
   // Construct one test data. This should succeed.
   test_data1.emplace(host);
   // Constructing another data of the same type should cause a CHECK failure.
-  EXPECT_DEATH(test_data2.emplace(host), "");
+  EXPECT_DEATH_IF_SUPPORTED(test_data2.emplace(host), "");
 }
 
 }  // namespace ui
