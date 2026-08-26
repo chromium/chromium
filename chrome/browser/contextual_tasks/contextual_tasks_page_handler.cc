@@ -721,6 +721,11 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   std::vector<contextual_tasks::UrlResource> committed_context =
       contextual_tasks::ConvertAiModeContextToUrlResources(message,
                                                            submitted_context);
+  bool is_history_loading = web_ui_controller_->is_history_thread_loading();
+  if (is_history_loading) {
+    web_ui_controller_->set_is_history_thread_loading(false);
+  }
+
   if (committed_context.empty()) {
     return;
   }
@@ -738,8 +743,7 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   // Populate restored tabs in the composebox.
   if (contextual_tasks_service_ &&
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
-      web_ui_controller_->is_history_thread_loading()) {
-    web_ui_controller_->set_is_history_thread_loading(false);
+      is_history_loading) {
     contextual_tasks_service_->GetContextForTask(
         *task_id, {},
         std::make_unique<contextual_tasks::ContextDecorationParams>(),

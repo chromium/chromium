@@ -2396,6 +2396,11 @@ void ContextualSearchboxHandler::OpenUrl(
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
+
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+               /*query_submitted=*/true);
+  }
   contextual_session_handle->ClearSubmittedContextTokens();
 }
 
