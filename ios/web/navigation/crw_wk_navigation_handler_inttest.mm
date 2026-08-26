@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/callback.h"
 #import "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
@@ -12,6 +14,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
+#import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/web_int_test.h"
@@ -19,11 +22,19 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/url_constants.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;
 using web::HttpsUpgradeType;
 
 namespace {
+
+constexpr char kEchoURL[] = "/echo";
+constexpr char kServerRedirectToJavaScriptURL[] =
+    "/server-redirect?javascript:window.testExecuted=true;";
+constexpr char kServerRedirectToDataURL[] =
+    "/server-redirect?data:text/html,Blocked";
+constexpr char kBlockedDataContent[] = "Blocked";
 
 // A WebStateObserver that observes that the navigation is finished and keeps
 // track of the error type (SSL or net error).
@@ -41,6 +52,10 @@ class FailedWebStateObserver : public web::WebStateObserver {
   FailedWebStateObserver() = default;
   FailedWebStateObserver(const FailedWebStateObserver&) = delete;
   FailedWebStateObserver& operator=(const FailedWebStateObserver&) = delete;
+
+  void SetOnDidFinishNavigation(base::OnceClosure closure) {
+    on_did_finish_navigation_ = std::move(closure);
+  }
 
   void DidFinishNavigation(
       web::WebState* web_state,
@@ -64,6 +79,9 @@ class FailedWebStateObserver : public web::WebStateObserver {
         error_type_ = ErrorType::kNetError;
       }
     }
+    if (on_did_finish_navigation_) {
+      std::move(on_did_finish_navigation_).Run();
+    }
   }
 
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
@@ -75,6 +93,7 @@ class FailedWebStateObserver : public web::WebStateObserver {
   ErrorType error_type() const { return error_type_; }
 
  private:
+  base::OnceClosure on_did_finish_navigation_;
   bool did_finish_ = false;
   web::HttpsUpgradeType failed_https_upgrade_type_ =
       web::HttpsUpgradeType::kNone;
@@ -224,6 +243,62 @@ TEST_F(CRWKNavigationHandlerIntTest,
   TestFailedHttpsUpgrade(url, HttpsUpgradeType::kHttpsOnlyMode,
                          HttpsUpgradeType::kHttpsOnlyMode,
                          FailedWebStateObserver::ErrorType::kNetError);
+}
+
+// Tests that a server redirect to a JavaScript URL does not proceed.
+TEST_F(CRWKNavigationHandlerIntTest, ServerRedirectToJavaScriptURL) {
+  ASSERT_TRUE(server_.Start());
+  GURL initial_url = server_.GetURL(kEchoURL);
+  ASSERT_TRUE(LoadUrl(initial_url));
+
+  GURL redirect_url = server_.GetURL(kServerRedirectToJavaScriptURL);
+
+  FailedWebStateObserver observer;
+  base::ScopedObservation<WebState, WebStateObserver> scoped_observer(
+      &observer);
+  scoped_observer.Observe(web_state());
+
+  base::test::TestFuture<void> future;
+  observer.SetOnDidFinishNavigation(future.GetCallback());
+
+  NavigationManager::WebLoadParams params(redirect_url);
+  web_state()->GetNavigationManager()->LoadURLWithParams(params);
+
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_EQ(FailedWebStateObserver::ErrorType::kNetError,
+            observer.error_type());
+  EXPECT_NE(url::kJavaScriptScheme,
+            web_state()->GetLastCommittedURL().scheme());
+  EXPECT_NE(url::kJavaScriptScheme, web_state()->GetVisibleURL().scheme());
+}
+
+// Tests that a server redirect to a data URL does not proceed.
+TEST_F(CRWKNavigationHandlerIntTest, ServerRedirectToDataURL) {
+  ASSERT_TRUE(server_.Start());
+  GURL initial_url = server_.GetURL(kEchoURL);
+  ASSERT_TRUE(LoadUrl(initial_url));
+
+  GURL redirect_url = server_.GetURL(kServerRedirectToDataURL);
+
+  FailedWebStateObserver observer;
+  base::ScopedObservation<WebState, WebStateObserver> scoped_observer(
+      &observer);
+  scoped_observer.Observe(web_state());
+
+  base::test::TestFuture<void> future;
+  observer.SetOnDidFinishNavigation(future.GetCallback());
+
+  NavigationManager::WebLoadParams params(redirect_url);
+  web_state()->GetNavigationManager()->LoadURLWithParams(params);
+
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_EQ(FailedWebStateObserver::ErrorType::kNetError,
+            observer.error_type());
+  EXPECT_NE(url::kDataScheme, web_state()->GetLastCommittedURL().scheme());
+  EXPECT_NE(url::kDataScheme, web_state()->GetVisibleURL().scheme());
+  EXPECT_FALSE(test::IsWebViewContainingText(web_state(), kBlockedDataContent));
 }
 
 }  // namespace web
