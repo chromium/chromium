@@ -260,8 +260,8 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
                            : caption_bounds.height();
     params.trailing_exclusion.content =
         gfx::SizeF(width() - caption_bounds.x(), height);
+    MaybeAddAppIconToLayoutParams(params);
   }
-  MaybeAddAppIconToLayoutParams(params);
   return params;
 }
 

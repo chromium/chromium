@@ -490,6 +490,19 @@ class WebAppFrameViewChromeOSTest
             views::ElementTrackerViews::GetContextForView(browser_view_)));
   }
 
+  BrowserView* CreateWebAppPopup(BrowserWindowInterface* parent_browser) {
+    NavigateParams navigate_params(parent_browser, GetAppURL(),
+                                   ui::PAGE_TRANSITION_LINK);
+    navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
+
+    content::TestNavigationObserver navigation_observer(GetAppURL());
+    navigation_observer.StartWatchingNewWebContents();
+    Navigate(&navigate_params);
+    navigation_observer.WaitForNavigationFinished();
+
+    return BrowserView::GetBrowserViewForBrowser(navigate_params.browser);
+  }
+
   AppMenu* GetAppMenu() { return web_app_menu_button_->app_menu(); }
 
   SkColor GetActiveColor() const {
@@ -839,24 +852,23 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasToolbar) {
   SetUpWebApp();
-
-  Browser* popup_browser;
-  {
-    NavigateParams navigate_params(app_browser_, GetAppURL(),
-                                   ui::PAGE_TRANSITION_LINK);
-    navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
-
-    content::TestNavigationObserver navigation_observer(GetAppURL());
-    navigation_observer.StartWatchingNewWebContents();
-    Navigate(&navigate_params);
-    navigation_observer.WaitForNavigationFinished();
-    popup_browser = navigate_params.browser->GetBrowserForMigrationOnly();
-  }
-
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup_browser);
+  BrowserView* browser_view = CreateWebAppPopup(app_browser_);
   EXPECT_TRUE(browser_view->web_app_frame_toolbar_for_testing() &&
               browser_view->web_app_frame_toolbar_for_testing()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupFullscreenNoTopInset) {
+  SetUpWebApp();
+  BrowserView* browser_view = CreateWebAppPopup(app_browser_);
+  content::WebContents* web_contents = browser_view->GetActiveWebContents();
+  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
+
+  EnterTabFullscreenMode(browser_view->browser(), web_contents);
+  EXPECT_TRUE(browser_view->IsFullscreen());
+
+  const auto layout_params = frame_view->GetBrowserLayoutParams();
+  EXPECT_EQ(0.0f, layout_params.leading_exclusion.content.height());
+  EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
