@@ -27,11 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
@@ -39,11 +36,9 @@ import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoPreferenceSubpageController;
 
 /** Tests for PageInfoPreferenceSubpageController. */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@RunWith(BaseRobolectricTestRunner.class)
 public class PageInfoPreferenceSubpageControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock private PageInfoControllerDelegate mDelegate;
     @Mock private SiteSettingsDelegate mSiteSettingsDelegate;
@@ -105,6 +100,7 @@ public class PageInfoPreferenceSubpageControllerTest {
         when(mFragmentTransaction.add(any(), any())).thenReturn(mFragmentTransaction);
         when(mFragmentTransaction.remove(any())).thenReturn(mFragmentTransaction);
         when(mFragment.getView()).thenReturn(mView);
+        when(mFragment.requireView()).thenReturn(mView);
 
         mController = new TestPreferenceSubpageController(mDelegate);
     }
@@ -118,7 +114,6 @@ public class PageInfoPreferenceSubpageControllerTest {
     }
 
     @Test
-    @DisabledTest(message = "b/552459911")
     public void testRemoveSubpageFragment_Twice_IsIdempotent() {
         // Add subpage first.
         View view = mController.addSubpage(mFragment);
