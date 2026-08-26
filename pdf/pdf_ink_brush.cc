@@ -72,7 +72,7 @@ std::vector<ink::BrushBehavior> GetTipBehaviors(PdfInkBrush::Type type) {
               ink::BrushBehavior::DampingNode{
                   .damping_source =
                       ink::BrushBehavior::ProgressDomain::kTimeInSeconds,
-                  .damping_gap = 0.025,
+                  .strength = 0.025,
               },
               ink::BrushBehavior::TargetNode{
                   .target = ink::BrushBehavior::Target::kSizeMultiplier,
