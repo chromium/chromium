@@ -42,11 +42,19 @@ class CC_EXPORT ScrollTimingEmitter {
   void ProcessTimeline(const ScrollJankV4Frame::Timeline& timeline,
                        const EventMetrics::List& events_metrics);
 
+  // Returns true if `events_metrics` can extend the active segment when later
+  // presented. This requires applied movement for the active scroll.
+  bool CanExtendActiveSegment(const EventMetricsSet& events_metrics) const;
+
   // Finalizes the active segment; idempotent. Needed because the stages which
   // would otherwise finalize it may never arrive. A flush which records a
   // segment reports nothing further for that gesture; a flush with nothing to
   // record leaves it open, keeping its original start time and target.
   void FlushActiveSegment();
+
+  // Clears the active segment and completed records. Ignores gestures which
+  // reached the renderer compositor no later than `scroll_id_cutoff`.
+  void Reset(base::TimeTicks scroll_id_cutoff);
 
   // Returns the records finalized so far and clears them.
   std::vector<ScrollTimingInfo> TakeCompletedScrollTimingInfos();
@@ -101,6 +109,8 @@ class CC_EXPORT ScrollTimingEmitter {
   // The ID of the most recent gesture for which a record was already emitted.
   // See the record-once rule in `FlushActiveSegment()`.
   std::optional<base::TimeTicks> last_recorded_scroll_id_;
+  // The latest scroll ID cutoff passed to `Reset()`.
+  base::TimeTicks suppressed_scroll_id_cutoff_ = base::TimeTicks::Min();
   // Finalized records, in the order their segments were finalized.
   std::vector<ScrollTimingInfo> completed_scroll_timing_infos_;
 };

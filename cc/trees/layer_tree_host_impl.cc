@@ -653,7 +653,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
         std::make_unique<CompositorFrameReportingController>(
             /*should_report_histograms=*/!settings
                 .single_thread_proxy_scheduler,
-            id,
+            /*should_report_scroll_timing=*/
+            settings.enable_scroll_performance_timing,
+            /*layer_tree_host_id=*/id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
 #if BUILDFLAG(IS_ANDROID)
@@ -663,6 +665,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     }
 #endif
   }
+  compositor_frame_reporting_controller_->SetVisible(visible_);
 
   if (base::FeatureList::IsEnabled(features::kTreesInViz) ||
       base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {

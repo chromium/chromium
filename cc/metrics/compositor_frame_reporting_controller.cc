@@ -27,16 +27,19 @@ using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
 CompositorFrameReportingController::CompositorFrameReportingController(
     bool should_report_histograms,
+    bool should_report_scroll_timing,
     int layer_tree_host_id,
     bool is_trees_in_viz_client)
     : should_report_histograms_(should_report_histograms),
+      should_report_scroll_timing_(should_report_scroll_timing),
       layer_tree_host_id_(layer_tree_host_id),
       is_trees_in_viz_client_(is_trees_in_viz_client) {
   if (should_report_histograms_) {
     predictor_jank_tracker_ = std::make_unique<PredictorJankTracker>();
     scroll_jank_dropped_frame_tracker_ =
         std::make_unique<ScrollJankDroppedFrameTracker>();
-    scroll_jank_v4_processor_ = std::make_unique<ScrollJankV4Processor>();
+    scroll_jank_v4_processor_ =
+        std::make_unique<ScrollJankV4Processor>(should_report_scroll_timing);
     global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
     global_trackers_.scroll_jank_dropped_frame_tracker =
         scroll_jank_dropped_frame_tracker_.get();
@@ -70,6 +73,11 @@ void CompositorFrameReportingController::SetVisible(bool visible) {
   }
 
   visible_ = visible;
+  pending_scroll_timing_flush_ = false;
+  if (scroll_jank_v4_processor_) {
+    // On show, this also suppresses gestures received while hidden.
+    scroll_jank_v4_processor_->ResetScrollTiming(Now());
+  }
   if (visible_) {
     // Note:`waiting_for_did_present_after_visible_` will be set to false
     // inside `CompositorFrameReportingController::DidPresentCompositorFrame`
@@ -92,6 +100,11 @@ CompositorFrameReportingController::SubmittedCompositorFrame::
 
 base::TimeTicks CompositorFrameReportingController::Now() const {
   return tick_clock_->NowTicks();
+}
+
+void CompositorFrameReportingController::OnScrollTimingInfosCompleted(
+    std::vector<ScrollTimingInfo>) {
+  // TODO(crbug.com/504094429): Forward completed records to the main thread.
 }
 
 bool CompositorFrameReportingController::HasReporterAt(
@@ -127,6 +140,7 @@ void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
 void CompositorFrameReportingController::WillBeginImplFrame(
     const viz::BeginFrameArgs& args,
     bool will_throttle_main) {
+  pending_scroll_timing_flush_ = false;
   ProcessSkippedFramesIfNecessary(args);
 
   base::TimeTicks begin_time = Now();
@@ -717,6 +731,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       submitted_frame = submitted_compositor_frames_.begin();
     }
   }
+  MaybeFlushAndDrainScrollTiming();
 }
 
 void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
@@ -732,6 +747,39 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
     }
   }
   last_started_compositor_frame_ = {};
+  if (visible_ && should_report_scroll_timing_) {
+    pending_scroll_timing_flush_ = true;
+  }
+  MaybeFlushAndDrainScrollTiming();
+}
+
+void CompositorFrameReportingController::MaybeFlushAndDrainScrollTiming() {
+  if (!should_report_scroll_timing_ || !scroll_jank_v4_processor_) {
+    return;
+  }
+
+  if (pending_scroll_timing_flush_ && submitted_compositor_frames_.empty()) {
+    // A dropped movement may be adopted by a later presented frame. Flushing
+    // now could permanently report an end time that excludes that movement.
+    bool dropped_movement_can_extend = false;
+    for (const auto& dropped_frame : events_metrics_from_dropped_frames_) {
+      if (scroll_jank_v4_processor_->CanExtendActiveScrollTiming(
+              dropped_frame.second)) {
+        dropped_movement_can_extend = true;
+        break;
+      }
+    }
+    if (!dropped_movement_can_extend) {
+      scroll_jank_v4_processor_->OnCompositorIdle();
+      pending_scroll_timing_flush_ = false;
+    }
+  }
+
+  std::vector<ScrollTimingInfo> scroll_timing_infos =
+      scroll_jank_v4_processor_->TakeCompletedScrollTimingInfos();
+  if (visible_ && !scroll_timing_infos.empty()) {
+    OnScrollTimingInfosCompleted(std::move(scroll_timing_infos));
+  }
 }
 
 void CompositorFrameReportingController::NotifyReadyToCommit(

@@ -4,6 +4,7 @@
 
 #include "cc/metrics/scroll_timing_emitter.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <variant>
@@ -49,6 +50,29 @@ void ScrollTimingEmitter::ProcessTimeline(
   }
 }
 
+bool ScrollTimingEmitter::CanExtendActiveSegment(
+    const EventMetricsSet& events_metrics) const {
+  if (!active_segment_.has_value()) {
+    return false;
+  }
+
+  const auto can_extend = [&](const EventMetrics::List& events) {
+    for (const auto& event : events) {
+      const ScrollUpdateEventMetrics* update = event->AsScrollUpdate();
+      if (update &&
+          update->scroll_begin_arrival_timestamp() ==
+              active_segment_->scroll_id &&
+          !update->applied_scroll_observations().empty()) {
+        return true;
+      }
+    }
+    return false;
+  };
+  return can_extend(events_metrics.main_event_metrics) ||
+         can_extend(events_metrics.impl_event_metrics) ||
+         can_extend(events_metrics.raster_event_metrics);
+}
+
 void ScrollTimingEmitter::FlushActiveSegment() {
   if (!active_segment_.has_value()) {
     return;
@@ -78,6 +102,13 @@ void ScrollTimingEmitter::FlushActiveSegment() {
   // real segment boundary needs a `start_time` that is not the scroll begin.
   last_recorded_scroll_id_ = active_segment_->scroll_id;
   active_segment_.reset();
+}
+
+void ScrollTimingEmitter::Reset(base::TimeTicks scroll_id_cutoff) {
+  suppressed_scroll_id_cutoff_ =
+      std::max(suppressed_scroll_id_cutoff_, scroll_id_cutoff);
+  active_segment_.reset();
+  completed_scroll_timing_infos_.clear();
 }
 
 std::vector<ScrollTimingInfo>
@@ -128,6 +159,9 @@ ScrollTimingEmitter::ActiveSegment* ScrollTimingEmitter::ProcessUpdates(
     CHECK(optional_scroll_id.has_value());
     return *optional_scroll_id;
   }();
+  if (scroll_id <= suppressed_scroll_id_cutoff_) {
+    return nullptr;
+  }
   // Guaranteed by `ScrollJankV4FrameStageCalculator`, which never lowers its
   // current scroll ID.
   DCHECK(!last_recorded_scroll_id_ || *last_recorded_scroll_id_ <= scroll_id);
@@ -141,7 +175,7 @@ ScrollTimingEmitter::ActiveSegment* ScrollTimingEmitter::ProcessUpdates(
   const ScrollUpdateEventMetrics* first_moved_update = nullptr;
   const ScrollUpdateEventMetrics::AppliedScrollObservation* first_observation =
       nullptr;
-  for (const std::unique_ptr<EventMetrics>& event : events_metrics) {
+  for (const auto& event : events_metrics) {
     // The event list spans the whole timeline, and
     // `ScrollJankV4FrameStageCalculator` stamps every scroll event it is given
     // with its frame's result ID before any eligibility filtering. A frame can

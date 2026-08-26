@@ -25,6 +25,7 @@
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
+#include "cc/metrics/scroll_timing_info.h"
 
 namespace viz {
 class FrameTimingDetails;
@@ -54,6 +55,7 @@ class CC_EXPORT CompositorFrameReportingController {
   };
 
   CompositorFrameReportingController(bool should_report_histograms,
+                                     bool should_report_scroll_timing,
                                      int layer_tree_host_id,
                                      bool is_trees_in_viz_client);
   virtual ~CompositorFrameReportingController();
@@ -151,6 +153,9 @@ class CC_EXPORT CompositorFrameReportingController {
   };
   base::TimeTicks Now() const;
 
+  virtual void OnScrollTimingInfosCompleted(
+      std::vector<ScrollTimingInfo> scroll_timing_infos);
+
   bool next_activate_has_invalidation() const {
     return next_activate_has_invalidation_;
   }
@@ -196,7 +201,12 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetPartialUpdateDeciderWhenWaitingOnMain(
       std::unique_ptr<CompositorFrameReporter>& reporter);
 
+  // Flushes Scroll Timing after compositor idle if no unresolved frame can
+  // extend the active segment, then drains completed records.
+  void MaybeFlushAndDrainScrollTiming();
+
   const bool should_report_histograms_;
+  const bool should_report_scroll_timing_;
   const int layer_tree_host_id_;
   bool is_trees_in_viz_client_;
 
@@ -254,6 +264,7 @@ class CC_EXPORT CompositorFrameReportingController {
   // being invisible
   bool visible_ = true;
   bool waiting_for_did_present_after_visible_ = false;
+  bool pending_scroll_timing_flush_ = false;
 
   // Indicates whether or not we expect the next frame to contain an animation
   // which requires impl invalidation.

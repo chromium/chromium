@@ -321,6 +321,45 @@ TEST_F(ScrollTimingEmitterTest, GestureWithoutAppliedMovementProducesNoRecord) {
   EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(), IsEmpty());
 }
 
+TEST_F(ScrollTimingEmitterTest,
+       OnlyMatchingAppliedMovementCanExtendActiveSegment) {
+  EventMetrics::List matching_updates;
+  matching_updates.push_back(
+      CreateUpdate(2, MillisecondsTicks(36), {kScroller}));
+  EventMetricsSet matching_events(/*main_thread_event_metrics=*/{},
+                                  /*impl_thread_event_metrics=*/
+                                  std::move(matching_updates),
+                                  /*raster_thread_event_metrics=*/{});
+  EXPECT_FALSE(emitter_.CanExtendActiveSegment(matching_events));
+
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          1, DamagingFrame{.presentation_ts = MillisecondsTicks(40)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kScrollId)}}),
+      CreateEvents(CreateUpdate(1, MillisecondsTicks(20), {kScroller})));
+  EXPECT_TRUE(emitter_.CanExtendActiveSegment(matching_events));
+
+  EventMetrics::List updates_without_movement;
+  updates_without_movement.push_back(
+      CreateUpdate(3, MillisecondsTicks(52), /*element_ids=*/{}));
+  EXPECT_FALSE(emitter_.CanExtendActiveSegment(
+      EventMetricsSet(/*main_thread_event_metrics=*/
+                      std::move(updates_without_movement),
+                      /*impl_thread_event_metrics=*/{},
+                      /*raster_thread_event_metrics=*/{})));
+
+  EventMetrics::List other_scroll_updates;
+  other_scroll_updates.push_back(
+      CreateUpdate(4, MillisecondsTicks(68), {kOtherScroller},
+                   /*scroll_id=*/MillisecondsTicks(60),
+                   /*scroll_begin_generated=*/MillisecondsTicks(55)));
+  EXPECT_FALSE(emitter_.CanExtendActiveSegment(
+      EventMetricsSet(/*main_thread_event_metrics=*/{},
+                      /*impl_thread_event_metrics=*/{},
+                      /*raster_thread_event_metrics=*/
+                      std::move(other_scroll_updates))));
+}
+
 TEST_F(ScrollTimingEmitterTest, UnsupportedInputTypesProduceNoRecord) {
   for (ui::ScrollInputType input_type :
        {ui::ScrollInputType::kScrollbar, ui::ScrollInputType::kAutoscroll}) {
@@ -617,6 +656,70 @@ TEST_F(ScrollTimingEmitterTest, AKeptSegmentDoesNotOutliveItsGesture) {
 
   emitter_.ProcessTimeline(
       CreateTimeline(3, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
+      /*events_metrics=*/{});
+
+  EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(),
+              ElementsAre(ScrollTimingInfo{
+                  .start_time = kNextScrollBeginGenerated,
+                  .end_time = MillisecondsTicks(80),
+                  .input_type = ui::ScrollInputType::kTouchscreen,
+                  .element_id = kOtherScroller,
+              }));
+}
+
+TEST_F(ScrollTimingEmitterTest, ResetDiscardsActiveAndCompletedState) {
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          1, DamagingFrame{.presentation_ts = MillisecondsTicks(40)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kScrollId)}}),
+      CreateEvents(CreateUpdate(1, MillisecondsTicks(20), {kScroller})));
+  emitter_.ProcessTimeline(
+      CreateTimeline(2, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
+      /*events_metrics=*/{});
+
+  constexpr base::TimeTicks kNextScrollId = MillisecondsTicks(50);
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          3, DamagingFrame{.presentation_ts = MillisecondsTicks(80)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kNextScrollId)}}),
+      CreateEvents(CreateUpdate(3, MillisecondsTicks(60), {kOtherScroller},
+                                kNextScrollId,
+                                /*scroll_begin_generated=*/
+                                MillisecondsTicks(45))));
+
+  emitter_.Reset(MillisecondsTicks(55));
+  EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(), IsEmpty());
+
+  emitter_.FlushActiveSegment();
+  EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(), IsEmpty());
+}
+
+TEST_F(ScrollTimingEmitterTest, ResetSuppressesPreResetGestures) {
+  constexpr base::TimeTicks kResetTime = MillisecondsTicks(50);
+  emitter_.Reset(kResetTime);
+
+  // This frame was already in flight at reset time, before the emitter had
+  // observed any stage from its gesture.
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          1, DamagingFrame{.presentation_ts = MillisecondsTicks(72)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kScrollId)}}),
+      CreateEvents(CreateUpdate(1, MillisecondsTicks(20), {kScroller})));
+  emitter_.ProcessTimeline(
+      CreateTimeline(2, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
+      /*events_metrics=*/{});
+  EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(), IsEmpty());
+
+  constexpr base::TimeTicks kNextScrollId = MillisecondsTicks(60);
+  constexpr base::TimeTicks kNextScrollBeginGenerated = MillisecondsTicks(55);
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          3, DamagingFrame{.presentation_ts = MillisecondsTicks(80)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kNextScrollId)}}),
+      CreateEvents(CreateUpdate(3, MillisecondsTicks(64), {kOtherScroller},
+                                kNextScrollId, kNextScrollBeginGenerated)));
+  emitter_.ProcessTimeline(
+      CreateTimeline(4, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
       /*events_metrics=*/{});
 
   EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(),

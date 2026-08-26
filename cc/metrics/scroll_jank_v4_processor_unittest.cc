@@ -8,10 +8,14 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
+#include "cc/metrics/scroll_timing_info.h"
+#include "cc/paint/element_id.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,8 +30,10 @@ using TraceId = EventMetrics::TraceId;
 using QueryResult = base::test::TestTraceProcessor::QueryResult;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
 
 constexpr base::TimeDelta kVsyncInterval = base::Milliseconds(16);
+constexpr ElementId kScroller(101);
 
 constexpr base::TimeTicks MillisSinceEpoch(int64_t millis) {
   return base::TimeTicks() + base::Milliseconds(millis);
@@ -119,7 +125,7 @@ class ScrollJankV4ProcessorTest : public testing::Test {
   base::TimeTicks next_presentation_ts_ = MillisSinceEpoch(32);
   int next_begin_frame_sequence_id_ = 1;
   EventMetricsTestCreator metrics_creator_;
-  ScrollJankV4Processor processor_;
+  ScrollJankV4Processor processor_{/*emit_scroll_timing=*/false};
   base::test::TracingEnvironment tracing_environment_;
   base::test::TestTraceProcessor trace_processor_;
 
@@ -1580,6 +1586,143 @@ TEST_F(ScrollJankV4ProcessorTest, ReportsScrollJankStatsToOs) {
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, args);
   }
+}
+
+struct ProcessorMode {
+  bool emit_scroll_jank_v4;
+  bool emit_scroll_timing;
+};
+
+class ScrollJankV4ProcessorModeTest
+    : public testing::TestWithParam<ProcessorMode> {};
+
+TEST_P(ScrollJankV4ProcessorModeTest, DispatchesToEnabledConsumers) {
+  const ProcessorMode mode = GetParam();
+  base::test::ScopedFeatureList feature_list;
+  if (mode.emit_scroll_jank_v4) {
+    feature_list.InitAndEnableFeature(features::kScrollJankV4Metric);
+  } else {
+    feature_list.InitAndDisableFeature(features::kScrollJankV4Metric);
+  }
+  ScrollJankV4Processor processor(mode.emit_scroll_timing);
+  EventMetricsTestCreator metrics_creator;
+  base::HistogramTester histogram_tester;
+
+  constexpr base::TimeTicks kScrollBeginGenerated = MillisSinceEpoch(4);
+  constexpr base::TimeTicks kScrollId = MillisSinceEpoch(8);
+  constexpr base::TimeTicks kFrameTime = MillisSinceEpoch(16);
+  constexpr base::TimeTicks kPresentationTime = MillisSinceEpoch(32);
+  const viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, /*source_id=*/1, /*sequence_number=*/1, kFrameTime,
+      kFrameTime + kVsyncInterval / 3, kVsyncInterval,
+      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(
+      metrics_creator.FirstGestureScrollUpdateBuilder()
+          .SetTimestamp(MillisSinceEpoch(12))
+          .SetDelta(1.0f)
+          .SetDidScroll(true)
+          .SetCausedFrameUpdate(true)
+          .SetScrollInputType(ui::ScrollInputType::kTouchscreen)
+          .SetDispatchArgs(DispatchBeginFrameArgs::From(args))
+          .SetScrollBeginArrivalTimestamp(kScrollId)
+          .SetScrollBeginGeneratedTimestamp(kScrollBeginGenerated)
+          .AddAppliedScrollObservation(kScroller)
+          .Build());
+  const EventMetrics* const update = events_metrics.back().get();
+  events_metrics.push_back(
+      metrics_creator.GestureScrollEndBuilder()
+          .SetTimestamp(MillisSinceEpoch(14))
+          .SetCausedFrameUpdate(false)
+          .SetScrollInputType(ui::ScrollInputType::kTouchscreen)
+          .SetDispatchArgs(DispatchBeginFrameArgs::From(args))
+          .SetScrollBeginArrivalTimestamp(kScrollId)
+          .SetScrollBeginGeneratedTimestamp(kScrollBeginGenerated)
+          .Build());
+  const EventMetrics* const end = events_metrics.back().get();
+
+  processor.ProcessEventsMetricsForPresentedFrame(events_metrics,
+                                                  kPresentationTime, args);
+
+  ASSERT_EQ(events_metrics.size(), 2u);
+  // Processing annotates events in place without replacing or reordering them.
+  ASSERT_EQ(events_metrics[0].get(), update);
+  ASSERT_EQ(events_metrics[1].get(), end);
+  for (const std::unique_ptr<EventMetrics>& event : events_metrics) {
+    EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id().has_value(),
+              mode.emit_scroll_jank_v4 || mode.emit_scroll_timing);
+  }
+
+  if (mode.emit_scroll_timing) {
+    EXPECT_THAT(processor.TakeCompletedScrollTimingInfos(),
+                ElementsAre(ScrollTimingInfo{
+                    .start_time = kScrollBeginGenerated,
+                    .end_time = kPresentationTime,
+                    .input_type = ui::ScrollInputType::kTouchscreen,
+                    .element_id = kScroller,
+                }));
+  } else {
+    EXPECT_THAT(processor.TakeCompletedScrollTimingInfos(), IsEmpty());
+  }
+  histogram_tester.ExpectTotalCount(
+      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
+      mode.emit_scroll_jank_v4 ? 1 : 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllFeatureModes,
+    ScrollJankV4ProcessorModeTest,
+    testing::Values(
+        ProcessorMode{.emit_scroll_jank_v4 = false,
+                      .emit_scroll_timing = false},
+        ProcessorMode{.emit_scroll_jank_v4 = true, .emit_scroll_timing = false},
+        ProcessorMode{.emit_scroll_jank_v4 = false, .emit_scroll_timing = true},
+        ProcessorMode{.emit_scroll_jank_v4 = true,
+                      .emit_scroll_timing = true}));
+
+TEST(ScrollJankV4ProcessorIntegrationTest, CompositorIdleDoesNotEndV4Scroll) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kScrollJankV4Metric);
+  ScrollJankV4Processor processor(/*emit_scroll_timing=*/true);
+  EventMetricsTestCreator metrics_creator;
+  base::HistogramTester histogram_tester;
+
+  constexpr base::TimeTicks kScrollBeginGenerated = MillisSinceEpoch(4);
+  constexpr base::TimeTicks kScrollId = MillisSinceEpoch(8);
+  constexpr base::TimeTicks kFrameTime = MillisSinceEpoch(16);
+  constexpr base::TimeTicks kPresentationTime = MillisSinceEpoch(32);
+  const viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, /*source_id=*/1, /*sequence_number=*/1, kFrameTime,
+      kFrameTime + kVsyncInterval / 3, kVsyncInterval,
+      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(
+      metrics_creator.FirstGestureScrollUpdateBuilder()
+          .SetTimestamp(MillisSinceEpoch(12))
+          .SetDelta(1.0f)
+          .SetDidScroll(true)
+          .SetCausedFrameUpdate(true)
+          .SetScrollInputType(ui::ScrollInputType::kTouchscreen)
+          .SetDispatchArgs(DispatchBeginFrameArgs::From(args))
+          .SetScrollBeginArrivalTimestamp(kScrollId)
+          .SetScrollBeginGeneratedTimestamp(kScrollBeginGenerated)
+          .AddAppliedScrollObservation(kScroller)
+          .Build());
+
+  processor.ProcessEventsMetricsForPresentedFrame(events_metrics,
+                                                  kPresentationTime, args);
+  processor.OnCompositorIdle();
+
+  EXPECT_THAT(processor.TakeCompletedScrollTimingInfos(),
+              ElementsAre(ScrollTimingInfo{
+                  .start_time = kScrollBeginGenerated,
+                  .end_time = kPresentationTime,
+                  .input_type = ui::ScrollInputType::kTouchscreen,
+                  .element_id = kScroller,
+              }));
+  histogram_tester.ExpectTotalCount(
+      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
 }
 
 }  // namespace cc

@@ -22,6 +22,8 @@
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "cc/metrics/scroll_jank_v4_tracing_recorder.h"
+#include "cc/metrics/scroll_timing_emitter.h"
+#include "cc/metrics/scroll_timing_info.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -60,8 +62,13 @@ class ProcessorResultConsumer
 
 }  // namespace
 
-ScrollJankV4Processor::ScrollJankV4Processor()
-    : decision_queue_(std::make_unique<ProcessorResultConsumer>()) {}
+ScrollJankV4Processor::ScrollJankV4Processor(bool emit_scroll_timing)
+    : emit_scroll_jank_v4_(
+          base::FeatureList::IsEnabled(features::kScrollJankV4Metric)),
+      decision_queue_(std::make_unique<ProcessorResultConsumer>()),
+      scroll_timing_emitter_(emit_scroll_timing
+                                 ? std::make_unique<ScrollTimingEmitter>()
+                                 : nullptr) {}
 
 ScrollJankV4Processor::~ScrollJankV4Processor() = default;
 
@@ -75,16 +82,47 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     EventMetrics::List& events_metrics,
     base::TimeTicks presentation_ts,
     const viz::BeginFrameArgs& args) {
-  static const bool scroll_jank_v4_metric_enabled =
-      base::FeatureList::IsEnabled(features::kScrollJankV4Metric);
-  if (!scroll_jank_v4_metric_enabled) {
+  if (!emit_scroll_jank_v4_ && !scroll_timing_emitter_) {
     return;
   }
 
-  ScrollJankV4Frame::Timeline timeline = timeline_calculator_.CalculateTimeline(
-      events_metrics, args, presentation_ts);
-  for (auto& frame : timeline) {
-    HandleFrame(frame.stages, frame.damage, frame.args);
+  const ScrollJankV4Frame::Timeline timeline =
+      timeline_calculator_.CalculateTimeline(events_metrics, args,
+                                             presentation_ts);
+  if (emit_scroll_jank_v4_) {
+    for (const auto& frame : timeline) {
+      HandleFrame(frame.stages, frame.damage, frame.args);
+    }
+  }
+  if (scroll_timing_emitter_) {
+    scroll_timing_emitter_->ProcessTimeline(timeline, events_metrics);
+  }
+}
+
+bool ScrollJankV4Processor::CanExtendActiveScrollTiming(
+    const EventMetricsSet& events_metrics) const {
+  return scroll_timing_emitter_ &&
+         scroll_timing_emitter_->CanExtendActiveSegment(events_metrics);
+}
+
+void ScrollJankV4Processor::OnCompositorIdle() {
+  if (scroll_timing_emitter_) {
+    scroll_timing_emitter_->FlushActiveSegment();
+  }
+}
+
+std::vector<ScrollTimingInfo>
+ScrollJankV4Processor::TakeCompletedScrollTimingInfos() {
+  if (!scroll_timing_emitter_) {
+    return {};
+  }
+  return scroll_timing_emitter_->TakeCompletedScrollTimingInfos();
+}
+
+void ScrollJankV4Processor::ResetScrollTiming(
+    base::TimeTicks scroll_id_cutoff) {
+  if (scroll_timing_emitter_) {
+    scroll_timing_emitter_->Reset(scroll_id_cutoff);
   }
 }
 

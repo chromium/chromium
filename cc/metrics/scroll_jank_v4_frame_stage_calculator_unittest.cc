@@ -6,10 +6,13 @@
 
 #include <cstdint>
 #include <optional>
+#include <variant>
 
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/test/event_metrics_test_creator.h"
@@ -58,6 +61,28 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, EmptyEventMetricsList) {
   EventMetrics::List events_metrics;
   auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, IsEmpty());
+}
+
+TEST_F(ScrollJankV4FrameStageCalculatorTest, DiagnosticUmaRequiresV4Feature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kScrollJankV4Metric);
+  base::HistogramTester histogram_tester;
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(
+      metrics_creator_.FirstGestureScrollUpdateBuilder()
+          .SetTimestamp(MillisecondsTicks(105))
+          .SetScrollBeginArrivalTimestamp(MillisecondsTicks(100))
+          .SetDelta(10)
+          .Build());
+
+  const ScrollJankV4Frame::StageList stages =
+      calculator_.CalculateStages(events_metrics, kResultId);
+  ASSERT_EQ(stages.size(), 2u);
+  EXPECT_TRUE(std::holds_alternative<ScrollStart>(stages[0].stage));
+  EXPECT_TRUE(std::holds_alternative<ScrollUpdates>(stages[1].stage));
+  EXPECT_THAT(events_metrics, AllHaveResultId(kResultId));
+  histogram_tester.ExpectTotalCount(
+      "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
 }
 
 TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {

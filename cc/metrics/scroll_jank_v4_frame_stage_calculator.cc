@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 
@@ -66,8 +68,9 @@ ScrollJankV4FrameStageCalculator::CalculateStagesBasedOnScrollId(
 
   // If `event_metrics` contains at least one GSU (eligible or ineligible),
   // emit the "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues" UMA
-  // histogram with 1% probability.
+  // histogram with 1% probability while the V4 metric is enabled.
   if ((has_ineligible_updates || eligible_update_scroll_id_range.has_value()) &&
+      base::FeatureList::IsEnabled(features::kScrollJankV4Metric) &&
       base::ShouldRecordSubsampledMetric(0.01)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", [&] {
