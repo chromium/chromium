@@ -362,9 +362,20 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement field,
   if (!info) {
     return;
   }
+  WaitForFocusAndReplaceSelectionForAtMemory(*std::move(info), value,
+                                             /*num_try=*/0);
+}
 
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
-  if (!frame) {
+void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
+    AskForValuesToFillInfo info,
+    std::u16string value,
+    int num_try) {
+  constexpr int kMaxRetries = 5;
+  constexpr base::TimeDelta kDelayBeforeRetry = base::Milliseconds(20);
+
+  WebElement field =
+      WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
+  if (!field || info.value_hash != HashFieldValue(field)) {
     return;
   }
 
@@ -374,18 +385,39 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement field,
   // moved the focus elsewhere.
   field.Focus();
 
-  if (!info->selection_range.IsNull()) {
+  // While `field.Focus()` sets the page-level focus, the window-level focus may
+  // still be with the AtMemory popup in the browser process. In that case,
+  // `field.Focused()` is false. If so, we wait `kMaxRetries - num_try` times
+  // for it to become true. If the focus still hasn't arrived afterwards, we
+  // just try to fill the field without window focus.
+  if (!field.Focused() && num_try < kMaxRetries) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory,
+            weak_ptr_factory_.GetWeakPtr(), std::move(info), std::move(value),
+            num_try + 1),
+        kDelayBeforeRetry);
+    return;
+  }
+
+  WebLocalFrame* frame = field.GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  if (!info.selection_range.IsNull()) {
     // Restores the text selection at the time of AskForValuesToFill().
     // When AtMemory was triggered with the trigger string, the selection is
     // normally empty (but JavaScript may have interfered).
     // When AtMemory was triggered by the context menu or keyboard shortcut, it
     // may be non-empty and filling should replace the selected text.
-    frame->SetEditableSelectionOffsets(info->selection_range.StartOffset(),
-                                       info->selection_range.EndOffset());
+    frame->SetEditableSelectionOffsets(info.selection_range.StartOffset(),
+                                       info.selection_range.EndOffset());
   }
 
   int offset = 0;
-  if (info->caused_by_trigger_string && HasTriggerStringNextToCaret(field)) {
+  if (info.caused_by_trigger_string && HasTriggerStringNextToCaret(field)) {
     offset = GetTriggerString().size();
   }
 
@@ -426,7 +458,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
 
   ExtractAskForValuesToFill(field);
 
-  static constexpr size_t kMaxSize = 10;
+  constexpr size_t kMaxSize = 10;
   while (last_at_memory_ask_for_values_to_fills_.size() >= kMaxSize) {
     last_at_memory_ask_for_values_to_fills_.pop_front();
   }

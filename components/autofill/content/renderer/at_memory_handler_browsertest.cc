@@ -684,6 +684,100 @@ TEST_F(AtMemoryHandlerTest, RefocusesAndRestoresCaretIfUnfocused) {
   EXPECT_EQ(input.GetDocument().FocusedElement(), input);
 }
 
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory waits for
+// window-level focus to return before filling if the window lost focus to a
+// popup.
+TEST_F(AtMemoryHandlerTest, WaitsForWindowFocusBeforeFilling) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  GetWebFrameWidget()->SetFocus(true);
+  blink::WebInputElement input = GetInputElementById("f");
+  Focus("f");
+
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
+      .Times(AnyNumber());
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+      .WillOnce([this](const FormData& form, FieldRendererId field_id,
+                       const gfx::Rect& caret_bounds,
+                       AutofillSuggestionTriggerSource trigger_source,
+                       const std::optional<PasswordSuggestionRequest>&
+                           password_request) {
+        // Simulate the window losing focus to the popup.
+        GetWebFrameWidget()->SetFocus(false);
+        ApplyFieldActionAsync(field_id, u"result");
+      });
+
+  SimulateSlowTyping("hello @");
+  SimulateUserTypingAsciiCharacter('@', /*flush_message_loop=*/true);
+  // The first attempt (num_try = 0) fails because the window lacks focus and
+  // schedules a retry in 20 ms.
+  WaitForApplyFieldAction();
+  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+
+  // After 20 ms, the first retry runs and finds the window is still unfocused.
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+
+  // Restore window focus. The next retry in 20 ms will see the focused state.
+  GetWebFrameWidget()->SetFocus(true);
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+
+  EXPECT_EQ(input.Value().Utf16(), u"hello result");
+  EXPECT_EQ(input.GetDocument().FocusedElement(), input);
+}
+
+// Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory falls back to
+// filling the field without window focus once the retry limit is exceeded.
+TEST_F(AtMemoryHandlerTest, FillsAfterMaxRetriesIfWindowNeverGainsFocus) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  GetWebFrameWidget()->SetFocus(true);
+  blink::WebInputElement input = GetInputElementById("f");
+  Focus("f");
+
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
+      .Times(AnyNumber());
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
+      .WillOnce([this](const FormData& form, FieldRendererId field_id,
+                       const gfx::Rect& caret_bounds,
+                       AutofillSuggestionTriggerSource trigger_source,
+                       const std::optional<PasswordSuggestionRequest>&
+                           password_request) {
+        // Simulate the window losing focus and never regaining it.
+        GetWebFrameWidget()->SetFocus(false);
+        ApplyFieldActionAsync(field_id, u"result");
+      });
+
+  SimulateSlowTyping("hello @");
+  SimulateUserTypingAsciiCharacter('@', /*flush_message_loop=*/true);
+  WaitForApplyFieldAction();
+
+  // Fast forward through 4 retries (4 * 20 ms = 80 ms). The field is not filled
+  // yet.
+  task_environment_.FastForwardBy(base::Milliseconds(80));
+  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
+
+  // The 5th retry (at 100 ms) hits kMaxRetries and fills as a fallback.
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  EXPECT_EQ(input.Value().Utf16(), u"hello result");
+}
+
 // Tests that a non-standard trigger string works in <input> fields.
 TEST_F(AtMemoryHandlerTest, NonStandardTriggerString) {
   // Ignore standard Autofill noise during setup.

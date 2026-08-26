@@ -109,6 +109,10 @@ class AtMemoryHandler {
       const blink::WebElement& field,
       const blink::WebKeyboardEvent& event);
 
+  void WaitForFocusAndReplaceSelectionForAtMemory(AskForValuesToFillInfo info,
+                                                  std::u16string value,
+                                                  int num_try);
+
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
   // `field` and removes the entry, if one was found.
   std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
