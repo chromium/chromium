@@ -29,6 +29,7 @@
 #endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
@@ -300,6 +301,14 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
   AppMenuBuilder builder(root, kColorAppMenuToolsAndActionsBackground);
 
   builder.AddSectionHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
+      .AddSubmenu(
+          kActionZoomSubmenu,
+          [](AppMenuBuilder& sub) {
+            sub.AddAction(kActionZoomMinus)
+                .AddAction(kActionZoomPlus)
+                .AddAction(kActionFullscreen);
+          },
+          DisplayType::kCustom)
       .AddAction(kActionPrint);
 
   if (glic::GlicEnabling::IsEnabledForProfile(

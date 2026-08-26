@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -146,7 +147,13 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       std::optional<actions::ActionId> action_id = child_ptr->GetActionId();
       int command_id = action_id.value_or(next_id_++);
 
-      const bool has_children = !child_base->GetChildren().children().empty();
+      // Even though the zoom menu item has children, it should not be treated
+      // as a submenu because its children are laid out within the the same top
+      // level menu item.
+      const bool is_zoom_menu_item =
+          child_ptr->GetActionId() == kActionZoomSubmenu;
+      const bool has_children =
+          !is_zoom_menu_item && !child_base->GetChildren().children().empty();
 
       auto* menu_item =
           has_children ? view_parent->AppendSubMenu(
@@ -164,6 +171,20 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       if (ui::ImageModel* icon_override = children[i]->GetProperty(
               ActionAppMenuManager::kIconOverrideKey)) {
         menu_item->SetIcon(*icon_override);
+      }
+
+      if (is_zoom_menu_item) {
+        menu_item->AddChildView(std::make_unique<ActionAppMenuZoomView>(
+            browser_window_interface_, &action_view_controller_,
+            command_to_action_map_, children[i].get()));
+      } else {
+        // Display shortcut text if the ActionItem has one.
+        ui::Accelerator accel = child_ptr->GetAccelerator();
+        if (accel.key_code() != ui::VKEY_UNKNOWN) {
+          menu_item->SetMinorText(accel.GetShortcutText());
+        }
+        // Recursively populate the menu item with the ActionItem's children.
+        PopulateMenu(menu_item, child_ptr);
       }
 
       // Set the border radius depending on the position a menu item has in
@@ -194,12 +215,6 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       menu_item->SetBorder(views::CreateEmptyBorder(
           provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM)));
 
-      // Display shortcut text if the ActionItem has one.
-      ui::Accelerator accel = child_ptr->GetAccelerator();
-      if (accel.key_code() != ui::VKEY_UNKNOWN) {
-        menu_item->SetMinorText(accel.GetShortcutText());
-      }
-
       // Get the styling from the ActionItem and apply it to its menu item.
       const ui::ColorId container_color =
           child_ptr->GetProperty(ActionAppMenuManager::kContainerColorKey);
@@ -209,10 +224,6 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
         // Apply darker hover selection states matching section theme.
         menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
       }
-
-      // Recursively populate the menu item with the ActionItem's children.
-      // This creates any submenu items.
-      PopulateMenu(menu_item, child_base);
     }
   }
 }

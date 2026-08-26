@@ -10,6 +10,7 @@ source_set("app_menu") {
   public = [
     "action_app_menu.h",
     "action_app_menu_manager.h",
+    "action_app_menu_zoom_view.h",
     "app_menu_section_action_item.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
@@ -25,6 +26,7 @@ source_set("app_menu") {
     "//chrome/browser/ui/views",
     "//components/favicon_base",
     "//components/user_education/common",
+    "//components/zoom",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
@@ -37,6 +39,7 @@ source_set("impl") {
   sources = [
     "action_app_menu.cc",
     "action_app_menu_manager.cc",
+    "action_app_menu_zoom_view.cc",
     "app_menu_section_action_item.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
