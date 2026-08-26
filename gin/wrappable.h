@@ -137,27 +137,25 @@ struct Converter<T*> {
       return false;
     }
 
-    auto tag = static_cast<v8::CppHeapPointerTag>(T::kWrapperInfo.pointer_tag);
-    // We noticed call sites of `FromV8()` where the object in `val` and the
-    // type `T` don't match. This works at the moment because Object::Unwrap()
-    // returns nullptr if the tag does not match. However, this is not
-    // guaranteed and there may be a DCHECK that fails if the tag does not
-    // match. If this turns out to be a problem, then we could use a bigger tag
-    // range here and rely completely on the second type check below.
-    //
-    // The second type check is needed anyways because on systems without V8
-    // heap sandbox, Object::Unwrap does not check the tag.
-    v8::Object::Wrappable* wrappable =
-        v8::Object::Unwrap<v8::Object::Wrappable>(isolate, obj, {tag, tag});
-    if (!wrappable) {
+    // Because Unwrap requires us to pass the expected tag range, and this
+    // function might get passed any type of object, it first unwraps to a
+    // generic Wrappable. An explicit type check is then performed below between
+    // the expected type, and the dynamic type info from `GetWrapperTypeInfo()`.
+    v8::Object::Wrappable* any_wrappable =
+        v8::Object::Unwrap<v8::Object::Wrappable>(isolate, obj,
+                                                  v8::kObjectWrappableTagRange);
+    if (!any_wrappable) {
       *out = nullptr;
       return false;
     }
-    if (wrappable->GetWrapperTypeInfo() != &T::kWrapperInfo) {
+    // Perform a second type check to assert that we indeed have the expected
+    // type before casting.
+    if (any_wrappable->GetWrapperTypeInfo() != &T::kWrapperInfo) {
       *out = nullptr;
       return false;
     }
-    *out = static_cast<T*>(wrappable);
+    // This cast is only safe because we have the second type check above.
+    *out = static_cast<T*>(any_wrappable);
     return *out != nullptr;
   }
 };

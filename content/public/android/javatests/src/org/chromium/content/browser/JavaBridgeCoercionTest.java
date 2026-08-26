@@ -924,4 +924,19 @@ public class JavaBridgeCoercionTest {
         mActivityTestRule.executeJavaScript("testObject.setObjectValue(func);");
         Assert.assertNull(mTestObject.waitForObjectValue());
     }
+
+    // Verify that attempting to pass a MessagePort object coerces to null like any other non-bridge
+    // object.
+    // MessagePort is a stand-in for complex objects that wrap Web APIs.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testPassMessagePort() throws Throwable {
+        mActivityTestRule.executeJavaScript(
+                """
+                  var channel = new MessageChannel();
+                  testObject.setObjectValue(channel.port1);
+                """);
+        Assert.assertNull(mTestObject.waitForObjectValue());
+    }
 }
