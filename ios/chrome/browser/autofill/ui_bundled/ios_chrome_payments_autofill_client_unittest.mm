@@ -161,6 +161,16 @@
   // TODO(crbug.com/533502803): Implement dismissal of the ambient notice sheet.
 }
 
+- (void)showAutofillAIPrivateInferenceNotice {
+  // TODO(crbug.com/552031299): Implement displaying of the private inference
+  // notice bottom sheet.
+}
+
+- (void)dismissAutofillAIPrivateInferenceNotice {
+  // TODO(crbug.com/552031299): Implement dismissal of the private inference
+  // notice bottom sheet.
+}
+
 @end
 
 namespace autofill {

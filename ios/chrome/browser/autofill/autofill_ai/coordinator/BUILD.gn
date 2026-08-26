@@ -8,6 +8,9 @@ source_set("coordinator") {
     "ambient_autofill_notice_coordinator.mm",
     "ambient_autofill_notice_mediator.h",
     "ambient_autofill_notice_mediator.mm",
+    "autofill_ai_private_inference_notice_mediator.h",
+    "autofill_ai_private_inference_notice_mediator.mm",
+    "autofill_ai_private_inference_notice_mutator.h",
     "autofill_ai_save_entity_coordinator.h",
     "autofill_ai_save_entity_coordinator.mm",
     "autofill_ai_save_entity_mediator.h",
@@ -16,9 +19,11 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/personal_context/first_run",
+    "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",
@@ -43,12 +48,17 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ambient_autofill_notice_mediator_unittest.mm" ]
+  sources = [
+    "ambient_autofill_notice_mediator_unittest.mm",
+    "autofill_ai_private_inference_notice_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//components/autofill/ios/browser:test_support",
+    "//components/prefs:test_support",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",

@@ -97,6 +97,10 @@ class WebState;
 - (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params;
 - (void)dismissAmbientAutofillNotice;
 
+// Commands to manage the Autofill AI Private Inference notice bottom sheet.
+- (void)showAutofillAIPrivateInferenceNotice;
+- (void)dismissAutofillAIPrivateInferenceNotice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
