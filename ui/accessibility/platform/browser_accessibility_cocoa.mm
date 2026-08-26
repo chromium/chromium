@@ -3285,7 +3285,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
       data.SetCheckedState(newCheckedState);
     }
     node->SetData(data);  // Set the data back in the node.
-    // LINT.ThenChange(accessibilityPerformPress)
+    // LINT.ThenChange(:accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
@@ -3315,9 +3315,11 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   BrowserAccessibilityManager* manager = actionTarget->manager();
   manager->DoDefaultAction(*actionTarget);
   if (actionTarget->GetData().GetRestriction() !=
-          ax::mojom::Restriction::kNone ||
-      ![self isCheckable]) {
+      ax::mojom::Restriction::kNone) {
     return NO;
+  }
+  if (![self isCheckable]) {
+    return YES;
   }
 
   // Hack: preemptively set the checked state to what it should become,
@@ -3339,6 +3341,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   node->SetData(data);  // Set the data back in the node.
   return YES;
 }
+// LINT.ThenChange(:NSAccessibilityPressAction)
 
 - (BOOL)accessibilityPerformShowMenu {
   if (![self instanceActive]) {
@@ -3361,7 +3364,6 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
   return NSAccessibilityActionDescription(action);
 }
-// LINT.ThenChange(NSAccessibilityPressAction)
 
 - (NSArray<NSAccessibilityCustomAction*>*)accessibilityCustomActions {
   if (![self instanceActive]) {
