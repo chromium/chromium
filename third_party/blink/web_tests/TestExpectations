@@ -2639,12 +2639,12 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-bevel.html [ Failure ]
-external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
-external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
-external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-elliptical.html [ Failure ]
-[ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure ]
-external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Failure ]
+crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-bevel.html [ Failure ]
+crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
+crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
+crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-elliptical.html [ Failure ]
+crbug.com/552713154 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure ]
+crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Failure ]
 crbug.com/552555180 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-004.html?class=cap [ Failure ]
 crbug.com/552555180 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-004.html?class=ex [ Failure ]
 crbug.com/552555180 external/wpt/css/css-inline/text-box-trim/text-box-trim-inline-box-004.html?class=vlr,alphabetic [ Failure ]
