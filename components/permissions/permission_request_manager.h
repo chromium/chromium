@@ -312,6 +312,10 @@ class PermissionRequestManager
     embedding_origin_for_testing_ = embedding_origin;
   }
 
+  void set_requesting_origin_for_testing(const GURL& requesting_origin) {
+    requesting_origin_for_testing_ = requesting_origin;
+  }
+
   base::ObserverList<
       Observer,
       /*check_empty=*/false,
@@ -688,6 +692,8 @@ class PermissionRequestManager
   std::optional<bool> enabled_app_level_notification_permission_for_testing_;
 
   std::optional<GURL> embedding_origin_for_testing_;
+
+  std::optional<GURL> requesting_origin_for_testing_;
 
   // A timer is used to pre-ignore the permission request if it's been displayed
   // as a quiet chip.

@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -25,6 +26,7 @@ class EmbeddedPermissionPromptUiTest : public DialogBrowserTest {
     DialogBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     set_baseline("5591772");
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void ShowUi(const std::string& name) override {
@@ -38,6 +40,10 @@ class EmbeddedPermissionPromptUiTest : public DialogBrowserTest {
 
     content::WebContents* web_contents =
         browser()->GetTabStripModel()->GetActiveWebContents();
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents);
+    manager->set_requesting_origin_for_testing(GURL("https://example.com"));
+
     permissions::PermissionRequestObserver observer(web_contents);
 
     ASSERT_TRUE(content::ExecJs(
@@ -65,23 +71,14 @@ class DefaultParamEmbeddedPermissionPromptUiTest
 
 IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41131));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
                        InvokeUi_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41132));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(DefaultParamEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41133));
   ShowAndVerifyUi();
 }
 
@@ -104,23 +101,14 @@ class WindowMiddleEmbeddedPermissionPromptUiTest
 
 IN_PROC_BROWSER_TEST_F(WindowMiddleEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41134));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(WindowMiddleEmbeddedPermissionPromptUiTest,
                        InvokeUi_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41135));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(WindowMiddleEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41136));
   ShowAndVerifyUi();
 }
 
@@ -143,23 +131,14 @@ class NearElementEmbeddedPermissionPromptUiTest
 
 IN_PROC_BROWSER_TEST_F(NearElementEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41137));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(NearElementEmbeddedPermissionPromptUiTest,
                        InvokeUi_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41138));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(NearElementEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41139));
   ShowAndVerifyUi();
 }
 
@@ -182,23 +161,14 @@ class LegacyPromptEmbeddedPermissionPromptUiTest
 
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41140));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
                        // TODO(crbug.com/365077551): Re-enable this test
                        DISABLED_InvokeUi_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41141));
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
                        InvokeUi_camera_microphone) {
-  /* A static port is needed because it is part of the shown dialog UI which
-   * is used for gold pixel texts.*/
-  ASSERT_TRUE(embedded_https_test_server().Start(41142));
   ShowAndVerifyUi();
 }

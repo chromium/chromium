@@ -615,6 +615,10 @@ PermissionRequestManager::Requests() const {
 }
 
 GURL PermissionRequestManager::GetRequestingOrigin() const {
+  if (requesting_origin_for_testing_.has_value()) {
+    return requesting_origin_for_testing_.value();
+  }
+
   CHECK(!requests_.empty());
   GURL origin = requests_.front()->requesting_origin();
   if (DCHECK_IS_ON()) {
