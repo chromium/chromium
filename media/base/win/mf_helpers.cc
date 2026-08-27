@@ -932,8 +932,6 @@ Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
                        "subsampled format.";
         return nullptr;
       }
-    } else {
-      NOTREACHED();
     }
     D3D11_TEXTURE2D_DESC desc;
     input_texture->GetDesc(&desc);
@@ -1224,8 +1222,6 @@ void GenerateResourceOnSyncTokenReleased(
             "Source visible_rect is not properly aligned for "
             "4:2:0 subsampled format.");
       }
-    } else {
-      NOTREACHED();
     }
     TRACE_EVENT0("media", "CopyTextureOnCreateSharedHandleFailed");
     texture_desc.Usage = D3D11_USAGE_DEFAULT;

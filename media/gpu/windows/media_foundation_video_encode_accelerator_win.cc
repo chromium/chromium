@@ -867,8 +867,6 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
                          "4:2:0 subsampled format."});
       return;
     }
-  } else {
-    NOTREACHED();
   }
 
   PendingInput result;
