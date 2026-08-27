@@ -19,12 +19,12 @@ import type {AutoTodoData, AutoTodoItem, SourceReference} from '../context_hub.m
 import {getCss} from './todo_item.css.js';
 import {getHtml} from './todo_item.html.js';
 
-const FORM_URL =
+const FIRST_PARTY_FORM_URL =
     'https://docs.google.com/forms/d/e/1FAIpQLSdKC1R7AWz6L0rRlCsCkF9cT7Q4KqGCU8mfT2qNFyWscUVo8g/viewform';
+const THIRD_PARTY_FORM_URL =
+    'https://docs.google.com/forms/d/e/1FAIpQLSdtsEqA8FnELO5VMUgz2ZotDxeuT2A1ctqmYUj_XEPL5SgzZg/viewform';
 const ENTRY_LIKED = 'entry.1262687224';
-const ENTRY_TITLE = 'entry.809272442';
-const ENTRY_DESCRIPTION = 'entry.1908093752';
-const ENTRY_SCORE = 'entry.1904072234';
+const ENTRY_DETAILS = 'entry.809272442';
 
 export enum TodoItemVariant {
   DEFAULT = 'default',
@@ -124,16 +124,31 @@ export class TodoItemElement extends CrLitElement {
     this.fire('feedback-changed', {todoId: this.id, liked: like});
 
     // Prefill the form with the todo item details.
+    const isTabTodo = this.variant === TodoItemVariant.TAB;
+    const formUrl = isTabTodo ? THIRD_PARTY_FORM_URL : FIRST_PARTY_FORM_URL;
+
+    let details = '';
+    if (isTabTodo) {
+      const groupTypeStr = AutoTodoGroup[this.groupType] ?? '';
+      details = [this.heading, this.description, groupTypeStr].join(' / ');
+    } else {
+      const scoreStr = this.score !== null && this.score !== undefined ?
+          this.score.toFixed(2) :
+          '';
+      details = [
+        this.heading,
+        this.description,
+        this.actionableUrl,
+        scoreStr,
+      ].join(' / ');
+    }
+
     const params = new URLSearchParams({
       'usp': 'pp_url',
       [ENTRY_LIKED]: like ? 'Liked' : 'Disliked',
-      [ENTRY_TITLE]: this.heading,
-      [ENTRY_DESCRIPTION]: this.description,
+      [ENTRY_DETAILS]: details,
     });
-    if (this.score !== null && this.score !== undefined) {
-      params.set(ENTRY_SCORE, this.score.toFixed(2));
-    }
-    window.open(`${FORM_URL}?${params.toString()}`, '_blank');
+    window.open(`${formUrl}?${params.toString()}`, '_blank');
   }
 
   private async updateStatus_(status: AutoTodoStatus) {
