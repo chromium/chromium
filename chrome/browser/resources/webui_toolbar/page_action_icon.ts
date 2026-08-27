@@ -154,6 +154,11 @@ export class PageActionIconElement extends CrLitElement {
     }
   }
 
+  protected onPointerdown_() {
+    this.browserProxy_.toolbarUIHandler.onPageActionPointerDown(
+        this.state.pageActionId);
+  }
+
   protected onPointerenter_() {
     this.fire('chip-pointerenter');
   }

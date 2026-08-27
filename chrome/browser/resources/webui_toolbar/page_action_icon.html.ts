@@ -18,6 +18,7 @@ export function getHtml(this: PageActionIconElement) {
     .tooltip="${this.state.tooltipText}"
     .ariaLabel="${this.getAriaLabel_()}"
     @click="${this.onClick_}"
+    @pointerdown="${this.onPointerdown_}"
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
     @pointercancel="${this.onPointercancel_}">

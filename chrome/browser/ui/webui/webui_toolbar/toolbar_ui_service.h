@@ -50,6 +50,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         ::toolbar_ui_api::mojom::ContentSettingImageType type) = 0;
     virtual void OnContentSettingImageAnimationEnded(
         ::toolbar_ui_api::mojom::ContentSettingImageType type) = 0;
+    virtual void OnPageActionPointerDown(
+        ::toolbar_ui_api::mojom::PageActionId action_id) = 0;
     virtual void OnPageActionClick(
         ::toolbar_ui_api::mojom::PageActionId action_id,
         ::toolbar_ui_api::mojom::PageActionTrigger trigger,
@@ -150,6 +152,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void OnContentSettingImageAnimationEnded(
       ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
+  void OnPageActionPointerDown(
+      ::toolbar_ui_api::mojom::PageActionId action_id) override;
   void OnPageActionClick(::toolbar_ui_api::mojom::PageActionId action_id,
                          ::toolbar_ui_api::mojom::PageActionTrigger trigger,
                          OnPageActionClickCallback callback) override;

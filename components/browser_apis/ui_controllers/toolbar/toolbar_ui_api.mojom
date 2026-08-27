@@ -103,6 +103,9 @@ interface ToolbarUIService {
   // Called when the content setting icon animation finishes.
   OnContentSettingImageAnimationEnded(ContentSettingImageType type);
 
+  // Called when a page action chip is pressed (e.g. pointerdown).
+  OnPageActionPointerDown(PageActionId action_id);
+
   // Called after an interaction with the icon, with `trigger` specifying
   // the input modality.
   OnPageActionClick(PageActionId action_id, PageActionTrigger trigger)

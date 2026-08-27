@@ -148,6 +148,10 @@ class MockToolbarUIDelegate
               OnContentSettingImageAnimationEnded,
               (::toolbar_ui_api::mojom::ContentSettingImageType),
               (override));
+  MOCK_METHOD(void,
+              OnPageActionPointerDown,
+              (::toolbar_ui_api::mojom::PageActionId action_id),
+              (override));
   MOCK_METHOD(
       void,
       OnPageActionClick,

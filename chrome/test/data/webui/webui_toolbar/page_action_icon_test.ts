@@ -18,6 +18,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'onPageActionClick',
+      'onPageActionPointerDown',
     ]);
   }
 
@@ -33,6 +34,9 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   }
   onPageInitialized() {}
   onContentSettingImagePointerDown() {}
+  onPageActionPointerDown(actionId: PageActionId) {
+    this.methodCalled('onPageActionPointerDown', actionId);
+  }
   showContentSettingsBubble() {
     return new Promise<never>(() => {});
   }
@@ -386,4 +390,16 @@ suite('PageActionIconTest', function() {
         assertFalse(icon.$.button.hasAttribute('animates-label'));
         assertFalse(icon.$.button.hasAttribute('has-label'));
       });
+
+  test('Pointer down triggers onPageActionPointerDown', async function() {
+    const button = icon.$.button;
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    const actionId =
+        await toolbarUiHandler.whenCalled('onPageActionPointerDown');
+    assertEquals(PageActionId.kActionShowTranslate, actionId);
+  });
 });

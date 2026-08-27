@@ -710,6 +710,13 @@ void WebUIToolbarWebView::OnContentSettingImageAnimationEnded(
   }
 }
 
+void WebUIToolbarWebView::OnPageActionPointerDown(
+    ::toolbar_ui_api::mojom::PageActionId action_id) {
+  if (location_bar_) {
+    location_bar_->page_action_control().OnPageActionPointerDown(action_id);
+  }
+}
+
 void WebUIToolbarWebView::OnPageActionClick(
     ::toolbar_ui_api::mojom::PageActionId action_id,
     ::toolbar_ui_api::mojom::PageActionTrigger trigger,

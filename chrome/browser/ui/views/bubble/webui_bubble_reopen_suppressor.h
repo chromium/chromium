@@ -69,6 +69,10 @@ class WebUIBubbleReopenSuppressor : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // Call to record that the bubble has closed when closure is driven by
+  // external model state rather than WidgetObserver.
+  void RecordBubbleClosed();
+
   void CloseForTesting();
 
   // Uses views::kMinimumTimeBetweenButtonClicks by default.

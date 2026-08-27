@@ -63,6 +63,9 @@ class WebUIPageActionControl {
   PageActionViewInterface* GetPageActionViewInterface(
       actions::ActionId action_id);
 
+  // Handles a pointer down on a page action from WebUI.
+  void OnPageActionPointerDown(toolbar_ui_api::mojom::PageActionId action_id);
+
   // Handles a click on a page action from WebUI.
   void OnPageActionClick(
       toolbar_ui_api::mojom::PageActionId action_id,
@@ -75,6 +78,8 @@ class WebUIPageActionControl {
       toolbar_ui_api::mojom::PageActionId action_id,
       toolbar_ui_api::mojom::ToolbarUIService::
           OnPageActionChipShowingChangedCallback callback);
+
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
 
   // Helpers accessed by WebUIPageActionView:
   BrowserWindowInterface* GetBrowser();

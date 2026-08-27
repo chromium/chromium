@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -89,8 +90,14 @@ class WebUIPageActionControl::WebUIPageActionDelegate
       const page_actions::PageActionModelInterface& model) override;
 
   toolbar_ui_api::mojom::PageActionStatePtr GetState();
+  void OnPointerDown();
   void NotifyClick(PageActionTrigger trigger);
   void NotifyChipShowingChanged();
+
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
+    bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
+        threshold);
+  }
 
   const page_actions::PageActionModelInterface* GetObservedModel() const {
     return observation_.IsObserving() ? observation_.GetSource() : nullptr;
@@ -139,6 +146,9 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // The last state sent to the WebUI. Null if the action was not visible.
   toolbar_ui_api::mojom::PageActionStatePtr old_state_;
   bool was_chip_visible_ = false;
+  bool was_showing_bubble_ = false;
+
+  WebUIBubbleReopenSuppressor bubble_reopen_suppressor_;
 
   toolbar_ui_api::IconHandle cached_icon_;
 };
@@ -149,6 +159,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   action_item_subscription_ = {};
   controller_ = controller;
   was_chip_visible_ = false;
+  was_showing_bubble_ = false;
 
   if (controller_) {
     controller_->RegisterCallbacks(page_actions::PageActionPassKey(),
@@ -167,6 +178,12 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
 
 void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     const page_actions::PageActionModelInterface& model) {
+  const bool is_showing_bubble = model.GetActionItemIsShowingBubble();
+  if (was_showing_bubble_ && !is_showing_bubble) {
+    bubble_reopen_suppressor_.RecordBubbleClosed();
+  }
+  was_showing_bubble_ = is_showing_bubble;
+
   const bool is_chip_visible =
       model.GetVisible() && model.ShouldShowSuggestionChip();
 
@@ -190,6 +207,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   action_item_subscription_ = {};
   controller_ = nullptr;
   was_chip_visible_ = false;
+  was_showing_bubble_ = false;
   if (old_state_) {
     old_state_ = nullptr;
     owner_->NotifyPageActionStateChanged();
@@ -254,8 +272,22 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   return state;
 }
 
+void WebUIPageActionControl::WebUIPageActionDelegate::OnPointerDown() {
+  const bool is_showing_bubble =
+      observation_.IsObserving() &&
+      observation_.GetSource()->GetActionItemIsShowingBubble();
+  bubble_reopen_suppressor_.OnMousePressed(is_showing_bubble);
+}
+
 void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
     PageActionTrigger trigger) {
+  const bool is_pointer_interaction = (trigger == PageActionTrigger::kMouse ||
+                                       trigger == PageActionTrigger::kGesture);
+  if (bubble_reopen_suppressor_.ShouldSuppressBubbleShow(
+          is_pointer_interaction)) {
+    return;
+  }
+
   click_callback_.Run(trigger);
 
   auto builder =
@@ -386,6 +418,15 @@ WebUIPageActionControl::GetPageActionStates() {
   return states;
 }
 
+void WebUIPageActionControl::OnPageActionPointerDown(
+    toolbar_ui_api::mojom::PageActionId action_id) {
+  auto it =
+      delegates_.find(webui_toolbar::MojomPageActionIdToActionId(action_id));
+  if (it != delegates_.end()) {
+    it->second->OnPointerDown();
+  }
+}
+
 void WebUIPageActionControl::OnPageActionClick(
     toolbar_ui_api::mojom::PageActionId action_id,
     PageActionTrigger trigger,
@@ -401,6 +442,13 @@ void WebUIPageActionControl::OnPageActionClick(
 
   it->second->NotifyClick(trigger);
   std::move(callback).Run(std::monostate());
+}
+
+void WebUIPageActionControl::SetSuppressionThresholdForTesting(
+    base::TimeDelta threshold) {
+  for (auto& [action_id, delegate] : delegates_) {
+    delegate->SetSuppressionThresholdForTesting(threshold);  // IN-TEST
+  }
 }
 
 void WebUIPageActionControl::OnPageActionChipShowingChanged(

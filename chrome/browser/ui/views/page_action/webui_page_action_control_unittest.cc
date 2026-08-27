@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -102,6 +103,8 @@ class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
     root_action_item_ =
         actions::ActionItem::Builder()
             .AddChild(actions::ActionItem::Builder().SetActionId(kActionAiMode))
+            .AddChild(actions::ActionItem::Builder().SetActionId(
+                kActionShowTranslate))
             .Build();
 
     control_ =
@@ -346,6 +349,147 @@ TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
       .Times(testing::AtLeast(1));
   view_interface->SetVisible(false);
   EXPECT_TRUE(control_->GetPageActionStates().empty());
+}
+
+TEST_F(WebUIPageActionControlTest, MouseClickSuppression) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  actions::ActionItem* ai_mode_action_item =
+      actions::ActionManager::Get().FindAction(kActionAiMode,
+                                               root_action_item_.get());
+  ASSERT_TRUE(ai_mode_action_item);
+  actions::ActionItem* translate_action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate,
+                                               root_action_item_.get());
+  ASSERT_TRUE(translate_action_item);
+
+  int ai_mode_invoked_count = 0;
+  ai_mode_action_item->SetInvokeActionCallback(
+      base::BindRepeating([](int* count, actions::ActionItem*,
+                             actions::ActionInvocationContext) { ++(*count); },
+                          &ai_mode_invoked_count));
+
+  int translate_invoked_count = 0;
+  translate_action_item->SetInvokeActionCallback(
+      base::BindRepeating([](int* count, actions::ActionItem*,
+                             actions::ActionInvocationContext) { ++(*count); },
+                          &translate_invoked_count));
+
+  controller->Show(kActionAiMode);
+  controller->Show(kActionShowTranslate);
+
+  control_->SetSuppressionThresholdForTesting(base::Seconds(1));
+
+  // 1. Initial click without bubble being shown is NOT suppressed.
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode);
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+        PageActionTrigger::kMouse, future.GetCallback());
+    EXPECT_OK(future.Get());
+    EXPECT_EQ(1, ai_mode_invoked_count);
+  }
+
+  // 2. Simulate bubble showing and then closing.
+  ai_mode_action_item->SetIsShowingBubble(true);
+  ai_mode_action_item->SetIsShowingBubble(false);
+
+  // Pointer down occurs immediately within the suppression threshold.
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode);
+
+  // 3. A non-pointer click (e.g. keyboard) should NOT be suppressed.
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+        PageActionTrigger::kKeyboard, future.GetCallback());
+    EXPECT_OK(future.Get());
+    EXPECT_EQ(2, ai_mode_invoked_count);
+  }
+
+  // 4. A mouse click immediately after bubble close + pointerdown IS
+  // suppressed.
+  ai_mode_action_item->SetIsShowingBubble(true);
+  ai_mode_action_item->SetIsShowingBubble(false);
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode);
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+        PageActionTrigger::kMouse, future.GetCallback());
+    EXPECT_OK(future.Get());
+    // Action should NOT have been invoked.
+    EXPECT_EQ(2, ai_mode_invoked_count);
+  }
+
+  // 5. A gesture/touch click immediately after bubble close + pointerdown IS
+  // suppressed.
+  ai_mode_action_item->SetIsShowingBubble(true);
+  ai_mode_action_item->SetIsShowingBubble(false);
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode);
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+        PageActionTrigger::kGesture, future.GetCallback());
+    EXPECT_OK(future.Get());
+    // Action should NOT have been invoked.
+    EXPECT_EQ(2, ai_mode_invoked_count);
+  }
+
+  // 6. Clicking a different page action chip is NOT suppressed.
+  ai_mode_action_item->SetIsShowingBubble(true);
+  ai_mode_action_item->SetIsShowingBubble(false);
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionShowTranslate);
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+        PageActionTrigger::kMouse, future.GetCallback());
+    EXPECT_OK(future.Get());
+    EXPECT_EQ(1, translate_invoked_count);
+  }
+
+  // 7. Pointer down while bubble is still open suppresses the subsequent
+  // mouse click.
+  ai_mode_action_item->SetIsShowingBubble(true);
+  control_->OnPageActionPointerDown(
+      toolbar_ui_api::mojom::PageActionId::kActionAiMode);
+  ai_mode_action_item->SetIsShowingBubble(false);
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+        PageActionTrigger::kMouse, future.GetCallback());
+    EXPECT_OK(future.Get());
+    // Action should NOT have been invoked.
+    EXPECT_EQ(2, ai_mode_invoked_count);
+  }
 }
 
 }  // namespace
