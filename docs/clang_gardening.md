@@ -50,15 +50,44 @@ The upload bots pull that revision from github; the SUB_REVISION field is
 appended to the package name, to distinguish between different builds at the
 same revision (perhaps with different settings).
 
-Usually you won't have to run the upload bots yourself; instead, we have
-several automatically generated
+Usually you won't have to run the upload bots yourself; instead, we have several
+automatically generated
 [Clang roll CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
 ("dry run CLs"). These are generated every few hours by a Cron job and attempt
-to package the latest version of Clang and Rust. The cron job runs on a team
-member's workstation. If the CLs stop coming and that team member is out, anyone else can run the script; search for
-[`clang_packaging_cron.sh`](https://cs/clang_packaging_cron.sh) internally.
+to package the latest version of Clang and Rust.
+
+The current gardener is responsible for creating the dry run CLs by running the
+(internal) [`clang_packaging_cron.sh`](https://cs/clang_packaging_cron.sh) script.
 The script essentially just runs
 [`upload_revision.py`](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/upload_revision.py).
+
+When your gardening shift starts, you can set up the cron job as follows:
+
+```bash
+crontab -e
+
+# Paste in the following, and adjust the path:
+15 */2 * * * /path/to/clang_packaging_cron.sh > ~/clangjob.log 2>&1
+
+bb auth-login
+gcert
+```
+
+You'll need to re-run `gcert` daily as usual, but `bb auth-login` should last
+for the duration of your shift (and perhaps much longer).
+
+To stop the cron job when your shift ends, simply run `crontab -e` and comment
+out the line you added.
+
+NOTE: The cronjob has a check to prevent uploading a CL if there's already an upload
+bot running on some other CL. This prevents us from spamming dry runs if they're
+taking a while to complete. However, this can also delay things if we're running
+upload jobs on a non-dry-run CL. If you want to upload a dry run CL _right now_,
+you can run the script directly with the `--force` argument:
+
+```
+/path/to/clang_packaging_cron.sh --force
+```
 
 ### Tip-of-tree Waterfall
 
