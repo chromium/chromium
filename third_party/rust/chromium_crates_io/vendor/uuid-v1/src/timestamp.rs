@@ -794,8 +794,21 @@ pub mod context {
             /// by trading a small amount of entropy for better counter synchronization. Note that the counter
             /// will still be reseeded on millisecond boundaries, even though some of its storage will be
             /// dedicated to the timestamp.
-            pub fn with_additional_precision(mut self) -> Self {
-                self.precision = Precision::new(12);
+            pub fn with_additional_precision(self) -> Self {
+                self.with_additional_precision_bits(12)
+            }
+
+            /// Use the leftmost `bits` bits of the counter for additional timestamp precision.
+            ///
+            /// This is a more general form of [`ContextV7::with_additional_precision`] for platforms
+            /// whose clocks don't have the resolution to make use of the full 12 bits. A platform with
+            /// microsecond precision can set 10 bits here, leaving the remaining 2 bits of the `rand_a`
+            /// field free for random data.
+            ///
+            /// `bits` is capped at 12, matching the size of the `rand_a` field in a version 7 UUID.
+            /// Passing 0 disables additional precision, the same as never calling this method.
+            pub fn with_additional_precision_bits(mut self, bits: usize) -> Self {
+                self.precision = Precision::new(cmp::min(bits, 12));
                 self
             }
         }
@@ -1153,6 +1166,49 @@ pub mod context {
                 let ts3 = Timestamp::from_unix(&context, seconds, subsec_nanos);
 
                 assert!(Uuid::new_v7(ts3) > Uuid::new_v7(ts2));
+            }
+
+            #[test]
+            fn context_additional_precision_bits() {
+                let seconds = 1_496_854_535;
+                let subsec_nanos = 812_946_000;
+
+                // 10 bits leaves the low 2 bits of `rand_a` for random data, which suits
+                // platforms with microsecond precision
+                let context = ContextV7::new().with_additional_precision_bits(10);
+
+                let ts = Timestamp::from_unix(&context, seconds, subsec_nanos);
+
+                // The submillisecond precision occupies the leftmost 10 of the 42 counter bits
+                // NOTE: Future changes in rounding may change this value slightly
+                assert_eq!(968, ts.counter >> 32);
+
+                assert!(ts.counter < (u64::MAX >> 22) as u128);
+
+                // The full method is just the 12-bit form of this one
+                let full = Timestamp::from_unix(
+                    &ContextV7::new().with_additional_precision(),
+                    seconds,
+                    subsec_nanos,
+                );
+                let bits12 = Timestamp::from_unix(
+                    &ContextV7::new().with_additional_precision_bits(12),
+                    seconds,
+                    subsec_nanos,
+                );
+                assert_eq!(full.counter >> 30, bits12.counter >> 30);
+
+                // Values above 12 are capped at 12
+                let capped = Timestamp::from_unix(
+                    &ContextV7::new().with_additional_precision_bits(64),
+                    seconds,
+                    subsec_nanos,
+                );
+                assert_eq!(bits12.counter >> 30, capped.counter >> 30);
+
+                // Zero bits disables additional precision entirely
+                let none = ContextV7::new().with_additional_precision_bits(0);
+                assert_eq!(0, none.precision.bits);
             }
 
             #[test]
