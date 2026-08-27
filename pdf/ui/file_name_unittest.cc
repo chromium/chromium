@@ -27,6 +27,19 @@ TEST(FileNameTest, GetFileNameForSaveFromUrl) {
   // security reasons, are allowed in file paths.
   EXPECT_EQ("\xF0\x9F\x94\x92",
             GetFileNameForSaveFromUrl("https://test/%F0%9F%94%92"));
+
+  // File names without extensions are kept as-is.
+  EXPECT_EQ("b", GetFileNameForSaveFromUrl("https://test/a/b"));
+
+  // URLs with query parameters.
+  EXPECT_EQ("download.php",
+            GetFileNameForSaveFromUrl("https://test/a/download.php?id=123"));
+
+  // URLs without paths fall back to the host name.
+  EXPECT_EQ("test", GetFileNameForSaveFromUrl("https://test"));
+
+  // URLs with empty paths fall back to the host name.
+  EXPECT_EQ("test", GetFileNameForSaveFromUrl("https://test/"));
 }
 
 }  // namespace chrome_pdf
