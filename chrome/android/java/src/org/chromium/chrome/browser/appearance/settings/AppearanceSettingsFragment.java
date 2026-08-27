@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
+import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -76,7 +78,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         super.onDestroy();
 
         if (mPrefChangeRegistrar != null) {
-            mPrefChangeRegistrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
+            mPrefChangeRegistrar.removeObserver(
+                    shouldShowSubpage()
+                            ? Pref.BOOKMARK_BAR_VISIBILITY_STATE
+                            : Pref.SHOW_BOOKMARK_BAR);
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
@@ -121,6 +126,21 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
         if (shouldShowSubpage()) {
             removePreference(PREF_BOOKMARK_BAR_SWITCH);
+            if (mUseProfileUserPrefs) {
+                mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
+                mPrefObserver = this::updateBookmarkBarPref;
+                mPrefChangeRegistrar.addObserver(Pref.BOOKMARK_BAR_VISIBILITY_STATE, mPrefObserver);
+            } else {
+                mDevicePrefsListener =
+                        (sharedPreferences, key) -> {
+                            if (BookmarkBarConstants.BOOKMARK_BAR_BOOKMARK_BAR_VISIBILITY_STATE
+                                    .equals(key)) {
+                                updateBookmarkBarPref();
+                            }
+                        };
+                ContextUtils.getAppSharedPreferences()
+                        .registerOnSharedPreferenceChangeListener(mDevicePrefsListener);
+            }
             return;
         }
 
@@ -267,6 +287,12 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
             return;
         }
 
+        Preference bookmarkBarPref = findPreference(PREF_BOOKMARK_BAR);
+        if (bookmarkBarPref != null) {
+            bookmarkBarPref.setSummary(getBookmarkBarVisibilityStateSummaryRes(getProfile()));
+            return;
+        }
+
         ChromeSwitchPreference bookmarkBarSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR_SWITCH);
         if (bookmarkBarSwitch == null) return;
@@ -299,6 +325,24 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
     @Nullable PrefObserver getPrefObserverForTesting() {
         return mPrefObserver;
+    }
+
+    static @StringRes int getBookmarkBarVisibilityStateSummaryRes(Profile profile) {
+        @BookmarkBarVisibilityState
+        int state =
+                BookmarkBarUtils.shouldUseProfileUserPrefs()
+                        ? BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(profile)
+                        : BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(profile);
+
+        return switch (state) {
+            case BookmarkBarVisibilityState.ALWAYS_SHOW ->
+                    R.string.bookmark_bar_setting_always_show;
+            case BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP ->
+                    R.string.bookmark_bar_setting_only_show_bookmarks_bar_on_ntp;
+            case BookmarkBarVisibilityState.ALWAYS_HIDE ->
+                    R.string.bookmark_bar_setting_always_hide;
+            default -> R.string.bookmark_bar_setting_always_hide;
+        };
     }
 
     static boolean shouldShowBookmarkPref(Context context) {
@@ -335,6 +379,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                         indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
                     } else if (shouldShowSubpage()) {
                         indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
+                        indexData.updateEntrySummaryForKey(
+                                prefFragment,
+                                PREF_BOOKMARK_BAR,
+                                getBookmarkBarVisibilityStateSummaryRes(profile));
                     } else {
                         indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
                     }

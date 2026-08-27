@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.appearance.settings;
 
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -44,7 +45,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -56,6 +59,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -88,6 +92,7 @@ public class AppearanceSettingsFragmentTest {
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
     private SettableNonNullObservableSupplier<Boolean> mBookmarkBarSettingSupplier;
+    private SettableNonNullObservableSupplier<Integer> mBookmarkBarVisibilityStateSupplier;
     private AppearanceSettingsFragment mSettings;
 
     @Before
@@ -121,6 +126,25 @@ public class AppearanceSettingsFragmentTest {
         doAnswer(runCallbackWithValueAtIndex(mBookmarkBarSettingSupplier::set, 1))
                 .when(mPrefService)
                 .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
+
+        // Update bookmark bar visibility state setting and notify observers when supplier changes.
+        mBookmarkBarVisibilityStateSupplier =
+                ObservableSuppliers.createNonNull(BookmarkBarVisibilityState.ALWAYS_HIDE);
+        mBookmarkBarVisibilityStateSupplier.addSyncObserverAndPostIfNonNull(
+                state -> {
+                    mBookmarkBarSettingObserverCache.stream()
+                            .filter(observer -> observer != null)
+                            .forEach(PrefObserver::onPreferenceChange);
+                });
+
+        // Update supplier when bookmark bar visibility state changes.
+        doAnswer(runCallbackWithValueAtIndex(mBookmarkBarVisibilityStateSupplier::set, 1))
+                .when(mPrefService)
+                .setInteger(eq(Pref.BOOKMARK_BAR_VISIBILITY_STATE), anyInt());
+
+        doAnswer(i -> mBookmarkBarVisibilityStateSupplier.get())
+                .when(mPrefService)
+                .getInteger(eq(Pref.BOOKMARK_BAR_VISIBILITY_STATE));
     }
 
     @AfterClass
@@ -157,6 +181,84 @@ public class AppearanceSettingsFragmentTest {
         launchSettings();
         assertSettingsExists(PREF_BOOKMARK_BAR, BookmarkBarSettingsFragment.class);
         Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR_SWITCH));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testBookmarkBarPreferenceSummary_Desktop() throws ClassNotFoundException {
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mBookmarkBarVisibilityStateSupplier.set(
+                                BookmarkBarVisibilityState.ALWAYS_SHOW));
+        launchSettings();
+
+        final var bookmarkBarPref =
+                assertSettingsExists(PREF_BOOKMARK_BAR, BookmarkBarSettingsFragment.class);
+        final var context = mSettings.getContext();
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_always_show),
+                bookmarkBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mBookmarkBarVisibilityStateSupplier.set(
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP));
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_only_show_bookmarks_bar_on_ntp),
+                bookmarkBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mBookmarkBarVisibilityStateSupplier.set(
+                                BookmarkBarVisibilityState.ALWAYS_HIDE));
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_always_hide),
+                bookmarkBarPref.getSummary());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    public void testBookmarkBarPreferenceSummary_NonDesktop() throws ClassNotFoundException {
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                            BookmarkBarVisibilityState.ALWAYS_SHOW,
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+                });
+        launchSettings();
+
+        final var bookmarkBarPref =
+                assertSettingsExists(PREF_BOOKMARK_BAR, BookmarkBarSettingsFragment.class);
+        final var context = mSettings.getContext();
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_always_show),
+                bookmarkBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                            BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+                });
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_only_show_bookmarks_bar_on_ntp),
+                bookmarkBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                            BookmarkBarVisibilityState.ALWAYS_HIDE,
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+                });
+        Assert.assertEquals(
+                context.getString(R.string.bookmark_bar_setting_always_hide),
+                bookmarkBarPref.getSummary());
     }
 
     @Test
@@ -324,6 +426,9 @@ public class AppearanceSettingsFragmentTest {
 
         verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
         verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+        verify(indexData)
+                .updateEntrySummaryForKey(
+                        prefFragment, PREF_BOOKMARK_BAR, R.string.bookmark_bar_setting_always_hide);
     }
 
     @Test

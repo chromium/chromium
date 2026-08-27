@@ -26,8 +26,7 @@ exclusive options. -->
         android:fragment="org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment"
         android:key="bookmark_bar"
         android:order="2"
-        android:title="@string/bookmark_bar_setting"
-        android:summary="@string/bookmark_bar_setting_subtitle" />
+        android:title="@string/bookmark_bar_setting" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="bookmark_bar_switch"
