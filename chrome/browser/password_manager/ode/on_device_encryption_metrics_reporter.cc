@@ -6,8 +6,11 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace password_manager {
 
@@ -16,18 +19,16 @@ OnDeviceEncryptionMetricsReporter::OnDeviceEncryptionMetricsReporter(
     std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker)
     : passkey_tracker_(std::move(passkey_tracker)),
       password_tracker_(std::move(password_tracker)) {
-  if (passkey_tracker_) {
-    passkey_observation_.Observe(passkey_tracker_.get());
-    // TODO(crbug.com/540854648): In this case the metrics should be published
-    // with delay.
-    MaybeRecordPasskeyReadiness(passkey_tracker_->GetEncryptionState());
-  }
-  if (password_tracker_) {
-    password_observation_.Observe(password_tracker_.get());
-    // TODO(crbug.com/540854648): In this case the metrics should be published
-    // with delay.
-    MaybeRecordPasswordReadiness(password_tracker_->GetEncryptionState());
-  }
+  // During startup, services are actively initializing, and might also start
+  // notifying the observers. On the other it is good practice to avoid
+  // publishing metrics immediately on startup. Given this, the initialization
+  // of observations and publishing of initial metrics is being deferred.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&OnDeviceEncryptionMetricsReporter::
+                         StartObservationsAndRecordInitialMetrics,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kInitialStateReportingDelay);
 }
 
 OnDeviceEncryptionMetricsReporter::~OnDeviceEncryptionMetricsReporter() =
@@ -35,6 +36,7 @@ OnDeviceEncryptionMetricsReporter::~OnDeviceEncryptionMetricsReporter() =
 
 void OnDeviceEncryptionMetricsReporter::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
   passkey_observation_.Reset();
   password_observation_.Reset();
   passkey_tracker_.reset();
@@ -66,6 +68,17 @@ void OnDeviceEncryptionMetricsReporter::
   } else {
     NOTREACHED();
   }
+}
+
+void OnDeviceEncryptionMetricsReporter::
+    StartObservationsAndRecordInitialMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(passkey_tracker_);
+  CHECK(password_tracker_);
+  passkey_observation_.Observe(passkey_tracker_.get());
+  MaybeRecordPasskeyReadiness(passkey_tracker_->GetEncryptionState());
+  password_observation_.Observe(password_tracker_.get());
+  MaybeRecordPasswordReadiness(password_tracker_->GetEncryptionState());
 }
 
 void OnDeviceEncryptionMetricsReporter::MaybeRecordPasskeyReadiness(

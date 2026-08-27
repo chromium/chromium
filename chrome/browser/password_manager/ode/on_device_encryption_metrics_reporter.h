@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/ode/on_device_encryption_state_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -19,6 +21,9 @@ inline constexpr char kPasskeyOnDeviceEncryptionStateHistogram[] =
     "PasswordManager.OnDeviceEncryptionState.Passkeys";
 inline constexpr char kPasswordOnDeviceEncryptionStateHistogram[] =
     "PasswordManager.OnDeviceEncryptionState.Passwords";
+
+inline constexpr base::TimeDelta kInitialStateReportingDelay =
+    base::Seconds(30);
 
 // LINT.IfChange(OnDeviceEncryptionStateHistogramBucket)
 enum class OnDeviceEncryptionStateHistogramBucket {
@@ -58,6 +63,9 @@ class OnDeviceEncryptionMetricsReporter
       OnDeviceEncryptionStateTracker* tracker) override;
 
  private:
+  // Starts observing the trackers and recording the readiness metrics.
+  void StartObservationsAndRecordInitialMetrics();
+
   // Determines whether the passkey encryption state should be published to
   // metrics (and if yes, publishes the metric).
   void MaybeRecordPasskeyReadiness(OnDeviceEncryptionState current_state);
@@ -82,6 +90,9 @@ class OnDeviceEncryptionMetricsReporter
       password_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<OnDeviceEncryptionMetricsReporter> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace password_manager

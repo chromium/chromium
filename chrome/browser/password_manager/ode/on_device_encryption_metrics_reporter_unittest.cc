@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/ode/on_device_encryption_state_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,10 +18,13 @@ namespace {
 
 class OnDeviceEncryptionMetricsReporterTest : public testing::Test {
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(OnDeviceEncryptionMetricsReporterTest, InitialStateRecordedIfAvailable) {
+TEST_F(OnDeviceEncryptionMetricsReporterTest,
+       InitialStateRecordedAfterDelayIfAvailable) {
   auto passkey_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
   passkey_tracker->SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
 
@@ -31,12 +35,64 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest, InitialStateRecordedIfAvailable) {
   OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
                                              std::move(password_tracker));
 
+  // No initial metrics recorded before delay.
+  histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                     0);
+  histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
+                                     0);
+
+  // Advance past the delay so observation starts.
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
   histogram_tester_.ExpectUniqueSample(
       kPasskeyOnDeviceEncryptionStateHistogram,
       OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
   histogram_tester_.ExpectUniqueSample(
       kPasswordOnDeviceEncryptionStateHistogram,
       OnDeviceEncryptionStateHistogramBucket::kOnDeviceEncryptionNotEnabled, 1);
+}
+
+TEST_F(OnDeviceEncryptionMetricsReporterTest,
+       StateChangesBeforeDelayDoNotPrematurelyPublish) {
+  auto passkey_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_passkey_tracker = passkey_tracker.get();
+
+  auto password_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+  OnDeviceEncryptionStateTracker* raw_password_tracker = password_tracker.get();
+
+  OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
+                                             std::move(password_tracker));
+
+  // Simulate transitional state changes during startup (e.g. at 5s and 10s).
+  task_environment_.FastForwardBy(base::Seconds(5));
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceNotReady);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceNotReady);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  raw_passkey_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceReady);
+  raw_password_tracker->SetStateForTesting(
+      OnDeviceEncryptionState::kDeviceReady);
+
+  // Observations have not started yet, so no metrics are recorded.
+  histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
+                                     0);
+  histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
+                                     0);
+
+  // Advance the time to start observations.
+  task_environment_.FastForwardBy(kInitialStateReportingDelay -
+                                  base::Seconds(10));
+
+  // Steady-state is recorded exactly once without duplicate publishing.
+  histogram_tester_.ExpectUniqueSample(
+      kPasskeyOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kPasswordOnDeviceEncryptionStateHistogram,
+      OnDeviceEncryptionStateHistogramBucket::kDeviceReady, 1);
 }
 
 TEST_F(OnDeviceEncryptionMetricsReporterTest,
@@ -47,13 +103,17 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest,
   OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
                                              std::move(password_tracker));
 
+  // Advance the time to start observations.
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
   histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
                                      0);
   histogram_tester_.ExpectTotalCount(kPasswordOnDeviceEncryptionStateHistogram,
                                      0);
 }
 
-TEST_F(OnDeviceEncryptionMetricsReporterTest, StateTransitionsRecorded) {
+TEST_F(OnDeviceEncryptionMetricsReporterTest,
+       StateTransitionsRecordedAfterDelay) {
   auto passkey_tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
   OnDeviceEncryptionStateTracker* raw_passkey_tracker = passkey_tracker.get();
 
@@ -62,6 +122,9 @@ TEST_F(OnDeviceEncryptionMetricsReporterTest, StateTransitionsRecorded) {
 
   OnDeviceEncryptionMetricsReporter reporter(std::move(passkey_tracker),
                                              std::move(password_tracker));
+
+  // Advance the time to start observations.
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
 
   histogram_tester_.ExpectTotalCount(kPasskeyOnDeviceEncryptionStateHistogram,
                                      0);
