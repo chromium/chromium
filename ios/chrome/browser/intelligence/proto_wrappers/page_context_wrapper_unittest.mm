@@ -4275,14 +4275,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_GenericContainer_TopLayer) {
   // The root node children are usually the un-flattened elements.
   for (const auto& child : root_node.children_nodes()) {
     if (child.content_attributes().attribute_type() ==
-        optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER) {
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER ||
+        child.content_attributes().attribute_type() ==
+            optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODAL) {
       target_node = &child;
       break;
     }
   }
 
   ASSERT_TRUE(target_node)
-      << "Dialog node not found as a container in APC tree";
+      << "Dialog node not found as a dialog modal/container in APC tree";
 
   ASSERT_EQ(target_node->children_nodes_size(), 1);
   const auto& text_node = target_node->children_nodes(0);
@@ -8639,6 +8641,130 @@ TEST_P(PageContextWrapperTest, ImageRedaction_PasswordFields) {
       [wrapper shouldRedactDecisionForScreenshot:
                    optimization_guide::proto::
                        REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD]);
+}
+
+// Tests that CSS position properties (fixed, absolute, relative, sticky)
+// are extracted into the node geometry.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_CssPosition) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "CssPosition",
+      RawHtml("<div id='fixed' style='position: fixed; top: 0; left: 0; "
+              "width: 100px; height: 50px;'>Fixed</div>"
+              "<p id='absolute' style='position: absolute; top: 50px; left: 0; "
+              "width: 100px; height: 50px;'>Absolute</p>"
+              "<p id='relative' style='position: relative; width: 100px; "
+              "height: 50px;'>Relative</p>"
+              "<div id='sticky' style='position: sticky; top: 0; width: 100px; "
+              "height: 50px;'>Sticky</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  bool found_fixed = false;
+  bool found_absolute = false;
+  bool found_relative = false;
+  bool found_sticky = false;
+
+  for (const auto& child : root_node.children_nodes()) {
+    if (child.has_content_attributes() &&
+        child.content_attributes().has_geometry() &&
+        child.content_attributes().geometry().has_css_position()) {
+      switch (child.content_attributes().geometry().css_position()) {
+        case optimization_guide::proto::CSS_POSITION_FIXED:
+          found_fixed = true;
+          break;
+        case optimization_guide::proto::CSS_POSITION_ABSOLUTE:
+          found_absolute = true;
+          break;
+        case optimization_guide::proto::CSS_POSITION_RELATIVE:
+          found_relative = true;
+          break;
+        case optimization_guide::proto::CSS_POSITION_STICKY:
+          found_sticky = true;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  EXPECT_TRUE(found_fixed);
+  EXPECT_TRUE(found_absolute);
+  EXPECT_TRUE(found_relative);
+  EXPECT_TRUE(found_sticky);
+}
+
+// Tests that <dialog> elements are extracted as DIALOG_MODAL or
+// DIALOG_MODELESS.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_DialogElements) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "DialogElements",
+      RawHtml(
+          "<dialog id='modeless' open>Modeless Dialog</dialog>"
+          "<dialog id='modal'>Modal Dialog</dialog>"
+          "<script>document.getElementById('modal').showModal();</script>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  bool found_modeless = false;
+  bool found_modal = false;
+
+  for (const auto& child : root_node.children_nodes()) {
+    if (child.has_content_attributes()) {
+      if (child.content_attributes().attribute_type() ==
+          optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS) {
+        found_modeless = true;
+      } else if (child.content_attributes().attribute_type() ==
+                 optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODAL) {
+        found_modal = true;
+      }
+    }
+  }
+
+  EXPECT_TRUE(found_modeless);
+  EXPECT_TRUE(found_modal);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

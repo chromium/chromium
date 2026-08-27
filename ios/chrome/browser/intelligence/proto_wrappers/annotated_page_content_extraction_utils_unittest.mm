@@ -426,3 +426,95 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
                 .text_content(),
             "Main Frame Paragraph");
 }
+
+// Tests that PopulateAPCNodeFromContentTree handles CssPosition in geometry.
+TEST_F(AnnotatedPageContentExtractionUtilsTest, CssPositionPopulated) {
+  optimization_guide::proto::ContentNode node;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  FrameGrafter grafter;
+
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {
+            "x": 0,
+            "y": 500,
+            "width": 400,
+            "height": 100
+          },
+          "visibleBoundingBox": {
+            "x": 0,
+            "y": 500,
+            "width": 400,
+            "height": 100
+          },
+          "cssPosition": 3
+        }
+      }
+    }
+  )");
+
+  ASSERT_TRUE(node_content.is_dict());
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter,
+      /*autofill_context=*/nullptr, &node,
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  ASSERT_TRUE(node.has_content_attributes());
+  ASSERT_TRUE(node.content_attributes().has_geometry());
+  EXPECT_EQ(node.content_attributes().geometry().css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+}
+
+// Tests that PopulateAPCNodeFromContentTree handles DIALOG_MODELESS
+// attributeType.
+TEST_F(AnnotatedPageContentExtractionUtilsTest, ModelessDialogPopulated) {
+  optimization_guide::proto::ContentNode node;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  FrameGrafter grafter;
+
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 29
+      }
+    }
+  )");
+
+  ASSERT_TRUE(node_content.is_dict());
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter,
+      /*autofill_context=*/nullptr, &node,
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  ASSERT_TRUE(node.has_content_attributes());
+  EXPECT_EQ(node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS);
+}
+
+// Tests that PopulateAPCNodeFromContentTree handles DIALOG_MODAL attributeType.
+TEST_F(AnnotatedPageContentExtractionUtilsTest, ModalDialogPopulated) {
+  optimization_guide::proto::ContentNode node;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  FrameGrafter grafter;
+
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 28
+      }
+    }
+  )");
+
+  ASSERT_TRUE(node_content.is_dict());
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter,
+      /*autofill_context=*/nullptr, &node,
+      base::RepeatingCallback<void(bool, const std::string&)>());
+
+  ASSERT_TRUE(node.has_content_attributes());
+  EXPECT_EQ(node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODAL);
+}

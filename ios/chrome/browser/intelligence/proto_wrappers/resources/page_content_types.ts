@@ -119,6 +119,18 @@ export enum PageContentAttributeType {
   SVG_ROOT = 25,
   CANVAS = 26,
   VIDEO = 27,
+  DIALOG_MODAL = 28,
+  DIALOG_MODELESS = 29,
+}
+
+// The numbers are aligned with the CssPosition enum in
+// components/optimization_guide/proto/features/common_quality_data.proto.
+export enum PageContentCssPosition {
+  STATIC = 0,
+  RELATIVE = 1,
+  ABSOLUTE = 2,
+  FIXED = 3,
+  STICKY = 4,
 }
 
 // The numbers are aligned with the AnnotatedRole enum in
@@ -140,6 +152,7 @@ export interface PageContentGeometry {
   outerBoundingBox: Rect;
   visibleBoundingBox?: Rect;
   fragmentVisibleBoundingBoxes?: Rect[];
+  cssPosition?: PageContentCssPosition;
 }
 
 export interface PageContentSelection {

@@ -5,7 +5,7 @@
 import {HAS_BEEN_PASSWORD_SYMBOL, ID_SYMBOL} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId, safeOwnerDocument} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
-import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentCssPosition, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect as BasicRect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // TODO(crbug.com/504261632): Report metrics from here down to the native
@@ -538,6 +538,7 @@ const ATTR_VALUE_ROLE_NONE = 'none';
 // Style values.
 const ATTR_POSITION_ABSOLUTE = 'absolute';
 const ATTR_POSITION_FIXED = 'fixed';
+const ATTR_POSITION_RELATIVE = 'relative';
 const ATTR_POSITION_STATIC = 'static';
 const ATTR_POSITION_STICKY = 'sticky';
 const ATTR_DISPLAY_NONE = 'none';
@@ -3006,6 +3007,19 @@ function getBasicContentForNonGenericElement(
           attributeType: PageContentAttributeType.LIST_ITEM,
         },
       };
+    case TAG_DIALOG: {
+      const isModal = typeof CSS !== 'undefined' &&
+          typeof CSS.supports === 'function' &&
+          CSS.supports('selector(:modal)') && safeMatches(domNode, ':modal');
+      return {
+        childrenNodes: [],
+        contentAttributes: {
+          ...BASIC_CONTENT_ATTRIBUTES,
+          attributeType: isModal ? PageContentAttributeType.DIALOG_MODAL :
+                                   PageContentAttributeType.DIALOG_MODELESS,
+        },
+      };
+    }
 
     default:
       return null;
@@ -3488,6 +3502,18 @@ function addNodeGeometry(
 
   const geometry = {} as PageContentGeometry;
   geometry.outerBoundingBox = toEnclosingRect(elementRect);
+
+  let cssPosition = PageContentCssPosition.STATIC;
+  if (position === ATTR_POSITION_RELATIVE) {
+    cssPosition = PageContentCssPosition.RELATIVE;
+  } else if (position === ATTR_POSITION_ABSOLUTE) {
+    cssPosition = PageContentCssPosition.ABSOLUTE;
+  } else if (position === ATTR_POSITION_FIXED) {
+    cssPosition = PageContentCssPosition.FIXED;
+  } else if (position === ATTR_POSITION_STICKY) {
+    cssPosition = PageContentCssPosition.STICKY;
+  }
+  geometry.cssPosition = cssPosition;
 
   // Calculate visibleBoundingBox by intersecting the element's client rect with
   // the selected clip rect.

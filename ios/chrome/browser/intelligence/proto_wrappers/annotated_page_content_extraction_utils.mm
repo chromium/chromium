@@ -118,6 +118,7 @@ constexpr char kOuterBoundingBoxKey[] = "outerBoundingBox";
 constexpr char kVisibleBoundingBoxKey[] = "visibleBoundingBox";
 constexpr char kFragmentVisibleBoundingBoxesKey[] =
     "fragmentVisibleBoundingBoxes";
+constexpr char kCssPositionKey[] = "cssPosition";
 constexpr char kIsFocusedDocumentKey[] = "isFocusedDocument";
 
 // Values matching the `RedactedFrameMetadata.Reason` enum in
@@ -761,6 +762,14 @@ void PopulateGeometry(const base::DictValue& geometry_dict,
     if (std::optional<optimization_guide::proto::BoundingRect> box =
             ExtractBoundingRect(*visible_box)) {
       *mutable_geometry()->mutable_visible_bounding_box() = std::move(*box);
+    }
+  }
+
+  if (std::optional<int> css_position =
+          ReadJsNumber(geometry_dict, kCssPositionKey)) {
+    if (optimization_guide::proto::CssPosition_IsValid(*css_position)) {
+      mutable_geometry()->set_css_position(
+          static_cast<optimization_guide::proto::CssPosition>(*css_position));
     }
   }
 
