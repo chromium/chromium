@@ -1043,6 +1043,16 @@ void LensSearchContextualizationController::FetchViewportImageBoundingBoxes(
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
+
+  // In contextual tasks, significant region image bounds are not used or
+  // uploaded, so bypass the IPC call to RequestBoundsHintForAllImages to reduce
+  // latency.
+  if (lens_search_controller_->should_route_to_contextual_tasks()) {
+    GetPdfCurrentPage(std::move(chrome_render_frame), ++screenshot_attempt_id_,
+                      bitmap, std::move(callback), /*bounds=*/{});
+    return;
+  }
+
   // Bind the InterfacePtr into the callback so that it's kept alive until
   // there's either a connection error or a response.
   auto* frame = chrome_render_frame.get();
