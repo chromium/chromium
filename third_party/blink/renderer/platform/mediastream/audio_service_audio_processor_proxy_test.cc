@@ -214,4 +214,16 @@ TEST_F(AudioServiceAudioProcessorProxyTest, SetVoiceIsolation) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AudioServiceAudioProcessorProxyTest,
+       SetVoiceIsolationBufferedBeforeSetControls) {
+  scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+  StrictMock<MockAudioProcessorControls> controls;
+  EXPECT_CALL(controls, SetVoiceIsolationCalled(false));
+
+  proxy->SetVoiceIsolation(false);
+
+  proxy->SetControls(&controls);
+}
+
 }  // namespace blink
