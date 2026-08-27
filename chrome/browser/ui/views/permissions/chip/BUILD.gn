@@ -125,7 +125,6 @@ if (!is_chromeos_device) {
       ":chip",
       "//chrome/browser/permissions",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
-      "//chrome/browser/ui/views/location_bar:test_support",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/permissions",
       "//chrome/test:test_support",

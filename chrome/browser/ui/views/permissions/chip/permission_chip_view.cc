@@ -536,10 +536,6 @@ void PermissionChipView::ExecuteForTesting() {
   NotifyClick(event);
 }
 
-void PermissionChipView::EndAnimationForTesting() {
-  animation_->End();
-}
-
 BEGIN_METADATA(PermissionChipView)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
 END_METADATA

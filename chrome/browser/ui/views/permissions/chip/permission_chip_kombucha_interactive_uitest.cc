@@ -8,10 +8,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -26,6 +24,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+const char kLocationBarView[] = "LocationBarView";
 }  // namespace
 
 class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
@@ -82,7 +81,7 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
   }
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
-    OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
+    OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
 
     // The pixel tests are sensitive to the URL displayed in the omnibox, as the
     // port number of the test server varies. To prevent flakiness, we override
@@ -106,29 +105,19 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
   }
 
-  LocationBar* GetLocationBar() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
-  }
-
-  PermissionDashboardController* GetDashboardController() {
-    return GetLocationBar()->GetPermissionDashboardController();
-  }
-
   // Checks that the permission chip is visible and in the given mode.
   // If `is_request` is false, should be in indicator mode instead.
   auto CheckChipIsRequest(bool is_request) {
-    return CheckResult(
-        [this, is_request]() {
-          auto* chip = is_request ? GetDashboardController()
-                                        ->permission_dashboard()
-                                        ->GetRequestChip()
-                                  : GetDashboardController()
-                                        ->permission_dashboard()
-                                        ->GetIndicatorChip();
-          CHECK(chip);
-          return chip->GetIsRequestForTesting();
-        },
-        is_request);
+    return CheckViewProperty(
+        is_request ? PermissionChipView::kPermissionRequestChipElementId
+                   : PermissionChipView::kIndicatorChipElementId,
+        &PermissionChipView::GetIsRequestForTesting, is_request);
+  }
+
+  LocationBarView* GetLocationBarView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->location_bar_view();
   }
 
  protected:
@@ -158,16 +147,17 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
       // Make sure the request chip is visible.
       WaitForShow(PermissionChipView::kPermissionRequestChipElementId),
       CheckChipIsRequest(true),
+      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarElementId, "NotificationsRequestChip", "7633407"),
+      Screenshot(kLocationBarView, "NotificationsRequestChip", "7633407"),
       // Make sure the permission popup bubble is visible.
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       PressButton(PermissionChipView::kPermissionRequestChipElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
       // The permission chip is hidden because the permission
       // request was dismissed instantly after a click.
-      WaitForHide(PermissionChipView::kPermissionRequestChipElementId),
+      EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
       EnsureNotPresent(PermissionChipView::kIndicatorChipElementId));
 }
 
@@ -185,10 +175,10 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
       // Make sure the request chip is visible.
       WaitForShow(PermissionChipView::kPermissionRequestChipElementId),
       CheckChipIsRequest(true),
+      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarElementId, "QuietNotificationsRequestChip",
-                 "7633407"),
+      Screenshot(kLocationBarView, "QuietNotificationsRequestChip", "7633407"),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
       // The first click - open a permission prompt popup bubble.
@@ -200,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      WaitForHide(PermissionChipView::kPermissionRequestChipElementId),
+      EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
       EnsureNotPresent(PermissionChipView::kIndicatorChipElementId));
 }
 
@@ -218,9 +208,10 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
       // Make sure the request chip is visible.
       WaitForShow(PermissionChipView::kPermissionRequestChipElementId),
       CheckChipIsRequest(true),
+      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarElementId, "QuietestNotificationsRequestChip",
+      Screenshot(kLocationBarView, "QuietestNotificationsRequestChip",
                  "7633407"),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
@@ -233,6 +224,6 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      WaitForHide(PermissionChipView::kPermissionRequestChipElementId),
+      EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
       EnsureNotPresent(PermissionChipView::kIndicatorChipElementId));
 }

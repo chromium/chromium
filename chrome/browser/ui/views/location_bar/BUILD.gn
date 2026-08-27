@@ -381,7 +381,6 @@ source_set("test_support") {
     ":location_bar",
     "//chrome/browser/ui",
     "//chrome/browser/ui:bubble_anchor_util",
-    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_info",

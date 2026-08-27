@@ -101,7 +101,6 @@ class PermissionChipView : public views::MdTextButton,
   void SetBubbleOwner(
       PermissionChipInterface::BubbleOwnerDelegate* owner) override;
   void ExecuteForTesting() override;
-  void EndAnimationForTesting() override;
 
   // Views-specific formatting.
   void UpdateForDividerVisibility(bool is_divider_visible,
