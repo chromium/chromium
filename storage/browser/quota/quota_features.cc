@@ -39,7 +39,7 @@ BASE_FEATURE(kStaticStorageQuota, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Incognito mode will always report a maximal quota value to avoid
 // fingerprinting and incognito detection.
-BASE_FEATURE(kIncognitoStaticStorageQuota, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIncognitoStaticStorageQuota, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace storage
