@@ -78,9 +78,14 @@ class FocusLossObserver : public content::WebContentsObserver {
   bool lost_focus_called_ = false;
 };
 
-class DictationKeyedServiceBrowserTest : public DictationBrowserTestBase {
+class DictationKeyedServiceBrowserTest
+    : public DictationBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  DictationKeyedServiceBrowserTest() = default;
+  DictationKeyedServiceBrowserTest()
+      : DictationKeyedServiceBrowserTest(GetParam()) {}
+  explicit DictationKeyedServiceBrowserTest(bool session_ends_on_stream_end)
+      : DictationBrowserTestBase(session_ends_on_stream_end) {}
   ~DictationKeyedServiceBrowserTest() override = default;
 
   void SimulateSpeechRecognition(ListenerStreamProvider* provider,
@@ -110,12 +115,12 @@ class DictationKeyedServiceBrowserTest : public DictationBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        CreatedForRegularProfile) {
   EXPECT_NE(DictationKeyedService::Get(profile()), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        NotCreatedForOTRProfile) {
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -125,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 class DictationKeyedServiceDisabledBrowserTest
     : public DictationKeyedServiceBrowserTest {
  public:
-  DictationKeyedServiceDisabledBrowserTest() {
+  DictationKeyedServiceDisabledBrowserTest()
+      : DictationKeyedServiceBrowserTest(/*session_ends_on_stream_end=*/false) {
     scoped_feature_list_.InitAndDisableFeature(kDictation);
   }
   ~DictationKeyedServiceDisabledBrowserTest() override = default;
@@ -141,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceDisabledBrowserTest,
 
 // Ensure the context menu entrypoint is shown both before, during, and after a
 // session is active.
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ShouldShowContextMenuItem) {
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
@@ -154,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommand) {
   content::ContextMenuParams params;
   params.is_editable = true;
@@ -181,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 // Ensure the context menu item can be used to start a new stream in the same
 // tab as an existing session.
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommandExistingSessionSameTab) {
   // Start a first stream
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
@@ -221,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 // Ensure the context menu item can be used to start a new stream in a second
 // window, while a session is already active in another window.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     DictationKeyedServiceBrowserTest,
     ExecuteContextMenuCommandExistingSessionDifferentWindow) {
   // Start dictation in the first window.
@@ -267,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(stream1_provider->GetLatestTranscriptionForTesting(), "Final");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommandRichlyEditable) {
   content::ContextMenuParams params;
   params.is_editable = true;
@@ -296,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
 // stream failures, including on start and mid stream.
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        StartSessionAndReceiveTranscription) {
   StartSession();
 
@@ -335,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
       [&]() { return controller->GetState() == SessionState::kInactive; }));
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        EndActiveStreamEntersFinalizingState) {
   StartSession();
 
@@ -377,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   // committed to the target.
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        StartNewStreamWhileFinalizing) {
   StartSession();
 
@@ -426,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_EQ(provider2->GetLatestTranscriptionForTesting(), "World");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterComplete) {
   StartSession();
 
@@ -455,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return provider_weak == nullptr; }));
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ProviderDestroyedAfterFailed) {
   StartSession();
 
@@ -483,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return provider_weak == nullptr; }));
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        TranscriptionCommittedToElement) {
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -541,8 +547,13 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ToggleStreamAndCommit) {
+  if (GetParam()) {
+    GTEST_SKIP()
+        << "Multiple streams per session are not possible in this config.";
+  }
+
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -620,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        TypeIntoEditableEndsStream) {
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -682,6 +693,10 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   // followed by the additional typed character, followed by the transcription.
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "abc");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationKeyedServiceBrowserTest,
+                         testing::Bool());
 
 // TODO(b/533465625): Ideally we could also make this a child of
 // DictationBrowserTestBase so we get all the helpers.

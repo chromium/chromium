@@ -14,6 +14,7 @@
 #include "base/state_transitions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
@@ -156,6 +157,11 @@ void SessionController::OnFocusChangedInPage(
     EndDictationStream();
   }
 
+  if (kSessionEndsOnStreamEnd.Get()) {
+    // Do not start additional streams, if we only do one stream in a session.
+    return;
+  }
+
   if (details.editable_level == content::EditableLevel::kNotEditable ||
       !details.global_dom_node_id.document.AsRenderFrameHostIfValid()) {
     return;
@@ -203,6 +209,11 @@ void SessionController::EndDictationStream() {
   CHECK(attached_stream_provider_);
   CHECK(state_ == SessionState::kStreamInitializing ||
         state_ == SessionState::kTranscribing);
+  if (kSessionEndsOnStreamEnd.Get()) {
+    // If ending a stream also ends the session, trigger shutdown after this one
+    // finalizes.
+    is_shutting_down_ = true;
+  }
   attached_stream_provider_->Stop();
   // TODO(b/525943882): Consider whether an initializing stream should be
   // immediately moved to deletion, rather than finalizing.

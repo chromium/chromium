@@ -35,6 +35,7 @@ class DictationInteractiveBrowserTestBase
   using StreamId = DictationMultiplexer::StreamId;
 
   DictationInteractiveBrowserTestBase();
+  explicit DictationInteractiveBrowserTestBase(bool session_ends_on_stream_end);
   ~DictationInteractiveBrowserTestBase() override;
 
   // InteractiveBrowserTestMixin:

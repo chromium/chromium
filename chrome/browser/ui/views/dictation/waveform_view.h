@@ -72,6 +72,7 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
                                              base::TimeTicks now) const;
 
   size_t GetCenterBarIndex() const;
+  bool IsCollapsedInParent() const;
 
   const bool full_size_;
 

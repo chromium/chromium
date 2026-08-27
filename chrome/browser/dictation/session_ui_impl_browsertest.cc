@@ -61,9 +61,11 @@ DECLARE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
 DEFINE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
 
 class DictationSessionUiImplBrowserTest
-    : public DictationInteractiveBrowserTestBase {
+    : public DictationInteractiveBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  DictationSessionUiImplBrowserTest() = default;
+  DictationSessionUiImplBrowserTest()
+      : DictationInteractiveBrowserTestBase(GetParam()) {}
   ~DictationSessionUiImplBrowserTest() override = default;
 
  protected:
@@ -139,8 +141,12 @@ class DictationSessionUiImplBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SessionStateUpdatesToggleButton) {
+  if (GetParam()) {
+    GTEST_SKIP() << "UI state behaviour differs in this config.";
+  }
+
   // clang-format off
   RunTestSequence(
     StartSession(),
@@ -184,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
   // clang-format off
   RunTestSequence(
     StartSession(),
@@ -198,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        ToastIsActivatableAfterCreation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -229,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        EndSessionTearsDownUI) {
   // clang-format off
   RunTestSequence(
@@ -241,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        DoneButtonEndsActiveStream) {
   // clang-format off
   RunTestSequence(
@@ -260,8 +266,13 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        ToggleStartStopFromUi) {
+  if (GetParam()) {
+    GTEST_SKIP()
+        << "Multiple streams per session are not possible in this config.";
+  }
+
   // clang-format off
   RunTestSequence(
     // Open the session ui.
@@ -305,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -322,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -342,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        UiFollowsDetachedTab) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -369,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -400,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        TabSwitchShowsDictationStoppedToast) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -420,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SwitchBackToDictatingTabDuringFinalization) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -446,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
   // clang-format off
   RunTestSequence(
     StartSession(),
@@ -467,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        FailedStreamInitAllowsOngoingFinalizing) {
   base::WeakPtr<ListenerStreamProvider> finalizing_stream;
   StreamId finalizing_stream_id;
@@ -532,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        NavigationEndsSession) {
   // clang-format off
   RunTestSequence(
@@ -553,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SecondWindowInvokesDictationMovesUI) {
   // Create a second browser window.
   Browser* second_browser = CreateBrowser(browser()->GetProfile());
@@ -583,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayButtonAppearsOnSessionStart) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -613,8 +624,12 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayButtonUpdatesOnStreamStateChange) {
+  if (GetParam()) {
+    GTEST_SKIP() << "UI state behaviour differs in this config.";
+  }
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -663,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayWaveformReceivesAudioLevelUpdates) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
@@ -688,8 +703,13 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayButtonsToggleStreamState) {
+  if (GetParam()) {
+    GTEST_SKIP()
+        << "Multiple streams per session are not possible in this config.";
+  }
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -733,5 +753,9 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   );
   // clang-format on
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationSessionUiImplBrowserTest,
+                         testing::Bool());
 
 }  // namespace dictation

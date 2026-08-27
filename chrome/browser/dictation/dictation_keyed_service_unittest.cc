@@ -20,10 +20,11 @@
 
 namespace dictation {
 
-class DictationKeyedServiceTest : public testing::Test {
+class DictationKeyedServiceTest : public testing::Test,
+                                  public testing::WithParamInterface<bool> {
  public:
   DictationKeyedServiceTest()
-      : scoped_feature_list_(CreateEnablingFeatureList()),
+      : scoped_feature_list_(CreateEnablingFeatureList(GetParam())),
         tab_weak_factory_(&tab_) {
     ON_CALL(tab_, GetWeakPtr())
         .WillByDefault(testing::Return(tab_weak_factory_.GetWeakPtr()));
@@ -42,20 +43,22 @@ class DictationKeyedServiceTest : public testing::Test {
   std::unique_ptr<MockDictationKeyedService> service_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All, DictationKeyedServiceTest, testing::Bool());
+
 // Ending a non-existent session should not crash.
-TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
+TEST_P(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->EndSession();
 }
 
-TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
+TEST_P(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->StartSessionForTesting(tab_, EmptyTarget(),
                                    DictationSessionEntryPoint::kContextMenu);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
-TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
+TEST_P(DictationKeyedServiceTest, EndSessionRemovesController) {
   service_->StartSessionForTesting(tab_, EmptyTarget(),
                                    DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service_->session_controller(), nullptr);
@@ -63,7 +66,7 @@ TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
   EXPECT_EQ(service_->session_controller(), nullptr);
 }
 
-TEST_F(DictationKeyedServiceTest,
+TEST_P(DictationKeyedServiceTest,
        RecordsMetricsOnInitializationAndStartSession) {
   base::HistogramTester histogram_tester;
 
@@ -81,7 +84,12 @@ TEST_F(DictationKeyedServiceTest,
       DictationStreamStartTrigger::kSessionStart, 1);
 }
 
-TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
+TEST_P(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
+  if (GetParam()) {
+    GTEST_SKIP()
+        << "Multiple streams per session are not possible in this config.";
+  }
+
   base::HistogramTester histogram_tester;
 
   auto service = std::make_unique<MockDictationKeyedService>(&profile_);
@@ -113,7 +121,7 @@ TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
   histogram_tester.ExpectTotalCount(kStreamStartTriggerHistogramName, 2);
 }
 
-TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
+TEST_P(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
   service_->StartSessionForTesting(tab_, EmptyTargetId(),
                                    DictationSessionEntryPoint::kContextMenu);
   auto* controller = service_->session_controller();
@@ -126,13 +134,13 @@ TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
   service_->UpdateAudioLevel(0.5f);
 }
 
-TEST_F(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
+TEST_P(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->ToggleHotkeyHandler();
   EXPECT_EQ(service_->session_controller(), nullptr);
 }
 
-TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
+TEST_P(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
   EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
@@ -142,7 +150,7 @@ TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
   EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
 }
 
-TEST_F(DictationKeyedServiceTest, TabChangedCallbackNotified) {
+TEST_P(DictationKeyedServiceTest, TabChangedCallbackNotified) {
   int callback_count = 0;
   base::CallbackListSubscription subscription =
       service_->AddDictationTabChangedCallback(base::BindLambdaForTesting(

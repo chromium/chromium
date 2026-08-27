@@ -28,6 +28,11 @@ namespace dictation {
 DictationBrowserTestBase::DictationBrowserTestBase()
     : scoped_feature_list_(CreateEnablingFeatureList()) {}
 
+DictationBrowserTestBase::DictationBrowserTestBase(
+    bool session_ends_on_stream_end)
+    : scoped_feature_list_(
+          CreateEnablingFeatureList(session_ends_on_stream_end)) {}
+
 DictationBrowserTestBase::~DictationBrowserTestBase() = default;
 
 void DictationBrowserTestBase::SetUpCommandLine(
