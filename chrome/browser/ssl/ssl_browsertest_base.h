@@ -11,10 +11,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/ssl_config.mojom.h"
 
 namespace content {
 class WebContents;
@@ -27,8 +25,7 @@ class SecurityInterstitialControllerClient;
 
 class SSLBlockingPage;
 
-class SSLUITestBase : public InProcessBrowserTest,
-                      public network::mojom::SSLConfigClient {
+class SSLUITestBase : public InProcessBrowserTest {
  public:
   SSLUITestBase();
   SSLUITestBase(const SSLUITestBase&) = delete;
@@ -40,10 +37,6 @@ class SSLUITestBase : public InProcessBrowserTest,
   void TearDown() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
-
-  // network::mojom::SSLConfigClient:
-  void OnSSLConfigUpdated(network::mojom::SSLConfigPtr config) override;
 
   static std::string GetFilePathWithHostAndPortReplacement(
       const std::string& original_file_path,
@@ -92,10 +85,6 @@ class SSLUITestBase : public InProcessBrowserTest,
   net::EmbeddedTestServer wss_server_mismatched_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-
-  network::mojom::SSLConfig last_ssl_config_;
-  mojo::Receiver<network::mojom::SSLConfigClient> receiver_{this};
-
  private:
   network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams();
 };

@@ -98,17 +98,6 @@ void SSLUITestBase::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   network::mojom::NetworkContextParamsPtr context_params =
       CreateDefaultNetworkContextParams();
-  last_ssl_config_ = *context_params->initial_ssl_config;
-  receiver_.Bind(std::move(context_params->ssl_config_client_receiver));
-}
-
-void SSLUITestBase::TearDownOnMainThread() {
-  receiver_.reset();
-}
-
-void SSLUITestBase::OnSSLConfigUpdated(
-    network::mojom::SSLConfigPtr ssl_config) {
-  last_ssl_config_ = *ssl_config;
 }
 
 // static
