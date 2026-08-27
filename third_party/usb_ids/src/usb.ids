@@ -9,8 +9,8 @@
 #	The latest version can be obtained from
 #		http://www.linux-usb.org/usb.ids
 #
-# Version: 2025.12.13
-# Date:    2025-12-13 20:34:01
+# Version: 2026.06.26
+# Date:    2026-06-26 20:34:02
 #
 
 # Vendors, devices and interfaces. Please keep sorted.
@@ -11319,6 +11319,7 @@
 	4500  LV-20 Digital Camera
 	6101  fx-9750gII
 	6102  fx-CP400
+	6103  fx-CG50
 	6801  PL-40R
 	6802  MIDI Keyboard
 	6803  CTK-3500 (MIDI keyboard)
@@ -13057,6 +13058,7 @@
 	5804  BCM5880 Secure Applications Processor with fingerprint swipe sensor
 	5832  BCM5880 Secure Applications Processor Smartcard reader
 	5843  BCM58200 ControlVault 3 (FingerPrint sensor + Contacted SmartCard)
+	5865  Fingerprint Reader (Dell Control Vault)
 	6300  Pirelli Remote NDIS Device
 	6410  BCM20703A1 Bluetooth 4.1 + LE
 	bd11  BCM4320 802.11bg Wireless Adapter
@@ -24146,7 +24148,7 @@ AT 0200  Input Undefined
 AT 0201  Microphone
 AT 0202  Desktop Microphone
 AT 0203  Personal Microphone
-AT 0204  Omni-directional Microphone
+AT 0204  Omni-Directional Microphone
 AT 0205  Microphone Array
 AT 0206  Processing Microphone Array
 AT 0300  Output Undefined
@@ -24161,8 +24163,8 @@ AT 0400  Bidirectional Undefined
 AT 0401  Handset
 AT 0402  Headset
 AT 0403  Speakerphone, no echo reduction
-AT 0404  Echo-suppressing speakerphone
-AT 0405  Echo-canceling speakerphone
+AT 0404  Echo-Suppressing Speakerphone
+AT 0405  Echo-Canceling Speakerphone
 AT 0500  Telephony Undefined
 AT 0501  Phone line
 AT 0502  Telephone
@@ -24384,7 +24386,7 @@ HUT 02  Simulation Controls
 	0b9  Elevator Trim
 	0ba  Rudder
 	0bb  Throttle
-	0bc  Flight COmmunications
+	0bc  Flight Communications
 	0bd  Flare Release
 	0be  Landing Gear
 	0bf  Toe Break
@@ -24401,8 +24403,8 @@ HUT 02  Simulation Controls
 	0ca  Barrel Elevation
 	0cb  Drive Plane
 	0cc  Ballast
-	0cd  Bicylce Crank
-	0ce  Handle Bars
+	0cd  Bicycle Crank
+	0ce  Handlebars
 	0cf  Front Brake
 	0d0  Rear Brake
 HUT 03  VR Controls
@@ -24539,7 +24541,7 @@ HUT 07  Keyboard
 	031  \ and | (Backslash and Bar)
 	032  # and ~ (Hash and Tilde, Non-US Keyboard near right shift)
 	033  ; and : (Semicolon and Colon)
-	034  ´ and " (Accent Acute and Double Quotes)
+	034  Â´ and " (Accent Acute and Double Quotes)
 	035  ` and ~ (Accent Grace and Tilde)
 	036  , and < (Comma and Less)
 	037  . and > (Period and Greater)
@@ -24674,7 +24676,7 @@ HUT 08  LEDs
 	00b  High Cut Filter
 	00c  Low Cut Filter
 	00d  Equalizer Enable
-	00e  Sound Field ON
+	00e  Sound Field On
 	00f  Surround On
 	010  Repeat
 	011  Stereo
@@ -25217,7 +25219,7 @@ HUT 14  Alphanumeric Display
 	02d  Display Status
 	02e  Stat Not Ready
 	02f  Stat Ready
-	030  Err Not a loadable Character
+	030  Err Not a Loadable Character
 	031  Err Font Data Cannot Be Read
 	032  Cursur Position Report
 	033  Row
@@ -25485,14 +25487,14 @@ L 0001  Arabic
 	04  Libya
 	05  Algeria
 	06  Morocco
-	07  Tunesia
+	07  Tunisia
 	08  Oman
 	09  Yemen
 	0a  Syria
 	0b  Jordan
 	0c  Lebanon
 	0d  Kuwait
-	0e  U.A.E
+	0e  U.A.E.
 	0f  Bahrain
 	10  Qatar
 L 0002  Bulgarian
@@ -25521,7 +25523,7 @@ L 0009  English
 	06  Ireland
 	07  South Africa
 	08  Jamaica
-	09  Carribean
+	09  Caribbean
 	0a  Belize
 	0b  Trinidad
 	0c  Zimbabwe
@@ -25557,7 +25559,7 @@ L 000c  French
 	06  Monaco
 L 000d  Hebrew
 L 000e  Hungarian
-L 000f  Idelandic
+L 000f  Icelandic
 L 0010  Italian
 	01  Italian
 	02  Swiss
@@ -25611,13 +25613,13 @@ L 002e  forgotten
 L 002f  Macedonian
 L 0036  Afrikaans
 L 0037  Georgian
-L 0038  Faeroese
+L 0038  Faroese
 L 0039  Hindi
 L 003e  Malay
 	01  Malaysia
 	02  Brunei Darassalam
 L 003f  Kazak
-L 0041  Awahili
+L 0041  Swahili
 L 0043  Uzbek
 	01  Latin
 	02  Cyrillic

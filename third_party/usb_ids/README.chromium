@@ -1,7 +1,8 @@
 Name: The USB ID Repository
 Short Name: usb-ids
 URL: http://www.linux-usb.org/usb-ids.html
-Version: 2025.12.13
+     https://packages.debian.org/testing/usb.ids
+Version: 2026.06.26
 Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
@@ -17,6 +18,10 @@ when an extension asks for permission to access it.
 
 To update, update upstream artifact URL in crowbar.txtpb, then run
 `crowbar build ./ --overwrite` in this directory.
+
+We use Debian's patched usb.ids file (which fixes typos and UTF-8 encodings).
+This file is licensed as "BSD-3-Clause OR GPL-2", see:
+https://sources.debian.org/copyright/license/usb.ids/testing
 
 Local Modifications:
 None.

@@ -1,17 +1,14 @@
 upstream {
   artifacts {
-    name: "usb_ids.tar.xz"
+    name: "usb.ids"
     http: {
-      url: "https://deb.debian.org/debian/pool/main/u/usb.ids/usb.ids_2025.12.13.orig.tar.xz"
-      digest: "sha256:492edc99d85a25dca388930c304e85543ef5913b63b5f2fdfa2c213d77709784"
+      url: "https://sources.debian.org/data/main/u/usb.ids/2026.06.26-1/usb.ids"
+      digest: "sha256:271973050dc55ea7a558b1f693d41bebe20ba6425c1b593ba144aa2eef6824fc"
     }
   }
 }
 stages {
   input {
-    unpack {
-      default { strip_components: 1 }
-    }
     patch { copybara: {} }
   }
   output {
@@ -19,4 +16,7 @@ stages {
   }
 }
 
-# LATEST: Check deb-src for latest version.
+# LATEST: Check debian index for latest version.
+#
+# We can use sources.debian.org API:
+# https://sources.debian.org/api/src/usb.ids/testing/
