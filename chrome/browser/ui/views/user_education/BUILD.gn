@@ -158,7 +158,7 @@ source_set("impl") {
     deps += [ "//chrome/browser/ui/search_promotion" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//chrome/browser/ui/webui/extensions_zero_state_promo" ]
   }
 
@@ -235,7 +235,7 @@ source_set("browser_tests") {
     "//ui/views",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [ "recent_session_observer_impl_browsertest.cc" ]
     deps += [
       "//base",

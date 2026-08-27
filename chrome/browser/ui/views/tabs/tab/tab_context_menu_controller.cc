@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "content/public/browser/context_menu_params.h"
 #endif
@@ -52,7 +52,7 @@ void TabContextMenuController::CloseMenu() {
 }
 
 bool TabContextMenuController::IsCommandIdChecked(int command_id) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     if (tab_menu_model_ && tab_menu_model_->extension_items()) {
       return tab_menu_model_->extension_items()->IsCommandIdChecked(command_id);
@@ -65,7 +65,7 @@ bool TabContextMenuController::IsCommandIdChecked(int command_id) const {
 }
 
 bool TabContextMenuController::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     if (tab_menu_model_ && tab_menu_model_->extension_items()) {
       return tab_menu_model_->extension_items()->IsCommandIdEnabled(command_id);
@@ -81,7 +81,7 @@ bool TabContextMenuController::IsCommandIdEnabled(int command_id) const {
 }
 
 bool TabContextMenuController::IsCommandIdVisible(int command_id) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     if (tab_menu_model_ && tab_menu_model_->extension_items()) {
       return tab_menu_model_->extension_items()->IsCommandIdVisible(command_id);
@@ -98,7 +98,7 @@ bool TabContextMenuController::IsCommandIdAlerted(int command_id) const {
 }
 
 void TabContextMenuController::ExecuteCommand(int command_id, int event_flags) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
     if (tab_menu_model_ && tab_menu_model_->extension_items()) {
       content::WebContents* web_contents =

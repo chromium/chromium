@@ -47,7 +47,7 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_mac.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -61,7 +61,7 @@ namespace {
 const extensions::Extension* GetExtensionForOrigin(
     Profile* profile,
     const GURL& security_origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!security_origin.SchemeIs(extensions::kExtensionScheme)) {
     return nullptr;
   }

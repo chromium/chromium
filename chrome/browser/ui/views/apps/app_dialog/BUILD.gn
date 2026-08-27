@@ -7,7 +7,7 @@ import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(is_chromeos)
-assert(enable_extensions)
+assert(enable_extensions_core)
 assert(enable_supervised_users)
 assert(toolkit_views)
 

@@ -71,9 +71,9 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace {
 
 constexpr int kWindowIconImageSize = 16;
@@ -231,12 +231,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 
   // Similarly for extension URLs and isolated-app URLs, the tail is more
   // important to elide.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme) ||
       location_bar_model_->GetURL().SchemeIs(webapps::kIsolatedAppScheme)) {
     elide_behavior = gfx::ELIDE_TAIL;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // TODO(crbug.com/424715850): use IWA app name in title (plus why registrar
   // based on browser_view->GetProfile doesn't know about the app).

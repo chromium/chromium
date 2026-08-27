@@ -31,7 +31,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/ui/views/extensions/chooser_dialog_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -224,7 +224,7 @@ namespace chrome {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 base::OnceClosure ShowDeviceChooserDialogForExtension(
     content::RenderFrameHost* owner,
     const extensions::Extension* extension,
@@ -265,7 +265,7 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
       extension->id());
   return close_closure;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -274,7 +274,7 @@ base::OnceClosure ShowDeviceChooserDialog(
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* browser_context = owner->GetBrowserContext();
   if (extensions::AppWindowRegistry::Get(browser_context)
           ->GetAppWindowForWebContents(contents)) {
@@ -295,7 +295,7 @@ base::OnceClosure ShowDeviceChooserDialog(
     return ShowDeviceChooserDialogForExtension(owner, extension,
                                                std::move(controller));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   auto* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);

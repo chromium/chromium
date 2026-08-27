@@ -37,7 +37,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "extensions/common/constants.h"
 #endif
@@ -50,7 +50,7 @@ namespace {
 
 bool IsExtensionPageInfoBubble(const GURL& url,
                                content::WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // The chrome-extension:// scheme is checked unconditionally, not via
   // `GetEnabledExtensionNameForUrl()`, because the latter returns empty for an
   // extension that is not currently enabled (or not installed). Such URLs still

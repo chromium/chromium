@@ -179,7 +179,7 @@ source_set("side_panel") {
     "//ui/webui",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     public_deps += [
       "//extensions/browser",
       "//extensions/common",
