@@ -9,8 +9,6 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class BrowserWindowInterface;
-
 namespace infobars {
 class ContentInfoBarManager;
 }  // namespace infobars
@@ -20,12 +18,9 @@ class ContentInfoBarManager;
 // suggested remedy is a browser relaunch to authorize keychain access.
 class OSCryptAsyncAvailabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates the info-bar only if OSCryptAsync isn't available and the platform
-  // is one where the issue can be resolved by a browser relaunch.
-  static void MaybeCreate(BrowserWindowInterface* browser);
-
-  // Forces an infobar to appear, bypasses other checks.
-  static void CreateForTest(infobars::ContentInfoBarManager* infobar_manager);
+  // Adds the infobar unconditionally; the decision of whether it should
+  // appear lives with the caller (see infobar_utils.cc).
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
  private:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

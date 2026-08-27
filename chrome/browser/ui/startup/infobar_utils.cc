@@ -5,6 +5,10 @@
 #include "chrome/browser/ui/startup/infobar_utils.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
@@ -23,10 +27,13 @@
 #include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_switches.h"
@@ -105,6 +112,48 @@ bool IsGpuTest() {
 }
 #endif
 
+// Shows the "relaunch to restore encryption" infobar on the browser's
+// active tab if OSCryptAsync reports encryption unavailable. The encryptor
+// arrives asynchronously, so the browser may be gone by then.
+void MaybeShowOSCryptAsyncAvailabilityInfoBar(BrowserWindowInterface* browser) {
+  if (!base::FeatureList::IsEnabled(
+          features::kOSCryptAsyncAvailabilityInfoBar)) {
+    return;
+  }
+  g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+      [](base::WeakPtr<BrowserWindowInterface> browser,
+         scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+        if (encryptor->IsEncryptionAvailable() || !browser ||
+            browser->GetTabStripModel()->empty()) {
+          return;
+        }
+        content::WebContents* web_contents =
+            browser->GetTabStripModel()->GetActiveWebContents();
+        if (!web_contents) {
+          return;
+        }
+        if (infobars::IsInfoBarMigrated(
+                infobars::InfoBarDelegate::
+                    OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)) {
+          auto* browser_infobar_manager =
+              infobars::BrowserInfoBarManager::From(g_browser_process);
+          tabs::TabInterface* tab =
+              tabs::TabInterface::GetFromContents(web_contents);
+          if (browser_infobar_manager && tab) {
+            browser_infobar_manager->Show(
+                tab, infobars::InfoBarDelegate::
+                         OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE);
+          }
+          return;
+        }
+        auto* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (infobar_manager) {
+          OSCryptAsyncAvailabilityInfoBarDelegate::Create(infobar_manager);
+        }
+      },
+      browser->GetWeakPtr()));
+}
 }  // namespace
 
 void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
@@ -236,7 +285,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
     }
   }
 
-  OSCryptAsyncAvailabilityInfoBarDelegate::MaybeCreate(browser);
+  MaybeShowOSCryptAsyncAvailabilityInfoBar(browser);
 
 #if BUILDFLAG(IS_WIN)
   if (auto* startup_launch_manager =

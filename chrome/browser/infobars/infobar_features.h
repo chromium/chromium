@@ -27,6 +27,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPdf);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedChromeForTesting);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedObsoleteSystem);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedOSCryptAsyncAvailability);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPinInfoBar);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedLocalTestPolicies);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedThemeInstalled);

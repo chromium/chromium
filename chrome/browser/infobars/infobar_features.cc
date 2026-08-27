@@ -55,6 +55,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedOSCryptAsyncAvailability,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedChromeForTesting,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -107,6 +112,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedChromeForTesting;
     case InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
       return &kMigratedObsoleteSystem;
+    case InfoBarDelegate::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE:
+      return &kMigratedOSCryptAsyncAvailability;
     case InfoBarDelegate::PIN_INFOBAR_DELEGATE:
       return &kMigratedPinInfoBar;
     case InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR:

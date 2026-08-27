@@ -388,8 +388,16 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE:
-      OSCryptAsyncAvailabilityInfoBarDelegate::CreateForTest(
-          GetInfoBarManager());
+      if (infobars::IsInfoBarMigrated(
+              IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)) {
+        if (auto* browser_infobar_manager =
+                infobars::BrowserInfoBarManager::From(g_browser_process)) {
+          browser_infobar_manager->Show(
+              GetTab(), IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE);
+        }
+      } else {
+        OSCryptAsyncAvailabilityInfoBarDelegate::Create(GetInfoBarManager());
+      }
       break;
 
     case IBD::PAGE_INFO_INFOBAR_DELEGATE:

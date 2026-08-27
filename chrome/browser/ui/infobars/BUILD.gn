@@ -16,6 +16,7 @@ source_set("infobars") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/infobars",
+    "//chrome/browser/lifetime",
     "//chrome/browser/obsolete_system",
     "//chrome/browser/ssl",
     "//chrome/browser/ui/browser_window",

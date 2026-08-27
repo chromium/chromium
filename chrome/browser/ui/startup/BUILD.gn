@@ -467,7 +467,10 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "startup_browser_creator_browsertest.cc" ]
+    sources = [
+      "oscryptasync_availability_infobar_browsertest.cc",
+      "startup_browser_creator_browsertest.cc",
+    ]
     deps = [
       ":startup",
       "//base",
@@ -475,10 +478,12 @@ if (!is_android) {
       "//base/version_info",
       "//build:buildflag_header_h",
       "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",
       "//chrome/browser:buildflags",
       "//chrome/browser:chrome_browser_main",
       "//chrome/browser/extensions",
+      "//chrome/browser/infobars",
       "//chrome/browser/lifetime",
       "//chrome/browser/prefs:util",
       "//chrome/browser/profiles",
@@ -531,6 +536,7 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/abseil-cpp:absl",
       "//third_party/blink/public/common:headers",
+      "//ui/base",
       "//ui/views",
       "//ui/views/controls/webview",
       "//url",

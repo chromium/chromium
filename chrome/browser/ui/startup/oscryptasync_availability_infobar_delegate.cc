@@ -4,56 +4,19 @@
 
 #include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 
-#include "base/feature_list.h"
-#include "base/memory/scoped_refptr.h"
-#include "chrome/browser/browser_process.h"
+#include <memory>
+
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/os_crypt/async/browser/os_crypt_async.h"
-#include "components/os_crypt/async/common/encryptor.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 // static
-void OSCryptAsyncAvailabilityInfoBarDelegate::MaybeCreate(
-    BrowserWindowInterface* browser) {
-  if (!base::FeatureList::IsEnabled(
-          features::kOSCryptAsyncAvailabilityInfoBar)) {
-    return;
-  }
-  g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
-      [](base::WeakPtr<BrowserWindowInterface> browser,
-         scoped_refptr<os_crypt_async::Encryptor> encryptor) {
-        if (encryptor->IsEncryptionAvailable() || !browser ||
-            browser->GetTabStripModel()->empty()) {
-          return;
-        }
-        content::WebContents* web_contents =
-            browser->GetTabStripModel()->GetActiveWebContents();
-        if (!web_contents) {
-          return;
-        }
-        infobars::ContentInfoBarManager* infobar_manager =
-            infobars::ContentInfoBarManager::FromWebContents(web_contents);
-        if (!infobar_manager) {
-          return;
-        }
-        infobar_manager->AddInfoBar(
-            CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
-                new OSCryptAsyncAvailabilityInfoBarDelegate())));
-      },
-      browser->GetWeakPtr()));
-}
-
-// static
-void OSCryptAsyncAvailabilityInfoBarDelegate::CreateForTest(
+void OSCryptAsyncAvailabilityInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
   infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(

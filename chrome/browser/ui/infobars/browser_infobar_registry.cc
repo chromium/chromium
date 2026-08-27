@@ -16,6 +16,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
@@ -258,6 +259,33 @@ void RegisterInfoBars() {
     browser_infobar_manager->Register(std::move(spec));
   }
 #endif
+
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE)
+            .SetMessageText(l10n_util::GetStringUTF16(
+                IDS_OSCRYPTASYNC_AVAILABILITY_INFOBAR_MESSAGE))
+            .SetIcon(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kErrorFilledIcon
+                         : vector_icons::kErrorOldIcon)
+            .SetScope(InfoBarScope::kTab)
+            .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
+            .SetExpireOnNavigation(false)
+            // The warning holds until the relaunch actually happens: no
+            // close button, and the relaunch button leaves the infobar up
+            // in case the relaunch gets cancelled.
+            .SetIsCloseable(false)
+            .SetCloseOnAccept(false)
+            .AddOkButton(l10n_util::GetStringUTF16(
+                             IDS_OSCRYPTASYNC_AVAILABILITY_INFOBAR_BUTTON),
+                         base::BindRepeating([](content::WebContents*) {
+                           chrome::AttemptRelaunch();
+                         }))
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 }
 
 void RegisterPreProfileInitInfoBars() {
