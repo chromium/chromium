@@ -133,7 +133,10 @@ bool IsLiveCaptionFeatureSupported() {
 }
 
 bool IsHeadlessCaptionFeatureSupported() {
-  return base::FeatureList::IsEnabled(media::kHeadlessLiveCaption);
+  return base::FeatureList::IsEnabled(media::kHeadlessLiveCaption) &&
+         (IsLiveCaptionFeatureSupported() ||
+          base::FeatureList::IsEnabled(
+              media::kLiveCaptionSpeechRecognitionSmallExpertModel));
 }
 
 std::string GetCaptionSettingsUrl() {
