@@ -12,8 +12,6 @@ source_set("isolated_mode") {
     "isolated_mode_settings_service.h",
     "prefs.cc",
     "prefs.h",
-    "settings.cc",
-    "settings.h",
   ]
 
   deps = [
@@ -26,7 +24,7 @@ source_set("isolated_mode") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "settings_unittest.cc" ]
+  sources = [ "isolated_mode_settings_service_unittest.cc" ]
   deps = [
     ":isolated_mode",
     "//base",

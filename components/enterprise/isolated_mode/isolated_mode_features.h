@@ -12,6 +12,11 @@ namespace enterprise_isolated_mode {
 // Enables Enterprise Isolated Mode.
 BASE_DECLARE_FEATURE(kEnableEnterpriseIsolatedMode);
 
+namespace switches {
+inline constexpr char kForceEnterpriseIsolatedModeReplacesIncognito[] =
+    "force-enterprise-isolated-mode";
+}  // namespace switches
+
 }  // namespace enterprise_isolated_mode
 
 #endif  // COMPONENTS_ENTERPRISE_ISOLATED_MODE_ISOLATED_MODE_FEATURES_H_

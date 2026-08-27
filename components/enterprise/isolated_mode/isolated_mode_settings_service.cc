@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 

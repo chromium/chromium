@@ -4,13 +4,18 @@
 
 source_set("isolated_mode") {
   sources = [
-    "settings.cc",
-    "settings.h",
+    "isolated_mode_settings_service_factory.cc",
+    "isolated_mode_settings_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
   ]
 
   deps = [
     "//chrome/common:channel_info",
     "//components/enterprise/isolated_mode",
-    "//components/prefs",
   ]
 }

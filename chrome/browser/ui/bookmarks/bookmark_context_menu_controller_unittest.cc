@@ -33,7 +33,6 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
