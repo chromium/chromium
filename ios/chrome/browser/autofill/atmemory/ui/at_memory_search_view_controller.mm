@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "build/buildflag.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
@@ -15,7 +17,9 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -151,17 +155,20 @@ enum class ItemIdentifier {
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  NSString* query = searchController.searchBar.text;
+  BOOL isSearchItemPresent =
+      [[_dataSource snapshot]
+          indexOfItemIdentifier:@(static_cast<int>(
+                                    ItemIdentifier::kSearchItem))] !=
+      NSNotFound;
 
-  if (query.length == 0) {
+  // Return to the initial state if the search bar is cleared and the current
+  // state view is not the search state.
+  if (searchController.searchBar.text.length == 0 && !isSearchItemPresent) {
     [self createSnapshotForInitialState];
     return;
   }
 
-  if ([[_dataSource snapshot]
-          indexOfItemIdentifier:@(static_cast<int>(
-                                    ItemIdentifier::kSearchItem))] !=
-      NSNotFound) {
+  if (isSearchItemPresent) {
     [self updateSnapshotForItemIdentifier:ItemIdentifier::kSearchItem];
   } else {
     [self createSnapshotForSearchState];
@@ -173,11 +180,28 @@ enum class ItemIdentifier {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   id item = [_dataSource itemIdentifierForIndexPath:indexPath];
-  if ([item isKindOfClass:[NSNumber class]] &&
-      static_cast<ItemIdentifier>([item integerValue]) ==
-          ItemIdentifier::kSearchItem) {
-    [self.mutator startSearchWithQuery:_searchController.searchBar.text];
-    [self createSnapshotForFetchingState];
+  if ([item isKindOfClass:[NSNumber class]]) {
+    ItemIdentifier itemIdentifier =
+        static_cast<ItemIdentifier>([item integerValue]);
+    switch (itemIdentifier) {
+      case ItemIdentifier::kSearchItem: {
+        [self.mutator startSearchWithQuery:_searchController.searchBar.text];
+        [self createSnapshotForFetchingState];
+        break;
+      }
+      case ItemIdentifier::kUnsupportedQueryItem: {
+        base::RecordAction(
+            base::UserMetricsAction("IOS.AtMemory.UnsupportedQueryTapped"));
+        [self openGeminiForUnsupportedQuery];
+        break;
+      }
+      case ItemIdentifier::kFetchingItem:
+      case ItemIdentifier::kNoDataItem:
+      case ItemIdentifier::kNoConnectionItem:
+      case ItemIdentifier::kNoticeItem:
+        // These cells are not selectable.
+        return;
+    }
   } else if ([item isKindOfClass:[AtMemorySearchItem class]]) {
     AtMemorySearchItem* searchItem =
         base::apple::ObjCCastStrict<AtMemorySearchItem>(item);
@@ -288,6 +312,24 @@ enum class ItemIdentifier {
 }
 
 #pragma mark - Private
+
+// Initiates the Gemini entry flow for an unsupported query and dismisses the
+// AtMemory UI upon success.
+- (void)openGeminiForUnsupportedQuery {
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AtMemorySearch];
+  startupState.prepopulatedPrompt = _searchController.searchBar.text;
+  __weak __typeof(self) weakSelf = self;
+  [self.geminiHandler
+      startGeminiEntryFlowWithStartupState:startupState
+                        baseViewController:self
+                  showSnackbarOnCompletion:NO
+                                completion:^(GeminiEntryFlowResult result) {
+                                  if (result == kGeminiEntryFlowResultSuccess) {
+                                    [weakSelf.atMemoryHandler dismissAtMemory];
+                                  }
+                                }];
+}
 
 // Creates the `snapshot` for the initial state.
 - (void)createSnapshotForInitialState {

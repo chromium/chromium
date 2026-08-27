@@ -129,6 +129,16 @@ TEST_F(GeminiAvailabilityTest, AppSwitcherFlagDisabled) {
   EXPECT_FALSE(result.enabled);
 }
 
+TEST_F(GeminiAvailabilityTest, AtMemorySearchAvailable) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({kPageActionMenu}, {});
+  fake_gemini_service_->SetIsEligible(true);
+  GeminiAvailabilityResult result =
+      IsGeminiAvailable(EntryPoint::AtMemorySearch, profile_.get(), nullptr);
+  EXPECT_TRUE(result.visible);
+  EXPECT_TRUE(result.enabled);
+}
+
 TEST_F(GeminiAvailabilityTest, NullWebStateForTabSurface) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =

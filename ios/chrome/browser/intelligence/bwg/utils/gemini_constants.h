@@ -41,6 +41,8 @@ enum class EntryPoint {
   Toolbar = 12,
   // Gemini was opened via App Switcher AI Summarization entry point.
   AppSwitcherAISummarization = 13,
+  // Gemini was opened from an unsupported query in AtMemory search.
+  AtMemorySearch = 14,
   // The entry point is unknown.
   Unknown = 100,
   kMaxValue = Unknown,

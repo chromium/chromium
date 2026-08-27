@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/web/public/web_state.h"
 
@@ -45,6 +46,8 @@
   _atMemorySearchViewController.searchResultHandler = self.searchResultHandler;
   _atMemorySearchViewController.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
+  _atMemorySearchViewController.geminiHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), GeminiCommands);
 
   autofill::AtMemoryQueryService* atMemoryQueryService =
       IOSAtMemoryQueryServiceFactory::GetForProfile(self.browser->GetProfile());

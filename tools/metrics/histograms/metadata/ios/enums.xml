@@ -870,6 +870,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="External App Store Event"/>
   <int value="12" label="Toolbar"/>
   <int value="13" label="App Switcher AI Summarization"/>
+  <int value="14" label="AtMemory Search Unsupported Query"/>
   <int value="100" label="Unknown"/>
 </enum>
 

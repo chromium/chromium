@@ -19292,6 +19292,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.AtMemory.UnsupportedQueryTapped">
+  <owner>leozhao@google.com</owner>
+  <owner>novakovica@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    The user tapped the unsupported query item in the AtMemory search view to
+    open Gemini. iOS only.
+  </description>
+</action>
+
 <action name="IOS.AutoDeletion.ActionSheet.AcceptDownloadEnrollment">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>

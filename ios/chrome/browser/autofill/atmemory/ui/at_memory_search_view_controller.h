@@ -11,6 +11,7 @@
 @protocol AtMemorySearchMutator;
 @protocol AtMemoryCommands;
 @protocol AtMemorySearchResultCommands;
+@protocol GeminiCommands;
 
 // View controller for AtMemory search.
 @interface AtMemorySearchViewController
@@ -24,6 +25,9 @@
 
 // Handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;
+
+// Handler for Gemini commands.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 @end
 

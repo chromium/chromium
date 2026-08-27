@@ -103,6 +103,14 @@ GeminiAvailabilityResult IsGeminiAvailable(EntryPoint entry_point,
       break;
     }
 
+    case EntryPoint::AtMemorySearch: {
+      // AtMemorySearch operates over stored user memories and does not evaluate
+      // active web state eligibility.
+      result.visible = profile_eligible;
+      result.enabled = profile_eligible;
+      break;
+    }
+
     case EntryPoint::ImageContextMenu:
     case EntryPoint::ImageRemixIPH: {
       bool eligible = profile_eligible && web_state_eligible &&

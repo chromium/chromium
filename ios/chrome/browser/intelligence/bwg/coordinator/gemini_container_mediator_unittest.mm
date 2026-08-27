@@ -10,6 +10,8 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -196,6 +198,27 @@ TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationActiveWebState) {
   EXPECT_EQ(mediator_.gateway, config.gateway);
 }
 
+// Tests that suggestion chips are hidden when creating configuration for
+// AtMemorySearch.
+TEST_F(GeminiContainerMediatorTest, TestCreateConfigurationForAtMemorySearch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
+                            autofill::features::debug::
+                                kAtMemorySkipEnablementChecks},
+      /*disabled_features=*/{});
+
+  AppendActiveWebState();
+
+  GeminiStartupState* at_memory_startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AtMemorySearch];
+
+  GeminiConfiguration* config = [mediator_
+      createGeminiConfigurationForActiveWebState:at_memory_startup_state
+                              baseViewController:nil];
+  EXPECT_FALSE(config.shouldShowSuggestionChips);
+}
+
 // Tests that kIPHiOSGeminiLiveIPHFeature and kIPHiOSGeminiLiveNewBadgeFeature
 // are successfully triggered when creating configuration and dismissed when
 // disconnect is called.
@@ -305,6 +328,25 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_FALSE([mediator_
       shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::
                                                   AppSwitcherAISummarization]);
+  EXPECT_TRUE([mediator_
+      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
+}
+
+// Tests that shouldShowSuggestionChipsForEntryPoint returns false for
+// AtMemorySearch.
+TEST_F(GeminiContainerMediatorTest,
+       TestShouldShowSuggestionChipsForEntryPointAtMemorySearch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
+                            autofill::features::debug::
+                                kAtMemorySkipEnablementChecks},
+      /*disabled_features=*/{});
+
+  AppendActiveWebState();
+
+  EXPECT_FALSE([mediator_ shouldShowSuggestionChipsForEntryPoint:
+                              gemini::EntryPoint::AtMemorySearch]);
   EXPECT_TRUE([mediator_
       shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
 }

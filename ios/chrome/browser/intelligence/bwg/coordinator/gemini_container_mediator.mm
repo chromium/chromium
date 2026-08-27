@@ -121,6 +121,10 @@
 
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
     (gemini::EntryPoint)entryPoint {
+  if (entryPoint == gemini::EntryPoint::AtMemorySearch) {
+    return NO;
+  }
+
   web::WebState* webState = _webStateList->GetActiveWebState();
   if (!webState) {
     return NO;

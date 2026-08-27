@@ -2,6 +2,7 @@ include_rules = [
   "+components/personal_context/core",
   "+components/personal_context/first_run",
   "+components/subscription_eligibility",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/personal_context/model",
   "+ios/chrome/browser/subscription_eligibility/model",

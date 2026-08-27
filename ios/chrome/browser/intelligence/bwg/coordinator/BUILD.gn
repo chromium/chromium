@@ -127,6 +127,7 @@ source_set("unit_tests") {
     ":container_mediator",
     ":coordinator",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/prefs",
