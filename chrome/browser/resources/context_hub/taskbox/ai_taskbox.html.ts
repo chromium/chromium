@@ -179,15 +179,40 @@ export function getHtml(this: AiTaskboxElement) {
                     </div>
                 </div>
 
-                ${this.getUnfinishedTabTodos_().length > 0 || this.getStaleTabTodos_().length > 0 ? html`
+                ${this.getUnfinishedTabTodos_().length > 0 || this.getShoppingCartTabTodos_().length > 0 || this.getStaleTabTodos_().length > 0 ? html`
                   <div class="category-sections">
                     ${this.getUnfinishedTabTodos_().length > 0 ? html`
                       <div class="category-section">
                         <div class="category-header">
-                          <h3>Unfinished actions</h3>
+                          <h3>Pending actions</h3>
                         </div>
                         <div class="todo-list">
                           ${repeat(this.getUnfinishedTabTodos_(), todo => todo.id, todo => html`
+                            <todo-item
+                                .id="${todo.id}"
+                                .heading="${todo.title}"
+                                .description="${todo.description}"
+                                .status="${todo.status}"
+                                .tabId="${todo.data.thirdParty!.tabId}"
+                                .lastActiveTimestamp="${
+                        todo.data.thirdParty!.lastActiveTimestamp}"
+                                .groupType="${todo.data.thirdParty!.groupType}"
+                                .variant="${TodoItemVariant.TAB}"
+                                .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                                .disable_state_mgmt="${this.isGeneratingTabTodos_}">
+                            </todo-item>
+                          `)}
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    ${this.getShoppingCartTabTodos_().length > 0 ? html`
+                      <div class="category-section">
+                        <div class="category-header">
+                          <h3>Shopping carts</h3>
+                        </div>
+                        <div class="todo-list">
+                          ${repeat(this.getShoppingCartTabTodos_(), todo => todo.id, todo => html`
                             <todo-item
                                 .id="${todo.id}"
                                 .heading="${todo.title}"

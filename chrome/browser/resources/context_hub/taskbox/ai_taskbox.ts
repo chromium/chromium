@@ -29,14 +29,17 @@ function convertMojoTimeToDate(mojoTime: Time): Date {
 function getTabTodoPriority(item: AutoTodoItem): number {
   const group = item.data.thirdParty?.groupType;
 
-  // Unfinished action todos are the highest priority and should be shown first.
+  // Pending action todos are the highest priority and should be shown first.
   if (group === AutoTodoGroup.kUnfinishedAction) {
     return 0;
   }
-  if (group === AutoTodoGroup.kNudgeToClose) {
+  if (group === AutoTodoGroup.kShoppingCart) {
     return 1;
   }
-  return 2;
+  if (group === AutoTodoGroup.kNudgeToClose) {
+    return 2;
+  }
+  return 3;
 }
 
 function compareFirstPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
@@ -291,6 +294,13 @@ export class AiTaskboxElement extends CrLitElement {
     return this.tabTodos?.filter(
                todo => todo.data.thirdParty?.groupType ===
                    AutoTodoGroup.kUnfinishedAction) ??
+        [];
+  }
+
+  protected getShoppingCartTabTodos_(): AutoTodoItem[] {
+    return this.tabTodos?.filter(
+               todo => todo.data.thirdParty?.groupType ===
+                   AutoTodoGroup.kShoppingCart) ??
         [];
   }
 
