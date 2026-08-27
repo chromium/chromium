@@ -8669,22 +8669,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wallpaper.DecodedSizeMB" units="MB"
-    expires_after="2025-02-10">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the size of the decoded wallpaper that is cached in memory for the
-    entire duration of the ChromeOS session. This applies to all wallpaper types
-    and layouts. It's recorded every time a wallpaper is loaded (ex: on boot),
-    and every time the wallpaper changes. Kilobyte granularity is unnecessary as
-    this metric is solely to validate a theory that the wallpaper typically only
-    occupies several megabytes of memory, rather than something on the order of
-    20-40. After this theory is validated, this metric can be removed. It has a
-    50 MB maximum.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Wallpaper.GooglePhotos.Source2"
     enum="WallpaperGooglePhotosSource" expires_after="2024-12-08">
   <owner>thuongphan@google.com</owner>

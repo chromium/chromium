@@ -150,23 +150,5 @@ TEST_F(WallpaperResizerTest, ImageId) {
   EXPECT_EQ(WallpaperResizer::GetImageId(image), resizer.original_image_id());
 }
 
-TEST_F(WallpaperResizerTest, RecordsDecodedSize) {
-  base::HistogramTester histogram_tester;
-  gfx::ImageSkia image = CreateTestImage(gfx::Size(3000, 3000));
-
-  WallpaperResizer resizer(image, gfx::Size(2000, 1000),
-                           WallpaperInfo("", WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                         WallpaperType::kDefault,
-                                         base::Time::Now().LocalMidnight()));
-  histogram_tester.ExpectTotalCount("Ash.Wallpaper.DecodedSizeMB", 0);
-  base::RunLoop loop;
-  resizer.StartResize(loop.QuitClosure());
-  loop.Run();
-
-  // 3000x3000 image should be shrunk down to 2000x1000. 2000 * 1000 *
-  // 4 bytes per pixel (RGBA) ~= 8 MB.
-  histogram_tester.ExpectUniqueSample("Ash.Wallpaper.DecodedSizeMB", 8, 1);
-}
-
 }  // namespace wallpaper
 }  // namespace ash
