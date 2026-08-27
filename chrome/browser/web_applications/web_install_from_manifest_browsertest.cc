@@ -118,6 +118,7 @@ constexpr webapps::WebappInstallSource kInstallSource =
     webapps::WebappInstallSource::WEB_INSTALL;
 constexpr apps::LaunchSource kLaunchSource =
     apps::LaunchSource::kFromWebInstallApi;
+constexpr char kInstallDialogWidgetName[] = "WebAppSimpleInstallDialog";
 
 // Records whether a named widget is ever shown. Construct it before firing the
 // install and query `shown()` afterwards. Defaults to watching the simple
@@ -125,7 +126,7 @@ constexpr apps::LaunchSource kLaunchSource =
 class WebInstallDialogShownWatcher {
  public:
   explicit WebInstallDialogShownWatcher(
-      std::string widget_name = "WebAppSimpleInstallDialog")
+      std::string widget_name = kInstallDialogWidgetName)
       : widget_name_(std::move(widget_name)) {
     observer_.set_shown_callback(
         base::BindLambdaForTesting([this](views::Widget* widget) {
@@ -570,8 +571,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   GURL manifest_url =
       embedded_https_test_server().GetURL("/dynamic_manifest.json");
 
-  permissions::PermissionRequestObserver observer(web_contents());
   base::HistogramTester histograms;
+  permissions::PermissionRequestObserver observer(web_contents());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(TryInstallFromManifest(manifest_url));
   observer.Wait();
@@ -664,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogWidgetName);
 
   ASSERT_TRUE(FireInstallFromManifestNoResolve(
       embedded_https_test_server().GetURL(kValidManifestWithId)));
@@ -765,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   const webapps::AppId app_id =
       GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogWidgetName);
 
   ASSERT_TRUE(FireInstallFromManifestNoResolve(
       embedded_https_test_server().GetURL(kValidManifestWithId), install_wc));
@@ -1028,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
       web_app::GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogWidgetName);
 
   // With no auto-response set, the dialog stays open so we can navigate while
   // it is showing.
@@ -2476,7 +2477,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestDialogTest,
   SetPermissionResponse(/*permission_granted=*/true);
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogWidgetName);
 
   // The promise only resolves once the dialog is closed, so leave it in-flight
   // to inspect the dialog.
