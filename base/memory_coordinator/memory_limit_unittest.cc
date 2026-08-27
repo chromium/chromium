@@ -78,7 +78,7 @@ TEST(MemoryLimitTest, ScaleIntegral) {
 
 TEST(MemoryLimitTest, ScaleByteSize) {
   constexpr MemoryLimit limit_50 = MemoryLimit::FromPercent(50);
-  EXPECT_EQ(limit_50.Scale(KiBU(100)), KiBU(50));
+  EXPECT_EQ(limit_50.Scale(KiB(100)), KiB(50));
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
