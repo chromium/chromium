@@ -22,7 +22,7 @@ UmaNavigationType GetUmaNavigationType(NavigationDirection direction,
                ? UmaNavigationType::FORWARD_TOUCHPAD
                : UmaNavigationType::FORWARD_TOUCHSCREEN;
   }
-  DCHECK_EQ(direction, NavigationDirection::RELOAD);
+  CHECK_EQ(direction, NavigationDirection::RELOAD, base::NotFatalUntil::M158);
   return source == OverscrollSource::TOUCHPAD
              ? UmaNavigationType::RELOAD_TOUCHPAD
              : UmaNavigationType::RELOAD_TOUCHSCREEN;

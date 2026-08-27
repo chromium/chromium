@@ -154,7 +154,7 @@ void GeolocationServiceImplContext::HandlePermissionResult(
 GeolocationServiceImpl::GeolocationServiceImpl(
     RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host, base::NotFatalUntil::M158);
 }
 
 GeolocationServiceImpl::~GeolocationServiceImpl() {
