@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.api.messaging.IBrowserNativeMessageService;
+import org.chromium.chrome.browser.extensions.api.messaging.IConnectExtensionCallback;
+import org.chromium.chrome.browser.extensions.api.messaging.IConnectPortCallback;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageCallback;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessagePort;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageService;
@@ -95,12 +97,19 @@ public class EchoService extends Service {
     private final IBrowserNativeMessageService.Stub mBinder =
             new IBrowserNativeMessageService.Stub() {
                 @Override
-                public IExtensionNativeMessageService connectExtension(
-                        String extensionId, Bundle extensionInfo) {
+                public void connectExtension(
+                        String extensionId,
+                        Bundle extensionInfo,
+                        IConnectExtensionCallback callback) {
                     Log.d(TAG, "connectExtension called for: %s", extensionId);
                     if (UNAUTHORIZED_EXTENSION_ID.equals(extensionId)) {
                         Log.w(TAG, "Rejecting unauthorized extension: %s", extensionId);
-                        throw new SecurityException("Unauthorized extension: " + extensionId);
+                        try {
+                            callback.onError("Unauthorized extension: " + extensionId);
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "RemoteException sending onError", e);
+                        }
+                        return;
                     }
 
                     // Record isVerified to parrot back in echo reply.
@@ -123,7 +132,12 @@ public class EchoService extends Service {
                             }
                         }
                     }
-                    return service;
+
+                    try {
+                        callback.onSuccess(service);
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "RemoteException sending onSuccess", e);
+                    }
                 }
             };
 
@@ -150,10 +164,16 @@ public class EchoService extends Service {
         }
 
         @Override
-        public IExtensionNativeMessagePort connectPort(IExtensionNativeMessageCallback cb) {
+        public void connectPort(
+                IExtensionNativeMessageCallback messageReceiver, IConnectPortCallback callback) {
             int portId = mPortIdCounter.incrementAndGet();
             Log.d(TAG, "connectPort for extension %s, portId=%d", mExtensionId, portId);
-            return new EchoPort(mExtensionId, mIsVerified, portId, cb);
+            EchoPort port = new EchoPort(mExtensionId, mIsVerified, portId, messageReceiver);
+            try {
+                callback.onSuccess(port);
+            } catch (RemoteException e) {
+                Log.e(TAG, "RemoteException sending onSuccess for connectPort", e);
+            }
         }
     }
 

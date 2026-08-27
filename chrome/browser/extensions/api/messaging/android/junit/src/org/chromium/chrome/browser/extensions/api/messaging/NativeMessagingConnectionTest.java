@@ -81,19 +81,22 @@ public class NativeMessagingConnectionTest {
         mFakeBrowserService =
                 new IBrowserNativeMessageService.Stub() {
                     @Override
-                    public IExtensionNativeMessageService connectExtension(
-                            String extensionId, Bundle info) throws RemoteException {
+                    public void connectExtension(
+                            String extensionId, Bundle info, IConnectExtensionCallback callback)
+                            throws RemoteException {
                         if (EXT_1.equals(extensionId)) {
                             Assert.assertNotNull(info);
                             Assert.assertTrue(info.getBoolean("isVerified"));
-                            return mMockExtensionService1;
+                            callback.onSuccess(mMockExtensionService1);
+                            return;
                         }
                         if (EXT_2.equals(extensionId)) {
                             Assert.assertNotNull(info);
                             Assert.assertFalse(info.getBoolean("isVerified"));
-                            return mMockExtensionService2;
+                            callback.onSuccess(mMockExtensionService2);
+                            return;
                         }
-                        return null; // EXT_FAIL returns null.
+                        callback.onError("Failed to connect extension");
                     }
                 };
     }
@@ -294,5 +297,41 @@ public class NativeMessagingConnectionTest {
         Assert.assertNull(connection.getSessionForTesting(EXT_1));
         Assert.assertFalse(connection.isBound());
         Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+    }
+
+    // Test that if an external app misbehaves and invokes both onSuccess and onError,
+    // or onSuccess multiple times, only the first call is processed and subsequent
+    // services are closed.
+    @Test
+    public void testConnectExtensionCallbackCalledMultipleTimes() throws RemoteException {
+        IExtensionNativeMessageService duplicateService =
+                Mockito.mock(IExtensionNativeMessageService.class);
+
+        IBrowserNativeMessageService misbehavingService =
+                new IBrowserNativeMessageService.Stub() {
+                    @Override
+                    public void connectExtension(
+                            String extensionId, Bundle info, IConnectExtensionCallback callback)
+                            throws RemoteException {
+                        callback.onSuccess(mMockExtensionService1);
+                        callback.onSuccess(duplicateService);
+                        callback.onError("Conflicting error message");
+                    }
+                };
+
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(misbehavingService.asBinder());
+
+        Assert.assertNull(connectExtension(connection, EXT_1));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // First service is retained in session.
+        var session = connection.getSessionForTesting(EXT_1);
+        Assert.assertNotNull(session);
+        Assert.assertEquals(mMockExtensionService1, session.getServiceForTesting());
+
+        // Duplicate service was immediately closed.
+        Mockito.verify(duplicateService).closeConnection();
     }
 }

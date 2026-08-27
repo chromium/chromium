@@ -13,6 +13,8 @@ android_aidl("aidl") {
   import_include = [ "java/src" ]
   sources = [
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IBrowserNativeMessageService.aidl",
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/IConnectExtensionCallback.aidl",
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/IConnectPortCallback.aidl",
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessageCallback.aidl",
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessagePort.aidl",
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessageService.aidl",

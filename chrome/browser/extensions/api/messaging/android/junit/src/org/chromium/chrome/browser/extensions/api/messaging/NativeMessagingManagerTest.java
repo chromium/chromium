@@ -10,6 +10,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -114,9 +115,12 @@ public class NativeMessagingManagerTest {
         IBrowserNativeMessageService fakeService =
                 new IBrowserNativeMessageService.Stub() {
                     @Override
-                    public IExtensionNativeMessageService connectExtension(
-                            String extensionId, android.os.Bundle info) {
-                        return null;
+                    public void connectExtension(
+                            String extensionId,
+                            android.os.Bundle info,
+                            IConnectExtensionCallback callback)
+                            throws RemoteException {
+                        callback.onError("Failed");
                     }
                 };
         mTestContext.triggerServiceConnected(fakeService.asBinder());

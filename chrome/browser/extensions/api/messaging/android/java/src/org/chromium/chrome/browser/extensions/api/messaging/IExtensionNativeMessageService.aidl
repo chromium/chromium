@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.extensions.api.messaging;
 
+import org.chromium.chrome.browser.extensions.api.messaging.IConnectPortCallback;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageCallback;
-import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessagePort;
 
-interface IExtensionNativeMessageService {
+oneway interface IExtensionNativeMessageService {
   // Called by the browser when the extension is no longer enabled (i.e. it is
   // disabled or uninstalled).
-  oneway void closeConnection();
+  void closeConnection();
 
   // Connects a message port to the external Android app. Any messages that the
   // external Android app sends back to the browser later will be sent through
-  // the callback. Used for connectNative and sendNativeMessage.
-  IExtensionNativeMessagePort connectPort(IExtensionNativeMessageCallback cb);
+  // `messageReceiver`. Used for connectNative and sendNativeMessage.
+  // callback: Invoked by the external app to accept or reject the port
+  // connection request.
+  void connectPort(
+      IExtensionNativeMessageCallback messageReceiver,
+      IConnectPortCallback callback);
 }
