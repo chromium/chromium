@@ -28,6 +28,10 @@ namespace signin {
 class AccountsInCookieJarInfo;
 }
 
+namespace version_info {
+enum class Channel;
+}
+
 class PrefRegistrySimple;
 class SigninClient;
 
@@ -97,6 +101,12 @@ class AboutSigninInternals : public KeyedService,
   //                 "status": "foo_stat", "time" : "foo_time"} elems]
   //  }
   base::DictValue GetSigninStatus();
+
+  // Returns whether capability override is allowed for the given account and
+  // capability on the given channel.
+  bool CanOverrideAccountCapability(const CoreAccountId& account_id,
+                                    std::string_view capability_name,
+                                    version_info::Channel channel) const;
 
   // signin::IdentityManager::Observer implementations.
   void OnAccountsInCookieUpdated(

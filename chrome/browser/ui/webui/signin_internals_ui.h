@@ -64,7 +64,7 @@ class SignInInternalsHandler : public content::WebUIMessageHandler,
   void OnCookieAccountsFetched(const base::DictValue& info) override;
 
  private:
-  bool AreAccountCapabilitiesOverridesAllowed() const;
+  void AddAccountCapabilitiesOverridesInfo(base::DictValue& signin_status);
 
   base::ScopedObservation<AboutSigninInternals, AboutSigninInternals::Observer>
       about_signin_internals_observeration_{this};

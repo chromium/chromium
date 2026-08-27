@@ -82,10 +82,12 @@ static_library("browser") {
     "//base:i18n",
     "//components/google/core/common",
     "//components/metrics",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/common:buildflags",
     "//components/supervised_user/core/common:features",
     "//components/sync/service",
+    "//components/version_info",
     "//components/webdata/common",
     "//crypto",
     "//services/network/public/cpp",
@@ -109,6 +111,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "about_signin_internals_unittest.cc",
     "account_investigator_unittest.cc",
     "account_management_type_metrics_recorder_unittest.cc",
     "account_metrics_id_allocator_unittest.cc",
@@ -137,6 +140,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",

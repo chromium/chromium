@@ -81,6 +81,7 @@ interface CapabilityInfo {
   label: string;
   value: string;
   override: string;
+  can_override?: boolean;
 }
 
 interface AccountCapabilitiesInfo {
@@ -284,8 +285,7 @@ function onOverrideValueChange(accountId: string, capName: string, e: Event) {
   chrome.send('overrideCapability', [accountId, capName, overrideValue]);
 }
 
-function getAccountCapabilitiesHtml(
-    infos: AccountCapabilitiesInfo[], canOverrideAccountInfo: boolean) {
+function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
   if (!infos || infos.length === 0) {
     return html``;
   }
@@ -306,7 +306,7 @@ function getAccountCapabilitiesHtml(
               <td><a href="http://go/capability-alias/${cap.name.replace('accountcapabilities/', '')}">${cap.label}</a></td>
               <td>${cap.value}</td>
               <td>
-                <select ?disabled="${!canOverrideAccountInfo}"
+                <select ?disabled="${!cap.can_override}"
                         @change="${(ev: Event) => onOverrideValueChange(
                             item.accountId, cap.name, ev)}">
                   <option value=""
@@ -346,7 +346,6 @@ function getClassFromValue(value: string): string {
 // Replace the displayed values with the latest fetched ones.
 function refreshSigninInfo(signinInfo: SigninInfo) {
   // Process templates even against an empty `signinInfo` to hide some sections.
-  const canOverrideAccountInfo = !!signinInfo.canOverrideAccountInfo;
   render(
       getSigninInfoHtml(signinInfo.signin_info),
       getRequiredElement('signin-info'));
@@ -363,8 +362,7 @@ function refreshSigninInfo(signinInfo: SigninInfo) {
       getBoundSessionInfoHtml(signinInfo.boundSessionInfo),
       getRequiredElement('bound-session-info'));
   render(
-      getAccountCapabilitiesHtml(
-          signinInfo.accountCapabilities, canOverrideAccountInfo),
+      getAccountCapabilitiesHtml(signinInfo.accountCapabilities),
       getRequiredElement('account-capabilities'));
 }
 

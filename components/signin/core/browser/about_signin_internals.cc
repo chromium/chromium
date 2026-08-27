@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_internals_util.h"
+#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -31,6 +32,7 @@
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
+#include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 
@@ -396,6 +398,35 @@ base::DictValue AboutSigninInternals::GetSigninStatus() {
   return signin_status_.ToValue(identity_manager_, signin_error_controller_,
                                 client_, account_consistency_,
                                 account_reconcilor_);
+}
+
+bool AboutSigninInternals::CanOverrideAccountCapability(
+    const CoreAccountId& account_id,
+    std::string_view capability_name,
+    version_info::Channel channel) const {
+  if (capability_name == kCanOverrideAccountInfoCapabilityName) {
+    // Overriding this capability (eg. from true to false) would mean the user
+    // couldn't then undo their action.
+    return false;
+  }
+
+  switch (channel) {
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return true;
+    case version_info::Channel::BETA:
+    case version_info::Channel::STABLE:
+      break;
+  }
+
+  if (!identity_manager_) {
+    return false;
+  }
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.GetAccountCapabilities().can_override_account_info() ==
+         signin::Tribool::kTrue;
 }
 
 void AboutSigninInternals::OnAccessTokenRequested(
