@@ -25,4 +25,5 @@ found in the LICENSE file.
     <dimen name="modal_dialog_view_horizontal_margin_lff">16dp</dimen>
     <dimen name="modal_dialog_view_vertical_margin_lff">24dp</dimen>
     <dimen name="modal_dialog_button_group_padding">18dp</dimen>
+    <dimen name="modal_dialog_title_end_icon_start_margin">16dp</dimen>
 </resources>

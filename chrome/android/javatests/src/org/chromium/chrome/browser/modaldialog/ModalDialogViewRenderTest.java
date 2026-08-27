@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -191,7 +192,89 @@ public class ModalDialogViewRenderTest {
                 mModelBuilder
                         .with(ModalDialogProperties.TITLE, mResources, R.string.title)
                         .with(ModalDialogProperties.TITLE_END_ICON, icon));
+        waitForViewToBeRendered(mModalDialogView);
         mRenderTestRule.render(mModalDialogView, "title_and_title_end_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_TitleAndTitleEndIcon_TopAligned() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        sActivityTestRule.getActivity(),
+                        R.drawable.ic_add_24dp,
+                        R.color.default_icon_color_tint_list);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.TITLE_END_ICON, icon)
+                        .with(ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.TOP));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "title_and_title_end_icon_top_aligned");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_MultiLineTitleAndTitleEndIcon() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        String longTitle =
+                "This is a significantly long title designed to test how the ModalDialogView"
+                        + " handles text wrapping across multiple lines when the title exceeds the"
+                        + " available width.";
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        sActivityTestRule.getActivity(),
+                        R.drawable.ic_add_24dp,
+                        R.color.default_icon_color_tint_list);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, longTitle)
+                        .with(ModalDialogProperties.TITLE_END_ICON, icon)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "multi_line_title_and_title_end_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_MultiLineTitleAndTitleEndIcon_TopAligned() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        String longTitle =
+                "This is a significantly long title designed to test how the ModalDialogView"
+                        + " handles text wrapping across multiple lines when the title exceeds the"
+                        + " available width.";
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        sActivityTestRule.getActivity(),
+                        R.drawable.ic_add_24dp,
+                        R.color.default_icon_color_tint_list);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, longTitle)
+                        .with(ModalDialogProperties.TITLE_END_ICON, icon)
+                        .with(ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.TOP)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(
+                mModalDialogView, "multi_line_title_and_title_end_icon_top_aligned");
     }
 
     @Test

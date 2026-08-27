@@ -34,11 +34,13 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -286,6 +288,47 @@ public class ModalDialogViewTest {
                 .check(matches(not(isDisplayed())));
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testTitleEndIcon_Gravity() {
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(ModalDialogProperties.TITLE, "Test Title")
+                                .with(
+                                        ModalDialogProperties.TITLE_END_ICON,
+                                        sActivity,
+                                        R.drawable.ic_domain)
+                                .with(ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.TOP));
+        onView(allOf(withId(R.id.title_end_icon), withParent(withId(R.id.title_container))))
+                .check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ImageView titleEndIcon = mModalDialogView.findViewById(R.id.title_end_icon);
+                    TextView titleView = mModalDialogView.findViewById(R.id.title);
+                    var params =
+                            (LinearLayout.LayoutParams)
+                                    titleEndIcon.getLayoutParams();
+                    int startMarginResId =
+                            R.dimen.modal_dialog_title_end_icon_start_margin;
+                    int expectedStartMargin =
+                            sActivity.getResources().getDimensionPixelSize(startMarginResId);
+                    int iconHeight = titleEndIcon.getDrawable().getIntrinsicHeight();
+                    int lineHeight = titleView.getLineHeight();
+                    int expectedTopMargin = Math.max(0, (lineHeight - iconHeight) / 2);
+                    Assert.assertEquals(Gravity.TOP, params.gravity);
+                    Assert.assertEquals(expectedStartMargin, params.getMarginStart());
+                    Assert.assertEquals(expectedTopMargin, params.topMargin);
+
+                    model.set(
+                            ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.CENTER_VERTICAL);
+                    Assert.assertEquals(Gravity.CENTER_VERTICAL, params.gravity);
+                    Assert.assertEquals(0, params.getMarginStart());
+                    Assert.assertEquals(0, params.topMargin);
+                });
     }
 
     @Test

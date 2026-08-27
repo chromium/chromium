@@ -347,6 +347,8 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR =
             "AutofillAiUseMaterialDatePickerInEntityEditor";
     public static final String AUTOFILL_AI_USE_PRIVATE_AI = "AutofillAiUsePrivateAi";
+    public static final String AUTOFILL_AI_WALLET_PASS_BRANDING_2026 =
+            "AutofillAiWalletPassBranding2026";
     public static final String AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK =
             "AutofillAiWalletPrivatePassesDeepLink";
     public static final String AUTOFILL_AI_WALLET_SHOPPING = "AutofillAiWalletShopping";

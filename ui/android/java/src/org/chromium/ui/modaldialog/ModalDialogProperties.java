@@ -206,6 +206,13 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<Drawable> TITLE_END_ICON =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The {@link android.view.Gravity} of the dialog icon displayed at the end of the title.
+     * Default is {@link android.view.Gravity#CENTER_VERTICAL}.
+     */
+    public static final WritableIntPropertyKey TITLE_END_ICON_GRAVITY =
+            new WritableIntPropertyKey();
+
     /** Deprecated for MESSAGE_PARAGRAPHS. The only paragraph of the dialog. */
     public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_1 =
             new WritableObjectPropertyKey<>();
@@ -396,6 +403,7 @@ public class ModalDialogProperties {
                 TITLE_MAX_LINES,
                 TITLE_ICON,
                 TITLE_END_ICON,
+                TITLE_END_ICON_GRAVITY,
                 MESSAGE_PARAGRAPH_1,
                 MESSAGE_PARAGRAPHS,
                 MENU_ITEMS,

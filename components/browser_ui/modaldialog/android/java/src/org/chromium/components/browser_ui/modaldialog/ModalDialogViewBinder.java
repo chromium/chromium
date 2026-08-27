@@ -39,6 +39,9 @@ public class ModalDialogViewBinder
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
         } else if (ModalDialogProperties.TITLE_END_ICON == propertyKey) {
             view.setTitleEndIcon(model.get(ModalDialogProperties.TITLE_END_ICON));
+        } else if (ModalDialogProperties.TITLE_END_ICON_GRAVITY == propertyKey) {
+            view.setTitleEndIconGravity(
+                    model.get(ModalDialogProperties.TITLE_END_ICON_GRAVITY));
         } else if (ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER == propertyKey) {
             view.setTitleBackButtonClickListener(
                     model.get(ModalDialogProperties.TITLE_BACK_BUTTON_CLICK_LISTENER));

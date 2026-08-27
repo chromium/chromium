@@ -12,6 +12,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -160,6 +161,10 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
             mDialogModel.set(
                     ModalDialogProperties.TITLE_END_ICON,
                     AppCompatResources.getDrawable(mContext, R.drawable.google_wallet_24dp));
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_AI_WALLET_PASS_BRANDING_2026)) {
+                mDialogModel.set(ModalDialogProperties.TITLE_END_ICON_GRAVITY, Gravity.TOP);
+            }
         }
     }
 
