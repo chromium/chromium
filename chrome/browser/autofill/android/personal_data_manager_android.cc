@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
@@ -697,7 +698,15 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
 }
 
 bool PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
-  return prefs::IsAutofillProfileManaged(prefs_);
+  // `prefs::IsAutofillProfileManaged` checks the legacy boolean policy.
+  // `AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy` checks
+  // the `kAutofillTypesBlocked` policy, which only specifies blocked (disabled)
+  // categories. Therefore, if this method returns true, Autofill profiles
+  // setting will be disabled.
+  return prefs::IsAutofillProfileManaged(prefs_) ||
+         AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+             *prefs_, GURL(),
+             AutofillClient::AutofillPolicyDataCategory::kContactInfo);
 }
 
 bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
