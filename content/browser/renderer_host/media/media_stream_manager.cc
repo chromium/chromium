@@ -4552,7 +4552,7 @@ void MediaStreamManager::RegisterDispatcherHost(
 void MediaStreamManager::RegisterVideoCaptureHost(
     std::unique_ptr<media::mojom::VideoCaptureHost> host,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   video_capture_hosts_.Add(std::move(host), std::move(receiver));
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
@@ -4585,7 +4585,7 @@ bool MediaStreamManager::IsSessionAllowedOnLockScreen(
 // static
 PermissionControllerImpl* MediaStreamManager::GetPermissionController(
     GlobalRenderFrameHostId requesting_render_frame_host_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   RenderFrameHost* rfh =
       RenderFrameHost::FromID(requesting_render_frame_host_id);
@@ -4599,8 +4599,8 @@ PermissionControllerImpl* MediaStreamManager::GetPermissionController(
 void MediaStreamManager::SubscribeToPermissionController(
     const std::string& label,
     const DeviceRequest* request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(request);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
+  CHECK(request, base::NotFatalUntil::M158);
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop.
@@ -4624,7 +4624,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     bool is_audio_request,
     bool is_video_request,
     const GURL& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   PermissionControllerImpl* controller =
       GetPermissionController(requesting_render_frame_host_id);
@@ -4680,7 +4680,7 @@ void MediaStreamManager::SetPermissionSubscriptionIDs(
     GlobalRenderFrameHostId requesting_render_frame_host_id,
     PermissionController::SubscriptionId audio_subscription_id,
     PermissionController::SubscriptionId video_subscription_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   DeviceRequest* const request = FindRequest(label);
   if (!request) {
@@ -4707,7 +4707,7 @@ void MediaStreamManager::UnsubscribeFromPermissionControllerOnUIThread(
     GlobalRenderFrameHostId requesting_render_frame_host_id,
     PermissionController::SubscriptionId audio_subscription_id,
     PermissionController::SubscriptionId video_subscription_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   PermissionControllerImpl* controller =
       GetPermissionController(requesting_render_frame_host_id);
@@ -4747,7 +4747,7 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
     const std::string& label,
     const MediaStreamDevice& captured_device,
     DeviceRequest& request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
       !IsEligibleForCaptureHandle(captured_device.id)) {
@@ -4770,7 +4770,7 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
 void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
     const std::string& label,
     const MediaStreamDevice& captured_device) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
       !IsEligibleForCaptureHandle(captured_device.id)) {
@@ -4790,8 +4790,9 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
     const std::string& label,
     const blink::mojom::StreamDevicesSet& new_devices_set,
     DeviceRequest& request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(1u, new_devices_set.stream_devices.size());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
+  CHECK_EQ(1u, new_devices_set.stream_devices.size(),
+           base::NotFatalUntil::M158);
 
   const blink::mojom::StreamDevices& new_devices =
       *new_devices_set.stream_devices[0];
@@ -4879,7 +4880,7 @@ std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 void MediaStreamManager::OnVideoCaptureHostConnectionError() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   media_devices_manager_->UpdateVideoCaptureHostsEmptyState(
       video_capture_hosts_.empty());
 }

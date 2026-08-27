@@ -32,7 +32,7 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
   explicit RenderFrameHostDelegateImpl(
       GlobalRenderFrameHostId render_frame_host_id)
       : render_frame_host_id_(render_frame_host_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   }
 
   RenderFrameHostDelegateImpl(const RenderFrameHostDelegateImpl&) = delete;
@@ -40,14 +40,14 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
       delete;
 
   ~RenderFrameHostDelegateImpl() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   }
 
   // Helper functions that are used for notifying Browser-side RenderFrameHost
   // if it is currently consuming video capture. This information is then used
   // to determine if the frame's renderer process should be backgrounded or not.
   void NotifyStreamAdded() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(
                        [](GlobalRenderFrameHostId render_frame_host_id) {
@@ -63,7 +63,7 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
   }
 
   void NotifyStreamRemoved() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(
                        [](GlobalRenderFrameHostId render_frame_host_id) {
@@ -100,7 +100,7 @@ VideoCaptureHost::VideoCaptureHost(
     : render_frame_host_delegate_(std::move(delegate)),
       media_stream_manager_(media_stream_manager) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 }
 
 // static
@@ -109,7 +109,7 @@ void VideoCaptureHost::Create(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   media_stream_manager->RegisterVideoCaptureHost(
       std::make_unique<VideoCaptureHost>(render_frame_host_id,
                                          media_stream_manager),
@@ -117,7 +117,7 @@ void VideoCaptureHost::Create(
 }
 
 VideoCaptureHost::~VideoCaptureHost() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   for (auto it = controllers_.begin(); it != controllers_.end();) {
     const base::WeakPtr<VideoCaptureController>& controller = it->second;
     if (controller) {
@@ -140,7 +140,7 @@ VideoCaptureHost::~VideoCaptureHost() {
 void VideoCaptureHost::OnError(const VideoCaptureControllerID& controller_id,
                                media::VideoCaptureError error) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoCaptureHost::DoError, weak_factory_.GetWeakPtr(),
@@ -149,7 +149,7 @@ void VideoCaptureHost::OnError(const VideoCaptureControllerID& controller_id,
 
 void VideoCaptureHost::OnCaptureConfigurationChanged(
     const VideoCaptureControllerID& controller_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (!controllers_.contains(controller_id) ||
       !device_id_to_observer_map_.contains(controller_id)) {
@@ -163,7 +163,7 @@ void VideoCaptureHost::OnNewBuffer(
     const VideoCaptureControllerID& controller_id,
     media::mojom::VideoBufferHandlePtr buffer_handle,
     int buffer_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
   }
@@ -177,7 +177,7 @@ void VideoCaptureHost::OnNewBuffer(
 void VideoCaptureHost::OnBufferDestroyed(
     const VideoCaptureControllerID& controller_id,
     int buffer_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
   }
@@ -191,7 +191,7 @@ void VideoCaptureHost::OnBufferDestroyed(
 void VideoCaptureHost::OnBufferReady(
     const VideoCaptureControllerID& controller_id,
     const ReadyBuffer& buffer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
   }
@@ -215,7 +215,7 @@ void VideoCaptureHost::OnBufferReady(
 void VideoCaptureHost::OnFrameDropped(
     const VideoCaptureControllerID& controller_id,
     media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
@@ -231,7 +231,7 @@ void VideoCaptureHost::OnFrameDropped(
 
 void VideoCaptureHost::OnFrameWithEmptyRegionCapture(
     const VideoCaptureControllerID& controller_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
@@ -246,7 +246,7 @@ void VideoCaptureHost::OnFrameWithEmptyRegionCapture(
 
 void VideoCaptureHost::OnEnded(const VideoCaptureControllerID& controller_id) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureHost::DoEnded,
                                 weak_factory_.GetWeakPtr(), controller_id));
@@ -255,7 +255,7 @@ void VideoCaptureHost::OnEnded(const VideoCaptureControllerID& controller_id) {
 void VideoCaptureHost::OnStarted(
     const VideoCaptureControllerID& controller_id) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
   }
@@ -279,7 +279,7 @@ void VideoCaptureHost::Start(
   DVLOG(1) << __func__ << " session_id=" << session_id
            << ", device_id=" << device_id << ", format="
            << media::VideoCaptureFormat::ToString(params.requested_format);
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Start");
 
@@ -294,7 +294,8 @@ void VideoCaptureHost::Start(
     return;
   }
 
-  DCHECK(!device_id_to_observer_map_.contains(device_id));
+  CHECK(!device_id_to_observer_map_.contains(device_id),
+        base::NotFatalUntil::M158);
   auto& observer_in_map = device_id_to_observer_map_[device_id];
   observer_in_map.Bind(std::move(observer));
 
@@ -315,7 +316,7 @@ void VideoCaptureHost::Start(
 
 void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Stop");
 
@@ -334,7 +335,7 @@ void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
 
 void VideoCaptureHost::Pause(const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Pause");
 
@@ -358,7 +359,7 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
                               const base::UnguessableToken& session_id,
                               const media::VideoCaptureParams& params) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureHost::Resume");
 
@@ -386,7 +387,7 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
 void VideoCaptureHost::RequestRefreshFrame(
     const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
@@ -403,7 +404,7 @@ void VideoCaptureHost::ReleaseBuffer(
     const base::UnguessableToken& device_id,
     int32_t buffer_id,
     const media::VideoCaptureFeedback& feedback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
@@ -425,7 +426,7 @@ void VideoCaptureHost::GetDeviceSupportedFormats(
     const base::UnguessableToken& session_id,
     GetDeviceSupportedFormatsCallback callback) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   media::VideoCaptureFormats supported_formats;
   if (!media_stream_manager_->video_capture_manager()
            ->GetDeviceSupportedFormats(session_id, &supported_formats)) {
@@ -439,7 +440,7 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
     const base::UnguessableToken& session_id,
     GetDeviceFormatsInUseCallback callback) {
   DVLOG(1) << __func__ << " " << device_id;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   media::VideoCaptureFormats formats_in_use;
   if (!media_stream_manager_->video_capture_manager()->GetDeviceFormatsInUse(
           session_id, &formats_in_use)) {
@@ -451,7 +452,7 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
 void VideoCaptureHost::OnNewCaptureVersion(
     const base::UnguessableToken& device_id,
     media::CaptureVersion capture_version) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   const VideoCaptureControllerID controller_id(device_id);
   if (!controllers_.contains(controller_id)) {
@@ -468,7 +469,7 @@ void VideoCaptureHost::OnNewCaptureVersion(
 
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,
                              const std::string& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
@@ -483,7 +484,7 @@ void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,
 void VideoCaptureHost::DoError(const VideoCaptureControllerID& controller_id,
                                media::VideoCaptureError error) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end())
     return;
 
@@ -499,7 +500,7 @@ void VideoCaptureHost::DoError(const VideoCaptureControllerID& controller_id,
 
 void VideoCaptureHost::DoEnded(const VideoCaptureControllerID& controller_id) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   if (controllers_.find(controller_id) == controllers_.end()) {
     return;
   }
@@ -517,7 +518,7 @@ void VideoCaptureHost::DoEnded(const VideoCaptureControllerID& controller_id) {
 void VideoCaptureHost::OnControllerAdded(
     const base::UnguessableToken& device_id,
     const base::WeakPtr<VideoCaptureController>& controller) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
   if (it == controllers_.end()) {
@@ -540,14 +541,14 @@ void VideoCaptureHost::OnControllerAdded(
     return;
   }
 
-  DCHECK(!it->second);
+  CHECK(!it->second, base::NotFatalUntil::M158);
   it->second = controller;
 }
 
 void VideoCaptureHost::DeleteVideoCaptureController(
     const VideoCaptureControllerID& controller_id,
     media::VideoCaptureError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   auto it = controllers_.find(controller_id);
   if (it == controllers_.end())
@@ -564,13 +565,13 @@ void VideoCaptureHost::DeleteVideoCaptureController(
 }
 
 void VideoCaptureHost::NotifyStreamAdded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   ++number_of_active_streams_;
   render_frame_host_delegate_->NotifyStreamAdded();
 }
 
 void VideoCaptureHost::NotifyStreamRemoved() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   // DoError() from camera side failure can be followed by Stop() from JS
   // side, so we should check before going to negative.
   // TODO(emircan): Investigate all edge cases and add more browsertests.
@@ -582,7 +583,7 @@ void VideoCaptureHost::NotifyStreamRemoved() {
 }
 
 void VideoCaptureHost::NotifyAllStreamsRemoved() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   while (number_of_active_streams_ > 0)
     NotifyStreamRemoved();
 }
