@@ -120,6 +120,9 @@ extern const base::FeatureParam<bool> kCsdCreditCardFormEnableDetectionTrigger;
 
 // Enables the creation of the ClientSideDetectionService on iOS.
 BASE_DECLARE_FEATURE(kClientSideDetectionEnabledIos);
+// Specifies whether to enforce on CSD verdicts on iOS by showing a blocking
+// page.
+extern const base::FeatureParam<bool> kCsdEnforceIos;
 
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);

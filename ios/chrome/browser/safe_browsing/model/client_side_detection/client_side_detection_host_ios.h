@@ -16,6 +16,8 @@
 #import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
+#import "components/safe_browsing/core/common/visual_utils.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/web_state_observer.h"
 #import "net/http/http_status_code.h"
@@ -111,6 +113,9 @@ class ClientSideDetectionHostIOS
   void UpdateDebuggingMetadataWithNetworkResult(
       GURL phishing_url,
       net::HttpStatusCode response_code) override;
+  // Note: Full multi-hop referrer chain tracking is not yet supported on iOS.
+  // This provides a minimal fallback containing only the current event URL and
+  // its immediate HTTP referrer.
   void AddReferrerChain(ClientPhishingRequest* verdict) override;
 
   // web::WebStateObserver implementation:
@@ -153,7 +158,13 @@ class ClientSideDetectionHostIOS
   void MaybeStartClassification(const GURL& url);
 
   // Records the pre-classification check result to histograms and updates the
-  // feature cache if Enhanced Protection is enabled.
+  // feature cache if Enhanced Protection is enabled. This serves a similar
+  // purpose to content's
+  // `ClientSideDetectionHost::ShouldClassifyUrlRequest::`
+  // `DontClassifyForPhishing()`.
+  // It differs from the base class's
+  // `RecordPreClassificationCheckResultWithAndWithoutSuffix()` which only
+  // handles histogram recording.
   void RecordPreClassificationCheckResult(const GURL& url,
                                           PreClassificationCheckResult reason);
 
@@ -199,6 +210,19 @@ class ClientSideDetectionHostIOS
                             const ClientPhishingRequest& verdict,
                             PhishingClassifier::Result result);
 
+  // Returns whether visual features can be extracted from the current page.
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction();
+
+  // Callback invoked when `PhishingImageEmbedder` completes image embedding.
+  void OnImageEmbeddingDone(
+      std::unique_ptr<safe_browsing::ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      safe_browsing::PhishingImageEmbedder::Result result,
+      const safe_browsing::ImageFeatureEmbedding& image_embedding,
+      const safe_browsing::VisualFeatures& visual_features);
+
   // Associated WebState.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
@@ -209,6 +233,7 @@ class ClientSideDetectionHostIOS
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   std::unique_ptr<PhishingClassifier> classifier_;
+  std::unique_ptr<PhishingImageEmbedder> image_embedder_;
 
   // Cached page snapshot image associated with active visual classification.
   // Retained on classification success for downstream visual image embedding.
