@@ -596,7 +596,6 @@ static_library("ui") {
     ":ui_features",
     ":url_identity",
     "//base",
-    "//chrome:strings",
     "//chrome/app:chrome_dll_resources",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
@@ -758,31 +757,23 @@ static_library("ui") {
     "//chrome/browser/vr:impl",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:impl",
-    "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/content/browser",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/breadcrumbs/core:status",
-    "//components/browser_sync",
     "//components/captive_portal/content",
     "//components/client_hints/browser",
     "//components/commerce/content/browser",
     "//components/commerce/core:feature_list",
-    "//components/commerce/core:shopping_service",
     "//components/consent_auditor/",
     "//components/content_capture/common",
     "//components/crash/core/app",
     "//components/dom_distiller/content/browser",
     "//components/download/content/factory",
     "//components/embedder_support:user_agent",
-    "//components/enterprise",
     "//components/facilitated_payments/core/features",
     "//components/feature_engagement",
-    "//components/find_in_page",
-    "//components/gcm_driver",
     "//components/history/content/browser",
     "//components/history_clusters/core",
     "//components/input",
-    "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/language_detection/core",
@@ -1511,9 +1502,7 @@ static_library("ui") {
       "//chrome/browser/visited_url_ranking:impl",
       "//chrome/browser/web_applications:features",
       "//components/app_constants",
-      "//components/autofill/core/browser",
       "//components/commerce/core:feature_list",
-      "//components/commerce/core:shopping_service",
       "//components/multistep_filter/core:features",
       "//components/notebooks/internals/webui",
       "//components/paint_preview/public",
@@ -2247,14 +2236,6 @@ static_library("ui") {
     }
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
-    deps += [ "//components/enterprise/device_trust/core:metrics" ]
-
-    if (enterprise_client_certificates) {
-      deps += [ "//components/enterprise/client_certificates/core" ]
-    }
-  }
-
   if (enable_dice_support || is_chromeos) {
     deps += [
       "webui/signin:batch_upload",
@@ -2888,9 +2869,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/ui/window_name_prompt",
-      "//components/collaboration/public",
       "//components/commerce/core:pref_names",
-      "//components/commerce/core:shopping_service",
       "//components/commerce/core:utils",
       "//components/input",
       "//components/media_message_center/vector_icons",
@@ -3285,7 +3264,6 @@ static_library("ui") {
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals",
         "//chrome/browser/ui/webui/unexportable_keys_internals:impl",
-        "//components/crash/core/common:crash_key",
         "//services/audio/public/cpp",
       ]
     } else {
