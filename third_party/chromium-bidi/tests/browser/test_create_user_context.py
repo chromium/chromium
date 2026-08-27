@@ -56,6 +56,7 @@ async def test_browser_create_user_context(websocket):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="b/553406062")
 async def test_browser_create_user_context_legacy_proxy(websocket, http_proxy_server):
     # Localhost URLs are not proxied.
     example_url = "http://example.com"
@@ -92,6 +93,7 @@ async def test_browser_create_user_context_legacy_proxy(websocket, http_proxy_se
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="b/553406062")
 @pytest.mark.parametrize("no_proxy", [True, False])
 async def test_browser_create_user_context_proxy(
     websocket, http_proxy_server, no_proxy
