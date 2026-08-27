@@ -52,6 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -316,6 +317,7 @@ public class SearchBoxMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void testApplyWhiteBackgroundWithShadow() {
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
@@ -693,5 +695,37 @@ public class SearchBoxMediatorUnitTest {
                             .getColor()
                             .getDefaultColor());
         }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testGetFakeSearchBoxTextStyle_auroraEnabled_applyTrue() {
+        assertEquals(
+                R.style.TextAppearance_FakeSearchBoxTextNewStyle,
+                SearchBoxMediator.getFakeSearchBoxTextStyle(/* apply= */ true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testGetFakeSearchBoxTextStyle_auroraEnabled_applyFalse() {
+        assertEquals(
+                R.style.TextAppearance_FakeSearchBoxTextNewStyle,
+                SearchBoxMediator.getFakeSearchBoxTextStyle(/* apply= */ false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testGetFakeSearchBoxTextStyle_auroraDisabled_applyTrue() {
+        assertEquals(
+                R.style.TextAppearance_FakeSearchBoxTextMediumDark,
+                SearchBoxMediator.getFakeSearchBoxTextStyle(/* apply= */ true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testGetFakeSearchBoxTextStyle_auroraDisabled_applyFalse() {
+        assertEquals(
+                R.style.TextAppearance_FakeSearchBoxTextMedium,
+                SearchBoxMediator.getFakeSearchBoxTextStyle(/* apply= */ false));
     }
 }
