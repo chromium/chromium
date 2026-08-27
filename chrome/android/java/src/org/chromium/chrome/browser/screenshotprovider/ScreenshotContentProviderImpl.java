@@ -123,7 +123,7 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
     }
 
     protected ScreenshotSource createScreenshotSource(Activity activity) {
-        return new ScreenshotTask(activity, ScreenshotMode.COMPOSITOR);
+        return new ScreenshotTask(activity, ScreenshotMode.DEFAULT);
     }
 
     private Bitmap blockOnCaptureFuture(
