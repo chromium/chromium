@@ -6,16 +6,17 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Price insights bottom sheet dimensions. -->
-    <dimen name="price_insights_general_padding">16dp</dimen>
-    <dimen name="price_insights_background_radius">16dp</dimen>
-    <dimen name="price_insights_content_background_radius">24dp</dimen>
-    <dimen name="price_insights_content_top_margin">18dp</dimen>
-    <dimen name="price_insights_bottom_padding">8dp</dimen>
-    <dimen name="price_insights_divider_height">1dp</dimen>
-    <dimen name="price_insights_price_tracking_button_drawable_padding">6dp</dimen>
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
     <dimen name="open_jackpot_url_button_text_horizontal_padding">28dp</dimen>
     <dimen name="open_jackpot_url_button_text_vertical_padding">14dp</dimen>
-    <dimen name="price_insights_price_tracking_button_icon_size">16dp</dimen>
     <dimen name="price_history_chart_height">168dp</dimen>
+    <dimen name="price_insights_background_radius">16dp</dimen>
+    <dimen name="price_insights_bottom_padding">8dp</dimen>
+    <dimen name="price_insights_content_background_radius">24dp</dimen>
+    <dimen name="price_insights_content_top_margin">18dp</dimen>
+    <dimen name="price_insights_divider_height">1dp</dimen>
+    <dimen name="price_insights_general_padding">16dp</dimen>
+    <dimen name="price_insights_price_tracking_button_drawable_padding">6dp</dimen>
+    <dimen name="price_insights_price_tracking_button_icon_size">16dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
