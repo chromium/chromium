@@ -142,11 +142,9 @@
   [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       performAction:grey_tap()];
 
-  id<GREYMatcher> deleteButton = grey_allOf(
-      grey_accessibilityLabel(@"Delete"),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-  [[EarlGrey selectElementWithMatcher:deleteButton] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_nil()];
