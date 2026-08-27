@@ -3369,6 +3369,20 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
     return;
   }
 
+  // If speech is playing, don't redraw and disrupt speech. The app will
+  // re-distill once speech pauses.
+  // TODO(b/550352614): Refactor this to use IsUpdateProcessingPaused() and set
+  // the state to kDistillationWithContent, bringing Readability into parity
+  // with Screen2x distillation PostProcessing. This needs to have it's own test
+  // to check that the state is set correctly and the pending distillations are
+  // executed.
+  if (features::IsReadAnythingImprovedUiEnabled() &&
+      read_aloud_model_.speech_playing()) {
+    model_.set_requires_readability_distillation(true);
+    VLOG(1) << "Distillation terminated because speech is playing";
+    return;
+  }
+
   // Set both active and target distillation to readability since distillation
   // was successful.
   model_.set_next_distillation_method(

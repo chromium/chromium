@@ -4854,6 +4854,37 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_SpeechPlaying_DefersDistillation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kReadAnythingWithReadability,
+                                        features::kReadAnythingImprovedUi},
+                                       {});
+
+  model().set_requires_readability_distillation(false);
+  read_aloud_model().SetSpeechPlaying(true);
+
+  controller().UpdateContent("Title", "Some valid content");
+
+  EXPECT_TRUE(model().requires_readability_distillation());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_SpeechNotPlaying_DoesNotDeferDistillation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kReadAnythingWithReadability,
+                                        features::kReadAnythingImprovedUi},
+                                       {});
+
+  model().set_requires_readability_distillation(false);
+  read_aloud_model().SetSpeechPlaying(false);
+
+  controller().UpdateContent("Title", "Some valid content");
+
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        UpdateContent_EmptyContentNoTree_SkipsDistillationAttempt) {
   Mock::VerifyAndClearExpectations(distiller_);
 
