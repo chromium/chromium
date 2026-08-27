@@ -11,7 +11,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -206,6 +208,44 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   // preconnect.
   WaitForPreresolveCount(3);
   EXPECT_EQ(3, preresolve_done_count_);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
+                       SearchEnginePreconnectorVisibilityUpdatedCorrectly) {
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+
+  SearchEnginePreconnector* preconnector = GetSearchEnginePreconnector();
+  ASSERT_TRUE(preconnector);
+  preconnector->SetTickClockForTesting(&tick_clock);
+
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Hide the active tab.
+  web_contents->WasHidden();
+
+  // Advance time beyond the 1-second cooldown threshold.
+  tick_clock.Advance(base::Seconds(2));
+
+  // The SearchEnginePreconnector should now consider the browser app in the
+  // background.
+  EXPECT_FALSE(preconnector->IsBrowserAppLikelyInForeground());
+
+  // Show the active tab again.
+  web_contents->WasShown();
+
+  // Advance time beyond the cooldown threshold.
+  tick_clock.Advance(base::Seconds(2));
+
+  // The SearchEnginePreconnector should now consider the browser app in the
+  // foreground.
+  EXPECT_TRUE(preconnector->IsBrowserAppLikelyInForeground());
+
+  preconnector->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 class NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout

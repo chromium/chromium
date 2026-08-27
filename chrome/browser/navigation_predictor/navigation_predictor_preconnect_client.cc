@@ -122,7 +122,7 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
   auto* search_engine_preconnector = GetSearchEnginePreconnector();
   if (search_engine_preconnector) {
     search_engine_preconnector->OnWebContentsVisibilityChanged(
-        web_contents(), current_visibility_ == content::Visibility::VISIBLE);
+        web_contents(), visibility == content::Visibility::VISIBLE);
   }
 
   // Check for same state.
