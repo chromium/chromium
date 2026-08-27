@@ -20,12 +20,16 @@ struct ImportedPasskeyInfo;
 /// A passkey item to be imported.
 @interface PasskeyImportItem : CredentialImportItem
 
+/// Creation date of the passkey in the exporter password manager, if available.
+@property(nonatomic, readonly, strong) NSDate* creationDate;
+
 /// Converts list of `ImportedPasskeyInfo` to a list of `PasskeyImportItem`.
 + (NSArray<PasskeyImportItem*>*)passkeyImportItemsFromImportedPasskeyInfos:
     (const std::vector<webauthn::ImportedPasskeyInfo>&)results;
 
 - (instancetype)initWithRpId:(NSString*)rpId
-                    username:(NSString*)username NS_DESIGNATED_INITIALIZER;
+                    username:(NSString*)username
+                creationDate:(NSDate*)creationDate NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUrl:(URLWithTitle*)url
                    username:(NSString*)username NS_UNAVAILABLE;
 

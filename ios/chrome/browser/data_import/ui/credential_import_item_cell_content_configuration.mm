@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_configuration.h"
 
+#import "base/i18n/time_formatting.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/credential_import_item_cell_content_view.h"
@@ -86,11 +88,17 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 }
 
 + (instancetype)cellConfigurationForPasskey:(PasskeyImportItem*)item {
+  NSString* message =
+      item.creationDate
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_CREDENTIAL_IMPORT_PASSKEY_CREATION_DATE,
+                base::TimeFormatShortDate(
+                    base::Time::FromNSDate(item.creationDate)))
+          : l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_CREATION_DATE);
   return [[CredentialImportItemCellContentConfiguration alloc]
           initPrivateWithURL:item.url.title
                     username:item.username
-                     // TODO(crbug.com/450982128): Pass creation date.
-                     message:nil
+                     message:message
       shouldHighlightMessage:NO];
 }
 

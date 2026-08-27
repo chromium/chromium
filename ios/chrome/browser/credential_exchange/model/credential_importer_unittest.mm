@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/rand_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 #import "ios/chrome/browser/credential_exchange/model/features.h"
 #import "ios/chrome/browser/credential_exchange/model/import_stats.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -301,6 +303,44 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithEmptyLargeBlob) {
   EXPECT_EQ(decrypted.large_blob(), "");
   EXPECT_TRUE(decrypted.has_large_blob_uncompressed_size());
   EXPECT_EQ(decrypted.large_blob_uncompressed_size(), 0u);
+}
+
+TEST_F(CredentialImporterTest, ConflictPasskeyPassesCreationDateToUI) {
+  // Add an existing passkey to trigger a conflict.
+  sync_pb::WebauthnCredentialSpecifics existing_passkey;
+  existing_passkey.set_sync_id(base::RandBytesAsString(16));
+  existing_passkey.set_credential_id(base::RandBytesAsString(16));
+  existing_passkey.set_rp_id("example.com");
+  existing_passkey.set_user_id("user_id");
+  passkey_model_->AddNewPasskeyForTesting(existing_passkey);
+
+  NSDate* creationDate = [NSDate dateWithTimeIntervalSince1970:1700000000];
+  CredentialExchangePasskey* passkey = CreateTestPasskey();
+  passkey.creationDate = creationDate;
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[ passkey ]
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
+
+  __block base::test::TestFuture<NSArray<PasskeyImportItem*>*> future;
+  OCMExpect([importer_delegate_
+                showConflictResolutionScreenWithPasswords:[OCMArg any]
+                                                 passkeys:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        __unsafe_unretained NSArray<PasskeyImportItem*>* items = nil;
+        [invocation getArgument:&items atIndex:3];
+        future.SetValue(items);
+      });
+
+  [importer_
+      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+
+  NSArray<PasskeyImportItem*>* items = future.Get();
+  ASSERT_EQ(items.count, 1u);
+  EXPECT_TRUE([items.firstObject.creationDate isEqualToDate:creationDate]);
+
+  EXPECT_OCMOCK_VERIFY(importer_delegate_);
 }
 
 TEST_F(CredentialImporterTest, DoesNotImportInvalidPassword) {

@@ -47,6 +47,7 @@ source_set("credential_import_cell_configuration") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/shared/ui/util:url_with_title",

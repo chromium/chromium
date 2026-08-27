@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//components/webauthn/core/browser/import",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test/app:test_support",

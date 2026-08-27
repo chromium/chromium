@@ -2384,6 +2384,9 @@
       <message name="IDS_IOS_CREDENTIAL_IMPORT_CONFLICT_RESOLUTION_TITLE" desc="Title modal that enables user to resolve conflict between existing credentials in Google Password Manager and those that are currently being imported. [iOS only]">
         Merge duplicates
       </message>
+      <message name="IDS_IOS_CREDENTIAL_IMPORT_PASSKEY_CREATION_DATE" desc="Creation date of a passkey in the credential import conflict resolution screen. [iOS only]">
+        Passkey created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
+      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_SUGGEST_STRONG_PASSWORD" desc="Button allowing users to request Chrome suggest a strong password">
         Suggest strong password
       </message>
