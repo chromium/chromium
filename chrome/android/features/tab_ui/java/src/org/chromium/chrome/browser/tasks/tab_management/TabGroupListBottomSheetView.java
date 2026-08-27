@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetRecyclerScrollListener;
@@ -104,8 +105,15 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        return Math.min(getSheetContentHeight(), mBottomsheetController.getContainerHeight())
-                / (float) mBottomsheetController.getContainerHeight();
+        float maxAvailable = getAvailableSheetHeight();
+        return maxAvailable <= 0
+                ? 0f
+                : Math.min(getSheetContentHeight(), maxAvailable) / maxAvailable;
+    }
+
+    private @Px int getAvailableSheetHeight() {
+        int maxHeight = mBottomsheetController.getMaxSheetHeight();
+        return maxHeight > 0 ? maxHeight : mBottomsheetController.getContainerHeight();
     }
 
     @Override
@@ -142,8 +150,11 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
 
         Resources resources = mRecyclerView.getContext().getResources();
         @Px int rowMargin = resources.getDimensionPixelSize(R.dimen.default_list_row_padding);
-        params.bottomMargin = rowMargin;
-        mRecyclerView.setLayoutParams(params);
+        if (params.bottomMargin != rowMargin) {
+            params.bottomMargin = rowMargin;
+            mRecyclerView.setLayoutParams(params);
+            invalidateContentHeight();
+        }
     }
 
     private int mCachedSheetHeightPx;
@@ -160,8 +171,7 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
         mContentView.measure(
                 MeasureSpec.makeMeasureSpec(
                         mBottomsheetController.getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(
-                        mBottomsheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+                MeasureSpec.makeMeasureSpec(getAvailableSheetHeight(), MeasureSpec.AT_MOST));
         int measuredHeight = mContentView.getMeasuredHeight();
 
         int adapterCount =
@@ -190,11 +200,12 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
                 nonListHeight += titleText.getMeasuredHeight() + lp.topMargin + lp.bottomMargin;
             }
 
+            Resources resources = mRecyclerView.getContext().getResources();
             int rowHeight =
-                    mRecyclerView
-                            .getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.tab_group_row_height);
+                    resources.getDimensionPixelSize(
+                            ChromeFeatureList.sTabGroupListContainment.getValue()
+                                    ? R.dimen.tab_group_row_height_containment
+                                    : R.dimen.tab_group_row_height);
             ViewGroup.MarginLayoutParams recyclerLp =
                     (ViewGroup.MarginLayoutParams) mRecyclerView.getLayoutParams();
             int recyclerMargins =

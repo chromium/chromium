@@ -655,7 +655,7 @@ class BottomSheet extends BottomSheetView
 
     @Override
     public float getMinOffsetPx() {
-        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mContainerHeight;
+        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * getMaxSheetHeight();
     }
 
     /**
@@ -1052,10 +1052,10 @@ class BottomSheet extends BottomSheetView
         return toolbarHeight;
     }
 
-    /** Returns the ratio of the height of the screen that the peeking state is. */
+    /** Returns the ratio of the maximum sheet height that the peeking state is. */
     public float getPeekRatio() {
-        if (mContainerHeight <= 0) return 0;
-        return getPeekHeightPx() / (float) mContainerHeight;
+        if (getMaxSheetHeight() <= 0) return 0;
+        return (float) getPeekHeightPx() / getMaxSheetHeight();
     }
 
     private @Nullable View getToolbarView() {
@@ -1962,7 +1962,7 @@ class BottomSheet extends BottomSheetView
 
         // Calculate the color based on the ratio between PEEK / FULL state.
         float maxOffset = getMaxOffsetPx();
-        float minOffset = getPeekRatio() * mContainerHeight;
+        float minOffset = getPeekRatio() * getMaxSheetHeight();
 
         boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
         if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
