@@ -4,6 +4,7 @@
 
 #include "chrome/browser/readaloud/read_aloud_service.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -99,6 +100,9 @@ void ReadAloudService::Stop() {
   // Cancel any ongoing page distillation request and reset timing metrics.
   viewer_handle_.reset();
   distillation_start_time_ = base::TimeTicks();
+  current_title_.clear();
+  current_publisher_.clear();
+  current_duration_ = base::Seconds(0);
 
   // Stopping the Utility Process and any of their connections.
   ResetUtilityConnection();
@@ -247,6 +251,16 @@ void ReadAloudService::OnArticleReady(
     return;
   }
 
+  // Refine article title in UI using distilled article headline if available.
+  // Processed before checking utility_player_.is_bound() so service state
+  // retains the distilled title independently of utility transport binding.
+  if (article_proto && !article_proto->title().empty()) {
+    current_title_ = article_proto->title();
+    if (delegate_) {
+      delegate_->OnMetadataAvailable(current_title_, current_publisher_);
+    }
+  }
+
   if (!utility_player_.is_bound()) {
     return;
   }
@@ -283,21 +297,31 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   Observe(new_web_contents);
   active_session_ =
       std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
+
+  current_duration_ = base::Seconds(0);
+
   ProvideInitialMetadata();
+  if (delegate_) {
+    delegate_->OnPlaybackProgressUpdated(base::Seconds(0), current_duration_);
+  }
+
   DistillPage(new_web_contents);
   EnsurePlaybackControllerConnected();
   InitializeAudioStream();
 }
 
 void ReadAloudService::ProvideInitialMetadata() {
-  if (!delegate_ || !web_contents()) {
+  if (!web_contents()) {
     return;
   }
-  const std::string title = base::UTF16ToUTF8(web_contents()->GetTitle());
-  const std::string publisher = base::UTF16ToUTF8(
+  current_title_ = base::UTF16ToUTF8(web_contents()->GetTitle());
+  current_publisher_ = base::UTF16ToUTF8(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           web_contents()->GetLastCommittedURL()));
-  delegate_->OnMetadataAvailable(title, publisher);
+
+  if (delegate_) {
+    delegate_->OnMetadataAvailable(current_title_, current_publisher_);
+  }
 }
 
 // Ensures the sandboxed ReadAloudPlaybackController utility process is running and
@@ -411,11 +435,20 @@ void ReadAloudService::OnDistillationFailed(
 void ReadAloudService::OnPlaybackStateChanged(
     read_aloud::mojom::PlaybackState state) {}
 
-void ReadAloudService::OnPlaybackDurationChanged(base::TimeDelta duration) {}
+void ReadAloudService::OnPlaybackDurationChanged(base::TimeDelta duration) {
+  current_duration_ = std::max(base::Seconds(0), duration);
+}
 
 void ReadAloudService::OnWordBoundaryReached(uint32_t segment_index,
                                              uint32_t character_offset,
-                                             base::TimeDelta audio_timestamp) {}
+                                             base::TimeDelta audio_timestamp) {
+  if (!current_duration_.is_positive() || !delegate_) {
+    return;
+  }
+  base::TimeDelta clamped_elapsed =
+      std::clamp(audio_timestamp, base::Seconds(0), current_duration_);
+  delegate_->OnPlaybackProgressUpdated(clamped_elapsed, current_duration_);
+}
 
 void ReadAloudService::RequestSpeechSynthesis(
     const std::u16string& text_chunk,
