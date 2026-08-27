@@ -2135,6 +2135,137 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testVerticalTabs_moveTabUpDown_singleTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        prepareVerticalTabsCoordinatorWithTabs();
+        // Put mTab2 in the middle so that it's capable of moving up and down.
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        AnchorInfo anchorInfo = new AnchorInfo(TAB_ID_2, List.of(TAB_ID_2));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        // Move single tab up.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_up, 1),
+                anchorInfo,
+                /* expectedToStart= */ true);
+
+        // Move single tab down.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_down, 1),
+                anchorInfo,
+                /* expectedToStart= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testVerticalTabs_moveTabsUpDown_multipleTabs() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        prepareVerticalTabsCoordinatorWithTabs();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        ModelList modelList = new ModelList();
+        AnchorInfo anchorInfo = new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        // Move 2 tabs up.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_up, 2),
+                anchorInfo,
+                /* expectedToStart= */ true);
+
+        // Move 2 tabs down.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_down, 2),
+                anchorInfo,
+                /* expectedToStart= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testVerticalTabs_moveTabUpDown_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        prepareVerticalTabsCoordinatorWithTabs();
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        AnchorInfo anchorInfo = new AnchorInfo(TAB_ID_2, List.of(TAB_ID_2));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        // In VT with RTL, "Move tab up" should still move toward the start (true) without
+        // inversion.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_up, 1),
+                anchorInfo,
+                /* expectedToStart= */ true);
+
+        // "Move tab down" should still move towards the end.
+        verifyReorderOption(
+                modelList,
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_down, 1),
+                anchorInfo,
+                /* expectedToStart= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testVerticalTabs_boundaries_firstAndLastTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        prepareVerticalTabsCoordinatorWithTabs();
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        // First tab (index 0): can move down, but not up.
+        ModelList firstTabModelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                firstTabModelList, new AnchorInfo(TAB_ID, List.of(TAB_ID)));
+        String moveUpTitle = mActivity.getResources().getQuantityString(R.plurals.move_tabs_up, 1);
+        String moveDownTitle =
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_down, 1);
+
+        assertNull(
+                "First tab should not have 'Move tab up'",
+                findItemByTitle(firstTabModelList, moveUpTitle));
+        assertNotNull(
+                "First tab should have 'Move tab down'",
+                findItemByTitle(firstTabModelList, moveDownTitle));
+
+        // Last tab: can move up, but not down.
+        when(mTabModel.indexOf(mTabOutsideOfGroup)).thenReturn(2);
+        ModelList lastTabModelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                lastTabModelList,
+                new AnchorInfo(TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertNotNull(
+                "Last tab should have 'Move tab up'",
+                findItemByTitle(lastTabModelList, moveUpTitle));
+        assertNull(
+                "Last tab should not have 'Move tab down'",
+                findItemByTitle(lastTabModelList, moveDownTitle));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     public void testAccessibilityMoveOptions_visibleForSingleTab() {
         mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
 
@@ -3002,6 +3133,28 @@ public class TabContextMenuCoordinatorUnitTest {
     // --------------------------------------------------------------//
     // ----------------------  UTILITY METHODS ----------------------//
     // --------------------------------------------------------------//
+
+    /**
+     * Verifies that a reorder list item with the given string exists in {@code modelList}, clicks
+     * it, and asserts that {@code mReorderFunction} is called with the expected direction.
+     *
+     * @param modelList The menu model list containing the items.
+     * @param expectedTitle The expected string title of the reorder item.
+     * @param expectedAnchorInfo The anchor info expected to be passed to the reorder callback.
+     * @param expectedToStart Whether the click is expected to move the item toward the start (true
+     *     for up, false for down).
+     */
+    private void verifyReorderOption(
+            ModelList modelList,
+            String expectedTitle,
+            AnchorInfo expectedAnchorInfo,
+            boolean expectedToStart) {
+        ListItem item = findItemByTitle(modelList, expectedTitle);
+        assertNotNull("Expected reorder item '" + expectedTitle + "' to be present", item);
+        item.model.get(CLICK_LISTENER).onClick(mView);
+        verify(mReorderFunction, times(1)).accept(refEq(expectedAnchorInfo), eq(expectedToStart));
+        Mockito.clearInvocations((Object) mReorderFunction);
+    }
 
     private void verifyVerticalTabsDirectionalLabels(ModelList modelList) {
         ListItem newTabBelowItem = findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id);
