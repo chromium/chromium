@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 
 #import <AppKit/AppKit.h>
+#import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
@@ -31,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 
 // Enables the allowsChangingSelectedContent property on the native macOS
@@ -134,6 +136,169 @@ API_AVAILABLE(macos(14.0))
 }
 @end
 
+namespace {
+
+// Frame queue depth for one-shot screenshot capture. Setting to 1 minimizes
+// frame buffer allocation and latency in ScreenCaptureKit.
+constexpr NSInteger kScreenshotQueueDepth = 1;
+
+// Maximum duration to wait for a frame from ScreenCaptureKit before timing out.
+constexpr base::TimeDelta kScreenshotTimeout = base::Seconds(5);
+
+// Delay allowing the system picker window to complete its fade-out animation
+// before capturing the screen.
+constexpr base::TimeDelta kPickerFadeOutDelay = base::Milliseconds(250);
+
+// Default resolution used as fallback when filter content rect is empty.
+constexpr int kDefaultFallbackWidth = 1920;
+constexpr int kDefaultFallbackHeight = 1080;
+
+}  // namespace
+
+// Helper object that captures a single video frame from an SCStream and stops
+// capture immediately. SCScreenshotManager unconditionally enforces
+// system-level TCC screen recording permissions in macOS System Settings
+// (returning error -3801 when not granted), whereas SCStream is officially
+// authorized by Apple to capture without global permissions when using an
+// SCContentFilter originating from the SCContentSharingPicker.
+API_AVAILABLE(macos(14.0))
+@interface EphemeralFrameGrabber : NSObject <SCStreamOutput, SCStreamDelegate>
+- (instancetype)initWithCallback:
+    (base::OnceCallback<void(const SkBitmap&)>)callback;
+- (void)startWithFilter:(SCContentFilter*)filter
+          configuration:(SCStreamConfiguration*)config;
+- (void)finishWithBitmap:(const SkBitmap&)bitmap;
+@end
+
+API_AVAILABLE(macos(14.0))
+@implementation EphemeralFrameGrabber {
+  base::OnceCallback<void(const SkBitmap&)> _callback;
+  SCStream* __strong _stream;
+  std::unique_ptr<base::OneShotTimer> _timeoutTimer;
+  scoped_refptr<base::SingleThreadTaskRunner> _taskRunner;
+  EphemeralFrameGrabber* __strong _selfRetain;
+}
+
+- (instancetype)initWithCallback:
+    (base::OnceCallback<void(const SkBitmap&)>)callback {
+  if ((self = [super init])) {
+    _callback = std::move(callback);
+    _taskRunner = base::SingleThreadTaskRunner::GetCurrentDefault();
+    _timeoutTimer = std::make_unique<base::OneShotTimer>();
+  }
+  return self;
+}
+
+- (void)startWithFilter:(SCContentFilter*)filter
+          configuration:(SCStreamConfiguration*)config {
+  DCHECK(_taskRunner->RunsTasksInCurrentSequence());
+  NSError* error = nil;
+  _stream = [[SCStream alloc] initWithFilter:filter
+                               configuration:config
+                                    delegate:self];
+  if (!_stream) {
+    [self finishWithBitmap:SkBitmap()];
+    return;
+  }
+
+  if (![_stream addStreamOutput:self
+                           type:SCStreamOutputTypeScreen
+             sampleHandlerQueue:dispatch_get_main_queue()
+                          error:&error] ||
+      error) {
+    [self finishWithBitmap:SkBitmap()];
+    return;
+  }
+
+  _selfRetain = self;
+
+  _timeoutTimer->Start(FROM_HERE, kScreenshotTimeout,
+                       base::BindOnce(
+                           [](EphemeralFrameGrabber* grabber) {
+                             [grabber finishWithBitmap:SkBitmap()];
+                           },
+                           base::Unretained(self)));
+
+  __block EphemeralFrameGrabber* strongSelf = self;
+  [_stream startCaptureWithCompletionHandler:^(NSError* _Nullable startError) {
+    if (startError) {
+      [strongSelf finishWithBitmap:SkBitmap()];
+    }
+  }];
+}
+
+- (void)stream:(SCStream*)stream
+    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+                   ofType:(SCStreamOutputType)type {
+  DCHECK(_taskRunner->RunsTasksInCurrentSequence());
+  if (type != SCStreamOutputTypeScreen || !_callback) {
+    return;
+  }
+
+  CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+  if (!pixelBuffer) {
+    [self finishWithBitmap:SkBitmap()];
+    return;
+  }
+
+  if (CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly) !=
+      kCVReturnSuccess) {
+    [self finishWithBitmap:SkBitmap()];
+    return;
+  }
+
+  const size_t width = CVPixelBufferGetWidth(pixelBuffer);
+  const size_t height = CVPixelBufferGetHeight(pixelBuffer);
+  const size_t bytes_per_row = CVPixelBufferGetBytesPerRow(pixelBuffer);
+  const void* src = CVPixelBufferGetBaseAddress(pixelBuffer);
+
+  SkBitmap bitmap;
+  if (src && width > 0 && height > 0) {
+    SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+                                         kPremul_SkAlphaType);
+    if (bitmap.tryAllocPixels(info)) {
+      SkPixmap src_pixmap(info, src, bytes_per_row);
+      bitmap.writePixels(src_pixmap);
+    }
+  }
+  CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+  [self finishWithBitmap:bitmap];
+}
+
+- (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
+  [self finishWithBitmap:SkBitmap()];
+}
+
+- (void)finishWithBitmap:(const SkBitmap&)bitmap {
+  if (!_taskRunner->RunsTasksInCurrentSequence()) {
+    _taskRunner->PostTask(
+        FROM_HERE,
+        base::BindOnce([](EphemeralFrameGrabber* grabber,
+                          SkBitmap bmp) { [grabber finishWithBitmap:bmp]; },
+                       base::Unretained(self), bitmap));
+    return;
+  }
+
+  if (!_callback) {
+    return;
+  }
+
+  _timeoutTimer->Stop();
+  auto callback = std::move(_callback);
+  SCStream* stream = _stream;
+  _stream = nil;
+
+  if (stream) {
+    [stream stopCaptureWithCompletionHandler:^(NSError* _Nullable error){
+    }];
+  }
+
+  std::move(callback).Run(bitmap);
+  _selfRetain = nil;
+}
+@end
+
 namespace content {
 
 // When enabled, this allows you to change the maximum number of streams you can
@@ -143,6 +308,7 @@ constexpr base::FeatureParam<int> kMaxContentShareCountValue = {
     &kMaxContentShareCount, "max_content_share_count", 50};
 
 namespace {
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SCContentSharingPickerSessionEvent {
@@ -595,7 +761,7 @@ void NativeScreenCapturePickerMac::CaptureScreenshot(
       base::BindOnce(&NativeScreenCapturePickerMac::CaptureScreenshotInternal,
                      weak_ptr_factory_.GetWeakPtr(), session_id,
                      std::move(callback)),
-      base::Milliseconds(250));
+      kPickerFadeOutDelay);
 }
 
 void NativeScreenCapturePickerMac::CaptureScreenshotInternal(
@@ -638,25 +804,15 @@ void NativeScreenCapturePickerMac::CaptureScreenshotInternal(
     config.width = rect.size.width * scale;
     config.height = rect.size.height * scale;
   } else {
-    config.width = 1920;
-    config.height = 1080;
+    config.width = kDefaultFallbackWidth;
+    config.height = kDefaultFallbackHeight;
   }
 
-  [SCScreenshotManager
-      captureImageWithFilter:filter
-               configuration:config
-           completionHandler:base::CallbackToBlock(base::BindOnce(
-                                 [](base::OnceCallback<void(const SkBitmap&)>
-                                        cb,
-                                    CGImageRef image, NSError* error) {
-                                   if (error || !image) {
-                                     std::move(cb).Run(SkBitmap());
-                                     return;
-                                   }
-                                   std::move(cb).Run(
-                                       skia::CGImageToSkBitmap(image));
-                                 },
-                                 std::move(callback)))];
+  config.queueDepth = kScreenshotQueueDepth;
+
+  EphemeralFrameGrabber* grabber =
+      [[EphemeralFrameGrabber alloc] initWithCallback:std::move(callback)];
+  [grabber startWithFilter:filter configuration:config];
 }
 
 void CaptureScreenshotFromMacNativePicker(
