@@ -36,6 +36,7 @@ source_set("dictation") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser/dictation:metrics",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views:layout_provider",
