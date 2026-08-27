@@ -10,16 +10,16 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="app_language_section"
         android:order="1">
 
         <org.chromium.chrome.browser.language.settings.LanguageItemPickerPreference
             android:key="app_language_preference" />
 
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
       android:key="content_languages_section"
       android:title="@string/languages_content_title"
       android:order="2"
@@ -38,9 +38,9 @@ found in the LICENSE file.
             android:widgetLayout="@layout/accept_languages_list"
             tools:ignore="LineLength" />
 
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="translation_settings_section"
         android:order="5"
         android:title="@string/languages_settings_translation_title"
@@ -53,7 +53,7 @@ found in the LICENSE file.
             app:allowDividerAbove="false"
             app:allowDividerBelow="true"/>
 
-        <PreferenceCategory
+        <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
             android:key="translation_advanced_settings_section"
             android:title="@string/languages_settings_advanced"
             app:allowDividerAbove="true"
@@ -77,8 +77,8 @@ found in the LICENSE file.
               app:allowDividerAbove="false"
               app:allowDividerBelow="false" />
 
-        </PreferenceCategory>
+        </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
-    </PreferenceCategory>
+    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
 </PreferenceScreen>

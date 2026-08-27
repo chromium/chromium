@@ -282,4 +282,14 @@ public class ChromeBasePreferenceTest {
         onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
     }
+
+    @Test
+    @LargeTest
+    public void testIconSpaceReservedDefaultFalse() {
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
+        Assert.assertFalse(preference.isIconSpaceReserved());
+
+        ChromeBasePreferenceCategory category = new ChromeBasePreferenceCategory(mActivity);
+        Assert.assertFalse(category.isIconSpaceReserved());
+    }
 }

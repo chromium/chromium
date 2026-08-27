@@ -15,11 +15,11 @@ found in the LICENSE file.
         android:selectable="false"
         app:backgroundStyle="none" />
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="glic_preference_section"
         android:title="@string/settings_glic_preferences_section" />
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:key="glic_button"
             android:title="@string/glic_pin"
             android:summary="@string/settings_glic_button_toggle_sublabel"
@@ -44,7 +44,7 @@ found in the LICENSE file.
             android:defaultValue="false" />
 
     <!-- TODO(b/531824318): Make the shortcut customizable. -->
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:key="glic_launcher_hotkey"
             android:selectable="false"
             android:title="@string/settings_glic_keyboard_shortcut"
@@ -52,14 +52,14 @@ found in the LICENSE file.
             app:widgetLayout="@layout/preference_widget_hotkey" />
 
     <!-- TODO(b/531824318): Make the shortcut customizable. -->
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:key="glic_navigation_shortcut"
             android:selectable="false"
             android:title="@string/settings_glic_navigation_shortcut"
             android:summary="@string/settings_glic_navigation_shortcut_sublabel"
             app:widgetLayout="@layout/preference_widget_hotkey_navigation" />
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="glic_permissions_section"
         android:title="@string/settings_glic_permissions_section" />
 
@@ -84,7 +84,7 @@ found in the LICENSE file.
         android:summary="@string/settings_glic_permissions_chrome_web_actuation_toggle_sublabel"
         app:expandedContentLayout="@layout/glic_auto_browse" />
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="glic_actor_login_permissions"
         android:title=
             "@string/settings_glic_actor_login_permissions_section_title"

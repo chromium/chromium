@@ -36,7 +36,7 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
 
     public ExpandablePreferenceGroup(Context context, AttributeSet attrs) {
         super(context, attrs, R.attr.preferenceStyle);
-
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
         setWidgetLayoutResource(R.layout.checkable_image_view_widget);
     }
 

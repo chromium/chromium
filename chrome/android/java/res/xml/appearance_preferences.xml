@@ -7,13 +7,13 @@ found in the LICENSE file.
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment"
         android:key="ui_theme"
         android:order="0"
         android:title="@string/theme_settings" />
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
         android:key="toolbar_shortcut"
         android:order="1"
@@ -22,7 +22,7 @@ found in the LICENSE file.
 <!--The following bookmarks bar settings preferences repeat
 the same order, title and summary because they are mutually
 exclusive options. -->
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment"
         android:key="bookmark_bar"
         android:order="2"

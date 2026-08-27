@@ -172,6 +172,7 @@ public class AccessibilitySettingsTest {
         Preference captionsPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_CAPTIONS);
         Assert.assertNotNull(captionsPref);
+        Assert.assertFalse(captionsPref.isIconSpaceReserved());
         Assert.assertNotNull(captionsPref.getOnPreferenceClickListener());
 
         Instrumentation.ActivityMonitor monitor =
@@ -199,6 +200,7 @@ public class AccessibilitySettingsTest {
                 mAccessibilitySettings.findPreference(PREF_IMAGE_DESCRIPTIONS);
 
         Assert.assertNotNull(imageDescriptionsPref);
+        Assert.assertFalse(imageDescriptionsPref.isIconSpaceReserved());
         Assert.assertTrue(
                 "Image Descriptions option should be visible", imageDescriptionsPref.isVisible());
 
@@ -231,6 +233,7 @@ public class AccessibilitySettingsTest {
         Preference zoomInfoPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
         Assert.assertNotNull(zoomInfoPref);
+        Assert.assertFalse(zoomInfoPref.isIconSpaceReserved());
         Assert.assertNotNull(zoomInfoPref.getOnPreferenceClickListener());
 
         // First scroll to the "Saved zoom levels" preference, then click.

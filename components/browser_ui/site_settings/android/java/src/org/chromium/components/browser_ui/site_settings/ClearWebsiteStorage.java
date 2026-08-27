@@ -12,6 +12,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Dialog that prompts the user to clear website storage on the device. */
 @NullMarked
@@ -29,15 +30,16 @@ public class ClearWebsiteStorage extends DialogPreference {
 
     public ClearWebsiteStorage(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initialize(context);
+        initialize(context, attrs);
     }
 
     public ClearWebsiteStorage(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize(context);
+        initialize(context, attrs);
     }
 
-    private void initialize(Context context) {
+    private void initialize(Context context, @Nullable AttributeSet attrs) {
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
         setDialogLayoutResource(R.layout.clear_data_dialog);
         mContext = context;
     }

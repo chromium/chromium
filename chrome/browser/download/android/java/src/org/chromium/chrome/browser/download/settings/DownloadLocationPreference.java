@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** The preference used to save the download directory in download settings page. */
 @NullMarked
@@ -37,6 +38,7 @@ public class DownloadLocationPreference extends DialogPreference
     /** Constructor for DownloadLocationPreference. */
     public DownloadLocationPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
         setDialogLayoutResource(R.layout.download_location_preference);
         mAdapter = new DownloadLocationPreferenceAdapter(getContext(), this);
     }

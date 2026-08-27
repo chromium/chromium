@@ -13,6 +13,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
  * A {@link Preference} that provides a clickable edit link as a widget.
@@ -24,6 +25,7 @@ public class AutofillEditLinkPreference extends Preference {
     /** Constructor for inflating from XML. */
     public AutofillEditLinkPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
         setSelectable(false);
         setWidgetLayoutResource(R.layout.autofill_server_data_edit_link);
         setTitle(R.string.autofill_from_google_account_long);

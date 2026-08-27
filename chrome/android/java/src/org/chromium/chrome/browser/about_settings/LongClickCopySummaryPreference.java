@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.base.Clipboard;
 
 /** Preference that copies its summary to the clipboard upon a long press. */
@@ -21,6 +22,7 @@ public class LongClickCopySummaryPreference extends Preference {
     /** Constructor for inflating from XML. */
     public LongClickCopySummaryPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
     }
 
     @Override

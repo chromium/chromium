@@ -8,11 +8,11 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="true">
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings"
         android:key="default_categories"
         android:title="Default categories"/><!-- developer strings are not translated -->
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings"
         android:key="non_default_categories"
         android:title="Disabled-by-default categories"/>

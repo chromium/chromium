@@ -7,15 +7,15 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="privacy_section"
         android:title="@string/privacy_section_title" />
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="clear_browsing_data"
         android:title="@string/clear_browsing_data_title"
         android:summary="@string/clear_browsing_data_summary"
         android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment" />
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="privacy_guide"
         android:title="@string/privacy_guide_pref_title"
         android:summary="@string/privacy_guide_pref_summary"
@@ -24,15 +24,15 @@ found in the LICENSE file.
         android:key="third_party_cookies"
         android:title="@string/third_party_cookies_link_row_label"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="do_not_track"
         android:title="@string/do_not_track_title"
         android:fragment="org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings" />
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="universal_opt_out"
         android:title="@string/universal_opt_out_title"
         android:fragment="org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings" />
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="preload_pages"
         android:title="@string/preload_pages_title"
         android:summary="@string/preload_pages_summary"
@@ -43,13 +43,13 @@ found in the LICENSE file.
         android:summary="@string/settings_incognito_tab_lock_summary_android_setting_off"
         android:persistent="false" />
 
-    <PreferenceCategory
+    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="security_section"
       android:title="@string/security_section_title" />
      <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
             android:key="advanced_protection_info"
             android:title="@string/settings_privacy_and_security_advanced_protection_section_title"/>
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="safe_browsing"
         android:title="@string/prefs_safe_browsing_title"
         android:summary="@string/prefs_safe_browsing_summary"
@@ -65,7 +65,7 @@ found in the LICENSE file.
         android:key="https_first_mode_legacy"
         android:title="@string/settings_https_first_mode_title" />
     <!-- New HTTPS-First Mode settings sub-page. Hidden if HttpsFirstBalancedMode flag is disabled. -->
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="https_first_mode"
         android:title="@string/settings_https_first_mode_title"
         android:fragment="org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment" />
