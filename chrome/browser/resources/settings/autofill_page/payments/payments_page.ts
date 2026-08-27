@@ -43,6 +43,8 @@ import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractio
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
 import type {PersonalDataChangedListener} from '../autofill_manager_proxy.js';
+import {AutofillPolicyDataCategory, computeEffectiveAutofillPref} from '../policy_utils.js';
+import type {TypesBlockedEntry} from '../policy_utils.js';
 
 import type {DotsIbanMenuClickEvent, RemoteIbanMenuClickEvent} from './iban_list_entry.js';
 import type {SettingsPaymentsListElement} from './payments_list.js';
@@ -96,8 +98,18 @@ export class SettingsPaymentsPageElement extends
     return getTemplate();
   }
 
+  static get observers() {
+    return [
+      `updateCreditCardEnabledSyntheticPref_(
+          prefs.autofill.credit_card_enabled.*,
+          prefs.autofill.types_blocked.*)`,
+    ];
+  }
   static get properties() {
     return {
+      creditCardEnabledSyntheticPref_: {
+        type: Object,
+      },
       prefs: Object,
 
       /**
@@ -241,6 +253,8 @@ export class SettingsPaymentsPageElement extends
   declare ibans: chrome.autofillPrivate.IbanEntry[];
   declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
   declare private showIbanSettingsEnabled_: boolean;
+  declare private creditCardEnabledSyntheticPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private autofillEnableWalletBrandingEnabled_: boolean;
   declare private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
       null;
@@ -255,6 +269,35 @@ export class SettingsPaymentsPageElement extends
   // </if>
   declare private cvcStorageAvailable_: boolean;
   declare private showBulkRemoveCvcConfirmationDialog_: boolean;
+
+  /**
+   * Computes a synthetic preference that overlays the wildcard
+   * `autofill.types_blocked` enterprise policy onto the user's
+   * `autofill.credit_card_enabled` preference.
+   */
+  private updateCreditCardEnabledSyntheticPref_() {
+    this.creditCardEnabledSyntheticPref_ = computeEffectiveAutofillPref(
+        this.getPref<boolean>('autofill.credit_card_enabled'),
+        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        AutofillPolicyDataCategory.PAYMENTS);
+  }
+
+  /**
+   * Handles user toggle changes on the payments autofill toggle. Since the
+   * toggle is one-way bound to `creditCardEnabledSyntheticPref_`, we explicitly
+   * update the underlying `autofill.credit_card_enabled` pref, guarding against
+   * changes when policy is enforced.
+   */
+  private onCreditCardToggleChange_(event: Event) {
+    // If the preference is enforced by enterprise policy, do not allow the user
+    // to toggle or mutate the underlying preference value.
+    if (this.creditCardEnabledSyntheticPref_?.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return;
+    }
+    const toggle = event.target as SettingsToggleButtonElement;
+    this.setPrefValue('autofill.credit_card_enabled', toggle.checked);
+  }
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -340,7 +383,8 @@ export class SettingsPaymentsPageElement extends
     // To align with Android, only record this histogram when the pref is
     // enabled.
     if (this.prefsInitialized_ &&
-        this.getPref<boolean>('autofill.credit_card_enabled').value) {
+        (this.creditCardEnabledSyntheticPref_?.value ??
+         this.getPref<boolean>('autofill.credit_card_enabled').value)) {
       MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
           'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
           this.creditCards.length === 0);
@@ -641,7 +685,7 @@ export class SettingsPaymentsPageElement extends
       return true;
     }
 
-    const creditCardEnabled =
+    const creditCardEnabled = this.creditCardEnabledSyntheticPref_?.value ??
         this.getPref<boolean>('autofill.credit_card_enabled').value;
     return !creditCardEnabled || !this.deviceAuthAvailable_;
   }

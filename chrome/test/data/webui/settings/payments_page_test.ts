@@ -33,7 +33,10 @@ suite('PaymentsPageUiTest', function() {
     // Initializing with fake prefs
     const page = document.createElement('settings-payments-page');
     page.prefs = {
-      autofill: {credit_card_enabled: {}},
+      autofill: {
+        credit_card_enabled: {},
+        types_blocked: {value: []},
+      },
     };
     document.body.appendChild(page);
 
@@ -150,6 +153,116 @@ suite('PaymentsPage', function() {
         testMetricsBrowserProxy,
         'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards');
   });
+
+  test('verifyTypesBlockedEnterprisePolicy', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const page = await createPaymentsPage(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+          types_blocked: {
+            value: [{url_pattern: '*', blocked_types: ['payments']}],
+          },
+        });
+
+    assertTrue(page.$.autofillCreditCardToggle.controlDisabled());
+    assertFalse(page.$.autofillCreditCardToggle.checked);
+
+    const addCreditCardButton =
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCreditCardButton);
+    assertTrue(addCreditCardButton.disabled);
+  });
+
+  test('verifyTypesBlockedAllEnterprisePolicy', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const page = await createPaymentsPage(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+          types_blocked: {
+            value: [{url_pattern: '*', blocked_types: ['all']}],
+          },
+        });
+
+    assertTrue(page.$.autofillCreditCardToggle.controlDisabled());
+    assertFalse(page.$.autofillCreditCardToggle.checked);
+
+    const addCreditCardButton =
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCreditCardButton);
+    assertTrue(addCreditCardButton.disabled);
+  });
+
+  test('verifyTypesBlockedEnterprisePolicyNegativeTest', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const page = await createPaymentsPage(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+          types_blocked: {
+            value: [{url_pattern: '*', blocked_types: ['contact_info']}],
+          },
+        });
+
+    assertFalse(page.$.autofillCreditCardToggle.controlDisabled());
+    assertTrue(page.$.autofillCreditCardToggle.checked);
+
+    const addCreditCardButton =
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+    assertTrue(!!addCreditCardButton);
+    assertFalse(addCreditCardButton.disabled);
+  });
+
+  test('verifyAddButtonDisabledWhenUserTogglesOff', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const page = await createPaymentsPage(
+        /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+          credit_card_enabled: {value: true},
+        });
+
+    const addCreditCardButton =
+        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard')!;
+    assertTrue(!!addCreditCardButton);
+    assertFalse(addCreditCardButton.disabled);
+
+    // User toggles off payments.
+    page.$.autofillCreditCardToggle.click();
+    flush();
+
+    assertFalse(page.$.autofillCreditCardToggle.checked);
+    assertTrue(addCreditCardButton.disabled);
+  });
+
+  test(
+      'verifyAddPaymentMethodsButtonDisabledWhenUserTogglesOff',
+      async function() {
+        loadTimeData.overrideValues({
+          showIbansSettings: true,
+        });
+        const page = await createPaymentsPage(
+            /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
+              credit_card_enabled: {value: true},
+            });
+
+        const addPaymentMethodsButton =
+            page.shadowRoot!.querySelector<CrButtonElement>(
+                '#addPaymentMethods')!;
+        assertTrue(!!addPaymentMethodsButton);
+        assertFalse(addPaymentMethodsButton.disabled);
+
+        // User toggles off payments.
+        page.$.autofillCreditCardToggle.click();
+        flush();
+
+        assertFalse(page.$.autofillCreditCardToggle.checked);
+        assertTrue(addPaymentMethodsButton.disabled);
+      });
 
   test('verifyCreditCardCount', async function() {
     const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -386,6 +499,7 @@ suite('PaymentsPage', function() {
     const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[], {
           credit_card_enabled: {value: true},
+          types_blocked: {value: []},
           payment_methods_mandatory_reauth: {value: false},
         });
 
@@ -417,6 +531,7 @@ suite('PaymentsPage', function() {
     page.prefs = {
       autofill: {
         credit_card_enabled: {value: true},
+        types_blocked: {value: []},
         payment_methods_mandatory_reauth: {value: false},
       },
     };

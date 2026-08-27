@@ -156,6 +156,7 @@ suite('ContactInfoPageUiTest', function() {
     page.prefs = {
       autofill: {
         profile_enabled: {},
+        types_blocked: {value: []},
         email_verification_state: {
           type: chrome.settingsPrivate.PrefType.DICTIONARY,
           value: {},
@@ -171,6 +172,88 @@ suite('ContactInfoPageUiTest', function() {
 
     assertTrue(
         !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+  });
+
+  test('AutofillTypesBlockedPolicy', async function() {
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+      types_blocked: {
+        value: [{url_pattern: '*', blocked_types: ['contact_info']}],
+      },
+    });
+    flush();
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#autofillProfileToggle')!;
+    assertTrue(toggle.controlDisabled());
+    assertFalse(toggle.checked);
+    assertTrue(page.$.addAddress.disabled);
+
+    // Dynamically clearing the policy blocks triggers the .* observer.
+    page.set('prefs.autofill.types_blocked.value', []);
+    flush();
+    assertFalse(toggle.controlDisabled());
+    assertTrue(toggle.checked);
+    assertFalse(page.$.addAddress.disabled);
+
+    // Dynamically re-applying policy blocks updates toggle back to disabled.
+    page.set('prefs.autofill.types_blocked.value', [
+      {url_pattern: '*', blocked_types: ['contact_info']},
+    ]);
+    flush();
+    assertTrue(toggle.controlDisabled());
+    assertFalse(toggle.checked);
+    assertTrue(page.$.addAddress.disabled);
+  });
+
+  test('AutofillTypesBlockedAllPolicy', async function() {
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+      types_blocked: {
+        value: [{url_pattern: '*', blocked_types: ['all']}],
+      },
+    });
+    flush();
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#autofillProfileToggle')!;
+    assertTrue(toggle.controlDisabled());
+    assertFalse(toggle.checked);
+    assertTrue(page.$.addAddress.disabled);
+  });
+
+  test('AutofillTypesBlockedPolicyNegativeTest', async function() {
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+      types_blocked: {
+        value: [{url_pattern: '*', blocked_types: ['payments']}],
+      },
+    });
+    flush();
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#autofillProfileToggle')!;
+    assertFalse(toggle.controlDisabled());
+    assertTrue(toggle.checked);
+    assertFalse(page.$.addAddress.disabled);
+  });
+
+  test('verifyAddAddressDisabledWhenUserTogglesOff', async function() {
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+    });
+    flush();
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#autofillProfileToggle')!;
+    assertFalse(page.$.addAddress.disabled);
+
+    // User toggles off addresses.
+    toggle.click();
+    flush();
+
+    assertFalse(toggle.checked);
+    assertTrue(page.$.addAddress.disabled);
   });
 
   test('EmailVerificationToggle', async function() {

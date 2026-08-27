@@ -33,7 +33,8 @@
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
     sub-label="$i18n{enableCreditCardsSublabel}"
-    pref="{{prefs.autofill.credit_card_enabled}}">
+    pref="[[creditCardEnabledSyntheticPref_]]"
+    on-settings-boolean-control-change="onCreditCardToggleChange_">
 </settings-toggle-button>
 
 <!-- Extension-override indicator for payments autofill enable/disable; this
@@ -61,7 +62,7 @@
       sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
       pref="{{prefs.autofill.payment_methods_mandatory_reauth}}" no-set-pref
       disabled="[[shouldDisableAuthToggle_(
-          prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_,
+          creditCardEnabledSyntheticPref_.value, deviceAuthAvailable_,
           prefsInitialized_)]]"
       on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
   </settings-toggle-button>
@@ -74,7 +75,7 @@
         no-extension-indicator label="$i18n{enableCvcStorageLabel}"
         aria-label="[[getCvcStorageAriaLabel_(creditCards)]]"
         sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
-        disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+        disabled="[[!creditCardEnabledSyntheticPref_.value]]"
         on-sub-label-link-clicked="onBulkRemoveCvcClick_"
         pref="{{prefs.autofill.payment_cvc_storage}}">
     </settings-toggle-button>
@@ -85,7 +86,7 @@
     no-extension-indicator label="$i18n{cardBenefitsLabel}"
     sub-label-with-link="[[cardBenefitsSublabel_]]"
     on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
-    disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+    disabled="[[!creditCardEnabledSyntheticPref_.value]]"
     pref="{{prefs.autofill.payment_card_benefits}}">
 </settings-toggle-button>
 
@@ -95,7 +96,7 @@
       no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
       sub-label-with-link="[[payOverTimeSublabel_]]"
       on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
-      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      disabled="[[!creditCardEnabledSyntheticPref_.value]]"
       pref="{{prefs.autofill.bnpl_enabled}}">
   </settings-toggle-button>
 </template>
@@ -125,7 +126,7 @@
       if="[[!shouldShowIbanSettings_(showIbanSettingsEnabled_)]]">
     <cr-button id="addCreditCard" class="header-aligned-button"
         on-click="onAddCreditCardClick_" aria-label="$i18n{addCreditCardTitle}"
-        disabled="[[!prefs.autofill.credit_card_enabled.value]]">
+        disabled="[[!creditCardEnabledSyntheticPref_.value]]">
       $i18n{add}
     </cr-button>
   </template>
@@ -134,7 +135,7 @@
     <cr-button class="header-aligned-button"
         id="addPaymentMethods" on-click="onAddPaymentMethodClick_"
         aria-label="$i18n{addPaymentMethods}"
-        disabled="[[!prefs.autofill.credit_card_enabled.value]]">
+        disabled="[[!creditCardEnabledSyntheticPref_.value]]">
       $i18n{add}
       <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
     </cr-button>

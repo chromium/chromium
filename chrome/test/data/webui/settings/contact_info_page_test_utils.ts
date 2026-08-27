@@ -58,6 +58,10 @@ export async function createContactInfoPage(
         type: chrome.settingsPrivate.PrefType.DICTIONARY,
         value: {},
       },
+      types_blocked: {
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
       ...prefValues,
     },
   };

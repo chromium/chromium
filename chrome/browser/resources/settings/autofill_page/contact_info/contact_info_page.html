@@ -43,8 +43,8 @@
       <settings-toggle-button id="autofillProfileToggle"
           no-extension-indicator label="$i18n{enableProfilesLabel}"
           sub-label="$i18n{enableProfilesSublabel}"
-          pref="{{prefs.autofill.profile_enabled}}"
-          on-change="onAutofillProfileToggleChanged_">
+          pref="[[profileEnabledSyntheticPref_]]"
+          on-settings-boolean-control-change="onAutofillProfileToggleChange_">
       </settings-toggle-button>
       <template is="dom-if" if="[[showGmailOtpFillingToggle_]]" restamp>
         <settings-toggle-button id="autofillOtpFillingToggle"
@@ -74,7 +74,7 @@
         <h2 class="flex">$i18n{addresses}</h2>
         <cr-button id="addAddress" class="header-aligned-button"
             on-click="onAddAddressClick_" aria-label="$i18n{addAddressTitle}"
-            disabled="[[!prefs.autofill.profile_enabled.value]]">
+            disabled="[[!profileEnabledSyntheticPref_.value]]">
           $i18n{add}
         </cr-button>
       </div>

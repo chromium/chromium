@@ -46,6 +46,10 @@ export async function createPaymentsPage(
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
+      types_blocked: {
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
       ...(prefValues as Record<string, unknown>),
     },
   };

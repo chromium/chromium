@@ -31,7 +31,8 @@ import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../me
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
-import {checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
+import {AutofillPolicyDataCategory, checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
+import type {TypesBlockedEntry} from '../policy_utils.js';
 
 import {getTemplate} from './shopping_page.html.js';
 
@@ -72,10 +73,10 @@ export class SettingsShoppingPageElement extends
       shoppingOptedIn_: {
         type: Object,
         computed: `computeShoppingOptedIn_(
-              prefs.autofill.autofill_ai.shopping_entities_enabled,
+              prefs.autofill.autofill_ai.shopping_entities_enabled.*,
               prefs.autofill.profile_enabled.value,
-              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI},
-              prefsInitialized_)`,
+              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.*,
+              prefsInitialized_, prefs.autofill.types_blocked.*)`,
       },
 
       /**
@@ -163,12 +164,20 @@ export class SettingsShoppingPageElement extends
         AiEnterpriseFeaturePrefName.AUTOFILL_AI);
 
     checkAutofillPoliciesAndModifyPrefIfNecessary(
-        fakePref, addressPolicy, autofillAiPolicy);
+        fakePref, addressPolicy, autofillAiPolicy,
+        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        AutofillPolicyDataCategory.SHOPPING);
 
     return fakePref;
   }
 
   private onOptInToggleChange_() {
+    // If the preference is enforced by enterprise policy, do not allow the user
+    // to toggle or mutate the underlying preference value.
+    if (this.$.optInToggle.pref?.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return;
+    }
     this.setPrefValue(
         'autofill.autofill_ai.shopping_entities_enabled',
         this.$.optInToggle.checked);

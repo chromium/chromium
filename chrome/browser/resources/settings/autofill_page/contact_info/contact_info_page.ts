@@ -43,10 +43,10 @@ import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
 import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_manager_proxy.js';
 import {AutofillManagerImpl} from '../autofill_manager_proxy.js';
+import {AutofillPolicyDataCategory, computeEffectiveAutofillPref} from '../policy_utils.js';
+import type {TypesBlockedEntry} from '../policy_utils.js';
 
 import {getTemplate} from './contact_info_page.html.js';
-
-
 
 /**
  * The enum values for the Autofill.Address.IsEnabled.Change metric.
@@ -95,6 +95,13 @@ export class SettingsContactInfoPageElement extends
     return getTemplate();
   }
 
+  static get observers() {
+    return [
+      `updateProfileEnabledSyntheticPref_(
+          prefs.autofill.profile_enabled.*,
+          prefs.autofill.types_blocked.*)`,
+    ];
+  }
   static get properties() {
     return {
       prefs: Object,
@@ -140,6 +147,10 @@ export class SettingsContactInfoPageElement extends
         type: Boolean,
         computed: 'computeShowGmailOtpFillingToggle_(accountInfo_)',
       },
+
+      profileEnabledSyntheticPref_: {
+        type: Object,
+      },
     };
   }
 
@@ -155,7 +166,45 @@ export class SettingsContactInfoPageElement extends
   declare private isEmailVerificationProtocolEnabled_: boolean;
   declare private emailVerificationAddresses_: string[];
   declare private showGmailOtpFillingToggle_: boolean;
+  declare private profileEnabledSyntheticPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   private emailSharedMenuModel_: string = '';
+
+  /**
+   * Computes a synthetic preference that overlays the wildcard
+   * `autofill.types_blocked` enterprise policy onto the user's
+   * `autofill.profile_enabled` preference.
+   */
+  private updateProfileEnabledSyntheticPref_() {
+    this.profileEnabledSyntheticPref_ = computeEffectiveAutofillPref(
+        this.getPref<boolean>('autofill.profile_enabled'),
+        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        AutofillPolicyDataCategory.CONTACT_INFO);
+  }
+
+  /**
+   * Handles user toggle changes on the address autofill toggle. Since the
+   * toggle is one-way bound to `profileEnabledSyntheticPref_`, we explicitly
+   * update the underlying `autofill.profile_enabled` pref and record metrics,
+   * guarding against changes when policy is enforced.
+   */
+  private onAutofillProfileToggleChange_(event: Event) {
+    // If the preference is enforced by enterprise policy, do not allow the user
+    // to toggle or mutate the underlying preference value.
+    if (this.profileEnabledSyntheticPref_?.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return;
+    }
+    const toggle = event.target as SettingsToggleButtonElement;
+    this.setPrefValue('autofill.profile_enabled', toggle.checked);
+
+    const value = toggle.checked ? AutofillAddressOptInChange.OPT_IN :
+                                   AutofillAddressOptInChange.OPT_OUT;
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Autofill.Address.IsEnabled.Change', value,
+        AutofillAddressOptInChange.COUNT);
+  }
+
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -559,14 +608,6 @@ export class SettingsContactInfoPageElement extends
         'Autofill.ProfileDeleted.Any.' + suffix, wasDeletionConfirmed);
   }
 
-  private onAutofillProfileToggleChanged_() {
-    const value = this.$.autofillProfileToggle.checked ?
-        AutofillAddressOptInChange.OPT_IN :
-        AutofillAddressOptInChange.OPT_OUT;
-    chrome.metricsPrivate.recordEnumerationValue(
-        'Autofill.Address.IsEnabled.Change', value,
-        AutofillAddressOptInChange.COUNT);
-  }
 
   private onGmailOtpFillingLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(

@@ -32,7 +32,8 @@ import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../me
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
-import {checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
+import {AutofillPolicyDataCategory, checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
+import type {TypesBlockedEntry} from '../policy_utils.js';
 
 import {getTemplate} from './travel_page.html.js';
 
@@ -77,10 +78,10 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
       travelOptedIn_: {
         type: Object,
         computed: `computeTravelOptedIn_(
-              prefs.autofill.autofill_ai.travel_entities_enabled,
+              prefs.autofill.autofill_ai.travel_entities_enabled.*,
               prefs.autofill.profile_enabled.value,
-              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI},
-              prefsInitialized_)`,
+              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.*,
+              prefsInitialized_, prefs.autofill.types_blocked.*)`,
       },
 
       /**
@@ -162,12 +163,20 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         AiEnterpriseFeaturePrefName.AUTOFILL_AI);
 
     checkAutofillPoliciesAndModifyPrefIfNecessary(
-        fakePref, addressPolicy, autofillAiPolicy);
+        fakePref, addressPolicy, autofillAiPolicy,
+        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        AutofillPolicyDataCategory.TRAVEL);
 
     return fakePref;
   }
 
   private onOptInToggleChange_() {
+    // If the preference is enforced by enterprise policy, do not allow the user
+    // to toggle or mutate the underlying preference value.
+    if (this.$.optInToggle.pref?.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return;
+    }
     this.setPrefValue(
         'autofill.autofill_ai.travel_entities_enabled',
         this.$.optInToggle.checked);
