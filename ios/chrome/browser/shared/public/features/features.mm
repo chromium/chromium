@@ -1259,10 +1259,10 @@ bool IsNextOldDesignEnabled() {
   return base::FeatureList::IsEnabled(kNextOldDesign);
 }
 
-BASE_FEATURE(kVoiceSearchMicPermissions, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsVoiceSearchMicPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(kVoiceSearchMicPermissions);
-}
-
 BASE_FEATURE(kRecoverTabsOfLastClosedWindow, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDomainLevelSitePermissions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDomainLevelSitePermissionsEnabled() {
+  return base::FeatureList::IsEnabled(kDomainLevelSitePermissions);
+}

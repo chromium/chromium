@@ -1018,14 +1018,14 @@ BASE_DECLARE_FEATURE(kNextOldDesign);
 // Returns true if the NextOldDesign feature is enabled.
 bool IsNextOldDesignEnabled();
 
-// Feature to enable mic permissions for voice search.
-BASE_DECLARE_FEATURE(kVoiceSearchMicPermissions);
-
-// Returns true if VoiceSearchMicPermissions is enabled.
-bool IsVoiceSearchMicPermissionsEnabled();
-
 // Feature to control whether the application should try to restore the tabs
 // of the last closed window on startup when possible.
 BASE_DECLARE_FEATURE(kRecoverTabsOfLastClosedWindow);
+
+// Feature to enable domain level site permissions.
+BASE_DECLARE_FEATURE(kDomainLevelSitePermissions);
+
+// Returns true if DomainLevelSitePermissions is enabled.
+bool IsDomainLevelSitePermissionsEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

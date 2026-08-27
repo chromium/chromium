@@ -661,6 +661,11 @@ inline constexpr char kDisplayTracingDescription[] =
     "Enables display and input latency tracing instrumentation on view "
     "controllers.";
 
+inline constexpr char kDomainLevelSitePermissionsName[] =
+    "Domain Level Site Permissions";
+inline constexpr char kDomainLevelSitePermissionsDescription[] =
+    "Enables domain level site permissions.";
+
 inline constexpr char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
     "Enable Download Auto-Deletion Testing Mode";
 inline constexpr char
@@ -2084,11 +2089,6 @@ inline constexpr char kViewCertificateInformationName[] =
     "View Certificate Information";
 inline constexpr char kViewCertificateInformationDescription[] =
     "Enables viewing detailed certificate information in Page Info.";
-
-inline constexpr char kVoiceSearchMicPermissionsName[] =
-    "Voice Search Microphone Permissions";
-inline constexpr char kVoiceSearchMicPermissionsDescription[] =
-    "Enables microphone permissions optimizations for voice search.";
 
 inline constexpr char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "

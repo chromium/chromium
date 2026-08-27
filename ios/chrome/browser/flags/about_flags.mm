@@ -2999,10 +2999,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPrepopulatedEnginesShadowVariantsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kPrepopulatedEnginesShadowVariants)},
-    {"voice-search-mic-permissions",
-     flag_descriptions::kVoiceSearchMicPermissionsName,
-     flag_descriptions::kVoiceSearchMicPermissionsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kVoiceSearchMicPermissions)},
     {"glic-actor-autofill", flag_descriptions::kGlicActorAutofillName,
      flag_descriptions::kGlicActorAutofillDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kGlicActorAutofill)},
@@ -3064,6 +3060,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiInsightsChipAblationName,
      flag_descriptions::kGeminiInsightsChipAblationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiInsightsChipAblation)},
+    {"domain-level-site-permissions",
+     flag_descriptions::kDomainLevelSitePermissionsName,
+     flag_descriptions::kDomainLevelSitePermissionsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDomainLevelSitePermissions)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
