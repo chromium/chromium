@@ -33,13 +33,15 @@
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
@@ -197,7 +199,12 @@ std::optional<GURL> ChromeOsFeedbackDelegate::GetLastActivePageUrl() {
 
 std::optional<std::string> ChromeOsFeedbackDelegate::GetSignedInUserEmail()
     const {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  // Guest profiles have no annotated account, so there's no signed-in email
+  // to report for them.
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_);
+  auto* identity_manager =
+      account_id ? ash::IdentityManagerProvider::Get().Find(*account_id)
+                 : nullptr;
   if (!identity_manager)
     return std::nullopt;
   // Browser sync consent is not required to use feedback.
