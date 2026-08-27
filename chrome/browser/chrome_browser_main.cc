@@ -265,6 +265,9 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"
 #endif
 
@@ -1533,7 +1536,7 @@ void ChromeBrowserMainParts::PreProfileInit() {
           std::make_unique<apps::PublisherHostFactoryImpl>());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   javascript_dialog_extensions_client::InstallClient();
 #endif
 
@@ -1548,7 +1551,7 @@ void ChromeBrowserMainParts::PreProfileInit() {
   InstallChromeJavaScriptAppModalDialogViewFactory();
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   SetChromeAppModalDialogManagerDelegate();
 #endif
 

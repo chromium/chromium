@@ -106,6 +106,9 @@ class TabModalDialogManager
 
   void SetDialogShownCallbackForTesting(base::OnceClosure callback);
   bool IsShowingDialogForTesting() const;
+  const std::u16string& GetDialogTitleForTesting() const {
+    return dialog_title_;
+  }
   void ClickDialogButtonForTesting(bool accept,
                                    const std::u16string& user_input);
   using DialogDismissedCallback = base::OnceCallback<void(DismissalCause)>;
@@ -194,6 +197,9 @@ class TabModalDialogManager
 
   // A closure to be fired when a dialog is shown. For testing only.
   base::OnceClosure dialog_shown_;
+
+  // The title of the dialog being displayed.
+  std::u16string dialog_title_;
 
   // A closure to be fired when a dialog is dismissed. For testing only.
   DialogDismissedCallback dialog_dismissed_;

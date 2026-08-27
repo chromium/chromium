@@ -170,6 +170,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
 
   std::u16string title = GetAppModalDialogManager()->GetTitle(
       alerting_web_contents, render_frame_host->GetLastCommittedOrigin());
+  dialog_title_ = title;
   dialog_callback_ = std::move(callback);
   dialog_type_ = dialog_type;
   if (make_pending) {
@@ -361,6 +362,7 @@ void TabModalDialogManager::CloseDialog(DismissalCause cause,
   }
 
   dialog_.reset();
+  dialog_title_.clear();
   pending_dialog_.Reset();
   dialog_callback_.Reset();
 

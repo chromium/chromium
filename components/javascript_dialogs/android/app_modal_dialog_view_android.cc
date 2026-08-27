@@ -32,7 +32,10 @@ AppModalDialogViewAndroid::AppModalDialogViewAndroid(
     std::unique_ptr<javascript_dialogs::AppModalDialogController> controller,
     gfx::NativeWindow parent)
     : controller_(std::move(controller)),
-      parent_jobject_weak_ref_(env, parent->GetJavaObject()) {
+      // Some calls may not have an associated `parent`, such as extension
+      // contexts without a visible window.
+      parent_jobject_weak_ref_(env,
+                               parent ? parent->GetJavaObject() : nullptr) {
   controller_->web_contents()->GetDelegate()->ActivateContents(
       controller_->web_contents());
 }

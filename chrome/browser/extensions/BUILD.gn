@@ -2321,6 +2321,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "alert_apitest.cc",
     "all_urls_apitest.cc",
     "api/alarms/alarms_apitest.cc",
     "api/bookmarks/bookmarks_apitest.cc",
@@ -2702,7 +2703,6 @@ source_set("browser_tests") {
       # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
       "//chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
       "ai_language_model_browsertest.cc",
-      "alert_apitest.cc",
       "api/activity_log_private/activity_log_private_apitest.cc",
       "api/autofill_private/autofill_private_api_browsertest.cc",
       "api/autofill_private/autofill_private_apitest.cc",
