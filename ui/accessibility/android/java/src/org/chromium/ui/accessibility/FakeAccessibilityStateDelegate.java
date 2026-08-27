@@ -210,7 +210,7 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
     public void registerObservers() {}
 
     @Override
-    public void initializeOnStartup() {}
+    public void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {}
 
     @Override
     public int getAccessibilityServiceEventTypeMask() {
