@@ -190,7 +190,10 @@ void ShowFilePickerOnUIThread(
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
   RenderFrameHost* outermost_rfh = rfh ? rfh->GetOutermostMainFrame() : nullptr;
 
-  if (!web_contents || !outermost_rfh || !outermost_rfh->IsActive()) {
+  if (!web_contents ||
+      (base::FeatureList::IsEnabled(features::kFileSystemAccessCheckHidden) &&
+       web_contents->GetVisibility() == Visibility::HIDDEN) ||
+      !outermost_rfh || !outermost_rfh->IsActive()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationAborted),
                             {});

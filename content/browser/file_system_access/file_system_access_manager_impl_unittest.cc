@@ -37,6 +37,9 @@
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -68,6 +71,10 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#endif
 
 namespace content {
 
@@ -155,6 +162,34 @@ class DenyingFilePickerContentBrowserClient : public ContentBrowserClient {
   bool was_checked_ = false;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// A WebContentsDelegate that simulates WebView by overriding
+// `UseFileChooserForFileSystemAccess()` and handling `RunFileChooser()`.
+class TestWebViewWebContentsDelegate : public WebContentsDelegate {
+ public:
+  bool UseFileChooserForFileSystemAccess() const override { return true; }
+
+  void RunFileChooser(RenderFrameHost* render_frame_host,
+                      scoped_refptr<FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override {
+    run_file_chooser_called_ = true;
+    listener->FileSelected(std::move(files_), base::FilePath(), params.mode);
+  }
+
+  void SetFileToSelect(base::FilePath file) {
+    files_.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                          std::vector<std::u16string>())));
+  }
+
+  bool run_file_chooser_called() const { return run_file_chooser_called_; }
+
+ private:
+  bool run_file_chooser_called_ = false;
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files_;
+};
+#endif
+
 }  // namespace
 
 using base::test::RunOnceCallback;
@@ -210,7 +245,9 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     EXPECT_CALL(permission_context_, IsFileTypeDangerous_)
         .WillRepeatedly(testing::Return(false));
-  }
+    EXPECT_CALL(permission_context_, CanShowFilePicker(testing::_))
+        .WillRepeatedly(testing::Return(base::ok()));
+}
 
   void TearDown() override {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
@@ -259,11 +296,12 @@ class FileSystemAccessManagerImplTest : public testing::Test {
       FileSystemAccessPermissionContext::SensitiveEntryResult result,
       FileSystemAccessPermissionContext::UserAction user_action =
           FileSystemAccessPermissionContext::UserAction::kOpen,
-      testing::ExpectationSet after_expectations = {}) {
+      testing::ExpectationSet after_expectations = {},
+      FileSystemAccessPermissionContext::HandleType handle_type =
+          FileSystemAccessPermissionContext::HandleType::kFile) {
     return EXPECT_CALL(permission_context_,
                        ConfirmSensitiveEntryAccess_(
-                           kTestStorageKey.origin(), path_info,
-                           FileSystemAccessPermissionContext::HandleType::kFile,
+                           kTestStorageKey.origin(), path_info, handle_type,
                            user_action,
                            web_contents_->GetPrimaryMainFrame()->GetGlobalId(),
                            testing::_))
@@ -274,25 +312,71 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   void ExpectGetReadPermissionGrant(
       const PathInfo& path_info,
       FileSystemAccessPermissionContext::UserAction user_action =
-          FileSystemAccessPermissionContext::UserAction::kOpen) {
-    EXPECT_CALL(
-        permission_context_,
-        GetReadPermissionGrant(
-            kTestStorageKey.origin(), path_info,
-            FileSystemAccessPermissionContext::HandleType::kFile, user_action))
+          FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType handle_type =
+          FileSystemAccessPermissionContext::HandleType::kFile) {
+    EXPECT_CALL(permission_context_,
+                GetReadPermissionGrant(kTestStorageKey.origin(), path_info,
+                                       handle_type, user_action))
         .WillOnce(testing::Return(allow_grant_));
   }
 
   void ExpectGetWritePermissionGrant(
       const PathInfo& path_info,
       FileSystemAccessPermissionContext::UserAction user_action =
-          FileSystemAccessPermissionContext::UserAction::kOpen) {
-    EXPECT_CALL(
-        permission_context_,
-        GetWritePermissionGrant(
-            kTestStorageKey.origin(), path_info,
-            FileSystemAccessPermissionContext::HandleType::kFile, user_action))
-        .WillOnce(testing::Return(allow_grant_));
+          FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType handle_type =
+          FileSystemAccessPermissionContext::HandleType::kFile,
+      scoped_refptr<FixedFileSystemAccessPermissionGrant> grant = nullptr) {
+    EXPECT_CALL(permission_context_,
+                GetWritePermissionGrant(kTestStorageKey.origin(), path_info,
+                                        handle_type, user_action))
+        .WillOnce(testing::Return(grant ? grant : allow_grant_));
+  }
+
+  void ExpectShowFilePicker(
+      bool read_permission = true,
+      bool write_permission = false,
+      std::optional<PathInfo> last_picked_directory_to_set = std::nullopt) {
+    if (read_permission) {
+      EXPECT_CALL(permission_context_,
+                  CanObtainReadPermission(kTestStorageKey.origin()))
+          .WillOnce(testing::Return(true));
+    }
+    if (write_permission) {
+      EXPECT_CALL(permission_context_,
+                  CanObtainWritePermission(kTestStorageKey.origin()))
+          .WillOnce(testing::Return(true));
+    }
+    EXPECT_CALL(permission_context_,
+                GetWellKnownDirectoryPath(
+                    blink::mojom::WellKnownDirectory::kDirDocuments,
+                    kTestStorageKey.origin()))
+        .WillOnce(testing::Return(base::FilePath()));
+    EXPECT_CALL(permission_context_,
+                GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
+        .WillOnce(testing::Return(PathInfo()));
+    EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
+        .WillOnce(testing::Return(std::u16string()));
+    if (last_picked_directory_to_set) {
+      EXPECT_CALL(
+          permission_context_,
+          SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
+                                 *last_picked_directory_to_set));
+    }
+  }
+
+  void ExpectCheckPathsAgainstEnterprisePolicy(bool allowed = true) {
+    EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
+                                         testing::_, testing::_, testing::_))
+        .WillOnce(
+            [allowed](std::vector<PathInfo> entries,
+                      content::GlobalRenderFrameHostId frame_id,
+                      MockFileSystemAccessPermissionContext::
+                          EntriesAllowedByEnterprisePolicyCallback callback) {
+              std::move(callback).Run(allowed ? std::move(entries)
+                                              : std::vector<PathInfo>());
+            });
   }
 
   FileSystemAccessTransferTokenImpl* SerializeAndDeserializeToken(
@@ -1638,37 +1722,16 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     PathInfo(test_file_info.path.DirName())));
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/false,
+      PathInfo(test_file_info.path.DirName()));
 
   ExpectConfirmSensitiveEntryAccess(
       test_file_info,
       FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed);
   ExpectGetReadPermissionGrant(test_file_info);
   ExpectGetWritePermissionGrant(test_file_info);
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::move(entries));
-      });
+  ExpectCheckPathsAgainstEnterprisePolicy();
 
   auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(
@@ -1715,23 +1778,9 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     PathInfo(test_file_info1.path.DirName())));
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/false,
+      PathInfo(test_file_info1.path.DirName()));
 
   // ConfirmSensitiveEntryAccess should be called for BOTH files.
   testing::Expectation e1 = ExpectConfirmSensitiveEntryAccess(
@@ -1748,14 +1797,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   ExpectGetReadPermissionGrant(test_file_info2);
   ExpectGetWritePermissionGrant(test_file_info2);
 
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::move(entries));
-      });
+  ExpectCheckPathsAgainstEnterprisePolicy();
 
   auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(
@@ -1803,20 +1845,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
+  ExpectShowFilePicker();
 
   // ConfirmSensitiveEntryAccess is called for BOTH. The first is allowed, the
   // second is aborted.
@@ -1875,20 +1904,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
+  ExpectShowFilePicker();
 
   // ConfirmSensitiveEntryAccess is called for the first file and is aborted.
   // The second file should NOT be checked.
@@ -1948,20 +1964,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
+  ExpectShowFilePicker();
 
   // Mock CanShowFilePicker to synchronously destroy the WebContents, which
   // destroys the RFH. This simulates the frame being detached/destroyed
@@ -1997,6 +2000,149 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOperationAborted,
             future.Get<0>()->status);
 }
+
+// Chooser should not be shown when WebContents is hidden.
+TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_HiddenWebContents) {
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // Must set VISIBLE first before HIDDEN will work.
+  web_contents_->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents_->UpdateWebContentsVisibility(Visibility::HIDDEN);
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  ExpectShowFilePicker();
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOperationAborted,
+            future.Get<0>()->status);
+  EXPECT_TRUE(future.Get<1>().empty());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// WebView has a WebContentsDelegate and calls back to the hosting app which
+// implements WebContentsClient.
+TEST_F(FileSystemAccessManagerImplTest, WebView_ChooseEntries_OpenFile) {
+  base::FilePath test_file = dir_.GetPath().AppendASCII("foo");
+  ASSERT_TRUE(base::CreateTemporaryFile(&test_file));
+  PathInfo test_file_info(test_file);
+
+  TestWebViewWebContentsDelegate delegate;
+  delegate.SetFileToSelect(test_file);
+  web_contents_->SetDelegate(&delegate);
+
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/false,
+      PathInfo(test_file_info.path.DirName()));
+  ExpectConfirmSensitiveEntryAccess(
+      test_file_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed);
+  ExpectGetReadPermissionGrant(test_file_info);
+  ExpectGetWritePermissionGrant(test_file_info);
+  ExpectCheckPathsAgainstEnterprisePolicy();
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_TRUE(delegate.run_file_chooser_called());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>().size(), 1u);
+}
+
+// WebView WebContentsDelegate should not be called when WebContents is hidden.
+TEST_F(FileSystemAccessManagerImplTest,
+       WebView_ChooseEntries_HiddenWebContents) {
+  TestWebViewWebContentsDelegate delegate;
+  web_contents_->SetDelegate(&delegate);
+
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // Must set VISIBLE first before HIDDEN will work.
+  web_contents_->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents_->UpdateWebContentsVisibility(Visibility::HIDDEN);
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  ExpectShowFilePicker();
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_FALSE(delegate.run_file_chooser_called());
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOperationAborted,
+            future.Get<0>()->status);
+  EXPECT_TRUE(future.Get<1>().empty());
+}
+#endif
 
 TEST_F(FileSystemAccessManagerImplTest,
        ChooseEntries_CrossOriginDenialDoesNotConsumeActivation) {
@@ -2062,41 +2208,11 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(), test_file_info,
-          FileSystemAccessPermissionContext::HandleType::kFile,
-          FileSystemAccessPermissionContext::UserAction::kOpen,
-          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-
-  // This is where the tests mocks the enterprise check as blocking the file.
-  // The callback is invoked with an empty path.
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::vector<PathInfo>());
-      });
+  ExpectShowFilePicker();
+  ExpectConfirmSensitiveEntryAccess(
+      test_file_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed);
+  ExpectCheckPathsAgainstEnterprisePolicy(/*allowed=*/false);
 
   auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(
@@ -2134,27 +2250,9 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(permission_context_,
-              CanObtainWritePermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     PathInfo(test_file_info.path.DirName())));
-
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/true,
+      PathInfo(test_file_info.path.DirName()));
   ExpectConfirmSensitiveEntryAccess(
       test_file_info,
       FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
@@ -2209,54 +2307,20 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     test_dir_info));
-
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(), test_dir_info,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          FileSystemAccessPermissionContext::UserAction::kOpen,
-          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::move(entries));
-      });
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/false, test_dir_info);
+  ExpectConfirmSensitiveEntryAccess(
+      test_dir_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
+      FileSystemAccessPermissionContext::UserAction::kOpen, {},
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetReadPermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetWritePermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectCheckPathsAgainstEnterprisePolicy();
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -2288,57 +2352,20 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory_ReadWrite) {
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(permission_context_,
-              CanObtainWritePermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     test_dir_info));
-
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(), test_dir_info,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          FileSystemAccessPermissionContext::UserAction::kOpen,
-          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::move(entries));
-      });
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/true, test_dir_info);
+  ExpectConfirmSensitiveEntryAccess(
+      test_dir_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
+      FileSystemAccessPermissionContext::UserAction::kOpen, {},
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetReadPermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetWritePermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectCheckPathsAgainstEnterprisePolicy();
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -2371,57 +2398,20 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(permission_context_,
-              CanObtainWritePermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-  EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
-                                     test_dir_info));
-
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(), test_dir_info,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          FileSystemAccessPermissionContext::UserAction::kOpen,
-          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-
-  EXPECT_CALL(permission_context_,
-              GetReadPermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(allow_grant_));
-  EXPECT_CALL(permission_context_,
-              GetWritePermissionGrant(
-                  kTestStorageKey.origin(), test_dir_info,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  FileSystemAccessPermissionContext::UserAction::kOpen))
-      .WillOnce(testing::Return(deny_grant_));
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::move(entries));
-      });
+  ExpectShowFilePicker(
+      /*read_permission=*/true, /*write_permission=*/true, test_dir_info);
+  ExpectConfirmSensitiveEntryAccess(
+      test_dir_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
+      FileSystemAccessPermissionContext::UserAction::kOpen, {},
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetReadPermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectGetWritePermissionGrant(
+      test_dir_info, FileSystemAccessPermissionContext::UserAction::kOpen,
+      FileSystemAccessPermissionContext::HandleType::kDirectory, deny_grant_);
+  ExpectCheckPathsAgainstEnterprisePolicy();
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
@@ -2470,41 +2460,13 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(permission_context_,
-              CanObtainReadPermission(kTestStorageKey.origin()))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(
-      permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
-                                kTestStorageKey.origin()))
-      .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_,
-              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
-      .WillOnce(testing::Return(std::u16string()));
-
-  EXPECT_CALL(
-      permission_context_,
-      ConfirmSensitiveEntryAccess_(
-          kTestStorageKey.origin(), test_dir_info,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          FileSystemAccessPermissionContext::UserAction::kOpen,
-          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(
-          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-
-  // This is where the tests mocks the enterprise check as blocking the file.
-  // The callback is invoked with an empty path.
-  EXPECT_CALL(permission_context_, CheckPathsAgainstEnterprisePolicy(
-                                       testing::_, testing::_, testing::_))
-      .WillOnce([](std::vector<PathInfo> entries,
-                   content::GlobalRenderFrameHostId frame_id,
-                   MockFileSystemAccessPermissionContext::
-                       EntriesAllowedByEnterprisePolicyCallback callback) {
-        std::move(callback).Run(std::vector<PathInfo>());
-      });
+  ExpectShowFilePicker();
+  ExpectConfirmSensitiveEntryAccess(
+      test_dir_info,
+      FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed,
+      FileSystemAccessPermissionContext::UserAction::kOpen, {},
+      FileSystemAccessPermissionContext::HandleType::kDirectory);
+  ExpectCheckPathsAgainstEnterprisePolicy(/*allowed=*/false);
 
   auto picker_options = blink::mojom::FilePickerOptions::New(
       blink::mojom::TypeSpecificFilePickerOptionsUnion::
