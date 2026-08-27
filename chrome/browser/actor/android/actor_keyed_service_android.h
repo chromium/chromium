@@ -33,10 +33,9 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetActiveTasks();
-  int32_t GetActiveTasksCount(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jobject> GetTask(JNIEnv* env,
-                                                     int32_t task_id);
-  void StopTask(JNIEnv* env, int32_t task_id, int32_t stop_reason);
+  int32_t GetActiveTasksCount();
+  base::android::ScopedJavaLocalRef<jobject> GetTask(int32_t task_id);
+  void StopTask(int32_t task_id, int32_t stop_reason);
 
   // Called by JNI.
   void SetPreparedBackgroundTab(TabAndroid* tab,

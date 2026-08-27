@@ -163,7 +163,8 @@ public class ActorKeyedService {
     }
 
     @CalledByNative
-    private void onTaskStepProgressChanged(@ActorTaskId int taskId, String stepProgress) {
+    private void onTaskStepProgressChanged(
+            @ActorTaskId int taskId, @JniType("std::string") String stepProgress) {
         for (Observer obs : mObservers) {
             obs.onTaskStepProgressUpdated(taskId, stepProgress);
         }

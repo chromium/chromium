@@ -8,7 +8,6 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -19,6 +18,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -45,15 +45,15 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
 
 BrowsingHistoryBridge::~BrowsingHistoryBridge() = default;
 
-void BrowsingHistoryBridge::Destroy(JNIEnv*) {
+void BrowsingHistoryBridge::Destroy() {
   delete this;
 }
 
 void BrowsingHistoryBridge::QueryHistory(
     JNIEnv* env,
     const JavaRef<jobject>& j_result_obj,
-    const base::android::JavaRef<jstring>& j_query,
-    const JavaRef<jstring>& j_app_id,
+    const std::u16string& query,
+    const std::optional<std::string>& app_id,
     bool j_host_only) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
@@ -65,11 +65,8 @@ void BrowsingHistoryBridge::QueryHistory(
   options.host_only = j_host_only;
   options.include_actor_visits =
       history::IsBrowsingHistoryActorIntegrationM3Enabled();
-  if (j_app_id) {
-    options.app_id = base::android::ConvertJavaStringToUTF8(j_app_id);
-  }
-  browsing_history_service_->QueryHistory(
-      base::android::ConvertJavaStringToUTF16(env, j_query), options);
+  options.app_id = app_id;
+  browsing_history_service_->QueryHistory(query, options);
 }
 
 void BrowsingHistoryBridge::QueryHistoryContinuation(
@@ -95,20 +92,17 @@ void BrowsingHistoryBridge::OnGetAllAppIds(
     const std::vector<std::string>& app_ids) {
   JNIEnv* env = base::android::AttachCurrentThread();
   for (const std::string& id : app_ids) {
-    Java_BrowsingHistoryBridge_addAppIdToList(
-        env, j_app_ids_result_obj_,
-        base::android::ConvertUTF8ToJavaString(env, id));
+    Java_BrowsingHistoryBridge_addAppIdToList(env, j_app_ids_result_obj_, id);
   }
   Java_BrowsingHistoryBridge_onQueryAppsComplete(env, j_history_service_obj_,
                                                  j_app_ids_result_obj_);
 }
 
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_host_name,
+    const std::string& host_name,
     const JavaRef<jobject>& jcallback) {
   browsing_history_service_->GetLastVisitToHostBeforeRecentNavigations(
-      base::android::ConvertJavaStringToUTF8(env, j_host_name),
+      host_name,
       base::BindOnce(&base::android::RunTimeCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
@@ -147,16 +141,9 @@ void BrowsingHistoryBridge::OnQueryComplete(
           val.ToDeltaSinceWindowsEpoch().InMicroseconds());
     }
     Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
-        env, j_query_result_obj_,
-        url::GURLAndroid::FromNativeGURL(env, entry.url),
-        base::android::ConvertUTF16ToJavaString(env, domain),
-        base::android::ConvertUTF16ToJavaString(env, entry.title),
-        entry.app_id
-            ? base::android::ConvertUTF8ToJavaString(env, *entry.app_id)
-            : nullptr,
-        most_recent_java_timestamp,
-        base::android::ToJavaLongArray(env, native_timestamps),
-        entry.blocked_visit, entry.is_actor_visit);
+        env, j_query_result_obj_, entry.url, domain, entry.title, entry.app_id,
+        most_recent_java_timestamp, native_timestamps, entry.blocked_visit,
+        entry.is_actor_visit);
   }
 
   Java_BrowsingHistoryBridge_onQueryHistoryComplete(
@@ -165,19 +152,12 @@ void BrowsingHistoryBridge::OnQueryComplete(
 }
 
 void BrowsingHistoryBridge::MarkItemForRemoval(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_url,
-    const JavaRef<jstring>& j_app_id,
-    const JavaRef<jlongArray>& j_native_timestamps) {
+    const GURL& url,
+    const std::optional<std::string>& app_id,
+    const std::vector<int64_t>& timestamps) {
   BrowsingHistoryService::HistoryEntry entry;
-  entry.url = url::GURLAndroid::ToNativeGURL(env, j_url);
-
-  std::vector<int64_t> timestamps;
-  base::android::JavaLongArrayToInt64Vector(env, j_native_timestamps,
-                                            &timestamps);
-  entry.app_id = j_app_id
-                     ? base::android::ConvertJavaStringToUTF8(env, j_app_id)
-                     : history::kNoAppIdFilter;
+  entry.url = url;
+  entry.app_id = app_id;
   for (int64_t val : timestamps) {
     // Since the similar visits grouping logic does not yet exist on Android,
     // we'll only pass the timestamps for the same url. See b/460405414 for more
@@ -189,7 +169,7 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
   items_to_remove_.push_back(entry);
 }
 
-void BrowsingHistoryBridge::RemoveItems(JNIEnv* env) {
+void BrowsingHistoryBridge::RemoveItems() {
   browsing_history_service_->RemoveVisits(items_to_remove_);
   items_to_remove_.clear();
 }

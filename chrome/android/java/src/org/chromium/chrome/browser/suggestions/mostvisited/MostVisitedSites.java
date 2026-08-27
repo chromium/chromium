@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.mostvisited;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,6 +57,7 @@ public interface MostVisitedSites extends CustomLinkOperations {
          * @return The raw URL of the currently set home page.
          */
         @CalledByNative
+        @JniType("std::string")
         @Nullable String getHomepageUrl();
     }
 

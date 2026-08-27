@@ -42,26 +42,18 @@ class ComposeboxQueryControllerBridge
       Profile* profile,
       content::WebContents* web_contents);
   ~ComposeboxQueryControllerBridge() override;
-  void Destroy(JNIEnv* env);
-  void NotifySessionStarted(JNIEnv* env);
-  void NotifySessionAbandoned(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jobject> AddFile(
-      JNIEnv* env,
-      const std::string& file_name,
-      const std::string& file_type,
-      const jni_zero::JavaRef<jobject>& file_data);
-  base::android::ScopedJavaLocalRef<jobject> AddTabContext(
-      JNIEnv* env,
-      content::WebContents* web_contents,
-      bool is_suggested_tab);
-  base::android::ScopedJavaLocalRef<jobject>
-  AddTabContextFromCache(JNIEnv* env, long tab_id, bool is_suggested_tab);
-  void GetAimUrl(JNIEnv* env,
-                 GURL url,
-                 const base::android::JavaRef<jobject>& j_callback);
-  void GetImageGenerationUrl(JNIEnv* env,
-                             GURL url,
-                             const base::android::JavaRef<jobject>& j_callback);
+  void Destroy();
+  void NotifySessionStarted();
+  void NotifySessionAbandoned();
+  std::string AddFile(JNIEnv* env,
+                      const std::string& file_name,
+                      const std::string& file_type,
+                      const jni_zero::JavaRef<jobject>& file_data);
+  std::string AddTabContext(content::WebContents* web_contents,
+                            bool is_suggested_tab);
+  std::string AddTabContextFromCache(int64_t tab_id, bool is_suggested_tab);
+  void GetAimUrl(GURL url, base::OnceCallback<void(GURL)> callback);
+  void GetImageGenerationUrl(GURL url, base::OnceCallback<void(GURL)> callback);
 
   // Builds the URL to use for a navigation, supplementing the passed in URL
   // with additional parameters. This will do things such as include the current
@@ -69,16 +61,14 @@ class ComposeboxQueryControllerBridge
   // information. This reduces client side knowledge of how to use tools (and
   // soon models), as the information of what parameters to add is coming from
   // the server.
-  void GetAimUrlFromInputState(
-      JNIEnv* env,
-      GURL url,
-      const base::android::JavaRef<jobject>& j_callback);
-  void RemoveAttachment(JNIEnv* env, const std::string& token);
-  bool IsFuseboxEligible(JNIEnv* env);
-  bool IsPdfUploadEligible(JNIEnv* env);
-  bool IsCreateImagesEligible(JNIEnv* env);
-  void SetActiveTool(JNIEnv* env, omnibox::ToolMode tool_mode);
-  void SetActiveModel(JNIEnv* env, omnibox::ModelMode model_mode);
+  void GetAimUrlFromInputState(GURL url,
+                               base::OnceCallback<void(GURL)> callback);
+  void RemoveAttachment(const std::string& token);
+  bool IsFuseboxEligible();
+  bool IsPdfUploadEligible();
+  bool IsCreateImagesEligible();
+  void SetActiveTool(omnibox::ToolMode tool_mode);
+  void SetActiveModel(omnibox::ModelMode model_mode);
 
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
   CreateLensOverlaySuggestInputs() const;
@@ -125,12 +115,10 @@ class ComposeboxQueryControllerBridge
 
  private:
   void OnGetPageContentFromCache(
-      JNIEnv* env,
       const base::UnguessableToken& context_token,
       base::TimeTicks start_time,
       std::optional<optimization_guide::proto::PageContext> page_context);
   void StartTabContextUploadFlow(
-      JNIEnv* env,
       const base::UnguessableToken& context_token,
       std::optional<SessionID> tab_session_id,
       bool was_cached,
@@ -140,13 +128,11 @@ class ComposeboxQueryControllerBridge
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromUrl(GURL url);
-  void OnSearchUrlCreated(
-      base::android::ScopedJavaGlobalRef<jobject> j_callback,
-      GURL url);
+  void OnSearchUrlCreated(base::OnceCallback<void(GURL)> callback, GURL url);
   void ContextualizeAndCreateSearchUrl(
       std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
           search_url_request_info,
-      const base::android::JavaRef<jobject>& j_callback);
+      base::OnceCallback<void(GURL)> callback);
   contextual_search::ContextualSearchContextController* query_controller()
       const {
     return session_handle_->GetController();

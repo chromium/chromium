@@ -211,7 +211,7 @@ public final class DeviceInfo {
     }
 
     @CalledByNative
-    public static String getDeviceName() {
+    public static @JniType("std::string") @Nullable String getDeviceName() {
         return Settings.Global.getString(
                 ContextUtils.getApplicationContext().getContentResolver(), "device_name");
     }

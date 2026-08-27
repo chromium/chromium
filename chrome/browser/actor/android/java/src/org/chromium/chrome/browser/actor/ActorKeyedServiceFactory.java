@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -46,6 +47,6 @@ public class ActorKeyedServiceFactory {
 
     @NativeMethods
     public interface Natives {
-        ActorKeyedService getForProfile(Profile profile);
+        ActorKeyedService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

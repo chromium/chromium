@@ -21,8 +21,7 @@ void ShowBadFlagsSnackbar(content::WebContents* web_contents,
   if (!window_android)
     return;
   chrome::Java_BadFlagsSnackbarManager_show(
-      env, window_android->GetJavaObject(),
-      base::android::ConvertUTF16ToJavaString(env, message));
+      env, window_android->GetJavaObject(), message);
 }
 
 DEFINE_JNI(BadFlagsSnackbarManager)

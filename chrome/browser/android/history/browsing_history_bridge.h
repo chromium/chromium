@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ANDROID_HISTORY_BROWSING_HISTORY_BRIDGE_H_
 #define CHROME_BROWSER_ANDROID_HISTORY_BROWSING_HISTORY_BRIDGE_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -27,12 +30,12 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
   BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;
 
-  void Destroy(JNIEnv*);
+  void Destroy();
 
   void QueryHistory(JNIEnv* env,
                     const JavaRef<jobject>& j_result_obj,
-                    const base::android::JavaRef<jstring>& j_query,
-                    const JavaRef<jstring>& j_app_id,
+                    const std::u16string& query,
+                    const std::optional<std::string>& app_id,
                     bool j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,
@@ -41,21 +44,19 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   void GetAllAppIds(JNIEnv* env, const JavaRef<jobject>& j_result_obj);
 
   void GetLastVisitToHostBeforeRecentNavigations(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_host_name,
+      const std::string& host_name,
       const JavaRef<jobject>& jcallback_);
 
-  // Adds a HistoryEntry with the |j_url| and |j_native_timestamps| to the list
+  // Adds a HistoryEntry with the |url|, |app_id|, and |timestamps| to the list
   // of items being removed. The removal will not be committed until
   // ::removeItems() is called.
-  void MarkItemForRemoval(JNIEnv* env,
-                          const JavaRef<jobject>& j_url,
-                          const JavaRef<jstring>& j_app_id,
-                          const JavaRef<jlongArray>& j_native_timestamps);
+  void MarkItemForRemoval(const GURL& url,
+                          const std::optional<std::string>& app_id,
+                          const std::vector<int64_t>& timestamps);
 
   // Removes all items that have been marked for removal through
   // ::markItemForRemoval().
-  void RemoveItems(JNIEnv* env);
+  void RemoveItems();
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(

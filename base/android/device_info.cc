@@ -64,8 +64,7 @@ void Set(const IDeviceInfo& info) {
   holder.emplace(info);
 }
 
-static void JNI_DeviceInfo_FillFields(JNIEnv* env,
-                                      const std::string& gmsVersionCode,
+static void JNI_DeviceInfo_FillFields(const std::string& gmsVersionCode,
                                       bool isTV,
                                       bool isAutomotive,
                                       bool isFoldable,
@@ -134,9 +133,7 @@ bool was_launched_on_large_display() {
 }
 
 std::string device_name() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_DeviceInfo_getDeviceName(env));
+  return Java_DeviceInfo_getDeviceName(AttachCurrentThread());
 }
 
 void set_is_xr_for_testing() {

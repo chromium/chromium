@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_
 #define CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_
 
-#include "base/android/scoped_java_ref.h"
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/search_engines/template_url.h"
-
-using base::android::JavaRef;
 
 class TemplateURLService;
 
@@ -21,11 +22,11 @@ class LocaleTemplateUrlLoader : public ProfileObserver {
   LocaleTemplateUrlLoader(const std::string& locale,
                           TemplateURLService* service,
                           Profile* profile);
-  void Destroy(JNIEnv* env);
-  bool LoadTemplateUrls(JNIEnv* env);
-  void RemoveTemplateUrls(JNIEnv* env);
-  void OverrideDefaultSearchProvider(JNIEnv* env);
-  void SetGoogleAsDefaultSearch(JNIEnv* env);
+  void Destroy();
+  bool LoadTemplateUrls();
+  void RemoveTemplateUrls();
+  void OverrideDefaultSearchProvider();
+  void SetGoogleAsDefaultSearch();
 
   LocaleTemplateUrlLoader(const LocaleTemplateUrlLoader&) = delete;
   LocaleTemplateUrlLoader& operator=(const LocaleTemplateUrlLoader&) = delete;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
@@ -20,7 +21,11 @@ public class SuggestedTabInfo {
     public final long lastActiveTime;
 
     @CalledByNative
-    public SuggestedTabInfo(int tabId, String title, GURL url, long lastActiveTime) {
+    public SuggestedTabInfo(
+            int tabId,
+            @JniType("std::u16string") String title,
+            @JniType("GURL") GURL url,
+            long lastActiveTime) {
         this.tabId = tabId;
         this.title = title;
         this.url = url;

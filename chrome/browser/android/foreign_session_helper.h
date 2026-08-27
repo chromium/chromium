@@ -33,9 +33,9 @@ class ForeignSessionHelper {
 
   ~ForeignSessionHelper();
 
-  void Destroy(JNIEnv* env);
-  bool IsTabSyncEnabled(JNIEnv* env);
-  void TriggerSessionSync(JNIEnv* env);
+  void Destroy();
+  bool IsTabSyncEnabled();
+  void TriggerSessionSync();
   void SetOnForeignSessionCallback(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& callback);
@@ -44,15 +44,13 @@ class ForeignSessionHelper {
   bool GetMobileAndTabletForeignSessions(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& result);
-  bool OpenForeignSessionTab(JNIEnv* env,
-                             TabAndroid* tab_android,
+  bool OpenForeignSessionTab(TabAndroid* tab_android,
                              const std::string& session_tag,
                              int32_t tab_id,
                              int32_t disposition);
-  void DeleteForeignSession(JNIEnv* env, const std::string& session_tag);
-  void SetInvalidationsForSessionsEnabled(JNIEnv* env, bool enabled);
+  void DeleteForeignSession(const std::string& session_tag);
+  void SetInvalidationsForSessionsEnabled(bool enabled);
   int32_t OpenForeignSessionTabsAsBackgroundTabs(
-      JNIEnv* env,
       TabAndroid* tab_android,
       const std::vector<int32_t>& session_tab_ids,
       const std::string& session_tag);

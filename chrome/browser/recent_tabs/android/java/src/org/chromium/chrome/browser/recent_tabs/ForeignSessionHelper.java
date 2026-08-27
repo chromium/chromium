@@ -120,8 +120,8 @@ public class ForeignSessionHelper {
     @CalledByNative
     private static ForeignSession pushSession(
             List<ForeignSession> sessions,
-            String tag,
-            String name,
+            @JniType("std::string") String tag,
+            @JniType("std::string") String name,
             long modifiedTime,
             @FormFactor int formFactor) {
         ForeignSession session = new ForeignSession(tag, name, modifiedTime, formFactor);
@@ -140,8 +140,8 @@ public class ForeignSessionHelper {
     @CalledByNative
     private static void pushTab(
             ForeignSessionWindow window,
-            GURL url,
-            String title,
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String title,
             long timestamp,
             long lastActiveTime,
             int sessionId) {

@@ -6,16 +6,15 @@
 
 #include <vector>
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/actor/android/jni_headers/ActorTask_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/jni_zero/default_conversions.h"
 
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/actor/android/jni_headers/ActorTask_jni.h"
+
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaIntArray;
 
 namespace actor {
 
@@ -43,8 +42,7 @@ ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_ActorTask_Constructor(
                            env, reinterpret_cast<int64_t>(this),
-                           task_->id().GetUnsafeValue(),
-                           ConvertUTF8ToJavaString(env, task_->title()),
+                           task_->id().GetUnsafeValue(), task_->title(),
                            task_->GetProfile()->GetJavaObject()));
 }
 
@@ -57,51 +55,50 @@ ScopedJavaLocalRef<jobject> ActorTaskAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
-ScopedJavaLocalRef<jstring> ActorTaskAndroid::GetCurrentActionName(
-    JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, task_->step_progress());
+std::string ActorTaskAndroid::GetCurrentActionName() {
+  return task_->step_progress();
 }
 
-int32_t ActorTaskAndroid::GetState(JNIEnv* env) {
+int32_t ActorTaskAndroid::GetState() {
   return static_cast<int>(task_->GetState());
 }
 
-bool ActorTaskAndroid::IsCompleted(JNIEnv* env) {
+bool ActorTaskAndroid::IsCompleted() {
   return task_->IsCompleted();
 }
 
-bool ActorTaskAndroid::IsUnderActorControl(JNIEnv* env) {
+bool ActorTaskAndroid::IsUnderActorControl() {
   return task_->IsUnderActorControl();
 }
 
-void ActorTaskAndroid::Pause(JNIEnv* env) {
+void ActorTaskAndroid::Pause() {
   task_->Pause(/*from_actor=*/false);
 }
 
-void ActorTaskAndroid::Resume(JNIEnv* env) {
+void ActorTaskAndroid::Resume() {
   task_->Resume();
 }
 
-ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetTabs(JNIEnv* env) {
+std::vector<int32_t> ActorTaskAndroid::GetTabs() {
   auto tab_handles = task_->GetTabs();
-  std::vector<int> tab_ids;
+  std::vector<int32_t> tab_ids;
   for (const auto& handle : tab_handles) {
     if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
       tab_ids.push_back(tab_android->GetAndroidId());
     }
   }
-  return ToJavaIntArray(env, tab_ids);
+  return tab_ids;
 }
 
-ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetLastActedTabs(JNIEnv* env) {
+std::vector<int32_t> ActorTaskAndroid::GetLastActedTabs() {
   auto tab_handles = task_->GetLastActedTabs();
-  std::vector<int> tab_ids;
+  std::vector<int32_t> tab_ids;
   for (const auto& handle : tab_handles) {
     if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
       tab_ids.push_back(tab_android->GetAndroidId());
     }
   }
-  return ToJavaIntArray(env, tab_ids);
+  return tab_ids;
 }
 
 }  // namespace actor

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,7 +27,8 @@ public class ActorTask {
     private final WeakReference<Profile> mProfile;
 
     @CalledByNative
-    private ActorTask(long nativeTask, int id, String title, Profile profile) {
+    private ActorTask(
+            long nativeTask, int id, @JniType("std::string") String title, Profile profile) {
         mNativeTask = nativeTask;
         mId = id;
         mTitle = title;
@@ -141,6 +143,7 @@ public class ActorTask {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getCurrentActionName(long nativeActorTaskAndroid);
 
         int getState(long nativeActorTaskAndroid);
@@ -153,8 +156,10 @@ public class ActorTask {
 
         void resume(long nativeActorTaskAndroid);
 
+        @JniType("std::vector<int32_t>")
         int[] getTabs(long nativeActorTaskAndroid);
 
+        @JniType("std::vector<int32_t>")
         int[] getLastActedTabs(long nativeActorTaskAndroid);
     }
 }

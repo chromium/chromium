@@ -4,9 +4,7 @@
 
 #include "chrome/browser/android/locale/locale_template_url_loader.h"
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,14 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
-
-static int64_t JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
-                                                const std::string& locale,
+static int64_t JNI_LocaleTemplateUrlLoader_Init(const std::string& locale,
                                                 Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
       locale, TemplateURLServiceFactory::GetForProfile(profile), profile));
@@ -40,7 +31,7 @@ LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
   profile_observation_.Observe(profile);
 }
 
-void LocaleTemplateUrlLoader::Destroy(JNIEnv* env) {
+void LocaleTemplateUrlLoader::Destroy() {
   delete this;
 }
 
@@ -53,7 +44,7 @@ void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
   template_url_service_ = nullptr;
 }
 
-bool LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
+bool LocaleTemplateUrlLoader::LoadTemplateUrls() {
   DCHECK(locale_.length() == 2);
 
   if (!template_url_service_) {
@@ -111,7 +102,7 @@ bool LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
   return true;
 }
 
-void LocaleTemplateUrlLoader::RemoveTemplateUrls(JNIEnv* env) {
+void LocaleTemplateUrlLoader::RemoveTemplateUrls() {
   if (!template_url_service_) {
     // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
     base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
@@ -128,7 +119,7 @@ void LocaleTemplateUrlLoader::RemoveTemplateUrls(JNIEnv* env) {
   }
 }
 
-void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(JNIEnv* env) {
+void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider() {
   if (!template_url_service_) {
     // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
     base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
@@ -151,7 +142,7 @@ void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(JNIEnv* env) {
   }
 }
 
-void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch(JNIEnv* env) {
+void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch() {
   if (!template_url_service_) {
     // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
     base::debug::DumpWithoutCrashing();  // Investigating b/317335096.

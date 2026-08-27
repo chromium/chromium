@@ -44,9 +44,7 @@ ActorKeyedServiceAndroid* ActorKeyedServiceAndroid::Get(
 }
 
 ScopedJavaLocalRef<jobject> JNI_ActorKeyedServiceFactory_GetForProfile(
-    JNIEnv* env,
-    const JavaRef<jobject>& jprofile) {
-  Profile* profile = Profile::FromJavaObject(jprofile);
+    Profile* profile) {
   if (!profile) {
     return nullptr;
   }
@@ -115,12 +113,11 @@ ActorKeyedServiceAndroid::GetActiveTasks() {
   return j_tasks;
 }
 
-int32_t ActorKeyedServiceAndroid::GetActiveTasksCount(JNIEnv* env) {
+int32_t ActorKeyedServiceAndroid::GetActiveTasksCount() {
   return static_cast<int32_t>(service_->GetActiveTasksCount());
 }
 
 base::android::ScopedJavaLocalRef<jobject> ActorKeyedServiceAndroid::GetTask(
-    JNIEnv* env,
     int32_t task_id) {
   ActorTask* task = service_->GetTask(TaskId(task_id));
   if (!task) {
@@ -129,9 +126,7 @@ base::android::ScopedJavaLocalRef<jobject> ActorKeyedServiceAndroid::GetTask(
   return ActorTaskAndroid::GetForTask(task)->GetJavaObject();
 }
 
-void ActorKeyedServiceAndroid::StopTask(JNIEnv* env,
-                                        int32_t task_id,
-                                        int32_t stop_reason) {
+void ActorKeyedServiceAndroid::StopTask(int32_t task_id, int32_t stop_reason) {
   service_->StopTask(TaskId(task_id),
                      static_cast<ActorTask::StoppedReason>(stop_reason));
 }
@@ -159,8 +154,7 @@ void ActorKeyedServiceAndroid::OnTaskStepProgressChanged(
     const std::string& step_progress) {
   JNIEnv* env = AttachCurrentThread();
   Java_ActorKeyedService_onTaskStepProgressChanged(
-      env, java_obj_, task.id().GetUnsafeValue(),
-      base::android::ConvertUTF8ToJavaString(env, step_progress));
+      env, java_obj_, task.id().GetUnsafeValue(), step_progress);
 }
 
 void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(

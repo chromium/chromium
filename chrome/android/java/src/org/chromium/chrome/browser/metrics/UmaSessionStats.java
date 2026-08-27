@@ -307,7 +307,8 @@ public class UmaSessionStats {
 
         void umaEndSession(long nativeUmaSessionStats);
 
-        void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
+        void registerExternalExperiment(
+                @JniType("std::vector<int32_t>") int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
                 @JniType("std::string") String trialName,

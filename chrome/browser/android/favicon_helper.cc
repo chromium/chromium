@@ -11,14 +11,11 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
-#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/compose_bitmaps_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
@@ -40,9 +37,6 @@
 #include "chrome/browser/ui/android/favicon/jni_headers/FaviconHelper_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -55,12 +49,11 @@ FaviconHelper::FaviconHelper() {
   cancelable_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
 }
 
-void FaviconHelper::Destroy(JNIEnv* env) {
+void FaviconHelper::Destroy() {
   delete this;
 }
 
 bool FaviconHelper::GetLocalFaviconImageForURL(
-    JNIEnv* env,
     Profile* profile,
     const GURL& page_url,
     int32_t j_desired_size_in_pixel,
@@ -113,7 +106,6 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
 }
 
 bool FaviconHelper::GetForeignFaviconImageForURL(
-    JNIEnv* env,
     Profile* profile,
     const GURL& page_url,
     int32_t j_desired_size_in_pixel,

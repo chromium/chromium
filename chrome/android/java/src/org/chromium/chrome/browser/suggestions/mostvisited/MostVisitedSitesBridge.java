@@ -228,7 +228,8 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         void setObserver(
                 long nativeMostVisitedSitesBridge, MostVisitedSitesBridge observer, int numSites);
 
-        void addOrRemoveBlockedUrl(long nativeMostVisitedSitesBridge, GURL url, boolean addUrl);
+        void addOrRemoveBlockedUrl(
+                long nativeMostVisitedSitesBridge, @JniType("GURL") GURL url, boolean addUrl);
 
         void recordPageImpression(long nativeMostVisitedSitesBridge, int tilesCount);
 
@@ -239,7 +240,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
                 int iconType,
                 int titleSource,
                 int source,
-                GURL url);
+                @JniType("GURL") GURL url);
 
         void recordOpenedMostVisitedItem(
                 long nativeMostVisitedSitesBridge,

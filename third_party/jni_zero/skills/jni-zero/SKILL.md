@@ -82,8 +82,11 @@ Defining native entry point methods:
 - Search all .h files for `FromJniType` or `ToJniType` to discover which types
   are currently supported.
 - Strings are either `std::string` or `std::u16string`.
-- Use `std::optional` for `@Nullable` types except when the type itself contains
-  a null-state (e.g. GURL, Callback, Strings where "" is not a valid value).
+- Although `std::optional` can be used for `@Nullable` types, it always leads to
+  larger binary size. Prefer empty containers and empty strings, and use
+  `std::optional` only when empty and null are semantically different.
+  - `null` will convert to an empty string or an empty container, so use
+    `@JniType("container or string") @Nullable List/String` when applicable.
 - Prefer to use `List<>` over typed object arrays.
 
 ## Converting From jobject to Correctly-Typed jobject Subclasses

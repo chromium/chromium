@@ -88,7 +88,7 @@ TEST_F(LocaleTemplateUrlLoaderTest, AddLocalSearchEngines) {
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(naver));
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(keyword_so));
 
-  ASSERT_TRUE(loader()->LoadTemplateUrls(nullptr));
+  ASSERT_TRUE(loader()->LoadTemplateUrls());
 
   EXPECT_EQ(TemplateURLPrepopulateData::naver.id,
             model()->GetTemplateURLForKeyword(naver)->prepopulate_id());
@@ -97,13 +97,13 @@ TEST_F(LocaleTemplateUrlLoaderTest, AddLocalSearchEngines) {
 
   // Ensure multiple calls to Load do not duplicate the search engines.
   size_t existing_size = model()->GetTemplateURLs().size();
-  ASSERT_TRUE(loader()->LoadTemplateUrls(nullptr));
+  ASSERT_TRUE(loader()->LoadTemplateUrls());
   EXPECT_EQ(existing_size, model()->GetTemplateURLs().size());
 }
 
 TEST_F(LocaleTemplateUrlLoaderTest, RemoveLocalSearchEngines) {
   test_util()->VerifyLoad();
-  ASSERT_TRUE(loader()->LoadTemplateUrls(nullptr));
+  ASSERT_TRUE(loader()->LoadTemplateUrls());
   // Make sure locale engines are loaded.
   std::u16string keyword_naver = u"naver.com";
   std::u16string keyword_so = u"so.com";
@@ -112,7 +112,7 @@ TEST_F(LocaleTemplateUrlLoaderTest, RemoveLocalSearchEngines) {
   ASSERT_EQ(TemplateURLPrepopulateData::so_360.id,
             model()->GetTemplateURLForKeyword(keyword_so)->prepopulate_id());
 
-  loader()->RemoveTemplateUrls(nullptr);
+  loader()->RemoveTemplateUrls();
 
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(keyword_naver));
   ASSERT_EQ(nullptr, model()->GetTemplateURLForKeyword(keyword_so));
@@ -123,18 +123,18 @@ TEST_F(LocaleTemplateUrlLoaderTest, OverrideDefaultSearch) {
   ASSERT_EQ(TemplateURLPrepopulateData::google.id,
             model()->GetDefaultSearchProvider()->prepopulate_id());
   // Load local search engines first.
-  ASSERT_TRUE(loader()->LoadTemplateUrls(nullptr));
+  ASSERT_TRUE(loader()->LoadTemplateUrls());
 
   ASSERT_EQ(TemplateURLPrepopulateData::google.id,
             model()->GetDefaultSearchProvider()->prepopulate_id());
 
   // Set one of the local search engine as default.
-  loader()->OverrideDefaultSearchProvider(nullptr);
+  loader()->OverrideDefaultSearchProvider();
   ASSERT_EQ(TemplateURLPrepopulateData::naver.id,
             model()->GetDefaultSearchProvider()->prepopulate_id());
 
   // Revert the default search engine tweak.
-  loader()->SetGoogleAsDefaultSearch(nullptr);
+  loader()->SetGoogleAsDefaultSearch();
   ASSERT_EQ(TemplateURLPrepopulateData::google.id,
             model()->GetDefaultSearchProvider()->prepopulate_id());
 }
@@ -165,10 +165,10 @@ TEST_F(LocaleTemplateUrlLoaderTest, OnProfileWillBeDestroyed) {
   // For coverage of the fallbacks from b/317335096, the following calls should
   // not crash and return "harmless" values after we report that the profile is
   // destroying.
-  loader->LoadTemplateUrls(/*env=*/nullptr);
-  loader->RemoveTemplateUrls(/*env=*/nullptr);
-  loader->OverrideDefaultSearchProvider(/*env=*/nullptr);
-  loader->SetGoogleAsDefaultSearch(/*env=*/nullptr);
+  loader->LoadTemplateUrls();
+  loader->RemoveTemplateUrls();
+  loader->OverrideDefaultSearchProvider();
+  loader->SetGoogleAsDefaultSearch();
   EXPECT_TRUE(loader->GetLocalPrepopulatedEngines().empty());
   EXPECT_GT(loader->GetDesignatedSearchEngineForChina(), 0);
 }

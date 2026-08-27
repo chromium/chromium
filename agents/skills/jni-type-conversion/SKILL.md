@@ -40,44 +40,55 @@ You must first read the prerequisite skill:
      performance.
 5. **Annotate Java**:
    - Add `@JniType("cpp_type")` to the parameter or return type.
-   - For `String` parameters, `@JniType("std::string")` automatically converts
-     Java `null` to C++ `""`. Prefer this over `std::optional<std::string>`
-     unless the C++ logic specifically distinguishes between `null` and empty.
-   - For all other types, use `std::optional<T>` if the Java parameter is
-     `@Nullable`. Always maintain `@Nullable` annotations.
-   - **Binary Data**: Use `@JniType("std::vector<uint8_t>")` for `byte[]`.
-   - **Null Safety**: Keep `@Nullable` in Java if the parameter can be null. For
-     `@Nullable String`, using `std::optional<std::string>` in C++ will map
-     `null` to `std::nullopt`.
+   - **Integer Types**: References to `int` in `@JniType` should always be
+     `int32_t` (e.g., `@JniType("std::vector<int32_t>")` instead of
+     `@JniType("std::vector<int>")`).
+   - **Collections**: Prefer `List<T>` over object arrays (`T[]`) for collection
+     parameters and return types (e.g.,
+     `@JniType("std::vector") List<SuggestedTabInfo> suggestedTabs` instead of
+     `SuggestedTabInfo[]`), especially when Java passes or stores it as a `List`
+     (avoiding `Arrays.asList(...)`).
+   - **`@Nullable` Types**:
+     - For `String` parameters, `@JniType("std::string")` automatically converts
+       Java `null` to C++ `""`. Prefer this over `std::optional<std::string>`
+       unless the C++ logic specifically distinguishes between `null` and empty.
+     - For array parameters, `@JniType("std::vector")` automatically converts
+       Java `null` to an empty vector. Prefer empty containers over
+       `std::optional<>` unless the C++ logic specifically distinguishes between
+       `null` and empty, since `std::optional<>` has larger binary size.
+     - For all other types, leave them as `jni_zero::JavaRef`, unless they are
+       already converted to `std::optional<T>`, in which case use
+       `@JniType("std::optional<...>") @Nullable`.
    - Ensure `org.jni_zero.JniType` is imported.
 6. **Update C++**:
    - Change the C++ parameter type to the native type (e.g.,
      `const std::string&`, `std::vector<int32_t>&`, `base::OnceClosure`).
    - Remove the explicit conversion calls and intermediate variables.
    - **Remove Unused JNIEnv**: If the `JNIEnv* env` parameter used to be used,
-     but is no longer used after @JniType additions, it should be removed from
+     but is no longer used after `@JniType` additions, it should be removed from
      the C++ function signature.
    - **Remove Unused Callers**: For non-static `@NativeMethods`, the `caller`
      parameter is usually unnecessary. Remove it from Java and C++ to reduce
      boilerplate.
    - **Remove Unused using statements**: Aliases of conversion functions might
-     no longer have any uses. e.g.: "using base::android::ConvertStringToUTF8"
+     no longer have any uses (e.g.,
+     `using base::android::ConvertStringToUTF8;`).
    - **Include Order**: Specialization headers **MUST** be included before the
      generated `_jni.h` file.
    - Include the header file that defines the FromJniType / ToJniType conversion
-     functions.
-     - E.g.: Include `base/android/jni_string.h` for all string conversions.
-     - E.g.: Include `third_party/jni_zero/default_conversions.h` for containers
+     functions:
+     - E.g., include `base/android/jni_string.h` for all string conversions.
+     - E.g., include `third_party/jni_zero/default_conversions.h` for containers
        (`std::vector`, `std::optional`, `base::span`).
-     - E.g.: Include `base/android/callback_android.h` for callback conversions.
+     - E.g., include `base/android/callback_android.h` for callback conversions.
 7. **Validate (CRITICAL)**: Changes are INCOMPLETE until you have verified they
    build. Build all .cc and .java files to ensure JNI generation and compilation
    succeed.
    - Build using a command like:
      `autoninja -C OUTPUT_DIR ../../path/to/foo.cc^ ../../path/to/Foo.java^ ...`
      - Paths must be relative to `OUTPUT_DIR` (e.g. start with `../../`)
-     - The "^" suffix means "build all targets that have this input.
-   - Do not guess the `OUTPUT_DIR` you must have been told it.
+     - The "^" suffix means "build all targets that have this input".
+   - Do not guess the `OUTPUT_DIR`; you must have been told it.
    - If you cannot build, you MUST state this clearly and summarize the changes
      made.
 
@@ -85,15 +96,34 @@ You must first read the prerequisite skill:
 
 ### base::Uuid Handling
 
-**Java:** `@JniType("std::string") String uuid` **C++:**
-`base::Uuid::ParseLowercase(uuid_string)` (incoming) or
-`uuid.AsLowercaseString()` (outgoing).
+- **Java:** `@JniType("std::string") String uuid`
+- **C++:** `base::Uuid::ParseLowercase(uuid_string)` (incoming) or
+  `uuid.AsLowercaseString()` (outgoing).
 
-### Collection Return Types
+### Collection Types (`std::vector` \<-> `List<T>` / `T[]`)
 
-`@JniType("std::vector<...>")` works for return types. C++ can return a
-`std::vector` and it will be automatically converted to a Java `Thing[]` or
-`List<Thing>`.
+- Prefer `List<T>` over object arrays (`T[]`) for collection parameters and
+  return types.
+- `@JniType("std::vector")` (or `@JniType("std::vector<...>")`) works for both
+  `@CalledByNative` and `@NativeMethods` parameters and return types.
+
+**Prefer:**
+
+```java
+@CalledByNative
+private void onSuggestedTabsUpdated(@JniType("std::vector") List<SuggestedTabInfo> suggestedTabs) {
+    mSuggestedTabsSupplier.set(suggestedTabs);
+}
+```
+
+**Over:**
+
+```java
+@CalledByNative
+private void onSuggestedTabsUpdated(@JniType("std::vector") SuggestedTabInfo[] suggestedTabs) {
+    mSuggestedTabsSupplier.set(Arrays.asList(suggestedTabs));
+}
+```
 
 ## Examples
 
