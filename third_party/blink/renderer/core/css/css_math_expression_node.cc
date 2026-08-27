@@ -4617,7 +4617,9 @@ class CSSMathExpressionNodeParser {
       }
       double progress_value = (double_values[0] - double_values[1]) /
                               (double_values[2] - double_values[1]);
-      progress_value = std::clamp(progress_value, 0., 1.);
+      if (!std::isnan(progress_value)) {
+        progress_value = std::clamp(progress_value, 0., 1.);
+      }
       return CSSMathExpressionNumericLiteral::Create(
           progress_value, CSSPrimitiveValue::UnitType::kNumber);
     }
