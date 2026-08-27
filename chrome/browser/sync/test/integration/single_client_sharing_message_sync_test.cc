@@ -11,12 +11,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/sharing_message_bridge.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_token_status.h"
 #include "content/public/test/browser_test.h"
@@ -288,21 +290,18 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(callback_checker.Wait());
 }
 
-// TODO(crbug.com/552891144): Re-enable this test once the bug is fixed.
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError \
-    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError
-#else
-#define MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError \
-    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError
-#endif
 IN_PROC_BROWSER_TEST_P(
     SingleClientSharingMessageSyncTest,
-    MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   const std::string payload = "payload";
 
   ASSERT_TRUE(SetupSync());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
+  // Disable internal access token fetch retries in IdentityManager so that the
+  // transient error immediately propagates to Sync and triggers its retry
+  // logic.
+  signin::DisableAccessTokenFetchRetries(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)));
   SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
       OAuth2Response::kInternalFailure));
 
