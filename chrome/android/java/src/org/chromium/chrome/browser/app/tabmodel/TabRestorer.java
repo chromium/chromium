@@ -15,6 +15,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.BackgroundTabRestorationHelper;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
@@ -36,6 +37,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -131,6 +133,7 @@ class TabRestorer {
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private final TabModelSelector mTabModelSelector;
     private final Set<@TabId Integer> mTabIdsToIgnore = new HashSet<>();
+    private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
     private final boolean mIsFromRecreating;
 
     private @State int mState = State.EMPTY;
@@ -215,6 +218,9 @@ class TabRestorer {
     public void onDataLoaded(StorageLoadedData data) {
         mData = data;
         int restoredTabCount = data.getLoadedTabStates().length;
+
+        mBackgroundTabIds =
+                BackgroundTabRestorationHelper.fetchBackgroundTabIds(mTabModelSelector, mIncognito);
 
         // Special case for when cancellation happened during loading. In this case we cancel as
         // soon as loading has finished.
@@ -328,6 +334,7 @@ class TabRestorer {
     }
 
     private void cancelInternal() {
+        mBackgroundTabIds = Collections.emptySet();
         if (mData != null) {
             // Delegate still needs access to the StorageLoadedData before it is cleaned up.
             mDelegate.onCancelled(mIncognito);
@@ -346,6 +353,8 @@ class TabRestorer {
 
         assert mState == State.FINISHING;
         mState = State.FINISHED;
+
+        mBackgroundTabIds = Collections.emptySet();
 
         // Delegate still needs access to the StorageLoadedData before it is cleaned up.
         mDelegate.onFinished(mIncognito);
@@ -522,12 +531,17 @@ class TabRestorer {
         }
 
         Tab tab = null;
+        if (mBackgroundTabIds.contains(tabId)) {
+            tab =
+                    BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                            mTabModelSelector, tabId, index, tabState);
+        }
         GURL url = tabState.url;
         boolean hasEmptyBuffer =
                 tabState.contentsState != null && tabState.contentsState.buffer().limit() == 0;
-        if (tabState.contentsState != null && !hasEmptyBuffer) {
+        if (tab == null && tabState.contentsState != null && !hasEmptyBuffer) {
             tab = createFrozenTab(tabState, tabId, index);
-        } else if (url != null) {
+        } else if (tab == null && url != null) {
             tab = createTabWithoutContentsState(url, index);
         }
 
