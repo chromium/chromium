@@ -79,10 +79,13 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/base/data_url.h"
 #include "net/base/mime_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -5469,5 +5472,136 @@ IN_PROC_BROWSER_TEST_P(DownloadExtensionDeferredHistoryTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          DownloadExtensionDeferredHistoryTest,
                          testing::Bool());
+
+// Verifies the behavior reported in https://crbug.com/40878315 where
+// `chrome.downloads.onChanged` listener in an inactive Manifest V3 service
+// worker wakes up the worker and fires when a download state changes, recording
+// the expected event timestamp in storage.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       ServiceWorkerInactiveOnChangedListener) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GoOnTheRecord();
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "downloads onChanged Service Worker test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "worker.js"
+    },
+    "permissions": [
+      "downloads",
+      "storage"
+    ]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), R"(
+    chrome.downloads.onCreated.addListener((downloadItem) => {
+      const now = Date.now();
+      chrome.storage.local.set({ onCreatedTime: now });
+      chrome.test.sendMessage('ON_CREATED');
+    });
+
+    chrome.downloads.onChanged.addListener((downloadDelta) => {
+      const now = Date.now();
+      chrome.storage.local.set({
+        onChangedTime: now,
+        onChangedDelta: downloadDelta
+      });
+      chrome.test.sendMessage('ON_CHANGED');
+    });
+
+    chrome.downloads.onDeterminingFilename.addListener(
+        (downloadItem, suggest) => {
+          suggest();
+          const now = Date.now();
+          chrome.storage.local.set({ onDeterminingFilenameTime: now });
+          chrome.test.sendMessage('ON_DETERMINING_FILENAME');
+        });
+
+    chrome.test.sendMessage('WORKER_READY');
+  )");
+
+  // Load the `Extension` and wait for the service worker to start and be ready.
+  ExtensionTestMessageListener ready_listener("WORKER_READY");
+  const Extension* extension = ExtensionBrowserTest::LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Stop the service worker so that it becomes inactive.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+
+  // Set up listeners to observe event messages when the service worker wakes
+  // up.
+  ExtensionTestMessageListener on_created_listener("ON_CREATED");
+  ExtensionTestMessageListener on_determining_filename_listener(
+      "ON_DETERMINING_FILENAME");
+  ExtensionTestMessageListener on_changed_listener("ON_CHANGED");
+
+  // Record `base::Time` timestamp before initiating the download.
+  const base::Time before_download_time = base::Time::Now();
+  const int64_t before_download_ms =
+      before_download_time.InMillisecondsSinceUnixEpoch();
+
+  // Initiate a download while the service worker is inactive.
+  DownloadManager::DownloadVector items;
+  DownloadManager* manager = GetCurrentManager();
+  ScopedItemVectorCanceller delete_items(&items);
+  std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
+  auto params = std::make_unique<download::DownloadUrlParameters>(
+      GURL(download_url), TRAFFIC_ANNOTATION_FOR_TESTS);
+  manager->DownloadUrl(std::move(params));
+
+  // Verify that `chrome.downloads.onChanged` (along with
+  // `chrome.downloads.onCreated` and `chrome.downloads.onDeterminingFilename`)
+  // listener fires and wakes up the inactive service worker.
+  {
+    SCOPED_TRACE("waiting for download API event listeners to fire");
+    ASSERT_TRUE(on_created_listener.WaitUntilSatisfied());
+    ASSERT_TRUE(on_determining_filename_listener.WaitUntilSatisfied());
+    ASSERT_TRUE(on_changed_listener.WaitUntilSatisfied());
+  }
+
+  // Populate `items` so `ScopedItemVectorCanceller` cancels the in-progress
+  // download on teardown, preventing active download keepalives from blocking
+  // browser shutdown on Windows.
+  manager->GetAllDownloads(&items);
+
+  // Verify stored timestamps and delta in `chrome.storage.local`.
+  base::Value storage_result = browsertest_util::ExecuteScriptInBackgroundPage(
+      profile(), extension->id(),
+      R"((async () => {
+               const items = await chrome.storage.local.get([
+                   'onCreatedTime', 'onDeterminingFilenameTime',
+                   'onChangedTime', 'onChangedDelta'
+               ]);
+               chrome.test.sendScriptResult(items);
+             })())");
+  ASSERT_TRUE(storage_result.is_dict());
+  const base::DictValue& storage_dict = storage_result.GetDict();
+
+  std::optional<double> stored_on_changed_time =
+      storage_dict.FindDouble("onChangedTime");
+  ASSERT_TRUE(stored_on_changed_time.has_value());
+  EXPECT_GE(static_cast<int64_t>(*stored_on_changed_time), before_download_ms);
+
+  std::optional<double> stored_on_created_time =
+      storage_dict.FindDouble("onCreatedTime");
+  ASSERT_TRUE(stored_on_created_time.has_value());
+  EXPECT_GE(static_cast<int64_t>(*stored_on_created_time), before_download_ms);
+
+  std::optional<double> stored_on_determining_filename_time =
+      storage_dict.FindDouble("onDeterminingFilenameTime");
+  ASSERT_TRUE(stored_on_determining_filename_time.has_value());
+  EXPECT_GE(static_cast<int64_t>(*stored_on_determining_filename_time),
+            before_download_ms);
+
+  const base::DictValue* stored_delta = storage_dict.FindDict("onChangedDelta");
+  ASSERT_TRUE(stored_delta);
+  EXPECT_TRUE(stored_delta->FindInt("id").has_value());
+}
 
 }  // namespace extensions
