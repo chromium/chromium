@@ -525,6 +525,12 @@ inline constexpr char kContentPushNotificationsName[] =
 inline constexpr char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
+inline constexpr char kContextManagementInComposeboxName[] =
+    "Context management in the Composebox assistant AIM";
+inline constexpr char kContextManagementInComposeboxDescription[] =
+    "When Enabled, it ensures that removed tab context are removed from AIM "
+    "even when submitted.";
+
 inline constexpr char kContextualTasksName[] = "Enables the contextual tasks";
 inline constexpr char kContextualTasksDescription[] =
     "Enables the contextual tasks infrastructure";

@@ -41,6 +41,7 @@ source_set("flags") {
     "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/omnibox/common",
+    "//components/omnibox/common:features",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/page_image_service",

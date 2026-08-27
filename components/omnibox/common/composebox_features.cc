@@ -4,7 +4,13 @@
 
 #include "components/omnibox/common/composebox_features.h"
 
+#include "build/build_config.h"
+
 namespace omnibox {
+
+namespace {
+constexpr bool IS_IOS = !!BUILDFLAG(IS_IOS);
+}  // namespace
 
 BASE_FEATURE(kContextManagementInComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextMenuToolTips, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -28,7 +34,7 @@ const base::FeatureParam<bool>
     kContextManagementInComposeboxEnableTabDeselection(
         &kContextManagementInComposebox,
         "enable_tab_deselection",
-        false);
+        IS_IOS);
 
 const base::FeatureParam<int> kContextMenuAnimationDailyLimit(
     &kContextMenuAnimationLimiting,

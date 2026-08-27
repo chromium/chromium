@@ -57,6 +57,7 @@
 #import "components/ntp_tiles/switches.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -2268,6 +2269,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kComposeboxDevTools,
                                     kComposeboxDevToolsVariations,
                                     "ComposeboxDevTools")},
+    {"context-management-in-composebox",
+     flag_descriptions::kContextManagementInComposeboxName,
+     flag_descriptions::kContextManagementInComposeboxDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kContextManagementInComposebox)},
     {"contextual-tasks", flag_descriptions::kContextualTasksName,
      flag_descriptions::kContextualTasksDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasks)},
