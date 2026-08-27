@@ -823,6 +823,49 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    public void testCheckReadability_nativeEnabled() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+
+        mController.maybeCheckReadability(mTab);
+
+        verify(mNativeBridgeNatives).checkReadability(eq(12345L), eq(sTestGURL));
+        verify(mHooksImpl, never())
+                .isPageReadable(
+                        anyString(),
+                        any(ReadAloudReadabilityHooks.ReadabilityPerModeCallback.class));
+    }
+
+    @Test
+    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    public void testOnReadabilityResult_nativeEnabled() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+
+        assertFalse(mController.isReadable(mTab));
+
+        mController.onReadabilityResult(sTestGURL, true);
+
+        assertTrue(mController.isReadable(mTab));
+        assertEquals(PlaybackMode.CLASSIC, mController.getModeToPlay(mTab));
+    }
+
+    @Test
+    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    public void testIsAllowed_nativeEnabled() {
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
+        assertTrue(ReadAloudFeatures.isAllowed(mMockProfile));
+
+        when(mMockProfile.isOffTheRecord()).thenReturn(true);
+        assertFalse(ReadAloudFeatures.isAllowed(mMockProfile));
+
+        when(mMockProfile.isOffTheRecord()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(false);
+        assertFalse(ReadAloudFeatures.isAllowed(mMockProfile));
+    }
+
+    @Test
     public void checkReadability_onlyOnePendingRequest() {
         mController.maybeCheckReadability(mTab);
         mController.maybeCheckReadability(mTab);

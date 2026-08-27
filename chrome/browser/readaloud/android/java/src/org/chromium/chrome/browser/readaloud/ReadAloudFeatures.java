@@ -54,6 +54,17 @@ public final class ReadAloudFeatures {
             return false;
         }
 
+        // When native C++ Read Aloud is enabled, bypass MSBB and Google default search engine
+        // checks.
+        // Incognito mode and enterprise policy checks remain strictly enforced.
+        if (isNativeEnabled()) {
+            if (!UserPrefs.get(profile).getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)) {
+                sIneligibilityReason = IneligibilityReason.POLICY_DISABLED;
+                return false;
+            }
+            return true;
+        }
+
         // Check whether the user has enabled anonymous URL-keyed data collection.
         // This is surfaced on the relatively new "Make searches and browsing
         // better" user setting.

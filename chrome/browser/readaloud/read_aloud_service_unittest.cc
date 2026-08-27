@@ -1113,4 +1113,21 @@ TEST_F(ReadAloudServiceTest, SetPlaybackMode) {
             service()->playback_mode());
 }
 
+TEST_F(ReadAloudServiceTest, CheckReadability) {
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  const GURL valid_url("https://www.example.com/article");
+  const GURL invalid_url("chrome://settings");
+
+  EXPECT_CALL(*delegate_ptr, OnReadabilityResult(valid_url, true)).Times(1);
+  service()->CheckReadability(valid_url);
+
+  EXPECT_CALL(*delegate_ptr, OnReadabilityResult(invalid_url, false)).Times(1);
+  service()->CheckReadability(invalid_url);
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
 }  // namespace readaloud

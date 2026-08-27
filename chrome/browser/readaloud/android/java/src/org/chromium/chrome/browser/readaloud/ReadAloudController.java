@@ -898,7 +898,7 @@ public class ReadAloudController
         if (!isAvailable()) {
             return;
         }
-        if (mReadabilityHooks == null) {
+        if (!ReadAloudFeatures.isNativeEnabled() && mReadabilityHooks == null) {
             return;
         }
         if (mProfileSupplier.get() == null || !mProfileSupplier.get().isNativeInitialized()) {
@@ -922,8 +922,15 @@ public class ReadAloudController
             ReadAloudMetrics.recordIsPageReadable(info.isReadable());
             return;
         }
-        mPendingRequests.add(urlSpecHash);
-        mReadabilityHooks.isPageReadable(urlSpec, mReadabilityPerModeCallback);
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            if (mNativeBridge != null) {
+                mPendingRequests.add(urlSpecHash);
+                mNativeBridge.checkReadability(url);
+            }
+        } else if (mReadabilityHooks != null) {
+            mPendingRequests.add(urlSpecHash);
+            mReadabilityHooks.isPageReadable(urlSpec, mReadabilityPerModeCallback);
+        }
     }
 
     @Nullable
@@ -983,17 +990,31 @@ public class ReadAloudController
                 || (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf());
     }
 
+    @Nullable
+    private ReadabilityInfo getReadabilityInfoForTab(@Nullable Tab tab) {
+        if (isTabUnavailableForReadAloud(tab) || !isAvailable()) {
+            return null;
+        }
+        int sanitizedUrlHash = urlToHash(stripUserData(assumeNonNull(tab).getUrl()).getSpec());
+        return getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+    }
+
     /** Returns true if the web contents within current Tab is readable. */
     @Contract("null -> false")
     public boolean isReadable(@Nullable Tab tab) {
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            // TODO: Verify tab language support or handle unsupported language playback gracefully
+            // under native mode.
+            ReadabilityInfo info = getReadabilityInfoForTab(tab);
+            return info != null && info.isReadable();
+        }
         if (isTabUnavailableForReadAloud(tab)) {
             return false;
         }
         Tab nonNullTab = assumeNonNull(tab);
         TabLanguageStatus tabLanguageStatus = isTabLanguageSupported(nonNullTab);
-        if (tabLanguageStatus.mSupported && isAvailable()) {
-            int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
-            ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+        if (tabLanguageStatus.mSupported) {
+            ReadabilityInfo info = getReadabilityInfoForTab(nonNullTab);
             if (info != null) {
                 if (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()) {
                     return info.isReadable(tabLanguageStatus.mLanguage);
@@ -1016,10 +1037,13 @@ public class ReadAloudController
         }
 
         Tab nonNullTab = assumeNonNull(tab);
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            return isReadable(nonNullTab) ? PlaybackMode.CLASSIC : PlaybackMode.UNSPECIFIED;
+        }
+
         TabLanguageStatus tabLanguageStatus = isTabLanguageSupported(nonNullTab);
-        if (tabLanguageStatus.mSupported && isAvailable()) {
-            int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
-            ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+        if (tabLanguageStatus.mSupported) {
+            ReadabilityInfo info = getReadabilityInfoForTab(nonNullTab);
             if (info != null
                     && (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()
                             ? info.isReadable(tabLanguageStatus.mLanguage)
@@ -2399,9 +2423,30 @@ public class ReadAloudController
     }
 
     // Called with the result of an asynchronous page readability check.
-    void onReadabilityResult(GURL url, boolean isReadable) {
-        // TODO: Update property model with readability result.
-        Log.d(TAG, "onReadabilityResult: url = %s, isReadable = %b", url.getSpec(), isReadable);
+    void onReadabilityResult(@Nullable GURL url, boolean isReadable) {
+        Log.d(
+                TAG,
+                "onReadabilityResult: url = %s, isReadable = %b",
+                url != null ? url.getSpec() : "null",
+                isReadable);
+        if (mIsDestroyed || url == null || GURL.isEmptyOrInvalid(url)) {
+            return;
+        }
+        String urlSpec = stripUserData(url).getSpec();
+        int urlHash = urlToHash(urlSpec);
+        mPendingRequests.remove(urlHash);
+
+        ReadabilityInfo info =
+                isReadable
+                        ? ReadabilityInfo.forTimepoints(true, sClock.currentTimeMillis())
+                        : ReadabilityInfo.entirelyUnsupported(sClock.currentTimeMillis());
+        sReadabilityInfoMap.put(urlHash, info);
+
+        ReadAloudMetrics.recordIsPageReadable(isReadable);
+        // TODO(crbug.com/552605982): Add dedicated UMA telemetry metrics for native ReadAloud page
+        // readability.
+
+        notifyReadabilityMayHaveChanged();
     }
 
     // Called immediately before the native service is destroyed.

@@ -565,6 +565,7 @@ if (is_android) {
 
     sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
     deps = [
+      ":accessibility_features_java",
       "//base:base_java",
       "//third_party/jni_zero:jni_zero_java",
     ]

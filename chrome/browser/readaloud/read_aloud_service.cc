@@ -19,6 +19,7 @@
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -162,7 +163,12 @@ void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {
 }
 void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}
-void ReadAloudService::CheckReadability(const GURL& url) {}
+void ReadAloudService::CheckReadability(const GURL& url) {
+  if (delegate_) {
+    bool is_readable = dom_distiller::url_utils::IsUrlDistillable(url);
+    delegate_->OnReadabilityResult(url, is_readable);
+  }
+}
 
 void ReadAloudService::WebContentsDestroyed() {
   // Stop active playback and detach observer when the tab is destroyed.
