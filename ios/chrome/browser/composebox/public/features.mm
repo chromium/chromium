@@ -71,7 +71,7 @@ bool EnableComposeboxServerSideState() {
 
 BASE_FEATURE(kComposeboxServerSideState, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsComposeboxVerbatimSuggestionEnabled() {
+bool IsComposeboxVerbatimSuggestionInAIMEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxVerbatimSuggestionInAIM);
 }
 

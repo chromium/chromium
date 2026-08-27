@@ -643,8 +643,13 @@ using base::UserMetricsAction;
 
 /// Wraps the suggestions and send them to the delegate.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
+  BOOL supressVerbatim =
+      _omniboxPresentationContext == OmniboxPresentationContext::kComposebox &&
+      _omniboxClient->ShouldSuppressVerbatimSuggestion();
   NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
-      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
+      [self.autocompleteResultWrapper
+          wrapAutocompleteResultInGroups:results
+              suppressVerbatimFromResult:supressVerbatim];
   [self.delegate omniboxAutocompleteController:self
                     didUpdateSuggestionsGroups:suggestionGroups];
 }

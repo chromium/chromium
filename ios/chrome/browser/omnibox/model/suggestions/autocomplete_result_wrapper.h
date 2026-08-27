@@ -52,8 +52,9 @@ class TemplateURLService;
 - (void)disconnect;
 
 /// Organizes the raw autocomplete result into structured groups of suggestions.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
-    (const AutocompleteResult&)autocompleteResult;
+- (NSArray<id<AutocompleteSuggestionGroup>>*)
+    wrapAutocompleteResultInGroups:(const AutocompleteResult&)autocompleteResult
+        suppressVerbatimFromResult:(BOOL)shouldSkipVerbatim;
 
 @end
 

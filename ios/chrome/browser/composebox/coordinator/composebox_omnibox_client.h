@@ -107,6 +107,8 @@ class ComposeboxOmniboxClient final : public OmniboxClientIOS {
 
   bool ShouldSkipZeroSuggestRequest() const override;
 
+  bool ShouldSuppressVerbatimSuggestion() const override;
+
  private:
   raw_ptr<WebLocationBar> location_bar_;
   raw_ptr<Browser> browser_;

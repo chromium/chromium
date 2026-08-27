@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -363,4 +364,11 @@ omnibox::InputState ComposeboxOmniboxClient::GetInputState() const {
 
 bool ComposeboxOmniboxClient::ShouldSkipZeroSuggestRequest() const {
   return [delegate_ awaitingAttachmentSignals];
+}
+
+bool ComposeboxOmniboxClient::ShouldSuppressVerbatimSuggestion() const {
+  if (IsComposeboxVerbatimSuggestionInAIMEnabled()) {
+    return false;
+  }
+  return [delegate_ composeboxMode] != ComposeboxMode::kRegularSearch;
 }

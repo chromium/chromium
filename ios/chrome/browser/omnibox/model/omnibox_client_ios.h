@@ -346,6 +346,9 @@ class OmniboxClientIOS {
   // Returns whether the omnibox should skip zero suggest requests.
   virtual bool ShouldSkipZeroSuggestRequest() const;
 
+  // Returns whether the omnibox should
+  virtual bool ShouldSuppressVerbatimSuggestion() const;
+
   virtual GURL GetContextualTasksInnerFrameURL() const;
 
   virtual base::WeakPtr<OmniboxClientIOS> AsWeakPtr() = 0;

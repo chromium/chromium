@@ -44,7 +44,7 @@ bool ShowDeepSearchTool();
 bool EnableComposeboxServerSideState();
 
 // Weather verbatim suggestion is enabled in AIM in composebox.
-bool IsComposeboxVerbatimSuggestionEnabled();
+bool IsComposeboxVerbatimSuggestionInAIMEnabled();
 
 // Whether to enable compact mode.
 bool IsComposeboxCompactModeEnabled();
