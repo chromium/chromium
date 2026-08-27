@@ -22,6 +22,7 @@ class ContextualTasksExtensionConfigProvider
   ContextualTasksExtensionConfigProvider();
   ~ContextualTasksExtensionConfigProvider() override;
 
+  base::DictValue GetLoadTimeData(content::BrowserContext& context) override;
   bool IsJsErrorReportingEnabled() const override;
   bool ShouldCrashOnJsErrorInDevelopmentBuild() const override;
 };

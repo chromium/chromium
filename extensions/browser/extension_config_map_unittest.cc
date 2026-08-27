@@ -21,11 +21,17 @@ class TestExtensionConfigProvider : public ExtensionConfigProvider {
  public:
   TestExtensionConfigProvider(ExtensionId extension_id,
                               bool js_error_reporting_enabled,
-                              bool should_crash_on_js_error)
+                              bool should_crash_on_js_error,
+                              base::DictValue load_time_data)
       : ExtensionConfigProvider(std::move(extension_id)),
         js_error_reporting_enabled_(js_error_reporting_enabled),
-        should_crash_on_js_error_(should_crash_on_js_error) {}
+        should_crash_on_js_error_(should_crash_on_js_error),
+        load_time_data_(std::move(load_time_data)) {}
   ~TestExtensionConfigProvider() override = default;
+
+  base::DictValue GetLoadTimeData(content::BrowserContext& context) override {
+    return load_time_data_.Clone();
+  }
 
   bool IsJsErrorReportingEnabled() const override {
     return js_error_reporting_enabled_;
@@ -38,6 +44,7 @@ class TestExtensionConfigProvider : public ExtensionConfigProvider {
  private:
   bool js_error_reporting_enabled_;
   bool should_crash_on_js_error_;
+  base::DictValue load_time_data_;
 };
 
 }  // namespace
@@ -61,17 +68,21 @@ TEST_F(ExtensionConfigMapTest, GetConfigProvider) {
 
   EXPECT_EQ(nullptr, config_map()->GetConfigProvider(*component_extension));
 
+  base::DictValue expected_dict;
+  expected_dict.Set("test_key", "test_val");
+
   config_map()->RegisterConfigProvider(
       std::make_unique<TestExtensionConfigProvider>(
           component_extension->id(),
           /*js_error_reporting_enabled=*/true,
-          /*should_crash_on_js_error=*/true));
+          /*should_crash_on_js_error=*/true, expected_dict.Clone()));
 
-  const ExtensionConfigProvider* provider =
+  ExtensionConfigProvider* provider =
       config_map()->GetConfigProvider(*component_extension);
   ASSERT_NE(nullptr, provider);
   EXPECT_TRUE(provider->IsJsErrorReportingEnabled());
   EXPECT_TRUE(provider->ShouldCrashOnJsErrorInDevelopmentBuild());
+  EXPECT_EQ(expected_dict, provider->GetLoadTimeData(*browser_context()));
 
   scoped_refptr<const Extension> external_component_extension =
       ExtensionBuilder("External Component Extension")
@@ -82,9 +93,9 @@ TEST_F(ExtensionConfigMapTest, GetConfigProvider) {
       std::make_unique<TestExtensionConfigProvider>(
           external_component_extension->id(),
           /*js_error_reporting_enabled=*/true,
-          /*should_crash_on_js_error=*/true));
+          /*should_crash_on_js_error=*/true, base::DictValue()));
 
-  const ExtensionConfigProvider* external_provider =
+  ExtensionConfigProvider* external_provider =
       config_map()->GetConfigProvider(*external_component_extension);
   ASSERT_NE(nullptr, external_provider);
   EXPECT_TRUE(external_provider->IsJsErrorReportingEnabled());
@@ -99,7 +110,7 @@ TEST_F(ExtensionConfigMapTest, GetConfigProvider) {
       std::make_unique<TestExtensionConfigProvider>(
           non_component_extension->id(),
           /*js_error_reporting_enabled=*/true,
-          /*should_crash_on_js_error=*/true));
+          /*should_crash_on_js_error=*/true, base::DictValue()));
 
   EXPECT_EQ(nullptr, config_map()->GetConfigProvider(*non_component_extension));
 }

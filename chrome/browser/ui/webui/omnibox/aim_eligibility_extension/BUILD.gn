@@ -31,6 +31,7 @@ source_set("aim_eligibility_extension") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/omnibox",
     "//chrome/common",
     "//content/public/browser",
     "//extensions/browser",

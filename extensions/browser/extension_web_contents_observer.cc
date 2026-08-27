@@ -426,9 +426,9 @@ bool ExtensionWebContentsObserver::IsMojoJsEnabled(
 
 bool ExtensionWebContentsObserver::IsJsErrorReportingEnabled(
     const Extension& extension) const {
-  const auto* config_map =
+  auto* config_map =
       ExtensionConfigMapFactory::GetForBrowserContext(browser_context_);
-  const auto* provider =
+  auto* provider =
       config_map ? config_map->GetConfigProvider(extension) : nullptr;
   return provider && provider->IsJsErrorReportingEnabled();
 }

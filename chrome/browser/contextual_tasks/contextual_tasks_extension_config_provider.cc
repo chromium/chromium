@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_config_map.h"
@@ -27,6 +29,12 @@ ContextualTasksExtensionConfigProvider::ContextualTasksExtensionConfigProvider()
 
 ContextualTasksExtensionConfigProvider::
     ~ContextualTasksExtensionConfigProvider() = default;
+
+base::DictValue ContextualTasksExtensionConfigProvider::GetLoadTimeData(
+    content::BrowserContext& context) {
+  return ContextualTasksUI::GetContextualTasksLoadTimeData(
+      Profile::FromBrowserContext(&context));
+}
 
 bool ContextualTasksExtensionConfigProvider::IsJsErrorReportingEnabled() const {
   return true;

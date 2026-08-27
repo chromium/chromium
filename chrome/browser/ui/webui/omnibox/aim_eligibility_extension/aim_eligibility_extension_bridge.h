@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_AIM_ELIGIBILITY_EXTENSION_AIM_ELIGIBILITY_EXTENSION_BRIDGE_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_AIM_ELIGIBILITY_EXTENSION_AIM_ELIGIBILITY_EXTENSION_BRIDGE_H_
 
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ref.h"
-#include "base/values.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_service_worker_page_handler_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -38,10 +35,6 @@ class AimEligibilityExtensionBridge : public KeyedService {
   }
 
  private:
-  base::DictValue GetLoadTimeData();
-
-  const raw_ref<Profile> profile_;
-  base::ScopedClosureRunner load_time_data_subscription_;
   AimEligibilityExtensionServiceWorkerPageHandlerFactory
       service_worker_page_handler_factory_;
 };

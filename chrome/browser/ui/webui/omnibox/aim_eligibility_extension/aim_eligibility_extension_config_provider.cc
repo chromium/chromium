@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_config_map.h"
 #include "extensions/browser/extension_config_map_factory.h"
@@ -25,6 +27,12 @@ AimEligibilityExtensionConfigProvider::AimEligibilityExtensionConfigProvider()
 
 AimEligibilityExtensionConfigProvider::
     ~AimEligibilityExtensionConfigProvider() = default;
+
+base::DictValue AimEligibilityExtensionConfigProvider::GetLoadTimeData(
+    content::BrowserContext& context) {
+  return OmniboxUI::GetAimEligibilityLoadTimeData(
+      Profile::FromBrowserContext(&context));
+}
 
 bool AimEligibilityExtensionConfigProvider::IsJsErrorReportingEnabled() const {
   return true;

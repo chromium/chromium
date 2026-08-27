@@ -18,6 +18,23 @@ ExtensionConfigProvider::ExtensionConfigProvider(ExtensionId extension_id)
 
 ExtensionConfigProvider::~ExtensionConfigProvider() = default;
 
+base::DictValue ExtensionConfigProvider::GetLoadTimeData(
+    content::BrowserContext& context) {
+  return base::DictValue();
+}
+
+const ui::TemplateReplacements*
+ExtensionConfigProvider::GetTemplateReplacements(
+    content::BrowserContext& context) {
+  if (!template_replacements_.has_value()) {
+    base::DictValue dict = GetLoadTimeData(context);
+    ui::TemplateReplacements replacements;
+    ui::TemplateReplacementsFromDictionaryValue(dict, &replacements);
+    template_replacements_ = std::move(replacements);
+  }
+  return &template_replacements_.value();
+}
+
 bool ExtensionConfigProvider::IsJsErrorReportingEnabled() const {
   return false;
 }
@@ -41,13 +58,19 @@ void ExtensionConfigMap::RegisterConfigProvider(
                   << "' is already registered.";
 }
 
-const ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
-    const Extension& extension) const {
+ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
+    const Extension& extension) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!Manifest::IsComponentLocation(extension.location())) {
     return nullptr;
   }
-  return base::FindPtrOrNull(providers_, extension.id());
+  return GetConfigProvider(extension.id());
+}
+
+ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
+    const ExtensionId& extension_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FindPtrOrNull(providers_, extension_id);
 }
 
 void ExtensionConfigMap::ClearProvidersForTesting() {

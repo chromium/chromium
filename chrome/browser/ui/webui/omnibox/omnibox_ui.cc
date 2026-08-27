@@ -39,19 +39,29 @@ bool OmniboxUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild() const {
   return true;
 }
 
+// static
+base::DictValue OmniboxUI::GetAimEligibilityLoadTimeData(Profile* profile) {
+  // The following keys (`aimEligibilityTitle`, `showAimEligibilityFooter`) are
+  // for illustration and parity purposes with the component extension version.
+  base::DictValue dict;
+  dict.Set("aimEligibilityTitle", "AIM Eligibility Diagnostic");
+  dict.Set("showAimEligibilityFooter", true);
+  return dict;
+}
+
 OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+
   // Set up the chrome://omnibox/ source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxHost);
+      profile, chrome::kChromeUIOmniboxHost);
 
   webui::SetupWebUIDataSource(source, kOmniboxResources,
                               IDR_OMNIBOX_OMNIBOX_HTML);
 
 #if !BUILDFLAG(IS_ANDROID)
-  content::URLDataSource::Add(
-      Profile::FromWebUI(web_ui),
-      std::make_unique<ThemeSource>(Profile::FromWebUI(web_ui)));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 #endif
 
   // Expose version information to client because it is useful in output.
@@ -65,10 +75,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->AddBoolean("isMlUrlScoringEnabled",
                      OmniboxFieldTrial::IsMlUrlScoringEnabled());
 
-  // The following keys (`aimEligibilityTitle`, `showAimEligibilityFooter`) are
-  // for illustration and parity purposes with the component extension version.
-  source->AddBoolean("showAimEligibilityFooter", true);
-  source->AddString("aimEligibilityTitle", "AIM Eligibility Diagnostic");
+  source->AddLocalizedStrings(GetAimEligibilityLoadTimeData(profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxUI)

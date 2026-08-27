@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_UI_H_
 
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/logging/logs.mojom.h"
@@ -18,6 +19,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class AimEligibilityPageHandler;
+class Profile;
 
 namespace omnibox::logging {
 class LogsPageHandler;
@@ -48,6 +50,8 @@ class OmniboxUI : public ui::MojoWebUIController,
   OmniboxUI& operator=(const OmniboxUI&) = delete;
 
   ~OmniboxUI() override;
+
+  static base::DictValue GetAimEligibilityLoadTimeData(Profile* profile);
 
   // Instantiates the implementor of the mojom::OmniboxPageHandler mojo
   // interface passing the pending receiver that will be internally bound.

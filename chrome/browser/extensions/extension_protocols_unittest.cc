@@ -39,6 +39,8 @@
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
+#include "extensions/browser/extension_config_map.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -461,16 +463,21 @@ TEST_F(ExtensionProtocolsTest, ComponentDynamicResourceRequest) {
   scoped_refptr<const Extension> extension = CreateWebStoreExtension();
   AddExtension(extension, false, false);
 
-  auto* resource_manager =
-      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
-  ASSERT_TRUE(resource_manager);
+  class TestConfigProvider : public ExtensionConfigProvider {
+   public:
+    explicit TestConfigProvider(const ExtensionId& extension_id)
+        : ExtensionConfigProvider(extension_id) {}
+    base::DictValue GetLoadTimeData(content::BrowserContext& context) override {
+      base::DictValue dict;
+      dict.Set("dynamicTestKey", "dynamicTestValue");
+      return dict;
+    }
+  };
 
-  auto subscription = resource_manager->RegisterTemplateDataProvider(
-      extension->id(), browser_context(), base::BindRepeating([]() {
-        base::DictValue dict;
-        dict.Set("dynamicTestKey", "dynamicTestValue");
-        return dict;
-      }));
+  auto* config_map = ExtensionConfigMapFactory::GetOrCreateForBrowserContext(
+      browser_context());
+  config_map->RegisterConfigProvider(
+      std::make_unique<TestConfigProvider>(extension->id()));
 
   auto get_result = RequestOrLoad(extension->GetResourceURL("strings.m.js"),
                                   network::mojom::RequestDestination::kScript);

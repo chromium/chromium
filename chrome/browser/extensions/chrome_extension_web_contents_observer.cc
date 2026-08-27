@@ -99,9 +99,9 @@ void ChromeExtensionWebContentsObserver::OnExtensionJsError(
   if (!version_info::IsOfficialBuild() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableCrashOnComponentExtensionJsError)) {
-    const auto* config_map =
+    auto* config_map =
         ExtensionConfigMapFactory::GetForBrowserContext(browser_context());
-    const auto* provider =
+    auto* provider =
         config_map ? config_map->GetConfigProvider(extension) : nullptr;
     if (provider && provider->ShouldCrashOnJsErrorInDevelopmentBuild()) {
       // LOG(FATAL) will crash the browser in development builds.

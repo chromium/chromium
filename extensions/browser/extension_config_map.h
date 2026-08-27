@@ -6,12 +6,19 @@
 #define EXTENSIONS_BROWSER_EXTENSION_CONFIG_MAP_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/base/template_expressions.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
@@ -29,6 +36,16 @@ class ExtensionConfigProvider {
   // Returns the ID of the component extension configured by this provider.
   const ExtensionId& extension_id() const { return extension_id_; }
 
+  // Returns the `$i18n{key}` template replacements for this component
+  // extension.
+  const ui::TemplateReplacements* GetTemplateReplacements(
+      content::BrowserContext& context);
+
+  // Returns dictionary data for this component extension to supply `$i18n{key}`
+  // template replacements and `loadTimeData` in dynamic ES modules (e.g.,
+  // `strings.m.js`).
+  virtual base::DictValue GetLoadTimeData(content::BrowserContext& context);
+
   // Returns true if JS error reporting is enabled for this extension.
   virtual bool IsJsErrorReportingEnabled() const;
 
@@ -38,6 +55,7 @@ class ExtensionConfigProvider {
 
  private:
   const ExtensionId extension_id_;
+  std::optional<ui::TemplateReplacements> template_replacements_;
 };
 
 // A registry for component extension configuration providers. It decouples the
@@ -59,8 +77,11 @@ class ExtensionConfigMap : public KeyedService {
   // Returns the ExtensionConfigProvider registered for `extension`, or nullptr
   // if no provider is registered or if `extension` is not a component
   // extension.
-  const ExtensionConfigProvider* GetConfigProvider(
-      const Extension& extension) const;
+  ExtensionConfigProvider* GetConfigProvider(const Extension& extension);
+
+  // Returns the ExtensionConfigProvider registered for `extension_id`, or
+  // nullptr if no provider is registered.
+  ExtensionConfigProvider* GetConfigProvider(const ExtensionId& extension_id);
 
   void ClearProvidersForTesting();
 
