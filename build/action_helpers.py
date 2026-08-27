@@ -8,13 +8,34 @@ import filecmp
 import os
 import pathlib
 import posixpath
-import shutil
 import tempfile
+import time
 
 import gn_helpers
 
 from typing import Optional
 from typing import Sequence
+
+
+def _replace_file(source, destination):
+    """Atomically replaces `destination` with `source`.
+
+    Do not replace os.replace() with shutil.move(). If the destination exists
+    on Windows, shutil.move() falls back to copying because os.rename() cannot
+    overwrite it. Concurrent readers could then observe a partially copied
+    file. Both paths are always on the same filesystem (see atomic_output), so
+    os.replace() provides the required atomic overwrite on every platform.
+    """
+    attempts = 5
+    for attempt in range(attempts):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            # Windows cannot replace a destination while a reader has it open.
+            time.sleep(0.01)
 
 
 @contextlib.contextmanager
@@ -58,7 +79,7 @@ def atomic_output(path, mode='w+b', encoding=None, only_if_changed=True):
                 and os.path.exists(path)
                 and filecmp.cmp(f.name, path)
             ):
-                shutil.move(f.name, path)
+                _replace_file(f.name, path)
         finally:
             f.close()
             if os.path.exists(f.name):

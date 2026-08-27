@@ -18,6 +18,7 @@ import subprocess
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+import action_helpers
 import gn_helpers
 
 SCRIPT_DIR = os.path.dirname(__file__)
@@ -329,7 +330,9 @@ def main():
 
             if environment_block_name != '':
                 env_block = _FormatAsEnvironmentBlock(env)
-                with open(environment_block_name, 'w', encoding='utf8') as f:
+                with action_helpers.atomic_output(
+                    environment_block_name, mode='w', encoding='utf8'
+                ) as f:
                     f.write(env_block)
 
     def ListToArgString(x):

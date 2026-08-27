@@ -10,11 +10,53 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 import action_helpers
 
 
 class ActionHelpersTest(unittest.TestCase):
+    def test_replace_file_retries_permission_error(self):
+        with (
+            mock.patch.object(
+                action_helpers.os,
+                'replace',
+                side_effect=[PermissionError, None],
+            ) as replace,
+            mock.patch.object(action_helpers.time, 'sleep') as sleep,
+        ):
+            action_helpers._replace_file('source', 'destination')
+
+        self.assertEqual(replace.call_count, 2)
+        sleep.assert_called_once_with(0.01)
+
+    def test_replace_file_reraises_permission_error(self):
+        with (
+            mock.patch.object(
+                action_helpers.os,
+                'replace',
+                side_effect=PermissionError,
+            ) as replace,
+            mock.patch.object(action_helpers.time, 'sleep') as sleep,
+            self.assertRaises(PermissionError),
+        ):
+            action_helpers._replace_file('source', 'destination')
+
+        self.assertEqual(replace.call_count, 5)
+        self.assertEqual(sleep.call_count, 4)
+
+    def test_replace_file_overwrites_existing_destination(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            source = os.path.join(tmp_dir, 'source')
+            destination = os.path.join(tmp_dir, 'destination')
+            pathlib.Path(source).write_text('new')
+            pathlib.Path(destination).write_text('old')
+
+            action_helpers._replace_file(source, destination)
+
+            self.assertEqual(pathlib.Path(destination).read_text(), 'new')
+            self.assertFalse(os.path.exists(source))
+
     def test_atomic_output(self):
         tmp_file = pathlib.Path(tempfile.mktemp())
         tmp_file.write_text('test')
