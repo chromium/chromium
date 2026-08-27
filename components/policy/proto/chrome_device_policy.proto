@@ -2133,4 +2133,5 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
   optional IntegerPolicyProto DeviceWeeklyScheduledResuspendDelayMs = 1461;
   optional IntegerPolicyProto DeviceOnlinePasswordMismatchBehavior = 1470;
+  optional IntegerPolicyProto DeviceOsMigrationTargetDate = 1481;
 }

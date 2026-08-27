@@ -1,0 +1,27 @@
+caption: Set the target date for device migration to Next OS
+desc: |-
+  This policy controls if and when a device is targeted for migration from ChromeOS to the Next OS.
+
+  If this policy is set to 0, the device's eligibility for migration is determined by Google default settings, which may depend on the device model, hardware, and other factors.
+
+  If this policy is set to 2147483647, the device is marked as available and targeted for migration without a specific deadline.
+
+  If this policy is set to a value greater than 0 and less than 2147483647, the device is marked as available and targeted for migration. The value represents the recommended completion deadline as the number of seconds since the Unix Epoch (1970-01-01 00:00:00 UTC).
+
+  Note that other device update settings, such as version pinning (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY">DeviceTargetVersionPrefix</ph>), disabling updates (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY">DeviceAutoUpdateDisabled</ph>), or release channel settings (<ph name="DEVICE_RELEASE_CHANNEL_POLICY">DeviceReleaseChannel</ph>), may prevent the device from receiving the necessary updates to initiate the migration, even if a target date is set here. Policy meant to be always served, not-set corresponds to Google default, because it's value can influence the device update policies processing.
+device_only: true
+example_value: 1735689600
+features:
+  dynamic_refresh: true
+owners:
+- mpolzer@google.com
+- korokhina@google.com
+- chromeos-commercial-remote-management@google.com
+schema:
+  type: integer
+  minimum: 0
+supported_on:
+- chrome_os:153-
+tags: []
+type: int
+generate_device_proto: true

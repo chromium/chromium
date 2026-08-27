@@ -1476,9 +1476,10 @@ policies:
   1475: OnNetworkRequestEnterpriseConnector
   1476: EnterprisePublishedSkills
   1477: OnDataCopiedEnterpriseConnector
-  1478: ''
-  1479: ''
-  1480: ''
+  1478: ""
+  1479: ""
+  1480: ""
+  1481: DeviceOsMigrationTargetDate
 
 atomic_groups:
   1: Homepage
