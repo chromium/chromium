@@ -62,7 +62,6 @@
   height: 100%;
   margin: 0 8px;
   margin-bottom: var(--sp-card-block-padding);
-  min-width: var(--container-min-width);
   overflow: auto;
   padding: 20px;
 }
@@ -90,7 +89,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-x: var(--app-overflow-x);
+  overflow-x: hidden;
   width: 100%;
 }
 
@@ -105,7 +104,6 @@
   height: 100%;
   margin-bottom: var(--sp-card-block-padding);
   min-height: 0;
-  min-width: var(--container-min-width);
   padding-top: 2px;
   padding-left: var(--sp-card-block-padding);
   padding-right: var(--sp-card-block-padding);
