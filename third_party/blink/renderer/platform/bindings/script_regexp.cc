@@ -37,15 +37,6 @@ namespace blink {
 
 namespace {
 const uint32_t kBacktrackLimit = 1'000'000;
-
-ScriptState* GetScriptState(v8::Isolate* isolate) {
-  v8::HandleScope handle_scope(isolate);
-  // TODO(ishell): make EnsureScriptRegexpContext() return ScriptState* to
-  // avoid unnecessary hops script_state -> context -> script_state.
-  return ScriptState::From(
-      isolate, V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext());
-}
-
 }  // namespace
 
 ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
@@ -53,8 +44,11 @@ ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
                            TextCaseSensitivity case_sensitivity,
                            MultilineMode multiline_mode,
                            UnicodeMode unicode_mode)
-    : script_state_(GetScriptState(isolate)) {
-  ScriptState::Scope scope(script_state_);
+    : isolate_(isolate) {
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
+  v8::Context::Scope scope(context);
   v8::TryCatch try_catch(isolate);
 
   unsigned flags = v8::RegExp::kNone;
@@ -71,9 +65,9 @@ ScriptRegexp::ScriptRegexp(v8::Isolate* isolate,
   }
 
   v8::Local<v8::RegExp> regex;
-  if (v8::RegExp::NewWithBacktrackLimit(
-          script_state_->GetContext(), V8String(isolate, pattern),
-          static_cast<v8::RegExp::Flags>(flags), kBacktrackLimit)
+  if (v8::RegExp::NewWithBacktrackLimit(context, V8String(isolate, pattern),
+                                        static_cast<v8::RegExp::Flags>(flags),
+                                        kBacktrackLimit)
           .ToLocal(&regex)) {
     regex_.Reset(isolate, regex);
   }
@@ -102,14 +96,15 @@ int ScriptRegexp::Match(StringView string,
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
-  auto* isolate = script_state_->GetIsolate();
-  ScriptState::Scope scope(script_state_);
-  v8::TryCatch try_catch(isolate);
-  v8::Local<v8::Context> context = script_state_->GetContext();
+  v8::HandleScope handle_scope(isolate_);
+  v8::Local<v8::Context> context =
+      V8PerIsolateData::From(isolate_)->EnsureScriptRegexpContext();
+  v8::Context::Scope scope(context);
+  v8::TryCatch try_catch(isolate_);
 
-  v8::Local<v8::RegExp> regex = regex_.Get(isolate);
+  v8::Local<v8::RegExp> regex = regex_.Get(isolate_);
   v8::Local<v8::String> subject =
-      V8String(isolate, StringView(string, start_from));
+      V8String(isolate_, StringView(string, start_from));
   v8::Local<v8::Value> return_value;
   if (!regex->Exec(context, subject).ToLocal(&return_value)) {
     return -1;
@@ -129,7 +124,7 @@ int ScriptRegexp::Match(StringView string,
 
   v8::Local<v8::Array> result = return_value.As<v8::Array>();
   v8::Local<v8::Value> match_offset;
-  if (!result->Get(context, V8AtomicString(isolate, "index"))
+  if (!result->Get(context, V8AtomicString(isolate_, "index"))
            .ToLocal(&match_offset)) {
     return -1;
   }
@@ -150,7 +145,7 @@ int ScriptRegexp::Match(StringView string,
       }
       String group_string;
       if (group->IsString()) {
-        group_string = ToBlinkString<String>(isolate, group.As<v8::String>(),
+        group_string = ToBlinkString<String>(isolate_, group.As<v8::String>(),
                                              kExternalize);
       }
       group_list->push_back(group_string);
@@ -161,7 +156,6 @@ int ScriptRegexp::Match(StringView string,
 }
 
 void ScriptRegexp::Trace(Visitor* visitor) const {
-  visitor->Trace(script_state_);
   visitor->Trace(regex_);
 }
 

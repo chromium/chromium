@@ -185,9 +185,6 @@ void V8PerIsolateData::Destroy(v8::Isolate* isolate) {
   V8PerIsolateData* data = From(isolate);
 
   // Clear everything before exiting the Isolate.
-  if (data->script_regexp_script_state_) {
-    data->script_regexp_script_state_->DisposePerContextData();
-  }
   data->private_property_.reset();
   data->string_cache_->Dispose();
   data->string_cache_.reset();
@@ -319,24 +316,16 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
 }
 
 v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {
-  if (!script_regexp_script_state_) {
+  if (script_regexp_context_.IsEmpty()) {
     LEAK_SANITIZER_DISABLED_SCOPE;
     v8::Local<v8::Context> context(v8::Context::New(GetIsolate()));
-    script_regexp_script_state_ = ScriptState::Create(
-        context,
-        DOMWrapperWorld::Create(GetIsolate(),
-                                DOMWrapperWorld::WorldType::kRegExp),
-        /* execution_context = */ nullptr);
+    script_regexp_context_.Set(GetIsolate(), context);
   }
-  return script_regexp_script_state_->GetContext();
+  return script_regexp_context_.NewLocal(GetIsolate());
 }
 
 void V8PerIsolateData::ClearScriptRegexpContext() {
-  if (script_regexp_script_state_) {
-    script_regexp_script_state_->DisposePerContextData();
-    script_regexp_script_state_->DissociateContext();
-  }
-  script_regexp_script_state_ = nullptr;
+  script_regexp_context_.Clear();
 }
 
 void V8PerIsolateData::SetThreadDebugger(

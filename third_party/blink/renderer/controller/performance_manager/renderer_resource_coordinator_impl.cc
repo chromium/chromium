@@ -142,9 +142,6 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
     case DOMWrapperWorld::WorldType::kInspectorIsolated: {
       v8_desc->world_type = V8ContextWorldType::kInspector;
     } break;
-    case DOMWrapperWorld::WorldType::kRegExp: {
-      v8_desc->world_type = V8ContextWorldType::kRegExp;
-    } break;
     case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain: {
       // This should not happen in the production browser.
       NOTREACHED();
@@ -158,9 +155,6 @@ void RendererResourceCoordinatorImpl::OnScriptStateCreated(
   }
 
   if (auto* execution_context = ExecutionContext::From(script_state)) {
-    // This should never happen for a regexp world.
-    DCHECK_NE(DOMWrapperWorld::WorldType::kRegExp, dom_wrapper.GetWorldType());
-
     v8_desc->execution_context_token =
         execution_context->GetExecutionContextToken();
 

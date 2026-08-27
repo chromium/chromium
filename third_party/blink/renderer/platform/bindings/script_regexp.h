@@ -27,10 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_REGEXP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_REGEXP_H_
 
-#include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -72,7 +72,7 @@ class PLATFORM_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp>
   void Trace(Visitor* visitor) const;
 
  private:
-  Member<ScriptState> script_state_;
+  const raw_ptr<v8::Isolate> isolate_;
   TraceWrapperV8Reference<v8::RegExp> regex_;
   String exception_message_;
 };

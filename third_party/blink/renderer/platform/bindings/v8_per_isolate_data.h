@@ -34,6 +34,7 @@
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -58,7 +59,6 @@ namespace blink {
 
 class DictionaryConversionContext;
 class DOMWrapperWorld;
-class ScriptState;
 class StringCache;
 class ThreadDebugger;
 class V8PrivateProperty;
@@ -320,7 +320,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   std::unique_ptr<StringCache> string_cache_;
   std::unique_ptr<V8PrivateProperty> private_property_;
-  Persistent<ScriptState> script_regexp_script_state_;
+  ScopedPersistent<v8::Context> script_regexp_context_;
 
   bool is_in_wrapper_constructor_ = false;
 

@@ -399,12 +399,6 @@ void V8Initializer::ExceptionPropagationCallback(
     return;
   }
 
-  ScriptState* script_state =
-      ScriptState::MaybeFrom(isolate, isolate->GetCurrentContext());
-  if (!script_state) {
-    return;
-  }
-
   v8::Local<v8::Object> exception = v8_message.GetException();
 
   v8::ExceptionContext context_type = v8_message.GetExceptionContext();
@@ -426,17 +420,18 @@ void V8Initializer::ExceptionPropagationCallback(
   }
   DCHECK(class_name.Is8Bit());
 
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   for (auto* dictionary_context =
            V8PerIsolateData::From(isolate)->TopOfDictionaryStack();
        dictionary_context;
        dictionary_context = dictionary_context->Previous()) {
-    ApplyContextToException(script_state, exception,
+    ApplyContextToException(isolate, context, exception,
                             v8::ExceptionContext::kAttributeGet,
                             dictionary_context->DictionaryName(),
                             dictionary_context->PropertyName());
   }
 
-  ApplyContextToException(script_state, exception, context_type,
+  ApplyContextToException(isolate, context, exception, context_type,
                           class_name.Utf8().data(), property_name);
 }
 
@@ -942,10 +937,9 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
 
 // static
 void V8Initializer::InitializeContext(v8::Local<v8::Context> context,
-                                      ExecutionContext* execution_context) {
-  DCHECK(execution_context);
+                                      ExecutionContext& execution_context) {
   context->SetTemporalHostSystemUTCEpochNanosecondsCallback(
-      execution_context->CrossOriginIsolatedCapability()
+      execution_context.CrossOriginIsolatedCapability()
           ? FineTemporalHostSystemUTCEpochNanosecondsCallback
           : CoarseTemporalHostSystemUTCEpochNanosecondsCallback);
 }
