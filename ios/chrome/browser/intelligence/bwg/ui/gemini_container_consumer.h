@@ -10,8 +10,8 @@
 // Consumer protocol for updating the Gemini Container UI state.
 @protocol GeminiContainerConsumer <NSObject>
 
-// Updates the container for `zeroState`.
-- (void)setZeroState:(BOOL)zeroState;
+// Updates the container's zero-state UI visibility.
+- (void)updateZeroStateVisibility:(BOOL)visible;
 
 // Instructs the container to dismiss any active keyboard.
 - (void)dismissKeyboard;

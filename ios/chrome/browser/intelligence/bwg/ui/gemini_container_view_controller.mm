@@ -33,30 +33,37 @@
                         name:UIKeyboardWillShowNotification
                       object:nil];
 
+  // Prevent double-padding/extra spacing at the bottom when the keyboard
+  // is hidden.
+  self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
+
+  UIStackView* containerStack = [[UIStackView alloc] init];
+  containerStack.translatesAutoresizingMaskIntoConstraints = NO;
+  containerStack.axis = UILayoutConstraintAxisVertical;
+  containerStack.alignment = UIStackViewAlignmentFill;
+  [self.view addSubview:containerStack];
+
+  AddSameConstraintsToSides(
+      containerStack, self.view,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  [NSLayoutConstraint activateConstraints:@[
+    [containerStack.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
+  ]];
+
+  if (self.zeroStateViewController) {
+    [self addZeroStateToContainer:containerStack];
+  }
+
   if (_geminiViewController) {
-    [self addChildViewController:_geminiViewController];
-    _geminiViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_geminiViewController.view];
-
-    // Prevent double-padding/extra spacing at the bottom when the keyboard
-    // is hidden.
-    self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
-
-    // Anchor on top of the keyboard.
-    AddSameConstraintsToSides(_geminiViewController.view, self.view,
-                              LayoutSides::kTop | LayoutSides::kHorizontal);
-    [NSLayoutConstraint activateConstraints:@[
-      [_geminiViewController.view.bottomAnchor
-          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
-    ]];
-    [_geminiViewController didMoveToParentViewController:self];
+    [self addGeminiToContainer:containerStack];
   }
 }
 
 #pragma mark - GeminiContainerConsumer
 
-- (void)setZeroState:(BOOL)zeroState {
-  // Hide/unhide UI elements based on the state requested by the mediator.
+- (void)updateZeroStateVisibility:(BOOL)visible {
+  self.zeroStateViewController.view.hidden = !visible;
 }
 
 - (void)dismissKeyboard {
@@ -64,6 +71,40 @@
 }
 
 #pragma mark - Private
+
+// Adds the zero-state view controller to `containerStack`.
+- (void)addZeroStateToContainer:(UIStackView*)containerStack {
+  [self addChildViewController:self.zeroStateViewController];
+  [containerStack addArrangedSubview:self.zeroStateViewController.view];
+
+  // Allow the zero-state view to expand into any remaining vertical space
+  // and compress first when vertical space is constrained (e.g., when the
+  // keyboard is presented).
+  [self.zeroStateViewController.view
+      setContentHuggingPriority:UILayoutPriorityDefaultLow
+                        forAxis:UILayoutConstraintAxisVertical];
+  [self.zeroStateViewController.view
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+  [self.zeroStateViewController didMoveToParentViewController:self];
+}
+
+// Adds the Gemini view controller to `containerStack`.
+- (void)addGeminiToContainer:(UIStackView*)containerStack {
+  [self addChildViewController:_geminiViewController];
+  [containerStack addArrangedSubview:_geminiViewController.view];
+
+  // Keep `_geminiViewController` sized strictly to its intrinsic content
+  // height and prevent it from compressing when vertical space is
+  // constrained.
+  [_geminiViewController.view
+      setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                        forAxis:UILayoutConstraintAxisVertical];
+  [_geminiViewController.view
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
+  [_geminiViewController didMoveToParentViewController:self];
+}
 
 // Called right before the keyboard is shown.
 - (void)keyboardWillShow:(NSNotification*)notification {

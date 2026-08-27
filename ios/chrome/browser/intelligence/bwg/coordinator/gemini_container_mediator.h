@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_mutator.h"
 
 namespace gemini {
 enum class EntryPoint;
@@ -23,14 +24,16 @@ class WebStateList;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
 @protocol GeminiCommands;
+@protocol GeminiZeroStateConsumer;
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 
 // Mediator for the Gemini container.
-@interface GeminiContainerMediator
-    : NSObject <AssistantContainerDelegate, GeminiViewStateDelegate>
+@interface GeminiContainerMediator : NSObject <AssistantContainerDelegate,
+                                               GeminiViewStateDelegate,
+                                               GeminiZeroStateMutator>
 
 // Delegate for handling events from the mediator. Temporarily used by
 // `GeminiBrowserAgent` to support pre-migration logic.
@@ -51,8 +54,8 @@ class WebStateList;
 // Current detent size of the container.
 @property(nonatomic, assign) AssistantContainerDetent detentSize;
 
-// Whether the container is in zero state.
-@property(nonatomic, assign, getter=isZeroState) BOOL zeroState;
+// Whether the container should display the zero state UI.
+@property(nonatomic, assign, getter=isZeroStateVisible) BOOL zeroStateVisible;
 
 // Current processing status of the Gemini client.
 @property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
@@ -65,6 +68,12 @@ class WebStateList;
 
 // Manager that creates and owns the gateway and handlers.
 @property(nonatomic, readonly) GeminiGatewayManager* gatewayManager;
+
+// Startup state used to initialize the Gemini content.
+@property(nonatomic, strong) GeminiStartupState* startupState;
+
+// Consumer for zero-state updates.
+@property(nonatomic, weak) id<GeminiZeroStateConsumer> zeroStateConsumer;
 
 // TODO(crbug.com/537719170): Mediator should be the target directly.
 // Initializes the mediator with the given dependencies.
@@ -114,6 +123,9 @@ class WebStateList;
 // of floaty and the mediator will be the same, meaning the mediator will be
 // destructed on each floaty dismissal.
 - (void)onFloatyDismiss;
+
+// Fetches zero-state suggestions for the active web state.
+- (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
 
 // Disconnects raw pointers owned by the mediator and dismisses handlers.
 // Handles all the cleanup that needs to happen before mediator dealloc.

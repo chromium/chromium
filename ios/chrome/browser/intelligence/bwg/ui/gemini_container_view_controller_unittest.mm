@@ -100,3 +100,21 @@ TEST_F(GeminiContainerViewControllerTest, TestDismissKeyboard) {
 
   EXPECT_FALSE([internal_text_field_ isFirstResponder]);
 }
+
+// Tests that updateZeroStateVisibility updates
+// zeroStateViewController view hidden state.
+TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
+  UIViewController* zero_state_view_controller =
+      [[UIViewController alloc] init];
+  container_view_controller_.zeroStateViewController =
+      zero_state_view_controller;
+
+  [container_view_controller_ updateZeroStateVisibility:YES];
+  EXPECT_FALSE(zero_state_view_controller.view.hidden);
+
+  [container_view_controller_ updateZeroStateVisibility:NO];
+  EXPECT_TRUE(zero_state_view_controller.view.hidden);
+
+  [container_view_controller_ updateZeroStateVisibility:YES];
+  EXPECT_FALSE(zero_state_view_controller.view.hidden);
+}

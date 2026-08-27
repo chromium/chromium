@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
@@ -31,6 +32,8 @@
   __weak id<AssistantContainerCommands> _containerHandler;
   // Mediator for the Gemini container.
   GeminiContainerMediator* _mediator;
+  // The zero-state suggestions view controller.
+  GeminiZeroStateViewController* _geminiZeroStateViewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -69,6 +72,12 @@
       initWithGeminiViewController:geminiViewController];
   _viewController.delegate = self;
 
+  // Initialize and attach GeminiZeroStateViewController.
+  _geminiZeroStateViewController = [[GeminiZeroStateViewController alloc] init];
+  _geminiZeroStateViewController.mutator = _mediator;
+  _viewController.zeroStateViewController = _geminiZeroStateViewController;
+  _mediator.zeroStateConsumer = _geminiZeroStateViewController;
+
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:_mediator];
   // Set the consumer only after the bottom sheet is presenting.
@@ -85,6 +94,7 @@
   _mediator = nil;
   _viewController = nil;
   _containerHandler = nil;
+  _geminiZeroStateViewController = nil;
 }
 
 #pragma mark - GeminiContainerViewControllerDelegate

@@ -29,6 +29,9 @@
 // The delegate for this view controller.
 @property(nonatomic, weak) id<GeminiContainerViewControllerDelegate> delegate;
 
+// The child zero-state view controller.
+@property(nonatomic, weak) UIViewController* zeroStateViewController;
+
 // Initializes the container with the Gemini backend view controller.
 - (instancetype)initWithGeminiViewController:
     (UIViewController*)geminiViewController NS_DESIGNATED_INITIALIZER;

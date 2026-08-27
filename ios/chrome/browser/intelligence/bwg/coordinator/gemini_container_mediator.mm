@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -79,6 +81,10 @@
     createGeminiConfigurationForActiveWebState:(GeminiStartupState*)startupState
                             baseViewController:
                                 (UIViewController*)baseViewController {
+  if (startupState) {
+    _startupState = startupState;
+  }
+
   web::WebState* webState =
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
   if (!webState) {
@@ -133,6 +139,32 @@
   return shouldShow;
 }
 
+- (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState {
+  if (!self.zeroStateConsumer) {
+    return;
+  }
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    [self.zeroStateConsumer setZeroStateSuggestions:@[]];
+    return;
+  }
+
+  GeminiTabHelper* geminiTabHelper =
+      GeminiTabHelper::FromWebState(activeWebState);
+  if (!geminiTabHelper ||
+      ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
+    [self.zeroStateConsumer setZeroStateSuggestions:@[]];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  geminiTabHelper->FetchZeroStateSuggestions(
+      base::BindOnce(^(NSArray<ZeroStateSuggestion*>* suggestions) {
+        [weakSelf.zeroStateConsumer setZeroStateSuggestions:suggestions];
+      }));
+}
+
 - (BOOL)shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
     (gemini::EntryPoint)entryPoint {
   return entryPoint == gemini::EntryPoint::AppSwitcherAISummarization &&
@@ -172,6 +204,8 @@
 - (void)disconnect {
   [self onFloatyDismiss];
 
+  self.zeroStateConsumer = nil;
+  _startupState = nil;
   _eventHandler = nullptr;
   _containerHandler = nil;
   _geminiHandler = nil;
@@ -206,8 +240,8 @@
   }
 
   self.detentSize = newDetent;
-  if (newDetent == AssistantContainerDetent::kMinimized && self.isZeroState &&
-      IsChromeNextIaEnabled()) {
+  if (newDetent == AssistantContainerDetent::kMinimized &&
+      self.isZeroStateVisible && IsChromeNextIaEnabled()) {
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
   }
 }
@@ -303,7 +337,7 @@
 
   // Preserve the detent size that the container already has.
   self.hasGrabber = YES;
-  self.zeroState = YES;
+  self.zeroStateVisible = YES;
 }
 
 #pragma mark - Property Setters
@@ -325,12 +359,25 @@
   [self.containerHandler animateAssistantContainerToDetent:detentSize];
 }
 
-- (void)setZeroState:(BOOL)zeroState {
-  if (_zeroState == zeroState) {
+- (void)setZeroStateVisible:(BOOL)zeroStateVisible {
+  if (_zeroStateVisible == zeroStateVisible) {
     return;
   }
-  _zeroState = zeroState;
-  [self.consumer setZeroState:zeroState];
+  _zeroStateVisible = zeroStateVisible;
+
+  if (zeroStateVisible) {
+    [self fetchZeroStateSuggestions:_startupState];
+  }
+  [self.consumer updateZeroStateVisibility:_zeroStateVisible];
+}
+
+#pragma mark - GeminiZeroStateMutator
+
+- (void)geminiZeroStateViewController:
+            (GeminiZeroStateViewController*)viewController
+                  didSelectSuggestion:(ZeroStateSuggestion*)suggestion {
+  // TODO(crbug.com/546118728): Handle suggestion selection (e.g. forward query
+  // text to Gemini session).
 }
 
 #pragma mark - Private
@@ -371,7 +418,8 @@
   config.lastInteractionURLDifferent =
       geminiTabHelper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
-      [self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint];
+      [self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint] &&
+      !IsIOSGeminiBottomSheetMigrationEnabled();
   if (IsAppSwitcherAISummarizationEnabled() &&
       startupState.isMismatchedAccount) {
     config.shouldShowAccountSnackbar = YES;
@@ -431,7 +479,7 @@
   self.hasGrabber = YES;
 
   // TODO(crbug.com/545204121): Load previous conversion instead if applicable.
-  self.zeroState = YES;
+  self.zeroStateVisible = YES;
 
   // In initial zero state the view shouldn't be focused for input.
   [self.consumer dismissKeyboard];
@@ -443,7 +491,7 @@
   if (_viewMode == ios::provider::GeminiViewMode::kLive) {
     self.detentSize = AssistantContainerDetent::kMinimized;
     self.hasGrabber = NO;
-    self.zeroState = NO;
+    self.zeroStateVisible = NO;
     return;
   }
 
@@ -451,14 +499,14 @@
     case ios::provider::GeminiClientMode::kThinking:
       self.detentSize = AssistantContainerDetent::kMinimized;
       self.hasGrabber = NO;
-      self.zeroState = NO;
+      self.zeroStateVisible = NO;
       break;
     case ios::provider::GeminiClientMode::kResponding:
     case ios::provider::GeminiClientMode::kDormant:
     case ios::provider::GeminiClientMode::kPreviousConversationLoading:
       self.detentSize = AssistantContainerDetent::kMedium;
       self.hasGrabber = YES;
-      self.zeroState = NO;
+      self.zeroStateVisible = NO;
       break;
     case ios::provider::GeminiClientMode::kListening:
     case ios::provider::GeminiClientMode::kTranscribing:
