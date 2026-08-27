@@ -7,14 +7,16 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/cc_export.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/trees/occlusion.h"
+#include "cc/trees/property_ids.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
+class EffectTree;
 class LayerImpl;
 class Region;
 class RenderSurfaceImpl;
@@ -30,7 +32,8 @@ class RenderSurfaceImpl;
 // calling MarkOccludedBehindLayer().
 class CC_EXPORT OcclusionTracker {
  public:
-  explicit OcclusionTracker(const gfx::Rect& screen_space_clip_rect);
+  explicit OcclusionTracker(const gfx::Rect& screen_space_clip_rect,
+                            const EffectTree* effect_tree = nullptr);
   OcclusionTracker(const OcclusionTracker&) = delete;
   ~OcclusionTracker();
 
@@ -60,15 +63,24 @@ class CC_EXPORT OcclusionTracker {
 
  protected:
   struct StackObject {
-    StackObject() : target(nullptr) {}
-    explicit StackObject(const RenderSurfaceImpl* target) : target(target) {}
-    // RAW_PTR_EXCLUSION: Performance reasons: on-stack (temporary) vector +
-    // based on analysis of sampling profiler data
-    // (LayerTreeImpl::UpdateDrawProperties -> OcclusionTracker::EnterLayer ->
-    // OcclusionTracker::EnterRenderTarget -> emplaces StackObject in a vector;
-    // ... -> OcclusionTracker::LeaveLayer ->
-    // OcclusionTracker::LeaveToRenderTarget -> pops StackObject from a vector).
-    RAW_PTR_EXCLUSION const RenderSurfaceImpl* target;
+    StackObject() = default;
+    explicit StackObject(int target_effect_node_id)
+        : target_effect_node_id(target_effect_node_id) {}
+
+    // Storing the effect node ID instead of a RenderSurfaceImpl* avoids
+    // MiraclePtr/BackupRefPtr (BRP) reference-counting overhead when
+    // pushing, popping, and copying/moving StackObjects in `stack_` during
+    // high-frequency layer tree traversals in
+    // LayerTreeImpl::UpdateDrawProperties() (via EnterRenderTarget /
+    // LeaveToRenderTarget).
+    //
+    // Previously, sampling profiler data showed significant BRP overhead in
+    // vector operations, requiring RAW_PTR_EXCLUSION. Storing an integer ID
+    // eliminates the need for RAW_PTR_EXCLUSION while keeping vector operations
+    // zero-overhead. Resolving the RenderSurfaceImpl via
+    // EffectTree::GetRenderSurface() is an O(1) array index lookup performed
+    // only at render target boundaries.
+    int target_effect_node_id = kInvalidPropertyNodeId;
     SimpleEnclosedRegion occlusion_from_outside_target;
     SimpleEnclosedRegion occlusion_from_inside_target;
     bool ignores_parent_occlusion = false;
@@ -110,6 +122,9 @@ class CC_EXPORT OcclusionTracker {
   // Add the layer's occlusion to the tracked state.
   void MarkOccludedBehindLayer(const LayerImpl* layer);
 
+  // The effect tree used to resolve RenderSurfaceImpl instances from their
+  // owning effect node IDs.
+  raw_ptr<const EffectTree> effect_tree_ = nullptr;
   gfx::Rect screen_space_clip_rect_;
   gfx::Size minimum_tracking_size_;
 };

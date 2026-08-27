@@ -201,6 +201,10 @@ int RenderSurfaceImpl::EffectTreeIndex() const {
   return effect_tree_index_;
 }
 
+const EffectTree* RenderSurfaceImpl::effect_tree() const {
+  return &layer_tree_impl_->property_trees()->effect_tree();
+}
+
 const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
   if (EffectTreeIndex() == kInvalidPropertyNodeId) {
     return nullptr;

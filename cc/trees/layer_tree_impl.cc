@@ -1882,7 +1882,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
   TRACE_EVENT2("cc,benchmark", "LayerTreeImpl::UpdateDrawProperties::Occlusion",
                "IsActive", IsActiveTree(), "SourceFrameNumber",
                source_frame_number_);
-  OcclusionTracker occlusion_tracker(RootRenderSurface()->content_rect());
+  OcclusionTracker occlusion_tracker(RootRenderSurface()->content_rect(),
+                                     &property_trees()->effect_tree());
   occlusion_tracker.set_minimum_tracking_size(
       settings().minimum_occlusion_tracking_size);
 

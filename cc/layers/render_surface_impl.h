@@ -34,6 +34,7 @@ namespace cc {
 struct AppendQuadsContext;
 class AppendQuadsData;
 class DamageTracker;
+class EffectTree;
 class FilterOperations;
 class Occlusion;
 class LayerImpl;
@@ -282,6 +283,9 @@ class CC_EXPORT RenderSurfaceImpl {
 
   void set_effect_tree_index(int index) { effect_tree_index_ = index; }
   int EffectTreeIndex() const;
+
+  // Returns the effect tree associated with this render surface.
+  const EffectTree* effect_tree() const;
 
   const EffectNode* OwningEffectNode() const;
   EffectNode* OwningEffectNodeMutableForTest() const;
