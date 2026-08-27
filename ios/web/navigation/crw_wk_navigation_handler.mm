@@ -1591,11 +1591,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 - (BOOL)shouldRenderResponse:(WKNavigationResponse*)WKResponse
                  HTTPHeaders:(net::HttpResponseHeaders*)headers {
   if (headers) {
-    std::string contentDisposition =
-        headers->GetNormalizedHeader("content-disposition")
-            .value_or(std::string());
-    net::HttpContentDisposition parsedContentDisposition(contentDisposition,
-                                                         std::string());
+    net::HttpContentDisposition parsedContentDisposition(
+        *headers,
+        /*referrer_charset=*/std::string());
     if (parsedContentDisposition.is_attachment()) {
       return NO;
     }
