@@ -3395,7 +3395,6 @@ if (!is_android) {
         "//components/pdf/common:util",
         "//extensions/browser/mime_handler",
         "//extensions/browser/mime_handler:stream_container",
-        "//pdf",
         "//pdf:features",
       ]
 

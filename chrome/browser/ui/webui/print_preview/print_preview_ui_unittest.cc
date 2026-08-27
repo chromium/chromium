@@ -9,8 +9,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/test_web_ui.h"
@@ -83,18 +86,27 @@ class PrintPreviewUIUnitTest : public ChromeRenderViewHostTestHarness {
     }
 #endif
 
+    initiator_ = CreateTestWebContents();
+    CHECK(initiator_);
     test_web_ui_.set_web_contents(web_contents());
+    PrintPreviewDialogController::GetInstance()
+        ->AssociateWebContentsesForTesting(initiator_.get(), web_contents());
     preview_ui_ = std::make_unique<FakePrintPreviewUI>(&test_web_ui_);
     preview_ui_->SetPreviewUIId();
   }
 
   void TearDown() override {
     preview_ui_.reset();
+    PrintPreviewDialogController::GetInstance()
+        ->DisassociateWebContentsesForTesting(web_contents());
+    initiator_.reset();
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   PrintPreviewUI* GetPreviewUi() { return preview_ui_.get(); }
+
+  std::unique_ptr<content::WebContents> initiator_;
 
  private:
   content::TestWebUI test_web_ui_;
@@ -271,6 +283,50 @@ TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithAllPagesToRender) {
   EXPECT_EQ(2u, preview_ui->GetPageToNupConvertIndex(2));
   // There is no page at index 3 to render, so this call fails.
   EXPECT_EQ(kInvalidPageIndex, preview_ui->GetPageToNupConvertIndex(3));
+}
+
+TEST_F(PrintPreviewUIUnitTest, CompositeToPdfDoneNonModifiableNup) {
+  PrintPreviewUI* preview_ui = GetPreviewUi();
+  ASSERT_TRUE(preview_ui);
+
+  // Set the preview dialog as printing a PDF (non-modifiable source).
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  dialog_controller->DisassociateWebContentsesForTesting(web_contents());
+  dialog_controller->AssociateWebContentsesForTesting(
+      initiator_.get(), web_contents(), /*is_pdf=*/true);
+
+  constexpr int kRequestId = 100;
+  preview_ui->OnPrintPreviewRequest(kRequestId);
+
+  // Simulate initiating print preview with 2 pages per sheet (N-up).
+  auto params = mojom::DidStartPreviewParams::New();
+  params->page_count = 3;
+  params->pages_to_render = {0, 1};
+  params->pages_per_sheet = 2;
+  params->page_size = gfx::SizeF(100, 200);
+  preview_ui->DidStartPreview(std::move(params), kRequestId);
+
+  // Create sample PDF data in shared memory.
+  scoped_refptr<base::RefCountedBytes> dummy_data = CreateTestData();
+  base::MappedReadOnlyRegion region_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(dummy_data->size());
+  ASSERT_TRUE(region_mapping.IsValid());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
+      base::span(*dummy_data));
+
+  // Deliver the composited PDF to PrintPreviewUI.
+  preview_ui->OnCompositeToPdfDone(/*document_cookie=*/0, kRequestId,
+                                   mojom::PrintCompositor::Status::kSuccess,
+                                   std::move(region_mapping.region));
+
+  // For non-modifiable (PDF) content with N-up, N-up conversion has already
+  // been handled in the renderer by PDFiumPrint. Thus, PrintPreviewUI must
+  // directly store the composite preview document rather than routing to
+  // PdfNupConverterClient (which would cause duplicate N-up conversion).
+  scoped_refptr<base::RefCountedMemory> data =
+      preview_ui->GetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX);
+  ASSERT_TRUE(data);
+  EXPECT_EQ(base::span(*dummy_data), base::span(*data));
 }
 
 }  // namespace printing

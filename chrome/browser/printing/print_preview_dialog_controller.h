@@ -98,12 +98,12 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
   // Exposes a way for tests to manually specify the initiator to preview_dialog
   // relationship. For use in tests that create their own preview dialogs.
   void AssociateWebContentsesForTesting(content::WebContents* initiator,
-                                        content::WebContents* preview_dialog) {
+                                        content::WebContents* preview_dialog,
+                                        bool is_pdf = false) {
     CHECK(initiator);
     CHECK(preview_dialog);
 
-    constexpr bool kIsPdf = false;
-    InitiatorData data(initiator, mojom::RequestPrintPreviewParams(), kIsPdf,
+    InitiatorData data(initiator, mojom::RequestPrintPreviewParams(), is_pdf,
                        /*scoper=*/nullptr);
     preview_dialog_map_.emplace(preview_dialog, std::move(data));
   }

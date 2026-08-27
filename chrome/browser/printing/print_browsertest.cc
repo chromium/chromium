@@ -75,7 +75,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "pdf/buildflags.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -105,10 +104,6 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "pdf/pdf.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/printing_utils.h"
@@ -1300,49 +1295,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, BasicPdfPrint) {
 
   PrintAndWaitUntilPreviewIsReady();
 }
-
-#if BUILDFLAG(ENABLE_PDF)
-// Printing preview a multi-page PDF file with N-up enabled (e.g. 2 pages per
-// sheet). Test that PrintPreviewUI does not re-apply N-up conversion to the
-// preview document.
-IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, BasicPdfNupPrint) {
-  // 3-page PDF.
-  ASSERT_NO_FATAL_FAILURE(
-      StartEmbeddedTestServerAndNavigate("/printing/pdf_converter_basic.pdf"));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      browser()->tab_strip_model()->GetActiveWebContents()));
-
-  content::WebContents* preview_dialog =
-      PrintAndWaitUntilPreviewIsReadyAndLoaded();
-  ASSERT_TRUE(preview_dialog);
-
-  // Set pagesPerSheet to 2 in the WebUI to trigger N-up preview generation.
-  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
-  const char kSetPagesPerSheetScript[] = R"(
-    var app = document.querySelector('print-preview-app');
-    app.setSetting('pagesPerSheet', 2);
-  )";
-  ASSERT_TRUE(content::ExecJs(preview_dialog, kSetPagesPerSheetScript));
-  print_preview_observer.WaitUntilPreviewIsReady();
-
-  auto* preview_ui =
-      preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
-  ASSERT_TRUE(preview_ui);
-
-  scoped_refptr<base::RefCountedMemory> data =
-      preview_ui->GetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX);
-  ASSERT_TRUE(data);
-
-  // A 3-page PDF with 2 pages per sheet should produce 2 sheets in preview
-  // (sheet 1 containing pages 1-2, sheet 2 containing page 3).
-  // If N-up conversion were erroneously applied a second time (2x2 = 4 pages
-  // per sheet), all 3 pages would be crammed into a single 4-up sheet.
-  int num_pages = 0;
-  ASSERT_TRUE(
-      chrome_pdf::GetPDFDocInfo(base::span(*data), &num_pages, nullptr));
-  EXPECT_EQ(num_pages, 2);
-}
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Printing a web page with a dead subframe for site per process should succeed.
 // This test passes whenever the print preview is rendered. This should not be

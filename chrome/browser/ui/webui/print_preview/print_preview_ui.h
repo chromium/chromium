@@ -224,6 +224,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewDialogControllerUnitTest,
                            TitleAfterReload);
   FRIEND_TEST_ALL_PREFIXES(PrintPreviewUIUnitTest,
+                           CompositeToPdfDoneNonModifiableNup);
+  FRIEND_TEST_ALL_PREFIXES(PrintPreviewUIUnitTest,
                            PrintPreviewFailureCancelsPendingActions);
 
   // Sets the print preview |data|. |index| is zero-based, and can be
