@@ -1390,7 +1390,7 @@ BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIsolatedWebAppDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the chrome://iwa-dev WebUI page.
-BASE_FEATURE(kIsolatedWebAppDevUi, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIsolatedWebAppDevUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fast update checks for Isolated Web Apps, reducing the update check
 // interval to 1 minute.
