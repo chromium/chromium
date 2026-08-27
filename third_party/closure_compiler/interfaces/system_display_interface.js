@@ -26,8 +26,8 @@ SystemDisplay.prototype = {
   getInfo: assertNotReached,
 
   /**
-   * Requests the layout info for all displays. NOTE: This is only available to
-   * Chrome OS Kiosk apps and Web UI.
+   * NOTE: This is only available to Chrome OS Kiosk apps.
+   * Requests the layout info for all displays.
    * @param {function(!Array<!chrome.system.display.DisplayLayout>):void}
    *     callback The callback to invoke with the results.
    * @see https://developer.chrome.com/extensions/system.display#method-getDisplayLayout
@@ -35,9 +35,10 @@ SystemDisplay.prototype = {
   getDisplayLayout: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Updates the properties for the display specified by |id|, according to the
    * information provided in |info|. On failure, $(ref:runtime.lastError) will
-   * be set. NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+   * be set.
    * @param {string} id The display's unique identifier.
    * @param {!chrome.system.display.DisplayProperties} info The information
    *     about display properties that should be changed.     A property will be
@@ -50,11 +51,11 @@ SystemDisplay.prototype = {
   setDisplayProperties: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Set the layout for all displays. Any display not included will use the
    * default layout. If a layout would overlap or be otherwise invalid it will
    * be adjusted to a valid layout. After layout is resolved, an
-   * onDisplayChanged event will be triggered. NOTE: This is only available to
-   * Chrome OS Kiosk apps and Web UI.
+   * onDisplayChanged event will be triggered.
    * @param {!Array<!chrome.system.display.DisplayLayout>} layouts The layout
    *     information, required for all displays except     the primary display.
    * @param {function():void=} callback Empty function called when the function
@@ -65,16 +66,17 @@ SystemDisplay.prototype = {
   setDisplayLayout: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Enables/disables the unified desktop feature. Note that this simply enables
    * the feature, but will not change the actual desktop mode. (That is, if the
-   * desktop is in mirror mode, it will stay in mirror mode) NOTE: This is only
-   * available to Chrome OS Kiosk apps and Web UI.
+   * desktop is in mirror mode, it will stay in mirror mode)
    * @param {boolean} enabled True if unified desktop should be enabled.
    * @see https://developer.chrome.com/extensions/system.display#method-enableUnifiedDesktop
    */
   enableUnifiedDesktop: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Starts overscan calibration for a display. This will show an overlay on the
    * screen indicating the current overscan insets. If overscan calibration for
    * display |id| is in progress this will reset calibration.
@@ -84,6 +86,7 @@ SystemDisplay.prototype = {
   overscanCalibrationStart: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Adjusts the current overscan insets for a display. Typically this should
    * etiher move the display along an axis (e.g. left+right have the same value)
    * or scale it along an axis (e.g. top+bottom have opposite values). Each
@@ -96,6 +99,7 @@ SystemDisplay.prototype = {
   overscanCalibrationAdjust: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Resets the overscan insets for a display to the last saved value (i.e
    * before Start was called).
    * @param {string} id The display's unique identifier.
@@ -104,6 +108,7 @@ SystemDisplay.prototype = {
   overscanCalibrationReset: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Complete overscan adjustments for a display  by saving the current values
    * and hiding the overlay.
    * @param {string} id The display's unique identifier.
@@ -112,6 +117,7 @@ SystemDisplay.prototype = {
   overscanCalibrationComplete: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Displays the native touch calibration UX for the display with |id| as
    * display id. This will show an overlay on the screen with required
    * instructions on how to proceed. The callback will be invoked in case of
@@ -126,6 +132,7 @@ SystemDisplay.prototype = {
   showNativeTouchCalibration: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Starts custom touch calibration for a display. This should be called when
    * using a custom UX for collecting calibration data. If another touch
    * calibration is already in progress this will throw an error.
@@ -135,6 +142,7 @@ SystemDisplay.prototype = {
   startCustomTouchCalibration: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Sets the touch calibration pairs for a display. These |pairs| would be used
    * to calibrate the touch screen for display with |id| called in
    * startCustomTouchCalibration(). Always call |startCustomTouchCalibration|
@@ -150,6 +158,7 @@ SystemDisplay.prototype = {
   completeCustomTouchCalibration: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Resets the touch calibration for the display and brings it back to its
    * default state by clearing any touch calibration data associated with the
    * display.
@@ -159,10 +168,10 @@ SystemDisplay.prototype = {
   clearTouchCalibration: assertNotReached,
 
   /**
+   * NOTE: This is only available to Chrome OS Kiosk apps.
    * Sets the display mode to the specified mirror mode. Each call resets the
    * state from previous calls. Calling setDisplayProperties() will fail for the
-   * mirroring destination displays. NOTE: This is only available to Chrome OS
-   * Kiosk apps and Web UI.
+   * mirroring destination displays.
    * @param {!chrome.system.display.MirrorModeInfo} info The information of the
    *     mirror mode that should be applied to the     display mode.
    * @param {function(): void=} callback Empty function called when the function
