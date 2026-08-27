@@ -12,8 +12,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -385,7 +385,7 @@ public class HubCoordinatorUnitTest {
 
     @Test
     public void testFocusPane() {
-        reset(mPaneManager);
+        clearInvocations(mPaneManager);
         mHubCoordinator.focusPane(PaneId.TAB_SWITCHER);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
     }
@@ -502,23 +502,73 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    public void onSwipeSwitchComplete_cyclesToNextPane() {
+    public void onSwipeSwitchComplete_switchesToNextPane() {
         mHubCoordinator.onSwipeSwitchComplete(true);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
     @Test
-    public void onSwipeSwitchComplete_cyclesToPreviousPane() {
-        mHubCoordinator.onSwipeSwitchComplete(false);
-        verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
-    }
-
-    @Test
-    public void onSwipeSwitchComplete_wrapsAroundFromLastPane() {
-        reset(mPaneManager);
+    public void onSwipeSwitchComplete_switchesToPreviousPane() {
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
-        mHubCoordinator.onSwipeSwitchComplete(true);
+        clearInvocations(mPaneManager);
+        mHubCoordinator.onSwipeSwitchComplete(false);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    public void onSwipeSwitchComplete_doesNotWrapAround() {
+        // At first pane, swiping right (to previous) should not switch or emit histograms.
+        var rightSwipeWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Hub.PaneSwiped.Right")
+                        .expectNoRecords("Android.Hub.PaneSwiped.Left")
+                        .build();
+        clearInvocations(mPaneManager);
+        mHubCoordinator.onSwipeSwitchComplete(false);
+        verify(mPaneManager, never()).focusPane(anyInt());
+        rightSwipeWatcher.assertExpected();
+
+        // At last pane, swiping left (to next) should not switch or emit histograms.
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        clearInvocations(mPaneManager);
+        var leftSwipeWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Hub.PaneSwiped.Right")
+                        .expectNoRecords("Android.Hub.PaneSwiped.Left")
+                        .build();
+        mHubCoordinator.onSwipeSwitchComplete(true);
+        verify(mPaneManager, never()).focusPane(anyInt());
+        leftSwipeWatcher.assertExpected();
+    }
+
+    @Test
+    public void prepareAndGetAdjacentPaneView_edgePanesReturnNull() {
+        FrameLayout tabSwitcherView = new FrameLayout(mActivityController.get());
+        FrameLayout incognitoTabSwitcherView = new FrameLayout(mActivityController.get());
+        when(mTabSwitcherPane.getRootView()).thenReturn(tabSwitcherView);
+        when(mIncognitoTabSwitcherPane.getRootView()).thenReturn(incognitoTabSwitcherView);
+
+        // At first pane (TAB_SWITCHER), swiping right has no previous pane so returns null.
+        assertNull(mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ false));
+
+        // Swiping left has next pane (INCOGNITO_TAB_SWITCHER).
+        assertEquals(
+                incognitoTabSwitcherView,
+                mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true));
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+
+        // Move to last pane (INCOGNITO_TAB_SWITCHER).
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+
+        // Swiping left has no next pane so returns null.
+        assertNull(mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true));
+
+        // Swiping right has previous pane (TAB_SWITCHER).
+        clearInvocations(mTabSwitcherPane);
+        assertEquals(
+                tabSwitcherView,
+                mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ false));
+        verify(mTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
     }
 
     @Test
@@ -526,8 +576,10 @@ public class HubCoordinatorUnitTest {
         mHubCoordinator.onSwipeSwitchCancel(true);
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
 
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        clearInvocations(mTabSwitcherPane);
         mHubCoordinator.onSwipeSwitchCancel(false);
-        verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(LoadHint.WARM);
+        verify(mTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
     }
 
     @Test

@@ -324,6 +324,14 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
 
     @Override
     public void onSwipeSwitchComplete(boolean isSwipeLeft) {
+        mHubToolbarCoordinator.setBlockTabSelectionCallback(false);
+        mSwipeAnimationProgressSupplier.set(null);
+
+        Pane nextPane = getAdjacentPane(isSwipeLeft);
+        if (nextPane == null) {
+            return;
+        }
+
         Pane currentPane = getFocusedPane();
         if (currentPane != null) {
             RecordUserAction.record("Android.Hub.PaneSwiped");
@@ -332,13 +340,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
                     "Android.Hub.PaneSwiped." + direction, currentPane.getPaneId(), PaneId.COUNT);
         }
 
-        mHubToolbarCoordinator.setBlockTabSelectionCallback(false);
-        mSwipeAnimationProgressSupplier.set(null);
-
-        Pane nextPane = getAdjacentPane(isSwipeLeft);
-        if (nextPane != null) {
-            mPaneManager.focusPane(nextPane.getPaneId());
-        }
+        mPaneManager.focusPane(nextPane.getPaneId());
     }
 
     @Override
@@ -445,15 +447,10 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
         int paneCount = orderedPaneIds.size();
         if (paneCount <= 1) return INVALID_PANE_SWITCHER_INDEX;
 
-        // Find the next available pane to switch to.
-        for (int i = 1; i < paneCount; i++) {
-            int nextPaneIndex;
-            if (isSwipeLeft) {
-                nextPaneIndex = (currentPaneIndex + i) % paneCount;
-            } else {
-                nextPaneIndex = (currentPaneIndex - i + paneCount) % paneCount;
-            }
-
+        int step = isSwipeLeft ? 1 : -1;
+        for (int nextPaneIndex = currentPaneIndex + step;
+                nextPaneIndex >= 0 && nextPaneIndex < paneCount;
+                nextPaneIndex += step) {
             @PaneId int nextPaneId = orderedPaneIds.get(nextPaneIndex);
             Pane pane = mPaneManager.getPaneForId(nextPaneId);
             if (pane != null && pane.getReferenceButtonDataSupplier().get() != null) {
