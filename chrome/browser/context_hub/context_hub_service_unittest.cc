@@ -1078,6 +1078,39 @@ TEST_F(ContextHubServiceTest, GetEntriesByIds) {
   EXPECT_EQ(entries[0].tab_title, selected_entries[0].tab_title);
 }
 
+TEST_F(ContextHubServiceTest, GetAllMemoryBankTags) {
+  MemoryBankEntry entry1(MemoryBankType::kTab, GURL("https://example1.com"),
+                         "Title1", "Page text 1");
+  entry1.tags = {"tag1", "tag2"};
+  service_.SaveMemoryBankEntry(entry1, base::DoNothing());
+
+  MemoryBankEntry entry2(MemoryBankType::kTab, GURL("https://example2.com"),
+                         "Title2", "Page text 2");
+  entry2.tags = {"tag2", "tag3"};
+  service_.SaveMemoryBankEntry(entry2, base::DoNothing());
+
+  base::test::TestFuture<const std::vector<std::string>&> tags_future;
+  service_.GetAllMemoryBankTags(tags_future.GetCallback());
+  EXPECT_THAT(tags_future.Get(),
+              testing::UnorderedElementsAre("tag1", "tag2", "tag3"));
+}
+
+TEST_F(ContextHubServiceTest, GetAllMemoryBankCollections) {
+  MemoryBankEntry entry1(MemoryBankType::kTab, GURL("https://example1.com"),
+                         "Title1", "Page text 1");
+  entry1.collection = "Research";
+  service_.SaveMemoryBankEntry(entry1, base::DoNothing());
+
+  MemoryBankEntry entry2(MemoryBankType::kTab, GURL("https://example2.com"),
+                         "Title2", "Page text 2");
+  entry2.collection = "Recipes";
+  service_.SaveMemoryBankEntry(entry2, base::DoNothing());
+
+  base::test::TestFuture<const std::vector<std::string>&> coll_future;
+  service_.GetAllMemoryBankCollections(coll_future.GetCallback());
+  EXPECT_THAT(coll_future.Get(), testing::ElementsAre("Recipes", "Research"));
+}
+
 TEST_F(ContextHubServiceTest, GroupTabs_NoTabs) {
   base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
                          std::string>

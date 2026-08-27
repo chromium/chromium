@@ -30,6 +30,8 @@ class NoOpMemoryBank : public MemoryBank {
                        GetEntriesCallback callback) const override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
+  void GetAllTags(GetStringsCallback callback) const override;
+  void GetAllCollections(GetStringsCallback callback) const override;
 };
 
 }  // namespace context_hub

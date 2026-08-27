@@ -203,5 +203,44 @@ TEST_F(TabContextSyncMemoryBankTest, DeletesEntriesFromCache) {
   ASSERT_TRUE(get_future.Get().empty());
 }
 
+TEST_F(TabContextSyncMemoryBankTest, GetAllTagsAndCollections) {
+  const sync_tab_context::ContainerId kContainerId(
+      base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(mock_sync_service_, CreateContainer())
+      .WillOnce(Return(kContainerId));
+  EXPECT_CALL(mock_sync_service_, UploadPageContext(kContainerId, _, _))
+      .WillRepeatedly(Return(true));
+
+  MemoryBankEntry entry1;
+  entry1.id = 1;
+  entry1.tags = {"tag1", "tag2"};
+  entry1.collection = "Research";
+
+  MemoryBankEntry entry2;
+  entry2.id = 2;
+  entry2.tags = {"tag2", "tag3"};
+  entry2.collection = "Work";
+
+  base::test::TestFuture<bool> save_future1;
+  memory_bank_->SaveMemoryBankEntry(std::move(entry1),
+                                    save_future1.GetCallback());
+  ASSERT_TRUE(save_future1.Get());
+
+  base::test::TestFuture<bool> save_future2;
+  memory_bank_->SaveMemoryBankEntry(std::move(entry2),
+                                    save_future2.GetCallback());
+  ASSERT_TRUE(save_future2.Get());
+
+  base::test::TestFuture<const std::vector<std::string>&> tags_future;
+  memory_bank_->GetAllTags(tags_future.GetCallback());
+  std::vector<std::string> tags = tags_future.Get();
+  EXPECT_EQ(tags, (std::vector<std::string>{"tag1", "tag2", "tag3"}));
+
+  base::test::TestFuture<const std::vector<std::string>&> collections_future;
+  memory_bank_->GetAllCollections(collections_future.GetCallback());
+  std::vector<std::string> collections = collections_future.Get();
+  EXPECT_EQ(collections, (std::vector<std::string>{"Research", "Work"}));
+}
+
 }  // namespace
 }  // namespace context_hub

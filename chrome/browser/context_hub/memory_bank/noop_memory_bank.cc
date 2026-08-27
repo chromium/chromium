@@ -36,4 +36,16 @@ void NoOpMemoryBank::DeleteEntries(base::span<const int64_t> ids,
   }
 }
 
+void NoOpMemoryBank::GetAllTags(GetStringsCallback callback) const {
+  if (callback) {
+    std::move(callback).Run({});
+  }
+}
+
+void NoOpMemoryBank::GetAllCollections(GetStringsCallback callback) const {
+  if (callback) {
+    std::move(callback).Run({});
+  }
+}
+
 }  // namespace context_hub

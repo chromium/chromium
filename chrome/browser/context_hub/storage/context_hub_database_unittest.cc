@@ -16,6 +16,7 @@
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -328,6 +329,49 @@ TEST_F(ContextHubDatabaseTest, MaxEntriesLimitRejectsNewEntries) {
 
   // Table should still contain only 2 entries.
   EXPECT_EQ(db_->GetAllMemoryBankEntries().size(), 2u);
+}
+
+// Tests retrieving all unique tags.
+TEST_F(ContextHubDatabaseTest, GetAllMemoryBankTags) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+  EXPECT_TRUE(db_->GetAllMemoryBankTags().empty());
+
+  MemoryBankEntry entry1 = CreateTestData();
+  entry1.url = GURL("https://example.com/1");
+  entry1.tags = {"tag1", "tag2"};
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+
+  MemoryBankEntry entry2 = CreateTestData();
+  entry2.url = GURL("https://example.com/2");
+  entry2.tags = {"tag2", "tag3"};
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+
+  std::vector<std::string> tags = db_->GetAllMemoryBankTags();
+  EXPECT_THAT(tags, testing::UnorderedElementsAre("tag1", "tag2", "tag3"));
+}
+
+// Tests retrieving all unique collections.
+TEST_F(ContextHubDatabaseTest, GetAllMemoryBankCollections) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+  EXPECT_TRUE(db_->GetAllMemoryBankCollections().empty());
+
+  MemoryBankEntry entry1 = CreateTestData();
+  entry1.url = GURL("https://example.com/1");
+  entry1.collection = "Research";
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+
+  MemoryBankEntry entry2 = CreateTestData();
+  entry2.url = GURL("https://example.com/2");
+  entry2.collection = "Recipes";
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+
+  MemoryBankEntry entry3 = CreateTestData();
+  entry3.url = GURL("https://example.com/3");
+  entry3.collection = "Research";
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry3));
+
+  std::vector<std::string> collections = db_->GetAllMemoryBankCollections();
+  EXPECT_THAT(collections, testing::ElementsAre("Recipes", "Research"));
 }
 
 }  // namespace context_hub

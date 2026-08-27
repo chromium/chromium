@@ -34,6 +34,8 @@ class ContextHubBackendImpl : public ContextHubBackend {
   void GetMemoryBankEntriesByIds(
       base::span<const int64_t> ids,
       GetEntriesCallback callback) const override;
+  void GetAllMemoryBankTags(GetStringsCallback callback) const override;
+  void GetAllMemoryBankCollections(GetStringsCallback callback) const override;
 
  private:
   enum class DbState {

@@ -239,6 +239,12 @@ interface PageHandler {
   // Saves the current context entry to the memory bank with user annotations.
   SaveMemoryBankEntry(MemoryBankEntryAnnotations annotations) => (bool success);
 
+  // Returns all unique tags stored in the memory bank.
+  GetAllMemoryBankTags() => (array<string> tags);
+
+  // Returns all unique collections stored in the memory bank.
+  GetAllMemoryBankCollections() => (array<string> collections);
+
   // Returns the list of open ungrouped tabs in the current window.
   [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);

@@ -29,6 +29,8 @@ class InMemoryMemoryBank : public MemoryBank {
                        GetEntriesCallback callback) const override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
+  void GetAllTags(GetStringsCallback callback) const override;
+  void GetAllCollections(GetStringsCallback callback) const override;
 
  private:
   // LRU cache to store the entries in the memory bank.

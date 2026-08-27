@@ -76,6 +76,12 @@ class MemoryBankTable {
   // Retrieves all entries from memory_bank_entries ordered by timestamp DESC.
   std::vector<MemoryBankEntry> GetAllEntries();
 
+  // Retrieves all unique tags stored across memory bank entries.
+  std::vector<std::string> GetAllTags();
+
+  // Retrieves all unique collection names stored across memory bank entries.
+  std::vector<std::string> GetAllCollections();
+
   // Returns the total number of entries in memory_bank_entries.
   size_t GetEntryCount();
 

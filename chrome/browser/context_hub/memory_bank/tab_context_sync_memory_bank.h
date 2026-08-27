@@ -45,6 +45,8 @@ class TabContextSyncMemoryBank : public MemoryBank {
   void GetAllEntries(GetEntriesCallback callback) const override;
   void GetEntriesByIds(base::span<const int64_t> ids,
                        GetEntriesCallback callback) const override;
+  void GetAllTags(GetStringsCallback callback) const override;
+  void GetAllCollections(GetStringsCallback callback) const override;
 
  private:
   std::optional<sync_tab_context::ContainerId> GetOrCreateContainerId();

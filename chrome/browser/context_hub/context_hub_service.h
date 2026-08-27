@@ -231,6 +231,11 @@ class ContextHubService : public KeyedService,
   // Returns entries for the given IDs from the memory bank.
   void GetEntriesByIds(base::span<const int64_t> ids,
                        MemoryBank::GetEntriesCallback callback) const;
+  // Returns all unique tags from the memory bank.
+  void GetAllMemoryBankTags(MemoryBank::GetStringsCallback callback) const;
+  // Returns all unique collections from the memory bank.
+  void GetAllMemoryBankCollections(
+      MemoryBank::GetStringsCallback callback) const;
 
   using GetTabGroupsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry>)>;

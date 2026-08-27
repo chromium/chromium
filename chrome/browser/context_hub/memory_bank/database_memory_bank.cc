@@ -44,4 +44,12 @@ void DatabaseMemoryBank::GetEntriesByIds(base::span<const int64_t> ids,
   context_hub_backend_->GetMemoryBankEntriesByIds(ids, std::move(callback));
 }
 
+void DatabaseMemoryBank::GetAllTags(GetStringsCallback callback) const {
+  context_hub_backend_->GetAllMemoryBankTags(std::move(callback));
+}
+
+void DatabaseMemoryBank::GetAllCollections(GetStringsCallback callback) const {
+  context_hub_backend_->GetAllMemoryBankCollections(std::move(callback));
+}
+
 }  // namespace context_hub

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
 #define CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -38,6 +39,13 @@ class ContextHubBackend {
   virtual void GetMemoryBankEntriesByIds(
       base::span<const int64_t> ids,
       GetEntriesCallback callback) const = 0;
+  using GetStringsCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
+  // Returns all unique tags in the MemoryBankTable.
+  virtual void GetAllMemoryBankTags(GetStringsCallback callback) const = 0;
+  // Returns all unique collections in the MemoryBankTable.
+  virtual void GetAllMemoryBankCollections(
+      GetStringsCallback callback) const = 0;
 };
 
 }  // namespace context_hub

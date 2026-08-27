@@ -1075,6 +1075,67 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
   EXPECT_TRUE(entries2.empty());
 }
 
+TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankTags_Empty) {
+  base::test::TestFuture<const std::vector<std::string>&> tags_future;
+  handler_->GetAllMemoryBankTags(tags_future.GetCallback());
+  EXPECT_TRUE(tags_future.Get().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankTags_Success) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  MemoryBankEntry entry1(MemoryBankType::kTab, GURL("https://example.com/tab1"),
+                         "Tab Title 1", "Page text 1");
+  entry1.tags = {"tag1", "tag2"};
+  base::test::TestFuture<bool> save_tab_future1;
+  service->SaveMemoryBankEntry(entry1, save_tab_future1.GetCallback());
+  ASSERT_TRUE(save_tab_future1.Wait());
+
+  MemoryBankEntry entry2(MemoryBankType::kTab, GURL("https://example.com/tab2"),
+                         "Tab Title 2", "Page text 2");
+  entry2.tags = {"tag2", "tag3"};
+  base::test::TestFuture<bool> save_tab_future2;
+  service->SaveMemoryBankEntry(entry2, save_tab_future2.GetCallback());
+  ASSERT_TRUE(save_tab_future2.Wait());
+
+  base::test::TestFuture<const std::vector<std::string>&> tags_future;
+  handler_->GetAllMemoryBankTags(tags_future.GetCallback());
+  EXPECT_THAT(tags_future.Get(),
+              testing::UnorderedElementsAre("tag1", "tag2", "tag3"));
+}
+
+TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankCollections_Empty) {
+  base::test::TestFuture<const std::vector<std::string>&> coll_future;
+  handler_->GetAllMemoryBankCollections(coll_future.GetCallback());
+  EXPECT_TRUE(coll_future.Get().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankCollections_Success) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  MemoryBankEntry entry1(MemoryBankType::kTab, GURL("https://example.com/tab1"),
+                         "Tab Title 1", "Page text 1");
+  entry1.collection = "Research";
+  base::test::TestFuture<bool> save_tab_future1;
+  service->SaveMemoryBankEntry(entry1, save_tab_future1.GetCallback());
+  ASSERT_TRUE(save_tab_future1.Wait());
+
+  MemoryBankEntry entry2(MemoryBankType::kTab, GURL("https://example.com/tab2"),
+                         "Tab Title 2", "Page text 2");
+  entry2.collection = "Recipes";
+  base::test::TestFuture<bool> save_tab_future2;
+  service->SaveMemoryBankEntry(entry2, save_tab_future2.GetCallback());
+  ASSERT_TRUE(save_tab_future2.Wait());
+
+  base::test::TestFuture<const std::vector<std::string>&> coll_future;
+  handler_->GetAllMemoryBankCollections(coll_future.GetCallback());
+  EXPECT_THAT(coll_future.Get(), testing::ElementsAre("Recipes", "Research"));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
   EXPECT_CALL(*mock_tab_provider_, SwitchToTab(42)).Times(1);

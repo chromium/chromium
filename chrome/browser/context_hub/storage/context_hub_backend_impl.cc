@@ -138,4 +138,44 @@ void ContextHubBackendImpl::GetMemoryBankEntriesByIds(
   }
 }
 
+void ContextHubBackendImpl::GetAllMemoryBankTags(
+    GetStringsCallback callback) const {
+  auto* non_const_this = const_cast<ContextHubBackendImpl*>(this);
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      non_const_this->queued_operations_.push_back(
+          base::BindOnce(&ContextHubBackendImpl::GetAllMemoryBankTags,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::GetAllMemoryBankTags)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(const_cast<GetStringsCallback&>(callback)).Run({});
+      break;
+  }
+}
+
+void ContextHubBackendImpl::GetAllMemoryBankCollections(
+    GetStringsCallback callback) const {
+  auto* non_const_this = const_cast<ContextHubBackendImpl*>(this);
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      non_const_this->queued_operations_.push_back(
+          base::BindOnce(&ContextHubBackendImpl::GetAllMemoryBankCollections,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::GetAllMemoryBankCollections)
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(const_cast<GetStringsCallback&>(callback)).Run({});
+      break;
+  }
+}
+
 }  // namespace context_hub

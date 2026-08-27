@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -231,6 +232,51 @@ std::vector<MemoryBankEntry> MemoryBankTable::GetAllEntries() {
   }
 
   return entries;
+}
+
+std::vector<std::string> MemoryBankTable::GetAllTags() {
+  if (!db_) {
+    return {};
+  }
+
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT DISTINCT tags FROM memory_bank_entries WHERE tags IS NOT NULL "
+      "AND tags != ''"));
+
+  std::set<std::string> unique_tags;
+  while (statement.Step()) {
+    std::string tags_json = statement.ColumnString(0);
+    std::optional<base::ListValue> list_opt =
+        base::JSONReader::ReadList(tags_json, base::JSON_PARSE_RFC);
+    if (list_opt.has_value()) {
+      for (const auto& val : list_opt.value()) {
+        if (val.is_string()) {
+          unique_tags.insert(val.GetString());
+        }
+      }
+    }
+  }
+
+  return std::vector<std::string>(unique_tags.begin(), unique_tags.end());
+}
+
+std::vector<std::string> MemoryBankTable::GetAllCollections() {
+  if (!db_) {
+    return {};
+  }
+
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT DISTINCT collection FROM memory_bank_entries WHERE collection "
+      "IS NOT NULL AND collection != '' ORDER BY collection ASC"));
+
+  std::vector<std::string> collections;
+  while (statement.Step()) {
+    collections.push_back(statement.ColumnString(0));
+  }
+
+  return collections;
 }
 
 size_t MemoryBankTable::GetEntryCount() {

@@ -5,6 +5,7 @@
 #include "chrome/browser/context_hub/memory_bank/tab_context_sync_memory_bank.h"
 
 #include <limits>
+#include <set>
 #include <utility>
 
 #include "base/check.h"
@@ -137,6 +138,33 @@ void TabContextSyncMemoryBank::DeleteEntries(
   }
   if (callback) {
     std::move(callback).Run(/*success=*/true);
+  }
+}
+
+void TabContextSyncMemoryBank::GetAllTags(GetStringsCallback callback) const {
+  std::set<std::string> unique_tags;
+  for (const auto& [_, entry] : entries_) {
+    for (const auto& tag : entry.tags) {
+      unique_tags.insert(tag);
+    }
+  }
+  if (callback) {
+    std::move(callback).Run(
+        std::vector<std::string>(unique_tags.begin(), unique_tags.end()));
+  }
+}
+
+void TabContextSyncMemoryBank::GetAllCollections(
+    GetStringsCallback callback) const {
+  std::set<std::string> unique_collections;
+  for (const auto& [_, entry] : entries_) {
+    if (entry.collection.has_value() && !entry.collection->empty()) {
+      unique_collections.insert(*entry.collection);
+    }
+  }
+  if (callback) {
+    std::move(callback).Run(std::vector<std::string>(unique_collections.begin(),
+                                                     unique_collections.end()));
   }
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_H_
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -32,6 +33,12 @@ class MemoryBank {
   // Returns entries for the given IDs from the memory bank via the callback.
   virtual void GetEntriesByIds(base::span<const int64_t> ids,
                                GetEntriesCallback callback) const = 0;
+  using GetStringsCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
+  // Returns all unique tags from the memory bank via the callback.
+  virtual void GetAllTags(GetStringsCallback callback) const = 0;
+  // Returns all unique collections from the memory bank via the callback.
+  virtual void GetAllCollections(GetStringsCallback callback) const = 0;
 };
 
 }  // namespace context_hub

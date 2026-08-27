@@ -10,6 +10,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -316,6 +317,62 @@ TEST_F(MemoryBankTableTest, GetEntriesByIds) {
   ASSERT_EQ(1u, retrieved.size());
   EXPECT_EQ(all[0].id, retrieved[0].id);
   EXPECT_EQ(all[0].tab_title, retrieved[0].tab_title);
+}
+
+TEST_F(MemoryBankTableTest, GetAllTags) {
+  EXPECT_TRUE(table_.GetAllTags().empty());
+
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://site1.com");
+  entry1.tab_title = "Site 1";
+  entry1.tags = {"tagA", "tagB"};
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://site2.com");
+  entry2.tab_title = "Site 2";
+  entry2.tags = {"tagB", "tagC"};
+
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+
+  std::vector<std::string> tags = table_.GetAllTags();
+  EXPECT_THAT(tags, testing::UnorderedElementsAre("tagA", "tagB", "tagC"));
+}
+
+TEST_F(MemoryBankTableTest, GetAllCollections) {
+  EXPECT_TRUE(table_.GetAllCollections().empty());
+
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://site1.com");
+  entry1.tab_title = "Site 1";
+  entry1.collection = "Research";
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://site2.com");
+  entry2.tab_title = "Site 2";
+  entry2.collection = "Work";
+
+  MemoryBankEntry entry3;
+  entry3.type = MemoryBankType::kTab;
+  entry3.timestamp = base::Time::FromSecondsSinceUnixEpoch(3000);
+  entry3.url = GURL("https://site3.com");
+  entry3.tab_title = "Site 3";
+  entry3.collection = "Research";
+
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry3));
+
+  std::vector<std::string> collections = table_.GetAllCollections();
+  EXPECT_THAT(collections, testing::ElementsAre("Research", "Work"));
 }
 
 }  // namespace context_hub

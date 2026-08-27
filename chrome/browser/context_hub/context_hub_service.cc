@@ -848,6 +848,16 @@ void ContextHubService::GetEntriesByIds(
   memory_bank_->GetEntriesByIds(ids, std::move(callback));
 }
 
+void ContextHubService::GetAllMemoryBankTags(
+    MemoryBank::GetStringsCallback callback) const {
+  memory_bank_->GetAllTags(std::move(callback));
+}
+
+void ContextHubService::GetAllMemoryBankCollections(
+    MemoryBank::GetStringsCallback callback) const {
+  memory_bank_->GetAllCollections(std::move(callback));
+}
+
 void ContextHubService::GetTabGroups(GetTabGroupsCallback callback) const {
   if (tab_group_store_) {
     tab_group_store_->GetAllGroups(std::move(callback));

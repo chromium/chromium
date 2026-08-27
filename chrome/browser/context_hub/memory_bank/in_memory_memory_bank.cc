@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <limits>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -72,6 +74,32 @@ void InMemoryMemoryBank::DeleteEntries(base::span<const int64_t> ids,
   }
   if (callback) {
     std::move(callback).Run(/*success=*/true);
+  }
+}
+
+void InMemoryMemoryBank::GetAllTags(GetStringsCallback callback) const {
+  std::set<std::string> unique_tags;
+  for (const auto& [_, entry] : entries_) {
+    for (const auto& tag : entry.tags) {
+      unique_tags.insert(tag);
+    }
+  }
+  if (callback) {
+    std::move(callback).Run(
+        std::vector<std::string>(unique_tags.begin(), unique_tags.end()));
+  }
+}
+
+void InMemoryMemoryBank::GetAllCollections(GetStringsCallback callback) const {
+  std::set<std::string> unique_collections;
+  for (const auto& [_, entry] : entries_) {
+    if (entry.collection.has_value() && !entry.collection->empty()) {
+      unique_collections.insert(*entry.collection);
+    }
+  }
+  if (callback) {
+    std::move(callback).Run(std::vector<std::string>(unique_collections.begin(),
+                                                     unique_collections.end()));
   }
 }
 

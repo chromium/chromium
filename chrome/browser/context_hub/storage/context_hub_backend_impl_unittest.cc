@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -154,11 +155,64 @@ TEST_F(ContextHubBackendImplTest, GetMemoryBankEntriesByIds) {
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> by_ids_future;
   backend_->GetMemoryBankEntriesByIds({all_entries[0].id},
-                                       by_ids_future.GetCallback());
+                                      by_ids_future.GetCallback());
   auto selected_entries = by_ids_future.Get();
   ASSERT_EQ(1u, selected_entries.size());
   EXPECT_EQ(all_entries[0].id, selected_entries[0].id);
   EXPECT_EQ(all_entries[0].tab_title, selected_entries[0].tab_title);
+}
+
+TEST_F(ContextHubBackendImplTest, GetAllMemoryBankTags) {
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://example.com/1");
+  entry1.tags = {"tag1", "tag2"};
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://example.com/2");
+  entry2.tags = {"tag2", "tag3"};
+
+  base::test::TestFuture<bool> save_future1;
+  backend_->AddOrUpdateMemoryBankEntry(entry1, save_future1.GetCallback());
+  ASSERT_TRUE(save_future1.Get());
+
+  base::test::TestFuture<bool> save_future2;
+  backend_->AddOrUpdateMemoryBankEntry(entry2, save_future2.GetCallback());
+  ASSERT_TRUE(save_future2.Get());
+
+  base::test::TestFuture<const std::vector<std::string>&> tags_future;
+  backend_->GetAllMemoryBankTags(tags_future.GetCallback());
+  EXPECT_THAT(tags_future.Get(),
+              testing::UnorderedElementsAre("tag1", "tag2", "tag3"));
+}
+
+TEST_F(ContextHubBackendImplTest, GetAllMemoryBankCollections) {
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://example.com/1");
+  entry1.collection = "Research";
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://example.com/2");
+  entry2.collection = "Recipes";
+
+  base::test::TestFuture<bool> save_future1;
+  backend_->AddOrUpdateMemoryBankEntry(entry1, save_future1.GetCallback());
+  ASSERT_TRUE(save_future1.Get());
+
+  base::test::TestFuture<bool> save_future2;
+  backend_->AddOrUpdateMemoryBankEntry(entry2, save_future2.GetCallback());
+  ASSERT_TRUE(save_future2.Get());
+
+  base::test::TestFuture<const std::vector<std::string>&> coll_future;
+  backend_->GetAllMemoryBankCollections(coll_future.GetCallback());
+  EXPECT_THAT(coll_future.Get(), testing::ElementsAre("Recipes", "Research"));
 }
 
 }  // namespace context_hub

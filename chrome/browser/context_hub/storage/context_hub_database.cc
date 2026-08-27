@@ -138,6 +138,22 @@ std::vector<MemoryBankEntry> ContextHubDatabase::GetAllMemoryBankEntries() {
   return memory_bank_table_.GetAllEntries();
 }
 
+std::vector<std::string> ContextHubDatabase::GetAllMemoryBankTags() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return {};
+  }
+  return memory_bank_table_.GetAllTags();
+}
+
+std::vector<std::string> ContextHubDatabase::GetAllMemoryBankCollections() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return {};
+  }
+  return memory_bank_table_.GetAllCollections();
+}
+
 bool ContextHubDatabase::DeleteMemoryBankEntries(
     base::span<const int64_t> ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -43,6 +43,8 @@ class ContextHubDatabase {
   std::vector<MemoryBankEntry> GetMemoryBankEntriesByIds(
       base::span<const int64_t> ids);
   std::vector<MemoryBankEntry> GetAllMemoryBankEntries();
+  std::vector<std::string> GetAllMemoryBankTags();
+  std::vector<std::string> GetAllMemoryBankCollections();
   bool DeleteMemoryBankEntries(base::span<const int64_t> ids);
 
  private:

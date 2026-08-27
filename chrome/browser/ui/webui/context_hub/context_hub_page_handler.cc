@@ -283,6 +283,28 @@ void ContextHubPageHandler::SaveMemoryBankEntry(
   std::move(callback).Run(/*success=*/false);
 }
 
+void ContextHubPageHandler::GetAllMemoryBankTags(
+    GetAllMemoryBankTagsCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  service->GetAllMemoryBankTags(std::move(callback));
+}
+
+void ContextHubPageHandler::GetAllMemoryBankCollections(
+    GetAllMemoryBankCollectionsCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  service->GetAllMemoryBankCollections(std::move(callback));
+}
+
 namespace {
 
 std::vector<context_hub::TabData> GetOpenUngroupedTabs(
