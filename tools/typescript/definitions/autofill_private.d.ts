@@ -179,6 +179,18 @@ declare global {
         PRIVATE_PASS = 'PRIVATE_PASS',
       }
 
+      export enum UserDataProcessingConsentState {
+        UNDEFINED = 'UNDEFINED',
+        UNKNOWN = 'UNKNOWN',
+        ENABLED = 'ENABLED',
+        DISABLED = 'DISABLED',
+      }
+
+      export interface UserDataProcessingConsentStates {
+        commsApps: UserDataProcessingConsentState;
+        googleApps: UserDataProcessingConsentState;
+      }
+
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
@@ -348,6 +360,8 @@ declare global {
       export function getWalletablePassDetectionOptInStatus(): Promise<boolean>;
       export function setWalletablePassDetectionOptInStatus(optedIn: boolean):
           Promise<boolean>;
+      export function fetchUserDataProcessingConsent():
+          Promise<UserDataProcessingConsentStates>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
