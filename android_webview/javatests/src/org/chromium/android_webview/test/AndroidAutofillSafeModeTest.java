@@ -28,8 +28,6 @@ import org.chromium.base.test.util.Feature;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
-    public static final String TAG = "AndroidAutofillTest";
-
     @Rule public AwActivityTestRule mRule;
 
     public AndroidAutofillSafeModeTest(AwSettingsMutation param) {

@@ -128,7 +128,6 @@ public class AwVariationsSeedFetcherTest {
     // parameters.
     private class TestVariationsSeedFetcher extends VariationsSeedFetcher {
         private static final String SAVED_VARIATIONS_SEED_SERIAL_NUMBER = "savedSerialNumber";
-        private Date mDownloadDate;
 
         public int fetchResult;
 

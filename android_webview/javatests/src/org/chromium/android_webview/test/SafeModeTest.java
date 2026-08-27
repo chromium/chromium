@@ -169,7 +169,6 @@ public class SafeModeTest extends AwParameterizedTest {
 
     private final TestJobScheduler mScheduler = new TestJobScheduler();
     private final TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
-    private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_NOT_MODIFIED = 304;
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
 

@@ -36,10 +36,6 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
     private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
 
-    // The system retains a strong ref to the last focused view (in InputMethodManager)
-    // so allow for 1 'leaked' instance.
-    private static final int MAX_IDLE_INSTANCES = 1;
-
     public AwJavaBridgeTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }

@@ -32,8 +32,6 @@ import org.chromium.base.test.util.Feature;
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
-    public static final String TAG = "DisableOriginTrialsSafeModeTest";
-
     @Rule public AwActivityTestRule mRule;
 
     public DisableOriginTrialsSafeModeTest(AwSettingsMutation param) {
