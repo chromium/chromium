@@ -38,51 +38,48 @@ class GtkUtilInterceptorTest : public testing::Test {
  protected:
   void SetUp() override { InstallGtkSettingsInterceptor(); }
   void TearDown() override { UninstallGtkSettingsInterceptor(); }
+
+  struct PropertyObserver {
+    std::string value;
+    void OnNotify(const char* prop, GtkSettings* settings, GParamSpec* pspec) {
+      gchar* str = nullptr;
+      g_object_get(settings, prop, &str, nullptr);
+      if (str) {
+        value = str;
+        g_free(str);
+      }
+    }
+    base::WeakPtrFactory<PropertyObserver> weak_factory{this};
+  };
 };
 
 TEST_F(GtkUtilInterceptorTest, ThemeNamesSanitizedAtWriteTime) {
   GtkSettings* settings = GetDefaultGtkSettings();
   ASSERT_TRUE(settings);
 
-  std::string observed_theme_name;
-  auto callback = base::BindRepeating(
-      [](std::string* out_str, GtkSettings* settings, GParamSpec* pspec) {
-        gchar* name = nullptr;
-        g_object_get(settings, "gtk-theme-name", &name, nullptr);
-        if (name) {
-          *out_str = name;
-          g_free(name);
-        }
-      },
-      base::Unretained(&observed_theme_name));
-
-  ScopedGSignal signal(settings, "notify::gtk-theme-name", callback);
+  PropertyObserver observer;
+  ScopedGSignal signal(settings, "notify::gtk-theme-name",
+                       base::BindRepeating(&PropertyObserver::OnNotify,
+                                           observer.weak_factory.GetWeakPtr(),
+                                           "gtk-theme-name"));
 
   // Set to an invalid value (path traversal)
   g_object_set(settings, "gtk-theme-name", "../../../invalid-theme", nullptr);
 
   // The interceptor should have triggered and sanitized the theme name to
   // "Adwaita" before the notify callback ran!
-  EXPECT_EQ(observed_theme_name, "Adwaita");
+  EXPECT_EQ(observer.value, "Adwaita");
 }
 
 TEST_F(GtkUtilInterceptorTest, IconThemeNamesSanitizedAtWriteTime) {
   GtkSettings* settings = GetDefaultGtkSettings();
   ASSERT_TRUE(settings);
 
-  std::string observed_theme_name;
-  auto callback = base::BindRepeating(
-      [](std::string* out_str, GtkSettings* settings, GParamSpec* pspec) {
-        gchar* name = nullptr;
-        g_object_get(settings, "gtk-icon-theme-name", &name, nullptr);
-        if (name) {
-          *out_str = name;
-          g_free(name);
-        }
-      },
-      base::Unretained(&observed_theme_name));
-
-  ScopedGSignal signal(settings, "notify::gtk-icon-theme-name", callback);
+  PropertyObserver observer;
+  ScopedGSignal signal(settings, "notify::gtk-icon-theme-name",
+                       base::BindRepeating(&PropertyObserver::OnNotify,
+                                           observer.weak_factory.GetWeakPtr(),
+                                           "gtk-icon-theme-name"));
 
   // Set to an invalid value (path traversal)
   g_object_set(settings, "gtk-icon-theme-name", "../../../invalid-theme",
@@ -90,26 +87,18 @@ TEST_F(GtkUtilInterceptorTest, IconThemeNamesSanitizedAtWriteTime) {
 
   // The interceptor should have triggered and sanitized the theme name to
   // "hicolor" before the notify callback ran!
-  EXPECT_EQ(observed_theme_name, "hicolor");
+  EXPECT_EQ(observer.value, "hicolor");
 }
 
 TEST_F(GtkUtilInterceptorTest, CursorThemeNamesSanitizedAtWriteTime) {
   GtkSettings* settings = GetDefaultGtkSettings();
   ASSERT_TRUE(settings);
 
-  std::string observed_theme_name;
-  auto callback = base::BindRepeating(
-      [](std::string* out_str, GtkSettings* settings, GParamSpec* pspec) {
-        gchar* name = nullptr;
-        g_object_get(settings, "gtk-cursor-theme-name", &name, nullptr);
-        if (name) {
-          *out_str = name;
-          g_free(name);
-        }
-      },
-      base::Unretained(&observed_theme_name));
-
-  ScopedGSignal signal(settings, "notify::gtk-cursor-theme-name", callback);
+  PropertyObserver observer;
+  ScopedGSignal signal(settings, "notify::gtk-cursor-theme-name",
+                       base::BindRepeating(&PropertyObserver::OnNotify,
+                                           observer.weak_factory.GetWeakPtr(),
+                                           "gtk-cursor-theme-name"));
 
   // Set to an invalid value (path traversal)
   g_object_set(settings, "gtk-cursor-theme-name",
@@ -117,7 +106,28 @@ TEST_F(GtkUtilInterceptorTest, CursorThemeNamesSanitizedAtWriteTime) {
 
   // The interceptor should have triggered and sanitized the cursor theme name
   // to "Adwaita" before the notify callback ran!
-  EXPECT_EQ(observed_theme_name, "Adwaita");
+  EXPECT_EQ(observer.value, "Adwaita");
+}
+
+TEST_F(GtkUtilInterceptorTest, GtkModulesSanitizedAtWriteTime) {
+  if (GtkCheckVersion(4)) {
+    GTEST_SKIP();
+  }
+  GtkSettings* settings = GetDefaultGtkSettings();
+  ASSERT_TRUE(settings);
+
+  PropertyObserver observer;
+  ScopedGSignal signal(
+      settings, "notify::gtk-modules",
+      base::BindRepeating(&PropertyObserver::OnNotify,
+                          observer.weak_factory.GetWeakPtr(), "gtk-modules"));
+
+  // Set to a module name
+  g_object_set(settings, "gtk-modules", "canberra-gtk-module:pk-gtk-module",
+               nullptr);
+
+  // The interceptor should have triggered and sanitized the modules to ""
+  EXPECT_EQ(observer.value, "");
 }
 
 }  // namespace gtk

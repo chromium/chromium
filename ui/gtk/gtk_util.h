@@ -220,7 +220,7 @@ bool IsValidThemeName(ThemeProperty property, const char* theme);
 COMPONENT_EXPORT(GTK)
 const char* GetThemeFallback(ThemeProperty property);
 
-// Hook the `GtkSettings` `set_property` method to sanitize theme names.
+// Hook the `GtkSettings` `set_property` method to sanitize settings.
 COMPONENT_EXPORT(GTK) void InstallGtkSettingsInterceptor();
 
 // Unhook the `GtkSettings` `set_property` method.

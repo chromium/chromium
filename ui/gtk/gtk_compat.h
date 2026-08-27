@@ -51,6 +51,7 @@ const base::Version& GtkVersion();
 // Returns true iff the runtime version of Gtk used meets
 // |major|.|minor|.|micro|. LoadGtk() must have been called
 // prior to calling this function.
+COMPONENT_EXPORT(GTK)
 bool GtkCheckVersion(uint32_t major, uint32_t minor = 0, uint32_t micro = 0);
 
 // The below functions replace GTK functions whose interface has
