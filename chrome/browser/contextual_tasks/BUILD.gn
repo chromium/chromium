@@ -476,6 +476,11 @@ source_set("ui_impl") {
     deps += [ "//chrome/browser/ui/webui:favicon_source" ]
   }
 
+  if (enable_extensions_core) {
+    deps +=
+        [ "//chrome/browser/resources/contextual_tasks/extension:resources" ]
+  }
+
   if (enable_guest_view && !enable_extensions_core) {
     deps += [
       "//chrome/browser/resources/guest_view_shared:resources",

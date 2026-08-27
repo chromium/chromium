@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {ExtensionPageCallbackRouter, PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, ExtensionPageHandlerInterface, ExtensionPageRemote, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {BrowserProxy, ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
-
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -513,5 +512,64 @@ export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
         this.callbackRouter.$.bindNewPipeAndPassRemote();
     this.handler = new TestContextualTasksPageHandler(url, this.page);
     this.callbackRouterRemote.onCookieSyncCompleted();
+  }
+}
+
+/**
+ * Test version of the ExtensionPageHandler used to verify calls to the
+ * browser from the extension frame.
+ */
+export class TestExtensionPageHandler extends TestBrowserProxy implements
+    ExtensionPageHandlerInterface {
+  constructor() {
+    super([
+      'getHandshakeMessage',
+      'onWebviewMessage',
+      'setTaskId',
+      'updateComposeboxHeight',
+    ]);
+  }
+
+  getHandshakeMessage() {
+    this.methodCalled('getHandshakeMessage');
+    return Promise.resolve({
+      message: {
+        protoName: '',
+        smuggled: {
+          bytes: [1, 2, 3],
+        },
+      },
+    });
+  }
+
+  onWebviewMessage(message: number[]) {
+    this.methodCalled('onWebviewMessage', message);
+  }
+
+  setTaskId(uuid: Uuid) {
+    this.methodCalled('setTaskId', uuid);
+  }
+
+  updateComposeboxHeight(height: number) {
+    this.methodCalled('updateComposeboxHeight', height);
+  }
+}
+
+/**
+ * Test version of the ExtensionBrowserProxy used in connecting the Contextual
+ * Tasks extension frame to the browser.
+ */
+export class TestExtensionBrowserProxy extends TestBrowserProxy implements
+    ExtensionBrowserProxy {
+  callbackRouter: ExtensionPageCallbackRouter;
+  callbackRouterRemote: ExtensionPageRemote;
+  handler: TestExtensionPageHandler;
+
+  constructor() {
+    super([]);
+    this.callbackRouter = new ExtensionPageCallbackRouter();
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
+    this.handler = new TestExtensionPageHandler();
   }
 }

@@ -14,6 +14,11 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/grit/contextual_tasks_extension_resources.h"
+#include "chrome/grit/contextual_tasks_extension_resources_map.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
@@ -53,6 +58,10 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   source->AddResourcePaths(kGuestViewSharedResources);
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  source->AddResourcePaths(kContextualTasksExtensionResources);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -62,6 +62,7 @@ generate_grd("build_background_grdp") {
 build_webui("build") {
   grd_prefix = "contextual_tasks_extension"
   grd_resource_path_prefix = "contextual_tasks_extension"
+  ts_composite = true
 
   # Refer to parent directory for composebox.ts and other UI files.
   in_folder = "."
