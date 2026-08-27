@@ -272,6 +272,9 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Whether the "Omnibox Next" Lens search chip feature is enabled.
   virtual bool IsOmniboxNextLensSearchChipEnabled() const;
 
+  // Whether the Ask G search chip is enabled.
+  virtual bool IsAskGShowChipEnabled() const;
+
   // Whether the "Omnibox Next" AIM popup is enabled.
   virtual bool IsOmniboxNextAimPopupEnabled() const;
 

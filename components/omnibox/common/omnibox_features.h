@@ -298,6 +298,8 @@ extern const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions;
 extern const base::FeatureParam<bool> kAskGComposeboxPlaceholder;
 // Whether to bypass the Lens privacy notice.
 extern const base::FeatureParam<bool> kAskGBypassPrivacyNotice;
+// Whether to show a chip instead of action for Ask G.
+extern const base::FeatureParam<bool> kAskGShowChip;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

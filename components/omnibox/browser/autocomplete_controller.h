@@ -337,6 +337,9 @@ class AutocompleteController : public AutocompleteProviderListener,
 #if BUILDFLAG(IS_IOS)
   friend class FakeSuggestionsAutocompleteController;
 #endif
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteControllerTest,
+      UpdateKeywordDescriptions_StaticContextualSearchSuggestion);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,

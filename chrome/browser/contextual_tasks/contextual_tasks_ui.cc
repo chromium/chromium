@@ -652,7 +652,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            contextual_tasks::GetEnableNativeZeroStateSuggestions());
 
   AddContextMenuItemEligibilityLoadTimeData(dict, profile);
-  dict.Set("composeboxShowLensSearchChip", false);
+  dict.Set("composeboxShowChip", false);
   dict.Set("composeboxShowContextMenuTabPreviews", false);
   dict.Set("composeboxContextMenuEnableMultiTabSelection", true);
   dict.Set("composeboxContextMenuEnableTabDeselection",

@@ -40,10 +40,12 @@
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -3439,3 +3441,53 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_EQ(match.destination_url,
             provider_client()->last_reset_geolocation_url());
 }
+
+// Mobile has different handling.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest,
+       UpdateKeywordDescriptions_StaticContextualSearchSuggestion) {
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"Google");
+  turl_data.SetKeyword(u"google.com");
+  turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(turl_data));
+
+  AutocompleteMatch match(nullptr, 1100, false,
+                          AutocompleteMatchType::SEARCH_SUGGEST);
+  match.keyword = u"google.com";
+  match.subtypes = {omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH,
+                    omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH_STATIC};
+  SetAutocompleteMatches({match});
+
+  // When IsAskGShowChipEnabled is false, description is empty for static suggestions.
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(false));
+  controller_.UpdateKeywordDescriptions(&controller_.internal_result_);
+  EXPECT_TRUE(
+      controller_.internal_result_.match_at(0)->description.empty());
+
+  // When IsAskGShowChipEnabled is true, description is populated for static suggestions.
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(true));
+  controller_.UpdateKeywordDescriptions(&controller_.internal_result_);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL),
+      controller_.internal_result_.match_at(0)->description);
+
+  // Non-static contextual suggestions always have description populated.
+  AutocompleteMatch non_static_match(nullptr, 1100, false,
+                                     AutocompleteMatchType::SEARCH_SUGGEST);
+  non_static_match.keyword = u"google.com";
+  non_static_match.subtypes = {
+      omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH};
+  SetAutocompleteMatches({non_static_match});
+
+  EXPECT_CALL(*provider_client(), IsAskGShowChipEnabled())
+      .WillRepeatedly(testing::Return(false));
+  controller_.UpdateKeywordDescriptions(&controller_.internal_result_);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL),
+      controller_.internal_result_.match_at(0)->description);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

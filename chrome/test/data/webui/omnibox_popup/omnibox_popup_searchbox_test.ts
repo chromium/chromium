@@ -1766,7 +1766,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    test('CurrentTabChipShown', async () => {
      loadTimeData.overrideValues({
        composeboxShowCurrentTabChip: true,
-       composeboxShowLensSearchChip: true,
+       composeboxShowChip: true,
      });
 
      document.body.innerHTML = window.trustedTypes!.emptyHTML;

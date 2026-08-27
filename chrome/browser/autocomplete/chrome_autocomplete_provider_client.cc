@@ -712,6 +712,14 @@ bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+bool ChromeAutocompleteProviderClient::IsAskGShowChipEnabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return IsOmniboxNextAimPopupEnabled() && omnibox::kAskGShowChip.Get();
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 bool ChromeAutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
 #if !BUILDFLAG(IS_ANDROID)
   return omnibox::IsAimPopupEnabled(profile_);

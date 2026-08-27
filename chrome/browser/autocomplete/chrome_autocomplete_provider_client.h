@@ -139,6 +139,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool ShouldSendContextualUrlSuggestParam() const override;
   bool ShouldSendPageTitleSuggestParam() const override;
   bool IsOmniboxNextLensSearchChipEnabled() const override;
+  bool IsAskGShowChipEnabled() const override;
   bool IsOmniboxNextAimPopupEnabled() const override;
   bool IsGeminiStarterPackEnabled() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(

@@ -81,7 +81,8 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
       controller()->autocomplete_controller()->result().has_contextual_chips();
   const bool contextual_chips_feature_enabled =
       omnibox::IsAimPopupEnabled(location_bar_->GetProfile()) &&
-      omnibox::kShowLensSearchChip.Get();
+      (omnibox::kShowLensSearchChip.Get() ||
+       omnibox::kAskGShowChip.Get());
   const bool has_results_or_chips =
       has_results || (contextual_chips_feature_enabled && has_contextual_chips);
   const bool should_be_visible =

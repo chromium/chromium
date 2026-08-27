@@ -227,6 +227,37 @@ class ChromeAutocompleteProviderClientWithChipTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientWithChipTest,
+                       IsOmniboxNextLensSearchChipEnabled) {
+  EXPECT_TRUE(
+      GetAutocompleteProviderClient()->IsOmniboxNextLensSearchChipEnabled());
+  EXPECT_FALSE(
+      GetAutocompleteProviderClient()->IsAskGShowChipEnabled());
+}
+
+class ChromeAutocompleteProviderClientAskGShowChipTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientAskGShowChipTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::internal::kWebUIOmniboxAimPopup, {}},
+         {omnibox::kWebUIOmniboxAskGAboutThisPage,
+          {{"Omnibox_AskGShowChip", "true"}}}},
+        {omnibox::internal::kWebUIOmniboxSimplification});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGShowChipTest,
+                       IsAskGShowChipEnabled) {
+  EXPECT_FALSE(
+      GetAutocompleteProviderClient()->IsOmniboxNextLensSearchChipEnabled());
+  EXPECT_TRUE(
+      GetAutocompleteProviderClient()->IsAskGShowChipEnabled());
+}
+
 class ChromeAutocompleteProviderClientAskGCoBrowseTest
     : public ChromeAutocompleteProviderClientTest {
  protected:

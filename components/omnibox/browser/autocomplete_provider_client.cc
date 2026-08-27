@@ -84,6 +84,10 @@ bool AutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled() const {
   return false;
 }
 
+bool AutocompleteProviderClient::IsAskGShowChipEnabled() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
   return false;
 }

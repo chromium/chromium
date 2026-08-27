@@ -84,8 +84,8 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
   protected accessor showContextButtonSuggestionLabel_: boolean =
       loadTimeData.getBoolean('omniboxShowContextButtonSuggestionLabel');
 
-  private isLensSearchEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowLensSearchChip');
+  private isComposeboxChipEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowChip');
   private isLensIconEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowLensIcon');
   private hideContextButton_: boolean =
@@ -122,7 +122,8 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     this.searchboxListenerIds_ = [
       callbackRouter.updateLensSearchEligibility.addListener(
           (eligible: boolean) => {
-            this.isLensSearchEligible = this.isLensSearchEnabled_ && eligible;
+            this.isLensSearchEligible =
+                this.isComposeboxChipEnabled_ && eligible;
             this.isLensIconEligible = this.isLensIconEnabled_ && eligible;
           }),
       callbackRouter.updateContentSharingPolicy.addListener(

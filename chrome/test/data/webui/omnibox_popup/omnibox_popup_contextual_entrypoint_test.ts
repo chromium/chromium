@@ -31,7 +31,7 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
       composeboxShowContextMenuDescription: false,
       omniboxShowContextButtonSuggestionLabel: false,
       composeboxShowCurrentTabChip: true,
-      composeboxShowLensSearchChip: true,
+      composeboxShowChip: true,
       composeboxShowLensIcon: true,
       contextualMenuUsePecApi: false,
       contextButtonHasBackground: false,
