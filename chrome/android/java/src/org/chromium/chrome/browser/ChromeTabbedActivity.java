@@ -3527,7 +3527,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mModuleRegistrySupplier.set(moduleRegistry);
     }
 
-    private EducationTipModuleActionDelegate createEducationTipModuleActionDelegate() {
+    @VisibleForTesting
+    EducationTipModuleActionDelegate createEducationTipModuleActionDelegate() {
         return new EducationTipModuleActionDelegate() {
             @Override
             public Context getContext() {
@@ -3551,7 +3552,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             @Override
             public void openHubPane(int paneId) {
-                if (mLayoutManager == null) return;
+                if (mLayoutManager == null || TabSwitcherUtils.isGridTabSwitcherDisabled()) return;
 
                 // Opens the tab switcher and displays a specific pane.
                 HubShowPaneHelper hubShowPaneHelper = mHubProvider.getHubShowPaneHelper();
@@ -3561,6 +3562,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             @Override
             public void openTabGroupIphDialog() {
+                if (TabSwitcherUtils.isGridTabSwitcherDisabled()) return;
+
                 TabGridIphDialogCoordinator tabGridIphDialogCoordinator =
                         new TabGridIphDialogCoordinator(
                                 ChromeTabbedActivity.this, getModalDialogManager());

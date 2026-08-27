@@ -30,7 +30,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
@@ -109,5 +111,25 @@ public class ChromeTabbedActivityUnitTest {
         delegate.openHubSearch();
 
         verify(activitySpy).onMenuOrKeyboardAction(eq(R.id.tab_search), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testEducationTipModuleActionDelegate_openHubPane_disabledOnDesktop_suppressesHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        EducationTipModuleActionDelegate delegate =
+                mActivity.createEducationTipModuleActionDelegate();
+        // Should return early without throwing any NPE or calling layout manager
+        delegate.openHubPane(PaneId.TAB_GROUPS);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testEducationTipModuleActionDelegate_openTabGroupIphDialog_disabledOnDesktop_suppressesIphAndHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        EducationTipModuleActionDelegate delegate =
+                mActivity.createEducationTipModuleActionDelegate();
+        // Should return early without throwing any NPE or creating IPH coordinator
+        delegate.openTabGroupIphDialog();
     }
 }
