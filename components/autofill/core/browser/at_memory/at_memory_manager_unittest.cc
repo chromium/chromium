@@ -2943,15 +2943,13 @@ TEST_F(
   manager().FillSearchResult(autofill_manager(), form_id, other_field_id,
                              child_suggestion, /*metadata=*/std::nullopt);
 
-  // Verify that previously filled suggestions contain two copies of the primary
+  // Verify that previously filled suggestions contain the deduplicated primary
   // suggestion (not `child_suggestion`).
   empty_suggestions = manager().GetEmptyQuerySuggestions();
-  ASSERT_EQ(empty_suggestions.size(), 3u);
+  ASSERT_EQ(empty_suggestions.size(), 2u);
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
-  EXPECT_EQ(empty_suggestions[2].main_text.value, u"123 Main St");
   ASSERT_EQ(empty_suggestions[1].children.size(), 1u);
-  ASSERT_EQ(empty_suggestions[2].children.size(), 1u);
 }
 
 }  // namespace

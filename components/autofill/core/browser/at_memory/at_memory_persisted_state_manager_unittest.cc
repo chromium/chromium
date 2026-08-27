@@ -231,10 +231,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, PreviouslyFilledSuggestion) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnSuggestionAccepted(primary_suggestion);
 
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
   EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Passport");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
             u"Passport");
 }
 
@@ -286,15 +284,39 @@ TEST_F(AtMemoryPersistedStateManagerTest, ChildOfPreviouslyFilledSuggestion) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnSuggestionAccepted(child_suggestion);
 
-  // Verify that `previously_filled_suggestions` contains the primary suggestion
-  // (not `child_suggestion`).
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  // Verify that `previously_filled_suggestions` contains the deduplicated
+  // primary suggestion (not `child_suggestion`).
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
   EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
             u"Passport");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
-            u"Passport");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].children.size(),
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].children.size(),
             1u);
+}
+
+// Tests that accepting an already existing suggestion deduplicates and moves it
+// to the most recently used position.
+TEST_F(AtMemoryPersistedStateManagerTest, DeduplicatesAndPreservesMruOrder) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  Suggestion s2(u"Suggestion 2", SuggestionType::kAtMemorySearchResult);
+
+  state_manager().OnSuggestionAccepted(s1);
+  state_manager().OnSuggestionAccepted(s2);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Suggestion 1");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
+            u"Suggestion 2");
+
+  // Re-accept s1 to verify it is deduplicated and moved to the back (MRU).
+  state_manager().OnSuggestionAccepted(s1);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Suggestion 2");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
+            u"Suggestion 1");
 }
 
 }  // namespace

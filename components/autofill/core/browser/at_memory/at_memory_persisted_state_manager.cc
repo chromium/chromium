@@ -101,9 +101,15 @@ void AtMemoryPersistedStateManager::OnSuggestionAccepted(
     const Suggestion& suggestion) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemoryPreviouslyFilled)) {
-    // TODO(crbug.com/494559543): Deduplicate suggestions.
-    previously_filled_suggestions_.push_back(GetSuggestionToStore(
-        suggestion, search_state_, previously_filled_suggestions_));
+    const Suggestion& suggestion_to_store = GetSuggestionToStore(
+        suggestion, search_state_, previously_filled_suggestions_);
+    const auto it =
+        std::ranges::find(previously_filled_suggestions_, suggestion_to_store);
+    if (it != previously_filled_suggestions_.end()) {
+      std::rotate(it, it + 1, previously_filled_suggestions_.end());
+    } else {
+      previously_filled_suggestions_.push_back(suggestion_to_store);
+    }
   }
   field_id_ = FieldGlobalId();
   search_state_.reset();
