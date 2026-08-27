@@ -8,7 +8,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -66,7 +65,6 @@ TEST_F(GeminiGatewayManagerTest, TestHandlersInitialization) {
       [[GeminiGatewayManager alloc] initWithBrowser:browser_.get()
                                   viewStateDelegate:nil];
   EXPECT_NE(nil, manager.gateway);
-  EXPECT_NE(nil, manager.linkOpeningHandler);
   EXPECT_NE(nil, manager.pageStateChangeHandler);
   EXPECT_NE(nil, manager.sessionHandler);
   EXPECT_NE(nil, manager.consentProviderHandler);

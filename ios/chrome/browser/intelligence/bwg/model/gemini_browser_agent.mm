@@ -413,6 +413,11 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     }
   }
 
+  link_opening_handler_ = [[GeminiLinkOpeningHandler alloc]
+      initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)
+             dispatcher:browser_->GetCommandDispatcher()];
+  ConfigureGemini();
+
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
@@ -491,6 +496,9 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
   LogLiveSessionMetrics(/*floaty_dismissed=*/true);
+  [link_opening_handler_ disconnect];
+  link_opening_handler_ = nil;
+
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
@@ -541,6 +549,9 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 }
 
 void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
+  [link_opening_handler_ disconnect];
+  link_opening_handler_ = nil;
+
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     [gemini_container_mediator_ disconnect];
     gemini_container_mediator_ = nil;
@@ -603,6 +614,29 @@ gemini::EntryPoint GeminiBrowserAgent::GetEntryPoint() const {
   return entry_point_;
 }
 
+void GeminiBrowserAgent::ConfigureGemini() {
+  ProfileIOS* profile = browser_->GetProfile();
+  if (!profile) {
+    return;
+  }
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!auth_service || !auth_service->HasPrimaryIdentity()) {
+    return;
+  }
+
+  GeminiStartupConfiguration* config =
+      [[GeminiStartupConfiguration alloc] init];
+  config.authService = auth_service;
+  config.linkOpeningHandler = link_opening_handler_;
+  config.imageRemixEnabled =
+      gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, profile);
+  config.geminiLiveEnabled =
+      gemini::IsFeatureAvailable(gemini::Feature::kLive, profile);
+
+  ios::provider::ConfigureWithStartupConfiguration(config);
+}
+
 void GeminiBrowserAgent::UpdateGeminiAvailability() {
   bool available = IsGeminiAvailableForActiveWebState();
   if (available != last_known_gemini_availability_) {
@@ -619,7 +653,7 @@ void GeminiBrowserAgent::OnPrimaryAccountChanged(
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
 
   if (event_type == signin::PrimaryAccountChangeEvent::Type::kSet) {
-    [gemini_container_mediator_ configureGemini];
+    ConfigureGemini();
   }
 
   if (event_type != signin::PrimaryAccountChangeEvent::Type::kNone) {
@@ -645,7 +679,7 @@ void GeminiBrowserAgent::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
   if (identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .account_id == account_info.GetAccountId()) {
-    [gemini_container_mediator_ configureGemini];
+    ConfigureGemini();
     UpdateGeminiAvailability();
     UpdateGeminiLiveIconVisibility();
   }

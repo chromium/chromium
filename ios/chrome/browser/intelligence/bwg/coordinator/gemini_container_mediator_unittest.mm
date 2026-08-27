@@ -83,7 +83,6 @@ class FakeGeminiContainerMediatorEventHandler
       ios::provider::GeminiViewState view_state) override {
     last_shown_view_state_ = view_state;
   }
-  void CollapseFloatyIfInvoked() override { collapse_floaty_called_ = true; }
   void OnLiveButtonTapped() override { live_button_tapped_called_ = true; }
   void OnGeminiLiveUserDidBargeIn() override { barge_in_called_ = true; }
   void OnGeminiLiveUserDidPressStopButton() override {
@@ -100,7 +99,6 @@ class FakeGeminiContainerMediatorEventHandler
   std::optional<ios::provider::GeminiDormantReason>
       last_dormant_reason_changed_;
   std::optional<ios::provider::GeminiViewState> last_shown_view_state_;
-  bool collapse_floaty_called_ = false;
   bool live_button_tapped_called_ = false;
   bool barge_in_called_ = false;
   bool stop_button_pressed_called_ = false;
@@ -360,20 +358,6 @@ TEST_F(GeminiContainerMediatorTest,
               testing::Optional(ios::provider::GeminiDormantReason::kUserStop));
 }
 
-// Tests that the mediator requests collapsing the floaty when requested to
-// switch to collapsed state.
-TEST_F(GeminiContainerMediatorTest, TestSwitchToViewStateCollapsed) {
-  [mediator_ switchToViewState:ios::provider::GeminiViewState::kCollapsed];
-  EXPECT_TRUE(delegate_.collapse_floaty_called_);
-}
-
-// Tests that the mediator does not request collapsing the floaty when requested
-// to switch to expanded state.
-TEST_F(GeminiContainerMediatorTest, TestSwitchToViewStateExpanded) {
-  [mediator_ switchToViewState:ios::provider::GeminiViewState::kExpanded];
-  EXPECT_FALSE(delegate_.collapse_floaty_called_);
-}
-
 // Tests that the mediator handles a null delegate gracefully without crashing.
 TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
   GeminiContainerMediator* null_delegate_mediator =
@@ -383,8 +367,6 @@ TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
   // Verify that calling delegate methods does not crash when delegate is null.
   [null_delegate_mediator
       didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
-  [null_delegate_mediator
-      switchToViewState:ios::provider::GeminiViewState::kCollapsed];
 
   SUCCEED();
 }
@@ -396,9 +378,6 @@ TEST_F(GeminiContainerMediatorTest, TestDisconnectDelegate) {
   [mediator_ didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
   EXPECT_FALSE(delegate_.last_view_state_changed_.has_value());
   EXPECT_FALSE(delegate_.last_shown_view_state_.has_value());
-
-  [mediator_ switchToViewState:ios::provider::GeminiViewState::kCollapsed];
-  EXPECT_FALSE(delegate_.collapse_floaty_called_);
 
   [mediator_ geminiLiveUserDidBargeIn];
   EXPECT_FALSE(delegate_.barge_in_called_);

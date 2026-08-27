@@ -11,7 +11,6 @@ class Browser;
 @class GeminiActuationHandler;
 @class GeminiCameraHandler;
 @class GeminiConsentProviderHandler;
-@class GeminiLinkOpeningHandler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
 @class GeminiSuggestionHandler;
@@ -29,7 +28,6 @@ class Browser;
 // TODO(crbug.com/491093929): Rename the below classes to move away from the
 // `-Handler` naming scheme used by Chromium Objective-C command protocols.
 // Handlers created and owned by the manager.
-@property(nonatomic, readonly) GeminiLinkOpeningHandler* linkOpeningHandler;
 @property(nonatomic, readonly)
     GeminiPageStateChangeHandler* pageStateChangeHandler;
 @property(nonatomic, readonly) GeminiSessionHandler* sessionHandler;

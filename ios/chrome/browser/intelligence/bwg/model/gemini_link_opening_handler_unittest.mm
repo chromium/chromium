@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
@@ -40,13 +41,16 @@ class GeminiLinkOpeningHandlerTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
-    // Create a mock dispatcher and associate it with a mock scene commands
-    // handler.
+    // Create a mock dispatcher and associate it with mock command handlers.
     mock_dispatcher_ = OCMClassMock([CommandDispatcher class]);
     mock_scene_commands_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     OCMStub(
         [mock_dispatcher_ strictCallableForProtocol:@protocol(SceneCommands)])
         .andReturn(mock_scene_commands_handler_);
+    mock_gemini_commands_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
+    OCMStub(
+        [mock_dispatcher_ strictCallableForProtocol:@protocol(GeminiCommands)])
+        .andReturn(mock_gemini_commands_handler_);
 
     // Initialize the link opening handler with the fake loader and mock
     // dispatcher.
@@ -61,6 +65,7 @@ class GeminiLinkOpeningHandlerTest : public PlatformTest {
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   id mock_dispatcher_;
   id mock_scene_commands_handler_;
+  id mock_gemini_commands_handler_;
   base::UserActionTester user_action_tester_;
   GeminiLinkOpeningHandler* link_opening_handler_;
 };
@@ -132,4 +137,23 @@ TEST_F(GeminiLinkOpeningHandlerTest,
   [link_opening_handler_ closePresentedViewsAndOpenURLInNewTab:@""];
 
   [mock_scene_commands_handler_ verify];
+}
+
+// Tests that opening a URL calls minimizeGeminiIfInvoked on GeminiCommands.
+TEST_F(GeminiLinkOpeningHandlerTest, TestOpenURLCallsMinimizeGeminiIfInvoked) {
+  OCMExpect([mock_gemini_commands_handler_ minimizeGeminiIfInvoked]);
+
+  [link_opening_handler_ openURLInNewTab:@(kTestURL)];
+
+  [mock_gemini_commands_handler_ verify];
+}
+
+// Tests that opening an invalid URL does not call minimizeGeminiIfInvoked.
+TEST_F(GeminiLinkOpeningHandlerTest,
+       TestOpenInvalidURLDoesNotCallMinimizeGeminiIfInvoked) {
+  [[mock_gemini_commands_handler_ reject] minimizeGeminiIfInvoked];
+
+  [link_opening_handler_ openURLInNewTab:@""];
+
+  [mock_gemini_commands_handler_ verify];
 }

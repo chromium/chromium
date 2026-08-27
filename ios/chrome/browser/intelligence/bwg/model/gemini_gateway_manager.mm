@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
@@ -53,9 +51,6 @@
   WebStateList* webStateList = browser->GetWebStateList();
   ProfileIOS* profile = browser->GetProfile();
 
-  _linkOpeningHandler = [[GeminiLinkOpeningHandler alloc]
-      initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
-             dispatcher:dispatcher];
   _pageStateChangeHandler = [[GeminiPageStateChangeHandler alloc]
       initWithPrefService:profile->GetPrefs()];
   _gateway.pageStateChangeHandler = _pageStateChangeHandler;
@@ -68,11 +63,9 @@
 
   if (viewStateDelegate) {
     _sessionHandler.geminiViewStateDelegate = viewStateDelegate;
-    _linkOpeningHandler.geminiViewStateDelegate = viewStateDelegate;
   }
 
   _gateway.sessionHandler = _sessionHandler;
-  _gateway.linkOpeningHandler = _linkOpeningHandler;
 
   _suggestionHandler =
       [[GeminiSuggestionHandler alloc] initWithWebStateList:webStateList];
@@ -111,8 +104,6 @@
 }
 
 - (void)disconnect {
-  [_linkOpeningHandler disconnect];
-  _linkOpeningHandler = nil;
   [_consentProviderHandler disconnect];
   _consentProviderHandler = nil;
   _sessionHandler = nil;

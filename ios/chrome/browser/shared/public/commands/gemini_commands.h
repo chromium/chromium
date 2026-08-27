@@ -80,6 +80,9 @@ enum class FloatyUpdateSource;
                 showSnackbarOnCompletion:(BOOL)showSnackbar
                               completion:(GeminiEntryFlowCompletion)completion;
 
+// Minimizes the Gemini UI if currently invoked.
+- (void)minimizeGeminiIfInvoked;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_GEMINI_COMMANDS_H_

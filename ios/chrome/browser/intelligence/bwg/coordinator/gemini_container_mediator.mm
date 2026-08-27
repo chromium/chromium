@@ -16,13 +16,11 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
@@ -65,9 +63,6 @@
     }
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
                                                   viewStateDelegate:self];
-    if (self.gateway && browser) {
-      [self configureGemini];
-    }
   }
   return self;
 }
@@ -116,29 +111,6 @@
   }
 
   return config;
-}
-
-- (void)configureGemini {
-  if (!_profile) {
-    return;
-  }
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(_profile);
-  if (!authService || !authService->HasPrimaryIdentity()) {
-    return;
-  }
-
-  GeminiStartupConfiguration* config =
-      [[GeminiStartupConfiguration alloc] init];
-  config.authService = authService;
-  config.gateway = self.gateway;
-  config.linkOpeningHandler = _gatewayManager.linkOpeningHandler;
-  config.imageRemixEnabled =
-      gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, _profile);
-  config.geminiLiveEnabled =
-      gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile);
-
-  ios::provider::ConfigureWithStartupConfiguration(config);
 }
 
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
@@ -251,13 +223,6 @@
   if (_eventHandler) {
     _eventHandler->OnViewStateChanged(viewState);
     _eventHandler->SetLastShownViewState(viewState);
-  }
-}
-
-- (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
-  if (_eventHandler &&
-      viewState == ios::provider::GeminiViewState::kCollapsed) {
-    _eventHandler->CollapseFloatyIfInvoked();
   }
 }
 

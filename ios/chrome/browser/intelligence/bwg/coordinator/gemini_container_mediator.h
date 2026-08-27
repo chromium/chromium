@@ -83,10 +83,6 @@ class WebStateList;
                                 (UIViewController*)baseViewController;
 
 // TODO(crbug.com/535579970): Move to private after migration is complete.
-// Configures Gemini with startup parameters.
-- (void)configureGemini;
-
-// TODO(crbug.com/535579970): Move to private after migration is complete.
 // Applies user preferences (e.g. page content sharing setting) to page context.
 - (void)applyUserPrefsToPageContext:(GeminiPageContext*)geminiPageContext;
 

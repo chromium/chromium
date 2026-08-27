@@ -2751,6 +2751,15 @@ inline LayoutStateScenePassKey PassKey() {
   }
 }
 
+
+- (void)minimizeGeminiIfInvoked {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(_regularBrowser.get());
+  if (geminiBrowserAgent) {
+    geminiBrowserAgent->CollapseFloatyIfInvoked();
+  }
+}
+
 #pragma mark - Helper methods for Gemini entry flow
 
 // Called when the Gemini container coordinator is dismissed.

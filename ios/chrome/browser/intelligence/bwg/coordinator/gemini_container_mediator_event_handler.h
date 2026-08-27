@@ -23,9 +23,6 @@ class GeminiContainerMediatorEventHandler {
       ios::provider::GeminiClientMode processing_status,
       ios::provider::GeminiDormantReason dormant_reason) = 0;
 
-  // Collapses floaty if invoked.
-  virtual void CollapseFloatyIfInvoked() = 0;
-
   // Records the most recently presented state of the Gemini view to inform
   // future interactions.
   virtual void SetLastShownViewState(

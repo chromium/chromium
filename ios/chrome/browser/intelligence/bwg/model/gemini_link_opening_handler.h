@@ -12,13 +12,9 @@
 class UrlLoadingBrowserAgent;
 
 @class CommandDispatcher;
-@protocol GeminiViewStateDelegate;
 
 // The handler for opening links for Gemini.
 @interface GeminiLinkOpeningHandler : NSObject <BWGLinkOpeningDelegate>
-
-// Delegate for view state changes.
-@property(nonatomic, weak) id<GeminiViewStateDelegate> geminiViewStateDelegate;
 
 // Initialize the handler with a URL loading browser agent.
 // In order to prevent a crash, we pass the 'CommandDispatcher' directly instead

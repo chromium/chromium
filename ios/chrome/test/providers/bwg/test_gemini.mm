@@ -14,7 +14,6 @@
 @synthesize actuationHandler = _actuationHandler;
 @synthesize cameraHandler = _cameraHandler;
 @synthesize consentProviderHandler = _consentProviderHandler;
-@synthesize linkOpeningHandler = _linkOpeningHandler;
 @synthesize pageStateChangeHandler = _pageStateChangeHandler;
 @synthesize sessionHandler = _sessionHandler;
 @synthesize suggestionHandler = _suggestionHandler;

@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol BWGLinkOpeningDelegate;
 @protocol GeminiActuationDelegate;
 @protocol GeminiPageStateChangeDelegate;
 @protocol GeminiCameraDelegate;
@@ -24,7 +23,6 @@
 @property(nonatomic, weak) id<GeminiCameraDelegate> cameraHandler;
 @property(nonatomic, weak) id<GeminiConsentProviderDelegate>
     consentProviderHandler;
-@property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 @property(nonatomic, weak) id<GeminiPageStateChangeDelegate>
     pageStateChangeHandler;
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
