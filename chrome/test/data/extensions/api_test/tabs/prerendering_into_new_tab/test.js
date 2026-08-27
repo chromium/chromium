@@ -146,48 +146,51 @@ async function testOnAttachedWithoutActivation() {
 // Tests that OnAttached is aware of the newly created prerendering into a new
 // tab after activation.
 async function testOnAttachedAfterActivation() {
-  const activationCallback = details => {
-    if (details.documentLifecycle === 'prerender') {
-      chrome.webRequest.onCompleted.removeListener(activationCallback);
-      chrome.tabs.executeScript(tabId, {
-        code: `document.getElementById('link').click();`,
-        runAt: 'document_idle',
-      });
-
-      let windowId = -1;
-      let secondWindowId = -1;
-      chrome.tabs.getSelected(
-          null, pass(function(tab) {
-            windowId = tab.windowId;
-
-            waitForAllTabs(pass(function() {
-              createWindow(
-                  [''], {}, pass(function(winId, tabIds) {
-                    secondWindowId = winId;
-                    chrome.test.listenOnce(
-                        chrome.tabs.onAttached, function(testTabId, info) {
-                          // Ensure notification is correct.
-                          assertEq(testTabId, prerenderingTabId);
-                          assertEq(winId, info.newWindowId);
-                        });
-
-                    chrome.test.assertNe(windowId, -1);
-                    chrome.test.assertNe(secondWindowId, -1);
-                    chrome.tabs.move(
-                        prerenderingTabId, {windowId: secondWindowId, index: 0},
-                        pass());
-                  }));
-            }));
-          }));
-    }
-  };
-
-  chrome.webRequest.onCompleted.addListener(
-      activationCallback, {urls: [getUrl('empty.js')]}, []);
-
   // This test is intended to check the behavior after activation, so it is
   // needed to set up activationCallback before calling setup function.
+  const activation = new Promise(resolve => {
+    const activationCallback = details => {
+      if (details.documentLifecycle === 'prerender') {
+        chrome.webRequest.onCompleted.removeListener(activationCallback);
+        resolve();
+      }
+    };
+    chrome.webRequest.onCompleted.addListener(
+        activationCallback, {urls: [getUrl('empty.js')]}, []);
+  });
+
   await setup();
+  await activation;
+
+  chrome.tabs.executeScript(tabId, {
+    code: `document.getElementById('link').click();`,
+    runAt: 'document_idle',
+  });
+
+  let windowId = -1;
+  let secondWindowId = -1;
+  chrome.tabs.getSelected(
+      null, pass(function(tab) {
+        windowId = tab.windowId;
+
+        waitForAllTabs(pass(function() {
+          createWindow([''], {}, pass(function(winId, tabIds) {
+                         secondWindowId = winId;
+                         chrome.test.listenOnce(
+                             chrome.tabs.onAttached, function(testTabId, info) {
+                               // Ensure notification is correct.
+                               assertEq(testTabId, prerenderingTabId);
+                               assertEq(winId, info.newWindowId);
+                             });
+
+                         chrome.test.assertNe(windowId, -1);
+                         chrome.test.assertNe(secondWindowId, -1);
+                         chrome.tabs.move(
+                             prerenderingTabId,
+                             {windowId: secondWindowId, index: 0}, pass());
+                       }));
+        }));
+      }));
 }
 
 chrome.test.getConfig(async config => {
