@@ -4614,6 +4614,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_PROMO_TITLE" desc="Text for the Level Up promo title. [iOS only]">
         Level up your browsing
       </message>
+      <message name="IDS_IOS_LEVEL_UP_PROMO_PRIMARY_BUTTON" desc="Text for the Level Up promo primary button. [iOS only]">
+        Get started
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_PROMO_SECONDARY_BUTTON" desc="Text for the Level Up promo secondary button. [iOS only]">
+        Not now
+      </message>
       <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
         See All
       </message>

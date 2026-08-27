@@ -31,6 +31,7 @@ source_set("ui") {
   ]
 
   deps = [
+    ":promo",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/level_up/coordinator:view_models",
@@ -71,4 +72,20 @@ bundle_data("lottie_resources") {
     "resources/typing_saved.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
+
+source_set("promo") {
+  sources = [
+    "level_up_promo_view_controller.h",
+    "level_up_promo_view_controller.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+
+  public_deps = [ ":resources" ]
 }
