@@ -146,6 +146,7 @@
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/cookie_util/cookie_constants.h"
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -1131,4 +1132,9 @@ void MigrateObsoleteUserDefault() {
   [defaults removeObjectForKey:@"userHasInteractedWithTailoredFullscreenPromo"];
   [defaults removeObjectForKey:@"userHasInteractedWithFirstRunPromo"];
   [defaults removeObjectForKey:@"lastTimeUserInteractedWithFullscreenPromo"];
+
+  // Added 06/2026.
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  [shared_defaults removeObjectForKey:@"SuggestedItems"];
+  [shared_defaults removeObjectForKey:@"SuggestedItemsLastModificationDate"];
 }

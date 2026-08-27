@@ -180,12 +180,6 @@ extern NSString* const kOpenCommandSourceShareExtension;
 extern NSString* const kOpenCommandSourceCredentialsExtension;
 extern NSString* const kOpenCommandSourceOpenExtension;
 
-// The value of the key for the sharedDefaults used by the Shortcuts Widget.
-extern NSString* const kSuggestedItems;
-// The value of the key for the sharedDefaults last modification date used by
-// the Shortcuts Widget.
-extern NSString* const kSuggestedItemsLastModificationDate;
-
 // NSUserDefaults key containing a dictionary with most visited sites data for a
 // given gaiaID. Used by the Shortcuts Widget.
 extern NSString* const kSuggestedItemsForMultiprofile;

@@ -83,10 +83,6 @@ NSString* const kOpenCommandSourceCredentialsExtension =
     @"ChromeCredentialsExtension";
 NSString* const kOpenCommandSourceOpenExtension = @"ChromeOpenExtension";
 
-NSString* const kSuggestedItems = @"SuggestedItems";
-NSString* const kSuggestedItemsLastModificationDate =
-    @"SuggestedItemsLastModificationDate";
-
 NSString* const kSuggestedItemsForMultiprofile = @"SuggestedItemsForMIM";
 NSString* const kSuggestedItemsLastModificationDateForMultiprofile =
     @"SuggestedItemsLastModificationDateForMIM";

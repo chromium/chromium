@@ -161,6 +161,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/web/model/annotations",
     "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/common/app_group",
     "//ios/components/cookie_util:constants",
     "//ios/web/common:features",
     "//ui/base",
