@@ -77,6 +77,8 @@ namespace {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(WEBNN_USE_LITERT)
 // Whether to use mojo data pipe for transferring tensor data between processes.
 BASE_FEATURE(kWebNNUseDataPipe, base::FEATURE_ENABLED_BY_DEFAULT);
+// Whether to enable LiteRT WebGPU execution in the renderer.
+BASE_FEATURE(kWebNNLiteRTGpuInRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 struct TensorDataPipes {
   mojo::ScopedDataPipeProducerHandle write_producer;
@@ -146,6 +148,10 @@ void RecordDeviceType(const mojom::Device device) {
 // the request is for `kCpu` / `kNpu`, it falls back to the renderer-process
 // (in-process) TFLite/LiteRT backend.
 bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options) {
+  if (options.device == mojom::Device::kGpu &&
+      base::FeatureList::IsEnabled(kWebNNLiteRTGpuInRenderer)) {
+    return true;
+  }
   return options.device != mojom::Device::kGpu;
 }
 

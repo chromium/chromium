@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 
+#include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -86,6 +87,12 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   // of graph execution processes.
   HeapMojoRemote<webnn::mojom::blink::WebNNContextProvider>
       webnn_context_provider_;
+
+  // Initiates asynchronous setup of the WebGPU device for the dedicated context
+  // worker task runner.
+  void GetWebGpuContextHelper(
+      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+      webnn::WebGpuContextHelperOnceCallback callback);
 
   // Resolvers for requests currently in-flight on the GPU-process
   // WebNN backend. Rejected when that Mojo pipe disconnects.

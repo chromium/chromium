@@ -4,21 +4,33 @@
 
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
+#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/webnn/public/cpp/in_process_context_provider.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#if BUILDFLAG(USE_DAWN)
+#include "third_party/dawn/include/dawn/wire/WireClient.h"
+#endif
 
 namespace blink {
 
@@ -51,6 +63,163 @@ ConvertBlinkPowerPreferenceToMojo(
           kHighPerformance;
   }
 }
+
+#if BUILDFLAG(USE_DAWN)
+WebGPUExecutionContextToken GetExecutionContextToken(
+    const ExecutionContext* execution_context) {
+  if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<DedicatedWorkerToken>();
+  }
+  if (execution_context->IsSharedWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<SharedWorkerToken>();
+  }
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<ServiceWorkerToken>();
+  }
+  if (execution_context->IsWindow()) {
+    return To<LocalDOMWindow>(execution_context)->document()->Token();
+  }
+  NOTREACHED();
+}
+
+void OnWebGpuDeviceRequested(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    webnn::WebGpuContextHelperOnceCallback callback,
+    wgpu::Device device) {
+  wgpu::Device wgpu_device = std::move(device);
+  std::move(callback).Run(webnn::WebGpuContextProperties{
+      .wgpu_device = wgpu_device.Get(),
+      .dawn_procs = &dawn::wire::client::GetProcs(),
+      // Explicitly retain references to both `DawnControlClientHolder` and
+      // `wgpu::Device` within this closure so that the underlying GPU
+      // command buffer channel and Dawn device remain alive throughout the
+      // entire lifetime of the WebNN context, while invoking Flush() when
+      // requested by LiteRT.
+      .webgpu_flush = blink::BindRepeating(
+          [](const scoped_refptr<DawnControlClientHolder>& dawn_control_client,
+             const wgpu::Device& /*wgpu_device*/) {
+            dawn_control_client->Flush();
+          },
+          dawn_control_client, wgpu_device)});
+}
+
+void OnWebGpuAdapterRequested(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    webnn::WebGpuContextHelperOnceCallback callback,
+    wgpu::Adapter adapter) {
+  Vector<wgpu::FeatureName> required_features;
+  if (adapter.HasFeature(wgpu::FeatureName::ShaderF16)) {
+    required_features.push_back(wgpu::FeatureName::ShaderF16);
+  }
+  if (adapter.HasFeature(wgpu::FeatureName::Subgroups)) {
+    required_features.push_back(wgpu::FeatureName::Subgroups);
+  }
+
+  wgpu::DeviceDescriptor dawn_desc = {};
+  if (!required_features.empty()) {
+    dawn_desc.requiredFeatures = required_features.data();
+    dawn_desc.requiredFeatureCount = required_features.size();
+  }
+
+  auto dawn_control_client_for_device = dawn_control_client;
+  auto* device_callback = BindWGPUOnceCallback(
+      [](scoped_refptr<DawnControlClientHolder> dawn_control_client,
+         webnn::WebGpuContextHelperOnceCallback callback,
+         wgpu::RequestDeviceStatus status, wgpu::Device device,
+         wgpu::StringView /*message*/) {
+        if (status != wgpu::RequestDeviceStatus::Success || !device) {
+          std::move(callback).Run(webnn::WebGpuContextProperties());
+          return;
+        }
+        OnWebGpuDeviceRequested(std::move(dawn_control_client),
+                                std::move(callback), std::move(device));
+      },
+      dawn_control_client, std::move(callback));
+  adapter.RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowProcessEvents,
+                        device_callback->UnboundCallback(),
+                        device_callback->AsUserdata());
+  dawn_control_client_for_device->Flush();
+}
+
+void OnWebGpuContextProviderCreated(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    WebGPUExecutionContextToken execution_context_token,
+    webnn::WebGpuContextHelperOnceCallback callback,
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+  if (!context_provider || !context_provider->BindToCurrentSequence()) {
+    std::move(callback).Run(webnn::WebGpuContextProperties());
+    return;
+  }
+
+  context_provider->WebGPUInterface()->SetWebGPUExecutionContextToken(
+      execution_context_token);
+
+  auto dawn_control_client =
+      DawnControlClientHolder::Create(std::move(context_provider), task_runner);
+  wgpu::Instance instance = dawn_control_client->GetWGPUInstance();
+  if (!instance) {
+    std::move(callback).Run(webnn::WebGpuContextProperties());
+    return;
+  }
+
+  // TODO(crbug.com/524317888): Pass the requested power preference from
+  // `MLContextOptions` to `dawn_options.powerPreference`.
+  wgpu::RequestAdapterOptions dawn_options = {};
+  auto dawn_control_client_for_adapter = dawn_control_client;
+  auto* adapter_callback = BindWGPUOnceCallback(
+      [](scoped_refptr<DawnControlClientHolder> dawn_control_client,
+         webnn::WebGpuContextHelperOnceCallback callback,
+         wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+         wgpu::StringView /*message*/) {
+        if (status != wgpu::RequestAdapterStatus::Success || !adapter) {
+          std::move(callback).Run(webnn::WebGpuContextProperties());
+          return;
+        }
+        OnWebGpuAdapterRequested(std::move(dawn_control_client),
+                                 std::move(callback), std::move(adapter));
+      },
+      dawn_control_client, std::move(callback));
+  instance.RequestAdapter(&dawn_options, wgpu::CallbackMode::AllowProcessEvents,
+                          adapter_callback->UnboundCallback(),
+                          adapter_callback->AsUserdata());
+  dawn_control_client_for_adapter->Flush();
+}
+
+// Asynchronously creates a WebGPU 3D graphics context provider, requests a GPU
+// adapter and device with required features (e.g. ShaderF16, Subgroups), and
+// passes them as WebGpuContextProperties to WebNN for in-renderer LiteRT
+// execution.
+void InitializeWebGpuAsyncContext(
+    const KURL& url,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    WebGPUExecutionContextToken execution_context_token,
+    webnn::WebGpuContextHelperOnceCallback callback) {
+  CreateWebGPUGraphicsContext3DProviderAsync(
+      url, Platform::WebGPUReplyThread::kIOThread, task_runner,
+      CrossThreadBindOnce(
+          [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             WebGPUExecutionContextToken execution_context_token,
+             webnn::WebGpuContextHelperOnceCallback callback,
+             std::unique_ptr<WebGraphicsContext3DProvider> provider) {
+            if (task_runner && !task_runner->RunsTasksInCurrentSequence()) {
+              PostCrossThreadTask(
+                  *task_runner, FROM_HERE,
+                  CrossThreadBindOnce(&OnWebGpuContextProviderCreated,
+                                      task_runner, execution_context_token,
+                                      std::move(callback),
+                                      std::move(provider)));
+            } else {
+              OnWebGpuContextProviderCreated(
+                  task_runner, execution_context_token, std::move(callback),
+                  std::move(provider));
+            }
+          },
+          task_runner, execution_context_token, std::move(callback)));
+}
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace
 
@@ -229,8 +398,10 @@ void ML::EnsureInProcessServiceConnection() {
   // We wrap it into a blink-variant PendingRemote — this works because blink
   // and non-blink Mojo variants use the same wire format.
   mojo::ScopedMessagePipeHandle context_provider_pipe =
-      webnn::CreateInProcessContextProvider(weights_file_creator.PassPipe(),
-                                            task_runner);
+      webnn::CreateInProcessContextProvider(
+          weights_file_creator.PassPipe(), task_runner,
+          blink::BindRepeating(&ML::GetWebGpuContextHelper,
+                               WrapWeakPersistent(this)));
   in_process_context_provider_.Bind(
       mojo::PendingRemote<webnn::mojom::blink::WebNNContextProvider>(
           std::move(context_provider_pipe), 0u),
@@ -248,6 +419,29 @@ void ML::OnInProcessServiceConnectionError() {
         "In-renderer WebNN service connection error.");
   }
   in_process_pending_resolvers_.clear();
+}
+
+void ML::GetWebGpuContextHelper(
+    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+    webnn::WebGpuContextHelperOnceCallback callback) {
+#if !BUILDFLAG(USE_DAWN)
+  context_task_runner->PostTask(
+      FROM_HERE,
+      blink::BindOnce(std::move(callback), webnn::WebGpuContextProperties()));
+  return;
+#else
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    context_task_runner->PostTask(
+        FROM_HERE,
+        blink::BindOnce(std::move(callback), webnn::WebGpuContextProperties()));
+    return;
+  }
+
+  InitializeWebGpuAsyncContext(execution_context->Url(), context_task_runner,
+                               GetExecutionContextToken(execution_context),
+                               std::move(callback));
+#endif  // !BUILDFLAG(USE_DAWN)
 }
 
 }  // namespace blink

@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
@@ -43,6 +44,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       ContextImplLiteRt& context,
+      WebGpuContextProperties webgpu_properties,
       base::File weights_file,
       mojo::PendingRemote<mojom::WeightsFileSession> session,
       WebNNContextImpl::CreateGraphImplCallback callback);
@@ -64,22 +66,6 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
  private:
   ~GraphImplLiteRt() override;
 
-  // TODO(crbug.com/454732289): Once the MLDrift delegate moves to the renderer
-  // process, this path will only be exercised for incognito mode. At that point
-  // `CreateWebNNWeightsFile` on GpuHost can be removed.
-  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  CreateAndBuildOnBackgroundThread(
-      ContextProperties context_properties,
-      mojom::Device context_device,
-      bool is_xnnpack_enabled,
-      mojom::GraphInfoPtr graph_info,
-      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      base::flat_map<OperandId, base::flat_set<OperationId>>
-          operand_to_dependent_operations,
-      base::flat_map<OperandId, OperationId> operand_to_producing_operation,
-      base::File weights_file);
-
   // Builds the graph only (writes weights via session sync IPC). Returns
   // the builder `Result`.
   static base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
@@ -95,24 +81,37 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
       base::File weights_file,
       mojo::SharedRemote<mojom::WeightsFileSession> session);
 
-  // Called on context sequence after the graph is built. Calls
-  // `session->Finalize` to seal the weights file.
+  // Called on context sequence after the graph is built. Finalizes the session
+  // if present, then dispatches compute resource creation.
   static void DidBuildGraph(
       base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info,
       mojom::Device context_device,
       bool is_xnnpack_enabled,
+      WebGpuContextProperties webgpu_properties,
       mojo::SharedRemote<mojom::WeightsFileSession> session,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
           result);
 
-  // Creates ComputeResources on background thread from finalized `Result`.
-  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  CreateComputeResourcesOnBackgroundThread(
+  // Dispatches compute resource creation to the appropriate sequence
+  // (context sequence for WebGPU, or thread pool for CPU/NPU).
+  static void DispatchCreateComputeResources(
+      base::WeakPtr<WebNNContextImpl> context,
+      ComputeResourceInfo compute_resource_info,
       mojom::Device context_device,
       bool is_xnnpack_enabled,
-      tflite::GraphBuilderTflite::Result result);
+      WebGpuContextProperties webgpu_properties,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      tflite::GraphBuilderTflite::Result build_result);
+
+  // Create compute resources on the task runner selected by
+  // DispatchCreateComputeResources().
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+  CreateComputeResources(mojom::Device context_device,
+                         bool is_xnnpack_enabled,
+                         WebGpuContextProperties webgpu_properties,
+                         tflite::GraphBuilderTflite::Result result);
 
   static void DidCreateAndBuild(
       base::WeakPtr<WebNNContextImpl> context,

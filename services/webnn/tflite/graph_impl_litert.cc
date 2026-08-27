@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
@@ -41,12 +42,14 @@
 #include "services/webnn/webnn_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/litert/buildflags.h"
 #include "third_party/litert/src/litert/c/litert_common.h"
 #include "third_party/litert/src/litert/cc/litert_compiled_model.h"
 #include "third_party/litert/src/litert/cc/litert_element_type.h"
 #include "third_party/litert/src/litert/cc/litert_environment.h"
+#include "third_party/litert/src/litert/cc/litert_environment_options.h"
 #include "third_party/litert/src/litert/cc/litert_expected.h"
 #include "third_party/litert/src/litert/cc/litert_layout.h"
 #include "third_party/litert/src/litert/cc/litert_model.h"
@@ -70,6 +73,24 @@ namespace {
 
 using ::webnn::tflite::BufferContent;
 using ::webnn::tflite::TensorDescriptor;
+
+// TODO(crbug.com/524317888): Replace this struct with the type defined directly
+// in LiteRT headers once exported.
+struct LiteRtWebGpuFlushCallback {
+  void (*callback)(void* user_data) = nullptr;
+  // RAW_PTR_EXCLUSION: Must match the LiteRT C callback ABI.
+  RAW_PTR_EXCLUSION void* user_data = nullptr;
+};
+
+void RunClosure(void* user_data) {
+  if (!user_data) {
+    return;
+  }
+  auto* closure = static_cast<base::RepeatingClosure*>(user_data);
+  if (!closure->is_null()) {
+    closure->Run();
+  }
+}
 
 void DumpModelToFile(const flatbuffers::DetachedBuffer& model_content) {
   base::ThreadPool::PostTask(
@@ -151,10 +172,12 @@ class GraphImplLiteRt::ComputeResources {
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(mojom::Device context_device,
          bool is_xnnpack_enabled,
+         WebGpuContextProperties webgpu_properties,
          tflite::GraphBuilderTflite::Result build_graph_result) {
     auto self = std::make_unique<ComputeResources>(
         std::move(build_graph_result.input_name_to_descriptor),
         std::move(build_graph_result.output_name_to_descriptor));
+    self->webgpu_properties_ = std::move(webgpu_properties);
 
     self->model_content_ = std::move(build_graph_result.buffer);
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -176,11 +199,41 @@ class GraphImplLiteRt::ComputeResources {
 
     std::vector<::litert::EnvironmentOptions::Option> env_options;
     if (context_device == mojom::Device::kGpu) {
-      env_options.emplace_back(
-          ::litert::EnvironmentOptions::Tag::kWebGpuProcs,
-          reinterpret_cast<int64_t>(&dawn::native::GetProcs()));
-    }
+      const DawnProcTable* dawn_procs = static_cast<const DawnProcTable*>(
+          self->webgpu_properties_.dawn_procs.get());
 
+      if (!dawn_procs && !self->webgpu_properties_.wgpu_device) {
+        dawn_procs = &dawn::native::GetProcs();
+      }
+      if (dawn_procs) {
+        env_options.emplace_back(
+            ::litert::EnvironmentOptions::Tag::kWebGpuProcs,
+            reinterpret_cast<int64_t>(dawn_procs));
+      }
+      if (self->webgpu_properties_.wgpu_device && dawn_procs) {
+        WGPUDevice c_device = self->webgpu_properties_.wgpu_device.get();
+        env_options.emplace_back(
+            ::litert::EnvironmentOptions::Tag::kWebGpuDevice,
+            reinterpret_cast<int64_t>(c_device));
+        // `deviceGetQueue` returns the device's singleton default queue. LiteRT
+        // retains its own reference during Environment creation, and all
+        // underlying queue resources and client proxies are automatically
+        // destroyed when `c_device` is released upon context destruction, so
+        // we don't explicitly release the queue release here.
+        env_options.emplace_back(
+            ::litert::EnvironmentOptions::Tag::kWebGpuQueue,
+            reinterpret_cast<int64_t>(dawn_procs->deviceGetQueue(c_device)));
+      }
+      if (!self->webgpu_properties_.webgpu_flush.is_null()) {
+        self->litert_webgpu_flush_callback_ = {
+            .callback = &RunClosure,
+            .user_data = &self->webgpu_properties_.webgpu_flush,
+        };
+        env_options.emplace_back(
+            ::litert::EnvironmentOptions::Tag::kWebGpuFlushCallback,
+            reinterpret_cast<int64_t>(&self->litert_webgpu_flush_callback_));
+      }
+    }
     ASSIGN_OR_RETURN(
         self->env_,
         AsBaseExpected(::litert::Environment::Create(
@@ -394,6 +447,8 @@ class GraphImplLiteRt::ComputeResources {
   std::vector<::litert::RankedTensorType> input_tensor_types;
   std::vector<::litert::RankedTensorType> output_tensor_types;
 
+  bool UseDawnWire() const { return webgpu_properties_.IsValid(); }
+
  private:
   base::expected<::litert::Options, mojom::ErrorPtr> GetCompilationOptions(
       mojom::Device context_device,
@@ -473,6 +528,10 @@ class GraphImplLiteRt::ComputeResources {
     return std::move(*options);
   }
 
+  WebGpuContextProperties webgpu_properties_;
+  // C ABI adapter passed to LiteRT. The actual flush implementation and
+  // resource lifetime are owned by webgpu_properties.webgpu_flush.
+  LiteRtWebGpuFlushCallback litert_webgpu_flush_callback_;
   std::unique_ptr<::litert::ScopedFile> weights_file_;
   flatbuffers::DetachedBuffer model_content_;
   std::optional<::litert::Environment> env_;
@@ -490,6 +549,7 @@ void GraphImplLiteRt::CreateAndBuild(
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ContextImplLiteRt& context,
+    WebGpuContextProperties webgpu_properties,
     base::File weights_file,
     mojo::PendingRemote<mojom::WeightsFileSession> session,
     WebNNContextImpl::CreateGraphImplCallback callback) {
@@ -499,81 +559,33 @@ void GraphImplLiteRt::CreateAndBuild(
   base::flat_map<OperandId, OperationId> operand_to_producing_operation =
       std::move(compute_resource_info.operand_to_producing_operation);
 
+  mojo::SharedRemote<mojom::WeightsFileSession> shared_session;
   if (session.is_valid()) {
-    // Bind on the context sequence: `SharedRemote::Bind` needs a sequenced
+    // Bind on the context sequence: `SharedRemote` needs a sequenced
     // task runner. Once bound it can be sync-called from any thread.
-    mojo::SharedRemote<mojom::WeightsFileSession> shared_session(
-        std::move(session));
-    // Keep a ref for `DidBuildGraph` to call `Finalize` after the build.
-    mojo::SharedRemote<mojom::WeightsFileSession> session_for_finalize =
-        shared_session;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock(),
-         base::WithBaseSyncPrimitives()},
-        base::BindOnce(&GraphImplLiteRt::BuildGraphOnBackgroundThread,
-                       context.properties(), context.options().device,
-                       std::move(graph_info), std::move(constant_operands),
-                       std::move(operand_to_dependent_operations),
-                       std::move(operand_to_producing_operation),
-                       std::move(weights_file), std::move(shared_session)),
-        base::BindOnce(&GraphImplLiteRt::DidBuildGraph, context.AsWeakPtr(),
-                       std::move(compute_resource_info),
-                       context.options().device, context.IsXNNPackInitialized(),
-                       std::move(session_for_finalize), std::move(callback)));
-    return;
+    shared_session =
+        mojo::SharedRemote<mojom::WeightsFileSession>(std::move(session));
   }
+  // Keep a ref for `DidBuildGraph` to call `Finalize` after the build.
+  mojo::SharedRemote<mojom::WeightsFileSession> session_for_finalize =
+      shared_session;
 
-  // Create and build the graph in incognito mode on a background thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(&GraphImplLiteRt::CreateAndBuildOnBackgroundThread,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock(),
+       base::WithBaseSyncPrimitives()},
+      base::BindOnce(&GraphImplLiteRt::BuildGraphOnBackgroundThread,
                      context.properties(), context.options().device,
-                     context.IsXNNPackInitialized(), std::move(graph_info),
-                     std::move(constant_operands),
+                     std::move(graph_info), std::move(constant_operands),
                      std::move(operand_to_dependent_operations),
                      std::move(operand_to_producing_operation),
-                     std::move(weights_file)),
-      base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild, context.AsWeakPtr(),
-                     std::move(compute_resource_info), std::move(callback)));
-}
-
-// static
-base::expected<std::unique_ptr<GraphImplLiteRt::ComputeResources>,
-               mojom::ErrorPtr>
-GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
-    ContextProperties context_properties,
-    mojom::Device context_device,
-    bool is_xnnpack_enabled,
-    mojom::GraphInfoPtr graph_info,
-    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    base::flat_map<OperandId, base::flat_set<OperationId>>
-        operand_to_dependent_operations,
-    base::flat_map<OperandId, OperationId> operand_to_producing_operation,
-    base::File weights_file) {
-  ASSIGN_OR_RETURN(
-      tflite::GraphBuilderTflite::Result result,
-      tflite::GraphBuilderTflite::CreateAndBuild(
-          context_properties, context_device, *graph_info,
-          std::move(constant_operands),
-          std::move(operand_to_dependent_operations),
-          std::move(operand_to_producing_operation), std::move(weights_file),
-          /*session=*/
-          mojo::SharedRemote<mojom::WeightsFileSession>(),
-          /*use_external_buffer=*/true),
-      [](std::string error) {
-        return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                                 std::move(error));
-      });
-
-  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(context_device, is_xnnpack_enabled,
-                                            std::move(result)));
-  return compute_resources;
+                     std::move(weights_file), std::move(shared_session)),
+      base::BindOnce(&GraphImplLiteRt::DidBuildGraph, context.AsWeakPtr(),
+                     std::move(compute_resource_info), context.options().device,
+                     context.IsXNNPackInitialized(),
+                     std::move(webgpu_properties),
+                     std::move(session_for_finalize), std::move(callback)));
 }
 
 // static
@@ -611,6 +623,7 @@ void GraphImplLiteRt::DidBuildGraph(
     ComputeResourceInfo compute_resource_info,
     mojom::Device context_device,
     bool is_xnnpack_enabled,
+    WebGpuContextProperties webgpu_properties,
     mojo::SharedRemote<mojom::WeightsFileSession> session,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
@@ -623,54 +636,98 @@ void GraphImplLiteRt::DidBuildGraph(
     return;
   }
 
-  // Call `Finalize` on the session; move `session` into the reply closure so
-  // the pipe stays open until the browser replies, then drops on closure exit.
-  mojom::WeightsFileSession* session_ptr = session.get();
-  session_ptr->Finalize(base::BindOnce(
-      [](mojo::SharedRemote<mojom::WeightsFileSession> /*session_keepalive*/,
-         base::WeakPtr<WebNNContextImpl> context,
-         ComputeResourceInfo compute_resource_info,
-         mojom::Device context_device, bool is_xnnpack_enabled,
-         WebNNContextImpl::CreateGraphImplCallback callback,
-         tflite::GraphBuilderTflite::Result build_result,
-         base::File sealed_file) {
-        if (!context) {
-          return;
-        }
-        if (!sealed_file.IsValid()) {
-          std::move(callback).Run(base::unexpected(
-              mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                "Failed to finalize weights file.")));
-          return;
-        }
-        build_result.weights_file = std::move(sealed_file);
+  if (session) {
+    // Call `Finalize` on the session; move `session` into the reply closure so
+    // the pipe stays open until the browser replies, then drops on closure
+    // exit.
+    mojom::WeightsFileSession* session_ptr = session.get();
+    session_ptr->Finalize(base::BindOnce(
+        [](mojo::SharedRemote<mojom::WeightsFileSession> /*session_keepalive*/,
+           base::WeakPtr<WebNNContextImpl> context,
+           ComputeResourceInfo compute_resource_info,
+           mojom::Device context_device, bool is_xnnpack_enabled,
+           WebGpuContextProperties webgpu_properties,
+           WebNNContextImpl::CreateGraphImplCallback callback,
+           tflite::GraphBuilderTflite::Result build_result,
+           base::File sealed_file) {
+          if (!context) {
+            return;
+          }
+          if (!sealed_file.IsValid()) {
+            std::move(callback).Run(base::unexpected(
+                mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                  "Failed to finalize weights file.")));
+            return;
+          }
+          build_result.weights_file = std::move(sealed_file);
+          DispatchCreateComputeResources(
+              std::move(context), std::move(compute_resource_info),
+              context_device, is_xnnpack_enabled, std::move(webgpu_properties),
+              std::move(callback), std::move(build_result));
+        },
+        std::move(session), std::move(context),
+        std::move(compute_resource_info), context_device, is_xnnpack_enabled,
+        std::move(webgpu_properties), std::move(callback), std::move(*result)));
+    return;
+  }
 
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE,
-            {base::TaskPriority::USER_BLOCKING,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-             base::MayBlock()},
-            base::BindOnce(
-                &GraphImplLiteRt::CreateComputeResourcesOnBackgroundThread,
-                context_device, is_xnnpack_enabled, std::move(build_result)),
-            base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild,
-                           std::move(context), std::move(compute_resource_info),
-                           std::move(callback)));
-      },
-      std::move(session), std::move(context), std::move(compute_resource_info),
-      context_device, is_xnnpack_enabled, std::move(callback),
-      std::move(*result)));
+  // In incognito mode (or when no weights file session is used), weights are
+  // written directly into an anonymous temporary in-memory file during graph
+  // building without a backing disk session IPC. We skip `session->Finalize`
+  // and proceed directly to compute resource creation.
+  DispatchCreateComputeResources(
+      std::move(context), std::move(compute_resource_info), context_device,
+      is_xnnpack_enabled, std::move(webgpu_properties), std::move(callback),
+      std::move(*result));
+}
+
+// static
+void GraphImplLiteRt::DispatchCreateComputeResources(
+    base::WeakPtr<WebNNContextImpl> context,
+    ComputeResourceInfo compute_resource_info,
+    mojom::Device context_device,
+    bool is_xnnpack_enabled,
+    WebGpuContextProperties webgpu_properties,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    tflite::GraphBuilderTflite::Result build_result) {
+  // For WebGPU execution in renderer, Dawn Wire client objects (`wgpu_device`,
+  // `wgpu_queue`) have strict single-thread affinity and must be accessed
+  // on the context's owning task runner (the sequence where the Dawn device
+  // and ContextImplLiteRt live).
+  // For CPU/NPU execution, compute resources and compilation do not depend on
+  // Dawn and can safely run on the asynchronous worker ThreadPool to avoid
+  // blocking the context sequence.
+  // TODO(crbug.com/524317888): Remove the background task runner and
+  // ResourceTask for non-GPU cases; a single task runner should be used for the
+  // entire MLContext.
+  scoped_refptr<base::TaskRunner> compute_task_runner =
+      webgpu_properties.IsValid()
+          ? context->owning_task_runner()
+          : base::ThreadPool::CreateTaskRunner(
+                {base::TaskPriority::USER_BLOCKING,
+                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+                 base::MayBlock()});
+
+  compute_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GraphImplLiteRt::CreateComputeResources, context_device,
+                     is_xnnpack_enabled, std::move(webgpu_properties),
+                     std::move(build_result)),
+      base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild, std::move(context),
+                     std::move(compute_resource_info), std::move(callback)));
 }
 
 // static
 base::expected<std::unique_ptr<GraphImplLiteRt::ComputeResources>,
                mojom::ErrorPtr>
-GraphImplLiteRt::CreateComputeResourcesOnBackgroundThread(
+GraphImplLiteRt::CreateComputeResources(
     mojom::Device context_device,
     bool is_xnnpack_enabled,
+    WebGpuContextProperties webgpu_properties,
     tflite::GraphBuilderTflite::Result result) {
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
                    ComputeResources::Create(context_device, is_xnnpack_enabled,
+                                            std::move(webgpu_properties),
                                             std::move(result)));
   return compute_resources;
 }
@@ -796,20 +853,32 @@ void GraphImplLiteRt::DispatchImpl(
                 raw_compute_resources->CollectBuffersForDispatch(
                     input_buffer_states, output_buffer_states);
 
-            // Compute tasks can take a significant amount of time, use the
-            // thread pool to avoid blocking the main thread.
-            base::ThreadPool::PostTaskAndReply(
-                FROM_HERE,
-                base::BindOnce(
-                    &ComputeResources::DoDispatch,
-                    // Unretained is safe here because a reference to
-                    // a `QueueableResourceState` corresponding to
-                    // `raw_compute_resources` is held by the
-                    // `ResourceTask` until `completion_closure` is run below.
-                    base::Unretained(raw_compute_resources),
-                    input_name_to_descriptor, output_name_to_descriptor,
-                    std::move(buffers), std::move(scoped_trace)),
-                std::move(completion_closure));
+            // When executing in-renderer over WebGPU, Dawn Wire client objects
+            // (`wgpu_device`, command queues) are strictly sequence-bound and
+            // thread-unsafe. We must execute `DoDispatch` synchronously inline
+            // on the current calling sequence rather than offloading to an
+            // asynchronous background CPU worker pool.
+            if (raw_compute_resources->UseDawnWire()) {
+              raw_compute_resources->DoDispatch(
+                  input_name_to_descriptor, output_name_to_descriptor,
+                  std::move(buffers), std::move(scoped_trace));
+              std::move(completion_closure).Run();
+            } else {
+              // Compute tasks can take a significant amount of time, use the
+              // thread pool to avoid blocking the main thread.
+              base::ThreadPool::PostTaskAndReply(
+                  FROM_HERE,
+                  base::BindOnce(
+                      &ComputeResources::DoDispatch,
+                      // Unretained is safe here because a reference to
+                      // a `QueueableResourceState` corresponding to
+                      // `raw_compute_resources` is held by the
+                      // `ResourceTask` until `completion_closure` is run below.
+                      base::Unretained(raw_compute_resources),
+                      input_name_to_descriptor, output_name_to_descriptor,
+                      std::move(buffers), std::move(scoped_trace)),
+                  std::move(completion_closure));
+            }
           },
           compute_resources_state_, std::move(input_buffer_states),
           std::move(output_buffer_states), input_name_to_descriptor_,
