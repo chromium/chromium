@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/profile_metrics/browser_profile_type.h"
 
+class GURL;
 class Profile;
 
 namespace bookmarks {
@@ -74,6 +75,10 @@ struct BookmarkLaunchAction {
   base::TimeTicks action_time = base::TimeTicks::Now();
 };
 std::ostream& operator<<(std::ostream& out, const BookmarkLaunchAction& action);
+
+// Records an app launch metric if the URL is associated with an installed
+// Chrome App.
+void RecordAppLaunchForBookmarkBar(Profile* profile, const GURL& url);
 
 // Records the launch of a bookmark for UMA purposes.
 void RecordBookmarkLaunch(BookmarkLaunchLocation location,

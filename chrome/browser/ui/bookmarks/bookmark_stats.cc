@@ -9,6 +9,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "extensions/buildflags/buildflags.h"
+#include "url/gurl.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/extensions/extension_metrics.h"
+#include "extensions/browser/extension_registry.h"
+#endif
 
 using bookmarks::BookmarkNode;
 
@@ -34,6 +41,20 @@ std::ostream& operator<<(std::ostream& out,
   return out << "BookmarkLaunchAction(location = "
              << static_cast<int>(launch_action.location)
              << ", action_time = " << launch_action.action_time << ")";
+}
+
+void RecordAppLaunchForBookmarkBar(Profile* profile, const GURL& url) {
+  DCHECK(profile);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)
+          ->enabled_extensions()
+          .GetAppByURL(url);
+  if (extension) {
+    extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_BOOKMARK_BAR,
+                                    extension->GetType());
+  }
+#endif
 }
 
 void RecordBookmarkLaunch(BookmarkLaunchLocation location,
