@@ -54,6 +54,7 @@ public class ActorNotificationClickIntegrationTest {
     @After
     public void tearDown() {
         ActorForegroundServiceController.setInstanceForTesting(null);
+        ActorForegroundServiceManager.resetInstanceForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
     }
 
