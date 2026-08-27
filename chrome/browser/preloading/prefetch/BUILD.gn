@@ -80,7 +80,6 @@ source_set("platform_browser_tests") {
     "//chrome/test:test_support",
     "//components/omnibox/browser",
     "//components/page_load_metrics/browser",
-    "//components/page_load_metrics/browser:test_support",
   ]
 
   if (use_blink) {

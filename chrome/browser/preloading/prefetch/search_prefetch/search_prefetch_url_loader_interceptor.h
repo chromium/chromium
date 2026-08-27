@@ -35,8 +35,7 @@ class SearchPrefetchURLLoaderInterceptor
   // be served to |tentative_resource_request|.
   static SearchPrefetchURLLoader::RequestHandler MaybeCreateLoaderForRequest(
       const network::ResourceRequest& tentative_resource_request,
-      content::FrameTreeNodeId frame_tree_node_id,
-      int64_t navigation_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Maybe proxies the given request handler with the Extensions Web Request
   // API.

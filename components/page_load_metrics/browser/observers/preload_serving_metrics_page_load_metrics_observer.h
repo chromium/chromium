@@ -69,7 +69,6 @@ class PreloadServingMetricsPageLoadMetricsObserver
     bool used_bfcache;
     std::string navigation_initiator_string;
     bool is_url_srp;
-    bool is_served_by_legacy_search_prefetch;
   };
 
   static NavigationData CreateNavigationData(

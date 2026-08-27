@@ -78,8 +78,7 @@ SearchPrefetchURLLoaderInterceptor::~SearchPrefetchURLLoaderInterceptor() =
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     const network::ResourceRequest& tentative_resource_request,
-    content::FrameTreeNodeId frame_tree_node_id,
-    int64_t navigation_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   // Do not intercept non-main frame navigations.
   if (!tentative_resource_request.is_outermost_main_frame) {
     // Use the is_outermost_main_frame flag instead of obtaining the
@@ -115,25 +114,14 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    auto handler = service->MaybeCreateResponseReaderForPrerender(
+    return service->MaybeCreateResponseReaderForPrerender(
         tentative_resource_request);
-    if (handler) {
-      // This navigation id is used for recording navigation served by search
-      // prefetch in UMA. It is added here to avoid recording navigation served
-      // from the disk cache handler below.
-      service->AddServingNavigationId(navigation_id);
-    }
-    return handler;
   }
 
   DCHECK(is_primary_main_frame_navigation);
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {
-    // This navigation id is used for recording navigation served by search
-    // prefetch in UMA. It is added here to avoid recording navigation served
-    // from the disk cache handler below.
-    service->AddServingNavigationId(navigation_id);
     return handler;
   }
   if (IsNoVarySearchDiskCacheEnabled() &&
@@ -196,7 +184,7 @@ void SearchPrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler =
       MaybeCreateLoaderForRequest(tentative_resource_request,
-                                  frame_tree_node_id_, navigation_id_);
+                                  frame_tree_node_id_);
 
   if (prefetched_loader_handler) {
     prefetched_loader_handler = MaybeProxyRequestHandler(
