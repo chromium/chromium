@@ -84,6 +84,23 @@ public class AutofillWalletReminderNoticeBottomSheetMediatorTest {
     public void testDestroy() {
         mMediator.destroy();
 
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(false),
+                        eq(BottomSheetController.StateChangeReason.NONE));
+        verify(mBottomSheetController).removeObserver(mMediator);
+    }
+
+    @Test
+    public void testOnSheetClosed_destroysMediatorAndRemovesObserver() {
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(false),
+                        eq(BottomSheetController.StateChangeReason.NONE));
         verify(mBottomSheetController).removeObserver(mMediator);
     }
 }

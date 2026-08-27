@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetContent mBottomSheetContent;
     private final PropertyModel mModel;
+    private boolean mIsDestroyed;
 
     AutofillWalletReminderNoticeBottomSheetMediator(
             BottomSheetController bottomSheetController,
@@ -42,10 +43,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
-        // Can be extended when dismissal metrics or delegate callbacks are needed.
+        destroy();
     }
 
     void destroy() {
+        if (mIsDestroyed) {
+            return;
+        }
+        mIsDestroyed = true;
+        mBottomSheetController.hideContent(
+                mBottomSheetContent, /* animate= */ false, StateChangeReason.NONE);
         mBottomSheetController.removeObserver(this);
     }
 }

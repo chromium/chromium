@@ -96,6 +96,11 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
         mCoordinator.destroy();
 
         verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillWalletReminderNoticeBottomSheetContent.class),
+                        /* animate= */ eq(false),
+                        eq(BottomSheetController.StateChangeReason.NONE));
+        verify(mBottomSheetController)
                 .removeObserver(any(AutofillWalletReminderNoticeBottomSheetMediator.class));
     }
 }

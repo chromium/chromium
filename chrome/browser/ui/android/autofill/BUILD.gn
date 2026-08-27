@@ -32,6 +32,8 @@ source_set("autofill") {
     "autofill_save_iban_delegate.h",
     "autofill_vcn_enroll_bottom_sheet_bridge.cc",
     "autofill_vcn_enroll_bottom_sheet_bridge.h",
+    "autofill_wallet_reminder_notice_bottom_sheet_bridge.cc",
+    "autofill_wallet_reminder_notice_bottom_sheet_bridge.h",
     "card_expiration_date_fix_flow_view_android.cc",
     "card_expiration_date_fix_flow_view_android.h",
     "card_name_fix_flow_view_android.cc",

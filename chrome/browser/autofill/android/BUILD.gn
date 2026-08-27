@@ -96,6 +96,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextNoticePreference.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetMediator.java",
@@ -208,6 +209,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityAttributeUpdateDetails.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
+    "java/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetBridge.java",
   ]
 }
 
@@ -330,6 +332,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/utils/TestUtils.java",
     "junit/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/settings/personal_context/AutofillPersonalContextTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetContentTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/wallet_reminder_notice/AutofillWalletReminderNoticeBottomSheetModuleTest.java",
@@ -358,7 +361,9 @@ robolectric_library("junit") {
     "//components/autofill/android:autofill_ai_test_utils_java",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
