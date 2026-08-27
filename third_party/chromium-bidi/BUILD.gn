@@ -15,6 +15,7 @@
 
 # Top-level GN build file for chromium-bidi
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//testing/test.gni")
