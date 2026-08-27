@@ -63,6 +63,16 @@ namespace {
 
 constexpr size_t kCharsPerWord = 15;
 
+// Colors are in ARGB format (0xAARRGGBB).
+constexpr uint32_t kBlack = 0xFF000000;
+constexpr uint32_t kRed = 0xFFFF0000;
+
+constexpr float kBodyFontSize = 10.0f;
+
+constexpr int kNormalFontWeight = 400;
+
+constexpr char kRegularFontName[] = "Helvetica-Regular";
+
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
     /*start_index=*/0,
     /*len=*/15,
@@ -348,7 +358,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
         run.style.font_name = styles[i].font_name;
         run.style.font_weight = styles[i].font_weight;
         run.style.is_italic = styles[i].is_italic;
-        run.style.font_weight = styles[i].font_weight;
+        run.style.fill_color = styles[i].fill_color;
       }
       if (i < bounds.size()) {
         run.bounds = bounds[i];
@@ -1395,6 +1405,43 @@ TEST_F(PdfAccessibilityTreeTest,
   const ui::AXNode* block3 = page->GetChildAtIndex(2u);
   ASSERT_NE(nullptr, block3);
   EXPECT_EQ(ax::mojom::Role::kParagraph, block3->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicTextColorHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo colored_heading_style;
+  colored_heading_style.font_weight = kNormalFontWeight;
+  colored_heading_style.font_name = kRegularFontName;
+  colored_heading_style.fill_color = kRed;
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_body_style;
+  normal_body_style.font_weight = kNormalFontWeight;
+  normal_body_style.font_name = kRegularFontName;
+  normal_body_style.fill_color = kBlack;
+
+  // 3 runs: 1 red run (size 10.0f), 2 black body runs (size 10.0f).
+  // Body color is `kBlack`. Red run differs from body color, so it is
+  // classified as a heading.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{kBodyFontSize, kBodyFontSize, kBodyFontSize},
+      {colored_heading_style, normal_body_style, normal_body_style},
+      MakeCharVector({"RedHeading", "body", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  // First run (red fill_color): promoted to heading based on kTextColor
+  // classifier.
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicFontWeightHeading) {
