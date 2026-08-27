@@ -16,6 +16,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -26,7 +27,14 @@ namespace tab_groups {
 class SharedTabGroupFeedbackController : public TabStripModelObserver,
                                          public TabGroupSyncService::Observer {
  public:
+  DECLARE_USER_DATA(SharedTabGroupFeedbackController);
+
   explicit SharedTabGroupFeedbackController(BrowserWindowInterface* browser);
+
+  // Returns the controller for `browser`, or null if it does not have one
+  // (e.g. shared tab groups unsupported, or no BrowserView).
+  static SharedTabGroupFeedbackController* From(
+      BrowserWindowInterface* browser);
   SharedTabGroupFeedbackController(const SharedTabGroupFeedbackController&) =
       delete;
   SharedTabGroupFeedbackController operator=(
@@ -41,6 +49,9 @@ class SharedTabGroupFeedbackController : public TabStripModelObserver,
   void TearDown();
 
  private:
+  ui::ScopedUnownedUserData<SharedTabGroupFeedbackController>
+      scoped_unowned_user_data_;
+
   FRIEND_TEST_ALL_PREFIXES(SharedTabGroupFeedbackControllerBrowserTest,
                            UpdateFeedbackButtonVisibility);
 

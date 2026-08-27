@@ -1062,8 +1062,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       if (browser_view) {
         shared_tab_group_feedback_controller_ =
-            std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
-                browser_view->browser());
+            GetUserDataFactory()
+                .CreateInstance<tab_groups::SharedTabGroupFeedbackController>(
+                    *browser, browser_view->browser());
         shared_tab_group_feedback_controller_->Init();
       }
       recent_activity_bubble_coordinator_ =

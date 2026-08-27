@@ -25,9 +25,18 @@
 
 namespace tab_groups {
 
+DEFINE_USER_DATA(SharedTabGroupFeedbackController);
+
+// static
+SharedTabGroupFeedbackController* SharedTabGroupFeedbackController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 SharedTabGroupFeedbackController::SharedTabGroupFeedbackController(
     BrowserWindowInterface* browser)
-    : browser_(browser),
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(browser),
       tab_group_sync_service_(
           TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())) {
   CHECK(tab_group_sync_service_);

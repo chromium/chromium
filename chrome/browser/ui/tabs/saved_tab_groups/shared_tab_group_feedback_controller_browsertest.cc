@@ -32,7 +32,7 @@ class SharedTabGroupFeedbackControllerBrowserTest
 IN_PROC_BROWSER_TEST_F(SharedTabGroupFeedbackControllerBrowserTest,
                        UpdateFeedbackButtonVisibility) {
   SharedTabGroupFeedbackController* controller =
-      browser()->GetFeatures().shared_tab_group_feedback_controller();
+      tab_groups::SharedTabGroupFeedbackController::From(browser());
   ASSERT_NE(controller, nullptr);
 
   // Call UpdateFeedbackButtonVisibility(true) to show the button.
