@@ -17,6 +17,7 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -94,7 +95,8 @@ public class ImprovedBookmarkRowProperties {
     public static final WritableObjectPropertyKey<BooleanSupplier> ROW_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<ImageVisibility> END_IMAGE_VISIBILITY =
+            new WritableIntDefPropertyKey<>(ImageVisibility.NONE);
     public static final WritableIntPropertyKey END_IMAGE_RES = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>

@@ -210,18 +210,14 @@ public class BookmarkToolbarMediatorTest {
     public void onStateChangedUpdatesModel() {
         mMediator.onUiModeChanged(BookmarkUiMode.LOADING);
         assertEquals(
-                BookmarkUiMode.LOADING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
+                BookmarkUiMode.LOADING, mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals(
-                BookmarkUiMode.SEARCHING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
+                BookmarkUiMode.SEARCHING, mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.FOLDER);
-        assertEquals(
-                BookmarkUiMode.FOLDER,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
+        assertEquals(BookmarkUiMode.FOLDER, mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE));
     }
 
     @Test

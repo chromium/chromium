@@ -12,6 +12,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -33,8 +34,8 @@ class BookmarkToolbarProperties {
     static final WritableObjectPropertyKey<String> TITLE =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
-    static final WritableObjectPropertyKey<@BookmarkUiMode Integer> BOOKMARK_UI_MODE =
-            new WritableObjectPropertyKey<>();
+    static final WritableIntDefPropertyKey<BookmarkUiMode> BOOKMARK_UI_MODE =
+            new WritableIntDefPropertyKey<>(BookmarkUiMode.LOADING);
     static final WritableObjectPropertyKey<Boolean> SOFT_KEYBOARD_VISIBLE =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     static final WritableBooleanPropertyKey IS_DIALOG_UI = new WritableBooleanPropertyKey();
