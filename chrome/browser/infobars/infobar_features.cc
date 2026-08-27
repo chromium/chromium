@@ -74,6 +74,11 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kMigratedSessionRestore,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -103,6 +108,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedThemeInstalled;
     case InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE:
       return &kMigratedExtensionDevTools;
+    case InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE:
+      return &kMigratedSessionRestore;
     default:
       return nullptr;
   }

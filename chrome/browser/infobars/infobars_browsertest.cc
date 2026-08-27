@@ -48,6 +48,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
+#endif
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -229,6 +233,10 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
           {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
           {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+          {"session_restore", IBD::SESSION_RESTORE_INFOBAR_DELEGATE},
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
           {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
@@ -418,6 +426,15 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    case IBD::SESSION_RESTORE_INFOBAR_DELEGATE:
+      session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
+          ->ShowInfoBar(*browser()->GetProfile(),
+                        session_restore_infobar::InfobarMessageType::
+                            kTurnOffFromRestart);
+      break;
+#endif
+
     default:
       ADD_FAILURE() << "Unhandled infobar " << name;
       break;
@@ -511,6 +528,12 @@ IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_oscryptasync_availability) {
 IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_page_info) {
   ShowAndVerifyUi();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_session_restore) {
+  ShowAndVerifyUi();
+}
+#endif
 
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40261456): This test case has been frequently failing on

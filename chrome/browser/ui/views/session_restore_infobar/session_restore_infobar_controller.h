@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -36,7 +36,7 @@ class SessionRestoreInfobarController {
   static SessionRestoreInfobarController* From(BrowserWindowInterface* browser);
 
  private:
-  SessionRestoreInfoBarDelegate::InfobarMessageType GetInfobarMessageType();
+  InfobarMessageType GetInfobarMessageType();
   std::unique_ptr<SessionRestoreInfobarModel> model_;
   ui::ScopedUnownedUserData<SessionRestoreInfobarController>
       scoped_unowned_user_data_;

@@ -90,7 +90,6 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"  // nogncheck
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"  // nogncheck
-#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #endif
 
@@ -632,8 +631,8 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     case InfoBarType::kSessionRestore: {
       session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
           ->ShowInfoBar(*profile,
-                        session_restore_infobar::SessionRestoreInfoBarDelegate::
-                            InfobarMessageType::kTurnOffFromRestart);
+                        session_restore_infobar::InfobarMessageType::
+                            kTurnOffFromRestart);
       return true;
     }
 #endif

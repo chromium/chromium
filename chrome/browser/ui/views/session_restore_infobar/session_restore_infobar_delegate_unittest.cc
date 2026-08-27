@@ -21,7 +21,7 @@ namespace session_restore_infobar {
 namespace {
 
 struct SessionRestoreInfoBarTestParams {
-  SessionRestoreInfoBarDelegate::InfobarMessageType message_type;
+  InfobarMessageType message_type;
   const char* histogram_name;
 };
 
@@ -73,27 +73,24 @@ class SessionRestoreInfoBarDelegateTest
 // infobar is created, the "shown" histogram should be recorded.
 TEST_P(SessionRestoreInfoBarDelegateTest, Create) {
   CreateDelegate();
-  histogram_tester().ExpectUniqueSample(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kShown, 1);
+  histogram_tester().ExpectUniqueSample(GetParam().histogram_name,
+                                        InfobarAction::kShown, 1);
 }
 
 // When the infobar is dismissed, the "dismissed" histogram should be recorded.
 TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogram) {
   infobars::InfoBar* infobar = CreateDelegate();
   infobar->delegate()->InfoBarDismissed();
-  histogram_tester().ExpectBucketCount(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed, 1);
+  histogram_tester().ExpectBucketCount(GetParam().histogram_name,
+                                       InfobarAction::kDismissed, 1);
 }
 
 // When the link is clicked, the "link clicked" histogram should be recorded.
 TEST_P(SessionRestoreInfoBarDelegateTest, LinkClickedHistogram) {
   infobars::InfoBar* infobar = CreateDelegate();
   infobar->delegate()->LinkClicked(WindowOpenDisposition::CURRENT_TAB);
-  histogram_tester().ExpectBucketCount(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kLinkClicked, 1);
+  histogram_tester().ExpectBucketCount(GetParam().histogram_name,
+                                       InfobarAction::kLinkClicked, 1);
 }
 
 // When the infobar is destroyed without being accepted or dismissed, the
@@ -101,9 +98,8 @@ TEST_P(SessionRestoreInfoBarDelegateTest, LinkClickedHistogram) {
 TEST_P(SessionRestoreInfoBarDelegateTest, IgnoredHistogram) {
   infobars::InfoBar* infobar = CreateDelegate();
   infobar_manager()->RemoveInfoBar(infobar);
-  histogram_tester().ExpectBucketCount(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kIgnored, 1);
+  histogram_tester().ExpectBucketCount(GetParam().histogram_name,
+                                       InfobarAction::kIgnored, 1);
 }
 
 // When the infobar is destroyed after being dismissed, the "dismissed"
@@ -112,12 +108,10 @@ TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogramInfoBarDestroyed) {
   infobars::InfoBar* infobar = CreateDelegate();
   infobar->delegate()->InfoBarDismissed();
   infobar_manager()->RemoveInfoBar(infobar);
-  histogram_tester().ExpectBucketCount(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed, 1);
-  histogram_tester().ExpectBucketCount(
-      GetParam().histogram_name,
-      SessionRestoreInfoBarDelegate::InfobarAction::kIgnored, 0);
+  histogram_tester().ExpectBucketCount(GetParam().histogram_name,
+                                       InfobarAction::kDismissed, 1);
+  histogram_tester().ExpectBucketCount(GetParam().histogram_name,
+                                       InfobarAction::kIgnored, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -125,12 +119,10 @@ INSTANTIATE_TEST_SUITE_P(
     SessionRestoreInfoBarDelegateTest,
     testing::Values(
         SessionRestoreInfoBarTestParams{
-            SessionRestoreInfoBarDelegate::InfobarMessageType::
-                kTurnOffFromRestart,
+            InfobarMessageType::kTurnOffFromRestart,
             "SessionRestore.InfoBar.TurnOffFromRestart"},
         SessionRestoreInfoBarTestParams{
-            SessionRestoreInfoBarDelegate::InfobarMessageType::
-                kTurnOnSessionRestore,
+            InfobarMessageType::kTurnOnSessionRestore,
             "SessionRestore.InfoBar.TurnOnSessionRestore"}));
 
 }  // namespace session_restore_infobar

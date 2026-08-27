@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h:SessionRestoreInfoBarAction) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h:SessionRestoreInfoBarAction) -->
 
 <enum name="SmartRestartability">
   <int value="0" label="None"/>

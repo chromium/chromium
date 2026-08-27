@@ -39,4 +39,8 @@ source_set("infobars") {
   if (is_win || is_mac) {
     deps += [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+  }
 }

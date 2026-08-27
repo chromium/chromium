@@ -10,11 +10,12 @@
 #include <optional>
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
 
 class Profile;
@@ -32,6 +33,35 @@ class PrefChangeRegistrar;
 
 namespace session_restore_infobar {
 
+// Enum for the message type to be displayed in the infobar.
+enum class InfobarMessageType {
+  kNone,
+  // Infobar message displayed for turning off session restore from restart.
+  kTurnOffFromRestart,
+  // Infobar message displayed for turning on session restore.
+  kTurnOnSessionRestore,
+};
+
+// Enum for session restore infobar actions.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SessionRestoreInfoBarAction)
+enum class InfobarAction {
+  kShown = 0,
+  kDismissed = 1,
+  kLinkClicked = 2,
+  kIgnored = 3,
+  kMaxValue = kIgnored,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:SessionRestoreInfoBarAction)
+
+// Records UMA metrics for session restore infobar actions.
+void RecordInfoBarAction(InfobarMessageType message_type, InfobarAction action);
+
+// Records UMA metrics for session restore setting changes.
+void RecordSettingChanged(bool setting_changed,
+                          InfobarMessageType message_type);
+
 // This class is responsible for managing the session restore infobar. It
 // ensures the infobar is shown consistently across all applicable browser
 // windows and tabs for a given profile and that interacting with one infobar
@@ -48,9 +78,7 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
       delete;
 
   // Shows a session restore infobar for the given profile.
-  void ShowInfoBar(
-      Profile& profile,
-      SessionRestoreInfoBarDelegate::InfobarMessageType message_type);
+  void ShowInfoBar(Profile& profile, InfobarMessageType message_type);
 
   // Closes all visible session restore infobars.
   void CloseAllInfoBars();
@@ -77,14 +105,24 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
     action_taken_for_session_ = value;
   }
 
+  // Returns the localized message text corresponding to the current message type.
+  std::u16string GetMessageText() const;
+
+  // Message substitution helper for centralized infobar registration.
+  std::vector<MessageSubstitution> GetMessageSubstitutions() const;
+
+  // Called by the centralized infobar framework on terminal outcomes.
+  void OnInfoBarResult(infobars::InfoBarResult result);
+
+  // BrowserTabStripTrackerDelegate
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
+
  private:
   friend struct base::DefaultSingletonTraits<SessionRestoreInfoBarManager>;
 
   SessionRestoreInfoBarManager();
   ~SessionRestoreInfoBarManager() override;
 
-  // BrowserTabStripTrackerDelegate
-  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
@@ -112,8 +150,7 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
   // Stores whether a user-initiated close is pending, which triggers closing
   // all other infobars.
   bool user_initiated_info_bar_close_pending_ = false;
-  SessionRestoreInfoBarDelegate::InfobarMessageType message_type_ =
-      SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
+  InfobarMessageType message_type_ = InfobarMessageType::kNone;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

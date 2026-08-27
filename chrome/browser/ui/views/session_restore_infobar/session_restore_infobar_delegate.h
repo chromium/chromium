@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -25,28 +26,6 @@ namespace session_restore_infobar {
 // can be changed in settings.
 class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Enum for the message type to be displayed in the infobar.
-  enum class InfobarMessageType {
-    kNone,
-    // Infobar message displayed for turning off session restore from restart.
-    kTurnOffFromRestart,
-    // Infobar message displayed for turning on session restore.
-    kTurnOnSessionRestore,
-  };
-
-  // Enum for session restore infobar actions.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(InfobarAction)
-  enum class InfobarAction {
-    kShown = 0,
-    kDismissed = 1,
-    kLinkClicked = 2,
-    kIgnored = 3,
-    kMaxValue = kIgnored,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:SessionRestoreInfoBarAction)
-
   explicit SessionRestoreInfoBarDelegate(Profile& profile,
                                          base::OnceCallback<void()> close_cb,
                                          InfobarMessageType message_type);
@@ -62,10 +41,6 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
       Profile& profile,
       base::OnceCallback<void()> close_cb,
       InfobarMessageType message_type);
-
-  void RecordSettingChanged(
-      bool setting_changed,
-      SessionRestoreInfoBarDelegate::InfobarMessageType message_type);
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

@@ -28,41 +28,18 @@
 
 namespace session_restore_infobar {
 
-namespace {
-
-void RecordInfoBarAction(
-    SessionRestoreInfoBarDelegate::InfobarMessageType message_type,
-    SessionRestoreInfoBarDelegate::InfobarAction action) {
-  switch (message_type) {
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart:
-      base::UmaHistogramEnumeration("SessionRestore.InfoBar.TurnOffFromRestart",
-                                    action);
-      break;
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::
-        kTurnOnSessionRestore:
-      base::UmaHistogramEnumeration(
-          "SessionRestore.InfoBar.TurnOnSessionRestore", action);
-      break;
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::kNone:
-      break;
-  }
-}
-
-}  // namespace
-
 // static
 infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
     infobars::ContentInfoBarManager* infobar_manager,
     Profile& profile,
     base::OnceCallback<void()> close_cb,
-    SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
+    InfobarMessageType message_type) {
   auto* manager = SessionRestoreInfoBarManager::GetInstance();
   if (!manager->shown_metric_recorded_for_session()) {
     manager->set_shown_metric_recorded_for_session(true);
     manager->set_ignored_metric_recorded_for_session(false);
     manager->set_action_taken_for_session(false);
-    RecordInfoBarAction(message_type,
-                        SessionRestoreInfoBarDelegate::InfobarAction::kShown);
+    RecordInfoBarAction(message_type, InfobarAction::kShown);
   }
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
       std::make_unique<SessionRestoreInfoBarDelegate>(
@@ -73,7 +50,7 @@ infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
 SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
     Profile& profile,
     base::OnceCallback<void()> close_cb,
-    SessionRestoreInfoBarDelegate::InfobarMessageType message_type)
+    InfobarMessageType message_type)
     : profile_(profile),
       close_cb_(std::move(close_cb)),
       message_type_(message_type) {
@@ -93,9 +70,7 @@ SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
     }
     if (!manager->ignored_metric_recorded_for_session()) {
       manager->set_ignored_metric_recorded_for_session(true);
-      RecordInfoBarAction(
-          message_type_,
-          SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
+      RecordInfoBarAction(message_type_, InfobarAction::kIgnored);
       if (profile_->GetPrefs()->GetInteger(
               prefs::kSessionRestoreInfoBarTimesShown) ==
           kSessionRestoreInfoBarMaxTimesToShow) {
@@ -113,25 +88,6 @@ void SessionRestoreInfoBarDelegate::OnSessionRestorePrefChanged() {
       true);
   RecordSettingChanged(true, message_type_);
   infobar()->RemoveSelf();
-}
-
-void SessionRestoreInfoBarDelegate::RecordSettingChanged(
-    bool setting_changed,
-    SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
-  switch (message_type) {
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart:
-      base::UmaHistogramBoolean(
-          "Session.Restore.SettingChanged.TurnOffFromRestart", setting_changed);
-      break;
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::
-        kTurnOnSessionRestore:
-      base::UmaHistogramBoolean(
-          "Session.Restore.SettingChanged.TurnOnSessionRestore",
-          setting_changed);
-      break;
-    case SessionRestoreInfoBarDelegate::InfobarMessageType::kNone:
-      break;
-  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -187,8 +143,7 @@ void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
   SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
       true);
-  RecordInfoBarAction(message_type_,
-                      SessionRestoreInfoBarDelegate::InfobarAction::kDismissed);
+  RecordInfoBarAction(message_type_, InfobarAction::kDismissed);
   if (close_cb_) {
     std::move(close_cb_).Run();
     if (profile_->GetPrefs()
@@ -212,9 +167,7 @@ bool SessionRestoreInfoBarDelegate::LinkClicked(
   action_taken_ = true;
   SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
       true);
-  RecordInfoBarAction(
-      message_type_,
-      SessionRestoreInfoBarDelegate::InfobarAction::kLinkClicked);
+  RecordInfoBarAction(message_type_, InfobarAction::kLinkClicked);
   return ConfirmInfoBarDelegate::LinkClicked(disposition);
 }
 

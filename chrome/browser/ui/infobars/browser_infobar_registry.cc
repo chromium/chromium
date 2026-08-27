@@ -40,9 +40,14 @@
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #endif
 
+#include "components/omnibox/browser/vector_icons.h"
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
-#include "components/omnibox/browser/vector_icons.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #endif
 
 namespace infobars {
@@ -213,6 +218,42 @@ void RegisterInfoBars() {
               extensions::ExtensionDevToolsInfoBarController::
                   OnInfoBarAction();
             }))
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (IsInfoBarMigrated(InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)
+            .SetMessageTextTemplate(u"$1")
+            .SetSubstitutionsCallback(base::BindRepeating(
+                [](content::WebContents*) {
+                  return session_restore_infobar::
+                      SessionRestoreInfoBarManager::GetInstance()
+                          ->GetMessageSubstitutions();
+                }))
+            .SetLinkText(l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_LINK))
+            .SetLinkNavigationUrl(GURL("chrome://settings/onStartup"))
+            .SetIcon(vector_icons::kProductRefreshIcon)
+            .SetDarkModeIcon(features::IsRoundedIconsEnabled()
+                                 ? omnibox::kChromeProductIcon
+                                 : omnibox::kProductChromeRefreshOldIcon)
+            .SetScope(InfoBarScope::kGlobal)
+            .SetExpireOnNavigation(false)
+            .SetBrowserFilter(base::BindRepeating(
+                [](BrowserWindowInterface* browser) {
+                  return session_restore_infobar::
+                      SessionRestoreInfoBarManager::GetInstance()
+                          ->ShouldTrackBrowser(browser);
+                }))
+            .SetResultCallback(base::BindRepeating(
+                [](content::WebContents*, InfoBarResult result) {
+                  session_restore_infobar::
+                      SessionRestoreInfoBarManager::GetInstance()
+                          ->OnInfoBarResult(result);
+                }))
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
