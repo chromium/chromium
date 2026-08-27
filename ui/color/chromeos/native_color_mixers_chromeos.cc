@@ -30,30 +30,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
   bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
-  // Add color initializations for highlight border.
-  {
-    // TODO(b/291622042): Delete when Jelly is fully launched.
-    const ui::ColorTransform light_border = {SkColorSetA(SK_ColorBLACK, 0x0F)};
-    const auto default_background_color =
-        ui::GetEndpointColorWithMinContrast({ui::kColorPrimaryBackground});
-    const auto background_color =
-        key.user_color.has_value() ? ui::ColorTransform(key.user_color.value())
-                                   : default_background_color;
-    mixer[kColorHighlightBorderBorder1] =
-        dark_mode ? SetAlpha(background_color, SK_AlphaOPAQUE * 0.8f)
-                  : light_border;
-    mixer[kColorHighlightBorderBorder2] =
-        dark_mode ? SetAlpha(background_color, SK_AlphaOPAQUE * 0.6f)
-                  : light_border;
-    mixer[kColorHighlightBorderBorder3] = light_border;
-
-    mixer[kColorHighlightBorderHighlight1] = {
-        SkColorSetA(SK_ColorWHITE, dark_mode ? 0x14 : 0x4C)};
-    mixer[kColorHighlightBorderHighlight2] = {
-        SkColorSetA(SK_ColorWHITE, dark_mode ? 0x0F : 0x33)};
-    mixer[kColorHighlightBorderHighlight3] = {kColorHighlightBorderHighlight1};
-  }
-
   // This matches cros.sys.system-highlight
   mixer[kColorCrosSystemHighlight] =
       ui::SetAlpha(ui::kColorRefNeutral100, dark_mode ? 0x0F : 0x28);

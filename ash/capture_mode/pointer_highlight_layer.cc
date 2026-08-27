@@ -42,12 +42,12 @@ SkColor GetColor() {
 
 SkColor GetHighlightBorderInnerColor() {
   return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
-      ui::kColorHighlightBorderHighlight1);
+      ui::kColorCrosSystemHighlight);
 }
 
 SkColor GetHighlightBorderOuterColor() {
   return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
-      ui::kColorHighlightBorderBorder1);
+      ui::kColorCrosSystemHighlightBorder);
 }
 
 }  // namespace

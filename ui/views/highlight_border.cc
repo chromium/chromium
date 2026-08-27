@@ -80,15 +80,6 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
     case HighlightBorder::Type::kHighlightBorderOnShadow:
       highlight_color_id = ui::kColorCrosSystemHighlight;
       break;
-    case HighlightBorder::Type::kHighlightBorder1:
-      highlight_color_id = ui::kColorHighlightBorderHighlight1;
-      break;
-    case HighlightBorder::Type::kHighlightBorder2:
-      highlight_color_id = ui::kColorHighlightBorderHighlight2;
-      break;
-    case HighlightBorder::Type::kHighlightBorder3:
-      highlight_color_id = ui::kColorHighlightBorderHighlight3;
-      break;
   }
 
   // `view` should be embedded in a Widget to use color provider.
@@ -106,15 +97,6 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
       break;
     case HighlightBorder::Type::kHighlightBorderOnShadow:
       border_color_id = ui::kColorCrosSystemHighlightBorder1;
-      break;
-    case HighlightBorder::Type::kHighlightBorder1:
-      border_color_id = ui::kColorHighlightBorderBorder1;
-      break;
-    case HighlightBorder::Type::kHighlightBorder2:
-      border_color_id = ui::kColorHighlightBorderBorder2;
-      break;
-    case HighlightBorder::Type::kHighlightBorder3:
-      border_color_id = ui::kColorHighlightBorderBorder3;
       break;
   }
 

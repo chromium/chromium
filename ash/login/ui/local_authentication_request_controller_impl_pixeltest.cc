@@ -256,14 +256,14 @@ TEST_P(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("Ready"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("Fail"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       view));
 }
 
@@ -287,7 +287,7 @@ TEST_P(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("Light"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 1,
       view));
 }
 

@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -65,7 +66,7 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kDialogCornerRadius));
   SetBorder(views::CreateRoundedRectBorder(
       game_dashboard::kWelcomeDialogBorderThickness, kDialogCornerRadius,
-      ui::ColorIds::kColorHighlightBorderHighlight1));
+      ui::kColorCrosSystemHighlight));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kDialogCornerRadius));

@@ -148,7 +148,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
 
     SetBorder(std::make_unique<views::HighlightBorder>(
         /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorder1));
+        views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
     label_ = AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));

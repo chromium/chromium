@@ -94,7 +94,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1));
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
     view_shadow_ =
         std::make_unique<views::ViewShadow>(this, kDialogShadowElevation);

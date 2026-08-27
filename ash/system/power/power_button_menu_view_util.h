@@ -27,7 +27,7 @@ constexpr int kPowerButtonMenuCornerRadius = 16;
 
 // The border highlight type for the container.
 constexpr auto kPowerButtonMenuBorderType =
-    views::HighlightBorder::Type::kHighlightBorder1;
+    views::HighlightBorder::Type::kHighlightBorderOnShadow;
 
 // The color id for widget background.
 constexpr auto kPowerButtonMenuBackgroundColorId = kColorAshShieldAndBase80;

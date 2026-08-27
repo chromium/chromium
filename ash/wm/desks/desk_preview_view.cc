@@ -669,10 +669,9 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 void DeskPreviewView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  highlight_overlay_->layer()->AsSolidColor()->SetColor(
-      SkColor4f::FromColor(SkColorSetA(
-          GetColorProvider()->GetColor(ui::kColorHighlightBorderHighlight1),
-          kHighlightTransparency)));
+  highlight_overlay_->layer()->AsSolidColor()->SetColor(SkColor4f::FromColor(
+      SkColorSetA(GetColorProvider()->GetColor(ui::kColorCrosSystemHighlight),
+                  kHighlightTransparency)));
 }
 
 void DeskPreviewView::OnFocus() {
