@@ -3050,7 +3050,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageBeforeInitialize) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
+#if defined(SLOW_BINARY)
+// Flaky on slow builds.
+#define MAYBE_testSorryPageAfterInitialize DISABLED_testSorryPageAfterInitialize
+#else
+#define MAYBE_testSorryPageAfterInitialize testSorryPageAfterInitialize
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageAfterInitialize) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set(
