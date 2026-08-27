@@ -16,16 +16,17 @@ class UrlLoadingBrowserAgent;
 @interface ContentSuggestionsViewController
     : UIViewController <ContentSuggestionsConsumer>
 
-// Initializes the new tab page view controller.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    audience;
+
+// Provider of menu configurations for the contentSuggestions component.
+@property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    audience;
-// Provider of menu configurations for the contentSuggestions component.
-@property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
 
 @end
 
