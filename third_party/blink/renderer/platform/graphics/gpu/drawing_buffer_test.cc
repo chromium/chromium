@@ -899,4 +899,61 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundBindReallocation) {
   // fallbacks.
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
 }
+
+TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundResizeReallocation) {
+  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+
+  drawing_buffer_->SetIsInHiddenPage(false);
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  // Resizing the drawing buffer while in background should reallocate
+  // the back color buffer and reset the discarded state so that
+  // MarkContentsChanged does not crash.
+  drawing_buffer_->Resize(gfx::Size(kInitialWidth + 10, kInitialHeight + 10));
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->MarkContentsChanged();
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+}
+
+TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundNoopResizeReallocation) {
+  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+
+  drawing_buffer_->SetIsInHiddenPage(false);
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  // Resizing with identical dimensions reallocates the back buffer if it
+  // was discarded, allowing MarkContentsChanged() to proceed without asserting.
+  drawing_buffer_->Resize(gfx::Size(kInitialWidth, kInitialHeight));
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->MarkContentsChanged();
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+}
+
+TEST_F(DrawingBufferDiscardBackBufferTest,
+       BackgroundSetColorSpaceReallocation) {
+  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+
+  drawing_buffer_->SetIsInHiddenPage(false);
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  // Changing color space while in background should reallocate the back color
+  // buffer and reset the discarded state so that MarkContentsChanged does not
+  // crash.
+  drawing_buffer_->SetColorSpace(PredefinedColorSpace::kP3);
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  drawing_buffer_->MarkContentsChanged();
+  EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+}
 }  // namespace blink

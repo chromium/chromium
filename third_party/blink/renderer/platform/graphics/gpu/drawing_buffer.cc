@@ -1450,6 +1450,7 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
   if (!back_color_buffer_) {
     return false;
   }
+  back_buffer_discarded_ = false;
 
   if (staging_texture_) {
     state_restorer_->SetTextureBindingDirty();
@@ -1652,6 +1653,12 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
     return false;
   }
   needs_reallocate |= adjusted_size != size_;
+
+  // If the back buffer was discarded while the page was hidden, reallocate it
+  // even if the size didn't change (e.g. no-op resize). This is a
+  // pessimization, since in this case we don't actually need to do anything,
+  // but this is done here to simplify the code and keep invariants.
+  needs_reallocate |= back_buffer_discarded_;
 
   // Initialize the alpha allocation settings based on the features and
   // workarounds in use.
