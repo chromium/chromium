@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -13,6 +14,14 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/autofill_bottom_sheet_padding_horizontal"
     android:paddingTop="@dimen/autofill_bottom_sheet_spacing_medium"
     android:paddingBottom="@dimen/autofill_bottom_sheet_spacing_large">
+
+    <ImageView
+        android:id="@+id/wallet_reminder_header_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_medium"
+        android:importantForAccessibility="no"
+        tools:src="@drawable/autofill_wallet_reminder_notice_illustration" />
 
     <TextView
         android:id="@+id/wallet_reminder_title"

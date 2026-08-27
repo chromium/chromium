@@ -63,6 +63,11 @@ public class AutofillWalletReminderNoticeBottomSheetModuleTest {
         assertThat(
                 mCoordinator
                         .getPropertyModelForTesting()
+                        .get(AutofillWalletReminderNoticeBottomSheetProperties.HEADER_ICON),
+                equalTo(R.drawable.autofill_wallet_reminder_notice_illustration));
+        assertThat(
+                mCoordinator
+                        .getPropertyModelForTesting()
                         .get(AutofillWalletReminderNoticeBottomSheetProperties.TITLE),
                 equalTo(mActivity.getString(R.string.autofill_wallet_reminder_notice_title)));
         assertThat(

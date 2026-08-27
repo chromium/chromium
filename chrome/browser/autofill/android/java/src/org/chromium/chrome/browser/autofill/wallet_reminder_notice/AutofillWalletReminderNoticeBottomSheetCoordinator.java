@@ -37,6 +37,9 @@ public class AutofillWalletReminderNoticeBottomSheetCoordinator {
                 new PropertyModel.Builder(
                                 AutofillWalletReminderNoticeBottomSheetProperties.ALL_KEYS)
                         .with(
+                                AutofillWalletReminderNoticeBottomSheetProperties.HEADER_ICON,
+                                R.drawable.autofill_wallet_reminder_notice_illustration)
+                        .with(
                                 AutofillWalletReminderNoticeBottomSheetProperties.TITLE,
                                 context.getString(R.string.autofill_wallet_reminder_notice_title))
                         .build();

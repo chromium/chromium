@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.autofill.wallet_reminder_notice;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -51,6 +54,27 @@ public class AutofillWalletReminderNoticeBottomSheetViewTest {
         assertThat(mView.getGotItButton(), notNullValue());
         assertThat(mView.getTitleText().getId(), equalTo(R.id.wallet_reminder_title));
         assertThat(mView.getGotItButton().getId(), equalTo(R.id.wallet_reminder_button_got_it));
+    }
+
+    @Test
+    public void testHeaderIcon() {
+        assertEquals(R.id.wallet_reminder_header_icon, mView.getHeaderIcon().getId());
+
+        bind(
+                mModelBuilder.with(
+                        AutofillWalletReminderNoticeBottomSheetProperties.HEADER_ICON,
+                        R.drawable.autofill_wallet_reminder_notice_illustration));
+        assertThat(mView.getHeaderIcon().getDrawable(), notNullValue());
+        assertEquals(
+                R.drawable.autofill_wallet_reminder_notice_illustration,
+                shadowOf(mView.getHeaderIcon().getDrawable()).getCreatedFromResId());
+        assertEquals(View.VISIBLE, mView.getHeaderIcon().getVisibility());
+    }
+
+    @Test
+    public void testHeaderIcon_hiddenWhenZero() {
+        bind(mModelBuilder.with(AutofillWalletReminderNoticeBottomSheetProperties.HEADER_ICON, 0));
+        assertEquals(View.GONE, mView.getHeaderIcon().getVisibility());
     }
 
     @Test
