@@ -180,11 +180,7 @@ public class FuseboxCoordinatorUnitTest {
                 mSnackbarManager,
                 /* scrimAnchorViewSupplier= */ SupplierUtils.ofNull(),
                 mBackPressManager,
-                /* onActivationChipClickedWithQuery= */ () -> {},
-                /* clearUrlBarTextRunnable= */ () -> {},
-                /* urlBarTextSupplier= */ () -> "",
-                isForcedPhoneStyleOmnibox,
-                ObservableSuppliers.createNonNull(true));
+                isForcedPhoneStyleOmnibox);
     }
 
     private FuseboxSessionState createSession() {

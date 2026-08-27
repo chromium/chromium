@@ -121,8 +121,6 @@ public class HintTextUpdaterUnitTest {
         when(mFuseboxCoordinator.getFuseboxStateSupplier()).thenReturn(mFuseboxStateSupplier);
         when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
                 .thenReturn(mFuseboxLayoutModeSupplier);
-        when(mFuseboxCoordinator.getActivationChipVisibilitySupplier())
-                .thenReturn(mActivationChipVisibilitySupplier);
 
         FuseboxSessionState.setInstanceForTesting(mFuseboxSessionState);
         mProfileSupplier.set(mProfile);
@@ -138,6 +136,7 @@ public class HintTextUpdaterUnitTest {
                         mEmbedderUiOverrides,
                         mSearchEngineServiceSupplier,
                         mFuseboxCoordinator,
+                        mActivationChipVisibilitySupplier,
                         mProfileSupplier,
                         mUpdateHintTextCallback);
 

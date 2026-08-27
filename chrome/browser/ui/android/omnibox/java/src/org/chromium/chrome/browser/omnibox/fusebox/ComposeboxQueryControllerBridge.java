@@ -180,7 +180,7 @@ public class ComposeboxQueryControllerBridge {
     }
 
     /** Returns whether client is Fusebox eligible. */
-    boolean isFuseboxEligible() {
+    public boolean isFuseboxEligible() {
         return ComposeboxQueryControllerBridgeJni.get().isFuseboxEligible(mNativeInstance);
     }
 

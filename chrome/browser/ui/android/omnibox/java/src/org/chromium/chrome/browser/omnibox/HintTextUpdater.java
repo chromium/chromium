@@ -12,6 +12,7 @@ import android.text.style.ImageSpan;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
@@ -49,6 +50,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private final Callback<CharSequence> mUpdateHintTextCallback;
     private final MonotonicObservableSupplier<SearchEngineService> mSearchEngineServiceSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
+    private final NonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SearchEngineNameObserver mSearchEngineNameObserver = this::updateHintText;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
@@ -76,6 +78,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             LocationBarEmbedderUiOverrides embedderUiOverrides,
             MonotonicObservableSupplier<SearchEngineService> searchEngineServiceSupplier,
             FuseboxCoordinator fuseboxCoordinator,
+            NonNullObservableSupplier<Boolean> activationChipVisibilitySupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
             Callback<CharSequence> updateHintTextCallback) {
         mResourceProvider = resourceProvider;
@@ -83,6 +86,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mEmbedderUiOverrides = embedderUiOverrides;
         mSearchEngineServiceSupplier = searchEngineServiceSupplier;
         mFuseboxCoordinator = fuseboxCoordinator;
+        mActivationChipVisibilitySupplier = activationChipVisibilitySupplier;
         mProfileSupplier = profileSupplier;
         mUpdateHintTextCallback = updateHintTextCallback;
         mLocationBarDataProvider.addObserver(this);
@@ -92,9 +96,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mFuseboxCoordinator
                 .getFuseboxLayoutModeSupplier()
                 .addSyncObserver(mFuseboxLayoutModeObserver);
-        mFuseboxCoordinator
-                .getActivationChipVisibilitySupplier()
-                .addSyncObserver(mActivationChipVisibilityObserver);
+        mActivationChipVisibilitySupplier.addSyncObserver(mActivationChipVisibilityObserver);
         mProfileSupplier.addSyncObserver(mProfileObserver);
 
         updateHintText();
@@ -111,9 +113,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mFuseboxCoordinator
                 .getFuseboxLayoutModeSupplier()
                 .removeObserver(mFuseboxLayoutModeObserver);
-        mFuseboxCoordinator
-                .getActivationChipVisibilitySupplier()
-                .removeObserver(mActivationChipVisibilityObserver);
+        mActivationChipVisibilitySupplier.removeObserver(mActivationChipVisibilityObserver);
         mProfileSupplier.removeObserver(mProfileObserver);
         endInput();
     }
@@ -257,7 +257,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private boolean useAimActivationOrEmptyHint() {
         return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
                 && isSuggestionsPopover()
-                && mFuseboxCoordinator.getActivationChipVisibilitySupplier().get();
+                && mActivationChipVisibilitySupplier.get();
     }
 
     private boolean isSuggestionsPopover() {

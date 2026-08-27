@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxViewHolder.AnchoringMo
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -65,26 +64,11 @@ class FuseboxViewBinder {
         mResourceProvider = resourceProvider;
     }
 
-    private static final int[][] HOVER_STATES =
-            new int[][] {
-                new int[] {android.R.attr.state_hovered}, new int[] {} // Default, must be last
-            };
-
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
-        if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_CLICKED) {
-            view.activationChip.setOnClickListener(
-                    v -> model.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_COMPACT) {
-            view.activationChip.setIsCompact(model.get(FuseboxProperties.ACTIVATION_CHIP_COMPACT));
-        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_SELECTED) {
-            view.activationChip.setSelected(model.get(FuseboxProperties.ACTIVATION_CHIP_SELECTED));
-        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_VISIBLE) {
-            updateButtonVisibility(
-                    model, FuseboxProperties.ACTIVATION_CHIP_VISIBLE, view.activationChip);
-        } else if (propertyKey == FuseboxProperties.ADAPTER) {
+        if (propertyKey == FuseboxProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
         } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
@@ -560,7 +544,6 @@ class FuseboxViewBinder {
         updateNavigateButton(model, view);
         updateRequestTypeButton(model, view);
         updatePopupTheme(model, view);
-        updateActivationChip(model, view);
         view.popup.mPopupWindow.setBackgroundDrawable(
                 mResourceProvider.getPopupBackgroundDrawable());
     }
@@ -644,32 +627,6 @@ class FuseboxViewBinder {
         button.setTextAppearance(
                 OmniboxResourceProvider.getRequestTypeButtonTextRes(brandedColorScheme));
         button.setCompoundDrawablesRelative(startDrawable, null, endDrawable, null);
-    }
-
-    private static void updateActivationChip(
-            PropertyModel propertyModel, FuseboxViewHolder viewHolder) {
-        Context context = viewHolder.parentView.getContext();
-        @BrandedColorScheme
-        int brandedColorScheme = propertyModel.get(FuseboxProperties.COLOR_SCHEME);
-        @ColorInt
-        int buttonColor =
-                OmniboxResourceProvider.getColorSurfaceContainerHigh(context, brandedColorScheme);
-        @ColorInt
-        int buttonColorHovered =
-                OmniboxResourceProvider.getColorSurfaceContainerHighest(
-                        context, brandedColorScheme);
-        int[] backgroundColors = new int[] {buttonColorHovered, buttonColor};
-
-        ChipView button = viewHolder.activationChip;
-        button.setBackgroundTintList(new ColorStateList(HOVER_STATES, backgroundColors));
-
-        @ColorInt
-        int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
-        button.setIconTint(ColorStateList.valueOf(colorOnSurface));
-        @ColorInt
-        int focusRingColor = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
-        button.setForegroundTintList(ColorStateList.valueOf(focusRingColor));
-        button.setTextColor(colorOnSurface);
     }
 
     @SuppressLint("SwitchIntDef")

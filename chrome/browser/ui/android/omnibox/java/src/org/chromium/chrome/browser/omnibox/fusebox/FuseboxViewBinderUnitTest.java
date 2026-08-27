@@ -14,7 +14,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -810,37 +809,6 @@ public class FuseboxViewBinderUnitTest {
         assertEquals(1, textView.getMaxLines());
         assertEquals(TextUtils.TruncateAt.END, textView.getEllipsize());
         assertNotNull(imageView.getDrawable());
-    }
-
-    @Test
-    public void activationChip() {
-        mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, true);
-        assertEquals(View.VISIBLE, mViewHolder.activationChip.getVisibility());
-
-        mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, false);
-        assertEquals(View.GONE, mViewHolder.activationChip.getVisibility());
-
-        mModel.set(FuseboxProperties.ACTIVATION_CHIP_COMPACT, true);
-        assertTrue(mViewHolder.activationChip.isCompact());
-
-        mModel.set(FuseboxProperties.ACTIVATION_CHIP_COMPACT, false);
-        assertFalse(mViewHolder.activationChip.isCompact());
-
-        mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, mRunnable);
-
-        mViewHolder.activationChip.performClick();
-        verify(mRunnable).run();
-
-        Context context = mViewHolder.activationChip.getContext();
-        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
-        assertEquals(
-                OmniboxResourceProvider.getColorPrimary(context, BrandedColorScheme.APP_DEFAULT),
-                mViewHolder.activationChip.getForegroundTintList().getDefaultColor());
-
-        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
-        assertEquals(
-                OmniboxResourceProvider.getColorPrimary(context, BrandedColorScheme.INCOGNITO),
-                mViewHolder.activationChip.getForegroundTintList().getDefaultColor());
     }
 
     private static class PopupButtonDataBuilder {

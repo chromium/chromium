@@ -32,7 +32,6 @@ import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -85,7 +84,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundS
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -106,7 +104,6 @@ import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
-import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
@@ -118,10 +115,6 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
-import org.chromium.components.prefs.PrefChangeRegistrar;
-import org.chromium.components.prefs.PrefChangeRegistrarJni;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -171,10 +164,6 @@ public class FuseboxMediatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private BackPressManager mBackPressManager;
     @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
-    @Mock private PrefService mPrefService;
-    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
-    @Mock private Runnable mOnActivationChipClickedWithQuery;
-    @Mock private Runnable mClearUrlBarTextCallback;
     @Mock private KeyEvent mKeyEvent;
     @Mock private Runnable mOnRemoveRunnable;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -202,22 +191,12 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(List.of());
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier =
             ObservableSuppliers.createNonNull(PopupState.HIDDEN);
-    private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier =
-            ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<String> mUrlBarText =
-            ObservableSuppliers.createNonNull("");
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<Boolean> mWindowHasFocusSupplier =
-            ObservableSuppliers.createNonNull(true);
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
     public void setUp() {
-        UserPrefs.setPrefServiceForTesting(mPrefService);
-        lenient().doReturn(true).when(mPrefService).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
-        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
-        lenient().doReturn(1L).when(mPrefChangeRegistrarJni).init(any(), any());
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
@@ -257,13 +236,6 @@ public class FuseboxMediatorUnitTest {
                 .getTabAt(anyInt());
         doAnswer(i -> mTabMap.size()).when(mTabModel).getCount();
         doAnswer(i -> mTabMap.get(i.getArgument(0))).when(mTabModelSelector).getTabById(anyInt());
-        doAnswer(
-                        inv -> {
-                            mMediator.endInput();
-                            return null;
-                        })
-                .when(mOnActivationChipClickedWithQuery)
-                .run();
 
         mInput.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
         recreateMediator();
@@ -300,12 +272,7 @@ public class FuseboxMediatorUnitTest {
                         SupplierUtils.ofNull(),
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
-                        mActivationChipVisibilitySupplier,
-                        mOnActivationChipClickedWithQuery,
-                        mClearUrlBarTextCallback,
-                        mUrlBarText,
-                        mHasAttachmentsSupplier,
-                        mWindowHasFocusSupplier);
+                        mHasAttachmentsSupplier);
         mMediator.beginInput(createSession());
     }
 
@@ -668,116 +635,6 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
 
         assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
-    }
-
-    @Test
-    public void testActivationChipClicked_TransitionsStandbyToEnabled() {
-        mInput.setAutocompleteState(AutocompleteState.STANDBY);
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        recreateMediator();
-
-        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
-
-        assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
-        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-    }
-
-    @Test
-    public void testActivationChipClicked_TransitionsStandbyToEnabled_SetsAiModeBeforeEnabled() {
-        mInput.setAutocompleteState(AutocompleteState.STANDBY);
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        recreateMediator();
-
-        List<@AutocompleteRequestType Integer> requestTypesWhenStateChanged = new ArrayList<>();
-        mInput.getAutocompleteStateSupplier()
-                .addSyncObserver(
-                        state -> {
-                            if (state == AutocompleteState.ENABLED) {
-                                requestTypesWhenStateChanged.add(mInput.getRequestType());
-                            }
-                        });
-
-        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
-
-        assertEquals(List.of(AutocompleteRequestType.AI_MODE), requestTypesWhenStateChanged);
-        assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
-        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-    }
-
-    @Test
-    public void testActivationChipClicked_otherText() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("suggestion text");
-        recreateMediator();
-
-        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
-
-        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-        verify(mOnActivationChipClickedWithQuery).run();
-    }
-
-    @Test
-    public void testActivationChipClicked_emptyText() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("");
-        recreateMediator();
-
-        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
-
-        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-        verify(mOnActivationChipClickedWithQuery, never()).run();
-    }
-
-    @Test
-    public void testActivationChipClicked_currentUrl() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("google.com");
-        recreateMediator();
-
-        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
-
-        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-        verify(mOnActivationChipClickedWithQuery, never()).run();
-        verify(mClearUrlBarTextCallback).run();
-    }
-
-    @Test
-    public void testActivationChipSelectionChanged_clearsUrl() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("google.com");
-        recreateMediator();
-
-        mMediator.onActivationChipSelectionChanged(true);
-
-        verify(mClearUrlBarTextCallback).run();
-    }
-
-    @Test
-    public void testActivationChipSelectionChanged_doesNotClearIfDifferent() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("different text");
-        recreateMediator();
-
-        mMediator.onActivationChipSelectionChanged(true);
-
-        verify(mClearUrlBarTextCallback, never()).run();
-    }
-
-    @Test
-    public void testActivationChipSelectionChanged_doesNotClearIfEmpty() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("google.com");
-        mUrlBarText.set("");
-        recreateMediator();
-
-        mMediator.onActivationChipSelectionChanged(true);
-
-        verify(mClearUrlBarTextCallback, never()).run();
     }
 
     @Test
@@ -2629,71 +2486,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activationChip() {
-        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        // Initial zero-prefix focus on a webpage.
-        mInput.setInitialUserText("page.com");
-        mInput.setUserText("page.com");
-        mInput.setPreviewMatchUrl(new GURL("https://page.com"));
-
-        mMediator.beginInput(createSession());
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mInput.setSiteSearchData(new SiteSearchData("test", "Test"));
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mInput.setSiteSearchData(null);
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        // When user types a new URL, it hides the chip.
-        mInput.setUserText("https://example.com");
-        mInput.setPreviewMatchUrl(new GURL("https://example.com"));
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mInput.setPreviewMatchUrl(null);
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mMediator.endInput();
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-    }
-
-    @Test
-    public void activationChip_restoredSessionWithPreviewMatchUrl() {
-        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setInitialUserText("page.com");
-        mInput.setUserText("page.com");
-        mInput.setPreviewMatchUrl(new GURL("https://page.com"));
-
-        // When beginning input with an existing session (e.g. tab restoration),
-        // activation chip should immediately become visible.
-        mMediator.beginInput(createSession());
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-    }
-
-    @Test
-    public void onConfigurationChanged_updatesActivationChipCompact() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        recreateMediator();
-        Configuration config = mResources.getConfiguration();
-
-        config.screenWidthDp = 600;
-        mMediator.onConfigurationChanged(config);
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_COMPACT));
-
-        config.screenWidthDp = 412;
-        mMediator.onConfigurationChanged(config);
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_COMPACT));
-    }
-
-    @Test
     public void onAutocompleteRequestTypeChanged_clearsAttachments_nonAim() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
@@ -2807,46 +2599,6 @@ public class FuseboxMediatorUnitTest {
         assertEquals(1, tools.size());
         assertEquals("Deep Search", tools.get(0).text);
         assertFalse(isToolVisible(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE));
-    }
-
-    @Test
-    public void testAlwaysShowAiModePrefChangesActivationChipVisibility() {
-        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setPreviewMatchUrl(null);
-        recreateMediator();
-
-        // Verify registrar is initialized
-        assertNotNull(mMediator.mPrefChangeRegistrar);
-
-        // Activation chip should be visible when the pref is true by default
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        // When the pref is turned off (set to false), activation chip becomes invisible
-        doReturn(false).when(mPrefService).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
-        mMediator.updateActivationChip();
-
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        // Verify registrar is destroyed when ending input
-        mMediator.endInput();
-        assertNull(mMediator.mPrefChangeRegistrar);
-    }
-
-    @Test
-    public void activationChip_windowFocusChanged() {
-        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.setPreviewMatchUrl(null);
-        recreateMediator();
-
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mWindowHasFocusSupplier.set(false);
-        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
-
-        mWindowHasFocusSupplier.set(true);
-        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
     }
 
     @Test

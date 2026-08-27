@@ -161,7 +161,7 @@ public class FuseboxMetrics {
     private final boolean[] mAttachmentButtonsUsedInSession =
             new boolean[FuseboxAttachmentButtonType.COUNT];
 
-    static void notifyAiModeActivated(@AiModeActivationSource int aiModeActivationSource) {
+    public static void notifyAiModeActivated(@AiModeActivationSource int aiModeActivationSource) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.MobileFusebox.AiModeActivationSource",
                 aiModeActivationSource,

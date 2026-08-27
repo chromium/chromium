@@ -34,7 +34,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -332,14 +331,7 @@ public class LocationBarCoordinator
                                         ? mAutocompleteCoordinator.getSuggestionsDropdown()
                                         : null,
                         backPressManager,
-                        () ->
-                                mAutocompleteCoordinator.loadTypedOmniboxText(
-                                        TimeUtils.uptimeMillis(),
-                                        AutocompleteCoordinator.NavigationTarget.CURRENT_TAB),
-                        this::clearEditingAndUserText,
-                        this::getUrlBarTextWithoutAutocomplete,
-                        uiOverrides.isForcedPhoneStyleOmnibox(),
-                        mWindowFocusSupplier);
+                        uiOverrides.isForcedPhoneStyleOmnibox());
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =
                 mFuseboxCoordinator.getFuseboxStateSupplier();
         fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
@@ -906,14 +898,6 @@ public class LocationBarCoordinator
     @Override
     public void clearOmniboxFocus() {
         mLocationBarMediator.endInput();
-    }
-
-    private void clearEditingAndUserText() {
-        if (mLocationBarMediator == null || mLocationBarMediator.getCurrentInput() == null) {
-            return;
-        }
-        setOmniboxEditingText("");
-        mLocationBarMediator.getCurrentInput().setUserText("");
     }
 
     @Override
