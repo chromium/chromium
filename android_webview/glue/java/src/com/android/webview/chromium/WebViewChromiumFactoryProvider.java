@@ -5,6 +5,7 @@
 package com.android.webview.chromium;
 
 import android.app.Application;
+import android.app.compat.CompatChanges;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,7 +31,9 @@ import android.webkit.ServiceWorkerController;
 import android.webkit.TokenBindingService;
 import android.webkit.TracingController;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebIconDatabase;
+import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewDatabase;
@@ -312,14 +315,21 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return new ContentSettingsAdapter(settings);
     }
 
-    // Overridden in downstream subclass when building using the unreleased Android SDK.
     boolean shouldEnableUserAgentReduction() {
-        return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            return CompatChanges.isChangeEnabled(WebSettings.ENABLE_USER_AGENT_REDUCTION);
+        } else {
+            return false;
+        }
     }
 
-    // Overridden in downstream subclass when building using the unreleased Android SDK.
     boolean shouldEnableFileSystemAccess() {
-        return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            return CompatChanges.isChangeEnabled(
+                    WebChromeClient.FileChooserParams.ENABLE_FILE_SYSTEM_ACCESS);
+        } else {
+            return false;
+        }
     }
 
     private void deleteContentsOnPackageDowngrade(PackageInfo packageInfo) {
