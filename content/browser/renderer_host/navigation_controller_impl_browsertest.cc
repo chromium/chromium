@@ -3335,8 +3335,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
         capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
 
     // We reused the last committed entry for this navigation.
-    // TODO(crbug.com/40755155): This should replace the last committed
-    // entry instead.
+    // TODO(crbug.com/396645696): This should replace the last committed entry
+    // instead.
     EXPECT_FALSE(capturer.did_replace_entry());
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(previous_entry, entry);
@@ -3358,10 +3358,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
 
-    // We reused the last committed entry for this navigation.
-    // TODO(crbug.com/40755155): This should replace the last committed
-    // entry instead.
-    EXPECT_FALSE(capturer.did_replace_entry());
+    // We replaced the last committed entry for this navigation.
+    EXPECT_TRUE(capturer.did_replace_entry());
     NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(previous_entry, entry);
     EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
@@ -3699,8 +3697,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               capturer.navigation_type());
 
-    // The navigation reused the previously committed error page entry.
-    EXPECT_FALSE(capturer.did_replace_entry());
+    // The navigation replaced the previously committed error page entry.
+    EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
@@ -18839,6 +18837,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   error_observer.Wait();
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(1, controller.GetEntryCount());
+  int error_entry_id = controller.GetLastCommittedEntry()->GetUniqueID();
+
+  EXPECT_NE(initial_entry_id, error_entry_id);
 
   // Make sure reload triggers a reload of the original page, not the error,
   // and that we get back to the original entry.
@@ -18846,9 +18847,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(initial_entry_index, controller.GetLastCommittedEntryIndex());
 
-  // We should be in the initial entry and no longer be in an error page.
-  EXPECT_EQ(initial_entry_id,
+  // We should be in a new, non-error page.
+  // TODO(crbug.com/396645696): Once pre-error subtree restoration lands,
+  // evaluate whether the initial entry ID should be restored.
+  EXPECT_NE(initial_entry_id,
             controller.GetLastCommittedEntry()->GetUniqueID());
+  EXPECT_NE(error_entry_id, controller.GetLastCommittedEntry()->GetUniqueID());
   EXPECT_EQ(PAGE_TYPE_NORMAL,
             controller.GetLastCommittedEntry()->GetPageType());
 
@@ -19806,9 +19810,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_TRUE(capturer.did_replace_entry());
 
-    // We keep the same history.state value, even in the error page, so that it
-    // can be used when the load later succeeds in step 4.
-    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    // We clear the history state/PageState on error page navigation.
+    EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
   }
 
   // 4) Test successfully navigating the subframe to the same URL after a failed
@@ -19825,19 +19828,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     capturer.Wait();
     EXPECT_TRUE(observer.last_navigation_succeeded());
 
-    // The navigation got converted into a reload - we reused the previous
-    // NavigationEntry, FNE, and didn't do replacement in the renderer.
-    // TODO(crbug.com/40755155): Once error-page isolation for subframes
-    // is turned on, this should do replacement.
     EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
     EXPECT_EQ(2, controller.GetEntryCount());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(previous_frame_entry,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
-    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_TRUE(capturer.did_replace_entry());
 
-    // We keep the same history.state value.
-    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    // We clear the history state/PageState on recovery as well.
+    EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
   }
 }
 
@@ -20030,7 +20029,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We reused the previous NavigationEntry, FNE, and didn't do replacement in
     // the renderer.
-    // TODO(crbug.com/40755155): Once error-page isolation for subframes
+    // TODO(crbug.com/396645697): Once error-page isolation for subframes
     // is turned on, this should do replacement.
     EXPECT_FALSE(capturer.did_replace_entry());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
@@ -20055,24 +20054,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // We're classifying this as AUTO_SUBFRAME.
     EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
 
-    // We reused the previous NavigationEntry, FNE, and didn't do replacement in
-    // the renderer.
-    // TODO(crbug.com/40755155): Once error-page isolation for subframes
-    // is turned on, this should do replacement.
-    EXPECT_FALSE(capturer.did_replace_entry());
-    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
-    EXPECT_EQ(previous_frame_entry,
-              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    // We replaced the previous NavigationEntry/FNE.
+    EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
-    // We keep the history.state value from before the failed navigation.
-    // TODO(http://crbug.com/1188956): Ensure error page isolation correctly
-    // maintains history.state as well.
-    if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
-      EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
   }
 }
 

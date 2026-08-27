@@ -4676,9 +4676,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
     reload_observer.Wait();
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
-    // TODO(nasko): Investigate making renderer initiated reloads that change
-    // SiteInstance be classified as NEW_ENTRY as well.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());

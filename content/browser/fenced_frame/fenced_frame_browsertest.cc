@@ -5514,7 +5514,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   reload_observer.Wait();
   EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
   EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
-  EXPECT_EQ(error_entry_id, fenced_frame->navigator()
+  // When reloading from an error page, entry replacement generates a new
+  // navigation entry.
+  EXPECT_NE(error_entry_id, fenced_frame->navigator()
                                 .controller()
                                 .GetLastCommittedEntry()
                                 ->GetUniqueID());
