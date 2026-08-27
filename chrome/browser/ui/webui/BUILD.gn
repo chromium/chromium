@@ -296,7 +296,6 @@ source_set("webui") {
     ":webui_hosts",
     ":webui_url_hashes",
     "//chrome/common",
-    "//extensions/buildflags",
   ]
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
@@ -541,7 +540,6 @@ source_set("fileicon_source") {
 source_set("metrics_handler") {
   sources = [ "metrics_handler.cc" ]
   public = [ "metrics_handler.h" ]
-  public_deps = [ "//content/public/browser" ]
   deps = [
     "//base",
     "//chrome/browser/ui/tab_contents",
@@ -832,10 +830,7 @@ source_set("ntp_tiles_internals_ui") {
   sources = [ "ntp_tiles_internals_ui.cc" ]
   public = [ "ntp_tiles_internals_ui.h" ]
 
-  public_deps = [
-    "//chrome/common",
-    "//content/public/browser",
-  ]
+  public_deps = [ "//chrome/common" ]
 
   deps = [
     "//base",
@@ -843,13 +838,10 @@ source_set("ntp_tiles_internals_ui") {
     "//chrome/browser/history",
     "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/ntp_tiles",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//components/history/core/browser",
     "//components/image_fetcher/core",
-    "//components/ntp_tiles",
     "//components/prefs",
-    "//services/network/public/mojom",
     "//ui/webui",
   ]
 
@@ -873,8 +865,6 @@ source_set("gcm_internals_ui") {
   deps = [
     "//base",
     "//chrome/browser/gcm",
-    "//chrome/browser/profiles:profile",
-    "//components/gcm_driver",
     "//components/gcm_driver/resources:resources_grit",
     "//ui/webui",
   ]
@@ -887,17 +877,11 @@ source_set("signin_internals_ui") {
   public_deps = [
     "//base",
     "//chrome/common",
-    "//components/signin/core/browser",
-    "//content/public/browser",
   ]
 
   deps = [
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//components/resources",
     "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//services/network/public/mojom",
     "//ui/webui",
   ]
 }
@@ -906,21 +890,14 @@ source_set("memory_internals_ui") {
   sources = [ "memory_internals_ui.cc" ]
   public = [ "memory_internals_ui.h" ]
 
-  public_deps = [
-    "//chrome/common",
-    "//content/public/browser",
-  ]
+  public_deps = [ "//chrome/common" ]
 
   deps = [
     "//base",
-    "//chrome:resources",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
     "//chrome/browser/resources/memory_internals:resources",
     "//chrome/browser/ui/select_file_policy",
     "//components/heap_profiling/multi_process",
-    "//components/services/heap_profiling/public/cpp",
-    "//components/services/heap_profiling/public/mojom",
     "//mojo/public/cpp/system",
     "//ui/shell_dialogs",
   ]
@@ -930,21 +907,14 @@ source_set("net_export_ui") {
   sources = [ "net_export_ui.cc" ]
   public = [ "net_export_ui.h" ]
 
-  public_deps = [
-    "//chrome/common",
-    "//content/public/browser",
-  ]
+  public_deps = [ "//chrome/common" ]
 
   deps = [
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
-    "//chrome/browser/download",
     "//chrome/browser/net",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/select_file_policy",
-    "//components/net_log",
-    "//services/network/public/mojom",
     "//ui/shell_dialogs",
     "//ui/webui",
   ]
