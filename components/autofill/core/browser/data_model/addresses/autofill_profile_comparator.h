@@ -13,16 +13,16 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/company_info.h"
-#include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
+class Address;
+class CompanyInfo;
 class EmailInfo;
+class PhoneNumber;
 
 struct ProfileValueDifference {
   // The type of the field that is different.
@@ -92,16 +92,6 @@ class AutofillProfileComparator {
                                       const AutofillProfile& second_profile,
                                       const std::string& app_locale);
 
-  // Returns true if `p1` and `p2` are viable merge candidates. This means that
-  // their names, addresses, email addresses, company names, and phone numbers
-  // are all pairwise equivalent or mergeable.
-  //
-  // Note that mergeability is non-directional; merging two profiles will likely
-  // incorporate data from both profiles.
-  // TODO(crbug.com/453945181): Delete this function once callers are migrated to
-  // `AutofillProfile::MergeDataFrom`.
-  bool AreMergeable(const AutofillProfile& p1, const AutofillProfile& p2) const;
-
   // Populates `email_info` with the result of merging the email addresses in
   // `new_profile` and `old_profile`. Returns the merge result.
   //
@@ -141,20 +131,21 @@ class AutofillProfileComparator {
       PhoneNumber& phone_number) const;
 
   // Populates `address` with the result of merging the addresses in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
+  // `new_profile` and `old_profile`. Returns the merge result.
   //
   // Heuristic: Populate the missing parts of each address from the other.
   // Prefer the abbreviated state, the shorter zip code and routing code, the
-  // more verbost city, dependent locality, and address.
+  // more verbose city, dependent locality, and address.
   //
-  // If one of the profiles is `kAccountNameEmail`, returns true and
-  // sets `address` to the address tree of the other profile. Merging two
-  // `kAccountNameEmail` profiles will never happen, since there can be at most
-  // one of them at any given time.
-  bool MergeAddresses(const AutofillProfile& new_profile,
-                      const AutofillProfile& old_profile,
-                      Address& address) const;
+  // If one of the profiles is `kAccountNameEmail`, sets `address` to the
+  // address tree of the other profile.
+  //
+  // TODO(crbug.com/453945181): Return a newly created `Address` instead of
+  // modifying `address`.
+  AutofillProfile::ProfileMergeResult MergeAddresses(
+      const AutofillProfile& new_profile,
+      const AutofillProfile& old_profile,
+      Address& address) const;
 
   // Returns the subset of setting-visible types whose values in `a` and `b` are
   // non-mergeable. This means that `a` and `b` become mergeable, if the values
@@ -195,22 +186,6 @@ class AutofillProfileComparator {
   std::u16string GetNonEmptyOf(const AutofillProfile& p1,
                                const AutofillProfile& p2,
                                AutofillType t) const;
-
-  // Returns true if `p1` and `p2` have addresses which are equivalent for the
-  // purposes of merging the two profiles. This means one of the addresses is
-  // empty, or the addresses are a match. A number of normalization and
-  // comparison heuristics are employed to determine if the addresses match.
-  //
-  // If one of the profiles has `kAccountNameEmail` record type, this function
-  // will return true early. While merging `kAccountNameEmail` profile with any
-  // other profile, only the non-`kAccountNameEmail` profile's address data is
-  // used. Merging two `kAccountNameEmail` profiles will never happen, since
-  // there can be at most one of them at any given time.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the addresses.
-  bool HaveMergeableAddresses(const AutofillProfile& p1,
-                              const AutofillProfile& p2) const;
 
  private:
   const std::string app_locale_;

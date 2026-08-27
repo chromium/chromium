@@ -721,10 +721,28 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
     const AutofillProfile& profile,
     std::string_view app_locale) {
-  AutofillProfileComparator comparator(app_locale);
-  if (!comparator.AreMergeable(*this, profile)) {
+  // TODO(crbug.com/453945181) Move this CHECK to a more suitable place.
+  CHECK(record_type() != RecordType::kAccountNameEmail ||
+        profile.record_type() != RecordType::kAccountNameEmail);
+
+  if (!data_util::HaveNonConflictingCountryCodes(
+          GetAddressCountryCode(), profile.GetAddressCountryCode())) {
     return ProfileMergeResult::kMergeFailed;
   }
+
+  // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
+  // it conforms to the other infos. The check logic should be embedded inside
+  // the merge method.
+  if (!NameInfo::AreNamesMergeable(profile.GetNameInfo(),
+                                   profile.GetAddressCountryCode(),
+                                   GetNameInfo(), GetAddressCountryCode()) ||
+      !NameInfo::AreAlternativeNamesMergeable(
+          profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
+          GetAddressCountryCode())) {
+    return ProfileMergeResult::kMergeFailed;
+  }
+
+  AutofillProfileComparator comparator(app_locale);
 
   NameInfo name(
       /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
@@ -742,21 +760,24 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
+  // TODO(crbug.com/453945181): Simplify this logic by returning merged
+  // objects instead of passing them by reference.
+  // TODO(crbug.com/453945181): Change check and merge logic for `NameInfo` so
+  // it conforms to the other infos. The check logic should be embedded inside
+  // the merge method.
   if (!NameInfo::MergeNames(
           profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
           GetAddressCountryCode(),
           usage_history().use_date() < profile.usage_history().use_date(),
           name) ||
-      // TODO(crbug.com/453945181): Simplify this logic by returning merged
-      // objects instead of passing them by reference.
       comparator.MergeEmailAddresses(profile, *this, email) ==
           ProfileMergeResult::kMergeFailed ||
       comparator.MergeCompanyNames(profile, *this, company) ==
           ProfileMergeResult::kMergeFailed ||
       comparator.MergePhoneNumbers(profile, *this, phone_number) ==
           ProfileMergeResult::kMergeFailed ||
-      !comparator.MergeAddresses(profile, *this, address)) {
-    DUMP_WILL_BE_NOTREACHED();
+      comparator.MergeAddresses(profile, *this, address) ==
+          ProfileMergeResult::kMergeFailed) {
     return ProfileMergeResult::kMergeFailed;
   }
 

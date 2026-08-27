@@ -133,66 +133,6 @@ bool AutofillProfileComparator::Compare(
   return false;
 }
 
-bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
-                                             const AutofillProfile& p2) const {
-  // Sorted in order to relative expense of the tests to fail early and cheaply
-  // if possible.
-  // Emails go last, since their comparison logic triggers ICU code, which can
-  // trigger the loading of locale-specific rules.
-  DVLOG(1) << "Comparing profiles:\np1 = " << p1 << "\np2 = " << p2;
-
-  // Do not process `p1` if it is trivially unrelated to `p2` for having
-  // different source country code, for performance reasons.
-  if (!data_util::HaveNonConflictingCountryCodes(p1.GetAddressCountryCode(),
-                                                 p2.GetAddressCountryCode())) {
-    DVLOG(1) << "Different country codes.";
-    return false;
-  }
-
-  CompanyInfo company;
-  if (MergeCompanyNames(p1, p2, company) ==
-      AutofillProfile::ProfileMergeResult::kMergeFailed) {
-    DVLOG(1) << "Different company names.";
-    return false;
-  }
-
-  PhoneNumber phone_number(&p1);
-  if (MergePhoneNumbers(p1, p2, phone_number) ==
-      AutofillProfile::ProfileMergeResult::kMergeFailed) {
-    DVLOG(1) << "Different phone numbers.";
-    return false;
-  }
-
-  if (!NameInfo::AreNamesMergeable(p1.GetNameInfo(), p1.GetAddressCountryCode(),
-                                   p2.GetNameInfo(),
-                                   p2.GetAddressCountryCode())) {
-    DVLOG(1) << "Different names.";
-    return false;
-  }
-
-  if (!NameInfo::AreAlternativeNamesMergeable(
-          p1.GetNameInfo(), p1.GetAddressCountryCode(), p2.GetNameInfo(),
-          p2.GetAddressCountryCode())) {
-    DVLOG(1) << "Different alternative names.";
-    return false;
-  }
-
-  if (!HaveMergeableAddresses(p1, p2)) {
-    DVLOG(1) << "Different addresses.";
-    return false;
-  }
-
-  EmailInfo email;
-  if (MergeEmailAddresses(p1, p2, email) ==
-      AutofillProfile::ProfileMergeResult::kMergeFailed) {
-    DVLOG(1) << "Different email addresses.";
-    return false;
-  }
-
-  DVLOG(1) << "Profiles are mergeable.";
-  return true;
-}
-
 AutofillProfile::ProfileMergeResult
 AutofillProfileComparator::MergeEmailAddresses(
     const AutofillProfile& new_profile,
@@ -419,33 +359,43 @@ AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
              : kMergeSucceededWithModification;
 }
 
-bool AutofillProfileComparator::MergeAddresses(
+AutofillProfile::ProfileMergeResult AutofillProfileComparator::MergeAddresses(
     const AutofillProfile& new_profile,
     const AutofillProfile& old_profile,
     Address& address) const {
-  DCHECK(HaveMergeableAddresses(new_profile, old_profile));
-  CHECK(!(old_profile.record_type() ==
-              AutofillProfile::RecordType::kAccountNameEmail &&
-          new_profile.record_type() ==
-              AutofillProfile::RecordType::kAccountNameEmail));
-
+  using enum AutofillProfile::ProfileMergeResult;
   // If one of the profiles is `kAccountNameEmail` profile, sets `address` to
-  // address tree of the other profile and returns true.
+  // address tree of the other profile.
   if (new_profile.record_type() ==
       AutofillProfile::RecordType::kAccountNameEmail) {
     address = old_profile.GetAddress();
-    return true;
+    return kMergeSucceededWithoutModification;
   }
   if (old_profile.record_type() ==
       AutofillProfile::RecordType::kAccountNameEmail) {
     address = new_profile.GetAddress();
-    return true;
+    return address == old_profile.GetAddress()
+               ? kMergeSucceededWithoutModification
+               : kMergeSucceededWithModification;
+  }
+
+  // TODO(crbug.com/552327712): Explore if the check logic can be embedded into
+  // the merge method.
+  if (!old_profile.GetAddress().IsStructuredAddressMergeable(
+          new_profile.GetAddress())) {
+    return kMergeFailed;
   }
 
   address = old_profile.GetAddress();
-  return address.MergeStructuredAddress(
-      new_profile.GetAddress(), old_profile.usage_history().use_date() <
-                                    new_profile.usage_history().use_date());
+  if (!address.MergeStructuredAddress(
+          new_profile.GetAddress(),
+          old_profile.usage_history().use_date() <
+              new_profile.usage_history().use_date())) {
+    return kMergeFailed;
+  }
+  return address == old_profile.GetAddress()
+             ? kMergeSucceededWithoutModification
+             : kMergeSucceededWithModification;
 }
 
 std::optional<FieldTypeSet>
@@ -489,7 +439,7 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
                                     AutofillProfile::ProfileMergeResult::
                                         kMergeFailed);
   // Now, only address-related types remain in `setting_visible_types`. Using
-  // `HaveMergeableAddresses()` is not fine-grained enough, since multiple
+  // `MergeAddresses()` is not fine-grained enough, since multiple
   // address types are setting-visible (e.g. city, zip, etc). Verify differences
   // in the corresponding subtrees manually.
   for (FieldType address_type : setting_visible_types) {
@@ -572,18 +522,6 @@ std::u16string AutofillProfileComparator::GetNonEmptyOf(
     return s1;
   }
   return p2.GetInfo(t, app_locale_);
-}
-
-bool AutofillProfileComparator::HaveMergeableAddresses(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  CHECK(!(p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail &&
-          p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail));
-  if (p1.record_type() == AutofillProfile::RecordType::kAccountNameEmail ||
-      p2.record_type() == AutofillProfile::RecordType::kAccountNameEmail) {
-    return true;
-  }
-  return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
 }
 
 }  // namespace autofill

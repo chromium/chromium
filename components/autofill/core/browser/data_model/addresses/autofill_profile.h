@@ -276,6 +276,8 @@ class AutofillProfile : public FormGroup {
   // Merges the data from `profile` into `this` profile if they are mergeable.
   // Returns a `ProfileMergeResult` indicating whether the merge succeeded and
   // whether `this` was modified. If mergeable, modifies `this` in-place.
+  // Merging two `kAccountNameEmail` profiles will never happen, since there can
+  // be at most one of them at any given time.
   [[nodiscard]] ProfileMergeResult MergeDataFrom(const AutofillProfile& profile,
                                                  std::string_view app_locale);
 
