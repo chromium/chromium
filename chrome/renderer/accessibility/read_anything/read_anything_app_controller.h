@@ -433,27 +433,6 @@ class ReadAnythingAppController
 
   void Draw(bool recompute_display_nodes);
 
-  // Snapshot_lite is a data structure which resembles an
-  // AXTreeUpdate. E.g.:
-  //   const axTree = {
-  //     root_id: 1,
-  //     nodes: [
-  //       {
-  //         id: 1,
-  //         role: 'rootWebArea',
-  //         child_ids: [2],
-  //       },
-  //       {
-  //         id: 2,
-  //         role: 'staticText',
-  //         name: 'Some text.',
-  //       },
-  //     ],
-  //   };
-  void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
-                            std::vector<ui::AXNodeID> content_node_ids);
-  void SetAnchorsForTesting(v8::Local<v8::Value> v8_snapshot_lite,
-                            std::vector<ui::AXNodeID> content_node_ids);
   void SetLanguageForTesting(const std::string& language_code);
   void set_forced_distillation_method_for_testing(
       ReadAnythingAppModel::DistillationMethod method) {

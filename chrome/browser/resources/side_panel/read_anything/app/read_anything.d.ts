@@ -371,30 +371,6 @@ declare namespace chrome {
     // Called when the number of words heard by a read aloud user changes.
     function updateWordsHeard(wordsHeard: number): void;
 
-    // Sets the AX Tree data for testing and forces the processing of the
-    // AX Tree Anchors.
-    // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
-    //   const axTree = {
-    //     rootId: 1,
-    //     nodes: [
-    //       {
-    //         id: 1,
-    //         role: 'rootWebArea',
-    //         childIds: [2],
-    //       },
-    //       {
-    //         id: 2,
-    //         role: 'staticText',
-    //         name: 'Some text.',
-    //       },
-    //     ],
-    //   };
-    function setAnchorsForTesting(
-        snapshotLite: Object, contentNodeIds: number[]): void;
-
-    // Sets the page language. Used by tests only.
-    function setLanguageForTesting(code: string): void;
-
     // Called when the side panel has finished loading and it's safe to call
     // SidePanelWebUIView::ShowUI
     function shouldShowUi(): boolean;
