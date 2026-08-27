@@ -325,7 +325,9 @@ void AndroidNotificationHandler::OpenEntriesInBackground(
   // Display an in-app banner for the most recent sender device if at least
   // one tab was opened.
   if (!last_device_name.empty()) {
-    ShowMessageBanner(last_device_name, entries.size(), &target_web_contents);
+    CHECK(!entries.empty());
+    ShowMessageBanner(last_device_name, entries.size(), &target_web_contents,
+                      entries.front()->GetURL());
   }
 }
 
@@ -381,9 +383,10 @@ void AndroidNotificationHandler::OnNavigationStarted(
 void AndroidNotificationHandler::ShowMessageBanner(
     std::string_view device_name,
     int opened_tab_count,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    const GURL& opened_tab_url) {
   send_tab_to_self::ShowMessageBanner(web_contents, device_name,
-                                       opened_tab_count);
+                                      opened_tab_count, opened_tab_url);
 }
 
 void AndroidNotificationHandler::DidAddTab(TabAndroid* tab,

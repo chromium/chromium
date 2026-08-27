@@ -639,7 +639,7 @@ public class SendTabToSelfAndroidBridgeTest {
     // shown correctly and that the primary action callback is triggered correctly.
     public void testShowMessageBanner() {
         // Trigger the banner display logic.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
         // Capture the enqueued PropertyModel to verify its content and action callbacks.
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
@@ -687,7 +687,7 @@ public class SendTabToSelfAndroidBridgeTest {
         DeviceInfo.setIsDesktopForTesting(true);
 
         // Trigger the banner display logic.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
         // Capture the enqueued PropertyModel to verify its content and action callbacks.
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
@@ -723,7 +723,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowMessageBanner_ClickActionSingleTab_OpensTab() {
         // Trigger message banner display.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
@@ -781,7 +781,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     public void testShowMessageBanner_ClickActionMultipleTabs_OpensNewestTab() {
         // Trigger message banner display.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
@@ -864,7 +864,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION)
     public void testShowMessageBanner_ClickAction_RecordSnackbarActivationDisabled() {
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
@@ -937,7 +937,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     @SmallTest
     public void testShowMessageBanner_ClickActionNoMatchingTabs_DoesNothing() {
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
@@ -979,7 +979,7 @@ public class SendTabToSelfAndroidBridgeTest {
         when(mTabbedActivity.isInOverviewMode()).thenReturn(true);
 
         // Trigger the banner display logic.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
         // Verify banner was never enqueued.
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), eq(false));
@@ -1113,20 +1113,12 @@ public class SendTabToSelfAndroidBridgeTest {
         resolveInfo.activityInfo = new ActivityInfo();
         resolveInfo.activityInfo.packageName = "com.example.app";
         resolveInfo.activityInfo.name = "com.example.app.MainActivity";
+        resolveInfo.nonLocalizedLabel = "Example App";
         resolveInfo.filter = filter;
 
         Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
-
-        // Trigger message banner display.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
-
-        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
-
-        var onPrimaryAction =
-                messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
 
         // Mock Activity elements.
         LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
@@ -1151,6 +1143,21 @@ public class SendTabToSelfAndroidBridgeTest {
 
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
 
+        // Trigger message banner display.
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(url));
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        Assert.assertEquals(
+                "Open in Example App • From Pixel 10",
+                messageCaptor.getValue().get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(
+                "Open", messageCaptor.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        var onPrimaryAction =
+                messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
         int result = onPrimaryAction.get();
 
         Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
@@ -1167,6 +1174,196 @@ public class SendTabToSelfAndroidBridgeTest {
                         eq("guid"),
                         eq(ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER));
         Assert.assertNull(userDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
+        MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
+    public void
+            testShowMessageBanner_ClickActionMultipleTabs_WithMatchingApp_OpensTabAndShowsSecondaryBanner() {
+        String url1 = "https://www.example.com/app/path1";
+        String url2 = "https://www.example.com/app/path2";
+
+        ShadowPackageManager shadowPackageManager =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme("https");
+        filter.addDataAuthority("www.example.com", null);
+        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.app";
+        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
+        resolveInfo.filter = filter;
+
+        Intent queryIntent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(url1));
+        queryIntent1.addCategory(Intent.CATEGORY_BROWSABLE);
+        shadowPackageManager.addResolveInfoForIntent(queryIntent1, resolveInfo);
+
+        Intent queryIntent2 = new Intent(Intent.ACTION_VIEW, Uri.parse(url2));
+        queryIntent2.addCategory(Intent.CATEGORY_BROWSABLE);
+        shadowPackageManager.addResolveInfoForIntent(queryIntent2, resolveInfo);
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = "com.example.app";
+        packageInfo.applicationInfo = new ApplicationInfo();
+        packageInfo.applicationInfo.packageName = "com.example.app";
+        packageInfo.applicationInfo.nonLocalizedLabel = "Example App";
+        packageInfo.applicationInfo.icon = android.R.drawable.sym_def_app_icon;
+        shadowPackageManager.addPackage(packageInfo);
+
+        // Mock Activity elements.
+        LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
+        TabModelSelector tabModelSelector = mock(TabModelSelector.class);
+        TabModel normalTabModel = mock(TabModel.class);
+
+        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
+        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getUrl()).thenReturn(new GURL(url1));
+        when(tab1.getProfile()).thenReturn(mProfile);
+        UserDataHost userDataHost1 = new UserDataHost();
+        when(tab1.getUserDataHost()).thenReturn(userDataHost1);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab1, "guid1", "Pixel 10");
+        SendTabToSelfTabCardLabelData data1 =
+                userDataHost1.getUserData(SendTabToSelfTabCardLabelData.class);
+        data1.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 10000);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getUrl()).thenReturn(new GURL(url2));
+        when(tab2.getProfile()).thenReturn(mProfile);
+        when(tab2.getWebContents()).thenReturn(mWebContents);
+        when(tab2.getWindowAndroid()).thenReturn(mWindowAndroid);
+        UserDataHost userDataHost2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab2, "guid2", "Pixel 10");
+        SendTabToSelfTabCardLabelData data2 =
+                userDataHost2.getUserData(SendTabToSelfTabCardLabelData.class);
+        data2.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 5000);
+
+        when(normalTabModel.getCount()).thenReturn(2);
+        when(normalTabModel.getTabAt(0)).thenReturn(tab1);
+        when(normalTabModel.getTabAt(1)).thenReturn(tab2);
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+
+        // Trigger message banner display for multiple tabs.
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        PropertyModel model = messageCaptor.getValue();
+        Assert.assertEquals("2 links received", model.get(MessageBannerProperties.TITLE));
+        // Primary button should still say "Open" even though matching app is available.
+        Assert.assertEquals("Open", model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        int result = onPrimaryAction.get();
+
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        // Verify newest tab is selected (index 1).
+        verify(normalTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
+        // Verify secondary message banner was enqueued on WebContents.
+        ArgumentCaptor<PropertyModel> secondaryMessageCaptor =
+                ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        secondaryMessageCaptor.capture(),
+                        eq(mWebContents),
+                        eq(MessageScopeType.WEB_CONTENTS),
+                        eq(false));
+        PropertyModel secondaryModel = secondaryMessageCaptor.getValue();
+        Assert.assertEquals(
+                MessageIdentifier.SEND_TAB_TO_SELF,
+                secondaryModel.get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals(
+                "From Pixel 10", secondaryModel.get(MessageBannerProperties.DESCRIPTION));
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
+        MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
+    public void
+            testShowMessageBanner_ClickActionMultipleTabs_WithoutMatchingApp_OpensTabAndShowsNoBanner() {
+        String url1 = "https://www.example.com/1";
+        String url2 = "https://www.example.com/2";
+
+        // Mock Activity elements.
+        LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
+        TabModelSelector tabModelSelector = mock(TabModelSelector.class);
+        TabModel normalTabModel = mock(TabModel.class);
+
+        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
+        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getUrl()).thenReturn(new GURL(url1));
+        when(tab1.getProfile()).thenReturn(mProfile);
+        UserDataHost userDataHost1 = new UserDataHost();
+        when(tab1.getUserDataHost()).thenReturn(userDataHost1);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab1, "guid1", "Pixel 10");
+        SendTabToSelfTabCardLabelData data1 =
+                userDataHost1.getUserData(SendTabToSelfTabCardLabelData.class);
+        data1.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 10000);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getUrl()).thenReturn(new GURL(url2));
+        when(tab2.getProfile()).thenReturn(mProfile);
+        when(tab2.getWebContents()).thenReturn(mWebContents);
+        when(tab2.getWindowAndroid()).thenReturn(mWindowAndroid);
+        UserDataHost userDataHost2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab2, "guid2", "Pixel 10");
+        SendTabToSelfTabCardLabelData data2 =
+                userDataHost2.getUserData(SendTabToSelfTabCardLabelData.class);
+        data2.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 5000);
+
+        when(normalTabModel.getCount()).thenReturn(2);
+        when(normalTabModel.getTabAt(0)).thenReturn(tab1);
+        when(normalTabModel.getTabAt(1)).thenReturn(tab2);
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+
+        // Trigger message banner display for multiple tabs.
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        PropertyModel model = messageCaptor.getValue();
+        Assert.assertEquals("2 links received", model.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals("Open", model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        int result = onPrimaryAction.get();
+
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        // Verify newest tab is selected (index 1).
+        verify(normalTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
+        // Verify no secondary message banner was enqueued.
+        verify(mMessageDispatcher, never())
+                .enqueueMessage(any(), any(), eq(MessageScopeType.WEB_CONTENTS), anyBoolean());
 
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);

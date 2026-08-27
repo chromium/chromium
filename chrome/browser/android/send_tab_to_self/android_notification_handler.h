@@ -57,7 +57,8 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   virtual void HideNotification(const std::string& guid);
   virtual void ShowMessageBanner(std::string_view device_name,
                                  int opened_tab_count,
-                                 content::WebContents* web_contents);
+                                 content::WebContents* web_contents,
+                                 const GURL& opened_tab_url);
 
  private:
   // SendTabToSelfModelObserver implementation.

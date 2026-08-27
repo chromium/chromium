@@ -1434,6 +1434,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
     "//base:supplier_java",
     "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/user_education:java",
+    "//components/messages/android:manager_java",
     "//components/sync/android:sync_java",
     "//extensions/buildflags:buildflags_java",
   ]

@@ -11,6 +11,7 @@ namespace content {
 class WebContents;
 }
 
+class GURL;
 class TabAndroid;
 
 namespace send_tab_to_self {
@@ -22,11 +23,13 @@ void AttachTabLabel(TabAndroid* tab,
                     std::string_view device_name);
 
 // Calls the Java SendTabToSelfAndroidBridge to display the message banner. This
-// is called upon successful auto-opening of the received tabs in the
-// background.
+// is called upon successful auto-opening of the received tab(s) in the
+// background. `web_contents` is the *currently-active* tab, *not* one of the
+// auto-opened ones. `opened_tab_url` is only meaningful in the single-tab case.
 void ShowMessageBanner(content::WebContents* web_contents,
                        std::string_view device_name,
-                       int opened_tab_count);
+                       int opened_tab_count,
+                       const GURL& opened_tab_url);
 
 }  // namespace send_tab_to_self
 

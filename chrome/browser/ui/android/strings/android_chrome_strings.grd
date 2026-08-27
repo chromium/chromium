@@ -6403,6 +6403,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SEND_TAB_TO_SELF_MESSAGE_BANNER_SUBTITLE" desc="The subtitle for the message banner shown on Android indicating the sender device.">
         From <ph name="DEVICE_NAME">%1$s<ex>Tanya's Pixel 10a</ex></ph>
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_MESSAGE_BANNER_SUBTITLE_WITH_APP" desc="The subtitle for the message banner shown on Android indicating the sender device, and the native app that will be opened.">
+        Open in <ph name="NATIVE_APP_NAME">%1$s<ex>Maps</ex></ph> • From <ph name="DEVICE_NAME">%2$s<ex>Tanya's Pixel 10a</ex></ph>
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN" desc="Label for the button to open a tab received from another device.">
         Open
       </message>

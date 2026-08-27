@@ -303,10 +303,12 @@ void AttachTabLabel(TabAndroid* tab,
 
 void ShowMessageBanner(content::WebContents* web_contents,
                        std::string_view device_name,
-                       int opened_tab_count) {
+                       int opened_tab_count,
+                       const GURL& opened_tab_url) {
   JNIEnv* const env = base::android::AttachCurrentThread();
   Java_SendTabToSelfAndroidBridge_showMessageBanner(
-      env, web_contents, std::string(device_name), opened_tab_count);
+      env, web_contents, std::string(device_name), opened_tab_count,
+      opened_tab_url);
 }
 
 static int64_t JNI_SendTabToSelfAndroidBridge_AddDeviceInfoObserver(

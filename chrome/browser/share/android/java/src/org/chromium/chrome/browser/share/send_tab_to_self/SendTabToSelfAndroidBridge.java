@@ -365,7 +365,8 @@ public class SendTabToSelfAndroidBridge {
     public static void showMessageBanner(
             @JniType("content::WebContents*") @Nullable WebContents webContents,
             @JniType("std::string") String deviceName,
-            int openedTabCount) {
+            int openedTabCount,
+            @JniType("GURL") GURL openedTabUrl) {
         assert openedTabCount > 0;
 
         // The tab or web page has been closed or destroyed.
@@ -388,6 +389,24 @@ public class SendTabToSelfAndroidBridge {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
 
+        String description =
+                res.getString(R.string.send_tab_to_self_message_banner_subtitle, deviceName);
+        // Use a different description that includes the app name if the link will be opened in a
+        // native app.
+        if (openedTabCount == 1 && openedTabUrl.isValid()) {
+            ResolveInfo resolveInfo =
+                    NotificationManager.getMatchingNativeAppResolveInfo(
+                            Uri.parse(openedTabUrl.getSpec()));
+            if (resolveInfo != null) {
+                String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
+                description =
+                        res.getString(
+                                R.string.send_tab_to_self_message_banner_subtitle_with_app,
+                                appName,
+                                deviceName);
+            }
+        }
+
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -399,18 +418,14 @@ public class SendTabToSelfAndroidBridge {
                                         R.plurals.send_tab_to_self_message_banner_title,
                                         openedTabCount,
                                         openedTabCount))
-                        .with(
-                                MessageBannerProperties.DESCRIPTION,
-                                res.getString(
-                                        R.string.send_tab_to_self_message_banner_subtitle,
-                                        deviceName))
+                        .with(MessageBannerProperties.DESCRIPTION, description)
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 res.getString(R.string.send_tab_to_self_message_open))
                         .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.send_tab)
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
-                                SendTabToSelfAndroidBridge::onMessageBannerPrimaryAction)
+                                () -> onMessageBannerPrimaryAction(openedTabCount, deviceName))
                         .build();
 
         // Enqueue as a window-scoped message so the banner persists across tab switching and is
@@ -493,15 +508,17 @@ public class SendTabToSelfAndroidBridge {
      * Handles the primary action click on the message banner. Selects and opens the newest received
      * tab, or opens it in a native app if available.
      *
+     * @param openedTabCount The number of tabs opened in the background.
+     * @param deviceName The name of the sender device.
      * @return The behavior to follow after the click (dismiss immediately).
      */
-    private static @PrimaryActionClickBehavior int onMessageBannerPrimaryAction() {
+    private static @PrimaryActionClickBehavior int onMessageBannerPrimaryAction(
+            int openedTabCount, String deviceName) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof ChromeTabbedActivity)) {
+        if (!(activity instanceof ChromeTabbedActivity tabbedActivity)) {
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
 
-        ChromeTabbedActivity tabbedActivity = (ChromeTabbedActivity) activity;
         TabModelSelector selector = tabbedActivity.getTabModelSelector();
         if (selector == null) {
             // Fall back to opening the tab switcher directly if the tab model selector is
@@ -518,7 +535,7 @@ public class SendTabToSelfAndroidBridge {
         int newestNewTabIndex = TabModel.INVALID_TAB_INDEX;
         long maxTimestamp = -1;
         SendTabToSelfTabCardLabelData newestLabelData = null;
-        GURL newestUrl = null;
+        Tab newestTab = null;
 
         // Iterate through all tabs in the standard model to find all unread/new
         // Send-Tab-to-Self tabs and identify the most recently added one by checking addition
@@ -537,13 +554,14 @@ public class SendTabToSelfAndroidBridge {
                 maxTimestamp = timestamp;
                 newestNewTabIndex = i;
                 newestLabelData = data;
-                newestUrl = tab.getUrl();
+                newestTab = tab;
             }
         }
 
         // Highlight and focus the newly received tab by setting it as the active tab, or open in
         // native app if available.
         if (newestNewTabIndex != TabModel.INVALID_TAB_INDEX) {
+            assert newestTab != null;
             if (ChromeFeatureList.sSendTabToSelfRecordSnackbarActivation.isEnabled()) {
                 assert newestLabelData != null;
 
@@ -561,10 +579,19 @@ public class SendTabToSelfAndroidBridge {
                 }
             }
 
-            // Finally, open the matching native app if available; otherwise activate the tab.
-            assert newestUrl != null;
-            if (!NotificationManager.openInNativeAppIfPossible(Uri.parse(newestUrl.getSpec()))) {
-                normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+            // In the single-tab case, open the matching native app directly if available.
+            if (openedTabCount == 1
+                    && NotificationManager.openInNativeAppIfPossible(
+                            Uri.parse(newestTab.getUrl().getSpec()))) {
+                return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+            }
+
+            normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+            // In the multi-tab case, show the "open in app" message banner if applicable. This does
+            // not happen automatically here, since the LabelData was already cleaned up above
+            // (which it needs to be for metrics to be recorded correctly).
+            if (openedTabCount > 1) {
+                maybeShowOpenInAppMessageBanner(newestTab, deviceName);
             }
         }
 
