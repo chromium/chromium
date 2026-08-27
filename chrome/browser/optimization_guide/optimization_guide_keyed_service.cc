@@ -540,6 +540,18 @@ void OptimizationGuideKeyedService::ExecuteModel(
       std::move(callback));
 }
 
+std::unique_ptr<optimization_guide::RemoteModelExecutionSession>
+OptimizationGuideKeyedService::StartStreamingSession(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const optimization_guide::StreamingModelExecutionOptions& options,
+    optimization_guide::OptimizationGuideModelExecutionStreamingCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/553134125): Delegate streaming session creation to
+  // ModelExecutionManager.
+  return nullptr;
+}
+
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
     optimization_guide::mojom::OnDeviceFeature feature,
     optimization_guide::OnDeviceModelAvailabilityObserver* observer) {

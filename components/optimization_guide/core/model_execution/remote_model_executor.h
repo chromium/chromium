@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTOR_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
@@ -62,6 +65,66 @@ struct ModelExecutionOptions {
       ModelExecutionServiceType::kDefault;
 };
 
+// The result type of streaming model execution.
+struct OptimizationGuideModelStreamingResult {
+  OptimizationGuideModelStreamingResult();
+  explicit OptimizationGuideModelStreamingResult(
+      base::expected<proto::Any /*response_metadata*/,
+                     OptimizationGuideModelExecutionError> response,
+      std::unique_ptr<proto::ModelExecutionInfo> execution_info);
+  OptimizationGuideModelStreamingResult(
+      OptimizationGuideModelStreamingResult&& other);
+  OptimizationGuideModelStreamingResult& operator=(
+      OptimizationGuideModelStreamingResult&& other);
+  ~OptimizationGuideModelStreamingResult();
+
+  base::expected<proto::Any /*response_metadata*/,
+                 OptimizationGuideModelExecutionError>
+      response;
+  std::unique_ptr<proto::ModelExecutionInfo> execution_info;
+};
+
+// The callback for receiving streamed model execution results.
+using OptimizationGuideModelExecutionStreamingCallback =
+    base::RepeatingCallback<void(OptimizationGuideModelStreamingResult)>;
+
+// Configuration options for remote streaming model executions.
+struct StreamingModelExecutionOptions {
+  // Max time the persistent WebSocket stays open without traffic.
+  base::TimeDelta idle_disconnect_timeout = base::Minutes(10);
+
+  // If true, the session will proactively initiate the WebSocket
+  // handshake upon creation before the first request is sent,
+  // reducing first token latency.
+  bool prewarm_connection = false;
+};
+
+// A model execution session that maintains a persistent streaming connection.
+class RemoteModelExecutionSession {
+ public:
+  enum class ConnectionState {
+    kDisconnected,
+    kConnecting,
+    kConnected,
+  };
+
+  // Observer interface to monitor WebSocket connection status.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the connection state changes.
+    virtual void OnConnectionStateChanged(ConnectionState state) = 0;
+  };
+
+  virtual ~RemoteModelExecutionSession() = default;
+
+  // Sends input through this session.
+  virtual void Send(const google::protobuf::MessageLite& message) = 0;
+
+  // Observer management for connection state changes.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+};
+
 // Interface for remote model execution.
 class RemoteModelExecutor {
  public:
@@ -74,6 +137,13 @@ class RemoteModelExecutor {
       const google::protobuf::MessageLite& request_metadata,
       const ModelExecutionOptions& options,
       OptimizationGuideModelExecutionResultCallback callback) = 0;
+
+  // Session-based Streaming Execution:
+  // Establishes a persistent bidi streaming session for execution.
+  virtual std::unique_ptr<RemoteModelExecutionSession> StartStreamingSession(
+      ModelBasedCapabilityKey feature,
+      const StreamingModelExecutionOptions& options,
+      OptimizationGuideModelExecutionStreamingCallback callback) = 0;
 };
 
 }  // namespace optimization_guide

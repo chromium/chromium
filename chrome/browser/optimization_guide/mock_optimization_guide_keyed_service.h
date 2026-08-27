@@ -66,6 +66,13 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        const google::protobuf::MessageLite&,
        const optimization_guide::ModelExecutionOptions&,
        optimization_guide::OptimizationGuideModelExecutionResultCallback));
+  MOCK_METHOD(
+      std::unique_ptr<optimization_guide::RemoteModelExecutionSession>,
+      StartStreamingSession,
+      (optimization_guide::ModelBasedCapabilityKey,
+       const optimization_guide::StreamingModelExecutionOptions&,
+       optimization_guide::OptimizationGuideModelExecutionStreamingCallback),
+      (override));
   MOCK_METHOD(void,
               AddOnDeviceModelAvailabilityChangeObserver,
               (optimization_guide::mojom::OnDeviceFeature feature,

@@ -145,6 +145,12 @@ class OptimizationGuideKeyedService
       const optimization_guide::ModelExecutionOptions& options,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
+  std::unique_ptr<optimization_guide::RemoteModelExecutionSession>
+  StartStreamingSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const optimization_guide::StreamingModelExecutionOptions& options,
+      optimization_guide::OptimizationGuideModelExecutionStreamingCallback
+          callback) override;
 
   // optimization_guide::OnDeviceCapability
   // implementation:

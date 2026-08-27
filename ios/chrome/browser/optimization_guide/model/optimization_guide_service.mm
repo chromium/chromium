@@ -351,3 +351,15 @@ void OptimizationGuideService::ExecuteModel(
       /*log_ai_data_request=*/nullptr, options.service_type,
       std::move(callback));
 }
+
+std::unique_ptr<optimization_guide::RemoteModelExecutionSession>
+OptimizationGuideService::StartStreamingSession(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const optimization_guide::StreamingModelExecutionOptions& options,
+    optimization_guide::OptimizationGuideModelExecutionStreamingCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  // TODO(crbug.com/553134125): Delegate streaming session creation to
+  // ModelExecutionManager.
+  return nullptr;
+}

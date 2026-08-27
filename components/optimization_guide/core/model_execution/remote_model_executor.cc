@@ -21,4 +21,24 @@ OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult(
     std::unique_ptr<proto::ModelExecutionInfo> execution_info)
     : response(response), execution_info(std::move(execution_info)) {}
 
+OptimizationGuideModelStreamingResult::OptimizationGuideModelStreamingResult() =
+    default;
+
+OptimizationGuideModelStreamingResult::OptimizationGuideModelStreamingResult(
+    OptimizationGuideModelStreamingResult&& other) = default;
+
+OptimizationGuideModelStreamingResult&
+OptimizationGuideModelStreamingResult::operator=(
+    OptimizationGuideModelStreamingResult&& other) = default;
+
+OptimizationGuideModelStreamingResult::
+    ~OptimizationGuideModelStreamingResult() = default;
+
+OptimizationGuideModelStreamingResult::OptimizationGuideModelStreamingResult(
+    base::expected<proto::Any /*response_metadata*/,
+                   OptimizationGuideModelExecutionError> response,
+    std::unique_ptr<proto::ModelExecutionInfo> execution_info)
+    : response(std::move(response)),
+      execution_info(std::move(execution_info)) {}
+
 }  // namespace optimization_guide
