@@ -8408,6 +8408,21 @@
             ]
         }
     ],
+    "ExcludePipFromScreenCapture": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExcludePipFromScreenCapture"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExpandCompositedCullRectMobile": [
         {
             "platforms": [
