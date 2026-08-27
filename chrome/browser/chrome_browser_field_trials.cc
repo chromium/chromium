@@ -336,6 +336,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       chrome::android::kAuxiliarySearchHistoryDonation);
 
+  // Allows IMEs to insert media content such as images, gifs and stickers on
+  // Android Desktop devices.
+  // TODO(crbug.com/404663565): Remove when rollout to all form factors is
+  // complete.
+  feature_overrides.EnableFeature(features::kAndroidMediaInsertion);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
