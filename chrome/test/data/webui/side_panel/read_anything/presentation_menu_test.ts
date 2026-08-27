@@ -4,23 +4,21 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {PresentationMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, stubAnimationFrame} from './common.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {assertCheckMarksForDropdown, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('PresentationMenuElement', () => {
   let presentationMenu: PresentationMenuElement;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    const result = setupTestEnvironment();
+    visualBrowserProxy = result.visualBrowserProxy;
 
     presentationMenu = document.createElement('presentation-menu');
     presentationMenu.presentationState =

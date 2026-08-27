@@ -6,13 +6,13 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import type {MediaMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
+import {assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('MediaMenuElement', () => {
   let mediaMenu: MediaMenuElement;
@@ -24,10 +24,9 @@ suite('MediaMenuElement', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    metrics = mockMetrics();
+    const result = setupTestEnvironment();
+    visualBrowserProxy = result.visualBrowserProxy;
+    metrics = result.metrics;
 
     mediaMenu = document.createElement('media-menu');
     document.body.appendChild(mediaMenu);

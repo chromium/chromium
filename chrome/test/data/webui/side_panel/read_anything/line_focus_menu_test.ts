@@ -11,7 +11,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('LineFocusMenuElement', () => {
@@ -24,9 +24,8 @@ suite('LineFocusMenuElement', () => {
   });
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    metrics = mockMetrics();
+    const result = setupTestEnvironment();
+    metrics = result.metrics;
     userEducationHandler = new TestUserEducationMixedTrustHandler();
     userEducationProxyFactory.setInstance({handler: userEducationHandler});
 

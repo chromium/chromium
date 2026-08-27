@@ -5,15 +5,15 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {MENU_SHOW_DELAY_MS, SettingsOption, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MENU_SHOW_DELAY_MS, SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {stubAnimationFrame} from './common.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Toolbar Settings Menu', () => {
   let toolbar: ReadAnythingToolbarElement;
@@ -49,9 +49,8 @@ suite('Toolbar Settings Menu', () => {
   }
 
   setup(async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    const result = setupTestEnvironment();
+    visualBrowserProxy = result.visualBrowserProxy;
     stubAnimationFrame();
     await createToolbar();
 

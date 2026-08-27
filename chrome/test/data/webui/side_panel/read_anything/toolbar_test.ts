@@ -8,14 +8,14 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics, stubAnimationFrame} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Toolbar', () => {
   let toolbar: ReadAnythingToolbarElement;
@@ -25,7 +25,6 @@ suite('Toolbar', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   async function createToolbar(): Promise<void> {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     await microtasksFinished();
@@ -38,11 +37,10 @@ suite('Toolbar', () => {
   }
 
   setup(() => {
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    metrics = mockMetrics();
+    const result = setupTestEnvironment();
+    visualBrowserProxy = result.visualBrowserProxy;
+    audioBrowserProxy = result.audioBrowserProxy;
+    metrics = result.metrics;
     return createToolbar();
   });
 

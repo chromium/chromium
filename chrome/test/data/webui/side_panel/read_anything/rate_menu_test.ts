@@ -4,13 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {RateMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, setupTestEnvironment, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('RateMenuElement', () => {
@@ -23,11 +23,9 @@ suite('RateMenuElement', () => {
   });
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    metrics = mockMetrics();
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    metrics = result.metrics;
 
     rateMenu = document.createElement('rate-menu');
     document.body.appendChild(rateMenu);

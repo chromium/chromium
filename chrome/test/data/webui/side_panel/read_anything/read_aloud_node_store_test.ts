@@ -4,9 +4,11 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ReadAloudNode, ReadAloudNodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ReadAloudNodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {setupTestEnvironment} from './common.js';
 
 suite('ReadAloudNodeStore', () => {
   let nodeStore: ReadAloudNodeStore;
@@ -20,8 +22,8 @@ suite('ReadAloudNodeStore', () => {
   }
 
   setup(() => {
-    nodeStore = new ReadAloudNodeStore();
-    ReadAloudNodeStore.setInstance(nodeStore);
+    const result = setupTestEnvironment();
+    nodeStore = result.readAloudNodeStore;
   });
 
   test('registering a node adds it to the store', () => {

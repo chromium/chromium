@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AudioBrowserProxyImpl, getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('SpeechPresentationRules', () => {
   let audioProxy: TestAudioBrowserProxy;
 
   setup(() => {
-    audioProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioProxy);
+    const result = setupTestEnvironment();
+    audioProxy = result.audioBrowserProxy;
   });
 
   test('getCurrentSpeechRate rounds value to 1 decimal', () => {

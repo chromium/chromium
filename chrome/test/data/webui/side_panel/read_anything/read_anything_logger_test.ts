@@ -4,13 +4,14 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, LinkStatus, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LinkStatus, ReadAloudSettingsChange, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Logger', () => {
   const defaultSpeechStartTime = 0;
@@ -28,14 +29,11 @@ suite('Logger', () => {
   }
 
   setup(() => {
-    metrics = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metrics);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-
-    logger = new ReadAnythingLogger();
+    const result = setupTestEnvironment();
+    metrics = result.metrics;
+    visualBrowserProxy = result.visualBrowserProxy;
+    audioBrowserProxy = result.audioBrowserProxy;
+    logger = result.logger;
   });
 
   test('speech controls', async () => {

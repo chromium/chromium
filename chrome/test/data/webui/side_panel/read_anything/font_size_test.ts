@@ -6,13 +6,13 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics} from './common.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('FontSize', () => {
   let toolbar: ReadAnythingToolbarElement;
@@ -20,11 +20,8 @@ suite('FontSize', () => {
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    mockMetrics();
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    const result = setupTestEnvironment();
+    visualBrowserProxy = result.visualBrowserProxy;
 
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);

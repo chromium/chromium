@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, BrowserProxy, NodeStore, previousReadHighlightClass, ReadAloudHighlighter, ReadAloudNode, setInstance, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore, ReadAloudHighlighter, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 
 suite('Highlighter', () => {
   let highlighter: ReadAloudHighlighter;
@@ -43,20 +43,13 @@ suite('Highlighter', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
-    wordBoundaries = new WordBoundaries();
-    WordBoundaries.setInstance(wordBoundaries);
-    voiceLanguageController = new VoiceLanguageController();
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    highlighter = new ReadAloudHighlighter();
-    nodeStore = NodeStore.getInstance();
-    nodeStore.clear();
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    readAloudModel = result.readAloudModel;
+    wordBoundaries = result.wordBoundaries;
+    voiceLanguageController = result.voiceLanguageController;
+    highlighter = result.highlighter;
+    nodeStore = result.nodeStore;
   });
 
   test('sentence highlight', () => {

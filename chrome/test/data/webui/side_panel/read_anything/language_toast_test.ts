@@ -5,25 +5,33 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LanguageToastElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
+// <if expr="is_chromeos">
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+// </if>
 
 suite('LanguageToast', () => {
   let toast: LanguageToastElement;
+  // <if expr="is_chromeos">
   let audioBrowserProxy: TestAudioBrowserProxy;
+  // </if>
 
   function getTitle(): string {
     return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent;
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    // <if expr="is_chromeos">
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    // </if>
+    // <if expr="not is_chromeos">
+    setupTestEnvironment();
+    // </if>
 
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);

@@ -4,16 +4,15 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentBrowserProxyImpl, LineFocusController, LineFocusModel, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusController, LineFocusModel, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {mockMetrics} from './common.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('LineFocusController', () => {
   const defaultHeight = 1000;
@@ -23,7 +22,6 @@ suite('LineFocusController', () => {
   let lineFocusContentPositionChanged: boolean;
   let lineFocusVisualPositionChanged: boolean;
   let defaultContainer: HTMLElement;
-  let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
@@ -68,20 +66,11 @@ suite('LineFocusController', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    visualBrowserProxy.lineFocusEnabled = true;
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    metrics = mockMetrics();
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
-    readAloudModel.setInitialized(true);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
+    const result = setupTestEnvironment({lineFocusEnabled: true});
+    visualBrowserProxy = result.visualBrowserProxy;
+    metrics = result.metrics;
+    readAloudModel = result.readAloudModel;
+    speechController = result.speechController;
     model = new LineFocusModel();
     lineFocusController = new LineFocusController(model);
     lineFocusContentPositionChanged = false;

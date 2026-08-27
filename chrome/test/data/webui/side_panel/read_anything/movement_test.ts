@@ -4,25 +4,21 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {currentReadHighlightClass, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setWindowSize} from './common.js';
+import {setupTestEnvironment, setWindowSize} from './common.js';
 
 suite('Movement', () => {
   let nodeStore: NodeStore;
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    window.scrollTo(0, 0);
-
+    const result = setupTestEnvironment();
     // Always set a large innerHeight and innerWidth to ensure elements are
     // considered visible and don't wrap unexpectedly in tests.
     setWindowSize(1000, 1000);
-
-    nodeStore = NodeStore.getInstance();
-    nodeStore.clear();
+    nodeStore = result.nodeStore;
   });
 
   function assertHtml(html: string, id: number) {

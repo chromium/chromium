@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ContentBrowserProxyImpl, LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, NodeStore, ReadAloudNode, SpeechController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {LineFocusMoveMode, MoveModeDelegate} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LineFocusMoveMode, MoveModeDelegate, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {mockMetrics} from './common.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('LineFocusMoveMode', () => {
   let model: LineFocusModel;
@@ -65,20 +64,14 @@ suite('LineFocusMoveMode', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    window.scrollTo(0, 0);
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    metricsBrowserProxy = mockMetrics();
-    visualBrowserProxy = new TestVisualBrowserProxy();
+    const result = setupTestEnvironment();
+    nodeStore = result.nodeStore;
+    speechController = result.speechController;
+    metricsBrowserProxy = result.metrics;
+    visualBrowserProxy = result.visualBrowserProxy;
     // Initialize font size so that the threshold for merging text bounds
     // is correctly calculated and not zero.
     visualBrowserProxy.fontSize = 1.5;
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
     model = new LineFocusModel();
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);
     windowMode =

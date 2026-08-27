@@ -1,28 +1,23 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {AppElement, Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, NodeStore, ReadAloudHighlighter, Segment, SelectionController, SpeechController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createApp, createSpeechSynthesisVoice, setContent, stubAnimationFrame} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {createSpeechSynthesisVoice, setContent, setupAppTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechController', () => {
   let audioBrowserProxy: TestAudioBrowserProxy = null!;
-  let visualBrowserProxy: TestVisualBrowserProxy = null!;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let wordBoundaries: WordBoundaries;
   let nodeStore: NodeStore;
   let highlighter: ReadAloudHighlighter;
-  let voiceLanguageController: VoiceLanguageController;
   let selectionController: SelectionController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let app: AppElement;
@@ -70,41 +65,24 @@ suite('SpeechController', () => {
   };
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
+    const result = await setupAppTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    speech = result.speech;
+    readAloudModel = result.readAloudModel;
+    nodeStore = result.nodeStore;
+    wordBoundaries = result.wordBoundaries;
+    highlighter = result.highlighter;
+    selectionController = result.selectionController;
+    speechController = result.speechController;
+    app = result.app;
 
-    voiceLanguageController = new VoiceLanguageController();
-    voiceLanguageController.setUserPreferredVoice(
+    result.voiceLanguageController.setUserPreferredVoice(
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Rumi'}));
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    wordBoundaries = new WordBoundaries();
-    WordBoundaries.setInstance(wordBoundaries);
-    highlighter = new ReadAloudHighlighter();
-    ReadAloudHighlighter.setInstance(highlighter);
-    selectionController = new SelectionController();
-    SelectionController.setInstance(selectionController);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    ContentController.setInstance(new ContentController());
     speechController.addListener(speechListener);
     speech.reset();
     onWordBoundary = false;
     isSpeechActiveChanged = false;
     onPlayingFromSelection = false;
-
-    app = await createApp();
   });
 
   suite('initializeSpeechTree', () => {
@@ -431,25 +409,25 @@ suite('SpeechController', () => {
   test('onNextGranularityClick updates state', () => {
     setContent('Know all about the glories', readAloudModel);
     wordBoundaries.updateBoundary(5);
-    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('cancel'));
 
     speechController.onNextGranularityClick();
 
     assertTrue(speechController.isSpeechBeingRepositioned());
     assertFalse(wordBoundaries.hasBoundaries());
-    assertEquals(2, speech.getCallCount('cancel'));
+    assertEquals(1, speech.getCallCount('cancel'));
   });
 
   test('onPreviousGranularityClick updates state', () => {
     setContent('And the disgraces', readAloudModel);
     wordBoundaries.updateBoundary(5);
-    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('cancel'));
 
     speechController.onPreviousGranularityClick();
 
     assertTrue(speechController.isSpeechBeingRepositioned());
     assertFalse(wordBoundaries.hasBoundaries());
-    assertEquals(2, speech.getCallCount('cancel'));
+    assertEquals(1, speech.getCallCount('cancel'));
   });
 
   test('onVoiceMenuClose resume speech only if it was active before', () => {
@@ -459,7 +437,7 @@ suite('SpeechController', () => {
 
     speechController.onVoiceMenuClose();
 
-    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(0, speech.getCallCount('speak'));
 

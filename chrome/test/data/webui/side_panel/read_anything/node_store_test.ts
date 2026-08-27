@@ -4,15 +4,15 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ContentBrowserProxyImpl, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore, ReadAloudNode, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {mockMetrics, setWindowSize} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {setupTestEnvironment, setWindowSize} from './common.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('NodeStore', () => {
   let nodeStore: NodeStore;
@@ -50,23 +50,17 @@ suite('NodeStore', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    window.scrollTo(0, 0);
-
+    const result = setupTestEnvironment();
     // Always set a large innerHeight and innerWidth to ensure elements are
     // considered visible and don't wrap unexpectedly in tests.
     setWindowSize(10000, 10000);
 
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    metricsBrowserProxy = mockMetrics();
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    contentBrowserProxy = new TestContentBrowserProxy();
-    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
+    metricsBrowserProxy = result.metrics;
+    visualBrowserProxy = result.visualBrowserProxy;
+    contentBrowserProxy = result.contentBrowserProxy;
+    nodeStore = result.nodeStore;
     now = 0;
     Date.now = () => now;
-    nodeStore = new NodeStore();
   });
 
   test('setDomNode', () => {
