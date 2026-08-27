@@ -530,7 +530,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         if (s.length() == 0 || mNtpSearchBox == null) return;
                         mManager.focusSearchBox(
                                 false, AutocompleteRequestType.SEARCH, false, s.toString());
-                        mNtpSearchBox.setSearchText("");
                     }
                 });
         TraceEvent.end(TAG + ".initializeSearchBoxTextView()");

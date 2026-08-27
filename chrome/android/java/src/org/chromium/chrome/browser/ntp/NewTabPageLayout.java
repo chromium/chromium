@@ -54,6 +54,7 @@ public class NewTabPageLayout extends LinearLayout {
         super.onFinishInflate();
 
         setBackgroundColor(ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(getContext()));
+        setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout.onFinishInflate before insertSiteSectionView");
