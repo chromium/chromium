@@ -456,6 +456,10 @@ OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
   return nullptr;
 }
 
+OtpMetricsTracker* AutofillClient::GetOtpMetricsTracker() {
+  return nullptr;
+}
+
 FormPredictionsTracker* AutofillClient::GetFormPredictionsTracker() {
   return nullptr;
 }

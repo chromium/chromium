@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
@@ -102,6 +103,7 @@
 namespace autofill {
 
 class AutofillAiPersonalContextAccessManager;
+class OtpMetricsTracker;
 class TestAutofillClient;
 
 // This class is for easier writing of tests. There are two instances of the
@@ -880,6 +882,15 @@ class TestAutofillClientTemplate : public T {
     form_predictions_tracker_ = std::move(form_predictions_tracker);
   }
 
+  OtpMetricsTracker* GetOtpMetricsTracker() override {
+    return otp_metrics_tracker_.get();
+  }
+
+  void set_otp_metrics_tracker(
+      std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker) {
+    otp_metrics_tracker_ = std::move(otp_metrics_tracker);
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -895,6 +906,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<GoogleGroupsManager> google_groups_manager_;
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
+  std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
   std::unique_ptr<AtMemoryManager> at_memory_manager_;
   personal_context::PersonalContextEligibilityState

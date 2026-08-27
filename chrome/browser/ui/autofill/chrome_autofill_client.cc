@@ -124,6 +124,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
@@ -1316,6 +1317,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       this,
       critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
 
+#if !BUILDFLAG(IS_ANDROID)
+  otp_metrics_tracker_ =
+      std::make_unique<OtpMetricsTracker>(GetOneTimeTokenService());
+#endif
+
   // Notify the EntityDataManager about the availability of device re-auth.
   // This information is injected through the client because the device
   // authenticator is tied to UI, even though the availability of device re-auth
@@ -1438,6 +1444,10 @@ ChromeAutofillClient::GetContentCredentialManager() {
 
 OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
   return otp_field_detector_.get();
+}
+
+OtpMetricsTracker* ChromeAutofillClient::GetOtpMetricsTracker() {
+  return otp_metrics_tracker_.get();
 }
 
 OtpPhishGuardDelegate* ChromeAutofillClient::GetOtpPhishGuardDelegate() {

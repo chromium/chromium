@@ -143,6 +143,7 @@ class FormDataImporter;
 class FormFieldData;
 class LogManager;
 class OtpFieldDetector;
+class OtpMetricsTracker;
 class OtpPhishGuardDelegate;
 class FormPredictionsTracker;
 struct PasswordFormClassification;
@@ -902,6 +903,10 @@ class AutofillClient {
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
+
+  // Returns the OtpMetricsTracker for the current tab. May return null on
+  // platforms where it is not supported or when the feature is disabled.
+  virtual OtpMetricsTracker* GetOtpMetricsTracker();
 
   // Returns the delegate for OTP phish guard, which can be used to perform
   // security checks before offering an OTP. May return nullptr.
