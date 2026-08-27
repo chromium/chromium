@@ -39,6 +39,7 @@
 #define IDC_CONTINUE_MESSAGE            1004
 #define IDC_CONTINUE_DEFAULT            1005
 #define IDC_CONTINUE_CANCEL             1007
+#define IDC_TOGGLE_ALIGNMENT 1008
 
 // Next default values for new objects
 //
