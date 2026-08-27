@@ -2669,6 +2669,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "desktop-android-twa-delete-browser-data",
+    "owners": [ "aixba@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "desktop-android-twa-disclosures",
     "owners": [ "aixba@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 165

@@ -13595,6 +13595,7 @@ from previous Chrome versions.
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
   <int value="-346256818" label="SyncSharedTabGroupAccountData:disabled"/>
+  <int value="-345908931" label="DesktopAndroidTWADeleteBrowserData:disabled"/>
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
   <int value="-345422674" label="FedCmAccountAutoSelectedFlag:disabled"/>
   <int value="-345366193" label="FeedDynamicColors:disabled"/>
@@ -18799,6 +18800,7 @@ from previous Chrome versions.
   <int value="1275507565" label="OfflinePagesRenovations:enabled"/>
   <int value="1276120671" label="AutofillEnableOfferNotification:enabled"/>
   <int value="1276209777" label="ntp-switch-to-existing-tab"/>
+  <int value="1277090609" label="DesktopAndroidTWADeleteBrowserData:enabled"/>
   <int value="1277167761" label="EnableTouchscreensInDiagnosticsApp:enabled"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
   <int value="1277539600" label="AutofillAiWalletPrivatePasses:enabled"/>

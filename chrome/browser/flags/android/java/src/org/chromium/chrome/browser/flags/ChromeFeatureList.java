@@ -517,6 +517,8 @@ public abstract class ChromeFeatureList {
     public static final String DEFAULT_BROWSER_PROMO_FRE = "DefaultBrowserPromoFre";
     public static final String DEFER_NAVIGATION_STATE_CHANGED = "DeferNavigationStateChanged";
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
+    public static final String DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA =
+            "DesktopAndroidTWADeleteBrowserData";
     public static final String DESKTOP_ANDROID_TWA_DISCLOSURES = "DesktopAndroidTWADisclosures";
     public static final String DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK =
             "DesktopAndroidTWADisclosuresHelpLink";
@@ -1107,6 +1109,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sDesktopAndroidLinkCapturing =
             newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, true);
+    public static final CachedFlag sDesktopAndroidTWADeleteBrowserData =
+            newCachedFlag(DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA, false);
     public static final CachedFlag sDesktopAndroidTWADisclosures =
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES, false);
     public static final CachedFlag sDesktopAndroidTWADisclosuresHelpLink =
@@ -1550,6 +1554,7 @@ public abstract class ChromeFeatureList {
                     sCrossDeviceTabPaneAndroid,
                     sDefaultBrowserPromoEntryPoint,
                     sDesktopAndroidLinkCapturing,
+                    sDesktopAndroidTWADeleteBrowserData,
                     sDesktopAndroidTWADisclosures,
                     sDesktopAndroidTWADisclosuresHelpLink,
                     sDesktopUAOnConnectedDisplay,

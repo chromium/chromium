@@ -6121,6 +6121,13 @@ inline constexpr char kDesktopAndroidLinkCapturingName[] =
 inline constexpr char kDesktopAndroidLinkCapturingDescription[] =
     "Enables Link Capturing on desktop Android.";
 
+inline constexpr char kDesktopAndroidTWADeleteBrowserDataName[] =
+    "Desktop Android TWA Delete Browser Data";
+inline constexpr char kDesktopAndroidTWADeleteBrowserDataDescription[] =
+    "Triggers a notification on TWA uninstall that provides the opportunity "
+    "for deleting browser data. This is a follow up to the "
+    "DesktopAndroidTWADisclosures feature.";
+
 inline constexpr char kDesktopAndroidTWADisclosuresName[] =
     "Desktop Android TWA Disclosures Suppression";
 inline constexpr char kDesktopAndroidTWADisclosuresDescription[] =
