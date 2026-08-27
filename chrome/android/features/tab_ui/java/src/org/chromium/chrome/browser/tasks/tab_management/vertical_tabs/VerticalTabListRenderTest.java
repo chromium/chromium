@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +14,8 @@ import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_MOBI
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -19,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -47,13 +54,17 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.MediaState;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
+import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -65,6 +76,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -73,6 +85,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.IOException;
 import java.util.List;
@@ -128,7 +142,10 @@ public class VerticalTabListRenderTest {
     public void setUp() throws Exception {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity.setTheme(
+                mIsIncognito
+                        ? R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito
+                        : R.style.Theme_BrowserUI_DayNight);
         mPinnedItemWidthPx =
                 mActivity
                         .getResources()
@@ -478,9 +495,6 @@ public class VerticalTabListRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPinnedTab_GlicIndicator_Active() throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -830,9 +844,6 @@ public class VerticalTabListRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testVerticalTabList_MultiSelected() throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         TabListRecyclerView[] view = new TabListRecyclerView[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -868,11 +879,54 @@ public class VerticalTabListRenderTest {
                 "vertical_tab_list_multi_selected" + (mIsIncognito ? "_incognito" : ""));
     }
 
+    // =========================================================================================
+    // Tab Hover Card Tests
+    // =========================================================================================
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabHoverCard_Standard() throws IOException {
+        testTabHoverCard(
+                "Google Search",
+                JUnitTestGURLs.SEARCH_URL,
+                /* isPinned= */ false,
+                TabAlert.NONE,
+                /* memoryUsageBytes= */ 0L,
+                createThumbnailBitmap(Color.GRAY),
+                "tab_hover_card_standard");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabHoverCard_Pinned() throws IOException {
+        testTabHoverCard(
+                "Google Search",
+                JUnitTestGURLs.SEARCH_URL,
+                /* isPinned= */ true,
+                TabAlert.NONE,
+                /* memoryUsageBytes= */ 0L,
+                createThumbnailBitmap(Color.BLUE),
+                "tab_hover_card_pinned");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabHoverCard_AlertAndMemoryUsage() throws IOException {
+        testTabHoverCard(
+                "YouTube - Video",
+                JUnitTestGURLs.SEARCH_URL,
+                /* isPinned= */ false,
+                TabAlert.AUDIO_PLAYING,
+                /* memoryUsageBytes= */ 100_000_000L,
+                createThumbnailBitmap(Color.RED),
+                "tab_hover_card_alert_and_memory_usage");
+    }
+
     private void testTabGroupSpine(boolean isCollapsed, boolean isRtl, boolean isHeaderOffScreen)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         TabListRecyclerView[] view = new TabListRecyclerView[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -967,9 +1021,6 @@ public class VerticalTabListRenderTest {
             boolean isHovered,
             String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1010,9 +1061,6 @@ public class VerticalTabListRenderTest {
 
     private void testStandardTabMultiSelected(String title, boolean isHovered, String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1058,9 +1106,6 @@ public class VerticalTabListRenderTest {
             boolean isHovered,
             String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1099,9 +1144,6 @@ public class VerticalTabListRenderTest {
 
     private void testPinnedTabMultiSelected(String title, boolean isHovered, String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1141,9 +1183,6 @@ public class VerticalTabListRenderTest {
     private void testTabGroupHeader(
             String title, boolean isCollapsed, boolean isHovered, String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1180,9 +1219,6 @@ public class VerticalTabListRenderTest {
     private void testTabGroupHoverCard(
             String title, List<String> childTabTitles, int excessCount, String goldenName)
             throws IOException {
-        if (mIsIncognito) {
-            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
-        }
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1203,6 +1239,93 @@ public class VerticalTabListRenderTest {
                                 "tab_group_hover_card_", "tab_group_hover_card_incognito_")
                         : goldenName;
         mRenderTestRule.render(mRenderView, finalGoldenName);
+    }
+
+    private Bitmap createThumbnailBitmap(@ColorInt int color) {
+        Bitmap bitmap = Bitmap.createBitmap(300, 200, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(color);
+        return bitmap;
+    }
+
+    private void testTabHoverCard(
+            String title,
+            GURL url,
+            boolean isPinned,
+            @TabAlert int alertState,
+            long memoryUsageBytes,
+            @Nullable Bitmap thumbnail,
+            String goldenName)
+            throws IOException {
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.tab_hover_card_holder);
+                    TabHoverCardView hoverCardView = (TabHoverCardView) view[0];
+
+                    TabModel tabModel = mock(TabModel.class);
+                    when(tabModel.isIncognitoBranded()).thenReturn(mIsIncognito);
+                    TabModelSelector tabModelSelector = setupMockTabModelSelector(tabModel);
+
+                    TabContentManager tabContentManager = mock(TabContentManager.class);
+                    if (thumbnail != null) {
+                        doAnswer(
+                                        invocation -> {
+                                            Callback<Bitmap> callback = invocation.getArgument(2);
+                                            callback.onResult(thumbnail);
+                                            return null;
+                                        })
+                                .when(tabContentManager)
+                                .getTabThumbnailWithCallback(anyInt(), any(), any());
+                    }
+                    hoverCardView.initialize(tabModelSelector, () -> tabContentManager);
+
+                    Tab tab = createMockTab(1, title, url, isPinned, alertState, memoryUsageBytes);
+                    hoverCardView.show(/* x= */ 0, /* y= */ 0);
+                    hoverCardView.bindTab(tab);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isHeightValid = view[0].getHeight() > 0;
+                    boolean isMemoryValid =
+                            memoryUsageBytes == 0
+                                    || view[0].findViewById(R.id.memory_usage).getVisibility()
+                                            == View.VISIBLE;
+                    TabThumbnailView thumbnailView = view[0].findViewById(R.id.thumbnail);
+                    boolean isThumbnailValid =
+                            thumbnail == null || thumbnailView.getDrawable() != null;
+                    return isHeightValid && isMemoryValid && isThumbnailValid;
+                });
+
+        String finalGoldenName =
+                mIsIncognito
+                        ? goldenName.replace("tab_hover_card_", "tab_hover_card_incognito_")
+                        : goldenName;
+        mRenderTestRule.render(mRenderView, finalGoldenName);
+    }
+
+    private Tab createMockTab(
+            int id,
+            String title,
+            GURL url,
+            boolean isPinned,
+            @TabAlert int alertState,
+            long memoryUsageBytes) {
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(id);
+        when(tab.getTitle()).thenReturn((mIsIncognito ? "Incognito " : "") + title);
+        when(tab.getUrl()).thenReturn(url);
+        when(tab.getIsPinned()).thenReturn(isPinned);
+        when(tab.isIncognito()).thenReturn(mIsIncognito);
+        when(tab.getAlertState()).thenReturn(alertState);
+        doAnswer(
+                        invocation -> {
+                            Callback<Long> callback = invocation.getArgument(0);
+                            callback.onResult(memoryUsageBytes);
+                            return null;
+                        })
+                .when(tab)
+                .getMemoryUsageBytes(any());
+        return tab;
     }
 
     private TabModelSelector setupMockTabModelSelector(TabModel tabModel) {

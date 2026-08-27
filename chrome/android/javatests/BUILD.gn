@@ -1599,6 +1599,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/hub/internal:java",
     "//chrome/browser/ui/vertical_tabs:java",
+    "//components/tabs/public/android:java",
     "//ui/accessibility:ui_accessibility_test_support_java",
   ]
 }
