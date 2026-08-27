@@ -134,7 +134,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
 // any.
 std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
 AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
-                                          std::u16string_view rp_id,
+                                          std::optional<std::u16string> rp_id,
                                           bool is_incognito);
 
 }  // namespace device

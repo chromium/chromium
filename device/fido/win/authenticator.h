@@ -52,11 +52,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
       WinWebAuthnApi* api,
       base::OnceCallback<void(bool is_available)>);
 
-  // Get metadata for all credentials in the platform authenticator. If such
-  // metadata is not available then the callback will be invoked with an empty
-  // list.
+  // Get metadata for credentials in the platform authenticator. If `rp_id` has
+  // a value, only credentials matching `rp_id` are returned. If such metadata
+  // is not available then the callback will be invoked with an empty list.
   static void EnumeratePlatformCredentials(
       WinWebAuthnApi* api,
+      std::optional<std::u16string> rp_id,
       base::OnceCallback<
           void(std::vector<device::DiscoverableCredentialMetadata>)> callback);
 

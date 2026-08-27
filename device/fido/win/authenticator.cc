@@ -181,6 +181,7 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
 // static
 void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
     WinWebAuthnApi* api,
+    std::optional<std::u16string> rp_id,
     base::OnceCallback<
         void(std::vector<device::DiscoverableCredentialMetadata>)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -188,8 +189,7 @@ void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(AuthenticatorEnumerateCredentialsBlocking, api,
-                     /*rp_id=*/std::u16string_view(),
-                     /*is_incognito=*/false),
+                     std::move(rp_id), /*is_incognito=*/false),
       base::BindOnce(
           [](base::OnceCallback<void(
                  std::vector<device::DiscoverableCredentialMetadata>)> callback,

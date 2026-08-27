@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -379,13 +380,9 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
 
   base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
   WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
-      fake_webauthn_api_.get(), future.GetCallback());
+      fake_webauthn_api_.get(), /*rp_id=*/std::nullopt, future.GetCallback());
 
-  while (!future.IsReady()) {
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(future.Take().empty());
 }
 
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
@@ -397,11 +394,7 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
 
   base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
   WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
-      fake_webauthn_api_.get(), future.GetCallback());
-
-  while (!future.IsReady()) {
-    base::RunLoop().RunUntilIdle();
-  }
+      fake_webauthn_api_.get(), /*rp_id=*/std::nullopt, future.GetCallback());
 
   std::vector<DiscoverableCredentialMetadata> creds = future.Take();
   ASSERT_EQ(creds.size(), 1u);
@@ -412,6 +405,30 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   EXPECT_EQ(cred.user.name, kUserName);
   EXPECT_EQ(cred.user.display_name, kUserDisplayName);
   EXPECT_EQ(cred.provider_name, kProviderName);
+}
+
+TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_ScopedToRp) {
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
+
+  PublicKeyCredentialRpEntity other_rp("other-rp.example");
+  const std::vector<uint8_t> kOtherCredentialId = {10, 11, 12};
+  fake_webauthn_api_->InjectDiscoverableCredential(kOtherCredentialId, other_rp,
+                                                   user, kProviderName);
+
+  fake_webauthn_api_->set_supports_silent_discovery(true);
+
+  base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
+  WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
+      fake_webauthn_api_.get(), base::UTF8ToUTF16(std::string(kRpId)),
+      future.GetCallback());
+
+  std::vector<DiscoverableCredentialMetadata> creds = future.Take();
+  ASSERT_EQ(creds.size(), 1u);
+  EXPECT_EQ(creds[0].rp_id, kRpId);
+  EXPECT_EQ(creds[0].cred_id, kCredentialId);
 }
 
 TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {

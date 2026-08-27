@@ -737,7 +737,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
 
 std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
 AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
-                                          std::u16string_view rp_id,
+                                          std::optional<std::u16string> rp_id,
                                           bool is_incognito) {
   if (!webauthn_api || !webauthn_api->IsAvailable() ||
       !webauthn_api->SupportsSilentDiscovery()) {
@@ -747,9 +747,7 @@ AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
 
   WEBAUTHN_GET_CREDENTIALS_OPTIONS options{
       .dwVersion = WEBAUTHN_GET_CREDENTIALS_OPTIONS_VERSION_1,
-      // For a default-initialized string_view `pwszRpId` will be nullptr,
-      // which makes the API not filter on RP ID.
-      .pwszRpId = base::as_wcstr(rp_id),
+      .pwszRpId = rp_id.has_value() ? base::as_wcstr(rp_id->c_str()) : nullptr,
       .bBrowserInPrivateMode = is_incognito};
 
   FIDO_LOG(DEBUG) << "WebAuthNGetCredentialList("
@@ -777,7 +775,27 @@ AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
   }
   FIDO_LOG(DEBUG) << "WebAuthNGetCredentialList returned "
                   << credentials->cCredentialDetails << " credential(s)";
-  return {true, WinCredentialDetailsListToCredentialMetadata(*credentials)};
+
+  std::vector<DiscoverableCredentialMetadata> results =
+      WinCredentialDetailsListToCredentialMetadata(*credentials);
+
+  // Other RP IDs should have been filtered out, but since we are relying on an
+  // OS API outside of our control we should not CHECK here. Instead, just skip
+  // any incorrect RP IDs.
+  if (rp_id.has_value()) {
+    std::string expected_rp_id = base::UTF16ToUTF8(*rp_id);
+    size_t erased_count =
+        std::erase_if(results, [&](const DiscoverableCredentialMetadata& cred) {
+          return cred.rp_id != expected_rp_id;
+        });
+
+    if (erased_count > 0) {
+      FIDO_LOG(ERROR) << "WebAuthNGetCredentialList returned " << erased_count
+                      << " credential(s) with a wrong RP ID";
+    }
+  }
+
+  return {true, std::move(results)};
 }
 
 }  // namespace device

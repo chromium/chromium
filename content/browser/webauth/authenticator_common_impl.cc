@@ -115,7 +115,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
 #endif
 
@@ -3565,6 +3567,54 @@ AuthenticatorCommonImpl::RequestKey AuthenticatorCommonImpl::GetRequestKey() {
 
 bool AuthenticatorCommonImpl::CheckRequestKey(RequestKey request_key) {
   return req_state_.get() && req_state_->request_key == request_key;
+}
+
+bool AuthenticatorCommonImpl::IsGetMatchingCredentialIdsSupported() {
+#if BUILDFLAG(IS_WIN)
+  return device::WinWebAuthnApi::GetDefault() &&
+         device::WinWebAuthnApi::GetDefault()->IsAvailable() &&
+         device::WinWebAuthnApi::GetDefault()->SupportsSilentDiscovery() &&
+         !device::fido::win::IsRemoteDesktopSession();
+#else
+  return false;
+#endif
+}
+
+void AuthenticatorCommonImpl::GetMatchingCredentialIds(
+    std::string_view relying_party_id,
+    base::span<const std::vector<uint8_t>> credential_ids,
+    bool require_third_party_payment_bit,
+    base::OnceCallback<void(std::vector<std::vector<uint8_t>>)> callback) {
+#if BUILDFLAG(IS_WIN)
+  // Third-party payment bit checking in OS stores is not yet supported.
+  // TODO(crbug.com/40868539): Support `require_third_party_payment_bit` by
+  // checking for `bThirdPartyPayment` being present.
+  CHECK(!require_third_party_payment_bit);
+
+  if (!IsGetMatchingCredentialIdsSupported()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  device::WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
+      device::WinWebAuthnApi::GetDefault(), base::UTF8ToUTF16(relying_party_id),
+      base::BindOnce(
+          [](base::span<const std::vector<uint8_t>> credential_ids,
+             base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>
+                 callback,
+             std::vector<device::DiscoverableCredentialMetadata> credentials) {
+            std::vector<std::vector<uint8_t>> matches;
+            for (auto& credential : credentials) {
+              if (std::ranges::contains(credential_ids, credential.cred_id)) {
+                matches.push_back(std::move(credential.cred_id));
+              }
+            }
+            std::move(callback).Run(std::move(matches));
+          },
+          base::ToVector(credential_ids), std::move(callback)));
+#else
+  std::move(callback).Run({});
+#endif
 }
 
 }  // namespace content

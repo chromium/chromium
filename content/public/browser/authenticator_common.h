@@ -6,7 +6,10 @@
 #define CONTENT_PUBLIC_BROWSER_AUTHENTICATOR_COMMON_H_
 
 #include <memory>
+#include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -104,6 +107,19 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // called, remote desktop Chrome extensions may choose to act as a request
   // proxy for all requests sent to this instance.
   virtual void EnableRequestProxyExtensionsAPISupport() = 0;
+
+  // Returns true if the underlying platform authenticator supports querying
+  // matching credential IDs.
+  virtual bool IsGetMatchingCredentialIdsSupported() = 0;
+
+  // Queries the underlying platform authenticator for matching credential IDs
+  // for the given `relying_party_id` which are also in the input
+  // `credential_ids` list.
+  virtual void GetMatchingCredentialIds(
+      std::string_view relying_party_id,
+      base::span<const std::vector<uint8_t>> credential_ids,
+      bool require_third_party_payment_bit,
+      base::OnceCallback<void(std::vector<std::vector<uint8_t>>)> callback) = 0;
 };
 
 }  // namespace content

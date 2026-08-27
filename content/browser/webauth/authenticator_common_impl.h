@@ -122,6 +122,13 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void DisableTLSCheck() override;
   RenderFrameHost* GetRenderFrameHost() const override;
   void EnableRequestProxyExtensionsAPISupport() override;
+  bool IsGetMatchingCredentialIdsSupported() override;
+  void GetMatchingCredentialIds(
+      std::string_view relying_party_id,
+      base::span<const std::vector<uint8_t>> credential_ids,
+      bool require_third_party_payment_bit,
+      base::OnceCallback<void(std::vector<std::vector<uint8_t>>)> callback)
+      override;
 
   // GetClientCapabilities returns a list WebAuthn capabilities of the browser
   // via the `callback` parameter. Websites can use this information to
