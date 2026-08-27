@@ -42,6 +42,8 @@ SearchEnginesTestEnvironment::ServiceFactories CreateDefaultFactories(
             environment.pref_service(),
             environment.search_engine_choice_service(),
             environment.prepopulate_data_resolver(),
+            environment.regional_capabilities_service(),
+            environment.profile_metrics_service(),
             deps.template_url_service_initializer);
       });
 

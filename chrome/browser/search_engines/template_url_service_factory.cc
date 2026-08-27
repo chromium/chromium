@@ -13,8 +13,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
@@ -70,6 +72,9 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
               profile)),
       CHECK_DEREF(
           TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile)),
+      CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile)),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
@@ -94,7 +99,11 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
+  DependsOn(
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
   DependsOn(search_engines::SearchEngineChoiceServiceFactory::GetInstance());
+  DependsOn(TemplateURLPrepopulateData::ResolverFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 }

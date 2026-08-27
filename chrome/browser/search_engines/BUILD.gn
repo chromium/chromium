@@ -37,6 +37,7 @@ source_set("search_engines") {
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
     "//chrome/browser/history",
+    "//chrome/browser/metrics",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/webdata_services",

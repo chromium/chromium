@@ -7,14 +7,16 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace search_engines {
@@ -194,6 +196,98 @@ TEST_F(SearchEngineSplitMetricsTest, InspectYahooEngineState_Custom) {
             OseSplitEngineState::kCustomNotDse);
 }
 
+TEST_F(SearchEngineSplitMetricsTest,
+       RecordSearchEngineSplitProfileLoadMetrics_NoYahoo) {
+  std::vector<std::unique_ptr<TemplateURL>> engines;
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::google));
+  engines.push_back(CreatePrepopulatedEngine(TemplateURLPrepopulateData::bing));
+
+  RecordSearchEngineSplitProfileLoadMetrics(
+      engines, engines[0].get(), search_terms_data_, profile_metrics_service_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 0);
+}
+
+TEST_F(SearchEngineSplitMetricsTest,
+       RecordSearchEngineSplitProfileLoadMetrics_SingleNewDse) {
+  std::vector<std::unique_ptr<TemplateURL>> engines;
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp_next));
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::google));
+
+  RecordSearchEngineSplitProfileLoadMetrics(
+      engines, engines[0].get(), search_terms_data_, profile_metrics_service_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", OseSplitType::kNew, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad",
+      OseSplitEngineState::kNewDse, 1);
+}
+
+TEST_F(SearchEngineSplitMetricsTest,
+       RecordSearchEngineSplitProfileLoadMetrics_DualYahooLegacyDse) {
+  std::vector<std::unique_ptr<TemplateURL>> engines;
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp));
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp_next));
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::google));
+
+  RecordSearchEngineSplitProfileLoadMetrics(
+      engines, engines[0].get(), search_terms_data_, profile_metrics_service_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 2, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", OseSplitType::kLegacy,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad",
+      OseSplitEngineState::kLegacyDse, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad",
+      OseSplitEngineState::kNewNotDse, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 2);
+}
+
+TEST_F(SearchEngineSplitMetricsTest,
+       RecordSearchEngineSplitProfileLoadMetrics_DualYahooNonYahooDse) {
+  std::vector<std::unique_ptr<TemplateURL>> engines;
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::google));
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp));
+  engines.push_back(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp_next));
+
+  RecordSearchEngineSplitProfileLoadMetrics(
+      engines, engines[0].get(), search_terms_data_, profile_metrics_service_);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 2, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", 0);
+  histogram_tester_.ExpectBucketCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad",
+      OseSplitEngineState::kLegacyNotDse, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad",
+      OseSplitEngineState::kNewNotDse, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 2);
+}
 TEST_F(SearchEngineSplitMetricsTest,
        RecordSearchEngineSplitSettingsPageLoadMetrics) {
   TemplateURL::TemplateURLVector raw_engines;

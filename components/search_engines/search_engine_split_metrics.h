@@ -76,6 +76,16 @@ std::optional<OseSplitEngineState> InspectYahooEngineState(
     const TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data);
 
+// Records profile load metrics for users in search engine split regions:
+// - Search.OseSplitYahooJapan.DseTypeOnProfileLoad{Profile}
+// - Search.OseSplitYahooJapan.CountOnProfileLoad{Profile}
+// - Search.OseSplitYahooJapan.EngineStateOnProfileLoad{Profile}
+void RecordSearchEngineSplitProfileLoadMetrics(
+    TemplateURL::OwnedTemplateURLVectorSpan template_urls,
+    const TemplateURL* default_search_provider,
+    const SearchTermsData& search_terms_data,
+    metrics::ProfileMetricsService& profile_metrics_service);
+
 // Records settings page load metrics:
 // - Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad{Profile}
 // - Search.OseSplitYahooJapan.CountOnSettingsPageLoad{Profile}

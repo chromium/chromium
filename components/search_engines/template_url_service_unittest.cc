@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -1364,4 +1365,58 @@ TEST_F(LoadedTemplateURLServiceUnitTestBase, RemoveUserAddedTemplateURLs) {
 
   // Custom engine should be removed.
   EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(u"custom"));
+}
+
+class SearchEngineSplitTemplateURLServiceTest
+    : public LoadedTemplateURLServiceUnitTestBase {
+ public:
+  explicit SearchEngineSplitTemplateURLServiceTest(const std::string& country)
+      : country_(country) {}
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, country_);
+    LoadedTemplateURLServiceUnitTestBase::SetUp();
+  }
+
+ protected:
+  std::string country_;
+  base::HistogramTester histogram_tester_;
+};
+
+class SearchEngineSplitTemplateURLServiceNonSplitRegionTest
+    : public SearchEngineSplitTemplateURLServiceTest {
+ public:
+  SearchEngineSplitTemplateURLServiceNonSplitRegionTest()
+      : SearchEngineSplitTemplateURLServiceTest("US") {}
+};
+
+TEST_F(SearchEngineSplitTemplateURLServiceNonSplitRegionTest,
+       SearchEngineSplitProfileLoadMetrics_NonSplitRegion) {
+  // In SetUp(), the service was loaded for US (non-split region).
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 0);
+}
+
+class SearchEngineSplitTemplateURLServiceSplitRegionTest
+    : public SearchEngineSplitTemplateURLServiceTest {
+ public:
+  SearchEngineSplitTemplateURLServiceSplitRegionTest()
+      : SearchEngineSplitTemplateURLServiceTest("JP") {}
+};
+
+TEST_F(SearchEngineSplitTemplateURLServiceSplitRegionTest,
+       SearchEngineSplitProfileLoadMetrics_SplitRegion) {
+  // When SetUp() ran with country JP, profile load metrics should be recorded.
+  // The default test DSE is Google, so DseType is not recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.DseTypeOnProfileLoad", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.CountOnProfileLoad", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 1);
 }

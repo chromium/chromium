@@ -257,6 +257,9 @@ TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
               profile)),
       CHECK_DEREF(
           TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile)),
+      CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile)),
       std::move(search_terms_data), web_data_service, std::move(client),
       std::move(dsp_change_callback));
 }
@@ -273,6 +276,9 @@ TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
               profile)),
       CHECK_DEREF(
           TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile)),
+      CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile)),
       initializers);
 }
 

@@ -19,6 +19,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
@@ -51,8 +52,13 @@ struct TemplateURLData;
 class TemplateUrlServiceAndroid;
 #endif
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 namespace regional_capabilities {
 class CountryIdHolder;
+class RegionalCapabilitiesService;
 }  // namespace regional_capabilities
 
 namespace search_engines {
@@ -186,6 +192,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
       TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
+      regional_capabilities::RegionalCapabilitiesService&
+          regional_capabilities_service,
+      metrics::ProfileMetricsService& profile_metrics_service,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
@@ -197,6 +206,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
       PrefService& prefs,
       search_engines::SearchEngineChoiceService& search_engine_choice_service,
       TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
+      regional_capabilities::RegionalCapabilitiesService&
+          regional_capabilities_service,
+      metrics::ProfileMetricsService& profile_metrics_service,
       base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
@@ -980,6 +992,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
       search_engine_choice_service_;
 
   raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
+
+  raw_ref<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
+
+  raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();

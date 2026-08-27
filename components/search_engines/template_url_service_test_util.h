@@ -80,6 +80,10 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
     return *search_engine_choice_service_.get();
   }
 
+  metrics::ProfileMetricsService& profile_metrics_service() {
+    return *profile_metrics_service_.get();
+  }
+
   TemplateURLService& template_url_service() {
     return *template_url_service_.get();
   }

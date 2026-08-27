@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/types/to_address.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
@@ -16,8 +17,54 @@ namespace search_engines {
 
 namespace {
 
+enum class Timing {
+  kProfileLoad,
+  kSettingsPageLoad,
+};
+
 bool IsYahooEngineType(SearchEngineType type) {
   return type == SEARCH_ENGINE_YAHOO || type == SEARCH_ENGINE_YAHOO_JP;
+}
+
+template <typename Range>
+void RecordSearchEngineSplitMetricsInternal(
+    const Range& template_urls,
+    const TemplateURL* default_search_provider,
+    const SearchTermsData& search_terms_data,
+    metrics::ProfileMetricsService& profile_metrics_service,
+    Timing timing) {
+  if (default_search_provider) {
+    if (std::optional<OseSplitType> dse_type =
+            InspectYahooEngineType(*default_search_provider, search_terms_data);
+        dse_type.has_value()) {
+      profile_metrics_service.UmaHistogramEnumeration(
+          timing == Timing::kProfileLoad
+              ? "Search.OseSplitYahooJapan.DseTypeOnProfileLoad"
+              : "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad",
+          *dse_type);
+    }
+  }
+
+  int yahoo_count = 0;
+  for (const auto& turl : template_urls) {
+    const TemplateURL& deref_turl = CHECK_DEREF(base::to_address(turl));
+    if (std::optional<OseSplitEngineState> state = InspectYahooEngineState(
+            deref_turl, default_search_provider, search_terms_data);
+        state.has_value()) {
+      yahoo_count++;
+      profile_metrics_service.UmaHistogramEnumeration(
+          timing == Timing::kProfileLoad
+              ? "Search.OseSplitYahooJapan.EngineStateOnProfileLoad"
+              : "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad",
+          *state);
+    }
+  }
+
+  profile_metrics_service.UmaHistogramCounts100(
+      timing == Timing::kProfileLoad
+          ? "Search.OseSplitYahooJapan.CountOnProfileLoad"
+          : "Search.OseSplitYahooJapan.CountOnSettingsPageLoad",
+      yahoo_count);
 }
 
 }  // namespace
@@ -91,34 +138,24 @@ std::optional<OseSplitEngineState> InspectYahooEngineState(
   }
 }
 
+void RecordSearchEngineSplitProfileLoadMetrics(
+    TemplateURL::OwnedTemplateURLVectorSpan template_urls,
+    const TemplateURL* default_search_provider,
+    const SearchTermsData& search_terms_data,
+    metrics::ProfileMetricsService& profile_metrics_service) {
+  RecordSearchEngineSplitMetricsInternal(
+      template_urls, default_search_provider, search_terms_data,
+      profile_metrics_service, Timing::kProfileLoad);
+}
+
 void RecordSearchEngineSplitSettingsPageLoadMetrics(
     TemplateURL::TemplateURLVectorSpan template_urls,
     const TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     metrics::ProfileMetricsService& profile_metrics_service) {
-  if (default_search_provider) {
-    if (std::optional<OseSplitType> dse_type =
-            InspectYahooEngineType(*default_search_provider, search_terms_data);
-        dse_type.has_value()) {
-      profile_metrics_service.UmaHistogramEnumeration(
-          "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad", *dse_type);
-    }
-  }
-
-  int yahoo_count = 0;
-  for (const TemplateURL* turl : template_urls) {
-    const TemplateURL& deref_turl = CHECK_DEREF(turl);
-    if (std::optional<OseSplitEngineState> state = InspectYahooEngineState(
-            deref_turl, default_search_provider, search_terms_data);
-        state.has_value()) {
-      yahoo_count++;
-      profile_metrics_service.UmaHistogramEnumeration(
-          "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad", *state);
-    }
-  }
-
-  profile_metrics_service.UmaHistogramCounts100(
-      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", yahoo_count);
+  RecordSearchEngineSplitMetricsInternal(
+      template_urls, default_search_provider, search_terms_data,
+      profile_metrics_service, Timing::kSettingsPageLoad);
 }
 
 }  // namespace search_engines

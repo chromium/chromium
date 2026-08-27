@@ -64,6 +64,15 @@ chromium-metrics-reviews@google.com.
   <variant name="ThirdPartyLauncher" summary="Third party launcher app"/>
 </variants>
 
+<variants name="OseSplitTiming">
+  <variant name="OnProfileLoad"
+      summary="Recorded on profile startup for users in Japan (JP)."/>
+  <variant name="OnSettingsPageLoad"
+      summary="Recorded once per settings page session for profiles that use
+               Japan's list of search engines when the Search Settings page
+               is opened."/>
+</variants>
+
 <variants name="SearchEnginePromoDeviceAndOrdering">
   <variant name=""/>
   <variant name=".First.ExistingDevice"/>
@@ -1543,48 +1552,45 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.OseSplitYahooJapan.CountOnSettingsPageLoad{Profile}"
+<histogram name="Search.OseSplitYahooJapan.Count{Timing}{Profile}"
     units="engines" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     Records the number of Yahoo! JAPAN search engine definitions present in the
-    profile when the Search Settings page is opened. Recorded once per settings
-    page session for profiles that use Japan's list of search engines.
+    profile. {Timing}
 
     {Profile}
   </summary>
+  <token key="Timing" variants="OseSplitTiming"/>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram name="Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad{Profile}"
+<histogram name="Search.OseSplitYahooJapan.DseType{Timing}{Profile}"
     enum="OseSplitType" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
-    Records the type of the Default Search Engine (DSE) when the Search Settings
-    page is opened. Recorded once per settings page session for profiles that
-    use Japan's list of search engines. Not recorded if the user's DSE is not
-    Yahoo! JAPAN.
+    Records the type of the Default Search Engine (DSE). Not recorded if the
+    user's DSE is not Yahoo! JAPAN. {Timing}
 
     {Profile}
   </summary>
+  <token key="Timing" variants="OseSplitTiming"/>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram
-    name="Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad{Profile}"
+<histogram name="Search.OseSplitYahooJapan.EngineState{Timing}{Profile}"
     enum="OseSplitEngineState" expires_after="2027-01-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     Records the detailed configuration state (see the OseSplitEngineState enum)
-    for each Yahoo! JAPAN search engine present in the profile when the Search
-    Settings page is opened. Recorded once per settings page session for
-    profiles that use Japan's list of search engines.
+    for each Yahoo! JAPAN search engine present in the profile. {Timing}
 
     {Profile}
   </summary>
+  <token key="Timing" variants="OseSplitTiming"/>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 

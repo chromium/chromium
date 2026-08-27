@@ -83,10 +83,13 @@ void TemplateURLServiceUnitTestBase::SetUp() {
   RegisterPrefsForTemplateURLService(pref_service_.registry());
   local_state_.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, true);
-  // Bypass the country checks.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      switches::kDefaultListCountryOverride);
+  // Bypass the country checks if not already set.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSearchEngineChoiceCountry)) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry,
+        switches::kDefaultListCountryOverride);
+  }
 
   regional_capabilities_service_ =
       regional_capabilities::CreateServiceWithFakeClient(pref_service_);
@@ -115,7 +118,8 @@ std::unique_ptr<TemplateURLService>
 TemplateURLServiceUnitTestBase::CreateService() {
   return std::make_unique<TemplateURLService>(
       pref_service_, *search_engine_choice_service_,
-      *prepopulate_data_resolver_.get(), std::make_unique<SearchTermsData>(),
+      *prepopulate_data_resolver_.get(), *regional_capabilities_service_,
+      *profile_metrics_service_, std::make_unique<SearchTermsData>(),
       nullptr /* KeywordWebDataService */,
       nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
 }
@@ -146,7 +150,8 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
 
   auto template_url_service = std::make_unique<TemplateURLService>(
       pref_service(), search_engine_choice_service(),
-      prepopulate_data_resolver(), std::make_unique<SearchTermsData>(),
+      prepopulate_data_resolver(), regional_capabilities_service(),
+      profile_metrics_service(), std::make_unique<SearchTermsData>(),
       keyword_data_service_, nullptr /* TemplateURLServiceClient */,
       base::RepeatingClosure());
 
@@ -161,8 +166,9 @@ void LoadedTemplateURLServiceUnitTestBase::SetUp() {
   template_url_service().Load();
   template_url_service_load_waiter_.WaitForLoadComplete(template_url_service());
 
-  ASSERT_EQ(GetKeywordTemplateURLs().size(),
-            regional_capabilities::GetDefaultPrepopulatedEngines().size());
+  ASSERT_EQ(
+      GetKeywordTemplateURLs().size(),
+      regional_capabilities_service().GetRegionalPrepopulatedEngines().size());
 }
 
 void LoadedTemplateURLServiceUnitTestBase::TearDown() {

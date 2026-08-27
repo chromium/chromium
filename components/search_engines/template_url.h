@@ -682,6 +682,8 @@ class TemplateURL {
   using TemplateURLVectorSpan =
       base::span<const raw_ptr<TemplateURL, VectorExperimental>>;
   using OwnedTemplateURLVector = std::vector<std::unique_ptr<TemplateURL>>;
+  using OwnedTemplateURLVectorSpan =
+      base::span<const std::unique_ptr<TemplateURL>>;
 
   // These values are not persisted and can be freely changed.
   // Their integer values are used for choosing the best engine during keyword
