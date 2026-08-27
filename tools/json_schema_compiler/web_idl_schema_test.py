@@ -579,6 +579,13 @@ class WebIdlSchemaTest(unittest.TestCase):
       ],
     )
 
+  def testIgnoresAdditionalPropertiesOnType(self):
+    self.assertTrue(
+      getType(self.idl_basics, 'IgnoreAdditionalPropertiesType')[
+        'ignoreAdditionalProperties'
+      ]
+    )
+
   # Tests that a schema that references a custom type that has not been defined
   # causes an error to be thrown.
   # TODO(crbug.com/450443604): This will likely have to change when adding
