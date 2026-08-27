@@ -364,11 +364,6 @@ class BrowserWindowFeatures {
     return history_clusters_side_panel_coordinator_.get();
   }
 
-  IncognitoClearBrowsingDataDialogCoordinator*
-  incognito_clear_browsing_data_dialog_coordinator() {
-    return incognito_clear_browsing_data_dialog_coordinator_.get();
-  }
-
   sessions::LiveTabContext* live_tab_context();
 
   // Returns the LocationBar for this browser window. Currently delegates to

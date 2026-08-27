@@ -5851,25 +5851,20 @@ void BrowserView::ShowHatsDialog(
 
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
-  browser()
-      ->GetFeatures()
-      .incognito_clear_browsing_data_dialog_coordinator()
-      ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
-             ToolbarButtonProvider::From(browser_)
-                 ->GetAvatarToolbarButtonInterface()
-                 ->GetBubbleAnchor(*browser()));
+  IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
+      IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
+      ToolbarButtonProvider::From(browser_)
+          ->GetAvatarToolbarButtonInterface()
+          ->GetBubbleAnchor(*browser()));
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
-  browser()
-      ->GetFeatures()
-      .incognito_clear_browsing_data_dialog_coordinator()
-      ->Show(IncognitoClearBrowsingDataDialogInterface::Type::
-                 kHistoryDisclaimerBubble,
-             ToolbarButtonProvider::From(browser_)
-                 ->GetAvatarToolbarButtonInterface()
-                 ->GetBubbleAnchor(*browser()));
+  IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
+      IncognitoClearBrowsingDataDialogInterface::Type::kHistoryDisclaimerBubble,
+      ToolbarButtonProvider::From(browser_)
+          ->GetAvatarToolbarButtonInterface()
+          ->GetBubbleAnchor(*browser()));
 }
 
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {

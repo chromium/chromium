@@ -861,7 +861,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   incognito_clear_browsing_data_dialog_coordinator_ =
-      std::make_unique<IncognitoClearBrowsingDataDialogCoordinator>(profile);
+      GetUserDataFactory()
+          .CreateInstance<IncognitoClearBrowsingDataDialogCoordinator>(
+              *browser, profile, browser->GetUnownedUserDataHost());
 
   live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
       browser, browser->GetTabStripModel(), profile, browser->GetWindow(),

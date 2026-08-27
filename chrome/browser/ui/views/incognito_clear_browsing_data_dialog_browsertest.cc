@@ -52,8 +52,8 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
   }
 
   IncognitoClearBrowsingDataDialogCoordinator* GetCoordinator() {
-    return incognito_browser_->GetFeatures()
-        .incognito_clear_browsing_data_dialog_coordinator();
+    return IncognitoClearBrowsingDataDialogCoordinator::From(
+        incognito_browser_);
   }
 
  private:
@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   std::u16string current_tab_title;
   ui_test_utils::GetCurrentTabTitle(incognito_browser, &current_tab_title);
   EXPECT_EQ(u"about:blank", current_tab_title);
-  auto* coordinator = incognito_browser->GetFeatures()
-                          .incognito_clear_browsing_data_dialog_coordinator();
+  auto* coordinator =
+      IncognitoClearBrowsingDataDialogCoordinator::From(incognito_browser);
   ASSERT_TRUE(coordinator->IsShowing());
 }
 
