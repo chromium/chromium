@@ -127,13 +127,11 @@ void ActorAutofillManager::MaybeLogCriticalAction(
               GetAutofillFilledTypesMetadata(*form_structure, filled_field_ids))
           .Build();
 
-  int64_t navigation_id = client_->GetNavigationId();
-  if (navigation_id != 0) {
-    critical_action_service_->AddCriticalActionWithNavigationId(entry,
-                                                                navigation_id);
-  } else {
-    critical_action_service_->AddCriticalAction(entry);
-  }
+  // Pass the navigation ID directly to the service. If the navigation ID is 0,
+  // the CriticalActionService will handle the drop and record it into the
+  // histogram.
+  critical_action_service_->AddCriticalActionWithNavigationId(
+      entry, client_->GetNavigationId());
 }
 
 }  // namespace autofill
