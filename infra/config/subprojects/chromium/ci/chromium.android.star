@@ -119,6 +119,8 @@ ci.builder(
             "has_native_resultdb_integration",
         ],
     ),
+    cores = 16,
+    ssd = True,
     free_space = builders.free_space.high,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
