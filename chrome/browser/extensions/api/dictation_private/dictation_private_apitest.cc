@@ -81,7 +81,7 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
         ->DispatchEventToExtension(extension_id_, std::move(event));
   }
 
-  void Stop() override {
+  void Stop(dictation::DictationStreamEndTrigger trigger) override {
     api::dictation_private::EndStreamDetails details;
     details.stream_id = stream_id_.value();
 

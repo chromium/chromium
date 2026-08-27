@@ -243,7 +243,8 @@ void DictationKeyedService::TriggerSession(
   } else {
     // Always stop existing stream before starting a new one.
     if (session_->controller_.attached_stream_provider()) {
-      session_->controller_.EndDictationStream();
+      session_->controller_.EndDictationStream(
+          DictationStreamEndTrigger::kNewSessionTriggered);
     }
 
     tabs::TabInterface* old_tab = session_->tab_.get();
@@ -302,7 +303,8 @@ void DictationKeyedService::ToggleHotkeyHandler() {
     bool tab_changed = (active_tab != old_tab);
 
     if (!tab_changed && session_->controller_.attached_stream_provider()) {
-      session_->controller_.EndDictationStream();
+      session_->controller_.EndDictationStream(
+          DictationStreamEndTrigger::kHotkeyToggle);
       return;
     }
   }

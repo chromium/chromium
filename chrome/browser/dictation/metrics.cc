@@ -28,4 +28,8 @@ void RecordDictationStreamStartTrigger(DictationStreamStartTrigger trigger) {
   base::UmaHistogramEnumeration(kStreamStartTriggerHistogramName, trigger);
 }
 
+void RecordDictationStreamExitStatus(DictationStreamExitStatus status) {
+  base::UmaHistogramEnumeration(kStreamExitReasonHistogramName, status);
+}
+
 }  // namespace dictation

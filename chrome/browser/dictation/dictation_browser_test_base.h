@@ -52,6 +52,9 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   void SimulateInvokeViaContextMenu(content::RenderFrameHost* render_frame_host,
                                     blink::DOMNodeIdType node_id);
 
+  // Waits until the session reaches the expected state.
+  void WaitForSessionState(SessionState target_state);
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

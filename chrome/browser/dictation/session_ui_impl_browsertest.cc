@@ -10,6 +10,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/target.h"
@@ -170,8 +171,9 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                       &views::View::GetEnabled, true),
 
     // kFinalizing.
-    Do([this]{
-      dictation_service().session_controller()->EndDictationStream();
+    Do([this] {
+      dictation_service().session_controller()->EndDictationStream(
+          DictationStreamEndTrigger::kTest);
     }),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
@@ -496,7 +498,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
       finalizing_stream = last_started_provider_;
       ASSERT_NE(finalizing_stream, nullptr);
       finalizing_stream_id = finalizing_stream->stream_id_for_testing();
-      dictation_service().session_controller()->EndDictationStream();
+      dictation_service().session_controller()->EndDictationStream(
+          DictationStreamEndTrigger::kTest);
     }),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     CheckResult(HasAttachedStreamProvider(), false),
@@ -659,7 +662,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 
     // Transition to kFinalizing: WaveformView shown, others absent.
     Do([this] {
-      dictation_service().session_controller()->EndDictationStream();
+      dictation_service().session_controller()->EndDictationStream(
+          DictationStreamEndTrigger::kTest);
     }),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
     InAnyContext(WaitForShow(

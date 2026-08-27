@@ -24,6 +24,7 @@
 
 namespace dictation {
 
+enum class DictationStreamEndTrigger;
 class SessionControllerDelegate;
 class SessionUi;
 class StreamProvider;
@@ -71,7 +72,7 @@ class SessionController : public SessionUiDelegate,
                             DictationStreamStartTrigger trigger);
 
   // Ends the current dictation stream and detaches the stream provider.
-  void EndDictationStream();
+  void EndDictationStream(DictationStreamEndTrigger trigger);
 
   // Updates the audio level in the UI.
   void UpdateAudioLevel(float audio_level);
