@@ -43,7 +43,6 @@ class InstanceIDDriver;
 
 namespace invalidation {
 class InvalidationListener;
-class LegacyTopicsCleaner;
 }  // namespace invalidation
 
 namespace user_manager {
@@ -341,9 +340,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // RequiredClientCertificateForDevice device policy.
   std::unique_ptr<ash::cert_provisioning::CertProvisioningScheduler>
       device_cert_provisioning_scheduler_;
-
-  // Unsubscribes any remaining invalidation topics.
-  std::unique_ptr<invalidation::LegacyTopicsCleaner> legacy_topics_cleaner_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
 };
