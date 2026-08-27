@@ -160,9 +160,8 @@ public class ActorForegroundServiceManagerTest {
         stopCallback.waitForOnly();
 
         assertFalse("Service should be unbound after delay.", mManager.isServiceBoundForTesting());
-        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         verify(mServiceController).unbindService();
-        verify(mNotificationService).repostNotification(1);
     }
 
     @Test
@@ -346,8 +345,7 @@ public class ActorForegroundServiceManagerTest {
         assertFalse(
                 "Service should be unbound after terminal timeout.",
                 mManager.isServiceBoundForTesting());
-        verify(mServiceController)
-                .stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
     }
 
     @Test

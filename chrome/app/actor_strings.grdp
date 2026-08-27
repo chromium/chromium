@@ -155,6 +155,18 @@
   <message name="IDS_ACTOR_NOTIFICATION_BODY_TASK_STARTS_SOON" desc="Notification body text when the actor task will start soon." formatter_data="android_java" translateable="false">
     Your task will start soon.
   </message>
+  <message name="IDS_ACTOR_NOTIFICATION_LIVE_STATUS_REVIEW" desc="Status chip text displayed when an actor task requires user review or approval." formatter_data="android_java">
+    Review
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_LIVE_STATUS_DONE" desc="Status chip text displayed when an actor task completes successfully." formatter_data="android_java">
+    Done
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_LIVE_STATUS_PAUSED" desc="Status chip text displayed when an actor task is paused." formatter_data="android_java">
+    Paused
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_LIVE_STATUS_STOPPED" desc="Status chip text displayed when an actor task is stopped." formatter_data="android_java">
+    Stopped
+  </message>
 
     <!-- Glic Peek View UI State Strings -->
   <message name="IDS_PEEK_STATE_NEW_CHAT" desc="Default title text for the peek view when there is a new chat with no title." formatter_data="android_java">

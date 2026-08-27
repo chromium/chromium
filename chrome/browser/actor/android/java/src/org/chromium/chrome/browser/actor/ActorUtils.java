@@ -17,6 +17,18 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 @NullMarked
 public class ActorUtils {
     /**
+     * Determines whether a notification should be ongoing. Ongoing status is used for live
+     * notifications and is gated on {@link ChromeFeatureList#sActorLiveNotification}, which
+     * controls Android 16 live notification (promoted ongoing) support.
+     *
+     * @param isLive Whether the notification is requested to be live.
+     * @return True if the notification should be ongoing.
+     */
+    public static boolean isOngoingNotification(boolean isLive) {
+        return isLive && ChromeFeatureList.sActorLiveNotification.isEnabled();
+    }
+
+    /**
      * @param state The {@link ActorTaskState} to check.
      * @return True if the state is completed (finished, failed, or cancelled).
      */
@@ -24,6 +36,14 @@ public class ActorUtils {
         return state == ActorTaskState.FINISHED
                 || state == ActorTaskState.FAILED
                 || state == ActorTaskState.CANCELLED;
+    }
+
+    /**
+     * @param state The {@link ActorTaskState} to check.
+     * @return True if the state is a stopped terminal state (failed or cancelled).
+     */
+    public static boolean isStoppedState(@ActorTaskState int state) {
+        return state == ActorTaskState.FAILED || state == ActorTaskState.CANCELLED;
     }
 
     /**

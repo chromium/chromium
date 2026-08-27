@@ -307,18 +307,12 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (!mIsServiceBound) return;
         mIsServiceBound = false;
 
-        int lastNotificationId = mPinnedNotificationId;
-
-        mServiceController.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        mServiceController.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         mServiceController.unbindService();
 
         mStartForegroundCalled = false;
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
-
-        if (lastNotificationId != INVALID_NOTIFICATION_ID && mNotificationService != null) {
-            mNotificationService.repostNotification(lastNotificationId);
-        }
 
         if (mStopCallbackForTesting != null) {
             mStopCallbackForTesting.run();

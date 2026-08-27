@@ -7,8 +7,10 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.IntDef;
+import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +34,12 @@ public class ActorNotificationFactory {
     /** Extra for the Intent to show the actor control bottom sheet. */
     public static final String EXTRA_SHOW_ACTOR_CONTROL =
             "org.chromium.chrome.browser.actor.SHOW_ACTOR_CONTROL";
+
+    // Constants for Android 16 (API 36) Promoted Ongoing (Live Updates) notifications.
+    public static final String EXTRA_REQUEST_PROMOTED_ONGOING =
+            Notification.EXTRA_REQUEST_PROMOTED_ONGOING;
+    public static final String EXTRA_SHORT_CRITICAL_TEXT =
+            NotificationCompat.EXTRA_SHORT_CRITICAL_TEXT;
 
     public static final int TASK_STARTS_SOON_NOTIFICATION_ID = 101;
 
@@ -64,6 +72,26 @@ public class ActorNotificationFactory {
      */
     public static NotificationWrapper buildNotification(
             ActorTask task, @ActorTaskState int state, boolean isSilent, boolean isWarning) {
+        return buildNotification(task, state, isSilent, isWarning, /* isLive= */ true);
+    }
+
+    /**
+     * Builds a notification for an actor task with an explicit state, warning mode, and live
+     * status.
+     *
+     * @param task The {@link ActorTask} to build the notification for.
+     * @param state The {@link ActorTaskState} of the task.
+     * @param isSilent Whether the notification should be silent.
+     * @param isWarning Whether the notification is in a warning state.
+     * @param isLive Whether the notification should be configured as a live notification.
+     * @return The built {@link NotificationWrapper}.
+     */
+    public static NotificationWrapper buildNotification(
+            ActorTask task,
+            @ActorTaskState int state,
+            boolean isSilent,
+            boolean isWarning,
+            boolean isLive) {
         int notificationId = task.getId();
         Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
@@ -77,6 +105,16 @@ public class ActorNotificationFactory {
                         .setLocalOnly(true)
                         .setSilent(isSilent);
 
+        if (ActorUtils.isOngoingNotification(isLive)) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true);
+            String chipText = getStatusChipText(context, state);
+            if (chipText != null) {
+                extras.putCharSequence(EXTRA_SHORT_CRITICAL_TEXT, chipText);
+            }
+            builder.addExtras(extras);
+        }
+
         if (isWarning) {
             return buildWarningNotification(builder, context, task, notificationId, state);
         } else if (ActorUtils.isRunningState(state)) {
@@ -86,9 +124,9 @@ public class ActorNotificationFactory {
         } else if (state == ActorTaskState.WAITING_ON_USER) {
             return buildUserInputNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.FINISHED) {
-            return buildSuccessNotification(builder, context, task, notificationId);
+            return buildSuccessNotification(builder, context, task, notificationId, isLive);
         } else {
-            return buildStoppedNotification(builder, context, task, notificationId);
+            return buildStoppedNotification(builder, context, task, notificationId, isLive);
         }
     }
 
@@ -191,10 +229,15 @@ public class ActorNotificationFactory {
     }
 
     private static NotificationWrapper buildSuccessNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
+            NotificationWrapperBuilder builder,
+            Context context,
+            ActorTask task,
+            int id,
+            boolean isLive) {
         String body = context.getString(R.string.actor_notification_body_complete, task.getTitle());
+        boolean isOngoing = ActorUtils.isOngoingNotification(isLive);
         builder.setAutoCancel(true)
-                .setOngoing(false)
+                .setOngoing(isOngoing)
                 .setContentTitle(context.getString(R.string.actor_notification_title_task_complete))
                 .setContentText(body)
                 .setBigTextStyle(body)
@@ -204,13 +247,16 @@ public class ActorNotificationFactory {
     }
 
     private static NotificationWrapper buildStoppedNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
-        String body =
-                context.getString(R.string.actor_notification_body_stopped, task.getTitle());
+            NotificationWrapperBuilder builder,
+            Context context,
+            ActorTask task,
+            int id,
+            boolean isLive) {
+        String body = context.getString(R.string.actor_notification_body_stopped, task.getTitle());
+        boolean isOngoing = ActorUtils.isOngoingNotification(isLive);
         builder.setAutoCancel(true)
-                .setOngoing(false)
-                .setContentTitle(
-                        context.getString(R.string.actor_notification_title_task_stopped))
+                .setOngoing(isOngoing)
+                .setContentTitle(context.getString(R.string.actor_notification_title_task_stopped))
                 .setContentText(body)
                 .setBigTextStyle(body)
                 .setContentIntent(createTabRoutingIntent(context, id, task));
@@ -241,6 +287,27 @@ public class ActorNotificationFactory {
         if (intent == null) return null;
         return PendingIntentProvider.getActivity(
                 context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Determines the status chip text based on the task's state.
+     *
+     * @param context The application context.
+     * @param state The {@link ActorTaskState}.
+     * @return The status chip text ("Done", "Stopped", "Review", "Paused"), or null for icon-only
+     *     chip.
+     */
+    public static @Nullable String getStatusChipText(Context context, @ActorTaskState int state) {
+        if (state == ActorTaskState.FINISHED) {
+            return context.getString(R.string.actor_notification_live_status_done);
+        } else if (ActorUtils.isStoppedState(state)) {
+            return context.getString(R.string.actor_notification_live_status_stopped);
+        } else if (state == ActorTaskState.WAITING_ON_USER) {
+            return context.getString(R.string.actor_notification_live_status_review);
+        } else if (ActorUtils.isPausedState(state)) {
+            return context.getString(R.string.actor_notification_live_status_paused);
+        }
+        return null;
     }
 
     /**

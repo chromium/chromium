@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
 public class ActorNotificationServiceTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -375,11 +377,8 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
-    public void testTerminalNotificationsAreDismissible() {
-        int taskId = 1;
-        when(mTask.getId()).thenReturn(taskId);
+    public void testTerminalNotificationStates() {
         when(mTask.getTitle()).thenReturn("Test Task");
-        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
         when(mServiceController.createTrustedBringTabToFrontIntent(any())).thenReturn(new Intent());
 
         int[] terminalStates = {
@@ -387,17 +386,206 @@ public class ActorNotificationServiceTest {
         };
 
         for (int state : terminalStates) {
-            when(mTask.getState()).thenReturn(state);
+            int taskId = state + 10;
+            ActorTask task = org.mockito.Mockito.mock(ActorTask.class);
+            when(task.getId()).thenReturn(taskId);
+            when(task.getTitle()).thenReturn("Test Task " + state);
+            when(task.getState()).thenReturn(state);
+            when(mKeyedService.getTask(taskId)).thenReturn(task);
+
             mNotificationService.updateNotificationForTask(
                     taskId, state, /* isSilent= */ false, /* isWarning= */ false);
             Notification notification =
                     mNotificationService.getCachedNotification(
                             taskId, /* isSilent= */ false, /* isWarning= */ false);
             assertNotNull("Notification should not be null for state: " + state, notification);
-            assertFalse(
-                    "Notification should NOT be ongoing for state: " + state,
+            assertTrue(
+                    "Initial terminal notification should be ongoing for state: " + state,
                     (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+            assertTrue(
+                    "Initial terminal notification should request promoted ongoing for state: "
+                            + state,
+                    notification.extras.getBoolean(
+                            ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+            assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+            // Run delayed tasks to fire demotion runnable.
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+            Notification demotedNotif =
+                    mNotificationService.getCachedNotification(
+                            taskId, /* isSilent= */ false, /* isWarning= */ false);
+            assertNotNull(demotedNotif);
+            assertFalse(
+                    "Demoted terminal notification should NOT be ongoing for state: " + state,
+                    (demotedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+            assertFalse(
+                    "Demoted terminal notification should not request promoted ongoing for state: "
+                            + state,
+                    demotedNotif.extras.getBoolean(
+                            ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+            assertNull(
+                    (Object)
+                            demotedNotif.extras.getCharSequence(
+                                    ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
         }
+    }
+
+    @Test
+    public void testFinishedNotificationDemotedAfterDelay() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        when(mServiceController.createTrustedBringTabToFrontIntent(any())).thenReturn(new Intent());
+
+        // Post finished notification.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        Notification liveNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(liveNotif);
+        assertTrue(
+                "Initial finished notification should be ongoing",
+                (liveNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Initial finished notification should request promoted ongoing",
+                liveNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Initial finished notification chip should be Done",
+                mContext.getString(R.string.actor_notification_live_status_done),
+                liveNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Advance looper to fire demotion runnable.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification demotedNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demotedNotif);
+        assertFalse(
+                "Demoted notification should not be ongoing",
+                (demotedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertFalse(
+                "Demoted notification should not request promoted ongoing",
+                demotedNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertNull(
+                (Object)
+                        demotedNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+        assertTrue(
+                "Demoted notification should have auto-cancel enabled",
+                (demotedNotif.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+    }
+
+    @Test
+    public void testStoppedNotificationDemotedAfterDelay() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FAILED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        when(mServiceController.createTrustedBringTabToFrontIntent(any())).thenReturn(new Intent());
+
+        // Post stopped notification.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FAILED, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        Notification liveNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(liveNotif);
+        assertTrue(
+                "Initial stopped notification should be ongoing",
+                (liveNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Initial stopped notification should request promoted ongoing",
+                liveNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Initial stopped notification chip should be Stopped",
+                mContext.getString(R.string.actor_notification_live_status_stopped),
+                liveNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Advance looper to fire demotion runnable.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification demotedNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demotedNotif);
+        assertFalse(
+                "Demoted stopped notification should not be ongoing",
+                (demotedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertFalse(
+                "Demoted stopped notification should not request promoted ongoing",
+                demotedNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertNull(
+                (Object)
+                        demotedNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+        assertTrue(
+                "Demoted stopped notification should have auto-cancel enabled",
+                (demotedNotif.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+    }
+
+    @Test
+    public void testCancelNotification_CancelsPendingDemotion() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        mNotificationService.clearAll();
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        // Advancing the looper should not post any notification.
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+    }
+
+    @Test
+    public void testDemoteToNonLiveNotification_WhenAlreadyCleared_DoesNothing() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        mNotificationService.clearAll();
+
+        // Direct invocation after clearAll should safely do nothing.
+        mNotificationService.demoteToNonLiveNotification(taskId);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
     }
 
     @Test
