@@ -864,6 +864,10 @@ if (is_win) {
           # framework into memory twice.
           "-Wl,-rpath,@executable_path/../../../../../../..",
 
+          # Add an rpath to the Libraries directory in the versioned framework
+          # for libraries packaged there.
+          "-Wl,-rpath,@loader_path/../../../../Libraries",
+
           # Add an rpath up to the base for all other libraries.
           "-Wl,-rpath,@loader_path/../../../../../../../../../..",
         ]
