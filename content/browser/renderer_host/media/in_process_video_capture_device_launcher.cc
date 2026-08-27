@@ -527,7 +527,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce([]() -> std::unique_ptr<PipScreenCaptureCoordinatorProxy> {
-        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
         if (auto* coordinator =
                 PipScreenCaptureCoordinatorImpl::GetInstance()) {
           return coordinator->CreateProxy();
@@ -553,7 +553,8 @@ void InProcessVideoCaptureDeviceLauncher::
         ReceiveDeviceCallback result_callback,
         std::unique_ptr<PipScreenCaptureCoordinatorProxy>
             pip_screen_capture_coordinator_proxy) {
-  DCHECK(device_task_runner_->BelongsToCurrentThread());
+  CHECK(device_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M158);
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
   DesktopCaptureImplementation implementation =
       CreatePlatformDependentVideoCaptureDevice(
@@ -582,8 +583,9 @@ void InProcessVideoCaptureDeviceLauncher::
         const media::VideoCaptureParams& params,
         std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
         ReceiveDeviceCallback result_callback) {
-  DCHECK(device_task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(DesktopMediaID::kFakeId, desktop_id.id);
+  CHECK(device_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M158);
+  CHECK_EQ(DesktopMediaID::kFakeId, desktop_id.id, base::NotFatalUntil::M158);
 
   fake_device_factory_ =
       std::make_unique<media::FakeVideoCaptureDeviceFactory>();
@@ -612,7 +614,8 @@ void InProcessVideoCaptureDeviceLauncher::OnFakeDevicesEnumerated(
     std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
     ReceiveDeviceCallback result_callback,
     std::vector<media::VideoCaptureDeviceInfo> devices_info) {
-  DCHECK(device_task_runner_->BelongsToCurrentThread());
+  CHECK(device_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M158);
 
   if (devices_info.empty()) {
     LOG(ERROR) << "Cannot start with no fake device config";

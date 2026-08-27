@@ -105,7 +105,8 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // mixed content for now. Once/if the browser should also check form submits
   // for mixed content than this will be allowed to happen and this DCHECK
   // should be updated.
-  DCHECK(!navigation_request->IsInOutermostMainFrame());
+  CHECK(!navigation_request->IsInOutermostMainFrame(),
+        base::NotFatalUntil::M158);
 
   RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
@@ -117,7 +118,8 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
               rfh->GetSiteInstance()->group()
           ? mixed_content_frame->GetLastCommittedURL()
           : mixed_content_frame->GetLastCommittedOrigin().GetURL();
-  DCHECK(!navigation_request->GetRedirectChain().empty());
+  CHECK(!navigation_request->GetRedirectChain().empty(),
+        base::NotFatalUntil::M158);
   GURL url_before_redirects = navigation_request->GetRedirectChain()[0];
   rfh->GetAssociatedLocalFrame()->MixedContentFound(
       mixed_content_url, navigation_request->GetURL(),

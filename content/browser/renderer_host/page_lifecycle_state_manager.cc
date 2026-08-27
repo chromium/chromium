@@ -118,8 +118,8 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
   }
   // Prevent races by waiting for confirmation that the renderer will no longer
   // evict the page before allowing it to exit the back-forward cache
-  DCHECK(is_in_back_forward_cache ||
-         !last_acknowledged_state_->eviction_enabled);
+  CHECK(is_in_back_forward_cache || !last_acknowledged_state_->eviction_enabled,
+        base::NotFatalUntil::M158);
   eviction_enabled_ = is_in_back_forward_cache;
   if (is_in_back_forward_cache) {
     SetBackForwardCacheEntered(BackForwardCacheEntered::kEntering);
@@ -132,7 +132,7 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
                        weak_ptr_factory_.GetWeakPtr()));
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kDispatchedPersisted;
   } else {
-    DCHECK(page_restore_params);
+    CHECK(page_restore_params, base::NotFatalUntil::M158);
     // When a page is restored from the back-forward cache, we should reset this
     // state so that it behaves correctly next time navigation occurs.
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kNotDispatched;
@@ -154,8 +154,9 @@ PageLifecycleStateManager::SetPagehideDispatchDuringNewPageCommit(
   // CalculatePageLifecycleState() below will be set to kHidden because it
   // depends on the value of |pagehide_dispatch_|.
   last_state_sent_to_renderer_ = CalculatePageLifecycleState();
-  DCHECK_EQ(last_state_sent_to_renderer_->visibility,
-            blink::mojom::PageVisibilityState::kHidden);
+  CHECK_EQ(last_state_sent_to_renderer_->visibility,
+           blink::mojom::PageVisibilityState::kHidden,
+           base::NotFatalUntil::M158);
 
   // We don't need to call SendUpdatesToRendererIfNeeded() because the update
   // will be sent through an OldPageInfo parameter in the CommitNavigation IPC.
@@ -164,16 +165,18 @@ PageLifecycleStateManager::SetPagehideDispatchDuringNewPageCommit(
 
 void PageLifecycleStateManager::DidSetPagehideDispatchDuringNewPageCommit(
     blink::mojom::PageLifecycleStatePtr acknowledged_state) {
-  DCHECK_EQ(acknowledged_state->visibility,
-            blink::mojom::PageVisibilityState::kHidden);
-  DCHECK_NE(acknowledged_state->pagehide_dispatch,
-            blink::mojom::PagehideDispatch::kNotDispatched);
+  CHECK_EQ(acknowledged_state->visibility,
+           blink::mojom::PageVisibilityState::kHidden,
+           base::NotFatalUntil::M158);
+  CHECK_NE(acknowledged_state->pagehide_dispatch,
+           blink::mojom::PagehideDispatch::kNotDispatched,
+           base::NotFatalUntil::M158);
   OnPageLifecycleStateChanged(std::move(acknowledged_state));
 }
 
 void PageLifecycleStateManager::SetIsLeavingBackForwardCache(
     base::OnceClosure done_cb) {
-  DCHECK(IsInBackForwardCache());
+  CHECK(IsInBackForwardCache(), base::NotFatalUntil::M158);
   eviction_enabled_ = false;
   SendUpdatesToRendererIfNeeded(nullptr, std::move(done_cb));
 }
@@ -181,7 +184,8 @@ void PageLifecycleStateManager::SetIsLeavingBackForwardCache(
 bool PageLifecycleStateManager::RendererExpectedToSendChannelAssociatedIpcs()
     const {
   // eviction_enabled_ => IsInBackForwardCache()
-  DCHECK(!eviction_enabled_ || IsInBackForwardCache());
+  CHECK(!eviction_enabled_ || IsInBackForwardCache(),
+        base::NotFatalUntil::M158);
   return !eviction_enabled_ || !last_acknowledged_state_->eviction_enabled;
 }
 
@@ -321,14 +325,15 @@ void PageLifecycleStateManager::OnSetPageLifecycleStateResponse(
 }
 
 void PageLifecycleStateManager::OnBackForwardCacheTimeout() {
-  DCHECK(!last_acknowledged_state_->is_in_back_forward_cache);
+  CHECK(!last_acknowledged_state_->is_in_back_forward_cache,
+        base::NotFatalUntil::M158);
   render_view_host_impl_->OnBackForwardCacheTimeout();
   back_forward_cache_timeout_monitor_.Stop();
 }
 
 void PageLifecycleStateManager::SetDelegateForTesting(
     PageLifecycleStateManager::TestDelegate* test_delegate) {
-  DCHECK(!test_delegate_ || !test_delegate);
+  CHECK(!test_delegate_ || !test_delegate, base::NotFatalUntil::M158);
   test_delegate_ = test_delegate;
 }
 

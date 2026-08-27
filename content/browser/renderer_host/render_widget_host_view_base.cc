@@ -247,7 +247,8 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   if (popup_host && popup_frame_host) {
     secondary_location = popup_host->GetView()->GetViewBounds().origin();
   } else if (unbounded_window) {
-    DCHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement));
+    CHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
+          base::NotFatalUntil::M158);
     secondary_location = unbounded_window->GetBounds().origin();
   }
 
@@ -323,8 +324,9 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
           return;
         } else {
           CHECK(unbounded_window);
-          DCHECK(
-              base::FeatureList::IsEnabled(blink::features::kUnboundedElement));
+          CHECK(
+              base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
+              base::NotFatalUntil::M158);
           gfx::Rect popup_subrect(src_subrect - offset);
           unbounded_window->CopyFromSurface(popup_subrect, dst_size, timeout,
                                             std::move(popup_done_callback));
@@ -1023,8 +1025,9 @@ void RenderWidgetHostViewBase::GetUnboundedSurfaceCompositorFrameSink(
 
 UnboundedSurfaceWindow* RenderWidgetHostViewBase::GetUnboundedSurfaceWindow()
     const {
-  DCHECK(!unbounded_surface_window_ ||
-         base::FeatureList::IsEnabled(blink::features::kUnboundedElement));
+  CHECK(!unbounded_surface_window_ ||
+            base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
+        base::NotFatalUntil::M158);
   return unbounded_surface_window_.get();
 }
 

@@ -610,7 +610,7 @@ void RenderWidgetHostViewIOS::SetActive(bool active) {
 }
 
 bool RenderWidgetHostViewIOS::ShouldRouteEvents() const {
-  DCHECK(host());
+  CHECK(host(), base::NotFatalUntil::M158);
   return host()->delegate() && host()->delegate()->GetInputEventRouter();
 }
 
@@ -829,7 +829,8 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
 #if !BUILDFLAG(IS_IOS_TVOS)
-  DCHECK_EQ(GetTextInputManager(), text_input_manager);
+  CHECK_EQ(GetTextInputManager(), text_input_manager,
+           base::NotFatalUntil::M158);
   const TextInputManager::TextSelection* selection =
       text_input_manager->GetTextSelection(updated_view);
   if (selection && selection->selected_text().length()) {

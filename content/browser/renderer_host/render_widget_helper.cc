@@ -20,7 +20,7 @@ base::LazyInstance<WidgetHelperMap>::DestructorAtExit g_widget_helpers =
 
 void AddWidgetHelper(int render_process_id,
                      const scoped_refptr<RenderWidgetHelper>& widget_helper) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   // We don't care if RenderWidgetHelpers overwrite an existing process_id. Just
   // want this to be up to date.
   g_widget_helpers.Get()[render_process_id] = widget_helper.get();
@@ -48,7 +48,7 @@ RenderWidgetHelper::FrameTokens::~FrameTokens() = default;
 RenderWidgetHelper::RenderWidgetHelper() : render_process_id_(-1) {}
 
 RenderWidgetHelper::~RenderWidgetHelper() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   // Delete this RWH from the map if it is found.
   WidgetHelperMap& widget_map = g_widget_helpers.Get();
@@ -106,7 +106,7 @@ void RenderWidgetHelper::StoreNextFrameRoutingID(
                    FrameTokens(routing_id, devtools_frame_token, document_token,
                                std::move(sandbox_origin_token)))
           .second;
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M158);
 }
 
 }  // namespace content

@@ -78,7 +78,7 @@ namespace content {
 FakeVideoCaptureDeviceLauncher::FakeVideoCaptureDeviceLauncher(
     media::VideoCaptureSystem* system)
     : system_(system) {
-  DCHECK(system_);
+  CHECK(system_, base::NotFatalUntil::M158);
 }
 
 FakeVideoCaptureDeviceLauncher::~FakeVideoCaptureDeviceLauncher() = default;

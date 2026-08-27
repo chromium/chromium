@@ -53,7 +53,7 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
     JNIEnv* env,
     content::NavigationEntry* entry,
     int index) {
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M158);
 
   // Get the details of the current entry
   ScopedJavaLocalRef<jobject> j_url(
@@ -239,7 +239,7 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     bool is_pdf,
     bool remove_extra_headers_on_cross_origin_redirect,
     const JavaRef<jstring>& internal_scroll_to_text_fragment) {
-  DCHECK(url);
+  CHECK(url, base::NotFatalUntil::M158);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
   // Wrap the raw pointer in case on an early return.
@@ -292,13 +292,14 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     // field. Note that kMaxURLChars is only enforced when serializing URLs
     // for IPC.
     GURL data_url = GURL(ConvertJavaStringToUTF8(env, data_url_as_string));
-    DCHECK(data_url.SchemeIs(url::kDataScheme));
-    DCHECK(params.url.SchemeIs(url::kDataScheme));
+    CHECK(data_url.SchemeIs(url::kDataScheme), base::NotFatalUntil::M158);
+    CHECK(params.url.SchemeIs(url::kDataScheme), base::NotFatalUntil::M158);
 #if DCHECK_IS_ON()
     {
       std::string mime_type, charset, data;
-      DCHECK(net::DataURL::Parse(params.url, &mime_type, &charset, &data));
-      DCHECK(data.empty());
+      CHECK(net::DataURL::Parse(params.url, &mime_type, &charset, &data),
+            base::NotFatalUntil::M158);
+      CHECK(data.empty(), base::NotFatalUntil::M158);
     }
 #endif
     std::string s = data_url.spec();
