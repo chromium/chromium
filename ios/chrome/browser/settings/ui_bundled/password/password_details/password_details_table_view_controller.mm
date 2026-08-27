@@ -409,8 +409,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeCreationDate];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.fieldNameLabelText =
-      l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_CREATION_DATE);
+  item.fieldNameLabelText = l10n_util::GetNSString(IDS_IOS_PASSKEY_LABEL);
   item.textFieldValue = [self passkeyCreationDateString:passwordDetails];
   item.textFieldEnabled = NO;
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;

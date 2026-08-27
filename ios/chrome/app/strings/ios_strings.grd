@@ -5665,6 +5665,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSKEY_INCOGNITO_INTERSTITIAL_DIALOG_TITLE" desc="Title of the dialog shown when a user tries to create a passkey while in Incognito mode.">
         Create a passkey outside of Incognito?
       </message>
+      <message name="IDS_IOS_PASSKEY_LABEL" desc="Label indicating that the credential is a passkey. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password' [iOS only]">
+        Passkey
+      </message>
       <message name="IDS_IOS_PASSKEY_PARTIAL_BOOTSTRAPPING_TITLE" desc="Title of the screen shown when the user needs to create their Google Password Manager pin to set up passkeys on their device.">
         Set up passkeys for this device
       </message>
@@ -7947,9 +7950,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE" desc="Tertiary action button text that leads to a list of instructions">
           Show me how
-      </message>
-      <message name="IDS_IOS_SHOW_PASSKEY_CREATION_DATE" desc="Label indicating that the text displayed below is the date at which the passkey was created. [Length: 20em] [iOS only]">
-        Passkey
       </message>
       <message name="IDS_IOS_SHOW_PASSKEY_DISPLAY_NAME" desc="Label indicating that the text displayed below is the display name (usually a legal name, as opposed to username, which is usually an email address) to which a saved passkey corresponds. [Length: 20em] [iOS only]">
         Display name

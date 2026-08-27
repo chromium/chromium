@@ -88,13 +88,13 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
 }
 
 + (instancetype)cellConfigurationForPasskey:(PasskeyImportItem*)item {
-  NSString* message =
-      item.creationDate
-          ? l10n_util::GetNSStringF(
-                IDS_IOS_CREDENTIAL_IMPORT_PASSKEY_CREATION_DATE,
-                base::TimeFormatShortDate(
-                    base::Time::FromNSDate(item.creationDate)))
-          : l10n_util::GetNSString(IDS_IOS_SHOW_PASSKEY_CREATION_DATE);
+  // Without a creation date, default to just showing the "Passkey" label.
+  NSString* message = item.creationDate
+                          ? l10n_util::GetNSStringF(
+                                IDS_IOS_CREDENTIAL_IMPORT_PASSKEY_CREATION_DATE,
+                                base::TimeFormatShortDate(
+                                    base::Time::FromNSDate(item.creationDate)))
+                          : l10n_util::GetNSString(IDS_IOS_PASSKEY_LABEL);
   return [[CredentialImportItemCellContentConfiguration alloc]
           initPrivateWithURL:item.url.title
                     username:item.username
