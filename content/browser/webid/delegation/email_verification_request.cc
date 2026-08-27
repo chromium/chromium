@@ -66,15 +66,11 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
     params.emplace_back(key, net::structured_headers::Item(value.GetString()));
   }
 
-  net::structured_headers::ParameterizedMember member;
-  member.member.emplace_back(
+  net::structured_headers::Dictionary dict;
+  dict["sig"] = net::structured_headers::ParameterizedMember(
       net::structured_headers::Item("hwk",
                                     net::structured_headers::Item::kTokenType),
       std::move(params));
-  member.member_is_inner_list = false;
-
-  net::structured_headers::Dictionary dict;
-  dict["sig"] = std::move(member);
 
   std::optional<std::string> signature_key_val_opt =
       net::structured_headers::SerializeDictionary(dict);
@@ -111,10 +107,8 @@ net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
                             net::structured_headers::Item(
                                 static_cast<int64_t>(created_time.ToTimeT())));
 
-  net::structured_headers::ParameterizedMember member_input(
-      std::move(list_items), std::move(params_input));
-  member_input.member_is_inner_list = true;
-  return member_input;
+  return net::structured_headers::ParameterizedMember(std::move(list_items),
+                                                      std::move(params_input));
 }
 
 std::string SerializeSignatureInput(

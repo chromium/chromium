@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/containers/to_vector.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -32,6 +33,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -83,38 +85,30 @@ net::structured_headers::Dictionary EncodeParams(
                    std::variant<std::string, std::vector<std::string>>>&
         params) {
   net::structured_headers::Dictionary dictionary;
-  for (const auto& pair : params) {
-    const std::string& key = pair.first;
-    const auto& value_variant = pair.second;
-
-    std::vector<net::structured_headers::ParameterizedItem>
-        member_items_for_param_member;
-
-    if (std::holds_alternative<std::string>(value_variant)) {
-      const std::string& value = std::get<std::string>(value_variant);
-      member_items_for_param_member.emplace_back(
-          net::structured_headers::Item(
-              value, net::structured_headers::Item::kStringType),
-          net::structured_headers::Parameters());
-    } else if (std::holds_alternative<std::vector<std::string>>(
-                   value_variant)) {
-      const std::vector<std::string>& values =
-          std::get<std::vector<std::string>>(value_variant);
-      for (const auto& value : values) {
-        member_items_for_param_member.emplace_back(
-            net::structured_headers::Item(
-                value, net::structured_headers::Item::kStringType),
-            net::structured_headers::Parameters());
-      }
-    }
-
-    auto member = net::structured_headers::ParameterizedMember(
-        std::move(member_items_for_param_member),
-        net::structured_headers::Parameters());
-    if (std::holds_alternative<std::string>(value_variant)) {
-      member.member_is_inner_list = false;
-    }
-    dictionary[key] = std::move(member);
+  for (const auto& [key, value_variant] : params) {
+    dictionary[key] = std::visit(
+        absl::Overload{
+            [](const std::string& value) {
+              return net::structured_headers::ParameterizedMember(
+                  net::structured_headers::Item(
+                      value, net::structured_headers::Item::kStringType),
+                  net::structured_headers::Parameters());
+            },
+            [](const std::vector<std::string>& values) {
+              return net::structured_headers::ParameterizedMember(
+                  base::ToVector(
+                      values,
+                      [](const auto& value) {
+                        return net::structured_headers::ParameterizedItem(
+                            net::structured_headers::Item(
+                                value,
+                                net::structured_headers::Item::kStringType),
+                            net::structured_headers::Parameters());
+                      }),
+                  net::structured_headers::Parameters());
+            },
+        },
+        value_variant);
   }
   return dictionary;
 }
