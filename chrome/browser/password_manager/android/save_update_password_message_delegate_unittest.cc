@@ -723,8 +723,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
   histogram_tester.ExpectUniqueSample(
@@ -790,8 +792,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -834,8 +838,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -878,8 +884,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -921,8 +929,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -968,8 +978,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*raw_form_manager, Save()).Times(0);
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
@@ -1022,8 +1034,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_CALL(*raw_form_manager, Save()).Times(0);
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
@@ -1398,11 +1412,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt));
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   TriggerActionClick();
 
@@ -1427,11 +1442,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt));
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   TriggerActionClick();
 
@@ -1467,11 +1483,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
   EXPECT_FALSE(is_password_saved());
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt));
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   test_device_lock_bridge()->SimulateDeviceLockComplete(true);
 
@@ -1505,11 +1522,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
   EXPECT_FALSE(is_password_saved());
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt));
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
 
   test_device_lock_bridge()->SimulateDeviceLockComplete(true);
 
@@ -1534,11 +1552,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
   test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
 
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt))
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
       .Times(0);
 
   std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
@@ -1575,11 +1594,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
   test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
 
-  EXPECT_CALL(
-      *helper_bridge(),
-      StartTrustedVaultKeyRetrievalFlow(
-          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                              kPasswordSavePrompt))
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(),
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
       .Times(0);
 
   std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
@@ -2022,8 +2042,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   // Trigger Save action
   EXPECT_CALL(*helper_bridge(),
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordSavePrompt));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
   TriggerActionClick();
 
   // The primary message should be dismissed, and no confirmation message

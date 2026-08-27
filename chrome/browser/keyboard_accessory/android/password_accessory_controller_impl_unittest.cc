@@ -1031,8 +1031,6 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
           .Build());
 }
 
-
-
 TEST_F(PasswordAccessoryControllerTest,
        RecordsAccessoryImpressionsForBlocklisted) {
   CreateSheetController();
@@ -1474,7 +1472,6 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   EXPECT_CALL(*mock_authenticator_ptr, Cancel());
 }
 
-
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
   WebAuthnCredManDelegate::override_cred_man_support_for_testing(
       CredManSupport::FULL_UNLESS_INAPPLICABLE);
@@ -1672,8 +1669,6 @@ TEST_F(PasswordAccessoryControllerTest,
           .Build());
 }
 
-
-
 TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1704,8 +1699,10 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
 
   EXPECT_CALL(*mock_error_message_helper_bridge_,
               StartTrustedVaultKeyRetrievalFlow(
-                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                         kPasswordManagerKeyboardAccessory));
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordManagerKeyboardAccessory,
+                  _));
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);

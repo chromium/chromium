@@ -144,6 +144,7 @@ class SaveUpdatePasswordMessageDelegate
   void StartSavePasswordFlow();
   void SolveTrustedVaultCheck(bool flow_involved_device_lock_ui,
                               bool is_device_lock_requirement_met);
+  void OnTrustedVaultRecoveryDone();
   void SaveFormManager(bool show_confirmation_message);
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();

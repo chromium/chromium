@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -17,11 +18,14 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.PendingIntent;
 
+import androidx.activity.result.ActivityResult;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,6 +37,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -50,6 +55,7 @@ import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.MockitoHelper;
 
@@ -214,20 +220,131 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
-    public void testStartTrustedVaultKeyRetrievalFlow() {
-        final Activity activity = mock(Activity.class);
+    public void testStartTrustedVaultKeyRetrievalFlow_WithActivityResultTracker_Success() {
+        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
+        final ActivityResultTracker tracker = mock(ActivityResultTracker.class);
+        when(activity.getActivityResultTracker()).thenReturn(tracker);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
         Promise<PendingIntent> intentPromise = new Promise<>();
         when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
 
+        Runnable completionCallback = mock(Runnable.class);
+
         PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
-                mWindowAndroidMock, mProfile, TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU);
+                mWindowAndroidMock,
+                mProfile,
+                TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU,
+                completionCallback);
 
         intentPromise.fulfill(mPendingIntent);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(activity).startActivity(any(), any());
+        ArgumentCaptor<ActivityResultTracker.ResultListener> listenerCaptor =
+                ArgumentCaptor.forClass(ActivityResultTracker.ResultListener.class);
+        verify(tracker).register(listenerCaptor.capture());
+        verify(tracker).startActivity(eq(listenerCaptor.getValue()), any(), eq(null));
+
+        ActivityResultTracker.ResultListener capturedListener = listenerCaptor.getValue();
+        assertTrue(
+                capturedListener
+                        .getRestorationKey()
+                        .startsWith(
+                                PasswordManagerErrorMessageHelperBridge
+                                        .TRUSTED_VAULT_KEY_RETRIEVAL_RESTORATION_KEY_NOT_TO_BE_RESTORED));
+
+        // Verify callback is not called before activity result is delivered.
+        verify(completionCallback, never()).run();
+
+        // Simulate activity result returning.
+        ActivityResult result = new ActivityResult(Activity.RESULT_OK, /* data= */ null);
+        capturedListener.onActivityResult(result, null);
+
+        verify(tracker).unregister(capturedListener);
+        verify(completionCallback).run();
+    }
+
+    @Test
+    public void testStartTrustedVaultKeyRetrievalFlow_TrackerStartActivityThrows() {
+        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
+        final ActivityResultTracker tracker = mock(ActivityResultTracker.class);
+        when(activity.getActivityResultTracker()).thenReturn(tracker);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+
+        doThrow(new RuntimeException()).when(tracker).startActivity(any(), any(), any());
+
+        Promise<PendingIntent> intentPromise = new Promise<>();
+        when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
+
+        Runnable completionCallback = mock(Runnable.class);
+
+        PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
+                mWindowAndroidMock,
+                mProfile,
+                TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU,
+                completionCallback);
+
+        intentPromise.fulfill(mPendingIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(tracker).unregister(any());
+        verify(completionCallback).run();
+    }
+
+    @Test
+    public void testStartTrustedVaultKeyRetrievalFlow_IntentPromiseFails() {
+        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+
+        Promise<PendingIntent> intentPromise = new Promise<>();
+        when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
+
+        Runnable completionCallback = mock(Runnable.class);
+
+        PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
+                mWindowAndroidMock,
+                mProfile,
+                TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU,
+                completionCallback);
+
+        intentPromise.reject(new Exception());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(completionCallback).run();
+    }
+
+    @Test
+    public void testStartTrustedVaultKeyRetrievalFlow_NoAccount() {
+        when(mSyncService.getAccountInfo()).thenReturn(null);
+
+        Runnable completionCallback = mock(Runnable.class);
+
+        PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
+                mWindowAndroidMock,
+                mProfile,
+                TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU,
+                completionCallback);
+
+        verify(completionCallback).run();
+    }
+
+    @Test
+    public void testStartTrustedVaultKeyRetrievalFlow_NullActivityRunsCallback() {
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(null));
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+
+        Runnable completionCallback = mock(Runnable.class);
+
+        PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
+                mWindowAndroidMock,
+                mProfile,
+                TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU,
+                completionCallback);
+
+        verify(mTrustedVaultBackend, never()).createKeyRetrievalIntent(any());
+        verify(completionCallback).run();
     }
 }

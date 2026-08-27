@@ -380,8 +380,12 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
     waiting_for_unlocking_trusted_vault_ = true;
     password_manager_error_message_helper_bridge_
         ->StartTrustedVaultKeyRetrievalFlow(
-            web_contents_, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                               kPasswordSavePrompt);
+            web_contents_,
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasswordSavePrompt,
+            base::BindOnce(
+                &SaveUpdatePasswordMessageDelegate::OnTrustedVaultRecoveryDone,
+                weak_ptr_factory_.GetWeakPtr()));
     // We don't save the credential or clear state yet.
     return;
   }
@@ -396,6 +400,11 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
       web_contents_->GetNativeView()->GetWindowAndroid()) {
     ClearState();
   }
+}
+
+void SaveUpdatePasswordMessageDelegate::OnTrustedVaultRecoveryDone() {
+  // TODO(crbug.com/543028154): Handle the result of the trusted vault unlock
+  // activity.
 }
 
 void SaveUpdatePasswordMessageDelegate::SaveFormManager(

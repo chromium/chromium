@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_
 
-#include <jni.h>
-
+#include "base/functional/callback_forward.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/web_contents.h"
 
@@ -23,16 +22,17 @@ class PasswordManagerErrorMessageHelperBridge {
 
   // An implementation of this method should call the Java method that starts
   // the Android process to retrieve key for on-device encryption. This method
-  // will only work for users that are currently syncing.
+  // will only work for users that are currently syncing. The callback is always
+  // invoked when the flow finishes, even if the flow was cancelled or failed.
   virtual void StartTrustedVaultKeyRetrievalFlow(
       content::WebContents* web_contents,
-      trusted_vault::TrustedVaultUserActionTriggerForUMA
-          user_action_trigger) = 0;
+      trusted_vault::TrustedVaultUserActionTriggerForUMA user_action_trigger,
+      base::OnceClosure completion_callback) = 0;
 
   // Checks if enough time has passed since the last error UI was shown.
   virtual bool ShouldShowSignInErrorUI(content::WebContents* web_contents) = 0;
 
-  // Saves the timestam at which the error UI was shown.
+  // Saves the timestamp at which the error UI was shown.
   virtual void SaveErrorUIShownTimestamp(
       content::WebContents* web_contents) = 0;
 };

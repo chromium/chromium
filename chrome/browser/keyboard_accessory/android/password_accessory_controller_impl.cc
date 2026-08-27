@@ -417,7 +417,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
           ->StartTrustedVaultKeyRetrievalFlow(
               &GetWebContents(),
               trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                  kPasswordManagerKeyboardAccessory);
+                  kPasswordManagerKeyboardAccessory,
+              base::DoNothing());
       return;
     case autofill::AccessoryAction::AUTOFILL_SUGGESTION:
     case autofill::AccessoryAction::MANAGE_CREDIT_CARDS:

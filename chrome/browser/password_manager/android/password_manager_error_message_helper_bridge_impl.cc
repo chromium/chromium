@@ -4,6 +4,10 @@
 
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
 
+#include <utility>
+
+#include "base/android/callback_android.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -32,11 +36,14 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 void PasswordManagerErrorMessageHelperBridgeImpl::
     StartTrustedVaultKeyRetrievalFlow(
         content::WebContents* web_contents,
-        trusted_vault::TrustedVaultUserActionTriggerForUMA
-            user_action_trigger) {
+        trusted_vault::TrustedVaultUserActionTriggerForUMA user_action_trigger,
+        base::OnceClosure completion_callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
   if (window_android == nullptr) {
+    if (completion_callback) {
+      std::move(completion_callback).Run();
+    }
     return;
   }
   Profile* profile =
@@ -44,7 +51,8 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startTrustedVaultKeyRetrievalFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      profile->GetJavaObject(), static_cast<int32_t>(user_action_trigger));
+      profile->GetJavaObject(), static_cast<int32_t>(user_action_trigger),
+      std::move(completion_callback));
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
