@@ -140,12 +140,6 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
 void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
                                        const GURL& url,
                                        const url::Origin& initiator_origin) {
-  auto intervention_outcome =
-      [](blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
-             outcome) {
-        UMA_HISTOGRAM_ENUMERATION("WebCore.Framebust.InterventionOutcome",
-                                  outcome);
-      };
   blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
       web_contents);
   blocked_content::FramebustBlockedMessageDelegate*
@@ -156,7 +150,7 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
       url, initiator_origin,
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
-      base::BindOnce(intervention_outcome));
+      base::NullCallback());
 }
 
 // The amount of time to disallow repeated pointer lock calls after the user

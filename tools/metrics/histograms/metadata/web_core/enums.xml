@@ -31,11 +31,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Streamed"/>
 </enum>
 
-<enum name="FramebustInterventionOutcome">
-  <int value="0" label="Accepted"/>
-  <int value="1" label="Declined and navigated"/>
-</enum>
-
 <enum name="IDBAction">
   <int value="0" label="BackingStoreOpenAttempt">
     Recorded when the there is an attempt to open the backing store from disk,
@@ -160,13 +155,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Corruption"/>
   <int value="2" label="IOError"/>
   <int value="3" label="Other"/>
-</enum>
-
-<enum name="ListItemPosition">
-  <int value="0" label="Only item"/>
-  <int value="1" label="First item"/>
-  <int value="2" label="Any middle item"/>
-  <int value="3" label="Last item"/>
 </enum>
 
 <enum name="MappedEditingCommands">
