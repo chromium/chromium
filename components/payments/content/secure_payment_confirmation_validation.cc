@@ -95,6 +95,19 @@ bool MatchLanguageTags(const std::vector<std::string>& request_tags,
   return false;
 }
 
+// Returns the outcome of matching the request's provided locales against the
+// application locale.
+SecurePaymentConfirmationLocaleOutcome GetSpcLocaleOutcome(
+    const mojom::SecurePaymentConfirmationRequestPtr& request,
+    const std::string& application_locale) {
+  if (request->locales.empty()) {
+    return SecurePaymentConfirmationLocaleOutcome::kLocaleNotProvided;
+  }
+  return MatchLanguageTags(request->locales, application_locale)
+             ? SecurePaymentConfirmationLocaleOutcome::kMatch
+             : SecurePaymentConfirmationLocaleOutcome::kNoMatch;
+}
+
 }  // namespace
 
 std::string SecurePaymentConfirmationRequestValidationErrorToString(
@@ -183,22 +196,10 @@ IsValidSecurePaymentConfirmationRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kSPCLocaleValidation)) {
-    if (request->locales.empty()) {
-      base::UmaHistogramEnumeration(
-          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-          SecurePaymentConfirmationLocaleOutcome::kLocaleNotProvided);
-    } else if (MatchLanguageTags(request->locales, application_locale)) {
-      base::UmaHistogramEnumeration(
-          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-          SecurePaymentConfirmationLocaleOutcome::kMatch);
-    } else {
-      base::UmaHistogramEnumeration(
-          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-          SecurePaymentConfirmationLocaleOutcome::kNoMatch);
-      return SecurePaymentConfirmationRequestValidationError::
-          kLocaleDoesNotMatch;
-    }
+  if (base::FeatureList::IsEnabled(features::kSPCLocaleValidation) &&
+      GetSpcLocaleOutcome(request, application_locale) ==
+          SecurePaymentConfirmationLocaleOutcome::kNoMatch) {
+    return SecurePaymentConfirmationRequestValidationError::kLocaleDoesNotMatch;
   }
 
   if (request->timeout.has_value() &&
@@ -300,6 +301,18 @@ IsValidSecurePaymentConfirmationRequest(
   }
 
   return SecurePaymentConfirmationRequestValidationError::kOk;
+}
+
+void RecordSpcLocaleOutcome(
+    const mojom::SecurePaymentConfirmationRequestPtr& request,
+    const std::string& application_locale) {
+  if (!base::FeatureList::IsEnabled(features::kSPCLocaleValidation)) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
+      GetSpcLocaleOutcome(request, application_locale));
 }
 
 }  // namespace payments

@@ -59,6 +59,12 @@ IsValidSecurePaymentConfirmationRequest(
     const url::Origin& initiator_origin,
     const std::string& application_locale);
 
+// Records the PaymentRequest.SecurePaymentConfirmation.LocaleOutcome histogram
+// based on the request locales and application locale.
+void RecordSpcLocaleOutcome(
+    const mojom::SecurePaymentConfirmationRequestPtr& request,
+    const std::string& application_locale);
+
 }  // namespace payments
 
 #endif  // COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_VALIDATION_H_

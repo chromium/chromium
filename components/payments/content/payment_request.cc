@@ -120,6 +120,9 @@ ValidateSecurePaymentConfirmationRequest(
         kSPCMethodMustNotBeNull;
   }
 
+  RecordSpcLocaleOutcome(method_data_entry->secure_payment_confirmation,
+                         application_locale);
+
   return IsValidSecurePaymentConfirmationRequest(
       method_data_entry->secure_payment_confirmation, initiator_origin,
       application_locale);

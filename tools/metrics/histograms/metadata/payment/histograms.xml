@@ -518,10 +518,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a website is passed a locale array when invoking Secure
     Payment Confirmation, and whether it matched the application locale.
-    Recorded once per call to the IsValidSecurePaymentConfirmationRequest
-    function when the feature flag is enabled. This function is invoked
-    asychronously on construction of a PaymentRequest object whose payment
-    method is SPC.
+    Recorded once upon initialization of a PaymentRequest object whose payment
+    method is SPC when the feature flag is enabled. Precisely, right before
+    IsValidSecurePaymentConfirmationRequest is called.
   </summary>
 </histogram>
 

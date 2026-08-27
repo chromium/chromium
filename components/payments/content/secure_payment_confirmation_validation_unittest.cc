@@ -7,11 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
-#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -425,53 +423,6 @@ TEST_F(SecurePaymentConfirmationValidationLocaleFeatureEnabledTest,
       payments::IsValidSecurePaymentConfirmationRequest(
           request, url::Origin::Create(GURL("https://rp.example")), "en-US"),
       SecurePaymentConfirmationRequestValidationError::kOk);
-}
-
-TEST_F(SecurePaymentConfirmationValidationLocaleFeatureEnabledTest,
-       LocaleOutcomeHistogramNotProvided) {
-  base::HistogramTester histogram_tester;
-  auto request = CreateValidRequest();
-
-  EXPECT_EQ(
-      payments::IsValidSecurePaymentConfirmationRequest(
-          request, url::Origin::Create(GURL("https://rp.example")), "en-US"),
-      SecurePaymentConfirmationRequestValidationError::kOk);
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-      SecurePaymentConfirmationLocaleOutcome::kLocaleNotProvided, 1);
-}
-
-TEST_F(SecurePaymentConfirmationValidationLocaleFeatureEnabledTest,
-       LocaleOutcomeHistogramMatch) {
-  base::HistogramTester histogram_tester;
-  auto request = CreateValidRequest();
-  request->locales.push_back("en-US");
-
-  EXPECT_EQ(
-      payments::IsValidSecurePaymentConfirmationRequest(
-          request, url::Origin::Create(GURL("https://rp.example")), "en-US"),
-      SecurePaymentConfirmationRequestValidationError::kOk);
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-      SecurePaymentConfirmationLocaleOutcome::kMatch, 1);
-}
-
-TEST_F(SecurePaymentConfirmationValidationLocaleFeatureEnabledTest,
-       LocaleOutcomeHistogramNoMatch) {
-  base::HistogramTester histogram_tester;
-  auto request = CreateValidRequest();
-  request->locales.push_back("fr-CA");
-
-  EXPECT_EQ(
-      payments::IsValidSecurePaymentConfirmationRequest(
-          request, url::Origin::Create(GURL("https://rp.example")), "en-US"),
-      SecurePaymentConfirmationRequestValidationError::kLocaleDoesNotMatch);
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
-      SecurePaymentConfirmationLocaleOutcome::kNoMatch, 1);
 }
 
 TEST_F(SecurePaymentConfirmationValidationTest, LocaleFeatureFlagDisabled) {

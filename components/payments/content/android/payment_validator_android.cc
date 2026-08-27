@@ -65,6 +65,7 @@ JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
     return static_cast<jint>(
         SecurePaymentConfirmationRequestValidationError::kInternalError);
   }
+  RecordSpcLocaleOutcome(request, application_locale);
   return static_cast<jint>(IsValidSecurePaymentConfirmationRequest(
       request, initiator_origin, application_locale));
 }
