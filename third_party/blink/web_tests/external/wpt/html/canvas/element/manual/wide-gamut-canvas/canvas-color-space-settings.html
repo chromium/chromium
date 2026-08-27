@@ -5,8 +5,9 @@
 // Test that creating canvas contexts and ImageData objects respect the
 // requested color space.
 
-for (let contextColorSpace of [undefined, "srgb", "display-p3"]) {
-    for (let imageDataColorSpace of [undefined, "srgb", "display-p3"]) {
+const colorSpaces = [undefined, "srgb", "display-p3", "srgb-linear", "display-p3-linear"];
+for (let contextColorSpace of colorSpaces) {
+    for (let imageDataColorSpace of colorSpaces) {
         test(function() {
             let contextSettings = { };
             if (contextColorSpace)
