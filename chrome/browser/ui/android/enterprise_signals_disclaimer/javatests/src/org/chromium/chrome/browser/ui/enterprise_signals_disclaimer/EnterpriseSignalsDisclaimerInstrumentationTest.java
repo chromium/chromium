@@ -6,13 +6,18 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
+import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import android.view.View;
 
@@ -115,17 +120,26 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         return instance;
     }
 
-    private void verifyActivityShowingSignalsDisclaimer() {
-        onView(withId(R.id.disclaimer_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.disclaimer_description)).check(matches(isDisplayed()));
+    private void waitForDisclaimerVisible() {
+        waitForVisibleView(withId(R.id.disclaimer_scroll_view));
 
-        // On smaller devices the buttons might not fit on the screen.
+        onView(withId(R.id.disclaimer_title)).perform(scrollTo()).check(matches(isDisplayed()));
+        onView(withId(R.id.disclaimer_description))
+                .perform(scrollTo())
+                .check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_accept_button))
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_cancel_button))
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
+    }
+
+    private void waitForDisclaimerNotShowing() {
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withId(R.id.disclaimer_scroll_view), VIEW_GONE | VIEW_NULL));
     }
 
     private @Nullable EnterpriseSignalsDisclaimerController createController() {
@@ -238,7 +252,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     public void disclaimerShowsOnStartup() {
-        verifyActivityShowingSignalsDisclaimer();
+        waitForDisclaimerVisible();
         final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
         // Verify that on phones the bottom sheet is used, while on large form factor the modal
         // dialog is used.
@@ -267,7 +281,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         // Close the currently open dialog, this should cause our disclaimer dialog to be shown.
         ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
 
-        verifyActivityShowingSignalsDisclaimer();
+        waitForDisclaimerVisible();
 
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
@@ -275,12 +289,12 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     public void disclaimerCannotBeSuppressed() {
-        verifyActivityShowingSignalsDisclaimer();
+        waitForDisclaimerVisible();
 
         final FakeDialog fakeDialog = showFakeDialog();
         Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
 
-        verifyActivityShowingSignalsDisclaimer();
+        waitForDisclaimerVisible();
     }
 
     @Test
@@ -308,10 +322,10 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
         Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
-        verifyActivityShowingSignalsDisclaimer();
+        waitForDisclaimerVisible();
 
         // Destroy the controller and verify that the dialog is not being shown anymore.
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
-        onView(withId(R.id.disclaimer_title)).check(doesNotExist());
+        waitForDisclaimerNotShowing();
     }
 }
