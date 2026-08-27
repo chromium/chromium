@@ -224,6 +224,11 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
+// Killswitch: When enabled, unifies the leak checkup dialog variations into a
+// single checkup dialog and removes the check for whether the credential was
+// saved on the current site.
+BASE_DECLARE_FEATURE(kUnifiedPasswordLeakDialog);
+
 // The feature enables the use of detached Widget during password change
 // to which WebContents is attached. This helps to resolve the problem
 // that requestAnimationFrame() is not fired on a detached WebContents.

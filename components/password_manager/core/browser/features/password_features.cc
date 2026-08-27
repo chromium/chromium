@@ -214,6 +214,8 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUnifiedPasswordLeakDialog, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseDetachedWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseProcessBoundPasswordString, base::FEATURE_DISABLED_BY_DEFAULT);
