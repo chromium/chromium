@@ -36,12 +36,14 @@ class ContextualCueingWebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
   friend class content::WebContentsUserData<
       ContextualCueingWebContentsObserver>;
 
   raw_ptr<ContextualCueingService> service_;
+  bool should_evaluate_cues_on_load_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

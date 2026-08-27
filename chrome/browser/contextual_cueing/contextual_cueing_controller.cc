@@ -385,7 +385,15 @@ void ContextualCueingController::OnTabNavigated(tabs::TabInterface* tab) {
 }
 
 void ContextualCueingController::OnTabActivated(tabs::TabInterface* tab) {
-  UrlChanged(tab_->GetURL());
+  OnUrlChanged(tab_->GetURL());
+}
+
+void ContextualCueingController::OnUrlChanged(const GURL& url) {
+  if (url == last_logged_active_url_) {
+    return;
+  }
+  last_logged_active_url_ = url;
+  CUEING_LOG(base::StringPrintf("Tab URL changed to %s", url.spec()));
 }
 
 void ContextualCueingController::OnTabDetached(
@@ -415,20 +423,10 @@ void ContextualCueingController::ObserveTabList() {
   }
 }
 
-void ContextualCueingController::UrlChanged(const GURL& url) {
-  if (url == last_logged_active_url_) {
+void ContextualCueingController::EvaluateCues() {
+  if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
     return;
   }
-  last_logged_active_url_ = url;
-  CUEING_LOG(base::StringPrintf("Tab URL changed to %s", url.spec()));
-
-  // V2: kick off parallel eligibility fan-out for all registered targets.
-  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    EvaluateCues();
-  }
-}
-
-void ContextualCueingController::EvaluateCues() {
   if (!tab_->IsActivated()) {
     return;
   }

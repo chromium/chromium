@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/browser_process.h"
@@ -2224,7 +2225,8 @@ class ContextualCueingControllerMultiSourceBrowserTest
         {{kContextualCueingV2,
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "always"},
-           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"}}},
+           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"},
+           {"ContextualCueingV2DisableCueBackoff", "true"}}},
          {kContextualCueingV2MultiSource, {}}},
         /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
   }
@@ -2276,6 +2278,47 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                                       1);
   VerifyProactiveCueDecision(ukm_recorder,
                              ContextualCueingDecision::kHistorySyncOff);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       TabActivation_DoesNotTriggerEvaluation) {
+  base::HistogramTester histogram_tester;
+
+  // Start embedded test server to serve real pages.
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Seed the execution result so we get kSuccess instead of failure.
+  SeedExecutionResult(MakeCompleteResponse());
+
+  // 1. Load First Tab
+  GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  // Wait for initial load evaluation to complete.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 1);
+
+  // 2. Open and Load Second Tab (Foreground)
+  GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Wait for second load evaluation to complete.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 2);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 2);
+
+  // 3. Switch back to First Tab
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // 4. Verify Evaluation DID NOT happen again
+  // yield control to ensure no async tasks were accidentally queued.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Total count should still be 2.
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 2);
 }
 
 class ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest
