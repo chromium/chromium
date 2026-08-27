@@ -21,6 +21,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -29,6 +30,22 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+
+namespace {
+
+ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon) {
+  if (icon.IsVectorIcon()) {
+    const ui::VectorIconModel& vector_model = icon.GetVectorIcon();
+    if (vector_model.icon_size() != ui::SimpleMenuModel::kDefaultIconSize) {
+      return ui::ImageModel::FromVectorIcon(
+          *vector_model.vector_icon(), vector_model.color(),
+          ui::SimpleMenuModel::kDefaultIconSize, vector_model.badge_icon());
+    }
+  }
+  return icon;
+}
+
+}  // namespace
 
 ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
@@ -173,7 +190,9 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
 
       if (ui::ImageModel* icon_override = children[i]->GetProperty(
               ActionAppMenuManager::kIconOverrideKey)) {
-        menu_item->SetIcon(*icon_override);
+        menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));
+      } else if (!child_ptr->GetImage().IsEmpty()) {
+        menu_item->SetIcon(StandardizeMenuIconSize(child_ptr->GetImage()));
       }
 
       if (is_zoom_menu_item) {
