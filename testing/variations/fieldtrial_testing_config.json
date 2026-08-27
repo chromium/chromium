@@ -20311,6 +20311,21 @@
             ]
         }
     ],
+    "WaylandTouchpadUnscaledScrolling": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260824",
+                    "enable_features": [
+                        "WaylandUnscaledTouchpadScrolling"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [
