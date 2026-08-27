@@ -18,6 +18,7 @@ source_set("picture_in_picture") {
   sources = [
     "picture_in_picture_bounds_cache.h",
     "picture_in_picture_window_manager.h",
+    "video_overlay_window.h",
 
     # Common Auto Picture-in-Picture files
     "auto_picture_in_picture_safe_browsing_checker_client.h",

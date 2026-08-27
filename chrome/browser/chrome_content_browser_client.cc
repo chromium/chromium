@@ -133,6 +133,7 @@
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
+#include "chrome/browser/picture_in_picture/video_overlay_window.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -366,7 +367,6 @@
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/overlay_window.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -7252,13 +7252,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
 std::unique_ptr<content::VideoOverlayWindow>
 ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
     content::VideoPictureInPictureWindowController* controller) {
-  // Note: content::VideoOverlayWindow::Create() is defined by platform-specific
-  // implementation in chrome/browser/ui/views. This layering hack, which goes
-  // through //content and ContentBrowserClient, allows us to work around the
-  // dependency constraints that disallow directly calling
-  // chrome/browser/ui/views code either from here or from other code in
-  // chrome/browser.
-  return content::VideoOverlayWindow::Create(controller);
+  return CreateVideoOverlayWindow(controller);
 }
 
 base::ScopedClosureRunner

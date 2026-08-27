@@ -21,6 +21,7 @@
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/video_overlay_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -419,8 +420,7 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 }
 
 // static
-std::unique_ptr<content::VideoOverlayWindow>
-content::VideoOverlayWindow::Create(
+std::unique_ptr<content::VideoOverlayWindow> CreateVideoOverlayWindow(
     content::VideoPictureInPictureWindowController* controller) {
   return VideoOverlayWindowViews::Create(controller);
 }

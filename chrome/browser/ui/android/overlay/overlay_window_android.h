@@ -23,6 +23,10 @@ namespace cc::slim {
 class SurfaceLayer;
 }
 
+namespace content {
+class VideoPictureInPictureWindowController;
+}
+
 namespace thin_webview {
 namespace android {
 class CompositorView;

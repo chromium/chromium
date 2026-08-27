@@ -25,8 +25,6 @@ class SurfaceId;
 
 namespace content {
 
-class VideoPictureInPictureWindowController;
-
 // This window will always float above other windows. The intention is to show
 // content perpetually while the user is still interacting with the other
 // browser windows.
@@ -39,16 +37,6 @@ class VideoOverlayWindow {
     kPaused,
     kEndOfVideo,
   };
-
-  VideoOverlayWindow() = default;
-
-  VideoOverlayWindow(const VideoOverlayWindow&) = delete;
-  VideoOverlayWindow& operator=(const VideoOverlayWindow&) = delete;
-
-  // Returns a created VideoOverlayWindow. This is defined in the
-  // platform-specific implementation for the class.
-  static std::unique_ptr<VideoOverlayWindow> Create(
-      VideoPictureInPictureWindowController* controller);
 
   virtual ~VideoOverlayWindow() = default;
 
