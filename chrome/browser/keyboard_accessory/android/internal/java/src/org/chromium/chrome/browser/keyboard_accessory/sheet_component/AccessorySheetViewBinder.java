@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HORIZONTAL_PADDING;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.MAX_WIDTH;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
@@ -67,10 +66,6 @@ class AccessorySheetViewBinder {
             if (model.get(ACTIVE_TAB_INDEX) != NO_ACTIVE_TAB) {
                 view.setCurrentItem(model.get(ACTIVE_TAB_INDEX));
                 view.setTitle(model.get(TABS).get(model.get(ACTIVE_TAB_INDEX)).getTitle());
-            }
-        } else if (propertyKey == PAGE_CHANGE_LISTENER) {
-            if (model.get(PAGE_CHANGE_LISTENER) != null) {
-                view.addOnPageChangeListener(model.get(PAGE_CHANGE_LISTENER));
             }
         } else if (propertyKey == SHOW_KEYBOARD_CALLBACK) {
             view.setShowKeyboardCallback(model.get(SHOW_KEYBOARD_CALLBACK));

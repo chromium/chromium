@@ -179,10 +179,6 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
         mMediator.setActiveTab(position);
     }
 
-    public void setOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {
-        mMediator.setOnPageChangeListener(onPageChangeListener);
-    }
-
     @Override
     public void addObserver(Observer observer) {
         mMediator.addObserver(observer);

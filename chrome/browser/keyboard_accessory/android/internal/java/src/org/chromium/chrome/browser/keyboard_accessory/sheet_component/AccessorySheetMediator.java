@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HORIZONTAL_PADDING;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.MAX_WIDTH;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
@@ -27,7 +26,6 @@ import android.view.Gravity;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
@@ -190,15 +188,10 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
                 || propertyKey == BACKGROUND
                 || propertyKey == BAR_SHADOW_VISIBLE
                 || propertyKey == TOP_SHADOW_VISIBLE
-                || propertyKey == PAGE_CHANGE_LISTENER
                 || propertyKey == SHOW_KEYBOARD_CALLBACK) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
-    }
-
-    void setOnPageChangeListener(ViewPager.OnPageChangeListener onPageChangeListener) {
-        mModel.set(PAGE_CHANGE_LISTENER, onPageChangeListener);
     }
 
     @VisibleForTesting

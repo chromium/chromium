@@ -250,7 +250,6 @@ class ManualFillingMediator
         if (controlsManager != null) {
             mAccessorySheet.setContentOffsetSupplier(controlsManager::getContentOffset);
         }
-        mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
         mApplicationViewportInsetTracker =
                 mWindowAndroid.getApplicationBottomInsetTracker().getSupplier();

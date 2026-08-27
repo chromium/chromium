@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
@@ -451,10 +450,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      */
     public boolean hasActiveTab() {
         return mMediator.hasActiveTab();
-    }
-
-    public ViewPager.OnPageChangeListener getOnPageChangeListener() {
-        return mButtonGroup.getStablePageChangeListener();
     }
 
     public KeyboardAccessoryMediator getMediatorForTesting() {

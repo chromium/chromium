@@ -61,7 +61,6 @@ class AccessorySheetMetricsRecorder {
                             || propertyKey == AccessorySheetProperties.BACKGROUND
                             || propertyKey == AccessorySheetProperties.BAR_SHADOW_VISIBLE
                             || propertyKey == AccessorySheetProperties.TOP_SHADOW_VISIBLE
-                            || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER
                             || propertyKey == AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK) {
                         return;
                     }
