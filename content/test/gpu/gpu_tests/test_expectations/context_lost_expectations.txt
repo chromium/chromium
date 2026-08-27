@@ -156,9 +156,6 @@ crbug.com/1154047 [ android ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1154047 [ fuchsia ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
-# WebGPU tests hanging on multiple Mac FYI bots
-crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-
 # Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes.
 # This hardware configuration is effectively obsolete; this won't be investigated.
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
@@ -216,10 +213,6 @@ crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ F
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
-
-
-# Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
-crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
 # Windows debug causes render process hangs due to slow gpu process restart.
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]

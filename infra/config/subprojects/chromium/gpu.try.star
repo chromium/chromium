@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("@chromium-luci//builders.star", "cpu")
 load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
 load("//lib/gpu.star", "gpu")
@@ -320,19 +319,6 @@ def gpu_mac_builder(*args, **kwargs):
     return gpu.try_.mac_manual_builder(*args, **kwargs)
 
 gpu_mac_builder(
-    name = "gpu-fyi-try-mac-amd-retina-asan",
-    mirrors = [
-        "ci/GPU FYI Mac Builder (asan)",
-        "ci/Mac FYI Retina ASAN (AMD)",
-    ],
-    gn_args = "ci/GPU FYI Mac Builder (asan)",
-    # //tools/grit:brotli_mac_asan_workaround doesn't create bundle
-    # `obj/tools/grit/brotli_mac_asan_workaround/` when cross compiling
-    # from ARM host.
-    cpu = cpu.X86_64,
-)
-
-gpu_mac_builder(
     name = "gpu-fyi-try-mac-amd-retina-dbg",
     mirrors = [
         "ci/GPU FYI Mac Builder (dbg)",
@@ -422,19 +408,6 @@ gpu_mac_builder(
         "ci/Mac FYI Retina Release (Apple M3)",
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
-)
-
-gpu_mac_builder(
-    name = "gpu-fyi-try-mac-intel-asan",
-    mirrors = [
-        "ci/GPU FYI Mac Builder (asan)",
-        "ci/Mac FYI ASAN (Intel)",
-    ],
-    gn_args = "ci/GPU FYI Mac Builder (asan)",
-    # //tools/grit:brotli_mac_asan_workaround doesn't create bundle
-    # `obj/tools/grit/brotli_mac_asan_workaround/` when cross compiling
-    # from ARM host.
-    cpu = cpu.X86_64,
 )
 
 gpu_mac_builder(

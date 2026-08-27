@@ -134,9 +134,6 @@ crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_perfo
 # Software Compositing is not supported on ChromeOS.
 crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
 
-# WebGPU tests hanging on multiple Mac FYI bots
-crbug.com/1305020 [ mac asan intel-0x3e9b ] GpuProcess_webgpu_iframe_removed [ Skip ]
-
 # Fails on Fuchsia cast receiver - not important to fix
 crbug.com/500083376 [ fuchsia ] GpuProcess_vulkan_vma_race [ Skip ]
 

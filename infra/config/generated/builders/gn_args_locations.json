@@ -391,7 +391,6 @@
     "GPU FYI Linux Builder (dbg)": "ci/GPU FYI Linux Builder (dbg)/gn-args.json",
     "GPU FYI Linux Wayland Builder": "ci/GPU FYI Linux Wayland Builder/gn-args.json",
     "GPU FYI Mac Builder": "ci/GPU FYI Mac Builder/gn-args.json",
-    "GPU FYI Mac Builder (asan)": "ci/GPU FYI Mac Builder (asan)/gn-args.json",
     "GPU FYI Mac Builder (dbg)": "ci/GPU FYI Mac Builder (dbg)/gn-args.json",
     "GPU FYI Mac arm64 Builder": "ci/GPU FYI Mac arm64 Builder/gn-args.json",
     "GPU FYI Mac arm64 Builder (asan)": "ci/GPU FYI Mac arm64 Builder (asan)/gn-args.json",
@@ -874,7 +873,6 @@
   "tryserver.chromium.mac": {
     "gpu-fyi-cq-mac-arm64": "try/gpu-fyi-cq-mac-arm64/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-555x-rel": "try/gpu-fyi-try-mac-amd-retina-555x-rel/gn-args.json",
-    "gpu-fyi-try-mac-amd-retina-asan": "try/gpu-fyi-try-mac-amd-retina-asan/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-dbg": "try/gpu-fyi-try-mac-amd-retina-dbg/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-exp": "try/gpu-fyi-try-mac-amd-retina-exp/gn-args.json",
     "gpu-fyi-try-mac-amd-retina-rel": "try/gpu-fyi-try-mac-amd-retina-rel/gn-args.json",
@@ -884,7 +882,6 @@
     "gpu-fyi-try-mac-arm64-apple-m2-exp": "try/gpu-fyi-try-mac-arm64-apple-m2-exp/gn-args.json",
     "gpu-fyi-try-mac-arm64-apple-m2-retina-rel": "try/gpu-fyi-try-mac-arm64-apple-m2-retina-rel/gn-args.json",
     "gpu-fyi-try-mac-arm64-apple-m3-retina-rel": "try/gpu-fyi-try-mac-arm64-apple-m3-retina-rel/gn-args.json",
-    "gpu-fyi-try-mac-intel-asan": "try/gpu-fyi-try-mac-intel-asan/gn-args.json",
     "gpu-fyi-try-mac-intel-dbg": "try/gpu-fyi-try-mac-intel-dbg/gn-args.json",
     "gpu-fyi-try-mac-intel-exp": "try/gpu-fyi-try-mac-intel-exp/gn-args.json",
     "gpu-fyi-try-mac-intel-rel": "try/gpu-fyi-try-mac-intel-rel/gn-args.json",

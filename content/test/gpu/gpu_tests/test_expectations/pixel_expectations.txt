@@ -286,13 +286,7 @@ crbug.com/42240193 [ win10 nvidia target-cpu-32 ] Pixel_WebGPU* [ Skip ]
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# WebGPU pixel tests crash on multiple mac fyi  bots.
-crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUImport* [ Skip ]
-
-crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUCanvas* [ Skip ]
-
 crbug.com/1213170 [ mac asan ] Pixel_WebGPUWebGL* [ Skip ]
-crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 crbug.com/1203317 [ mac ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
 
@@ -368,10 +362,8 @@ crbug.com/486121429 [ android android-sm-s911u1 ] Pixel_SVGHuge [ Slow ]
 # Mac
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac intel release asan ] Pixel_SVGHuge [ Skip ]
 crbug.com/486121429 [ mac intel release no-asan ] Pixel_SVGHuge [ Slow ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
 crbug.com/1474637 [ mac amd release no-asan graphite-disabled ] Pixel_SVGHuge [ Skip ]
 crbug.com/381211724 [ mac amd release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
 crbug.com/486121429 [ mac apple ] Pixel_SVGHuge [ Slow ]
@@ -389,16 +381,13 @@ crbug.com/486121429 [ linux intel ] Pixel_SVGHuge [ Slow ]
 crbug.com/486121429 [ linux amd ] Pixel_SVGHuge [ Slow ]
 
 # Mac Asan timeouts
-crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUToDataURL [ Slow ]
 crbug.com/338200323 crbug.com/479387364 [ mac angle-metal asan passthrough ] Pixel_WebGLSadCanvas [ Failure ]
 crbug.com/338200323 [ sonoma angle-metal asan passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Slow ]
 crbug.com/338200323 [ sonoma angle-metal asan passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan passthrough ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Slow ]
-crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan passthrough ] Pixel_Video_Context_Loss_VP9 [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan passthrough ] Pixel_Video_Context_Loss_MP4 [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan passthrough ] Pixel_WebGLContextRestored [ Slow ]
-crbug.com/403252788 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthrough ] Pixel_2DCanvasWebGL [ Slow ]
 
 # Flakily hits heartbeat timeout, context restoration likely just slow on these
 # devices
