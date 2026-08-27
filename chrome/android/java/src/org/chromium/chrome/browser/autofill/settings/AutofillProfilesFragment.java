@@ -234,7 +234,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 new ChromeSwitchPreference(getStyledContext(), null);
         autofillSwitch.setTitle(R.string.autofill_enable_profiles_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
-        autofillSwitch.setChecked(personalDataManager.isAutofillProfileEnabled());
+        boolean disabledSettings = disabledSettingsInThirdPartyMode(getProfile());
+        autofillSwitch.setEnabled(!disabledSettings);
+        autofillSwitch.setChecked(
+                personalDataManager.isAutofillProfileEnabled() && !disabledSettings);
         autofillSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     personalDataManager.setAutofillProfileEnabled((boolean) newValue);
@@ -250,10 +253,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         // For testing.
         autofillSwitch.setKey(SAVE_AND_FILL_ADDRESSES);
         // LINT.ThenChange(:DynamicAutofillSwitch)
-        if (disabledSettingsInThirdPartyMode(getProfile())) {
-            autofillSwitch.setChecked(false);
-            autofillSwitch.setEnabled(false);
-        }
 
         screen.addPreference(autofillSwitch);
     }
