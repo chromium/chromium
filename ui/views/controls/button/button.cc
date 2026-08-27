@@ -642,11 +642,8 @@ void Button::OnBlur() {
   View::OnBlur();
   if (IsHotTracked() || state_ == STATE_PRESSED) {
     SetState(STATE_NORMAL);
-    if (anchor_count_ > 0) {
-      SetHighlighted(true);
-    } else if (InkDrop::Get(ink_drop_view_)
-                   ->GetInkDrop()
-                   ->GetTargetInkDropState() != views::InkDropState::HIDDEN) {
+    if (InkDrop::Get(ink_drop_view_)->GetInkDrop()->GetTargetInkDropState() !=
+        views::InkDropState::HIDDEN) {
       InkDrop::Get(ink_drop_view_)
           ->AnimateToState(views::InkDropState::HIDDEN, nullptr /* event */);
     }
