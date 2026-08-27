@@ -2455,4 +2455,33 @@ TEST_F(ContextMenuControllerTest, RevealedPasswordField) {
             mojom::blink::FormControlType::kInputPassword);
 }
 
+TEST_F(ContextMenuControllerTest, ImageReplacement) {
+  RegisterMockedImageURLLoad("https://example.com/image.png");
+
+  frame_test_helpers::LoadHTMLString(
+      LocalMainFrame(), "<img id='target' src='https://example.com/image.png'>",
+      url_test_helpers::ToKURL("https://example.com/"));
+
+  GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* img_element = GetDocument()->getElementById(AtomicString("target"));
+  ASSERT_TRUE(IsA<HTMLImageElement>(img_element));
+  auto* image_element = To<HTMLImageElement>(img_element);
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      img_element, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data.image_replacement_frame_token.has_value());
+
+  image_element->StartImageReplacement();
+  GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      img_element, ui::mojom::blink::MenuSourceType::kMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.image_replacement_frame_token.has_value());
+  EXPECT_EQ(context_menu_data.image_replacement_frame_token,
+            image_element->ReplacementFrameToken());
+}
+
 }  // namespace blink

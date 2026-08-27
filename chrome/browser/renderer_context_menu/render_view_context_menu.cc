@@ -69,6 +69,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/indigo/indigo_image_replacement.h"
+#include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -1005,6 +1007,26 @@ std::pair<int, const gfx::VectorIcon*> GetOpenLinkInSplitStringAndIcon(
   return {string_id, icon};
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Resolves a blink::FrameToken from a renderer process to its corresponding
+// RenderFrameHost. Handles both same-process (LocalFrameToken) and
+// cross-process OOPIF (RemoteFrameToken) subframes.
+content::RenderFrameHost* GetRenderFrameHostForFrameToken(
+    content::ChildProcessId process_id,
+    const blink::FrameToken& frame_token) {
+  if (frame_token.Is<blink::LocalFrameToken>()) {
+    return content::RenderFrameHost::FromFrameToken(
+        content::GlobalRenderFrameHostToken(
+            process_id, frame_token.GetAs<blink::LocalFrameToken>()));
+  }
+  if (frame_token.Is<blink::RemoteFrameToken>()) {
+    return content::RenderFrameHost::FromPlaceholderToken(
+        process_id.GetUnsafeValue(),
+        frame_token.GetAs<blink::RemoteFrameToken>());
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -3852,12 +3874,24 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecCopyLinkText();
       break;
 
-    case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
+    case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION: {
+      GURL url = params_.src_url;
+      if (base::FeatureList::IsEnabled(features::kIndigoContextMenuCopy)) {
+        if (GURL replacement_url = GetIndigoReplacementImageURL();
+            !replacement_url.is_empty()) {
+          url = replacement_url;
+        }
+      }
+      WriteURLToClipboard(url, id);
+      break;
+    }
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:
       WriteURLToClipboard(params_.src_url, id);
       break;
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
+      // TODO(b/530284842): Support copying replacement image data to
+      // clipboard.
       ExecCopyImageAt();
       break;
 
@@ -5077,6 +5111,12 @@ void RenderViewContextMenu::ExecSaveAs() {
 
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
   GURL url = params_.src_url;
+  if (base::FeatureList::IsEnabled(features::kIndigoContextMenuCopy)) {
+    if (GURL replacement_url = GetIndigoReplacementImageURL();
+        !replacement_url.is_empty()) {
+      url = replacement_url;
+    }
+  }
   const bool is_plugin =
       params_.media_type == ContextMenuDataMediaType::kPlugin;
   RenderFrameHost* target_frame_host = nullptr;
@@ -6049,3 +6089,31 @@ bool RenderViewContextMenu::IsLinkToIsolatedWebApp() const {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+GURL RenderViewContextMenu::GetIndigoReplacementImageURL() const {
+  if (!params_.image_replacement_frame_token.has_value()) {
+    return GURL();
+  }
+  RenderFrameHost* frame_host = GetRenderFrameHost();
+  if (!frame_host) {
+    return GURL();
+  }
+
+  content::RenderFrameHost* subframe_host =
+      GetRenderFrameHostForFrameToken(frame_host->GetProcess()->GetID(),
+                                      *params_.image_replacement_frame_token);
+  if (!subframe_host || &subframe_host->GetPage() != &frame_host->GetPage() ||
+      subframe_host->GetParent() != frame_host) {
+    return GURL();
+  }
+  auto* manager =
+      indigo::IndigoImageReplacementManager::GetForPage(frame_host->GetPage());
+  if (!manager) {
+    return GURL();
+  }
+  auto* replacement = manager->GetImageReplacementForFrame(*subframe_host);
+  if (!replacement) {
+    return GURL();
+  }
+  return replacement->GetReplacementImageURL();
+}

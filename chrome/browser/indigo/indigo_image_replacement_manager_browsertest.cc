@@ -16,11 +16,13 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,11 +34,13 @@
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
@@ -54,6 +58,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -285,11 +291,14 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(fake_api_.InitializeAndListen());
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIndigo,
-        {{features::kIndigoGenerateUrl.name, fake_api_.GetGenerateUrl().spec()},
-         {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()},
-         {features::kIndigoSkipEnterpriseCheck.name, "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIndigo,
+          {{features::kIndigoGenerateUrl.name,
+            fake_api_.GetGenerateUrl().spec()},
+           {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()},
+           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
+         {features::kIndigoContextMenuCopy, {}}},
+        {});
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     script_path_ = temp_dir_.GetPath().AppendASCII("test_script.js");
@@ -2138,5 +2147,329 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return toast_controller->IsShowingToast(); }));
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ContextMenuCopyImageLocation) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  GURL generated_url(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
+      "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(generated_url);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe.get(),
+                                                  generated_url.spec()));
+
+  EXPECT_EQ(manager->generated_image_url(), generated_url);
+
+  // Register a secondary (non-primary) replacement to verify disambiguation.
+  MockImageReplacement mock_replacement2(web_contents, /*frame_index=*/1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/false);
+  mock_replacement2.WaitForStartReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  content::RenderFrameHostWrapper subframe2(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(subframe2.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  generated_url.spec()));
+
+  // Verify that GetImageReplacementForFrame disambiguates subframe2 and returns
+  // the secondary replacement.
+  IndigoImageReplacement* replacement1 =
+      manager->GetImageReplacementForFrame(*subframe.get());
+  ASSERT_TRUE(replacement1);
+  EXPECT_TRUE(replacement1->is_primary());
+
+  IndigoImageReplacement* replacement2 =
+      manager->GetImageReplacementForFrame(*subframe2.get());
+  ASSERT_TRUE(replacement2);
+  EXPECT_FALSE(replacement2->is_primary());
+  EXPECT_NE(replacement1, replacement2);
+
+  // 1. Verify Copy Image Location writes generated_image_url when
+  // primary replacement frame token is passed.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = subframe->GetFrameToken();
+    params.src_url = GURL("https://example.com/original_image.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, 0);
+
+    base::test::TestFuture<std::u16string> clipboard_future;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        clipboard_future.GetCallback());
+    EXPECT_EQ(base::UTF16ToUTF8(clipboard_future.Get()), generated_url.spec());
+  }
+
+  // 2. Verify Copy Image Location writes generated_image_url when
+  // non-primary replacement frame token is passed.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = subframe2->GetFrameToken();
+    params.src_url = GURL("https://example.com/original_image2.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, 0);
+
+    base::test::TestFuture<std::u16string> clipboard_future;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        clipboard_future.GetCallback());
+    EXPECT_EQ(base::UTF16ToUTF8(clipboard_future.Get()), generated_url.spec());
+  }
+
+  // 3. Verify Copy Image Location writes params.src_url when
+  // image_replacement_frame_token is std::nullopt.
+  {
+    GURL original_url("https://example.com/original_image.png");
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = std::nullopt;
+    params.src_url = original_url;
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, 0);
+
+    base::test::TestFuture<std::u16string> clipboard_future;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        clipboard_future.GetCallback());
+    EXPECT_EQ(base::UTF16ToUTF8(clipboard_future.Get()), original_url.spec());
+  }
+
+  // 4. Verify Copy Image Location writes params.src_url when an invalid/unknown
+  // replacement frame token is passed.
+  {
+    GURL original_url("https://example.com/original_image.png");
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = blink::LocalFrameToken();
+    params.src_url = original_url;
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, 0);
+
+    base::test::TestFuture<std::u16string> clipboard_future;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        clipboard_future.GetCallback());
+    EXPECT_EQ(base::UTF16ToUTF8(clipboard_future.Get()), original_url.spec());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ContextMenuSaveImageAs) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  GURL generated_url(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
+      "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(generated_url);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe.get(),
+                                                  generated_url.spec()));
+
+  EXPECT_EQ(manager->generated_image_url(), generated_url);
+
+  // Register a secondary (non-primary) replacement to verify disambiguation.
+  MockImageReplacement mock_replacement2(web_contents, /*frame_index=*/1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/false);
+  mock_replacement2.WaitForStartReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  content::RenderFrameHostWrapper subframe2(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(subframe2.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  generated_url.spec()));
+
+  // 1. Verify Save Image As resolves the replacement URL when
+  // primary replacement frame token is set.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = subframe->GetFrameToken();
+    params.src_url = GURL("https://example.com/original_image.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    EXPECT_EQ(menu.GetIndigoReplacementImageURL(), generated_url);
+  }
+
+  // 2. Verify Save Image As resolves the replacement URL when
+  // non-primary replacement frame token is set.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = subframe2->GetFrameToken();
+    params.src_url = GURL("https://example.com/original_image2.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    EXPECT_EQ(menu.GetIndigoReplacementImageURL(), generated_url);
+  }
+
+  // 3. Verify Save Image As returns empty GURL when
+  // image_replacement_frame_token is std::nullopt.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = std::nullopt;
+    params.src_url = GURL("https://example.com/original_image.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    EXPECT_TRUE(menu.GetIndigoReplacementImageURL().is_empty());
+  }
+
+  // 4. Verify Save Image As returns empty GURL when an invalid token is passed.
+  {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    params.has_image_contents = true;
+    params.image_replacement_frame_token = blink::LocalFrameToken();
+    params.src_url = GURL("https://example.com/original_image.png");
+
+    TestRenderViewContextMenu menu(*main_rfh.get(), params);
+    menu.Init();
+
+    EXPECT_TRUE(menu.GetIndigoReplacementImageURL().is_empty());
+  }
+}
+
+class IndigoImageReplacementManagerContextMenuDisabledBrowserTest
+    : public IndigoImageReplacementManagerBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    disabled_context_menu_feature_list_.InitAndDisableFeature(
+        features::kIndigoContextMenuCopy);
+    IndigoImageReplacementManagerBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_context_menu_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IndigoImageReplacementManagerContextMenuDisabledBrowserTest,
+    ContextMenuCopyImageLocationDisabled) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  GURL generated_url(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
+      "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(generated_url);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe.get(),
+                                                  generated_url.spec()));
+
+  GURL original_url("https://example.com/original_image.png");
+  content::ContextMenuParams params;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  params.has_image_contents = true;
+  params.image_replacement_frame_token = subframe->GetFrameToken();
+  params.src_url = original_url;
+
+  TestRenderViewContextMenu menu(*main_rfh.get(), params);
+  menu.Init();
+
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, 0);
+
+  base::test::TestFuture<std::u16string> clipboard_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_future.GetCallback());
+  EXPECT_EQ(base::UTF16ToUTF8(clipboard_future.Get()), original_url.spec());
 }
 }  // namespace indigo

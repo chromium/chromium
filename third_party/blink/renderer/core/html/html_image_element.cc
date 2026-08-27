@@ -42,12 +42,14 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_fallback_helper.h"
 #include "third_party/blink/renderer/core/html/html_picture_element.h"
 #include "third_party/blink/renderer/core/html/html_source_element.h"
@@ -1249,6 +1251,20 @@ bool HTMLImageElement::replacedByUserAgent() const {
 
 bool HTMLImageElement::HasImageReplacement() const {
   return layout_disposition_ == LayoutDisposition::kImageReplacement;
+}
+
+std::optional<FrameToken> HTMLImageElement::ReplacementFrameToken() const {
+  if (!HasImageReplacement()) {
+    return std::nullopt;
+  }
+  if (ShadowRoot* shadow_root = UserAgentShadowRoot()) {
+    if (auto* iframe = Traversal<HTMLIFrameElement>::FirstChild(*shadow_root)) {
+      if (Frame* frame = iframe->ContentFrame()) {
+        return frame->GetFrameToken();
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 void HTMLImageElement::ResetImageReplacement(Document* document) {

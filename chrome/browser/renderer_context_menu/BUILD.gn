@@ -128,6 +128,7 @@ source_set("impl") {
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/public:features",
       "//chrome/browser/glic/resources:browser_resources",
+      "//chrome/browser/indigo",
       "//chrome/browser/language",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
@@ -273,7 +274,10 @@ static_library("test_support") {
       "render_view_context_menu_test_util.cc",
     ]
     public_deps += [ "//extensions/buildflags" ]
-    deps += [ "//chrome/browser/compose" ]
+    deps += [
+      "//chrome/browser/compose",
+      "//chrome/browser/indigo",
+    ]
   }
 
   if (is_chromeos) {

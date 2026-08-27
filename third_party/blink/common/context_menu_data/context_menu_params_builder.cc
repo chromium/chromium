@@ -56,6 +56,7 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.unfiltered_link_url = data.link_url;
   params.src_url = data.src_url;
   params.has_image_contents = data.has_image_contents;
+  params.image_replacement_frame_token = data.image_replacement_frame_token;
   params.is_image_media_plugin_document = data.is_image_media_plugin_document;
   params.media_flags = data.media_flags;
   params.selection_text = base::UTF8ToUTF16(data.selected_text);

@@ -35,7 +35,9 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
       !data.ReadSelectionRect(&out->selection_rect) ||
       !data.ReadFormControlType(&out->form_control_type) ||
       !data.ReadFormRendererId(&out->form_renderer_id) ||
-      !data.ReadFieldRendererId(&out->field_renderer_id)) {
+      !data.ReadFieldRendererId(&out->field_renderer_id) ||
+      !data.ReadImageReplacementFrameToken(
+          &out->image_replacement_frame_token)) {
     return false;
   }
 

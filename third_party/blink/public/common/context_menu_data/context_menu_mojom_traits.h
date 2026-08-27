@@ -57,6 +57,11 @@ struct BLINK_COMMON_EXPORT
     return r.has_image_contents;
   }
 
+  static const std::optional<blink::FrameToken>& image_replacement_frame_token(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.image_replacement_frame_token;
+  }
+
   static bool is_image_media_plugin_document(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.is_image_media_plugin_document;

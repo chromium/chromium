@@ -457,6 +457,10 @@ class RenderViewContextMenu
   // the original page being distilled.
   content::WebContents* GetWebContentsForDataControls() const;
 
+  // Returns the URL of the Indigo replacement image if the context menu was
+  // invoked on an image with an active Indigo replacement, or an empty GURL.
+  virtual GURL GetIndigoReplacementImageURL() const;
+
   // Returns a list of registered ProtocolHandlers that can handle the clicked
   // on URL.
   custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList

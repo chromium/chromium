@@ -27,6 +27,7 @@
 #include <optional>
 
 #include "base/types/strong_alias.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
@@ -201,6 +202,9 @@ class CORE_EXPORT HTMLImageElement
 
   // Returns true if the image has an active image replacement.
   bool HasImageReplacement() const;
+  // Returns the FrameToken of the replacement subframe if this element has
+  // an active image replacement, or std::nullopt otherwise.
+  std::optional<FrameToken> ReplacementFrameToken() const;
   // Resets corresponding ImageReplacement (if any), and goes back to displaying
   // the primary content (if StartImageReplacement() was previously called).
   // Uses the element's current document if |document| is not specified.

@@ -5,6 +5,8 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/indigo/indigo_image_replacement.h"
+#include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/renderer_context_menu/context_menu_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
@@ -134,3 +136,42 @@ void TestRenderViewContextMenu::SetChromeComposeClient(
   compose_client_ = compose_client;
 }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
+
+GURL TestRenderViewContextMenu::GetIndigoReplacementImageURL() const {
+  GURL url = RenderViewContextMenu::GetIndigoReplacementImageURL();
+  if (!url.is_empty()) {
+    return url;
+  }
+  // In tests, `params_.image_replacement_frame_token` may be populated directly
+  // from a child RenderFrameHost's LocalFrameToken across process boundaries
+  // rather than from a placeholder RemoteFrameToken in the parent process.
+  if (!params_.image_replacement_frame_token.has_value() ||
+      !params_.image_replacement_frame_token->Is<blink::LocalFrameToken>()) {
+    return GURL();
+  }
+  content::RenderFrameHost* frame_host = GetRenderFrameHost();
+  if (!frame_host) {
+    return GURL();
+  }
+  content::RenderFrameHost* subframe_host = nullptr;
+  if (content::WebContents* web_contents =
+          content::WebContents::FromRenderFrameHost(frame_host)) {
+    web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+      if (rfh->GetFrameToken() == params_.image_replacement_frame_token
+                                      ->GetAs<blink::LocalFrameToken>()) {
+        subframe_host = rfh;
+      }
+    });
+  }
+  if (!subframe_host || &subframe_host->GetPage() != &frame_host->GetPage() ||
+      subframe_host->GetParent() != frame_host) {
+    return GURL();
+  }
+  auto* manager =
+      indigo::IndigoImageReplacementManager::GetForPage(frame_host->GetPage());
+  if (!manager) {
+    return GURL();
+  }
+  auto* replacement = manager->GetImageReplacementForFrame(*subframe_host);
+  return replacement ? replacement->GetReplacementImageURL() : GURL();
+}

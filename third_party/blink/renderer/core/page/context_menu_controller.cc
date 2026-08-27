@@ -730,6 +730,11 @@ bool ContextMenuController::ShowContextMenu(
       data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
       data.media_flags |= ContextMenuData::kMediaCanPrint;
       data.has_image_contents = HitTestResult::GetImage(potential_image_node);
+      if (auto* image_element =
+              DynamicTo<HTMLImageElement>(potential_image_node)) {
+        data.image_replacement_frame_token =
+            image_element->ReplacementFrameToken();
+      }
     }
   }
   // If it's not a link, an image, a media element, or an image/media link,

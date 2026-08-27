@@ -1380,6 +1380,10 @@ const base::FeatureParam<base::TimeDelta> kIndigoGeneratedImageCacheLifetime{
     &kIndigoGeneratedImageCache, "indigo_generated_image_cache_lifetime",
     base::Minutes(30)};
 
+// Enables context menu copy and save actions to operate on Indigo replacement
+// images.
+BASE_FEATURE(kIndigoContextMenuCopy, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
