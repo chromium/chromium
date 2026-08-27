@@ -279,6 +279,7 @@ source_set("unit_tests") {
       "password_generation_popup_controller_impl_unittest.cc",
       "password_manager_navigation_throttle_unittest.cc",
       "remote_actor_selection_dialog_controller_unittest.cc",
+      "ui_utils_unittest.cc",
       "well_known_change_password_navigation_throttle_unittest.cc",
     ]
     deps += [
@@ -313,6 +314,7 @@ source_set("unit_tests") {
       "//components/password_manager/core/common:features",
       "//components/prefs",
       "//components/signin/public/identity_manager",
+      "//components/strings:components_strings",
       "//components/tabs:test_support",
       "//components/ukm:test_support",
       "//components/variations:test_support",
