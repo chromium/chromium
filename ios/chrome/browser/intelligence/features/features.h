@@ -290,6 +290,11 @@ PageActionMenuIconVariations GetPageActionMenuIcon();
 BASE_DECLARE_FEATURE(kGeminiBackendMigration);
 bool IsGeminiBackendMigrationEnabled();
 
+// Feature flag for enabling Project Aureus (quota enforcement and usage
+// limits).
+BASE_DECLARE_FEATURE(kGeminiAureus);
+bool IsGeminiAureusEnabled();
+
 // Feature flag for enabling Gemini actor.
 BASE_DECLARE_FEATURE(kGeminiActor);
 bool IsGeminiActorEnabled();

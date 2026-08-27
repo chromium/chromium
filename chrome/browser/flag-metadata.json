@@ -5436,6 +5436,14 @@
     "expiry_milestone": 151
   },
   {
+    "name": "gemini-aureus",
+    "owners": [
+      "hamzamoh@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "gemini-backend-migration",
     "owners": [
       "nicolasmacbeth@google.com",

@@ -886,6 +886,10 @@ inline constexpr char kGaiaAuthFetcherDontSendSIDCookiesDescription[] =
 inline constexpr char kGeminiActorName[] = "Gemini Actor";
 inline constexpr char kGeminiActorDescription[] = "Enables the Gemini Actor.";
 
+inline constexpr char kGeminiAureusName[] = "Gemini Aureus";
+inline constexpr char kGeminiAureusDescription[] =
+    "Enables Project Aureus quota enforcement and usage limits for Gemini.";
+
 inline constexpr char kGeminiBackendMigrationName[] =
     "Gemini Backend Migration";
 inline constexpr char kGeminiBackendMigrationDescription[] =
