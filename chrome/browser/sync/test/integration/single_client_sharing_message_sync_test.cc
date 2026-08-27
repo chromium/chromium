@@ -288,9 +288,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(callback_checker.Wait());
 }
 
+// TODO(crbug.com/552891144): Re-enable this test once the bug is fixed.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError \
+    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError
+#else
+#define MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError \
+    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError
+#endif
 IN_PROC_BROWSER_TEST_P(
     SingleClientSharingMessageSyncTest,
-    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    MAYBE_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   const std::string payload = "payload";
 
   ASSERT_TRUE(SetupSync());
