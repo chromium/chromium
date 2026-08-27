@@ -5,10 +5,7 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Critical User Journeys histograms
-along with a detailed description for each histogram.
-
-For best practices on writing histogram descriptions, see
+This file is used to generate a metric definition markdown at
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
 Please follow the instructions in the OWNERS file in this directory to find a
@@ -30,6 +27,18 @@ chromium-metrics-reviews@google.com.
 <variants name="JourneyNames">
   <variant name="ClearBrowsingHistoryJourney"/>
   <variant name="PinExtensionJourney"/>
+  <variant name="SettingsAppearanceThemesJourney"
+      summary="Settings Appearance &amp; GM3 Themes"/>
+  <variant name="SettingsClearBrowsingDataJourney"
+      summary="Settings Clear Browsing Data Baseline"/>
+  <variant name="SettingsNavIAJourney"
+      summary="Settings Navigation IA Findability"/>
+  <variant name="SettingsSearchEngineJourney"
+      summary="Settings Search Engine &amp; Shortcuts"/>
+  <variant name="SettingsSitesDashboardJourney"
+      summary="Settings Sites Dashboard &amp; Permissions"/>
+  <variant name="SettingsSuperchargedSearchJourney"
+      summary="Settings Supercharged Search"/>
   <variant name="ViewDownloadedFileFromAppMenuJourney"/>
   <variant name="ViewDownloadedFileJourney"/>
 <!-- Add new journeys here! -->
@@ -52,6 +61,72 @@ chromium-metrics-reviews@google.com.
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Recorded when a step is {StepAction} in the PinExtensionJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram
+    name="CriticalUserJourney.SettingsAppearanceThemesJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the SettingsAppearanceThemesJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram
+    name="CriticalUserJourney.SettingsClearBrowsingDataJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the
+    SettingsClearBrowsingDataJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram name="CriticalUserJourney.SettingsNavIAJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the SettingsNavIAJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram name="CriticalUserJourney.SettingsSearchEngineJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the SettingsSearchEngineJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram
+    name="CriticalUserJourney.SettingsSitesDashboardJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the SettingsSitesDashboardJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
+<histogram
+    name="CriticalUserJourney.SettingsSuperchargedSearchJourney.{StepAction}"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>yrian@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the
+    SettingsSuperchargedSearchJourney.
   </summary>
   <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>

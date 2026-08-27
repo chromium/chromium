@@ -11,6 +11,7 @@
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/webui/settings/settings_element_ids.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace metrics {
@@ -29,6 +30,10 @@ void CriticalUserJourneyRegistry::AddJourneys() {
   HatsParams clear_browsing_history_hats_params;
   clear_browsing_history_hats_params.trigger =
       metrics::kHatsSurveyTriggerClearBrowsingHistory;
+
+  // ---------------------------------------------------------------------------
+  // Existing Browser Journeys
+  // ---------------------------------------------------------------------------
 
   AddJourney(
       CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
@@ -105,6 +110,74 @@ void CriticalUserJourneyRegistry::AddJourneys() {
               ui::InteractionSequence::StepType::kCustomEvent,
               ClearBrowsingHistoryJourneySteps::kClearBrowsingDataHistoryEvent)
           .LaunchHatsSurveyOnCompletion(clear_browsing_history_hats_params)
+          .Build());
+
+  // ---------------------------------------------------------------------------
+  // Settings Glow Up Journeys
+  // ---------------------------------------------------------------------------
+
+  // Navigational IA Findability
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kSettingsPageLoadedId,
+                   ui::InteractionSequence::StepType::kShown, 0)
+          .AddStep(settings::kSettingsNavCategoryClickedId,
+                   ui::InteractionSequence::StepType::kActivated, 1)
+          .AddStep(settings::kSettingStateChangedEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 2)
+          .Build());
+
+  // Supercharged Search & Inline Controls
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kSettingsSearchBoxElementId,
+                   ui::InteractionSequence::StepType::kShown, 0)
+          .AddStep(settings::kSettingsSearchQueryEnteredId,
+                   ui::InteractionSequence::StepType::kActivated, 1)
+          .AddStep(settings::kSettingsSearchResultClickedEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 2)
+          .Build());
+
+  // Dedicated Search Engine & Shortcuts
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kSearchEngineNavMenuItemId,
+                   ui::InteractionSequence::StepType::kActivated, 0)
+          .AddStep(settings::kDefaultSearchEngineChangedId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 1)
+          .AddStep(settings::kSearchShortcutsToggledEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 2)
+          .Build());
+
+  // Sites Dashboard & Site Permissions
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kSitesNavMenuItemId,
+                   ui::InteractionSequence::StepType::kActivated, 0)
+          .AddStep(settings::kSitePermissionCategoryElementId,
+                   ui::InteractionSequence::StepType::kActivated, 1)
+          .AddStep(settings::kSitePermissionChangedEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 2)
+          .Build());
+
+  // Clear Browsing Data Baseline
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kClearBrowsingDataElementId,
+                   ui::InteractionSequence::StepType::kActivated, 0)
+          .AddStep(settings::kClearBrowsingDataDialogOkButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated, 1)
+          .Build());
+
+  // Appearance & GM3 Themes
+  AddJourney(
+      CriticalUserJourney::Builder(&kSettingsGlowupJourneys)
+          .AddStep(settings::kAppearanceNavMenuItemId,
+                   ui::InteractionSequence::StepType::kActivated, 0)
+          .AddStep(settings::kAppearanceColorTileSelectedId,
+                   ui::InteractionSequence::StepType::kActivated, 1)
+          .AddStep(settings::kAppearanceThemeChangedId,
+                   ui::InteractionSequence::StepType::kCustomEvent, 2)
           .Build());
 }
 

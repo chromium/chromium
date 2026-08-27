@@ -16,6 +16,7 @@ BASE_FEATURE(kViewDownloadedFileJourney, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileFromAppMenuJourney,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPinExtensionJourney, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsGlowupJourneys, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HaTS.
 BASE_FEATURE(kHappinessTrackingSurveysForDownloadJourney,

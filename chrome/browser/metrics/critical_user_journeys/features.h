@@ -16,6 +16,7 @@ BASE_DECLARE_FEATURE(kClearBrowsingHistoryJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
 BASE_DECLARE_FEATURE(kPinExtensionJourney);
+BASE_DECLARE_FEATURE(kSettingsGlowupJourneys);
 
 // HaTS Survey feature flags.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDownloadJourney);
