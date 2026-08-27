@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("search_prefetch") {
   public = [
     "search_prefetch_keep_alive_request_tracker.h",
+    "search_prefetch_navigation_throttle.h",
     "search_prefetch_request.h",
     "search_prefetch_service.h",
     "search_prefetch_service_factory.h",
@@ -31,6 +32,7 @@ source_set("impl") {
     "cache_alias_search_prefetch_url_loader.cc",
     "cache_alias_search_prefetch_url_loader.h",
     "search_prefetch_keep_alive_request_tracker.cc",
+    "search_prefetch_navigation_throttle.cc",
     "search_prefetch_request.cc",
     "search_prefetch_service.cc",
     "search_prefetch_service_factory.cc",
@@ -48,6 +50,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/omnibox",
+    "//chrome/browser/page_load_metrics",
     "//chrome/browser/prefetch",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",

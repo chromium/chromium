@@ -29,6 +29,7 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
 
   virtual void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
+      bool is_served_by_legacy_search_prefetch,
       std::string_view navigation_initiator_string,
       bool is_url_srp) const = 0;
 
@@ -39,6 +40,7 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
   virtual void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint,
       bool is_in_foreground,
+      bool is_served_by_legacy_search_prefetch,
       std::string_view navigation_initiator_string,
       bool is_url_srp) const = 0;
 };
