@@ -4,13 +4,12 @@
 
 #include "ui/gl/angle_platform_impl.h"
 
-#include <atomic>
-
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
@@ -20,8 +19,6 @@
 namespace angle {
 
 namespace {
-
-std::atomic<bool> g_post_task_failed_for_testing{false};
 
 double ANGLEPlatformImpl_currentTime(PlatformMethods* platform) {
   return base::Time::Now().InSecondsFSinceUnixEpoch();
@@ -93,24 +90,19 @@ void ANGLEPlatformImpl_recordShaderCacheUse(bool in_cache) {
 
 }  // anonymous namespace
 
-void SetPostTaskFailedForTesting(bool failed) {
-  g_post_task_failed_for_testing.store(failed);
-}
-
 void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
                                       PostWorkerTaskCallback callback,
                                       void* user_data) {
-  bool success = false;
-  if (!g_post_task_failed_for_testing.load()) {
-    success = base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
-  }
-  if (!success) {
-    // Run the task synchronously if posting failed (e.g. during shutdown) to
-    // avoid GPU hangs. See https://crbug.com/539435331
-    AnglePlatformImpl_runWorkerTask(callback, user_data);
-  }
+  // Use BLOCK_SHUTDOWN so that worker tasks (e.g. shader compilation) are
+  // guaranteed to finish before ThreadPool shutdown completes, avoiding hangs
+  // in ANGLE (https://crbug.com/539435331) while ensuring tasks always run on
+  // worker threads rather than caller threads to prevent driver crashes
+  // (https://crbug.com/551704724).
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
 }
 
 NO_SANITIZE("cfi-icall")

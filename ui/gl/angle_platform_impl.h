@@ -22,8 +22,6 @@ GL_EXPORT bool InitializePlatform(EGLDisplay display,
 GL_EXPORT void ResetPlatform(EGLDisplay display,
                              GLGetProcAddressProc get_proc_address);
 
-GL_EXPORT void SetPostTaskFailedForTesting(bool failed);
-
 GL_EXPORT void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
                                                 void (*callback)(void*),
                                                 void* user_data);
