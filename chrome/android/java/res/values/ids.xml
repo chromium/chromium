@@ -50,6 +50,7 @@ found in the LICENSE file.
     <item type="id" name="select_previous_tab" />
     <item type="id" name="show_menu" />
     <item type="id" name="switch_keyboard_focus_row" />
+    <item type="id" name="switch_keyboard_focus_row_reverse" />
     <item type="id" name="tab_search" />
     <item type="id" name="tab_search_side_ui" />
     <item type="id" name="task_manager" />

@@ -2995,7 +2995,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (super.handleMenuOrKeyboardAction(id, fromMenu)) return true;
         if (id == R.id.switch_keyboard_focus_row) {
-            mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+            mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
+            return true;
+        } else if (id == R.id.switch_keyboard_focus_row_reverse) {
+            mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
             return true;
         } else if (id == R.id.open_tab_strip_context_menu) {
             if (mVerticalTabsSideUiCoordinator != null

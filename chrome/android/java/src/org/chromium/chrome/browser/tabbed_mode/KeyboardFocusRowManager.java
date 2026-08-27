@@ -109,25 +109,39 @@ import java.util.function.Supplier;
         mVerticalTabsSideUiCoordinatorSupplier = verticalTabsSideUiCoordinatorSupplier;
     }
 
-    /** Called when the user switches which row of the top controls should have keyboard focus. */
-    /* package */ void onKeyboardFocusRowSwitch() {
-        // If the toolbar is obscured, return early.
+    /**
+     * Returns whether the keyboard focus row can be switched (true when the toolbar is visible and
+     * no app-modal dialog is showing).
+     */
+    private boolean canSwitchKeyboardFocusRow() {
         var modalDialogManager = mModalDialogManagerSupplier.get();
         if (mTabObscuringHandler.isToolbarObscured()
                 || (modalDialogManager != null
                         && modalDialogManager.isShowing()
                         && modalDialogManager.getCurrentType() == APP)) {
-            return;
+            return false;
         }
+        return true;
+    }
+
+    /**
+     * Called when the user switches which row of the top controls should have keyboard focus.
+     *
+     * @param forward True if cycling forward, false if cycling reverse.
+     */
+    /* package */ void onKeyboardFocusRowSwitch(boolean forward) {
+        if (!canSwitchKeyboardFocusRow()) return;
 
         @KeyboardFocusRow int oldKeyboardFocusRow = getKeyboardFocusRow();
-        @KeyboardFocusRow int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow);
+        @KeyboardFocusRow
+        int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow, forward);
         if (oldKeyboardFocusRow == KeyboardFocusRow.OMNIBOX) {
             var toolbarManager = mToolbarManagerSupplier.get();
             if (toolbarManager != null) {
                 toolbarManager.endFuseboxInput();
             }
         }
+
         switch (newKeyboardFocusRow) {
             case KeyboardFocusRow.NONE -> {
                 var compositorViewHolder = mCompositorViewHolderSupplier.get();
@@ -208,10 +222,11 @@ import java.util.function.Supplier;
      * method assumes that the toolbar is visible and not obscured by other content.
      *
      * @param oldKeyboardFocusRow The old {@link KeyboardFocusRow}.
+     * @param forward True if cycling forward, false if cycling reverse.
      * @return What the new keyboard focus row should be.
      */
     private @KeyboardFocusRow int getNewKeyboardFocusRow(
-            @KeyboardFocusRow int oldKeyboardFocusRow) {
+            @KeyboardFocusRow int oldKeyboardFocusRow, boolean forward) {
         // NONE is always an option.
         List<Integer> keyboardFocusRows = new ArrayList<>(List.of(KeyboardFocusRow.NONE));
 
@@ -254,7 +269,9 @@ import java.util.function.Supplier;
 
         int currentFocusIndex = keyboardFocusRows.indexOf(oldKeyboardFocusRow);
         if (currentFocusIndex == -1) return KeyboardFocusRow.NONE;
-        int newFocusIndex = (currentFocusIndex + 1) % keyboardFocusRows.size();
+        int delta = forward ? 1 : -1;
+        int newFocusIndex =
+                (currentFocusIndex + delta + keyboardFocusRows.size()) % keyboardFocusRows.size();
         return keyboardFocusRows.get(newFocusIndex);
     }
 

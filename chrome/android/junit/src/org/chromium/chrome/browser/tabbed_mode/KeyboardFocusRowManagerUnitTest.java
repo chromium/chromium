@@ -103,14 +103,14 @@ public class KeyboardFocusRowManagerUnitTest {
         when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
 
         // Initial state: NONE. Switching moves to OMNIBOX.
-        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
         verify(mToolbarManager).beginFuseboxInput(any());
 
         // Focus is on OMNIBOX.
         when(mToolbarManager.isUrlBarFocused()).thenReturn(true);
 
         // Next switch moves to VERTICAL_TABS.
-        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
         verify(mToolbarManager).endFuseboxInput();
         verify(mVerticalTabsSideUiCoordinator).requestKeyboardFocus();
 
@@ -119,7 +119,7 @@ public class KeyboardFocusRowManagerUnitTest {
         when(mVerticalTabsSideUiCoordinator.containsKeyboardFocus()).thenReturn(true);
 
         // Next switch moves to NONE.
-        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
         verify(mCompositorViewHolder).setFocusOnFirstContentViewItem();
     }
 
@@ -133,8 +133,30 @@ public class KeyboardFocusRowManagerUnitTest {
         when(mToolbarManager.isUrlBarFocused()).thenReturn(true);
 
         // Next switch moves to VERTICAL_TABS, bypassing TAB_STRIP.
-        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
         verify(mVerticalTabsSideUiCoordinator).requestKeyboardFocus();
         verify(mStripLayoutHelperManager, never()).requestKeyboardFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void testSwitchKeyboardFocusRowBackward_withVerticalTabs() {
+        when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
+
+        // Initial state: NONE. Backward switch moves to the last element (VERTICAL_TABS).
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
+        verify(mVerticalTabsSideUiCoordinator).requestKeyboardFocus();
+
+        // Focus is on VERTICAL_TABS. Backward switch moves to OMNIBOX.
+        when(mVerticalTabsSideUiCoordinator.containsKeyboardFocus()).thenReturn(true);
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
+        verify(mToolbarManager).beginFuseboxInput(any());
+
+        // Focus is on OMNIBOX. Backward switch moves to NONE.
+        when(mVerticalTabsSideUiCoordinator.containsKeyboardFocus()).thenReturn(false);
+        when(mToolbarManager.isUrlBarFocused()).thenReturn(true);
+        mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
+        verify(mToolbarManager).endFuseboxInput();
+        verify(mCompositorViewHolder).setFocusOnFirstContentViewItem();
     }
 }
