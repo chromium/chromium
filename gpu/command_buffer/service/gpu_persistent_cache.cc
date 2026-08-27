@@ -602,10 +602,9 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
   return discovered_size;
 }
 
-void GpuPersistentCache::PurgeMemory(
-    base::MemoryPressureLevel memory_pressure_level) {
+void GpuPersistentCache::PurgeMemory(int memory_limit) {
   if (memory_cache_) {
-    memory_cache_->PurgeMemory(memory_pressure_level);
+    memory_cache_->OnReleaseMemory(memory_limit);
   }
 }
 
@@ -1024,11 +1023,10 @@ scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
   return iter->second;
 }
 
-void GpuPersistentCacheCollection::PurgeMemory(
-    base::MemoryPressureLevel memory_pressure_level) {
+void GpuPersistentCacheCollection::PurgeMemory(int memory_limit) {
   base::AutoLock lock(mutex_);
   for (auto& [_, cache] : caches_) {
-    cache->PurgeMemory(memory_pressure_level);
+    cache->PurgeMemory(memory_limit);
   }
 }
 

@@ -8,7 +8,8 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/linked_list.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/gpu_gles2_export.h"
@@ -48,9 +49,6 @@ class GPU_GLES2_EXPORT MemoryCache : public base::RefCounted<MemoryCache> {
   scoped_refptr<MemoryCacheEntry> Store(std::string_view key,
                                         base::HeapArray<uint8_t> data);
   scoped_refptr<MemoryCacheEntry> Find(std::string_view key);
-
-  // TODO(crbug.com/489349561): Remove once GpuPersistentCache is migrated.
-  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // Memory coordinator interface:
   // Triggers immediate eviction of cache entries down to `memory_limit`.

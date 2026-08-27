@@ -163,16 +163,6 @@ void MemoryCache::OnReleaseMemory(int memory_limit) {
   }
 }
 
-void MemoryCache::PurgeMemory(base::MemoryPressureLevel memory_pressure_level) {
-  base::AutoLock lock(mutex_);
-  size_t new_limit = gpu::UpdateShaderCacheSizeOnMemoryPressure(
-      max_size_, memory_pressure_level);
-  // Evict the least recently used entries until we reach the `new_limit`
-  while (current_size_ > new_limit) {
-    EvictEntry(lru_.head()->value());
-  }
-}
-
 void MemoryCache::OnMemoryDump(const std::string& dump_name,
                                base::trace_event::ProcessMemoryDump* pmd) {
   base::AutoLock lock(mutex_);

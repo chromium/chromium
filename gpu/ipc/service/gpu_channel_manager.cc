@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_level.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
@@ -874,21 +873,14 @@ void GpuChannelManager::OnReleaseMemory() {
   }
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
-  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
-    return;
-  }
-
-  base::MemoryPressureLevel memory_pressure_level =
-      memory_limit() <= base::kCriticalMemoryPressureThreshold
-          ? base::MEMORY_PRESSURE_LEVEL_CRITICAL
-          : base::MEMORY_PRESSURE_LEVEL_MODERATE;
-
   if (persistent_caches_) {
-    persistent_caches_->PurgeMemory(memory_pressure_level);
+    persistent_caches_->PurgeMemory(memory_limit());
   }
 
 #if BUILDFLAG(IS_WIN)
-  TrimD3DResources(shared_context_state_);
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    TrimD3DResources(shared_context_state_);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 }
 

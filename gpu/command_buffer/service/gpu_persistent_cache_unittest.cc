@@ -8,6 +8,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -630,6 +631,50 @@ TEST_F(GpuPersistentCacheTest, MetadataFirstEntriesLoadedToMemory) {
       }
     }
   }
+}
+
+// Verifies that PurgeMemory purges the in-memory cache.
+TEST_F(GpuPersistentCacheTest, PurgeMemory) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  cache_->StoreData(key, base::as_byte_span(value));
+  EXPECT_NE(nullptr, memory_cache_->Find(key));
+  EXPECT_EQ(value.size(), cache_->FindKey(key));
+
+  cache_->PurgeMemory(base::kCriticalMemoryPressureThreshold);
+
+  EXPECT_EQ(nullptr, memory_cache_->Find(key));
+  EXPECT_EQ(0u, cache_->FindKey(key));
+}
+
+// Verifies that GpuPersistentCacheCollection::PurgeMemory purges all managed
+// caches.
+TEST_F(GpuPersistentCacheTest, CollectionPurgeMemory) {
+  GpuPersistentCacheCollection collection(
+      1024, GpuPersistentCache::MetadataOpts(),
+      GpuPersistentCache::AsyncDiskWriteOpts());
+  auto cache_graphite = collection.GetCache(
+      gpu::GpuDiskCacheHandle(kGraphiteDawnGpuDiskCacheHandle));
+  auto cache_gr_shader =
+      collection.GetCache(gpu::GpuDiskCacheHandle(kGrShaderGpuDiskCacheHandle));
+
+  const std::string key_graphite = "my_key_graphite";
+  const std::string value_graphite = "my_value_graphite";
+  const std::string key_gr_shader = "my_key_gr_shader";
+  const std::string value_gr_shader = "my_value_gr_shader";
+
+  cache_graphite->StoreData(key_graphite, base::as_byte_span(value_graphite));
+  cache_gr_shader->StoreData(key_gr_shader,
+                             base::as_byte_span(value_gr_shader));
+
+  EXPECT_EQ(value_graphite.size(), cache_graphite->FindKey(key_graphite));
+  EXPECT_EQ(value_gr_shader.size(), cache_gr_shader->FindKey(key_gr_shader));
+
+  collection.PurgeMemory(base::kCriticalMemoryPressureThreshold);
+
+  EXPECT_EQ(0u, cache_graphite->FindKey(key_graphite));
+  EXPECT_EQ(0u, cache_gr_shader->FindKey(key_gr_shader));
 }
 
 // Test fixture which is friends with the CacheMetadata internal class in
