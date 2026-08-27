@@ -17341,6 +17341,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Create and submit a form that will create a new about:blank tab.
   WebContentsAddedObserver web_contents_added_observer;
   TestNavigationObserver navigation_observer(nullptr, 1);
+  // Set the wait event up front so that if the navigation to about:blank
+  // finishes before `ExecJs()` returns, `TestNavigationObserver` does not
+  // miss the navigation completion event.
+  navigation_observer.set_wait_event(
+      TestNavigationObserver::WaitEvent::kNavigationFinished);
   navigation_observer.StartWatchingNewWebContents();
   ASSERT_TRUE(ExecJs(contents(),
                      R"(let form = document.createElement('form');
