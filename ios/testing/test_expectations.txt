@@ -104,8 +104,5 @@ crbug.com/550305489 [ iPad Device ] TabStripSharedGroupTestCase/testTabStripShar
 # Gardening suppression 2026-08-24
 crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClosedWithoutName [ Failure ]
 
-# Gardening suppression 2026-08-26
-crbug.com/552774721 GeminiEGTest/testAcceptPromoAndConsent [ Pass Failure ]
-crbug.com/552774721 GeminiEGTest/testAcceptPromoDeclineConsent [ Pass Failure ]
-crbug.com/552978116 GeminiPageContextWithMigrationTestCase/testPageSharingDisabledThenEnabledInFloaty [ Pass Failure ]
-crbug.com/552978116 GeminiPageContextWithoutMigrationTestCase/testPageSharingDisabledThenEnabledInFloaty [ Pass Failure ]
+# Gardening suppression 2026-08-27
+crbug.com/553554439 [ iOS26.5 iPad Simulator ] ReadingListTestCase/testMarkMixedEntriesRead [ Pass Failure ]
