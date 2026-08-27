@@ -506,6 +506,211 @@ TEST_F(InspectorHighlightTest, GridAreaNames) {
   CompareAreaNames(subgrid_area_names, expected_subgrid_area_names);
 }
 
+TEST_F(InspectorHighlightTest, GridAreaNamesRTL) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #grid {
+      display: grid;
+      direction: rtl;
+      width: 400px;
+      height: 300px;
+      grid-template-columns: 100px 200px;
+      grid-template-rows: 150px 150px;
+      grid-template-areas:
+            "a b"
+            "c d";
+    }
+    </style>
+    <div id="grid"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Node* grid = GetDocument().getElementById(AtomicString("grid"));
+  EXPECT_TRUE(grid);
+  auto grid_info =
+      InspectorGridHighlight(grid, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(grid_info);
+  protocol::DictionaryValue* grid_area_names =
+      grid_info->getObject("areaNames");
+  EXPECT_TRUE(grid_area_names);
+  EXPECT_EQ(grid_area_names->size(), 4u);
+
+  protocol::ListValue* area_a = grid_area_names->getArray("a");
+  EXPECT_TRUE(area_a);
+  EXPECT_EQ(SerializeToJson(*area_a),
+            "[\"M\",400,0,\"L\",300,0,\"L\",300,150,\"L\",400,150,\"Z\"]");
+
+  protocol::ListValue* area_b = grid_area_names->getArray("b");
+  EXPECT_TRUE(area_b);
+  EXPECT_EQ(SerializeToJson(*area_b),
+            "[\"M\",300,0,\"L\",100,0,\"L\",100,150,\"L\",300,150,\"Z\"]");
+
+  protocol::ListValue* area_c = grid_area_names->getArray("c");
+  EXPECT_TRUE(area_c);
+  EXPECT_EQ(SerializeToJson(*area_c),
+            "[\"M\",400,150,\"L\",300,150,\"L\",300,300,\"L\",400,300,\"Z\"]");
+
+  protocol::ListValue* area_d = grid_area_names->getArray("d");
+  EXPECT_TRUE(area_d);
+  EXPECT_EQ(SerializeToJson(*area_d),
+            "[\"M\",300,150,\"L\",100,150,\"L\",100,300,\"L\",300,300,\"Z\"]");
+
+  // Also test RTL grid with gaps and multi-track spanning area.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #grid2 {
+      display: grid;
+      direction: rtl;
+      width: 400px;
+      height: 300px;
+      grid-gap: 20px 10px;
+      grid-template-columns: 100px 100px 100px;
+      grid-template-rows: 100px 100px;
+      grid-template-areas:
+            "header header header"
+            "sidebar main main";
+    }
+    </style>
+    <div id="grid2"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Node* grid2 = GetDocument().getElementById(AtomicString("grid2"));
+  EXPECT_TRUE(grid2);
+  auto grid2_info =
+      InspectorGridHighlight(grid2, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(grid2_info);
+  protocol::DictionaryValue* grid2_area_names =
+      grid2_info->getObject("areaNames");
+  EXPECT_TRUE(grid2_area_names);
+  EXPECT_EQ(grid2_area_names->size(), 3u);
+
+  // Total tracks width = 100 + 10 + 100 + 10 + 100 = 320px.
+  // rtl_offset = 400 - 320 = 80px.
+  // Col 0: 300..400 (x right=400, left=300)
+  // Gap: 290..300
+  // Col 1: 190..290 (x right=290, left=190)
+  // Gap: 180..190
+  // Col 2: 80..180 (x right=180, left=80)
+  // Row 0: y top=0, bottom=100
+  // Row 1: y top=120, bottom=220
+
+  // "header": cols 0..3 (spans all 3 cols, x right=400, left=80), row 0 (y 0..100)
+  protocol::ListValue* area_header = grid2_area_names->getArray("header");
+  EXPECT_TRUE(area_header);
+  EXPECT_EQ(SerializeToJson(*area_header),
+            "[\"M\",400,0,\"L\",80,0,\"L\",80,100,\"L\",400,100,\"Z\"]");
+
+  // "sidebar": col 0 (x right=400, left=300), row 1 (y 120..220)
+  protocol::ListValue* area_sidebar = grid2_area_names->getArray("sidebar");
+  EXPECT_TRUE(area_sidebar);
+  EXPECT_EQ(SerializeToJson(*area_sidebar),
+            "[\"M\",400,120,\"L\",300,120,\"L\",300,220,\"L\",400,220,\"Z\"]");
+
+  // "main": cols 1..3 (x right=290, left=80), row 1 (y 120..220)
+  protocol::ListValue* area_main = grid2_area_names->getArray("main");
+  EXPECT_TRUE(area_main);
+  EXPECT_EQ(SerializeToJson(*area_main),
+            "[\"M\",290,120,\"L\",80,120,\"L\",80,220,\"L\",290,220,\"Z\"]");
+}
+
+TEST_F(InspectorHighlightTest, GridLanesAreaNamesRTL) {
+  ScopedCSSGridLanesLayoutForTest grid_lanes_feature(true);
+
+  // Test column lanes (is_for_columns = true) in RTL:
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #lanes {
+      display: grid-lanes;
+      direction: rtl;
+      width: 400px;
+      height: 300px;
+      grid-template-columns: 100px 200px;
+      grid-template-areas: "a b";
+    }
+    </style>
+    <div id="lanes"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Node* lanes = GetDocument().getElementById(AtomicString("lanes"));
+  EXPECT_TRUE(lanes);
+  auto lanes_info =
+      InspectorGridHighlight(lanes, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(lanes_info);
+  protocol::DictionaryValue* lanes_area_names =
+      lanes_info->getObject("areaNames");
+  EXPECT_TRUE(lanes_area_names);
+  EXPECT_EQ(lanes_area_names->size(), 2u);
+
+  // In RTL, column 0 ("a") is on the right [300..400], column 1 ("b") is on the left [100..300].
+  // Cross-axis is container height [0..300].
+  protocol::ListValue* area_a = lanes_area_names->getArray("a");
+  EXPECT_TRUE(area_a);
+  EXPECT_EQ(SerializeToJson(*area_a),
+            "[\"M\",400,0,\"L\",300,0,\"L\",300,300,\"L\",400,300,\"Z\"]");
+
+  protocol::ListValue* area_b = lanes_area_names->getArray("b");
+  EXPECT_TRUE(area_b);
+  EXPECT_EQ(SerializeToJson(*area_b),
+            "[\"M\",300,0,\"L\",100,0,\"L\",100,300,\"L\",300,300,\"Z\"]");
+
+  // Test row lanes (is_for_columns = false):
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #row_lanes {
+      display: grid-lanes;
+      direction: rtl;
+      width: 400px;
+      height: 300px;
+      grid-template-rows: 100px 150px;
+      grid-template-areas:
+        "top"
+        "bottom";
+    }
+    </style>
+    <div id="row_lanes"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Node* row_lanes = GetDocument().getElementById(AtomicString("row_lanes"));
+  EXPECT_TRUE(row_lanes);
+  auto row_lanes_info =
+      InspectorGridHighlight(row_lanes, InspectorHighlight::DefaultGridConfig());
+  EXPECT_TRUE(row_lanes_info);
+  protocol::DictionaryValue* row_lanes_area_names =
+      row_lanes_info->getObject("areaNames");
+  EXPECT_TRUE(row_lanes_area_names);
+  EXPECT_EQ(row_lanes_area_names->size(), 2u);
+
+  // Cross-axis is container width [0..400]. Rows are [0..100] and [100..250].
+  protocol::ListValue* area_top = row_lanes_area_names->getArray("top");
+  EXPECT_TRUE(area_top);
+  EXPECT_EQ(SerializeToJson(*area_top),
+            "[\"M\",0,0,\"L\",400,0,\"L\",400,100,\"L\",0,100,\"Z\"]");
+
+  protocol::ListValue* area_bottom = row_lanes_area_names->getArray("bottom");
+  EXPECT_TRUE(area_bottom);
+  EXPECT_EQ(SerializeToJson(*area_bottom),
+            "[\"M\",0,100,\"L\",400,100,\"L\",400,250,\"L\",0,250,\"Z\"]");
+}
+
 TEST_F(InspectorHighlightTest, FieldsetGrid) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

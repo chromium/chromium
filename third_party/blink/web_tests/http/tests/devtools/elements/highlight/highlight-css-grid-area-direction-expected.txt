@@ -1,0 +1,1787 @@
+This test verifies that grid areas with direction rtl and ltr are correctly highlighted.
+
+ltrGrid{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "ltrGrid",
+    "className": ".grid.ltr-dir",
+    "nodeWidth": "400",
+    "nodeHeight": "300",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGrid",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 50,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 200,
+          "y": 0,
+          "computedSize": 200,
+          "authoredSize": "200px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 0,
+          "y": 75,
+          "computedSize": 150,
+          "authoredSize": "150px"
+        },
+        {
+          "x": 0,
+          "y": 225,
+          "computedSize": 150,
+          "authoredSize": "150px"
+        }
+      ],
+      "rows": [
+        "M",
+        0,
+        0,
+        "L",
+        300,
+        0,
+        "M",
+        0,
+        150,
+        "L",
+        300,
+        150,
+        "M",
+        300,
+        300,
+        "L",
+        0,
+        300
+      ],
+      "rowGaps": [
+        "M",
+        0,
+        150,
+        "L",
+        300,
+        150,
+        "L",
+        300,
+        150,
+        "L",
+        0,
+        150,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        0,
+        0,
+        "L",
+        0,
+        300,
+        "M",
+        100,
+        0,
+        "L",
+        100,
+        300,
+        "M",
+        300,
+        300,
+        "L",
+        300,
+        0
+      ],
+      "columnGaps": [
+        "M",
+        100,
+        0,
+        "L",
+        100,
+        0,
+        "L",
+        100,
+        300,
+        "L",
+        100,
+        300,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 150
+        },
+        {
+          "x": 0,
+          "y": 300
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 100,
+          "y": 0
+        },
+        {
+          "x": 300,
+          "y": 0
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 300,
+          "y": 0
+        },
+        {
+          "x": 300,
+          "y": 150
+        },
+        {
+          "x": 300,
+          "y": 300
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 300
+        },
+        {
+          "x": 100,
+          "y": 300
+        },
+        {
+          "x": 300,
+          "y": 300
+        }
+      ],
+      "areaNames": {
+        "a": [
+          "M",
+          0,
+          0,
+          "L",
+          100,
+          0,
+          "L",
+          100,
+          150,
+          "L",
+          0,
+          150,
+          "Z"
+        ],
+        "b": [
+          "M",
+          100,
+          0,
+          "L",
+          300,
+          0,
+          "L",
+          300,
+          150,
+          "L",
+          100,
+          150,
+          "Z"
+        ],
+        "c": [
+          "M",
+          0,
+          150,
+          "L",
+          100,
+          150,
+          "L",
+          100,
+          300,
+          "L",
+          0,
+          300,
+          "Z"
+        ],
+        "d": [
+          "M",
+          100,
+          150,
+          "L",
+          300,
+          150,
+          "L",
+          300,
+          300,
+          "L",
+          100,
+          300,
+          "Z"
+        ]
+      },
+      "rowLineNameOffsets": [
+        {
+          "x": 0,
+          "y": 150,
+          "name": "a-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "a-start"
+        },
+        {
+          "x": 0,
+          "y": 150,
+          "name": "b-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "b-start"
+        },
+        {
+          "x": 0,
+          "y": 300,
+          "name": "c-end"
+        },
+        {
+          "x": 0,
+          "y": 150,
+          "name": "c-start"
+        },
+        {
+          "x": 0,
+          "y": 300,
+          "name": "d-end"
+        },
+        {
+          "x": 0,
+          "y": 150,
+          "name": "d-start"
+        }
+      ],
+      "columnLineNameOffsets": [
+        {
+          "x": 100,
+          "y": 0,
+          "name": "a-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "a-start"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "b-end"
+        },
+        {
+          "x": 100,
+          "y": 0,
+          "name": "b-start"
+        },
+        {
+          "x": 100,
+          "y": 0,
+          "name": "c-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "c-start"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "d-end"
+        },
+        {
+          "x": 100,
+          "y": 0,
+          "name": "d-start"
+        }
+      ],
+      "gridBorder": [
+        "M",
+        0,
+        0,
+        "L",
+        300,
+        0,
+        "L",
+        300,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+rtlGrid{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "rtlGrid",
+    "className": ".grid.rtl-dir",
+    "nodeWidth": "400",
+    "nodeHeight": "300",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGrid",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 350,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 200,
+          "y": 0,
+          "computedSize": 200,
+          "authoredSize": "200px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 400,
+          "y": 75,
+          "computedSize": 150,
+          "authoredSize": "150px"
+        },
+        {
+          "x": 400,
+          "y": 225,
+          "computedSize": 150,
+          "authoredSize": "150px"
+        }
+      ],
+      "rows": [
+        "M",
+        100,
+        0,
+        "L",
+        400,
+        0,
+        "M",
+        100,
+        150,
+        "L",
+        400,
+        150,
+        "M",
+        400,
+        300,
+        "L",
+        100,
+        300
+      ],
+      "rowGaps": [
+        "M",
+        100,
+        150,
+        "L",
+        400,
+        150,
+        "L",
+        400,
+        150,
+        "L",
+        100,
+        150,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        300,
+        0,
+        "L",
+        300,
+        300,
+        "M",
+        400,
+        300,
+        "L",
+        400,
+        0,
+        "M",
+        100,
+        0,
+        "L",
+        100,
+        300
+      ],
+      "columnGaps": [
+        "M",
+        300,
+        0,
+        "L",
+        300,
+        0,
+        "L",
+        300,
+        300,
+        "L",
+        300,
+        300,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 0
+        },
+        {
+          "x": 400,
+          "y": 150
+        },
+        {
+          "x": 400,
+          "y": 300
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 0
+        },
+        {
+          "x": 300,
+          "y": 0
+        },
+        {
+          "x": 100,
+          "y": 0
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 100,
+          "y": 0
+        },
+        {
+          "x": 100,
+          "y": 150
+        },
+        {
+          "x": 100,
+          "y": 300
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 300
+        },
+        {
+          "x": 300,
+          "y": 300
+        },
+        {
+          "x": 100,
+          "y": 300
+        }
+      ],
+      "areaNames": {
+        "a": [
+          "M",
+          400,
+          0,
+          "L",
+          300,
+          0,
+          "L",
+          300,
+          150,
+          "L",
+          400,
+          150,
+          "Z"
+        ],
+        "b": [
+          "M",
+          300,
+          0,
+          "L",
+          100,
+          0,
+          "L",
+          100,
+          150,
+          "L",
+          300,
+          150,
+          "Z"
+        ],
+        "c": [
+          "M",
+          400,
+          150,
+          "L",
+          300,
+          150,
+          "L",
+          300,
+          300,
+          "L",
+          400,
+          300,
+          "Z"
+        ],
+        "d": [
+          "M",
+          300,
+          150,
+          "L",
+          100,
+          150,
+          "L",
+          100,
+          300,
+          "L",
+          300,
+          300,
+          "Z"
+        ]
+      },
+      "rowLineNameOffsets": [
+        {
+          "x": 300,
+          "y": 150,
+          "name": "a-end"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "a-start"
+        },
+        {
+          "x": 300,
+          "y": 150,
+          "name": "b-end"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "b-start"
+        },
+        {
+          "x": 300,
+          "y": 300,
+          "name": "c-end"
+        },
+        {
+          "x": 300,
+          "y": 150,
+          "name": "c-start"
+        },
+        {
+          "x": 300,
+          "y": 300,
+          "name": "d-end"
+        },
+        {
+          "x": 300,
+          "y": 150,
+          "name": "d-start"
+        }
+      ],
+      "columnLineNameOffsets": [
+        {
+          "x": 200,
+          "y": 0,
+          "name": "a-end"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "a-start"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "b-end"
+        },
+        {
+          "x": 200,
+          "y": 0,
+          "name": "b-start"
+        },
+        {
+          "x": 200,
+          "y": 0,
+          "name": "c-end"
+        },
+        {
+          "x": 300,
+          "y": 0,
+          "name": "c-start"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "d-end"
+        },
+        {
+          "x": 200,
+          "y": 0,
+          "name": "d-start"
+        }
+      ],
+      "gridBorder": [
+        "M",
+        100,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        100,
+        300,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+ltrGridGap{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "ltrGridGap",
+    "className": ".grid.ltr-dir.with-gap",
+    "nodeWidth": "400",
+    "nodeHeight": "300",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGrid",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 50,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 160,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 270,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 0,
+          "y": 50,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 0,
+          "y": 170,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        }
+      ],
+      "rows": [
+        "M",
+        0,
+        0,
+        "L",
+        320,
+        0,
+        "M",
+        320,
+        100,
+        "L",
+        0,
+        100,
+        "M",
+        0,
+        120,
+        "L",
+        320,
+        120,
+        "M",
+        320,
+        220,
+        "L",
+        0,
+        220
+      ],
+      "rowGaps": [
+        "M",
+        0,
+        100,
+        "L",
+        320,
+        100,
+        "L",
+        320,
+        120,
+        "L",
+        0,
+        120,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        0,
+        0,
+        "L",
+        0,
+        220,
+        "M",
+        100,
+        220,
+        "L",
+        100,
+        0,
+        "M",
+        110,
+        0,
+        "L",
+        110,
+        220,
+        "M",
+        210,
+        220,
+        "L",
+        210,
+        0,
+        "M",
+        220,
+        0,
+        "L",
+        220,
+        220,
+        "M",
+        320,
+        220,
+        "L",
+        320,
+        0
+      ],
+      "columnGaps": [
+        "M",
+        100,
+        0,
+        "L",
+        110,
+        0,
+        "L",
+        110,
+        220,
+        "L",
+        100,
+        220,
+        "Z",
+        "M",
+        210,
+        0,
+        "L",
+        220,
+        0,
+        "L",
+        220,
+        220,
+        "L",
+        210,
+        220,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 110
+        },
+        {
+          "x": 0,
+          "y": 220
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 105,
+          "y": 0
+        },
+        {
+          "x": 215,
+          "y": 0
+        },
+        {
+          "x": 320,
+          "y": 0
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 320,
+          "y": 0
+        },
+        {
+          "x": 320,
+          "y": 110
+        },
+        {
+          "x": 320,
+          "y": 220
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 0,
+          "y": 220
+        },
+        {
+          "x": 105,
+          "y": 220
+        },
+        {
+          "x": 215,
+          "y": 220
+        },
+        {
+          "x": 320,
+          "y": 220
+        }
+      ],
+      "areaNames": {
+        "header": [
+          "M",
+          0,
+          0,
+          "L",
+          320,
+          0,
+          "L",
+          320,
+          100,
+          "L",
+          0,
+          100,
+          "Z"
+        ],
+        "main": [
+          "M",
+          110,
+          120,
+          "L",
+          320,
+          120,
+          "L",
+          320,
+          220,
+          "L",
+          110,
+          220,
+          "Z"
+        ],
+        "sidebar": [
+          "M",
+          0,
+          120,
+          "L",
+          100,
+          120,
+          "L",
+          100,
+          220,
+          "L",
+          0,
+          220,
+          "Z"
+        ]
+      },
+      "rowLineNameOffsets": [
+        {
+          "x": 0,
+          "y": 110,
+          "name": "header-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "header-start"
+        },
+        {
+          "x": 0,
+          "y": 220,
+          "name": "main-end"
+        },
+        {
+          "x": 0,
+          "y": 110,
+          "name": "main-start"
+        },
+        {
+          "x": 0,
+          "y": 220,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 0,
+          "y": 110,
+          "name": "sidebar-start"
+        }
+      ],
+      "columnLineNameOffsets": [
+        {
+          "x": 320,
+          "y": 0,
+          "name": "header-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "header-start"
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "name": "main-end"
+        },
+        {
+          "x": 105,
+          "y": 0,
+          "name": "main-start"
+        },
+        {
+          "x": 105,
+          "y": 0,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "sidebar-start"
+        }
+      ],
+      "gridBorder": [
+        "M",
+        0,
+        0,
+        "L",
+        320,
+        0,
+        "L",
+        320,
+        220,
+        "L",
+        0,
+        220,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+rtlGridGap{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "rtlGridGap",
+    "className": ".grid.rtl-dir.with-gap",
+    "nodeWidth": "400",
+    "nodeHeight": "300",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGrid",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 350,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 240,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 130,
+          "y": 0,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 400,
+          "y": 50,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        },
+        {
+          "x": 400,
+          "y": 170,
+          "computedSize": 100,
+          "authoredSize": "100px"
+        }
+      ],
+      "rows": [
+        "M",
+        80,
+        0,
+        "L",
+        400,
+        0,
+        "M",
+        400,
+        100,
+        "L",
+        80,
+        100,
+        "M",
+        80,
+        120,
+        "L",
+        400,
+        120,
+        "M",
+        400,
+        220,
+        "L",
+        80,
+        220
+      ],
+      "rowGaps": [
+        "M",
+        80,
+        100,
+        "L",
+        400,
+        100,
+        "L",
+        400,
+        120,
+        "L",
+        80,
+        120,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        300,
+        0,
+        "L",
+        300,
+        220,
+        "M",
+        400,
+        220,
+        "L",
+        400,
+        0,
+        "M",
+        190,
+        0,
+        "L",
+        190,
+        220,
+        "M",
+        290,
+        220,
+        "L",
+        290,
+        0,
+        "M",
+        80,
+        0,
+        "L",
+        80,
+        220,
+        "M",
+        180,
+        220,
+        "L",
+        180,
+        0
+      ],
+      "columnGaps": [
+        "M",
+        290,
+        0,
+        "L",
+        300,
+        0,
+        "L",
+        300,
+        220,
+        "L",
+        290,
+        220,
+        "Z",
+        "M",
+        180,
+        0,
+        "L",
+        190,
+        0,
+        "L",
+        190,
+        220,
+        "L",
+        180,
+        220,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 0
+        },
+        {
+          "x": 400,
+          "y": 110
+        },
+        {
+          "x": 400,
+          "y": 220
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 0
+        },
+        {
+          "x": 295,
+          "y": 0
+        },
+        {
+          "x": 185,
+          "y": 0
+        },
+        {
+          "x": 80,
+          "y": 0
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 80,
+          "y": 0
+        },
+        {
+          "x": 80,
+          "y": 110
+        },
+        {
+          "x": 80,
+          "y": 220
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 400,
+          "y": 220
+        },
+        {
+          "x": 295,
+          "y": 220
+        },
+        {
+          "x": 185,
+          "y": 220
+        },
+        {
+          "x": 80,
+          "y": 220
+        }
+      ],
+      "areaNames": {
+        "header": [
+          "M",
+          400,
+          0,
+          "L",
+          80,
+          0,
+          "L",
+          80,
+          100,
+          "L",
+          400,
+          100,
+          "Z"
+        ],
+        "main": [
+          "M",
+          290,
+          120,
+          "L",
+          80,
+          120,
+          "L",
+          80,
+          220,
+          "L",
+          290,
+          220,
+          "Z"
+        ],
+        "sidebar": [
+          "M",
+          400,
+          120,
+          "L",
+          300,
+          120,
+          "L",
+          300,
+          220,
+          "L",
+          400,
+          220,
+          "Z"
+        ]
+      },
+      "rowLineNameOffsets": [
+        {
+          "x": 320,
+          "y": 110,
+          "name": "header-end"
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "name": "header-start"
+        },
+        {
+          "x": 320,
+          "y": 220,
+          "name": "main-end"
+        },
+        {
+          "x": 320,
+          "y": 110,
+          "name": "main-start"
+        },
+        {
+          "x": 320,
+          "y": 220,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 320,
+          "y": 110,
+          "name": "sidebar-start"
+        }
+      ],
+      "columnLineNameOffsets": [
+        {
+          "x": 0,
+          "y": 0,
+          "name": "header-end"
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "name": "header-start"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "main-end"
+        },
+        {
+          "x": 215,
+          "y": 0,
+          "name": "main-start"
+        },
+        {
+          "x": 215,
+          "y": 0,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "name": "sidebar-start"
+        }
+      ],
+      "gridBorder": [
+        "M",
+        80,
+        0,
+        "L",
+        400,
+        0,
+        "L",
+        400,
+        220,
+        "L",
+        80,
+        220,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+
