@@ -30,6 +30,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
@@ -506,7 +507,7 @@ tabs::TabStripCollection* TabModelJniBridge::GetTabStripCollection(
 void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {
   int index = GetIndexOfTab(tab);
   HighlightTabs(tab, {tab});
-  CHECK_NE(-1, index);
+  CHECK_NE(tab_list::kNoTabIndex, index);
   SetActiveIndex(index);
 }
 
@@ -611,7 +612,7 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
 int TabModelJniBridge::GetIndexOfTab(tabs::TabHandle tab) {
   tabs::TabInterface* tab_interface = tab.Get();
   if (!tab_interface) {
-    return -1;
+    return tab_list::kNoTabIndex;
   }
   int count = GetTabCount();
   for (int i = 0; i < count; ++i) {
@@ -620,7 +621,7 @@ int TabModelJniBridge::GetIndexOfTab(tabs::TabHandle tab) {
     }
   }
 
-  return -1;
+  return tab_list::kNoTabIndex;
 }
 
 void TabModelJniBridge::HighlightTabs(tabs::TabHandle tab_to_activate,

@@ -4,6 +4,7 @@
 
 source_set("tab_list") {
   sources = [
+    "constants.h",
     "tab_list_interface.cc",
     "tab_list_interface.h",
     "tab_list_interface_observer.h",

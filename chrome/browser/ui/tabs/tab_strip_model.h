@@ -26,6 +26,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -202,7 +203,7 @@ class TabStripModel {
   using reverse_iterator = std::reverse_iterator<TabIterator>;
   using const_reverse_iterator = std::reverse_iterator<TabIterator>;
 
-  static constexpr int kNoTab = -1;
+  static constexpr int kNoTab = tab_list::kNoTabIndex;
 
   TabStripModel() = delete;
 

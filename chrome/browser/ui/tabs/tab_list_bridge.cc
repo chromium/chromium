@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -144,40 +145,40 @@ tabs::TabInterface* TabListBridge::GetActiveTab() {
 
 void TabListBridge::ActivateTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab);
+  CHECK_NE(index, tab_list::kNoTabIndex);
   tab_strip_->ActivateTabAt(index);
 }
 
 tabs::TabInterface* TabListBridge::OpenTab(const GURL& url,
                                            int index,
                                            bool foreground) {
-  // If `index` is `TabStripModel::kNoTab` or equals the tab strip size, then
+  // If `index` is `tab_list::kNoTabIndex` or equals the tab strip size, then
   // the tab is added to the end of the tab strip.
   if (index == tab_strip_->count()) {
-    index = TabStripModel::kNoTab;
+    index = tab_list::kNoTabIndex;
   }
-  CHECK(index == TabStripModel::kNoTab || tab_strip_->ContainsIndex(index));
+  CHECK(index == tab_list::kNoTabIndex || tab_strip_->ContainsIndex(index));
 
   // It's a bit of a code smell to reach in and grab the delegate from
   // TabStripModel, but it avoids introducing new dependencies here.
   TabStripModelDelegate* delegate = tab_strip_->delegate();
   delegate->AddTabAt(url, index, foreground);
   int index_to_retrieve =
-      index == TabStripModel::kNoTab ? tab_strip_->count() - 1 : index;
+      index == tab_list::kNoTabIndex ? tab_strip_->count() - 1 : index;
   return tab_strip_->GetTabAtIndex(index_to_retrieve);
 }
 
 void TabListBridge::SetOpenerForTab(tabs::TabHandle target,
                                     tabs::TabHandle opener) {
   const int target_index = GetIndexOfTab(target);
-  CHECK_NE(target_index, TabStripModel::kNoTab);
+  CHECK_NE(target_index, tab_list::kNoTabIndex);
 
   tab_strip_->SetOpenerOfTabAt(target_index, opener.Get());
 }
 
 tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
   const int target_index = GetIndexOfTab(target);
-  CHECK_NE(target_index, TabStripModel::kNoTab);
+  CHECK_NE(target_index, tab_list::kNoTabIndex);
   return tab_strip_->GetOpenerOfTabAt(target_index);
 }
 
@@ -212,7 +213,7 @@ content::WebContents* TabListBridge::DiscardTab(tabs::TabHandle tab) {
 
 tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab);
+  CHECK_NE(index, tab_list::kNoTabIndex);
 
   // It's a bit of a code smell to reach in and grab the delegate from
   // TabStripModel, but it avoids introducing new dependencies here.
@@ -246,7 +247,7 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
 
   for (const auto& tab_handle : tabs) {
     auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
-    CHECK_NE(index, TabStripModel::kNoTab)
+    CHECK_NE(index, tab_list::kNoTabIndex)
         << "Trying to highlight a non-existent tab.";
 
     selection_state.AddTabToSelection(tab_handle.Get());
@@ -263,7 +264,7 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
 
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
   int current_index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab)
+  CHECK_NE(index, tab_list::kNoTabIndex)
       << "Trying to move a non-existent tab.";
   tab_strip_->MoveWebContentsAt(current_index, index,
                                 /*select_after_move=*/false);
@@ -277,7 +278,7 @@ void TabListBridge::CloseTab(tabs::TabHandle tab) {
 std::unique_ptr<content::WebContents> TabListBridge::DetachWebContents(
     tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab)
+  CHECK_NE(index, tab_list::kNoTabIndex)
       << "Trying to detach a tab that doesn't exist in this tab list.";
   return tab_strip_->DetachWebContentsAtForInsertion(
       index, TabRemovedReason::kInsertedIntoSidePanel);
@@ -295,14 +296,14 @@ std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
 
 void TabListBridge::PinTab(tabs::TabHandle tab) {
   int index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab)
+  CHECK_NE(index, tab_list::kNoTabIndex)
       << "Trying to pin a tab that doesn't exist in this tab list.";
   tab_strip_->SetTabPinned(index, true);
 }
 
 void TabListBridge::UnpinTab(tabs::TabHandle tab) {
   int index = GetIndexOfTab(tab);
-  CHECK_NE(index, TabStripModel::kNoTab)
+  CHECK_NE(index, tab_list::kNoTabIndex)
       << "Trying to unpin a tab that doesn't exist in this tab list.";
   tab_strip_->SetTabPinned(index, false);
 }
@@ -365,7 +366,7 @@ std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
   tab_indices.reserve(tabs.size());
   for (const auto& tab_handle : tabs) {
     int index = GetIndexOfTab(tab_handle);
-    if (index != TabStripModel::kNoTab) {
+    if (index != tab_list::kNoTabIndex) {
       tab_indices.push_back(index);
     }
   }
@@ -379,7 +380,7 @@ std::optional<split_tabs::SplitTabId> TabListBridge::CreateSplit(
   tab_indices.reserve(tabs.size());
   for (const auto& tab_handle : tabs) {
     int index = GetIndexOfTab(tab_handle);
-    CHECK_NE(index, TabStripModel::kNoTab)
+    CHECK_NE(index, tab_list::kNoTabIndex)
         << "Trying to add a non-existent tab to a split.";
     tab_indices.push_back(index);
   }
@@ -409,7 +410,7 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 
   for (const auto& tab_handle : tabs) {
     auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
-    CHECK_NE(index, TabStripModel::kNoTab)
+    CHECK_NE(index, tab_list::kNoTabIndex)
         << "Trying to add a non-existent tab to a group.";
 
     tab_indices.push_back(index);
@@ -435,7 +436,7 @@ void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 
   for (const auto& tab_handle : tabs) {
     auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
-    CHECK_NE(index, TabStripModel::kNoTab)
+    CHECK_NE(index, tab_list::kNoTabIndex)
         << "Trying to remove a non-existent tab from a group.";
 
     tab_indices.push_back(index);
@@ -502,7 +503,7 @@ void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
                                     SessionID destination_window_id,
                                     int destination_index) {
   int source_index = GetIndexOfTab(tab);
-  CHECK_NE(source_index, TabStripModel::kNoTab);
+  CHECK_NE(source_index, tab_list::kNoTabIndex);
 
   BrowserWindowInterface* target_window =
       GetBrowserWithSessionId(destination_window_id, tab_strip_->profile());

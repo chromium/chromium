@@ -42,6 +42,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1588,8 +1589,6 @@ bool ContextualSearchboxHandler::IsContextualSearchTabSharingEligible() const {
 void ContextualSearchboxHandler::RecordTabAddedMetric(
     tabs::TabInterface* const tab,
     bool is_tab_suggestion_chip) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   auto* metrics_recorder = GetMetricsRecorder();
   if (!metrics_recorder) {
     return;
@@ -1607,7 +1606,7 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
     return;
   }
   int tab_index = tab_list->GetIndexOfTab(tab->GetHandle());
-  if (tab_index == TabStripModel::kNoTab) {
+  if (tab_index == tab_list::kNoTabIndex) {
     return;
   }
 
@@ -1666,7 +1665,6 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
           contextual_search::ContextualSearchAttachmentButtonType::kRecentTab);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
