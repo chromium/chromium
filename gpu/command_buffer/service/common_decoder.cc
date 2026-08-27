@@ -52,13 +52,6 @@ CommonDecoder::Bucket::Bucket() : size_(0) {}
 
 CommonDecoder::Bucket::~Bucket() = default;
 
-void* CommonDecoder::Bucket::GetData(size_t offset, size_t size) const {
-  if (OffsetSizeValid(offset, size)) {
-    return const_cast<uint8_t*>(data_.subspan(offset).data());
-  }
-  return nullptr;
-}
-
 base::span<uint8_t> CommonDecoder::Bucket::GetDataAsByteSpan(size_t offset,
                                                              size_t size) {
   if (OffsetSizeValid(offset, size)) {
@@ -377,11 +370,11 @@ error::Error CommonDecoder::HandleGetBucketStart(
   int32_t data_memory_id = args.data_memory_id;
   uint32_t data_memory_offset = args.data_memory_offset;
   uint32_t data_memory_size = args.data_memory_size;
-  uint8_t* data = nullptr;
+  std::optional<base::span<uint8_t>> data;
   if (data_memory_size != 0 || data_memory_id != 0 || data_memory_offset != 0) {
-    data = GetSharedMemoryAs<uint8_t*>(data_memory_id, data_memory_offset,
-                                       data_memory_size);
-    if (!data) {
+    data = GetSharedMemoryAsByteSpan(data_memory_id, data_memory_offset,
+                                     data_memory_size);
+    if (!data.has_value()) {
       return error::kInvalidArguments;
     }
   }
@@ -398,9 +391,9 @@ error::Error CommonDecoder::HandleGetBucketStart(
   }
   uint32_t bucket_size = bucket->size();
   StoreU32Unaligned(bucket_size, result);
-  if (data) {
+  if (data.has_value()) {
     uint32_t size = std::min(data_memory_size, bucket_size);
-    UNSAFE_TODO(memcpy(data, bucket->GetData(0, size), size));
+    data->copy_prefix_from(bucket->GetDataAsByteSpan(0, size));
   }
   return error::kNoError;
 }
@@ -412,20 +405,23 @@ error::Error CommonDecoder::HandleGetBucketData(uint32_t immediate_data_size,
   uint32_t bucket_id = args.bucket_id;
   uint32_t offset = args.offset;
   uint32_t size = args.size;
-  void* data = GetSharedMemoryAs<void*>(
+  std::optional<base::span<uint8_t>> data = GetSharedMemoryAsByteSpan(
       args.shared_memory_id, args.shared_memory_offset, size);
-  if (!data) {
+  if (!data.has_value()) {
     return error::kInvalidArguments;
   }
   Bucket* bucket = GetBucket(bucket_id);
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  const void* src = bucket->GetData(offset, size);
-  if (!src) {
-      return error::kInvalidArguments;
+  // Note that an empty span is returned both for a valid zero-sized request and
+  // for an out-of-range one, so the range has to be validated explicitly.
+  base::CheckedNumeric<size_t> end = offset;
+  end += size;
+  if (!end.IsValid() || end.ValueOrDie() > bucket->size()) {
+    return error::kInvalidArguments;
   }
-  UNSAFE_TODO(memcpy(data, src, size));
+  data->copy_from(bucket->GetDataAsByteSpan(offset, size));
   return error::kNoError;
 }
 

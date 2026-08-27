@@ -349,7 +349,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetActiveUniformsiv(
     return error::kInvalidArguments;
   }
   GLsizei uniformCount = static_cast<GLsizei>(bucket->size() / sizeof(GLuint));
-  const GLuint* indices = bucket->GetDataAs<const GLuint*>(0, bucket->size());
+  base::span<GLuint> indices = bucket->GetDataAsSpan<GLuint>(0, uniformCount);
   typedef cmds::GetActiveUniformsiv::Result Result;
   uint32_t checked_size = 0;
   if (!Result::ComputeSize(uniformCount).AssignIfValid(&checked_size)) {
@@ -366,8 +366,8 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetActiveUniformsiv(
     return error::kInvalidArguments;
   }
 
-  error::Error error =
-      DoGetActiveUniformsiv(program, uniformCount, indices, pname, params);
+  error::Error error = DoGetActiveUniformsiv(program, uniformCount,
+                                             indices.data(), pname, params);
   if (error != error::kNoError) {
     return error;
   }
@@ -2010,10 +2010,10 @@ error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexImage2DBucket(
     return error::kInvalidArguments;
   }
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexImage2D(target, level, internal_format, width, height,
-                                border, image_size, data);
+                                border, image_size, data.data());
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexImage2D(
@@ -2060,10 +2060,10 @@ error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexSubImage2DBucket(
     return error::kInvalidArguments;
   }
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexSubImage2D(target, level, xoffset, yoffset, width,
-                                   height, format, image_size, data);
+                                   height, format, image_size, data.data());
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexSubImage2D(
@@ -2114,11 +2114,11 @@ error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexImage3DBucket(
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  uint32_t image_size = bucket->size();
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexImage3D(target, level, internal_format, width, height,
-                                depth, border, image_size, data);
+                                depth, border, image_size, data.data());
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexImage3D(
@@ -2174,11 +2174,11 @@ error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexSubImage3DBucket(
     return error::kInvalidArguments;
   }
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset,
                                    width, height, depth, format, image_size,
-                                   data);
+                                   data.data());
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCompressedTexSubImage3D(

@@ -22,9 +22,10 @@ TEST_P(GLES2DecoderTest2, GetProgramInfoLogValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  EXPECT_EQ(strlen(kInfo) + 1, bucket->size());
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(bucket->GetData(0, bucket->size()), kInfo,
-                                  bucket->size())));
+  const std::string_view info(kInfo);
+  ASSERT_EQ(info.size() + 1u, bucket->size());
+  EXPECT_EQ(base::as_string_view(bucket->GetDataAsByteSpan(0, info.size())),
+            info);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 

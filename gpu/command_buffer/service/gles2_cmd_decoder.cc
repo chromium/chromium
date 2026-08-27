@@ -12951,10 +12951,11 @@ error::Error GLES2DecoderImpl::HandleCompressedTexImage2DBucket(
   if (!bucket)
     return error::kInvalidArguments;
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexImage(target, level, internal_format, width, height, 1,
-                              border, image_size, data, ContextState::k2D);
+                              border, image_size, data.data(),
+                              ContextState::k2D);
 }
 
 error::Error GLES2DecoderImpl::HandleCompressedTexImage2D(
@@ -13011,10 +13012,10 @@ error::Error GLES2DecoderImpl::HandleCompressedTexImage3DBucket(
   if (!bucket)
     return error::kInvalidArguments;
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexImage(target, level, internal_format, width, height,
-                              depth, border, image_size, data,
+                              depth, border, image_size, data.data(),
                               ContextState::k3D);
 }
 
@@ -13078,11 +13079,11 @@ error::Error GLES2DecoderImpl::HandleCompressedTexSubImage3DBucket(
   if (!bucket)
     return error::kInvalidArguments;
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
   return DoCompressedTexSubImage(target, level, xoffset, yoffset, zoffset,
                                  width, height, depth, format, image_size,
-                                 data, ContextState::k3D);
+                                 data.data(), ContextState::k3D);
 }
 
 error::Error GLES2DecoderImpl::HandleCompressedTexSubImage3D(
@@ -13471,10 +13472,10 @@ error::Error GLES2DecoderImpl::HandleCompressedTexSubImage2DBucket(
   if (!bucket)
     return error::kInvalidArguments;
   uint32_t image_size = bucket->size();
-  const void* data = bucket->GetData(0, image_size);
-  DCHECK(data || !image_size);
-  return DoCompressedTexSubImage(target, level, xoffset, yoffset, 0,
-                                 width, height, 1, format, image_size, data,
+  base::span<uint8_t> data = bucket->GetDataAsByteSpan(0, image_size);
+  DCHECK_EQ(data.size(), image_size);
+  return DoCompressedTexSubImage(target, level, xoffset, yoffset, 0, width,
+                                 height, 1, format, image_size, data.data(),
                                  ContextState::k2D);
 }
 
@@ -14812,7 +14813,7 @@ error::Error GLES2DecoderImpl::HandleGetActiveUniformsiv(
     return error::kNoError;
   }
   GLsizei count = static_cast<GLsizei>(bucket->size() / sizeof(GLuint));
-  const GLuint* indices = bucket->GetDataAs<const GLuint*>(0, bucket->size());
+  base::span<GLuint> indices = bucket->GetDataAsSpan<GLuint>(0, count);
   typedef cmds::GetActiveUniformsiv::Result Result;
   uint32_t checked_size = 0;
   if (!Result::ComputeSize(count).AssignIfValid(&checked_size)) {
@@ -14835,8 +14836,8 @@ error::Error GLES2DecoderImpl::HandleGetActiveUniformsiv(
   }
   GLint activeUniforms = 0;
   program->GetProgramiv(GL_ACTIVE_UNIFORMS, &activeUniforms);
-  for (int i = 0; i < count; i++) {
-    if (UNSAFE_TODO(indices[i]) >= static_cast<GLuint>(activeUniforms)) {
+  for (const GLuint index : indices) {
+    if (index >= static_cast<GLuint>(activeUniforms)) {
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
           "glGetActiveUniformsiv", "index >= active uniforms");
       return error::kNoError;
@@ -14850,7 +14851,8 @@ error::Error GLES2DecoderImpl::HandleGetActiveUniformsiv(
         "glGetActiveUniformsiv", "program not linked");
     return error::kNoError;
   }
-  api()->glGetActiveUniformsivFn(service_id, count, indices, pname, params);
+  api()->glGetActiveUniformsivFn(service_id, count, indices.data(), pname,
+                                 params);
   result->SetNumResults(count);
   return error::kNoError;
 }

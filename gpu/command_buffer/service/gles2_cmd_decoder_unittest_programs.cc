@@ -5,9 +5,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -66,12 +70,10 @@ TEST_P(GLES2DecoderWithShaderTest, GetProgramInfoCHROMIUMInvalidArgs) {
   bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(sizeof(ProgramInfoHeader), bucket->size());
-  ProgramInfoHeader* info =
-      bucket->GetDataAs<ProgramInfoHeader*>(0, sizeof(ProgramInfoHeader));
-  ASSERT_TRUE(info != 0);
-  EXPECT_EQ(0u, info->link_status);
-  EXPECT_EQ(0u, info->num_attribs);
-  EXPECT_EQ(0u, info->num_uniforms);
+  ProgramInfoHeader& info = bucket->GetDataAsSpan<ProgramInfoHeader>(0, 1u)[0];
+  EXPECT_EQ(0u, info.link_status);
+  EXPECT_EQ(0u, info.num_attribs);
+  EXPECT_EQ(0u, info.num_uniforms);
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetUniformBlocksCHROMIUMValidArgs) {
@@ -88,10 +90,9 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformBlocksCHROMIUMValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   EXPECT_EQ(sizeof(UniformBlocksHeader), bucket->size());
-  UniformBlocksHeader* header =
-      bucket->GetDataAs<UniformBlocksHeader*>(0, sizeof(UniformBlocksHeader));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniform_blocks);
+  UniformBlocksHeader& header =
+      bucket->GetDataAsSpan<UniformBlocksHeader>(0, 1u)[0];
+  EXPECT_EQ(0u, header.num_uniform_blocks);
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetUniformBlocksCHROMIUMInvalidArgs) {
@@ -105,10 +106,9 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformBlocksCHROMIUMInvalidArgs) {
   bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(sizeof(UniformBlocksHeader), bucket->size());
-  UniformBlocksHeader* header =
-      bucket->GetDataAs<UniformBlocksHeader*>(0, sizeof(UniformBlocksHeader));
-  ASSERT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniform_blocks);
+  UniformBlocksHeader& header =
+      bucket->GetDataAsSpan<UniformBlocksHeader>(0, 1u)[0];
+  EXPECT_EQ(0u, header.num_uniform_blocks);
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetUniformsES3CHROMIUMValidArgs) {
@@ -125,10 +125,9 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformsES3CHROMIUMValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   EXPECT_EQ(sizeof(UniformsES3Header), bucket->size());
-  UniformsES3Header* header =
-      bucket->GetDataAs<UniformsES3Header*>(0, sizeof(UniformsES3Header));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniforms);
+  UniformsES3Header& header =
+      bucket->GetDataAsSpan<UniformsES3Header>(0, 1u)[0];
+  EXPECT_EQ(0u, header.num_uniforms);
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetUniformsES3CHROMIUMInvalidArgs) {
@@ -142,10 +141,9 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformsES3CHROMIUMInvalidArgs) {
   bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(sizeof(UniformsES3Header), bucket->size());
-  UniformsES3Header* header =
-      bucket->GetDataAs<UniformsES3Header*>(0, sizeof(UniformsES3Header));
-  ASSERT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniforms);
+  UniformsES3Header& header =
+      bucket->GetDataAsSpan<UniformsES3Header>(0, 1u)[0];
+  EXPECT_EQ(0u, header.num_uniforms);
 }
 
 TEST_P(GLES3DecoderWithShaderTest,
@@ -170,13 +168,11 @@ TEST_P(GLES3DecoderWithShaderTest,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   EXPECT_EQ(sizeof(TransformFeedbackVaryingsHeader), bucket->size());
-  TransformFeedbackVaryingsHeader* header =
-      bucket->GetDataAs<TransformFeedbackVaryingsHeader*>(
-          0, sizeof(TransformFeedbackVaryingsHeader));
-  EXPECT_TRUE(header != nullptr);
+  TransformFeedbackVaryingsHeader& header =
+      bucket->GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
   EXPECT_EQ(static_cast<uint32_t>(GL_INTERLEAVED_ATTRIBS),
-            header->transform_feedback_buffer_mode);
-  EXPECT_EQ(0u, header->num_transform_feedback_varyings);
+            header.transform_feedback_buffer_mode);
+  EXPECT_EQ(0u, header.num_transform_feedback_varyings);
 }
 
 TEST_P(GLES3DecoderWithShaderTest,
@@ -191,11 +187,9 @@ TEST_P(GLES3DecoderWithShaderTest,
   bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(sizeof(TransformFeedbackVaryingsHeader), bucket->size());
-  TransformFeedbackVaryingsHeader* header =
-      bucket->GetDataAs<TransformFeedbackVaryingsHeader*>(
-          0, sizeof(TransformFeedbackVaryingsHeader));
-  ASSERT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_transform_feedback_varyings);
+  TransformFeedbackVaryingsHeader& header =
+      bucket->GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
+  EXPECT_EQ(0u, header.num_transform_feedback_varyings);
 }
 
 TEST_P(GLES2DecoderWithShaderTest, GetUniformivSucceeds) {
@@ -625,8 +619,10 @@ TEST_P(GLES2DecoderWithShaderTest, GetActiveUniformSucceeds) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(bucket->GetData(0, bucket->size()),
-                                  kUniform2Name, bucket->size())));
+  const std::string_view name(kUniform2Name);
+  ASSERT_EQ(name.size() + 1u, bucket->size());
+  EXPECT_EQ(base::as_string_view(bucket->GetDataAsByteSpan(0, name.size())),
+            name);
 }
 
 TEST_P(GLES2DecoderWithShaderTest, GetActiveUniformResultNotInitFails) {
@@ -737,8 +733,8 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformBlockNameSucceeds) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(bucket->GetData(0, bucket->size()), kName, bucket->size())));
+  EXPECT_EQ(bucket->GetDataAsByteSpan(0, bucket->size()),
+            base::byte_span_with_nul_from_cstring(kName));
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformBlockNameUnlinkedProgram) {
@@ -971,8 +967,10 @@ TEST_P(GLES2DecoderWithShaderTest, GetActiveAttribSucceeds) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(bucket->GetData(0, bucket->size()),
-                                  kAttrib2Name, bucket->size())));
+  const std::string_view name(kAttrib2Name);
+  ASSERT_EQ(name.size() + 1u, bucket->size());
+  EXPECT_EQ(base::as_string_view(bucket->GetDataAsByteSpan(0, name.size())),
+            name);
 }
 
 TEST_P(GLES2DecoderWithShaderTest, GetActiveAttribResultNotInitFails) {
@@ -1344,9 +1342,10 @@ TEST_P(GLES2DecoderWithShaderTest, GetShaderInfoLogValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  EXPECT_EQ(strlen(kInfo) + 1, bucket->size());
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(bucket->GetData(0, bucket->size()), kInfo, bucket->size())));
+  const std::string_view info(kInfo);
+  ASSERT_EQ(info.size() + 1u, bucket->size());
+  EXPECT_EQ(base::as_string_view(bucket->GetDataAsByteSpan(0, info.size())),
+            info);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
@@ -1400,8 +1399,8 @@ TEST_P(GLES3DecoderWithShaderTest, GetTransformFeedbackVaryingSucceeds) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kBucketId);
   ASSERT_TRUE(bucket != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(bucket->GetData(0, bucket->size()), kName, bucket->size())));
+  EXPECT_EQ(bucket->GetDataAsByteSpan(0, bucket->size()),
+            base::byte_span_with_nul_from_cstring(kName));
 }
 
 TEST_P(GLES3DecoderWithShaderTest, GetTransformFeedbackVaryingNotInitFails) {
@@ -1550,8 +1549,8 @@ TEST_P(GLES2DecoderTest, ShaderSourceBucketAndGetShaderSourceValidArgs) {
   CommonDecoder::Bucket* bucket = decoder_->GetBucket(kOutBucketId);
   ASSERT_TRUE(bucket != nullptr);
   EXPECT_EQ(sizeof(kSource0), bucket->size());
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(bucket->GetData(0, bucket->size()), kSource0, bucket->size())));
+  EXPECT_EQ(bucket->GetDataAsByteSpan(0, bucket->size()),
+            base::as_byte_span(kSource0));
 }
 
 #if GLES2_TEST_SHADER_VS_PROGRAM_IDS

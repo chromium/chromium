@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/common_decoder.h"
@@ -315,8 +316,8 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
   }
 
   Program* SetupDefaultProgram() {
-    SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms, {},
-                            kServiceProgramId);
+    SetupShaderExpectations(kAttribs.data(), kNumAttribs, kUniforms.data(),
+                            kNumUniforms, {}, kServiceProgramId);
 
     Shader* vertex_shader = shader_manager_.CreateShader(
         kVertexShaderClientId, kVertexShaderServiceId, GL_VERTEX_SHADER);
@@ -357,8 +358,8 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
                       base::span<ProgramOutputInfo> program_outputs = {}) {
     GLuint service_id = program->service_id();
     if (expected_link_status) {
-      SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms,
-                              program_outputs, service_id);
+      SetupShaderExpectations(kAttribs.data(), kNumAttribs, kUniforms.data(),
+                              kNumUniforms, program_outputs, service_id);
     }
     program->Link(nullptr, this);
     GLint link_status;
@@ -480,26 +481,38 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
     ProgramManagerTestBase::TearDown();
   }
 
-  static AttribInfo kAttribs[];
-  static UniformInfo kUniforms[];
+  static std::array<AttribInfo, 4> kAttribs;
+  static std::array<UniformInfo, 3> kUniforms;
   ShaderManager shader_manager_;
 };
 
-ProgramManagerWithShaderTest::AttribInfo
-    ProgramManagerWithShaderTest::kAttribs[] = {
+std::array<ProgramManagerWithShaderTest::AttribInfo, 4>
+    ProgramManagerWithShaderTest::kAttribs = {{
         {
-            kAttrib1Name, kAttrib1Size, kAttrib1Type, kAttrib1Location,
+            kAttrib1Name,
+            kAttrib1Size,
+            kAttrib1Type,
+            kAttrib1Location,
         },
         {
-            kAttrib2Name, kAttrib2Size, kAttrib2Type, kAttrib2Location,
+            kAttrib2Name,
+            kAttrib2Size,
+            kAttrib2Type,
+            kAttrib2Location,
         },
         {
-            kAttrib3Name, kAttrib3Size, kAttrib3Type, kAttrib3Location,
+            kAttrib3Name,
+            kAttrib3Size,
+            kAttrib3Type,
+            kAttrib3Location,
         },
         {
-            kAttrib4Name, kAttrib4Size, kAttrib4Type, kAttrib4Location,
+            kAttrib4Name,
+            kAttrib4Size,
+            kAttrib4Type,
+            kAttrib4Location,
         },
-};
+    }};
 
 // GCC requires these declarations, but MSVC requires they not be present
 #ifndef COMPILER_MSVC
@@ -546,33 +559,36 @@ const GLint ProgramManagerWithShaderTest::kBadUniformIndex;
 const size_t ProgramManagerWithShaderTest::kNumAttribs =
     std::size(ProgramManagerWithShaderTest::kAttribs);
 
-ProgramManagerWithShaderTest::UniformInfo
-    ProgramManagerWithShaderTest::kUniforms[] = {
-  { kUniform1Name,
-    kUniform1Size,
-    kUniform1Type,
-    kUniform1FakeLocation,
-    kUniform1RealLocation,
-    kUniform1DesiredLocation,
-    kUniform1Name,
-  },
-  { kUniform2Name,
-    kUniform2Size,
-    kUniform2Type,
-    kUniform2FakeLocation,
-    kUniform2RealLocation,
-    kUniform2DesiredLocation,
-    kUniform2NameWithArrayIndex,
-  },
-  { kUniform3Name,
-    kUniform3Size,
-    kUniform3Type,
-    kUniform3FakeLocation,
-    kUniform3RealLocation,
-    kUniform3DesiredLocation,
-    kUniform3NameWithArrayIndex,
-  },
-};
+std::array<ProgramManagerWithShaderTest::UniformInfo, 3>
+    ProgramManagerWithShaderTest::kUniforms = {{
+        {
+            kUniform1Name,
+            kUniform1Size,
+            kUniform1Type,
+            kUniform1FakeLocation,
+            kUniform1RealLocation,
+            kUniform1DesiredLocation,
+            kUniform1Name,
+        },
+        {
+            kUniform2Name,
+            kUniform2Size,
+            kUniform2Type,
+            kUniform2FakeLocation,
+            kUniform2RealLocation,
+            kUniform2DesiredLocation,
+            kUniform2NameWithArrayIndex,
+        },
+        {
+            kUniform3Name,
+            kUniform3Size,
+            kUniform3Type,
+            kUniform3FakeLocation,
+            kUniform3RealLocation,
+            kUniform3DesiredLocation,
+            kUniform3NameWithArrayIndex,
+        },
+    }};
 
 const size_t ProgramManagerWithShaderTest::kNumUniforms =
     std::size(ProgramManagerWithShaderTest::kUniforms);
@@ -598,7 +614,7 @@ TEST_F(ProgramManagerWithShaderTest, GetAttribInfos) {
   ASSERT_EQ(kNumAttribs, infos.size());
   for (size_t ii = 0; ii < kNumAttribs; ++ii) {
     const Program::VertexAttrib& info = infos[ii];
-    const AttribInfo& expected = UNSAFE_TODO(kAttribs[ii]);
+    const AttribInfo& expected = kAttribs[ii];
     EXPECT_EQ(expected.size, info.size);
     EXPECT_EQ(expected.type, info.type);
     EXPECT_EQ(expected.location, info.location);
@@ -839,8 +855,8 @@ TEST_F(ProgramManagerWithShaderTest, GLDriverReturnsGLUnderscoreUniform) {
       },
   };
   const size_t kNumUniforms = std::size(kUniforms);
-  SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms, {},
-                          kServiceProgramId);
+  SetupShaderExpectations(kAttribs.data(), kNumAttribs, kUniforms, kNumUniforms,
+                          {}, kServiceProgramId);
   Shader* vshader = shader_manager_.CreateShader(
       kVertexShaderClientId, kVertexShaderServiceId, GL_VERTEX_SHADER);
   ASSERT_TRUE(vshader != nullptr);
@@ -903,8 +919,8 @@ TEST_F(ProgramManagerWithShaderTest, SimilarArrayNames) {
     },
   };
   const size_t kNumUniforms = std::size(kUniforms);
-  SetupShaderExpectations(kAttribs, kNumAttribs, kUniforms, kNumUniforms, {},
-                          kServiceProgramId);
+  SetupShaderExpectations(kAttribs.data(), kNumAttribs, kUniforms, kNumUniforms,
+                          {}, kServiceProgramId);
   Shader* vshader = shader_manager_.CreateShader(
       kVertexShaderClientId, kVertexShaderServiceId, GL_VERTEX_SHADER);
   ASSERT_TRUE(vshader != nullptr);
@@ -1176,55 +1192,47 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetProgramInfo) {
   const Program* program = SetupDefaultProgram();
   ASSERT_TRUE(program != nullptr);
   program->GetProgramInfo(manager_.get(), &bucket);
-  ProgramInfoHeader* header =
-      bucket.GetDataAs<ProgramInfoHeader*>(0, sizeof(ProgramInfoHeader));
-  ASSERT_TRUE(header != nullptr);
-  EXPECT_EQ(1u, header->link_status);
-  EXPECT_EQ(std::size(kAttribs), header->num_attribs);
-  EXPECT_EQ(std::size(kUniforms), header->num_uniforms);
-  const ProgramInput* inputs = bucket.GetDataAs<const ProgramInput*>(
-      sizeof(*header),
-      sizeof(ProgramInput) * (header->num_attribs + header->num_uniforms));
-  ASSERT_TRUE(inputs != nullptr);
-  const ProgramInput* input = inputs;
+  ProgramInfoHeader& header = bucket.GetDataAsSpan<ProgramInfoHeader>(0, 1u)[0];
+  EXPECT_EQ(1u, header.link_status);
+  EXPECT_EQ(std::size(kAttribs), header.num_attribs);
+  EXPECT_EQ(std::size(kUniforms), header.num_uniforms);
+  const uint32_t num_inputs = header.num_attribs + header.num_uniforms;
+  base::span<ProgramInput> inputs =
+      bucket.GetDataAsSpan<ProgramInput>(sizeof(header), num_inputs);
+  ASSERT_EQ(num_inputs, inputs.size());
+  size_t input_index = 0;
   // TODO(gman): Don't assume these are in order.
-  for (uint32_t ii = 0; ii < header->num_attribs; ++ii) {
-    const AttribInfo& expected = UNSAFE_TODO(kAttribs[ii]);
-    EXPECT_EQ(expected.size, input->size);
-    EXPECT_EQ(expected.type, input->type);
-    const int32_t* location = bucket.GetDataAs<const int32_t*>(
-        input->location_offset, sizeof(int32_t));
-    ASSERT_TRUE(location != nullptr);
-    EXPECT_EQ(expected.location, *location);
-    const char* name_buf = bucket.GetDataAs<const char*>(
-        input->name_offset, input->name_length);
-    ASSERT_TRUE(name_buf != nullptr);
-    std::string name(name_buf, input->name_length);
+  for (uint32_t ii = 0; ii < header.num_attribs; ++ii) {
+    const AttribInfo& expected = kAttribs[ii];
+    const ProgramInput& input = inputs[input_index++];
+    EXPECT_EQ(expected.size, input.size);
+    EXPECT_EQ(expected.type, input.type);
+    base::span<int32_t> location =
+        bucket.GetDataAsSpan<int32_t>(input.location_offset, 1u);
+    ASSERT_EQ(1u, location.size());
+    EXPECT_EQ(expected.location, location[0]);
+    std::string name(base::as_string_view(
+        bucket.GetDataAsByteSpan(input.name_offset, input.name_length)));
     EXPECT_STREQ(expected.name, name.c_str());
-    UNSAFE_TODO(++input);
   }
   // TODO(gman): Don't assume these are in order.
-  for (uint32_t ii = 0; ii < header->num_uniforms; ++ii) {
-    const UniformInfo& expected = UNSAFE_TODO(kUniforms[ii]);
-    EXPECT_EQ(expected.size, input->size);
-    EXPECT_EQ(expected.type, input->type);
-    const int32_t* locations = bucket.GetDataAs<const int32_t*>(
-        input->location_offset, sizeof(int32_t) * input->size);
-    ASSERT_TRUE(locations != nullptr);
-    for (int32_t jj = 0; jj < input->size; ++jj) {
-      UNSAFE_TODO(EXPECT_EQ(
-          ProgramManager::MakeFakeLocation(expected.fake_location, jj),
-          locations[jj]));
+  for (uint32_t ii = 0; ii < header.num_uniforms; ++ii) {
+    const UniformInfo& expected = kUniforms[ii];
+    const ProgramInput& input = inputs[input_index++];
+    EXPECT_EQ(expected.size, input.size);
+    EXPECT_EQ(expected.type, input.type);
+    base::span<int32_t> locations = bucket.GetDataAsSpan<int32_t>(
+        input.location_offset, static_cast<size_t>(input.size));
+    ASSERT_EQ(static_cast<size_t>(input.size), locations.size());
+    for (int32_t jj = 0; jj < input.size; ++jj) {
+      EXPECT_EQ(ProgramManager::MakeFakeLocation(expected.fake_location, jj),
+                locations[jj]);
     }
-    const char* name_buf = bucket.GetDataAs<const char*>(
-        input->name_offset, input->name_length);
-    ASSERT_TRUE(name_buf != nullptr);
-    std::string name(name_buf, input->name_length);
+    std::string name(base::as_string_view(
+        bucket.GetDataAsByteSpan(input.name_offset, input.name_length)));
     EXPECT_STREQ(expected.good_name, name.c_str());
-    UNSAFE_TODO(++input);
   }
-  EXPECT_EQ(header->num_attribs + header->num_uniforms,
-            static_cast<uint32_t>(input - inputs));
+  EXPECT_EQ(num_inputs, input_index);
 }
 
 TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksNone) {
@@ -1238,10 +1246,9 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksNone) {
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetUniformBlocks(&bucket));
   EXPECT_EQ(sizeof(UniformBlocksHeader), bucket.size());
-  UniformBlocksHeader* header =
-      bucket.GetDataAs<UniformBlocksHeader*>(0, sizeof(UniformBlocksHeader));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniform_blocks);
+  EXPECT_EQ(
+      0u,
+      bucket.GetDataAsSpan<UniformBlocksHeader>(0, 1u)[0].num_uniform_blocks);
   // Zero uniform blocks.
   EXPECT_CALL(*(gl_.get()),
               GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
@@ -1253,10 +1260,9 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksNone) {
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetUniformBlocks(&bucket));
   EXPECT_EQ(sizeof(UniformBlocksHeader), bucket.size());
-  header =
-      bucket.GetDataAs<UniformBlocksHeader*>(0, sizeof(UniformBlocksHeader));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniform_blocks);
+  EXPECT_EQ(
+      0u,
+      bucket.GetDataAsSpan<UniformBlocksHeader>(0, 1u)[0].num_uniform_blocks);
 }
 
 TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksValid) {
@@ -1370,9 +1376,8 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksValid) {
   }
   program->GetUniformBlocks(&bucket);
   EXPECT_EQ(sizeof(Data), bucket.size());
-  Data* bucket_data = bucket.GetDataAs<Data*>(0, sizeof(Data));
-  EXPECT_TRUE(bucket_data != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data, bucket_data, sizeof(Data))));
+  EXPECT_EQ(bucket.GetDataAsByteSpan(0, sizeof(Data)),
+            base::byte_span_from_ref(data));
 }
 
 TEST_F(ProgramManagerWithShaderTest,
@@ -1393,13 +1398,13 @@ TEST_F(ProgramManagerWithShaderTest,
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetTransformFeedbackVaryings(&bucket));
   EXPECT_EQ(sizeof(TransformFeedbackVaryingsHeader), bucket.size());
-  TransformFeedbackVaryingsHeader* header =
-      bucket.GetDataAs<TransformFeedbackVaryingsHeader*>(
-          0, sizeof(TransformFeedbackVaryingsHeader));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_transform_feedback_varyings);
-  EXPECT_EQ(static_cast<uint32_t>(GL_INTERLEAVED_ATTRIBS),
-            header->transform_feedback_buffer_mode);
+  {
+    TransformFeedbackVaryingsHeader& header =
+        bucket.GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
+    EXPECT_EQ(0u, header.num_transform_feedback_varyings);
+    EXPECT_EQ(static_cast<uint32_t>(GL_INTERLEAVED_ATTRIBS),
+              header.transform_feedback_buffer_mode);
+  }
   // Zero transform feedback blocks.
   EXPECT_CALL(*(gl_.get()),
               GetProgramiv(kServiceProgramId,
@@ -1418,12 +1423,13 @@ TEST_F(ProgramManagerWithShaderTest,
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetTransformFeedbackVaryings(&bucket));
   EXPECT_EQ(sizeof(TransformFeedbackVaryingsHeader), bucket.size());
-  header = bucket.GetDataAs<TransformFeedbackVaryingsHeader*>(
-      0, sizeof(TransformFeedbackVaryingsHeader));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(static_cast<uint32_t>(GL_SEPARATE_ATTRIBS),
-            header->transform_feedback_buffer_mode);
-  EXPECT_EQ(0u, header->num_transform_feedback_varyings);
+  {
+    TransformFeedbackVaryingsHeader& header =
+        bucket.GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
+    EXPECT_EQ(static_cast<uint32_t>(GL_SEPARATE_ATTRIBS),
+              header.transform_feedback_buffer_mode);
+    EXPECT_EQ(0u, header.num_transform_feedback_varyings);
+  }
 }
 
 TEST_F(ProgramManagerWithShaderTest,
@@ -1491,9 +1497,8 @@ TEST_F(ProgramManagerWithShaderTest,
   }
   program->GetTransformFeedbackVaryings(&bucket);
   EXPECT_EQ(sizeof(Data), bucket.size());
-  Data* bucket_data = bucket.GetDataAs<Data*>(0, sizeof(Data));
-  EXPECT_TRUE(bucket_data != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data, bucket_data, sizeof(Data))));
+  EXPECT_EQ(bucket.GetDataAsByteSpan(0, sizeof(Data)),
+            base::byte_span_from_ref(data));
 }
 
 TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3None) {
@@ -1507,10 +1512,7 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3None) {
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetUniformsES3(&bucket));
   EXPECT_EQ(sizeof(UniformsES3Header), bucket.size());
-  UniformsES3Header* header =
-      bucket.GetDataAs<UniformsES3Header*>(0, sizeof(UniformsES3Header));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniforms);
+  EXPECT_EQ(0u, bucket.GetDataAsSpan<UniformsES3Header>(0, 1u)[0].num_uniforms);
   // Zero uniform blocks.
   EXPECT_CALL(*(gl_.get()),
               GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
@@ -1522,10 +1524,7 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3None) {
       .RetiresOnSaturation();
   EXPECT_TRUE(program->GetUniformsES3(&bucket));
   EXPECT_EQ(sizeof(UniformsES3Header), bucket.size());
-  header =
-      bucket.GetDataAs<UniformsES3Header*>(0, sizeof(UniformsES3Header));
-  EXPECT_TRUE(header != nullptr);
-  EXPECT_EQ(0u, header->num_uniforms);
+  EXPECT_EQ(0u, bucket.GetDataAsSpan<UniformsES3Header>(0, 1u)[0].num_uniforms);
 }
 
 TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3Valid) {
@@ -1586,9 +1585,8 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3Valid) {
 
   program->GetUniformsES3(&bucket);
   EXPECT_EQ(sizeof(Data), bucket.size());
-  Data* bucket_data = bucket.GetDataAs<Data*>(0, sizeof(Data));
-  EXPECT_TRUE(bucket_data != nullptr);
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data, bucket_data, sizeof(Data))));
+  EXPECT_EQ(bucket.GetDataAsByteSpan(0, sizeof(Data)),
+            base::byte_span_from_ref(data));
 }
 
 // Some drivers optimize out unused uniform array elements, so their
@@ -1603,35 +1601,32 @@ TEST_F(ProgramManagerWithShaderTest, UnusedUniformArrayElements) {
     Program::UniformInfo* uniform = const_cast<Program::UniformInfo*>(
         program->GetUniformInfo(ii));
     ASSERT_TRUE(uniform != nullptr);
-    UNSAFE_TODO(EXPECT_EQ(static_cast<size_t>(kUniforms[ii].size),
-                          uniform->element_locations.size()));
+    EXPECT_EQ(static_cast<size_t>(kUniforms[ii].size),
+              uniform->element_locations.size());
     for (GLsizei jj = 1; jj < uniform->size; ++jj)
       uniform->element_locations[jj] = -1;
   }
   program->GetProgramInfo(manager_.get(), &bucket);
-  ProgramInfoHeader* header =
-      bucket.GetDataAs<ProgramInfoHeader*>(0, sizeof(ProgramInfoHeader));
-  ASSERT_TRUE(header != nullptr);
-  EXPECT_EQ(1u, header->link_status);
-  EXPECT_EQ(std::size(kAttribs), header->num_attribs);
-  EXPECT_EQ(std::size(kUniforms), header->num_uniforms);
-  const ProgramInput* inputs = bucket.GetDataAs<const ProgramInput*>(
-      sizeof(*header),
-      sizeof(ProgramInput) * (header->num_attribs + header->num_uniforms));
-  ASSERT_TRUE(inputs != nullptr);
-  const ProgramInput* input = UNSAFE_TODO(inputs + header->num_attribs);
-  for (uint32_t ii = 0; ii < header->num_uniforms; ++ii) {
-    const UniformInfo& expected = UNSAFE_TODO(kUniforms[ii]);
-    EXPECT_EQ(expected.size, input->size);
-    const int32_t* locations = bucket.GetDataAs<const int32_t*>(
-        input->location_offset, sizeof(int32_t) * input->size);
-    ASSERT_TRUE(locations != nullptr);
-    EXPECT_EQ(
-        ProgramManager::MakeFakeLocation(expected.fake_location, 0),
-        locations[0]);
-    for (int32_t jj = 1; jj < input->size; ++jj)
-      UNSAFE_TODO(EXPECT_EQ(-1, locations[jj]));
-    UNSAFE_TODO(++input);
+  ProgramInfoHeader& header = bucket.GetDataAsSpan<ProgramInfoHeader>(0, 1u)[0];
+  EXPECT_EQ(1u, header.link_status);
+  EXPECT_EQ(std::size(kAttribs), header.num_attribs);
+  EXPECT_EQ(std::size(kUniforms), header.num_uniforms);
+  base::span<ProgramInput> inputs = bucket.GetDataAsSpan<ProgramInput>(
+      sizeof(header), header.num_attribs + header.num_uniforms);
+  ASSERT_EQ(header.num_attribs + header.num_uniforms, inputs.size());
+  base::span<ProgramInput> uniform_inputs = inputs.subspan(header.num_attribs);
+  for (uint32_t ii = 0; ii < header.num_uniforms; ++ii) {
+    const UniformInfo& expected = kUniforms[ii];
+    const ProgramInput& input = uniform_inputs[ii];
+    EXPECT_EQ(expected.size, input.size);
+    base::span<int32_t> locations = bucket.GetDataAsSpan<int32_t>(
+        input.location_offset, static_cast<size_t>(input.size));
+    ASSERT_EQ(static_cast<size_t>(input.size), locations.size());
+    EXPECT_EQ(ProgramManager::MakeFakeLocation(expected.fake_location, 0),
+              locations[0]);
+    for (int32_t jj = 1; jj < input.size; ++jj) {
+      EXPECT_EQ(-1, locations[jj]);
+    }
   }
 }
 
@@ -1639,9 +1634,10 @@ TEST_F(ProgramManagerWithShaderTest, BindAttribLocationConflicts) {
   // Set up shader
   AttributeMap attrib_map;
   for (uint32_t ii = 0; ii < kNumAttribs; ++ii) {
-    attrib_map[UNSAFE_TODO(kAttribs[ii]).name] = TestHelper::ConstructAttribute(
-        UNSAFE_TODO(kAttribs[ii]).type, UNSAFE_TODO(kAttribs[ii]).size,
-        GL_MEDIUM_FLOAT, kAttribStaticUse, UNSAFE_TODO(kAttribs[ii]).name);
+    const AttribInfo& attrib = kAttribs[ii];
+    attrib_map[attrib.name] = TestHelper::ConstructAttribute(
+        attrib.type, attrib.size, GL_MEDIUM_FLOAT, kAttribStaticUse,
+        attrib.name);
   }
   const char kAttribMatName[] = "matAttrib";
   attrib_map[kAttribMatName] = TestHelper::ConstructAttribute(
@@ -2127,7 +2123,7 @@ TEST_F(ProgramManagerWithShaderTest, ZeroSizeUniformMarkedInvalid) {
   };
   const size_t kNumInvalidUniforms = std::size(kInvalidUniforms);
 
-  SetupShaderExpectations(kAttribs, kNumAttribs, kInvalidUniforms,
+  SetupShaderExpectations(kAttribs.data(), kNumAttribs, kInvalidUniforms,
                           kNumInvalidUniforms, {}, kServiceProgramId);
 
   Shader* vertex_shader = shader_manager_.CreateShader(

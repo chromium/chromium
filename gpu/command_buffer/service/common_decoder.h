@@ -75,19 +75,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
       return size_;
     }
 
-    // Gets a pointer to a section the bucket. Returns nullptr if offset or size
-    // is out of range.
-    // TODO(crbug.com/40284755): Remove this unsafe method once all call sites
-    // have been migrated to GetDataAsSpan() or GetDataAsByteSpan().
-    void* GetData(size_t offset, size_t size) const;
-
-    // TODO(crbug.com/40284755): Remove this unsafe method once all call sites
-    // have been migrated to GetDataAsSpan() or GetDataAsByteSpan().
-    template <typename T>
-    T GetDataAs(size_t offset, size_t size) const {
-      return reinterpret_cast<T>(GetData(offset, size));
-    }
-
     // Gets a span over a section of the bucket, reinterpreted as `count`
     // elements of type `T` starting at byte `offset`. Returns an empty span if
     // the range is out of bounds. `T` must be trivially copyable.
