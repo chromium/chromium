@@ -938,7 +938,6 @@ suite('SpeechController', () => {
   });
 
   test('playFromContentPosition logs line focus metric', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     const text = 'Lost for kind words to say.';
     const element = document.createElement('p');
     const id = 2;
@@ -970,7 +969,6 @@ suite('SpeechController', () => {
   });
 
   test('playFromContentPosition with line focus reads from there', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     const text = 'Lost for kind words to say.';
     const element = document.createElement('p');
     const id = 2;
@@ -998,7 +996,6 @@ suite('SpeechController', () => {
   test(
       'playFromContentPosition starts from beginning when line focus off',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         const text = 'Nobody understands.';
         const element = document.createElement('p');
         const id = 2;
@@ -1054,7 +1051,6 @@ suite('SpeechController', () => {
   test(
       'playFromContentPosition after line focus change when paused reads from new position',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         const text1 = 'First line. ';
         const text2 = 'Second line after scroll. ';
         const text3 = 'Third line.';
@@ -1270,7 +1266,6 @@ suite('SpeechController', () => {
   test(
       'highlightAndPlayMessage highlights before notifying word boundary when line focus is enabled',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         const text = 'Testing highlight order with line focus.';
         setContent(text, readAloudModel);
         const element = document.createElement('p');

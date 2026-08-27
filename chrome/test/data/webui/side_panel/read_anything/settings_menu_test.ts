@@ -480,7 +480,6 @@ suite('SettingsMenuElement', () => {
       'LINE_FOCUS is not in top level menu when isReadAnythingImprovedUiEnabled is true',
       async () => {
         visualBrowserProxy.readAnythingImprovedUiEnabled = true;
-        visualBrowserProxy.lineFocusEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
 

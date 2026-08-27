@@ -228,7 +228,6 @@ suite('TextMenuElement', () => {
   suite('With line focus enabled', () => {
     setup(async () => {
       metrics.reset();
-      visualBrowserProxy.lineFocusEnabled = true;
       textMenu.lineFocusEnabled = true;
       textMenu.settingsPrefs = {...textMenu.settingsPrefs};
       await microtasksFinished();

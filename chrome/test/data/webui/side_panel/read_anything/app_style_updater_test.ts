@@ -48,7 +48,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setPaddingForLineFocus sets top and bottom padding', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     const padding = 50;
 
     updater.setPaddingForLineFocus(padding);
@@ -69,8 +68,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with no line focus hides view', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
-
     updater.setLineFocusStyle(LineFocusType.NONE);
 
     assertEquals('none', app.style.getPropertyValue('--line-focus-display'));
@@ -80,7 +77,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus off hides view', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.NONE);
@@ -92,7 +88,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus line shows view', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.LINE);
@@ -106,8 +101,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus window shows view', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
-
     updater.setLineFocusStyle(LineFocusType.WINDOW);
 
     assertNotEquals('none', app.style.getPropertyValue('--line-focus-display'));
@@ -116,7 +109,6 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus window does not set height', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     updater.setLineFocusStyle(LineFocusType.WINDOW);
     assertEquals('', app.style.getPropertyValue('--line-focus-height'));
   });
@@ -124,7 +116,6 @@ suite('AppStyleUpdater', () => {
   test(
       'setLineFocusStyle sets different background and shadow for different types',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         const windowShadow = app.style.getPropertyValue('--line-focus-shadow');
         const windowBg = app.style.getPropertyValue('--line-focus-bg');
@@ -141,20 +132,20 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle does not update toolbar colors if line focus is ' +
           'disabled',
       () => {
+        const initialColor = 'rgb(255, 0, 0)';
+        app.style.setProperty('--toolbar-icon-color', initialColor);
         visualBrowserProxy.lineFocusEnabled = false;
+
         updater.setLineFocusStyle(LineFocusType.WINDOW);
-        assertEquals('', app.style.getPropertyValue('--toolbar-icon-color'));
+
         assertEquals(
-            '', app.style.getPropertyValue('--legacy-toolbar-icon-color'));
-        assertEquals(
-            '', app.style.getPropertyValue('--legacy-audio-player-icon-color'));
+            initialColor, app.style.getPropertyValue('--toolbar-icon-color'));
       });
 
   test(
       'setLineFocusStyle sets dark toolbar icon color in immersive mode for ' +
           'window line focus',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-dark)',
@@ -165,7 +156,6 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle sets themed toolbar icon color in immersive mode ' +
           'for non-window line focus',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
         updater.setLineFocusStyle(LineFocusType.LINE);
         assertEquals(
@@ -805,7 +795,6 @@ suite('AppStyleUpdater', () => {
       'setTheme does not update toolbar icon color if line focus is enabled ' +
           'and a visible window',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'block');
         app.style.setProperty('--line-focus-bg', 'none');
         const initialColor = 'rgb(255, 0, 0)';
@@ -821,7 +810,6 @@ suite('AppStyleUpdater', () => {
       'setTheme updates toolbar icon color if line focus is enabled but ' +
           'display is none',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'none');
         app.style.setProperty('--line-focus-bg', 'none');
         const initialColor = 'rgb(255, 0, 0)';
@@ -842,7 +830,6 @@ suite('AppStyleUpdater', () => {
       'setTheme updates toolbar icon color if line focus is enabled and a ' +
           'a visible line',
       () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'none');
         app.style.setProperty(
             '--line-focus-bg', 'var(--color-read-anything-line-focus-dark)');

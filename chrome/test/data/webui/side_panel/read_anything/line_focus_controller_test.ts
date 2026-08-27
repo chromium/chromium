@@ -66,7 +66,7 @@ suite('LineFocusController', () => {
   }
 
   setup(() => {
-    const result = setupTestEnvironment({lineFocusEnabled: true});
+    const result = setupTestEnvironment();
     visualBrowserProxy = result.visualBrowserProxy;
     metrics = result.metrics;
     readAloudModel = result.readAloudModel;

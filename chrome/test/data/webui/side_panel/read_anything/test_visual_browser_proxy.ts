@@ -38,7 +38,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   activeDistillationMethod: number = 0;
   distillationTypeScreen2x: number = 0;
   distillationTypeReadability: number = 1;
-  lineFocusEnabled: boolean = false;
+  lineFocusEnabled: boolean = true;
   lineFocusOn: boolean = false;
   lineFocusOff: number = 50;
   lineFocusSmallStaticWindow: number = 51;

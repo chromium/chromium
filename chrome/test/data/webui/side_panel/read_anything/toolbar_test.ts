@@ -306,7 +306,6 @@ suite('Toolbar', () => {
 
   suite('line focus button', () => {
     setup(async () => {
-      visualBrowserProxy.lineFocusEnabled = true;
       await createToolbar();
     });
 

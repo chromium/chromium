@@ -63,7 +63,6 @@ suite('AppContent', () => {
   test(
       'connected callback adds line focus mouse listener in toolbar',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.CURSOR}});
@@ -89,7 +88,6 @@ suite('AppContent', () => {
       });
 
   test('connected callback adds line focus mouse listener', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.CURSOR}});
@@ -116,7 +114,6 @@ suite('AppContent', () => {
   });
 
   test('new content updates padding for line focus', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     app.connectedCallback();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -157,7 +154,6 @@ suite('AppContent', () => {
   test(
       'new content does not update padding for line focus with line focus off',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -173,7 +169,6 @@ suite('AppContent', () => {
       });
 
   test('line focus shortcut toggles line focus', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     assertFalse(lineFocusController.isEnabled());
 
     // Alt+'l' toggle
@@ -217,7 +212,6 @@ suite('AppContent', () => {
   });
 
   test('line focus shortcut updates padding', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     // Ensure app is registered as a line focus listener.
     app.connectedCallback();
     await microtasksFinished();
@@ -248,8 +242,6 @@ suite('AppContent', () => {
   });
 
   test('line focus only shows on content', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
-
     contentController.setState(ContentType.NO_CONTENT);
     await microtasksFinished();
     assertTrue(app.$.lineFocus.hasAttribute('hidden'));
@@ -267,7 +259,6 @@ suite('AppContent', () => {
       'onContentStateChange updates line focus style when enabled and ' +
           'has content',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -284,7 +275,6 @@ suite('AppContent', () => {
   test(
       'onContentStateChange disables line focus style when no content',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -299,7 +289,6 @@ suite('AppContent', () => {
       });
 
   test('onContentStateChange line focus showing if has content', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -315,7 +304,6 @@ suite('AppContent', () => {
   test(
       'onContentStateChange line focus not showing if off but has content',
       async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         await microtasksFinished();
 
@@ -327,7 +315,6 @@ suite('AppContent', () => {
 
   test(
       'onContentStateChange line focus not showing if no content', async () => {
-        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -361,7 +348,6 @@ suite('AppContent', () => {
   });
 
   test('showLoading marks line focus showing if enabled', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -375,7 +361,6 @@ suite('AppContent', () => {
   });
 
   test('showLoading does not mark line focus showing if disabled', async () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
     await microtasksFinished();
 
@@ -1110,7 +1095,6 @@ suite('AppContent', () => {
   });
 
   test('onNeedScrollForLineFocus scrolls', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
     const startingScrollTop = app.$.containerScroller.scrollTop;
     let scrollTo = 0;
     app.$.containerScroller.scrollTo = (options) => {
