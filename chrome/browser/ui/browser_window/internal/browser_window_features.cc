@@ -514,10 +514,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           *browser, browser->GetUnownedUserDataHost());
 
   session_service_browser_helper_ =
-      std::make_unique<SessionServiceBrowserHelper>(
-          browser->GetTabStripModel(), browser->GetSessionID(),
+      GetUserDataFactory().CreateInstance<SessionServiceBrowserHelper>(
+          *browser, browser->GetTabStripModel(), browser->GetSessionID(),
           browser->GetType(), browser->GetProfile(),
-          &BrowserInitState::From(browser)->browser_window_create_params());
+          &BrowserInitState::From(browser)->browser_window_create_params(),
+          browser->GetUnownedUserDataHost());
 
   // Must be after session_service_browser_helper_:
   //   tab_list_bridge_ depends on initialized session tab/window state.

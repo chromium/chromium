@@ -44,13 +44,23 @@ void UpdateTabGroupSessionMetadata(Profile& profile,
 
 }  // namespace
 
+DEFINE_USER_DATA(SessionServiceBrowserHelper);
+
+// static
+SessionServiceBrowserHelper* SessionServiceBrowserHelper::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 SessionServiceBrowserHelper::SessionServiceBrowserHelper(
     TabStripModel* tab_strip_model,
     SessionID session_id,
     BrowserWindowInterface::Type browser_type,
     Profile* profile,
-    const BrowserWindowCreateParams* create_params)
-    : tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+    const BrowserWindowCreateParams* create_params,
+    ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this),
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       session_id_(session_id),
       browser_type_(browser_type),
       profile_(CHECK_DEREF(profile)) {

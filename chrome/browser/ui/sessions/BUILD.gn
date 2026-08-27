@@ -17,6 +17,7 @@ source_set("sessions") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/sessions:session_id",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [

@@ -403,10 +403,6 @@ class BrowserWindowFeatures {
     return profile_menu_coordinator_.get();
   }
 
-  SessionServiceBrowserHelper* session_service_browser_helper() {
-    return session_service_browser_helper_.get();
-  }
-
   tab_groups::SharedTabGroupFeedbackController*
   shared_tab_group_feedback_controller() {
     return shared_tab_group_feedback_controller_.get();

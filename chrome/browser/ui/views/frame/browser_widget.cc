@@ -175,9 +175,8 @@ void BrowserWidget::InitBrowserWidget() {
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
 
-  params.session_data = browser->GetFeatures()
-                            .session_service_browser_helper()
-                            ->platform_session_data();
+  params.session_data =
+      SessionServiceBrowserHelper::From(browser)->platform_session_data();
 #endif
 
   if (browser_native_widget_->ShouldRestorePreviousBrowserWidgetState()) {
