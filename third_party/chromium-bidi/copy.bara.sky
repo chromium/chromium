@@ -1,0 +1,84 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Copybara workflow for syncing chromium-bidi from Chromium to GitHub.
+
+This configuration defines a one-way iterative sync from Chromium (source of truth)
+under `third_party/chromium-bidi/` to the GitHub mirror at:
+https://github.com/GoogleChromeLabs/chromium-bidi
+
+Cut-off point:
+Only commits after the initial merge of chromium-bidi into Chromium should be synced:
+  Commit: ae0f21c64387599e4bd2e723dc4d3769f24b33b8
+  URL: https://chromium.googlesource.com/chromium/src/+/ae0f21c64387599e4bd2e723dc4d3769f24b33b8
+  Cr-Commit-Position: refs/heads/main@{#1684553}
+
+How to test locally:
+  1. Dry-run verification:
+     copybara third_party/chromium-bidi/copy.bara.sky default \\
+       --last-rev=ae0f21c64387599e4bd2e723dc4d3769f24b33b8 \\
+       --dry-run
+
+  2. Manual execution (with GitHub credentials configured):
+     copybara third_party/chromium-bidi/copy.bara.sky default \\
+       --last-rev=ae0f21c64387599e4bd2e723dc4d3769f24b33b8
+"""
+
+origin_url = "rpc://chromium/chromium/src"
+destination_url = "git@github.com:GoogleChromeLabs/chromium-bidi.git"
+
+# Files from Chromium to export
+origin_files = glob(
+    ["third_party/chromium-bidi/**"],
+    exclude = [
+        "third_party/chromium-bidi/README.chromium",
+        "third_party/chromium-bidi/OWNERS",
+        "third_party/chromium-bidi/DIR_METADATA",
+        "third_party/chromium-bidi/copy.bara.sky",
+    ],
+)
+
+# Files controlled in the destination repository
+destination_files = glob(["**"])
+
+core.workflow(
+    name = "default",
+    origin = git.origin(
+        url = origin_url,
+        ref = "main",
+        partial_fetch = True,
+        first_parent = True,
+    ),
+    destination = git.destination(
+        url = destination_url,
+        fetch = "main",
+        push = "main",
+    ),
+    origin_files = origin_files,
+    destination_files = destination_files,
+    mode = "ITERATIVE",
+    authoring = authoring.pass_thru(
+        default = "Chromium BiDi Authors <browser-automation@google.com>",
+    ),
+    transformations = [
+        core.move("third_party/chromium-bidi", ""),
+    ],
+)
+
+service.migration(
+    migration_name = "default",
+    owner_mdb = "browser-automation",
+    contact_email = "browser-automation@google.com",
+    cns_mdb = "copybara-freebie",
+    github_options = service.github(
+        use_app = True,
+    ),
+    notifications = service.notifications(
+        on_error = [
+            service.email(address = "browser-automation@google.com"),
+        ],
+    ),
+    state = "ACTIVE",
+    triggering = "EVENT_BASED",
+)

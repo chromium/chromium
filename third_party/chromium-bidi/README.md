@@ -1,5 +1,5 @@
 > [!NOTE]
-> If you are viewing this on GitHub, the source was moved to Chromium. Please contribute there.
+> If you are viewing this on GitHub, the source was moved to [Chromium](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi). Please contribute there.
 
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
@@ -465,6 +465,35 @@ new command, add it to `_processCommand`, write and call the module processor fo
 ### Publish new `npm` release
 
 TODO(crbug.com/540164671): describe the process.
+
+### Syncing from Chromium to GitHub
+
+[Chromium (`third_party/chromium-bidi`)](https://chromium.googlesource.com/chromium/src/+/main/third_party/chromium-bidi) is the source of truth, and changes are synced out to the GitHub mirror at [GoogleChromeLabs/chromium-bidi](https://github.com/GoogleChromeLabs/chromium-bidi) using [Copybara](https://goto.google.com/copybara).
+
+The configuration file is located at [`third_party/chromium-bidi/copy.bara.sky`](copy.bara.sky).
+
+TODO(crbug.com/549520316): Automate the sync process.
+
+#### Running Copybara manually
+
+> [!NOTE]
+> The Copybara sync takes ~10 minutes to run as it iteratively processes commits from Chromium history.
+
+1. **Prerequisites:**
+   - Set up the `copybara` CLI alias (see [go/copybara-setup](https://goto.google.com/copybara-setup)).
+   - Ensure your credentials for pushing to GitHub are configured via SSH.
+
+2. **Launch directory:**
+   Run Copybara from the **root of the Chromium repository** (`src/`):
+
+   ```sh
+   cd /path/to/chromium/src
+   ```
+
+3. **Sync:**
+   ```sh
+   copybara third_party/chromium-bidi/copy.bara.sky default
+   ```
 
 ## Adding new command
 
