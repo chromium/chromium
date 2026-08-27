@@ -44,7 +44,6 @@ build_webui_tests("build") {
     "presentation_menu_test.ts",
     "play_on_open_test.ts",
     "rate_menu_test.ts",
-    "read_aloud_highlighting_test.ts",
     "read_aloud_model_test.ts",
     "read_aloud_node_store_test.ts",
     "read_anything_logger_test.ts",

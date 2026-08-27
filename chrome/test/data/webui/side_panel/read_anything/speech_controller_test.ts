@@ -4,6 +4,7 @@
 import {ContentPositionSource, MAX_SPEECH_LENGTH, ReadAloudHighlighter, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {NodeStore, Segment, SpeechController, SpeechListener, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, setContent, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
@@ -579,70 +580,57 @@ suite('SpeechController', () => {
   });
 
   test('engine timeout logged when stalled', async () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
     const textContent = 'Wait for it, wait for it';
     setContent(textContent, readAloudModel);
 
-    // Swap global setTimeout to immediately fire the callback for this test
-    const originalSetTimeout = window.setTimeout;
-    let timeoutFired = false;
+    onPlayPauseToggle(textContent);
+    await speech.whenCalled('speak');
 
-    window.setTimeout = (fn: TimerHandler) => {
-      timeoutFired = true;
-      (fn as Function)();
-      return 1;
-    };
+    // The engine is in LOADING state initially before onstart is fired.
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
 
-    try {
-      onPlayPauseToggle(textContent);
-      await speech.whenCalled('speak');
+    // Fast-forward 10s to trigger the first stall timeout.
+    mockTimer.tick(10000);
+    // <if expr="is_chromeos">
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
+    // </if>
+    // <if expr="not is_chromeos">
+    assertEquals(1, metrics.getCallCount('recordSpeechError'));
+    assertEquals(9, metrics.getArgs('recordSpeechError')[0]);
+    // </if>
 
-      // The engine is in LOADING state initially before onstart is fired
-      // <if expr="is_chromeos">
-      assertFalse(timeoutFired);
-      assertEquals(0, metrics.getCallCount('recordSpeechError'));
-      // </if>
-      // <if expr="not is_chromeos">
-      assertTrue(timeoutFired);
-      assertEquals(2, metrics.getCallCount('recordSpeechError'));
-      const errorArg1 = metrics.getArgs('recordSpeechError')[0];
-      const errorArg2 = metrics.getArgs('recordSpeechError')[1];
-
-      // Assuming ReadAnythingSpeechError is defined such that
-      // TIMEOUT_ENGINE_STALLED is 9 and TIMEOUT_STALLED_AFTER_RECOVERY is 10
-      assertEquals(9, errorArg1);
-      assertEquals(10, errorArg2);
-      // </if>
-    } finally {
-      window.setTimeout = originalSetTimeout;
-    }
+    // Fast-forward another 5s (15s total) to trigger recovery stall timeout.
+    mockTimer.tick(5000);
+    // <if expr="is_chromeos">
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
+    // </if>
+    // <if expr="not is_chromeos">
+    assertEquals(2, metrics.getCallCount('recordSpeechError'));
+    assertEquals(10, metrics.getArgs('recordSpeechError')[1]);
+    // </if>
+    mockTimer.uninstall();
   });
 
   test('engine timeout cleared on success', async () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
     const textContent = 'Successful speech utterance';
     setContent(textContent, readAloudModel);
 
-    const originalClearTimeout = window.clearTimeout;
-    let clearTimeoutCalls = 0;
-    window.clearTimeout = (id: number|undefined) => {
-      clearTimeoutCalls++;
-      originalClearTimeout(id);
-    };
+    onPlayPauseToggle(textContent);
+    const spoken = await speech.whenCalled('speak');
 
-    try {
-      onPlayPauseToggle(textContent);
-      const spoken = await speech.whenCalled('speak');
+    // Simulate a successful start which clears the timeouts.
+    spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
 
-      // Now simulate a successful start which should clear the timeout
-      spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
-      // <if expr="is_chromeos">
-      assertEquals(0, clearTimeoutCalls);
-      // </if>
-      // <if expr="not is_chromeos">
-      assertEquals(2, clearTimeoutCalls);
-      // </if>
-    } finally {
-      window.clearTimeout = originalClearTimeout;
-    }
+    // Fast-forward 15s; no errors should be logged as timeouts were cleared.
+    mockTimer.tick(15000);
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
+    mockTimer.uninstall();
   });
 
 
@@ -753,9 +741,29 @@ suite('SpeechController', () => {
     assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
   });
 
+  test('onNextGranularityClick highlights when speech is playing', () => {
+    const text = 'Where\'s the party? Can you take me there?';
+    onPlayPauseToggle(text);
+    assertTrue(highlighter.hasCurrentGranularity());
+
+    speechController.onNextGranularityClick();
+    assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
+    assertTrue(highlighter.hasCurrentGranularity());
+  });
+
   test('onPreviousGranularityClick propagates change', () => {
     speechController.onPreviousGranularityClick();
     assertEquals(1, readAloudModel.getCallCount('moveSpeechBackwards'));
+  });
+
+  test('onPreviousGranularityClick highlights when speech is playing', () => {
+    const text = 'When the partys over. Can you find another party somewhere?';
+    onPlayPauseToggle(text);
+    assertTrue(highlighter.hasCurrentGranularity());
+
+    speechController.onPreviousGranularityClick();
+    assertEquals(1, readAloudModel.getCallCount('moveSpeechBackwards'));
+    assertTrue(highlighter.hasCurrentGranularity());
   });
 
   test(
@@ -1128,6 +1136,76 @@ suite('SpeechController', () => {
         assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
         // We verify that it bypassed adding previous highlights for performance
         assertEquals(0, nextGranularityCalls);
+        assertTrue(onPlayingFromPosition);
+      });
+
+  test(
+      'playFromContentPosition without line focus adds intermediate highlights',
+      async () => {
+        visualBrowserProxy.lineFocusEnabled = false;
+        const text1 = 'First line. ';
+        const text2 = 'Second line.';
+        const node1 = document.createTextNode(text1);
+        const node2 = document.createTextNode(text2);
+        nodeStore.setDomNode(node1, 1);
+        nodeStore.setDomNode(node2, 2);
+
+        const segment1 = {
+          node: ReadAloudNode.create(node1)!,
+          start: 0,
+          length: text1.length,
+        };
+        const segment2 = {
+          node: ReadAloudNode.create(node2)!,
+          start: 0,
+          length: text2.length,
+        };
+
+        const allSegments = [[segment1], [segment2]];
+        const allContent = [text1, text2];
+        let currentSegmentIndex = 0;
+
+        readAloudModel.resetSpeechToBeginning = () => {
+          readAloudModel.methodCalled('resetSpeechToBeginning');
+          currentSegmentIndex = 0;
+          readAloudModel.setCurrentTextSegments(
+              allSegments[currentSegmentIndex]!);
+          readAloudModel.setCurrentTextContent(
+              allContent[currentSegmentIndex]!);
+        };
+
+        readAloudModel.moveSpeechForward = () => {
+          readAloudModel.methodCalled('moveSpeechForward');
+          if (currentSegmentIndex < allSegments.length - 1) {
+            currentSegmentIndex++;
+            readAloudModel.setCurrentTextSegments(
+                allSegments[currentSegmentIndex]!);
+            readAloudModel.setCurrentTextContent(
+                allContent[currentSegmentIndex]!);
+          }
+        };
+
+        readAloudModel.setCurrentTextSegments(
+            allSegments[currentSegmentIndex]!);
+        readAloudModel.setCurrentTextContent(allContent[currentSegmentIndex]!);
+
+        const element = document.createElement('p');
+        element.appendChild(node1);
+        element.appendChild(node2);
+        document.body.appendChild(element);
+
+        let nextGranularityCalls = 0;
+        highlighter.onWillMoveToNextGranularity = () => {
+          nextGranularityCalls++;
+        };
+
+        speechController.onSelectionChange(
+            {node: node2, offset: 0, source: ContentPositionSource.SELECTION});
+        speechController.onPlayPauseToggle(element);
+        await speech.whenCalled('speak');
+
+        assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
+        assertEquals(1, nextGranularityCalls);
         assertTrue(onPlayingFromPosition);
       });
 

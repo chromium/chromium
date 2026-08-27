@@ -262,11 +262,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
-  RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineFocusController) {
   RunSidePanelTest("side_panel/read_anything/line_focus_controller_test.js",
                    "mocha.run()");
