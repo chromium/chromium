@@ -23604,6 +23604,19 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not rejected or not shown"/>
 </enum>
 
+<!-- LINT.IfChange(PdfAccessibilityHeadingClassifier) -->
+
+<enum name="PdfAccessibilityHeadingClassifier">
+  <int value="1" label="Font Size"/>
+  <int value="2" label="Bold Style"/>
+  <int value="3" label="All Uppercase"/>
+  <int value="4" label="Semi-Bold Weight"/>
+  <int value="5" label="Font Name"/>
+  <int value="6" label="Text Color"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeadingClassifier) -->
+
 <enum name="PerformanceMonitor.UsageScenario.LongInterval">
   <int value="1" label="All Tabs Hidden Audio"/>
   <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>
