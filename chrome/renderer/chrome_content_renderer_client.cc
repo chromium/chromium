@@ -585,6 +585,9 @@ void ChromeContentRendererClient::RenderThreadStarted() {
         WebString::FromAscii(scheme));
   }
 
+  WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(
+      WebString::FromAscii(chrome::kChromeExperimentalSiteTokenProviderScheme));
+
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
