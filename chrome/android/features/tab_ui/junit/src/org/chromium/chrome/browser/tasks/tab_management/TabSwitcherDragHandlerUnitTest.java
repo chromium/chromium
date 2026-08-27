@@ -255,13 +255,13 @@ public class TabSwitcherDragHandlerUnitTest {
         DragEvent dragEnterEvent = mock(DragEvent.class);
         when(dragEnterEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENTERED);
         mDragHandler.onDrag(targetView, dragEnterEvent);
-        verify(mDragHandlerDelegate).handleDragEnter();
+        verify(mDragHandlerDelegate).handleDragEnter(targetView);
 
         // ACTION_DRAG_EXITED
         DragEvent dragExitEvent = mock(DragEvent.class);
         when(dragExitEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_EXITED);
         mDragHandler.onDrag(targetView, dragExitEvent);
-        verify(mDragHandlerDelegate).handleDragExit();
+        verify(mDragHandlerDelegate).handleDragExit(targetView);
 
         // ACTION_DROP
         DropDataAndroid dropData = mock(DropDataAndroid.class);
@@ -319,7 +319,7 @@ public class TabSwitcherDragHandlerUnitTest {
         assertFalse(
                 "ACTION_DRAG_ENTERED must return false on incognito mismatch.",
                 mDragHandler.onDrag(targetView, dragEnterEvent));
-        verify(mDragHandlerDelegate, never()).handleDragEnter();
+        verify(mDragHandlerDelegate, never()).handleDragEnter(any(View.class));
 
         // ACTION_DRAG_LOCATION
         DragEvent dragLocationEvent = mock(DragEvent.class);
@@ -376,11 +376,11 @@ public class TabSwitcherDragHandlerUnitTest {
         // ACTION_DRAG_ENTERED
         DragEvent dragEnterEvent = mock(DragEvent.class);
         when(dragEnterEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENTERED);
-        when(mDragHandlerDelegate.handleDragEnter()).thenReturn(true);
+        when(mDragHandlerDelegate.handleDragEnter(targetView)).thenReturn(true);
         assertTrue(
                 "ACTION_DRAG_ENTERED must return true when incognito matches.",
                 mDragHandler.onDrag(targetView, dragEnterEvent));
-        verify(mDragHandlerDelegate).handleDragEnter();
+        verify(mDragHandlerDelegate).handleDragEnter(targetView);
 
         // ACTION_DRAG_LOCATION
         DragEvent dragLocationEvent = mock(DragEvent.class);

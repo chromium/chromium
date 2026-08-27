@@ -64,8 +64,16 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             return false;
         }
 
+        default boolean handleDragEnter(View view) {
+            return handleDragEnter();
+        }
+
         default boolean handleDragExit() {
             return false;
+        }
+
+        default boolean handleDragExit(View view) {
+            return handleDragExit();
         }
 
         default boolean handleDragLocation(float xPx, float yPx) {
@@ -354,10 +362,10 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
                     return false;
                 }
-                res = mDragHandlerDelegate.handleDragEnter();
+                res = mDragHandlerDelegate.handleDragEnter(view);
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
-                res = mDragHandlerDelegate.handleDragExit();
+                res = mDragHandlerDelegate.handleDragExit(view);
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
                 if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {

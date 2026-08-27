@@ -1612,11 +1612,27 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
+            public boolean handleDragEnter(View view) {
+                if (view != recyclerView) {
+                    return true;
+                }
+                return handleDragEnter();
+            }
+
+            @Override
             public boolean handleDragEnter() {
                 dragHandler.showDragShadow(recyclerView, false);
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 touchHelperCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
                 return true;
+            }
+
+            @Override
+            public boolean handleDragExit(View view) {
+                if (view != recyclerView) {
+                    return true;
+                }
+                return handleDragExit();
             }
 
             @Override
