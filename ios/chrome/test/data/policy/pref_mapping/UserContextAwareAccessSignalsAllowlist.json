@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_connectors.device_trust_user.origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://www.example.com",
+          "https://*.google.com"
+        ]
+      ]
+    }
+  }
+]

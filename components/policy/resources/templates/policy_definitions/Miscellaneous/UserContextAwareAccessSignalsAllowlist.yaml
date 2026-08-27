@@ -19,6 +19,8 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+future_on:
+- ios
 supported_on:
 - chrome.*:116-
 - chrome_os:116-

@@ -85,6 +85,7 @@ source_set("model") {
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors/core",
     "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/device_trust",
     "//components/enterprise/idle",
     "//components/enterprise/isolated_mode",
     "//components/enterprise/net/core",

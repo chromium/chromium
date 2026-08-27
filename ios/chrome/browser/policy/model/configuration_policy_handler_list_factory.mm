@@ -27,6 +27,7 @@
 #import "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
 #import "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
+#import "components/enterprise/device_trust/prefs.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/enterprise/isolated_mode/prefs.h"
 #import "components/enterprise/net/core/prefs.h"
@@ -360,6 +361,20 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
 
   handlers->AddHandler(
       std::make_unique<WatermarkStylePolicyHandler>(chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kUserContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kBrowserContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kBrowserContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
 
   handlers->AddHandler(
       std::make_unique<
