@@ -616,9 +616,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   base::RepeatingCallback<void(std::string_view)>
       set_required_username_callback_;
   bool enable_peer_connection_process_ = false;
-#if BUILDFLAG(IS_WIN)
-  std::optional<bool> use_peer_connection_process_override_;
-#endif
 #endif
 
   // End of multi-process-only members.
@@ -675,8 +672,8 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
     std::string switch_value =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             kUsePeerConnectionProcessSwitch);
-    use_peer_connection_process_override_ =
-        (switch_value == "true" || switch_value == "1");
+    enable_peer_connection_process_ =
+        multi_process_ && (switch_value == "true" || switch_value == "1");
   }
 #endif
 #endif
@@ -2138,25 +2135,6 @@ void HostProcess::StartHost() {
   // it is capturing before attempting to use it.
   desktop_environment_options_.desktop_capture_options()
       ->set_allow_directx_capturer(true);
-#endif
-
-#if BUILDFLAG(REMOTING_MULTI_PROCESS) && BUILDFLAG(IS_WIN)
-  CHECK(multi_process_);
-  if (use_peer_connection_process_override_.has_value()) {
-    enable_peer_connection_process_ = *use_peer_connection_process_override_;
-    if (enable_peer_connection_process_) {
-      HOST_LOG << "Enabling PeerConnection process (command-line/registry "
-                  "override).";
-    } else {
-      HOST_LOG << "Disabling PeerConnection process (command-line/registry "
-                  "override).";
-    }
-  } else {
-    enable_peer_connection_process_ = is_corp_host_;
-    if (enable_peer_connection_process_) {
-      HOST_LOG << "Enabling PeerConnection process (corp host default).";
-    }
-  }
 #endif
 
   std::unique_ptr<PeerSessionFactory> peer_session_factory;
