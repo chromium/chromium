@@ -130,10 +130,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     v8::Local<v8::Context> context_;
   };
 
-  static ScriptState* Create(v8::Local<v8::Context>,
-                             DOMWrapperWorld*,
-                             ExecutionContext*);
-
   ScriptState(const ScriptState&) = delete;
   ScriptState& operator=(const ScriptState&) = delete;
   virtual ~ScriptState();
@@ -273,13 +269,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // Serves as a unique ID for this context, which can be used to name the
   // context in browser/renderer communications.
   V8ContextToken token_;
-
-  using CreateCallback = ScriptState* (*)(v8::Local<v8::Context>,
-                                          DOMWrapperWorld*,
-                                          ExecutionContext*);
-  static CreateCallback s_create_callback_;
-  static void SetCreateCallback(CreateCallback);
-  friend class ScriptStateImpl;
 
   static constexpr int kV8ContextPerContextDataIndex =
       static_cast<int>(gin::kPerContextDataStartIndex) +

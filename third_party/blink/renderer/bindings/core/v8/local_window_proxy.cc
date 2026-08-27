@@ -38,6 +38,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -358,7 +359,8 @@ void LocalWindowProxy::CreateContext() {
   DidAttachGlobalObject();
 #endif
 
-  script_state_ = ScriptState::Create(context, world_, GetFrame()->DomWindow());
+  script_state_ = MakeGarbageCollected<ScriptStateImpl>(
+      context, world_, *GetFrame()->DomWindow());
 
   DCHECK(lifecycle_ == Lifecycle::kContextIsUninitialized ||
          lifecycle_ == Lifecycle::kGlobalObjectIsDetached);

@@ -72,7 +72,7 @@ char kLSanDefaultSuppressions[] =
 
     // v8 leaks caused by weak ref not call
     "leak:blink::DOMWrapperWorld::Create\n"
-    "leak:blink::ScriptState::Create\n"
+    "leak:blink::ScriptStateImpl::ScriptStateImpl\n"
 
     // Crash keys are intentionally leaked.
     "leak:crash_reporter::(anonymous "

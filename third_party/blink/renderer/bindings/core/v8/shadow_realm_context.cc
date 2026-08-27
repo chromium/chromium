@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/shadow_realm_context.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/shadow_realm/shadow_realm_global_scope.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
@@ -89,8 +89,8 @@ v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
   context->UseDefaultSecurityToken();
 
   // Associate the Blink object with the v8::Context.
-  ScriptState* script_state =
-      ScriptState::Create(context, world, shadow_realm_global_scope);
+  ScriptState* script_state = MakeGarbageCollected<ScriptStateImpl>(
+      context, world, *shadow_realm_global_scope);
 
   // Associate the Blink object with the v8::Objects.
   global_proxy = context->Global();

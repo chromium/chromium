@@ -37,6 +37,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -170,7 +171,8 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
   }
   CHECK(!context.IsEmpty());
 
-  script_state_ = ScriptState::Create(context, world_, global_scope_);
+  script_state_ =
+      MakeGarbageCollected<ScriptStateImpl>(context, world_, *global_scope_);
 
   ScriptState::Scope scope(script_state_);
 
