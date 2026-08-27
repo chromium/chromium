@@ -117,7 +117,10 @@ constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 constexpr CGFloat kOmniboxImageLeadingSpace = 22.0;
 constexpr CGFloat kOmniboxPlusLeadingSpace = 26.0;
 constexpr CGFloat kFakeboxImageSize = 20.0;
+// TODO(crbug.com/542594099): Remove the "UICleanup" suffix once
+// `kNewTabPageUICleanup` launches.
 constexpr CGFloat kFakeboxImageSizeUICleanup = 24.0;
+constexpr CGFloat kSymbolActionPointSizeUICleanup = 19.0;
 
 // The spacing between the items in the button stack.
 constexpr CGFloat kButtonSpacing = 9.0;
@@ -1396,7 +1399,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.plusButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
   CGFloat symbolPointSize = IsNewTabPageUICleanupEnabled()
-                                ? kFakeboxImageSizeUICleanup
+                                ? kSymbolActionPointSizeUICleanup
                                 : kSymbolActionPointSize;
   [self.plusButton setImage:SymbolWithPointSize(SymbolPlus, symbolPointSize)
                    forState:UIControlStateNormal];
