@@ -88,6 +88,7 @@ class HttpServerProperties;
 class NetLog;
 class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
+class NetworkQualityEstimator;
 class ProxyDelegate;
 class QuicChromiumConnectionHelper;
 class QuicCryptoClientStreamFactory;
@@ -325,6 +326,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
+      NetworkQualityEstimator* network_quality_estimator,
       QuicContext* context);
 
   QuicSessionPool(const QuicSessionPool&) = delete;
@@ -772,6 +774,15 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const NetworkAnonymizationKey& network_anonymization_key,
       const ProxyChain& proxy_chain) const;
 
+  // Returns the smoothed RTT for the given |server_id|,
+  // |network_anonymization_key|, and |proxy_chain| from ServerNetworkStats, or
+  // from NetworkQualityEstimator if not available. Returns nullopt if neither
+  // are available.
+  std::optional<base::TimeDelta> GetSmoothedRtt(
+      const quic::QuicServerId& server_id,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const ProxyChain& proxy_chain) const;
+
   // Helper methods.
   bool WasQuicRecentlyBroken(const QuicSessionKey& session_key) const;
 
@@ -857,6 +868,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const raw_ptr<HostResolver> host_resolver_;
   const raw_ptr<ClientSocketFactory> client_socket_factory_;
   const raw_ptr<HttpServerProperties> http_server_properties_;
+  const raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
   const raw_ptr<ProxyDelegate> proxy_delegate_;

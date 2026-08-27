@@ -2744,6 +2744,7 @@ class MockQuicSessionPool : public QuicSessionPool {
                         /*sct_auditing_delegate=*/nullptr,
                         /*socket_performance_watcher_factory=*/nullptr,
                         /*quic_crypto_client_stream_factory=*/nullptr,
+                        /*network_quality_estimator=*/nullptr,
                         context) {}
 
   MockQuicSessionPool(const MockQuicSessionPool&) = delete;

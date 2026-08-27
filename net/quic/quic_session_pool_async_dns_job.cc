@@ -19,8 +19,10 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_event_type.h"
+#include "net/nqe/network_quality_estimator.h"
 #include "net/quic/quic_session_pool_endpoint_connector.h"
 #include "net/ssl/ssl_config_service.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -678,7 +680,26 @@ void QuicSessionPool::AsyncDnsJob::MaybeStartSlowTimer(ConnectionState& state) {
       !state.primary_connector || !state.primary_connector->has_attempt()) {
     return;
   }
-  const base::TimeDelta delay = features::kAsyncDnsQuicJobSlowTimerDelay.Get();
+  base::TimeDelta delay = features::kQuicSlowTimerDelay.Get();
+
+  if (base::FeatureList::IsEnabled(features::kQuicSlowTimerBasedOnRTT)) {
+    std::optional<base::TimeDelta> rtt =
+        pool()->GetSmoothedRtt(key_.session_key().server_id(),
+                               key_.session_key().network_anonymization_key(),
+                               key_.session_key().proxy_chain());
+
+    if (rtt.has_value()) {
+      base::TimeDelta min_delay = features::kQuicSlowTimerMin.Get();
+      base::TimeDelta max_delay = features::kQuicSlowTimerMax.Get();
+      if (min_delay > max_delay) {
+        std::swap(min_delay, max_delay);
+      }
+      delay =
+          std::clamp(rtt.value() * features::kQuicSlowTimerRTTMultiplier.Get(),
+                     min_delay, max_delay);
+    }
+  }
+
   if (!delay.is_positive()) {
     // Two attempts at once are disabled. The primary connector walks the
     // candidates by itself.

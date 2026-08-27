@@ -343,10 +343,25 @@ BASE_FEATURE(kAsyncQuicSession,
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 BASE_FEATURE(kAsyncDnsQuicJob, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAdjustQuicSlowTimerDelay, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
-                   kAsyncDnsQuicJobSlowTimerDelay,
-                   &kAsyncDnsQuicJob,
+                   kQuicSlowTimerDelay,
+                   &kAdjustQuicSlowTimerDelay,
                    TcpConnectJob::kIPv6FallbackTime);
+
+BASE_FEATURE(kQuicSlowTimerBasedOnRTT, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kQuicSlowTimerRTTMultiplier,
+                   &kQuicSlowTimerBasedOnRTT,
+                   1.5);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kQuicSlowTimerMin,
+                   &kQuicSlowTimerBasedOnRTT,
+                   base::Milliseconds(50));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kQuicSlowTimerMax,
+                   &kQuicSlowTimerBasedOnRTT,
+                   base::Milliseconds(1500));
 
 // A flag to make multiport context creation asynchronous.
 BASE_FEATURE(kAsyncMultiPortPath,

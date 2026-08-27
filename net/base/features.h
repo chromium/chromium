@@ -425,11 +425,17 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncQuicSession);
 // HostResolver::ServiceEndpointRequest, for direct QUIC sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncDnsQuicJob);
 
-// How long AsyncDnsJob waits before it starts a second connection attempt
-// next to the one it already has in flight. Zero or a negative value means
-// AsyncDnsJob never runs two attempts at once.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                      kAsyncDnsQuicJobSlowTimerDelay);
+// Makes the QUIC slow timer delay configurable.
+// How long to wait before starting a second connection attempt
+// if one is already in flight.
+NET_EXPORT BASE_DECLARE_FEATURE(kAdjustQuicSlowTimerDelay);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicSlowTimerDelay);
+
+// Feature to base the QUIC slow timer on the network RTT.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicSlowTimerBasedOnRTT);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kQuicSlowTimerRTTMultiplier);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicSlowTimerMin);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicSlowTimerMax);
 
 // A flag to make multiport context creation asynchronous.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncMultiPortPath);

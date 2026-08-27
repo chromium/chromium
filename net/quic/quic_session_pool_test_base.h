@@ -31,6 +31,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/log/net_log.h"
+#include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
@@ -331,6 +332,7 @@ class QuicSessionPoolTestBase : private QuicSessionPoolFeatureInitializer,
   QuicTestPacketMaker client_maker_;
   QuicTestPacketMaker server_maker_;
   std::unique_ptr<HttpServerProperties> http_server_properties_;
+  std::unique_ptr<TestNetworkQualityEstimator> test_network_quality_estimator_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   TransportSecurityState transport_security_state_;
   std::unique_ptr<TestProxyDelegate> proxy_delegate_;

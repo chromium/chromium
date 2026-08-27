@@ -239,7 +239,8 @@ void QuicSessionPoolTestBase::Initialize() {
       cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
       /*sct_auditing_delegate=*/nullptr,
       /*SocketPerformanceWatcherFactory*/ nullptr,
-      &crypto_client_stream_factory_, &context_);
+      &crypto_client_stream_factory_, test_network_quality_estimator_.get(),
+      &context_);
 }
 
 void QuicSessionPoolTestBase::MaybeMakeNewConnectionIdAvailableToSession(

@@ -80,20 +80,24 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
 
   // The slow timer delay the job reads from the feature param.
   static base::TimeDelta SlowTimerDelay() {
-    return features::kAsyncDnsQuicJobSlowTimerDelay.Get();
+    return features::kQuicSlowTimerDelay.Get();
   }
 
   QuicSessionPoolAsyncDnsJobTest()
-      : QuicSessionPoolAsyncDnsJobTest(base::FieldTrialParams()) {}
+      : QuicSessionPoolAsyncDnsJobTest(EnabledFeatures(),
+                                       DisabledFeatures(),
+                                       {{features::kAsyncDnsQuicJob, {}}}) {}
 
-  // `params` are field trial params for kAsyncDnsQuicJob.
-  explicit QuicSessionPoolAsyncDnsJobTest(base::FieldTrialParams params)
+  QuicSessionPoolAsyncDnsJobTest(
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features,
+      std::vector<base::test::FeatureRefAndParams> enabled_features_with_params)
       : QuicSessionPoolTestBase(
             DefaultSupportedQuicVersions().front(),
-            EnabledFeatures(),
-            DisabledFeatures(),
+            std::move(enabled_features),
+            std::move(disabled_features),
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-            {{features::kAsyncDnsQuicJob, std::move(params)}}) {}
+            std::move(enabled_features_with_params)) {}
 
   bool async_quic_session() const { return GetParam(); }
 
@@ -107,7 +111,8 @@ class QuicSessionPoolAsyncDnsJobTest : public QuicSessionPoolTestBase,
         cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
         /*sct_auditing_delegate=*/nullptr,
         /*SocketPerformanceWatcherFactory*/ nullptr,
-        &crypto_client_stream_factory_, &context_);
+        &crypto_client_stream_factory_, test_network_quality_estimator_.get(),
+        &context_);
   }
 
   ServiceEndpoint MakeUsableEndpoint(std::string_view v4_addr) {
@@ -2498,8 +2503,11 @@ class QuicSessionPoolAsyncDnsJobZeroDelayTest
     : public QuicSessionPoolAsyncDnsJobTest {
  protected:
   QuicSessionPoolAsyncDnsJobZeroDelayTest()
-      : QuicSessionPoolAsyncDnsJobTest(
-            {{"AsyncDnsQuicJobSlowTimerDelay", "0ms"}}) {}
+      : QuicSessionPoolAsyncDnsJobTest(EnabledFeatures(),
+                                       DisabledFeatures(),
+                                       {{features::kAsyncDnsQuicJob, {}},
+                                        {features::kAdjustQuicSlowTimerDelay,
+                                         {{"QuicSlowTimerDelay", "0ms"}}}}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2557,7 +2565,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobZeroDelayTest,
   // No second connector appears, so the IPv4 candidate stays untried while
   // the IPv6 attempt runs. The delay param is zero in this fixture, so
   // advance past where the default delay would have fired the timer.
-  FastForwardBy(features::kAsyncDnsQuicJobSlowTimerDelay.default_value * 2);
+  FastForwardBy(features::kQuicSlowTimerDelay.default_value * 2);
   EXPECT_FALSE(callback_.have_result());
   EXPECT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
 
@@ -3646,6 +3654,280 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, OnConnectionFailedOnDefaultNetwork) {
   socket_data.ExpectAllWriteDataConsumed();
   socket_data2.ExpectAllReadDataConsumed();
   socket_data2.ExpectAllWriteDataConsumed();
+}
+
+class QuicSessionPoolAsyncDnsJobRTTBasedTest
+    : public QuicSessionPoolAsyncDnsJobTest {
+ public:
+  static std::vector<base::test::FeatureRef> Disabled() {
+    auto disabled = DisabledFeatures();
+    disabled.push_back(features::kAdjustQuicSlowTimerDelay);
+    return disabled;
+  }
+
+  QuicSessionPoolAsyncDnsJobRTTBasedTest()
+      : QuicSessionPoolAsyncDnsJobTest(EnabledFeatures(),
+                                       Disabled(),
+                                       {{features::kQuicSlowTimerBasedOnRTT,
+                                         {{"QuicSlowTimerRTTMultiplier", "2.0"},
+                                          {"QuicSlowTimerMin", "10ms"},
+                                          {"QuicSlowTimerMax", "1s"}}},
+                                        {features::kAsyncDnsQuicJob, {}}}) {}
+
+  static constexpr base::TimeDelta kRTT = base::Milliseconds(50);
+
+  void SetUp() override {
+    QuicSessionPoolAsyncDnsJobTest::SetUp();
+
+    // Set up HttpServerProperties with a specific RTT.
+    url::SchemeHostPort server(url::kHttpsScheme, kDefaultServerHostName, 443);
+    ServerNetworkStats stats;
+    stats.srtt = kRTT;
+    http_server_properties_->SetServerNetworkStats(
+        server, NetworkAnonymizationKey(), stats);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         QuicSessionPoolAsyncDnsJobRTTBasedTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AsyncQuicSession"
+                                             : "SyncQuicSession";
+                         });
+
+TEST_P(QuicSessionPoolAsyncDnsJobRTTBasedTest, UsesRTTForSlowTimer) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // The IPv6 attempt never finishes its handshake.
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddReadPauseForever();
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_data(version_);
+  ipv4_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  ipv4_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  const double kRTTMultiplier = 2.0;
+  const base::TimeDelta kExpectedDelay =
+      QuicSessionPoolAsyncDnsJobRTTBasedTest::kRTT * kRTTMultiplier;
+
+  // Wait for just before the timer fires.
+  FastForwardBy(kExpectedDelay - base::Milliseconds(1));
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+
+  // Timer fires and secondary connector starts IPv4 attempt.
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 2u);
+
+  crypto_client_stream_factory_.streams()[1]->NotifySessionZeroRttComplete();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  ipv4_data.ExpectAllReadDataConsumed();
+  ipv4_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolAsyncDnsJobRTTBasedTest, UsesNqeRTTForSlowTimer) {
+  // Clear the ServerNetworkStats RTT set in SetUp().
+  url::SchemeHostPort server(url::kHttpsScheme, kDefaultServerHostName, 443);
+  http_server_properties_->ClearServerNetworkStats(server,
+                                                   NetworkAnonymizationKey());
+
+  // Set up NQE with a specific RTT.
+  test_network_quality_estimator_ =
+      std::make_unique<TestNetworkQualityEstimator>();
+  const base::TimeDelta kNqeRTT = base::Milliseconds(100);
+  test_network_quality_estimator_->SetStartTimeNullTransportRtt(kNqeRTT);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // The IPv6 attempt never finishes its handshake.
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddReadPauseForever();
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_data(version_);
+  ipv4_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  ipv4_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  const double kRTTMultiplier = 2.0;
+  const base::TimeDelta kExpectedDelay = kNqeRTT * kRTTMultiplier;
+
+  // Wait for just before the timer fires.
+  FastForwardBy(kExpectedDelay - base::Milliseconds(1));
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+
+  // Timer fires and secondary connector starts IPv4 attempt.
+  FastForwardBy(base::Milliseconds(1));
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 2u);
+
+  crypto_client_stream_factory_.streams()[1]->NotifySessionZeroRttComplete();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  ipv6_data.ExpectAllReadDataConsumed();
+  ipv6_data.ExpectAllWriteDataConsumed();
+
+  ipv4_data.ExpectAllReadDataConsumed();
+  ipv4_data.ExpectAllWriteDataConsumed();
+}
+
+class QuicSessionPoolAsyncDnsJobStaticTimerTest
+    : public QuicSessionPoolAsyncDnsJobTest {
+ public:
+  static constexpr base::TimeDelta kStaticDelay = base::Milliseconds(250);
+
+  static std::vector<base::test::FeatureRef> Disabled() {
+    auto disabled = DisabledFeatures();
+    disabled.push_back(features::kQuicSlowTimerBasedOnRTT);
+    return disabled;
+  }
+
+  QuicSessionPoolAsyncDnsJobStaticTimerTest()
+      : QuicSessionPoolAsyncDnsJobTest(EnabledFeatures(),
+                                       Disabled(),
+                                       {{features::kAdjustQuicSlowTimerDelay,
+                                         {{"QuicSlowTimerDelay", "250ms"}}},
+                                        {features::kAsyncDnsQuicJob, {}}}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         QuicSessionPoolAsyncDnsJobStaticTimerTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AsyncQuicSession"
+                                             : "SyncQuicSession";
+                         });
+
+TEST_P(QuicSessionPoolAsyncDnsJobStaticTimerTest, UsesStaticTimer) {
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // The IPv6 attempt never finishes its handshake.
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddReadPauseForever();
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_data(version_);
+  ipv4_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  ipv4_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+
+  // Wait for just before the timer fires.
+  FastForwardBy(QuicSessionPoolAsyncDnsJobStaticTimerTest::kStaticDelay -
+                base::Milliseconds(1));
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 1u);
+
+  // Timer fires and secondary connector starts IPv4 attempt.
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_EQ(crypto_client_stream_factory_.streams().size(), 2u);
+
+  crypto_client_stream_factory_.streams()[1]->NotifySessionZeroRttComplete();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  ipv4_data.ExpectAllReadDataConsumed();
+  ipv4_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

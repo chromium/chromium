@@ -324,6 +324,7 @@ class MockQuicSessionPool : public QuicSessionPool {
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
+      NetworkQualityEstimator* network_quality_estimator,
       QuicContext* context)
       : QuicSessionPool(net_log,
                         host_resolver,
@@ -336,6 +337,7 @@ class MockQuicSessionPool : public QuicSessionPool {
                         sct_auditing_delegate,
                         socket_performance_watcher_factory,
                         quic_crypto_client_stream_factory,
+                        network_quality_estimator,
                         context) {}
 
   MockQuicSessionPool(const MockQuicSessionPool&) = delete;
@@ -2914,7 +2916,8 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
       cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
       /*sct_auditing_delegate=*/nullptr,
       /*SocketPerformanceWatcherFactory*/ nullptr,
-      &crypto_client_stream_factory_, &context_);
+      &crypto_client_stream_factory_,
+      /*network_quality_estimator=*/nullptr, &context_);
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
