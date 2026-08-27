@@ -55,6 +55,7 @@ namespace remoting {
 
 namespace {
 constexpr std::int32_t kMinBitrateBps = 10485760;
+constexpr char kMinHostVersionForProtobuf[] = "155";
 }
 
 RemotingClient::RemotingClient(
@@ -133,7 +134,8 @@ void RemotingClient::OnGetManagedChromeOsHostRetrieved(
   if (chrome_os_host_->has_host_version()) {
     base::Version host_version(chrome_os_host_->host_version());
     send_protobuf_in_initiate =
-        host_version.IsValid() && host_version >= base::Version("153");
+        host_version.IsValid() &&
+        host_version >= base::Version(kMinHostVersionForProtobuf);
   }
 
   CLIENT_LOG << "Initializing signaling...";
