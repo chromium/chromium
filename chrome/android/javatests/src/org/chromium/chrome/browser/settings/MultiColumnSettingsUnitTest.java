@@ -71,7 +71,9 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO(crbug.com/493130564): Revert to regular runner after
@@ -266,6 +268,89 @@ public class MultiColumnSettingsUnitTest {
             assertSame(fragment4.getPageTitle(), title1.titleSupplier);
             assertEquals(0, title1.backStackCount);
         }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testFragmentTracker_RestoreTitles_WithUnmatchedUuid() {
+        ObserverList<MultiColumnSettings.Observer> observers = new ObserverList<>();
+        var fragmentManager = new TestFragmentManager();
+
+        var fragmentTracker = new MultiColumnSettings.FragmentTracker(observers);
+
+        var fragment1 = new TestFragment();
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment1);
+
+        var fragment2 = new TestFragment();
+        fragmentManager.addBackStack();
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment2);
+
+        var fragment3 = new TestFragment();
+        fragmentManager.addBackStack();
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment3);
+
+        assertEquals(3, fragmentTracker.mTitles.size());
+
+        Bundle bundle = new Bundle();
+        fragmentTracker.saveTitles(bundle);
+
+        // Simulate activity recreation where fragment2 was an intermediate fragment replaced
+        // in-place without backstack, and fragment2Replacement (like EmptyFragment) was restored
+        // from backstack instead.
+        var fragment2Replacement = new TestFragment();
+        Map<String, EmbeddableSettingsPage> uuidMap = new HashMap<>();
+        uuidMap.put(MultiColumnSettings.getUUID(fragment1), fragment1);
+        uuidMap.put(MultiColumnSettings.getUUID(fragment2Replacement), fragment2Replacement);
+        uuidMap.put(MultiColumnSettings.getUUID(fragment3), fragment3);
+
+        var newFragmentTracker = new MultiColumnSettings.FragmentTracker(observers);
+        newFragmentTracker.restoreTitles(bundle, uuidMap);
+
+        assertEquals(3, newFragmentTracker.mTitles.size());
+        assertSame(fragment1.getPageTitle(), newFragmentTracker.mTitles.get(0).titleSupplier);
+        assertEquals(0, newFragmentTracker.mTitles.get(0).backStackCount);
+
+        assertSame(
+                fragment2Replacement.getPageTitle(),
+                newFragmentTracker.mTitles.get(1).titleSupplier);
+        assertEquals(1, newFragmentTracker.mTitles.get(1).backStackCount);
+
+        assertSame(fragment3.getPageTitle(), newFragmentTracker.mTitles.get(2).titleSupplier);
+        assertEquals(2, newFragmentTracker.mTitles.get(2).backStackCount);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testFragmentTracker_RestoreTitles_WithMissingUuidAndNoReplacement() {
+        ObserverList<MultiColumnSettings.Observer> observers = new ObserverList<>();
+        var fragmentManager = new TestFragmentManager();
+
+        var fragmentTracker = new MultiColumnSettings.FragmentTracker(observers);
+
+        var fragment1 = new TestFragment();
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment1);
+
+        var fragment2 = new TestFragment();
+        fragmentManager.addBackStack();
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment2);
+
+        Bundle bundle = new Bundle();
+        fragmentTracker.saveTitles(bundle);
+
+        // Only fragment1 is present in uuidMap, fragment2 is completely missing with no
+        // replacement.
+        Map<String, EmbeddableSettingsPage> uuidMap = new HashMap<>();
+        uuidMap.put(MultiColumnSettings.getUUID(fragment1), fragment1);
+
+        var newFragmentTracker = new MultiColumnSettings.FragmentTracker(observers);
+        // Must not crash with NullPointerException. See https://crbug.com/542323396
+        newFragmentTracker.restoreTitles(bundle, uuidMap);
+
+        assertEquals(1, newFragmentTracker.mTitles.size());
+        assertSame(fragment1.getPageTitle(), newFragmentTracker.mTitles.get(0).titleSupplier);
+        assertEquals(0, newFragmentTracker.mTitles.get(0).backStackCount);
     }
 
     @Test

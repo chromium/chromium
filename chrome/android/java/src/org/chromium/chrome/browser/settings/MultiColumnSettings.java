@@ -813,7 +813,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     }
 
     // Workaround for fragment identifying issue.
-    private static @Nullable String getUUID(Fragment fragment) {
+    static @Nullable String getUUID(Fragment fragment) {
         // This function depends on internal structure of Fragment.toString().
         // In fragment, an UUID is assigned, which survives at activity recreation.
         // The expected format begins with "<classname>{<hash>} (<UUID>...".
@@ -1026,14 +1026,56 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             }
             assert uuids.length == backStackCounts.length;
 
+            // Tracks created fragments that haven't been matched to a saved title yet. Under normal
+            // navigation, fragments match their saved UUIDs directly. However, if an intermediate
+            // fragment was replaced in-place without adding to the back stack (e.g.
+            // SearchResultsPreferenceFragment replacing EmptyFragment), its UUID will not be in
+            // uuidMap upon activity recreation, and the original back stack fragment
+            // (EmptyFragment) will be left in remainingMap to be matched as a fallback. See
+            // https://crbug.com/542323396
+            Map<String, EmbeddableSettingsPage> remainingMap = new HashMap<>(uuidMap);
+            Title[] restoredTitles = new Title[uuids.length];
+            List<Integer> unmatchedIndices = new ArrayList<>();
+
             for (int i = 0; i < uuids.length; ++i) {
                 String uuid = uuids[i];
                 int backStackCount = backStackCounts[i];
-                var page = uuidMap.get(uuid);
-                assert page != null;
-                mTitles.add(
-                        new Title(
-                                uuid, page.getPageTitle(), backStackCount, page.getMainMenuKey()));
+                EmbeddableSettingsPage page = remainingMap.remove(uuid);
+                if (page != null) {
+                    restoredTitles[i] =
+                            new Title(
+                                    uuid,
+                                    page.getPageTitle(),
+                                    backStackCount,
+                                    page.getMainMenuKey());
+                } else {
+                    unmatchedIndices.add(i);
+                }
+            }
+
+            // Match any remaining unmatched titles with remaining recreated fragments.
+            var remainingEntries = new ArrayList<>(remainingMap.entrySet());
+            remainingEntries.sort(Map.Entry.comparingByKey());
+            int pageIndex = 0;
+            for (int index : unmatchedIndices) {
+                if (pageIndex < remainingEntries.size()) {
+                    var entry = remainingEntries.get(pageIndex++);
+                    String uuid = entry.getKey();
+                    EmbeddableSettingsPage page = entry.getValue();
+                    int backStackCount = backStackCounts[index];
+                    restoredTitles[index] =
+                            new Title(
+                                    uuid,
+                                    page.getPageTitle(),
+                                    backStackCount,
+                                    page.getMainMenuKey());
+                }
+            }
+
+            for (Title title : restoredTitles) {
+                if (title != null) {
+                    mTitles.add(title);
+                }
             }
         }
     }
@@ -1064,6 +1106,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 super.onCreate(savedInstanceState);
             } finally {
                 fragmentManager.unregisterFragmentLifecycleCallbacks(uuidMapCreator);
+            }
+            // Also collect any fragments already present in FragmentManager that may not have
+            // been captured by the lifecycle callbacks.
+            for (Fragment f : fragmentManager.getFragments()) {
+                if (f instanceof EmbeddableSettingsPage page) {
+                    String uuid = getUUID(f);
+                    if (uuid != null) {
+                        uuidMapCreator.mMap.putIfAbsent(uuid, page);
+                    }
+                }
             }
             mFragmentTracker.restoreTitles(savedInstanceState, uuidMapCreator.mMap);
         } else {
