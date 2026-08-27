@@ -202,6 +202,8 @@ class ContextualTasksExtensionHandler
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
+  void DismissFre() override {}
+  void OpenHotkeySettings() override {}
 
  private:
   friend class content::DocumentUserData<ContextualTasksExtensionHandler>;

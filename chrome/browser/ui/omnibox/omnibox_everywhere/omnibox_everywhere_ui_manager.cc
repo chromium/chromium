@@ -486,7 +486,28 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
   CleanUpWidget();
 }
 
+void OmniboxEverywhereUIManager::RecordFreImpression() {
+  if (!profile_ || !profile_->GetPrefs() ||
+      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
+    return;
+  }
+
+  PrefService* prefs = profile_->GetPrefs();
+  if (prefs->GetBoolean(omnibox_everywhere::prefs::kFreDismissed)) {
+    return;
+  }
+
+  int impressions =
+      prefs->GetInteger(omnibox_everywhere::prefs::kFreImpressionCount) + 1;
+  prefs->SetInteger(omnibox_everywhere::prefs::kFreImpressionCount,
+                    impressions);
+  if (impressions >= omnibox_everywhere::prefs::kMaxFreImpressions) {
+    prefs->SetBoolean(omnibox_everywhere::prefs::kFreDismissed, true);
+  }
+}
+
 void OmniboxEverywhereUIManager::Close() {
+  RecordFreImpression();
   last_shown_time_.reset();
   deactivation_task_.Cancel();
   if (widget_) {

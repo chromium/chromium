@@ -598,10 +598,19 @@ interface PageHandler {
   // Called to retrieve the current Smart Tab Sharing state.
   [EnableIfNot=is_android]
   GetSmartTabSharingActive() => (bool active);
+
+  // Dispatched when the First-Run Experience (FRE) notice is dismissed.
+  DismissFre();
+
+  // Opens platform/browser shortcut configuration settings.
+  OpenHotkeySettings();
 };
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // Notifies the page of whether the FRE notice promo should be displayed.
+  SetShowFre(bool show);
+
   // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
 

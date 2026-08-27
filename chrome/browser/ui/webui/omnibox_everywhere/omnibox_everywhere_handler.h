@@ -50,6 +50,8 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
                    bool meta_key,
                    bool shift_key,
                    bool is_voice_search) override;
+  void DismissFre() override;
+  void OpenHotkeySettings() override;
 
   // SearchboxHandler:
   bool SupportsKeywordMode() const override;
@@ -72,6 +74,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
 
  private:
   void OnAimEligibilityChanged();
+  void UpdatePromoState();
 
   raw_ptr<OmniboxEverywhereService> service_;
   PrefChangeRegistrar pref_change_registrar_;

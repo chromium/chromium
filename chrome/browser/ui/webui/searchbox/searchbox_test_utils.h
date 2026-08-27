@@ -136,6 +136,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               (std::vector<searchbox::mojom::TabInfoPtr> tabs),
               (override));
   MOCK_METHOD(void, OnScreenshotMenuClosed, (), (override));
+  MOCK_METHOD(void, SetShowFre, (bool show), (override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)

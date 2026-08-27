@@ -210,6 +210,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void GetSmartTabSharingActive(
       GetSmartTabSharingActiveCallback callback) override;
 #endif
+  void DismissFre() override {}
+  void OpenHotkeySettings() override {}
   void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 
  protected:

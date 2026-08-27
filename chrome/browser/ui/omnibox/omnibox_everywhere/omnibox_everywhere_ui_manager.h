@@ -230,6 +230,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
   void OnMostVisitedPrefChanged();
+  void RecordFreImpression();
   static gfx::Rect CalculateWidgetBounds(int height);
 
   // Try and acquire process and profile keep alives. If unsuccessful, releases

@@ -27,6 +27,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/omnibox_everywhere:resources",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox/omnibox_everywhere",

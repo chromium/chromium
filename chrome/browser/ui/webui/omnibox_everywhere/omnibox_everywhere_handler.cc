@@ -13,12 +13,15 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
@@ -124,6 +127,16 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
       omnibox::kShowAiModeOmniboxButton,
       base::BindRepeating(&OmniboxEverywhereHandler::OnAimEligibilityChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      omnibox_everywhere::prefs::kFreDismissed,
+      base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      omnibox_everywhere::prefs::kFreImpressionCount,
+      base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
+                          base::Unretained(this)));
+
+  UpdatePromoState();
 }
 
 OmniboxEverywhereHandler::~OmniboxEverywhereHandler() = default;
@@ -250,4 +263,25 @@ void OmniboxEverywhereHandler::OpenUrl(
 
 bool OmniboxEverywhereHandler::SupportsKeywordMode() const {
   return true;
+}
+
+void OmniboxEverywhereHandler::UpdatePromoState() {
+  bool fre_enabled =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre);
+  bool fre_dismissed = profile_->GetPrefs()->GetBoolean(
+      omnibox_everywhere::prefs::kFreDismissed);
+  int impressions = profile_->GetPrefs()->GetInteger(
+      omnibox_everywhere::prefs::kFreImpressionCount);
+  bool show_fre = fre_enabled && !fre_dismissed &&
+                  (impressions < omnibox_everywhere::prefs::kMaxFreImpressions);
+  page()->SetShowFre(show_fre);
+}
+
+void OmniboxEverywhereHandler::DismissFre() {
+  profile_->GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                   true);
+}
+
+void OmniboxEverywhereHandler::OpenHotkeySettings() {
+  chrome::ShowSettingsSubPageForProfile(profile_, chrome::kSearchSubPage);
 }

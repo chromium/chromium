@@ -34,6 +34,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteAutocompleteMatch',
       'deleteContext',
       'deleteTabContext',
+      'dismissFre',
       'executeAction',
       'getCyclingPlaceholderConfig',
       'getDriveDisclaimerStatus',
@@ -49,6 +50,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'onNavigationLikely',
       'onThumbnailRemoved',
       'openAutocompleteMatch',
+      'openHotkeySettings',
       'openLensSearch',
       'openPopupSelection',
       'openProfilePicker',
@@ -314,6 +316,14 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   captureRegionScreenshot() {
     this.methodCalled('captureRegionScreenshot');
     return Promise.resolve({token: null});
+  }
+
+  dismissFre() {
+    this.methodCalled('dismissFre');
+  }
+
+  openHotkeySettings() {
+    this.methodCalled('openHotkeySettings');
   }
 }
 
