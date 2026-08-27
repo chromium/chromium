@@ -10443,6 +10443,25 @@
             ]
         }
     ],
+    "HeliosFREExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "VisualRich",
+                    "params": {
+                        "variant": "visual-rich"
+                    },
+                    "enable_features": [
+                        "GeminiFREExperiment",
+                        "GeminiFRERefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosMultiTabContext": [
         {
             "platforms": [
