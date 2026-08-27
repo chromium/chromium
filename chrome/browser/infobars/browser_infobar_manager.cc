@@ -159,7 +159,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
       callback.Run(contents);
     }
     ReportResult(InfoBarResult::kAccepted);
-    return true;
+    return spec_.close_on_accept();
   }
 
   bool Cancel() override {

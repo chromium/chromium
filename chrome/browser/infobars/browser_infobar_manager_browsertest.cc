@@ -698,6 +698,48 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(InfoBarResult::kDismissed, results[0]);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       AcceptCanKeepTheInfoBarShowing) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  int accepts = 0;
+  manager()->Register(
+      InfoBarSpec::Builder(identifier)
+          .SetMessageText(u"Test Message")
+          .SetScope(InfoBarScope::kTab)
+          .SetCloseOnAccept(false)
+          .AddOkButton(u"Go", base::BindLambdaForTesting(
+                                  [&](content::WebContents*) { ++accepts; }))
+          .SetResultCallback(base::BindLambdaForTesting(
+              [&](content::WebContents*, InfoBarResult result) {
+                results.push_back(result);
+              }))
+          .Build());
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  manager()->Show(tab, identifier);
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  // Accepting runs the action and reports, but tells the view to keep the
+  // infobar up.
+  EXPECT_FALSE(delegate->Accept());
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_EQ(1, accepts);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(InfoBarResult::kAccepted, results[0]);
+  // Accepting again re-runs the action without a second result.
+  EXPECT_FALSE(delegate->Accept());
+  EXPECT_EQ(2, accepts);
+  EXPECT_EQ(1u, results.size());
+  // The infobar outlived the interaction, so take it down before the test's
+  // callbacks go out of scope.
+  manager()->Hide(tab->GetContents(), identifier);
+  EXPECT_EQ(1u, results.size());
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, IsRegistered) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   EXPECT_FALSE(manager()->IsRegistered(identifier));
