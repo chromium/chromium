@@ -1284,7 +1284,9 @@ void Performance::ActivateObserver(PerformanceObserver& observer) {
 }
 
 void Performance::SuspendObserver(PerformanceObserver& observer) {
-  DCHECK(!suspended_observers_.Contains(&observer));
+  if (suspended_observers_.Contains(&observer)) {
+    return;
+  }
   auto it = active_observers_.find(&observer);
   if (it == active_observers_.end())
     return;
