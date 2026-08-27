@@ -324,6 +324,10 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                        PrefersAnchorInOriginalBrowser) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Flaky on Wayland; see https://crbug.com/552061334";
+  }
+
   auto ue_context = BrowserUserEducationInterface::From(browser())
                         ->GetUserEducationContextForTesting();
   auto filter = ue_context->GetDefaultElementFilter();
