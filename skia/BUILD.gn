@@ -236,6 +236,10 @@ config("skia_library_config") {
 source_set("skia_core_public_headers") {
   public = skia_core_public
   public += skia_pathops_public
+  public += skia_codec_public
+  public += skia_codec_rust_png_public
+  public += skia_encode_public
+  public += skia_encode_rust_png_public
 }
 
 component("skia") {
@@ -351,10 +355,6 @@ component("skia") {
   public += skia_effects_imagefilter_public
   public += skia_utils_chromium
   public += skia_discardable_memory_chromium
-  public += skia_codec_public
-  public += skia_codec_rust_png_public
-  public += skia_encode_public
-  public += skia_encode_rust_png_public
   public += skia_encode_webp_public
 
   # The imported Skia gni source paths are made absolute by gn.
