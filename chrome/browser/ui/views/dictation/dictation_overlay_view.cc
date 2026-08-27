@@ -114,6 +114,7 @@ class DictationOverlayContentsView : public views::View {
 
     waveform_view_->SetVisible(waveform_visible);
     waveform_view_->SetState(state);
+    waveform_view_->SetEnabled(state == UiState::kTranscribing);
 
     PreferredSizeChanged();
   }
