@@ -15,6 +15,9 @@ MockDeviceInfo::MockDeviceInfo() {
   ON_CALL(*this, SdkVersion())
       .WillByDefault(
           Return(base::android::android_info::SDK_VERSION_MARSHMALLOW));
+  ON_CALL(*this, SdkVersionFull())
+      .WillByDefault(
+          Return(base::android::android_info::SDK_VERSION_FULL_MARSHMALLOW));
   ON_CALL(*this, IsVp8DecoderAvailable()).WillByDefault(Return(true));
   ON_CALL(*this, IsDecoderKnownUnaccelerated(_)).WillByDefault(Return(false));
   ON_CALL(*this, CodecNeedsFlushWorkaround(_)).WillByDefault(Return(false));

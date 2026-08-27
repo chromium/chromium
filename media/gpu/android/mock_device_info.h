@@ -20,6 +20,7 @@ class MockDeviceInfo : public DeviceInfo {
   virtual ~MockDeviceInfo();
 
   MOCK_METHOD0(SdkVersion, int());
+  MOCK_METHOD0(SdkVersionFull, int());
   MOCK_METHOD0(IsVp8DecoderAvailable, bool());
   MOCK_METHOD1(IsDecoderKnownUnaccelerated, bool(VideoCodec codec));
   MOCK_METHOD1(CodecNeedsFlushWorkaround, bool(MediaCodecBridge* codec));

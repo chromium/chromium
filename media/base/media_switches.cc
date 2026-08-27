@@ -1297,9 +1297,9 @@ BASE_FEATURE(kContextMenuPictureInPictureAndroid,
 BASE_FEATURE(kFullscreenVideoPictureInPicture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables block model (LinearBlock) on supported devices.
-// TODO(crbug.com/327625558): Currently block model is buggy and can't be
-// enabled, we need to test it again when Android 17 is released.
+// Enables block model on supported devices.
+// Block model is only supported on Android 17 26Q4+ where the feature is
+// properly supported by the framework.
 BASE_FEATURE(kMediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables output-side block model (OutputFrame) on supported devices.

@@ -270,9 +270,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
       device_info_(device_info),
       enable_threaded_texture_mailboxes_(
           gpu_preferences.enable_threaded_texture_mailboxes),
-      use_block_model_(device_info_->SdkVersion() >=
-                           base::android::android_info::SDK_VERSION_V &&
-                       base::FeatureList::IsEnabled(kMediaCodecBlockModel)) {
+      use_block_model_(
+          device_info_->SdkVersionFull() >=
+              base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2 &&
+          base::FeatureList::IsEnabled(kMediaCodecBlockModel)) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
       base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,

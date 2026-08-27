@@ -4,6 +4,7 @@
 
 #include "media/gpu/android/media_codec_video_decoder.h"
 
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1120,6 +1121,42 @@ TEST_P(MediaCodecVideoDecoderVp9Test, HdrMetadataIsIncludedInCodecConfig) {
   EXPECT_TRUE(InitializeFully_OneDecodePending(config));
 
   EXPECT_EQ(hdr_metadata, codec_allocator_->most_recent_config->hdr_metadata);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, BlockModelDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(kMediaCodecBlockModel);
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+
+  VideoDecoderConfig config = TestVideoConfig::Normal(codec_);
+  ASSERT_TRUE(InitializeFully_OneDecodePending(config));
+  EXPECT_FALSE(codec_allocator_->most_recent_config->use_block_model);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, BlockModelDisabledOnEarlierSdkVersion) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(kMediaCodecBlockModel);
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_1));
+
+  VideoDecoderConfig config = TestVideoConfig::Normal(codec_);
+  ASSERT_TRUE(InitializeFully_OneDecodePending(config));
+  EXPECT_FALSE(codec_allocator_->most_recent_config->use_block_model);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, BlockModelEnabledOnSupportedVersion) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(kMediaCodecBlockModel);
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+
+  VideoDecoderConfig config = TestVideoConfig::Normal(codec_);
+  ASSERT_TRUE(InitializeFully_OneDecodePending(config));
+  EXPECT_TRUE(codec_allocator_->most_recent_config->use_block_model);
 }
 
 static std::vector<VideoCodec> GetTestList() {
