@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-pub use ffi::{ResponseStatus, TpmAlg, TpmCc, TpmConstant, TpmRh, TpmSt};
+pub use ffi::{
+    CreateResponse, ResponseStatus, TpmAlg, TpmCc, TpmConstant, TpmEccCurve, TpmRh, TpmSt,
+};
 
 /// Size of a standard TPM command header (Tag + Size + CommandCode).
 pub const TPM_HEADER_SIZE: usize = 10;
@@ -16,6 +18,11 @@ pub const TPM_SESSION_SIZE: usize = 9;
 /// Maximum buffer size for a TPM2B_MAX_BUFFER structure (typically 1024 bytes
 /// in TPM 2.0).
 pub const TPM_MAX_BUFFER_SIZE: usize = 1024;
+
+/// Object attributes for an Attestation Identity Key (AIK).
+/// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
+/// userWithAuth (0x40) | restricted (0x10000) | sign (0x40000) = 0x00050072.
+pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050072;
 
 /// Errors that can occur during TPM response parsing.
 #[derive(Debug)]
@@ -114,6 +121,17 @@ pub mod ffi {
         tpm_response_code: u32,
     }
 
+    /// Response from parsing a TPM2_Create command.
+    #[cxx_name = "RawCreateResponse"]
+    struct CreateResponse {
+        /// The outcome of the parsing operation.
+        status: ResponseStatus,
+        /// The serialized `TPM2B_PRIVATE` structure returned by the TPM.
+        out_private: Vec<u8>,
+        /// The serialized `TPM2B_PUBLIC` structure returned by the TPM.
+        out_public: Vec<u8>,
+    }
+
     /// Response from parsing a TPM2_Certify command.
     #[cxx_name = "RawCertifyResponse"]
     struct CertifyResponse {
@@ -173,12 +191,8 @@ pub mod ffi {
     #[derive(Debug)]
     #[repr(u16)]
     enum TpmAlg {
-        /// TPM_ALG_NULL is the null algorithm.
-        TPM_ALG_NULL = 0x0010,
-        /// TPM_ALG_RSASSA is the RSASSA signature algorithm.
-        TPM_ALG_RSASSA = 0x0014,
-        /// TPM_ALG_ECDSA is the ECDSA signature algorithm.
-        TPM_ALG_ECDSA = 0x0018,
+        /// TPM_ALG_RSA is the RSA algorithm.
+        TPM_ALG_RSA = 0x0001,
         /// TPM_ALG_SHA1 is the SHA-1 hash algorithm.
         TPM_ALG_SHA1 = 0x0004,
         /// TPM_ALG_SHA256 is the SHA-256 hash algorithm.
@@ -187,6 +201,30 @@ pub mod ffi {
         TPM_ALG_SHA384 = 0x000C,
         /// TPM_ALG_SHA512 is the SHA-512 hash algorithm.
         TPM_ALG_SHA512 = 0x000D,
+        /// TPM_ALG_NULL is the null algorithm.
+        TPM_ALG_NULL = 0x0010,
+        /// TPM_ALG_RSASSA is the RSASSA signature algorithm.
+        TPM_ALG_RSASSA = 0x0014,
+        /// TPM_ALG_RSAPSS is the RSAPSS signature algorithm.
+        TPM_ALG_RSAPSS = 0x0016,
+        /// TPM_ALG_ECDSA is the ECDSA signature algorithm.
+        TPM_ALG_ECDSA = 0x0018,
+        /// TPM_ALG_ECC is the ECC algorithm.
+        TPM_ALG_ECC = 0x0023,
+    }
+
+    /// TPM ECC Curves. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=46 for details.
+    #[derive(Debug)]
+    #[repr(u16)]
+    enum TpmEccCurve {
+        /// TPM_ECC_NONE is no curve.
+        TPM_ECC_NONE = 0x0000,
+        /// TPM_ECC_NIST_P256 is the NIST P-256 curve.
+        TPM_ECC_NIST_P256 = 0x0003,
+        /// TPM_ECC_NIST_P384 is the NIST P-384 curve.
+        TPM_ECC_NIST_P384 = 0x0004,
+        /// TPM_ECC_NIST_P521 is the NIST P-521 curve.
+        TPM_ECC_NIST_P521 = 0x0005,
     }
 
     /// TPM Reserved Handles. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=88 for details.
@@ -200,8 +238,8 @@ pub mod ffi {
         /// TPM_RS_PW is the handle for a password session.
         TPM_RS_PW = 0x40000009,
         /// TPM_RH_ENDORSEMENT is the handle for the endorsement hierarchy.
-        /// This MUST be used for Windows Attestation Identity Keys (AIKs),
-        /// because AIKs belong to the endorsement hierarchy.
+        /// This is used for Attestation Identity Keys (AIKs), because AIKs
+        /// belong to the endorsement hierarchy.
         TPM_RH_ENDORSEMENT = 0x4000000B,
     }
 
@@ -222,6 +260,8 @@ pub mod ffi {
         TPM_CC_SEQUENCE_COMPLETE = 0x0000013E,
         /// TPM_CC_CERTIFY is the command code for TPM2_Certify.
         TPM_CC_CERTIFY = 0x00000148,
+        /// TPM_CC_CREATE is the command code for TPM2_Create.
+        TPM_CC_CREATE = 0x00000153,
         /// TPM_CC_SEQUENCE_UPDATE is the command code for TPM2_SequenceUpdate.
         TPM_CC_SEQUENCE_UPDATE = 0x0000015C,
         /// TPM_CC_SIGN is the command code for TPM2_Sign.
@@ -246,6 +286,8 @@ pub mod ffi {
         /// TPM_ST_ATTEST_CERTIFY is the tag for a certify attestation
         /// statement.
         TPM_ST_ATTEST_CERTIFY = 0x8017,
+        /// TPM_ST_CREATION is the tag for a creation ticket.
+        TPM_ST_CREATION = 0x8021,
         /// TPM_ST_HASHCHECK is the tag for a hashcheck validation ticket.
         TPM_ST_HASHCHECK = 0x8024,
     }
@@ -319,6 +361,51 @@ pub mod ffi {
         /// code, the serialized `TPMS_ATTEST` statement, and the
         /// serialized `TPMT_SIGNATURE`.
         fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> CertifyResponse;
+
+        /// Builds a TPM2_Create command buffer for an Attestation Identity Key
+        /// (AIK).
+        ///
+        /// This function constructs the raw byte representation of a
+        /// TPM2_Create command.
+        ///
+        /// # Arguments
+        ///
+        /// * `parent_handle` - Handle of the parent key (e.g., Storage Root
+        ///   Key).
+        /// * `scheme` - Signing scheme (e.g., TPM_ALG_ECDSA, TPM_ALG_RSASSA, or
+        ///   TPM_ALG_RSAPSS).
+        /// * `hash_alg` - Hash algorithm (e.g., TPM_ALG_SHA256, TPM_ALG_SHA384,
+        ///   or TPM_ALG_SHA512).
+        ///
+        /// # Returns
+        ///
+        /// A `Vec<u8>` containing the serialized command buffer.
+        ///
+        /// # Panics
+        ///
+        /// Panics if `scheme` or `hash_alg` is unsupported.
+        fn build_create_aik_command(
+            parent_handle: u32,
+            scheme: TpmAlg,
+            hash_alg: TpmAlg,
+        ) -> Vec<u8>;
+
+        /// Parses a TPM2_Create response.
+        ///
+        /// This function reads the response buffer from a TPM2_Create command,
+        /// validates the response headers and creation ticket, and extracts the
+        /// private and public key areas.
+        ///
+        /// # Arguments
+        ///
+        /// * `resp` - The raw byte response from the TPM2_Create command.
+        ///
+        /// # Returns
+        ///
+        /// A `CreateResponse` containing the parsing result, any TPM error
+        /// code, the serialized `TPM2B_PRIVATE` structure, and the serialized
+        /// `TPM2B_PUBLIC` structure.
+        fn parse_create_response(resp: &[u8]) -> CreateResponse;
 
         /// Builds a TPM2_FlushContext command buffer.
         fn build_flush_context_command(handle: u32) -> Vec<u8>;
@@ -521,6 +608,14 @@ impl<'a> Reader<'a> {
         self.read_bytes(size)
     }
 
+    /// Reads a TPM2B structure (a 2-byte size prefix followed by that many
+    /// bytes) and returns the full slice including the 2-byte size prefix.
+    pub fn read_tpm2b_raw(&mut self) -> Option<&'a [u8]> {
+        let (&size_bytes, _) = self.data.split_first_chunk::<2>()?;
+        let size: usize = u16::from_be_bytes(size_bytes).into();
+        self.read_bytes(2 + size)
+    }
+
     /// Consumes and returns all remaining bytes in the reader.
     pub fn read_all(self) -> &'a [u8] {
         self.data
@@ -674,6 +769,149 @@ pub fn build_certify_command(
 
     // inScheme (TPMT_SIG_SCHEME)
     writer.write_u16(TpmAlg::TPM_ALG_NULL.repr);
+
+    writer.into_inner()
+}
+
+/// Builds a TPM2_Create command for an Attestation Identity Key (AIK).
+///
+/// * `parent_handle` - Handle of the parent key under which the AIK is created
+///   (e.g., Storage Root Key).
+/// * `scheme` - Signing scheme (TPM_ALG_RSASSA, TPM_ALG_RSAPSS, or
+///   TPM_ALG_ECDSA).
+/// * `hash_alg` - Hash algorithm (TPM_ALG_SHA256, TPM_ALG_SHA384, or
+///   TPM_ALG_SHA512).
+///
+/// Key type and parameters are inferred from the signing scheme:
+/// - RSASSA / RSAPSS implies RSA (2048 bits, default exponent).
+/// - ECDSA implies ECC (curve inferred from hash algorithm: SHA-256 -> P-256,
+///   SHA-384 -> P-384, SHA-512 -> P-521).
+///
+/// A TPM Create command has the following structure (Table 18 in Part 3):
+///
+/// Header:
+/// | Type                | Name                     |
+/// |---------------------|--------------------------|
+/// | TPMI_ST_COMMAND_TAG | tag (TPM_ST_SESSIONS)    |
+/// | UINT32              | commandSize              |
+/// | TPM_CC              | commandCode (TPM_CC_CREATE) |
+///
+/// Handles:
+/// | Type                | Name                     |
+/// |---------------------|--------------------------|
+/// | TPMI_DH_OBJECT      | parentHandle             |
+///
+/// Parameters:
+/// | Type                | Name                     |
+/// |---------------------|--------------------------|
+/// | TPM2B_SENSITIVE_CREATE | inSensitive           |
+/// | TPM2B_PUBLIC        | inPublic                 |
+/// | TPM2B_DATA          | outsideInfo              |
+/// | TPML_PCR_SELECTION  | creationPCR              |
+///
+/// See Table 18 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=67.
+pub fn build_create_aik_command(parent_handle: u32, scheme: TpmAlg, hash_alg: TpmAlg) -> Vec<u8> {
+    let (key_type, curve_id) = match scheme {
+        TpmAlg::TPM_ALG_RSASSA | TpmAlg::TPM_ALG_RSAPSS => (TpmAlg::TPM_ALG_RSA, None),
+        TpmAlg::TPM_ALG_ECDSA => {
+            let curve = match hash_alg {
+                TpmAlg::TPM_ALG_SHA256 => TpmEccCurve::TPM_ECC_NIST_P256,
+                TpmAlg::TPM_ALG_SHA384 => TpmEccCurve::TPM_ECC_NIST_P384,
+                TpmAlg::TPM_ALG_SHA512 => TpmEccCurve::TPM_ECC_NIST_P521,
+                _ => panic!("unsupported hash_alg for ECC in build_create_aik_command"),
+            };
+            (TpmAlg::TPM_ALG_ECC, Some(curve))
+        }
+        _ => panic!("unsupported scheme in build_create_aik_command"),
+    };
+    let in_scheme_size = 4; // 2 bytes scheme + 2 bytes hash_alg
+    let public_parms_size = match key_type {
+        TpmAlg::TPM_ALG_RSA => 2 + in_scheme_size + 2 + 4,
+        TpmAlg::TPM_ALG_ECC => 2 + in_scheme_size + 2 + 2,
+        _ => unreachable!(),
+    };
+    let unique_size = match key_type {
+        TpmAlg::TPM_ALG_RSA => 2,
+        TpmAlg::TPM_ALG_ECC => 4,
+        _ => unreachable!(),
+    };
+    let tpmt_public_size = 2 // type
+        + 2 // nameAlg
+        + 4 // objectAttributes
+        + 2 // authPolicy size (0)
+        + public_parms_size
+        + unique_size;
+
+    let in_sensitive_size = 2 // size (4)
+        + 2 // userAuth size (0)
+        + 2; // data size (0)
+
+    let in_public_size = 2 // size
+        + tpmt_public_size;
+
+    let outside_info_size = 2; // size (0)
+    let creation_pcr_size = 4; // count (0)
+
+    let total_size = TPM_HEADER_SIZE
+        + TPM_HANDLE_SIZE // parentHandle
+        + TPM_AUTH_SIZE_SIZE
+        + TPM_SESSION_SIZE
+        + in_sensitive_size
+        + in_public_size
+        + outside_info_size
+        + creation_pcr_size;
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(TpmSt::TPM_ST_SESSIONS, total_size, TpmCc::TPM_CC_CREATE);
+
+    // 2. Handles
+    writer.write_u32(parent_handle);
+
+    // 3. Authorization Area
+    writer.write_password_sessions(1);
+
+    // 4. Command Parameters
+    // inSensitive (TPM2B_SENSITIVE_CREATE)
+    writer.write_u16(4); // size of TPMS_SENSITIVE_CREATE
+    writer.write_u16(0); // userAuth size
+    writer.write_u16(0); // data size
+
+    // inPublic (TPM2B_PUBLIC)
+    writer.write_u16(u16::try_from(tpmt_public_size).unwrap());
+    writer.write_u16(key_type.repr);
+    writer.write_u16(hash_alg.repr);
+    writer.write_u32(AIK_OBJECT_ATTRIBUTES);
+    writer.write_u16(0); // authPolicy (empty TPM2B_DIGEST)
+
+    // parameters (TPMU_PUBLIC_PARMS)
+    writer.write_u16(TpmAlg::TPM_ALG_NULL.repr); // symmetric
+    writer.write_u16(scheme.repr);
+    writer.write_u16(hash_alg.repr);
+    match key_type {
+        TpmAlg::TPM_ALG_RSA => {
+            writer.write_u16(2048);
+            writer.write_u32(0); // exponent (default 2^16 + 1)
+                                 // unique (TPM2B_PUBLIC_KEY_RSA)
+            writer.write_u16(0);
+        }
+        TpmAlg::TPM_ALG_ECC => {
+            let curve = curve_id.unwrap();
+            writer.write_u16(curve.repr);
+            writer.write_u16(TpmAlg::TPM_ALG_NULL.repr); // kdf scheme
+                                                         // unique (TPMS_ECC_POINT)
+            writer.write_u16(0); // x
+            writer.write_u16(0); // y
+        }
+        _ => unreachable!(),
+    }
+
+    // outsideInfo (TPM2B_DATA)
+    writer.write_u16(0);
+
+    // creationPCR (TPML_PCR_SELECTION)
+    writer.write_u32(0);
 
     writer.into_inner()
 }
@@ -897,6 +1135,93 @@ impl<'a> From<Result<CertifyData<'a>, TpmParseError>> for ffi::CertifyResponse {
 /// the serialized `TPMS_ATTEST` statement, and the serialized `TPMT_SIGNATURE`.
 pub fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> ffi::CertifyResponse {
     parse_certify_response_impl(resp, expected_extra_data).into()
+}
+
+struct CreateData<'a> {
+    out_private: &'a [u8],
+    out_public: &'a [u8],
+}
+
+fn parse_create_response_impl<'a>(resp: &'a [u8]) -> Result<CreateData<'a>, TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+
+    let parameter_size = if header.tag == TpmSt::TPM_ST_SESSIONS {
+        reader
+            .read_u32()
+            .ok_or(TpmParseError::BufferTooSmall)?
+            .try_into()
+            .map_err(|_| TpmParseError::BufferTooSmall)?
+    } else if header.tag == TpmSt::TPM_ST_NO_SESSIONS {
+        header.response_size - TPM_HEADER_SIZE
+    } else {
+        return Err(TpmParseError::WrongType);
+    };
+
+    let mut param_reader =
+        Reader::new(reader.read_bytes(parameter_size).ok_or(TpmParseError::BufferTooSmall)?);
+
+    let out_private = param_reader.read_tpm2b_raw().ok_or(TpmParseError::BufferTooSmall)?;
+    let out_public = param_reader.read_tpm2b_raw().ok_or(TpmParseError::BufferTooSmall)?;
+    let _creation_data = param_reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
+    let _creation_hash = param_reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
+
+    // Consume and validate creationTicket:
+    // - tag: TPM_ST_CREATION (0x8021)
+    // - hierarchy: TPMI_RH_HIERARCHY (u32)
+    // - digest: TPM2B_DIGEST
+    let ticket_tag = param_reader.read_u16().ok_or(TpmParseError::BufferTooSmall)?;
+    if ticket_tag != TpmSt::TPM_ST_CREATION.repr {
+        return Err(TpmParseError::WrongType);
+    }
+    let _hierarchy = param_reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?;
+    let _digest = param_reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
+
+    if header.tag == TpmSt::TPM_ST_SESSIONS {
+        let _session = TpmsAuthResponse::parse(&mut reader)?;
+    }
+
+    reader.ensure_empty()?;
+
+    Ok(CreateData { out_private, out_public })
+}
+
+impl From<TpmParseError> for ffi::CreateResponse {
+    fn from(err: TpmParseError) -> Self {
+        ffi::CreateResponse { status: err.into(), out_private: Vec::new(), out_public: Vec::new() }
+    }
+}
+
+impl<'a> From<Result<CreateData<'a>, TpmParseError>> for ffi::CreateResponse {
+    fn from(result: Result<CreateData<'a>, TpmParseError>) -> Self {
+        match result {
+            Ok(data) => ffi::CreateResponse {
+                status: ffi::ResponseStatus::OK,
+                out_private: data.out_private.to_vec(),
+                out_public: data.out_public.to_vec(),
+            },
+            Err(err) => err.into(),
+        }
+    }
+}
+
+/// Parses a TPM2_Create response.
+///
+/// This function reads the response buffer from a TPM2_Create command,
+/// validates the response headers and creation ticket, and extracts the
+/// private and public key areas.
+///
+/// # Arguments
+///
+/// * `resp` - The raw byte response from the TPM2_Create command.
+///
+/// # Returns
+///
+/// A `CreateResponse` containing the parsing result, any TPM error code,
+/// the serialized `TPM2B_PRIVATE` structure, and the serialized
+/// `TPM2B_PUBLIC` structure.
+pub fn parse_create_response(resp: &[u8]) -> ffi::CreateResponse {
+    parse_create_response_impl(resp).into()
 }
 
 /// Enum representing the signature data for different algorithms.
