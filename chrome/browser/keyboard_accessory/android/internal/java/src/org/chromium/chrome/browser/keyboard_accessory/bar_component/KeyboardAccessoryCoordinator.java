@@ -89,14 +89,6 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      */
     public interface TabSwitchingDelegate {
         /**
-         * The {@link KeyboardAccessoryData.Tab} passed into this function will be completely
-         * removed from the tab layout.
-         *
-         * @param tab The tab to be removed.
-         */
-        void removeTab(KeyboardAccessoryData.Tab tab);
-
-        /**
          * Clears all currently known tabs and adds the given tabs as replacement.
          *
          * @param tabs An array of {@link KeyboardAccessoryData.Tab}s.
