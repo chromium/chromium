@@ -122,6 +122,7 @@ specific_include_rules = {
   "existing_user_controller\\.cc": [
     "+ash/shell.h",
     "+ash/metrics/login_unlock_throughput_recorder.h",
+    "+ui/message_center/message_center.h",
   ],
   "local_auth_factors_policy_controller\\.cc": [
     "+ui/message_center/message_center.h",

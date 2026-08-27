@@ -261,6 +261,7 @@ static_library("login") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/ozone",
     "//ui/wm",

@@ -68,7 +68,6 @@
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -128,6 +127,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -1001,7 +1001,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
             DCHECK(button_index);
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
-  message_center::Notification notification = CreateSystemNotification(
+  auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
       title, message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -1011,9 +1011,10 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
       ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                           : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.SetSystemPriority();
-  notification.set_pinned(true);
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  notification->SetSystemPriority();
+  notification->set_pinned(true);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void ExistingUserController::OnProfilePrepared(Profile* profile,
