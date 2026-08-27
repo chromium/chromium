@@ -17837,6 +17837,21 @@
             ]
         }
     ],
+    "SkiaGraphiteUsePersistentCache": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaGraphiteUsePersistentCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphiteWinIntel": [
         {
             "platforms": [
