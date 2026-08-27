@@ -197,7 +197,7 @@ TensorImplCoreml::Create(
       std::move(receiver), context, std::move(tensor_info),
       std::move(buffer_state),
       /*representation=*/
-      RepresentationPtr{nullptr, OnTaskRunnerDeleter(nullptr)},
+      RepresentationPtr{nullptr, OnTaskRunnerDeleterWithWait(nullptr)},
       base::PassKey<TensorImplCoreml>());
 }
 

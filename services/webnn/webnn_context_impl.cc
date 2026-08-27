@@ -482,7 +482,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 self.shared_image_manager_
                     ->ProduceWebNNTensor(mailbox, &self.memory_type_tracker_)
                     .release(),
-                OnTaskRunnerDeleter(self.main_task_runner()));
+                WebNNTensorImpl::OnTaskRunnerDeleterWithWait(
+                    self.main_task_runner()));
             if (!representation) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,

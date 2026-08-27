@@ -6,6 +6,8 @@
 #define SERVICES_WEBNN_WEBNN_TENSOR_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -35,8 +37,34 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
                              blink::WebNNTensorToken,
                              mojo::AssociatedReceiver<mojom::WebNNTensor>> {
  public:
-  using RepresentationPtr =
-      std::unique_ptr<gpu::WebNNTensorRepresentation, OnTaskRunnerDeleter>;
+  // Similar to OnTaskRunnerDeleter, but waits for deletion to complete when
+  // destruction occurs off the task runner's sequence. This belongs here
+  // because it is specific to the representation pointers owned by
+  // WebNNTensorImpl and reuses its wait helper.
+  struct COMPONENT_EXPORT(WEBNN_SERVICE) OnTaskRunnerDeleterWithWait {
+    explicit OnTaskRunnerDeleterWithWait(
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+    ~OnTaskRunnerDeleterWithWait();
+
+    OnTaskRunnerDeleterWithWait(OnTaskRunnerDeleterWithWait&&);
+    OnTaskRunnerDeleterWithWait& operator=(OnTaskRunnerDeleterWithWait&&);
+
+    // For compatibility with std:: deleters.
+    template <typename T>
+    void operator()(const T* ptr) {
+      if (!ptr) {
+        return;
+      }
+      WebNNTensorImpl::RunOrPostTaskAndWaitOnSequenceInternal(
+          task_runner_, base::BindOnce(&base::DeletePointer<const T>, ptr));
+    }
+
+   private:
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+
+  using RepresentationPtr = std::unique_ptr<gpu::WebNNTensorRepresentation,
+                                            OnTaskRunnerDeleterWithWait>;
 
   WebNNTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                   WebNNContextImpl& context,
@@ -80,14 +108,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // `ImportTensorImpl()` with that access. Returns true on success.
   bool ImportTensorInternal();
 
-  // Helper that runs a closure synchronously on a different sequence.
-  // The caller blocks but the target sequence never blocks.
-  // It is important the task does not post back to the current sequence, to
-  // prevent deadlocks.
-  void RunOrPostTaskAndWaitOnSequence(
-      scoped_refptr<base::SequencedTaskRunner> target,
-      base::OnceClosure task);
-
   // Destroys tensor shared image access and representation on their bound
   // sequences, and waits for teardown to complete before returning.
   // Called when the tensor is disconnected from the context or when the
@@ -127,12 +147,21 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
 
   // The shared image representation used to access the contents from shared
   // image. Only valid when usage has WebGPUInterop.
-  RepresentationPtr representation_{nullptr, OnTaskRunnerDeleter(nullptr)};
+  RepresentationPtr representation_{nullptr,
+                                    OnTaskRunnerDeleterWithWait(nullptr)};
 
   // Non-null only while WebNN holds exclusive access. Null if exported.
   ScopedAccessPtr representation_access_{nullptr, OnTaskRunnerDeleter(nullptr)};
 
  private:
+  // Helper that runs a closure synchronously on a different sequence.
+  // The caller blocks but the target sequence never blocks.
+  // It is important the task does not post back to the current sequence, to
+  // prevent deadlocks.
+  static void RunOrPostTaskAndWaitOnSequenceInternal(
+      scoped_refptr<base::SequencedTaskRunner> target,
+      base::OnceClosure task);
+
   // mojom::WebNNTensor
   void ReadTensor(ReadTensorCallback callback) override;
   void WriteTensor(mojo_base::BigBuffer src_buffer) override;
