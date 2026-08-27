@@ -182,19 +182,22 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetTitle(GetMessageTitle(
       update_password, pending_credentials.IsFederatedCredential()));
 
-  std::u16string description = GetMessageDescription(
-      pending_credentials, update_password,
+  const bool is_saving_blocked_by_trusted_vault_error =
+      !update_password &&
       password_manager_util::IsSavingBlockedByTrustedVaultError(
-          passwords_state_.client(), passwords_state_.form_manager()));
+          passwords_state_.client(), passwords_state_.form_manager());
+
+  std::u16string description =
+      GetMessageDescription(pending_credentials, update_password,
+                            is_saving_blocked_by_trusted_vault_error);
   message_->SetDescription(description);
 
   update_password_ = update_password;
 
   bool use_followup_button = HasMultipleCredentialsStored();
-  message_->SetPrimaryButtonText(GetPrimaryButtonText(
-      update_password, use_followup_button,
-      password_manager_util::IsSavingBlockedByTrustedVaultError(
-          passwords_state_.client(), passwords_state_.form_manager())));
+  message_->SetPrimaryButtonText(
+      GetPrimaryButtonText(update_password, use_followup_button,
+                           is_saving_blocked_by_trusted_vault_error));
 
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
@@ -366,7 +369,7 @@ void SaveUpdatePasswordMessageDelegate::SolveTrustedVaultCheck(
     return;
   }
   bool needs_trusted_vault_key =
-      passwords_state_.client() &&
+      !update_password_ && passwords_state_.client() &&
       password_manager_util::IsSavingBlockedByTrustedVaultError(
           passwords_state_.client(), passwords_state_.form_manager());
 

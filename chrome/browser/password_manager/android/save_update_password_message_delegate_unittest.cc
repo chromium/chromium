@@ -817,9 +817,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   delegate()->DismissAllActiveUI();
 }
 
-// Tests that the password is updated after trusted vault key is retrieved.
+// Tests that when updating a password, even if a trusted vault error is
+// present, the password update proceeds directly without triggering trusted
+// vault unlock.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       UpdatePasswordAfterTrustedVaultKeyRetrieval) {
+       UpdatePasswordWithTrustedVaultErrorSavesDirectly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordSaveInContextErrorResolution);
@@ -836,31 +838,15 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  _,
-                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                      kPasswordSavePrompt,
-                  _));
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
-  EXPECT_FALSE(is_password_saved());
-
-  // Simulate that the trusted vault key was successfully retrieved.
-  account_store_->ReturnErrorOnRequest(std::nullopt);
-  base::RunLoop run_loop;
-  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([&run_loop, this]() {
-    RecordPasswordSaved();
-    run_loop.Quit();
-  });
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
-      .WillOnce(Return(true));
-  account_store_->NotifyAboutError();
-  run_loop.Run();
-
-  ExpectConfirmationMessageDismissCall();
-  delegate()->DismissAllActiveUI();
+  EXPECT_TRUE(is_password_saved());
+  DismissAllActiveUI();
 }
 
 // Tests that the password is not saved if the delegate is cleared (e.g., due
@@ -1005,10 +991,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   delegate()->DismissAllActiveUI();
 }
 
-// Tests that the password is updated after the trusted vault key is retrieved
-// when the user accepts the password edit dialog.
+// Tests that when updating a password from dialog, even if a trusted vault
+// error is present, the password update proceeds directly without triggering
+// trusted vault unlock.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       DialogUpdateAfterTrustedVaultKeyRetrieval) {
+       DialogUpdateWithTrustedVaultErrorSavesDirectly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordSaveInContextErrorResolution);
@@ -1031,34 +1018,17 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   TriggerPasswordEditDialog(/*update_password=*/true);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*raw_form_manager, Save()).Times(0);
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  _,
-                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                      kPasswordSavePrompt,
-                  _));
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
 
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 
-  EXPECT_FALSE(is_password_saved());
-
-  // Simulate that the trusted vault key was successfully retrieved.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([&run_loop, this]() {
-    RecordPasswordSaved();
-    run_loop.Quit();
-  });
-  account_store_->ReturnErrorOnRequest(std::nullopt);
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
-      .WillOnce(Return(true));
-  account_store_->NotifyAboutError();
-  run_loop.Run();
-
-  ExpectConfirmationMessageDismissCall();
-  delegate()->DismissAllActiveUI();
+  EXPECT_TRUE(is_password_saved());
+  DismissAllActiveUI();
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the
@@ -1424,9 +1394,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_FALSE(is_password_saved());
 }
 
-// Tests that the password is not saved and trusted vault key retrieval flow
-// starts when trusted vault key is needed, but device lock is not, during
-// update password.
+// Tests that the password is saved directly and trusted vault key retrieval
+// flow is not started when trusted vault key is needed during update password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        UpdatePassword_TrustedVaultKeyNeeded_DeviceLockNotNeeded) {
   base::test::ScopedFeatureList feature_list;
@@ -1438,20 +1407,17 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EXPECT_CALL(*form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(),
-                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                      kPasswordSavePrompt,
-                  _));
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
 
   TriggerActionClick();
 
-  EXPECT_FALSE(is_password_saved());
+  EXPECT_TRUE(is_password_saved());
 }
 
 // Tests helper behaviour when device lock is set successfully, but a trusted
@@ -1496,8 +1462,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 }
 
 // Tests helper behaviour when device lock is set successfully, but a trusted
-// vault key is also needed during update password: device lock UI is shown and
-// trusted vault key retrieval flow is started.
+// vault key error is also present during update password: device lock UI is
+// shown, trusted vault key retrieval flow is not started, and password is
+// saved.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        UpdatePassword_DeviceLockAndTrustedVaultKeyNeeded_DeviceLockSet) {
   base::test::ScopedFeatureList feature_list;
@@ -1514,7 +1481,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EXPECT_CALL(*form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
@@ -1522,16 +1491,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
   EXPECT_FALSE(is_password_saved());
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(),
-                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                      kPasswordSavePrompt,
-                  _));
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
 
   test_device_lock_bridge()->SimulateDeviceLockComplete(true);
 
-  EXPECT_FALSE(is_password_saved());
+  EXPECT_TRUE(is_password_saved());
 }
 
 // Tests helper behaviour when device lock is not set, and a trusted vault
@@ -1578,8 +1542,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests helper behaviour when device lock is not set, and a trusted vault
 // key is also needed during update password: device lock UI is shown and
-// trusted vault key retrieval flow is not started because the device lock is
-// not set up.
+// trusted vault key retrieval flow is not started because it's a password
+// update flow. Saving does not occur because device lock setup was not
+// completed.
+
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        UpdatePassword_DeviceLockAndTrustedVaultKeyNeeded_DeviceLockNotSet) {
   base::test::ScopedFeatureList feature_list;
