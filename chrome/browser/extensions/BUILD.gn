@@ -2700,7 +2700,6 @@ source_set("browser_tests") {
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-      "//chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
       "//chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
       "ai_language_model_browsertest.cc",
       "alert_apitest.cc",
