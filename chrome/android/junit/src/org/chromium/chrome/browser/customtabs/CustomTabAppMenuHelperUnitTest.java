@@ -91,5 +91,9 @@ public class CustomTabAppMenuHelperUnitTest {
         assertFalse(
                 "AuthTab history menu not hidden! package-name: true first-run: true",
                 CustomTabAppMenuHelper.showHistoryItem(true, CustomTabsUiType.AUTH_TAB));
+        assertFalse(
+                "TWA history menu not hidden! package-name: true first-run: true",
+                CustomTabAppMenuHelper.showHistoryItem(
+                        true, CustomTabsUiType.TRUSTED_WEB_ACTIVITY));
     }
 }
