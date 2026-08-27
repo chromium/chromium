@@ -7,8 +7,6 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -86,8 +84,7 @@ void WebUIBrowserExclusiveAccessContext::UpdateExclusiveAccessBubble(
   bool should_close_bubble = false;
 #if BUILDFLAG(IS_CHROMEOS)
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
-  should_close_bubble = platform_util::IsBrowserLockedFullscreen(
-      browser_->GetBrowserForMigrationOnly());
+  should_close_bubble = platform_util::IsBrowserLockedFullscreen(browser_);
 #endif
   if (!params.has_download) {
     // ...TYPE_NONE indicates deleting the bubble, except when used with
@@ -165,8 +162,7 @@ bool WebUIBrowserExclusiveAccessContext::CanUserEnterFullscreen() const {
 
 bool WebUIBrowserExclusiveAccessContext::CanUserExitFullscreen() const {
 #if BUILDFLAG(IS_CHROMEOS)
-  return !platform_util::IsBrowserLockedFullscreen(
-      browser_->GetBrowserForMigrationOnly());
+  return !platform_util::IsBrowserLockedFullscreen(browser_);
 #else
   return true;
 #endif

@@ -6,8 +6,8 @@
 
 #include "base/apple/foundation_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/browsercrapplication+applescript.h"
@@ -25,18 +25,15 @@ using BrowserCrApplicationAppleScriptTest = InProcessBrowserTest;
 
 // Create windows of different |Type|.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
-  // Create additional |Browser*| objects of different type.
+  // Create additional |BrowserWindowInterface*| objects of different type.
   Profile* profile = browser()->GetProfile();
-  Browser* b1 =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP, profile,
-                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
-  Browser* b2 =
+  BrowserWindowInterface* b1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(BrowserWindowInterface::TYPE_POPUP, profile,
+                                /*from_user_gesture=*/true));
+  BrowserWindowInterface* b2 =
       CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                              "Test", /*trusted_source=*/true, gfx::Rect(),
-                              profile, /*user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+          "Test", /*trusted_source=*/true, gfx::Rect(), profile,
+          /*user_gesture=*/true));
 
   EXPECT_EQ(3U, [NSApp appleScriptWindows].count);
   for (WindowAppleScript* window in [NSApp appleScriptWindows]) {
@@ -45,8 +42,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
   }
 
   // Close the additional browsers.
-  b1->tab_strip_model()->CloseAllTabs();
-  b2->tab_strip_model()->CloseAllTabs();
+  b1->GetTabStripModel()->CloseAllTabs();
+  b2->GetTabStripModel()->CloseAllTabs();
 }
 
 // Insert a new window.

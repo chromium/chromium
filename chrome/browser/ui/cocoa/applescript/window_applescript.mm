@@ -13,10 +13,8 @@
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -33,6 +31,7 @@
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 
 @interface WindowAppleScript ()
 
@@ -98,10 +97,8 @@
       return nil;
     }
 
-    Browser* browser =
-        CreateBrowserWindow(
-            BrowserWindowCreateParams(aProfile, /*user_gesture=*/false))
-            ->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(aProfile, /*user_gesture=*/false));
     // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
     // for new tabs made with AppleScript requests.
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
@@ -253,7 +250,7 @@
   [aTab setContainer:self property:AppleScript::kTabsProperty];
 
   content::WebContents* contents = chrome::AddSelectedTabWithURL(
-      _browser->GetBrowserForMigrationOnly(), GURL(chrome::kChromeUINewTabURL),
+      _browser.get(), GURL(chrome::kChromeUINewTabURL),
       ui::PAGE_TRANSITION_TYPED);
   [aTab setWebContents:contents];
 }

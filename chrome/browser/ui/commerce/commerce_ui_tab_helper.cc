@@ -16,7 +16,6 @@
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
@@ -483,11 +482,7 @@ views::BubbleAnchor CommerceUiTabHelper::GetDiscountsBubbleAnchor() {
   BrowserWindowInterface* bwi = tab().GetBrowserWindowInterface();
   CHECK(bwi);
 
-  // TODO(https://crbug.com/425953501): Remove GetBrowserForMigrationOnly since
-  // Browser* will not be needed once ToolBarButtonProvider is migrated to
-  // BrowserWindowInterface.
-  auto* browser_view =
-      BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   if (!browser_view) {
     return views::BubbleAnchor();
   }

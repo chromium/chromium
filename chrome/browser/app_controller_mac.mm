@@ -74,12 +74,10 @@
 #include "chrome/browser/shortcuts/chrome_webloc_file.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_mac.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -139,6 +137,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/base/filename_util.h"
+#include "ui/base/base_window.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
 #import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1439,7 +1438,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         // If it is not possible to open a browser window for a profile, then
         // don't count that profile towards "downloads in progress".
         if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-            Browser::CreationStatus::kOk) {
+            BrowserWindowInterface::CreationStatus::kOk) {
           return true;
         }
 
@@ -2669,9 +2668,8 @@ void OpenStartupTabsInBrowserWithProfile(const StartupTabs& tabs,
       first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenTabsInBrowser(browser->GetBrowserForMigrationOnly(),
-                           chrome::startup::IsProcessStartup::kNo, tabs,
-                           StartupBrowserCreatorImpl::TabOverWrite::kNo);
+  launch.OpenTabsInBrowser(browser, chrome::startup::IsProcessStartup::kNo,
+                           tabs, StartupBrowserCreatorImpl::TabOverWrite::kNo);
 
   // This NTP check should be replaced once https://crbug.com/41261582 is fixed.
   if (startupIndex != TabStripModel::kNoTab &&
@@ -2710,7 +2708,7 @@ void OnProfileLoaded(base::OnceCallback<void(Profile*)> callback,
 
   // Shutdown may have started since this callback was scheduled.
   if (GetBrowserWindowCreationStatusForProfile(*safe_profile) !=
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     std::move(callback).Run(nullptr);
     return;
   }
