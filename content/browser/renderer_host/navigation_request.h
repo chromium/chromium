@@ -2261,6 +2261,13 @@ class CONTENT_EXPORT NavigationRequest
   // (possibly blocking it).
   void SetupConnectionAllowlistEmbeddedEnforcement();
 
+  // Records `feature` against the embedder, which is the document that asserted
+  // (or inherited) the Connection-Allowlist requirement. The framed document
+  // may be blocked and never commit, so the parent is the only frame reliably
+  // available to attribute usage to.
+  void LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+      blink::mojom::WebFeature feature);
+
   enum class ConnectionAllowlistEmbeddedEnforcementResult {
     ALLOW_RESPONSE,
     BLOCK_RESPONSE,

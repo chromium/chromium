@@ -5308,6 +5308,10 @@ enum WebFeature {
   kPopoverTypeHintShown = 5991,
   kPopoverTypeManualShown = 5992,
   kCSSAtPrivate = 5993,
+  kConnectionAllowlistEmbeddedEnforcement = 5994,
+  kConnectionAllowlistEmbeddedEnforcementAllowedByOptIn = 5995,
+  kConnectionAllowlistEmbeddedEnforcementAllowedByDeliveredAllowlist = 5996,
+  kConnectionAllowlistEmbeddedEnforcementBlocked = 5997,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -8359,6 +8359,12 @@ void NavigationRequest::SetupConnectionAllowlistEmbeddedEnforcement() {
   }
 }
 
+void NavigationRequest::LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+    blink::mojom::WebFeature feature) {
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(GetParentFrame(),
+                                                             feature);
+}
+
 NavigationRequest::ConnectionAllowlistEmbeddedEnforcementResult
 NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
   if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
@@ -8374,6 +8380,12 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
   if (!required_connection_allowlist_) {
     return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
+
+  // The embedder required a Connection-Allowlist of this frame. Recorded here
+  // rather than in Setup() so that it counts requirements that actually reach
+  // a response and produce one of the outcomes counted below.
+  LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+      blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcement);
 
   // Resolve the deferred `response-origin` token (which could not be resolved
   // in the renderer) against the framed document's origin. Local-scheme
@@ -8436,6 +8448,9 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
     if (!GetURL().SchemeIsLocal()) {
       enforce_required_connection_allowlist_ = true;
     }
+    LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+        blink::mojom::WebFeature::
+            kConnectionAllowlistEmbeddedEnforcementAllowedByOptIn);
     return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
@@ -8461,6 +8476,9 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
       response()->parsed_headers->connection_allowlists.enforced;
   if (delivered && network::ConnectionAllowlistSubsumes(
                        *required_connection_allowlist_, *delivered)) {
+    LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+        blink::mojom::WebFeature::
+            kConnectionAllowlistEmbeddedEnforcementAllowedByDeliveredAllowlist);
     return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
@@ -8468,6 +8486,10 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
       *this,
       devtools_instrumentation::ConnectionAllowlistEmbeddedEnforcementIssue::
           kEmbeddingRequirementNotSatisfied);
+
+  LogConnectionAllowlistEmbeddedEnforcementUseCounter(
+      blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcementBlocked);
+
   return ConnectionAllowlistEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
 

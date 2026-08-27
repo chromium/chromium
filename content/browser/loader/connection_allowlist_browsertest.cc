@@ -3629,6 +3629,30 @@ class ConnectionAllowlistEmbeddedEnforcementTest
         switches::kEnableBlinkFeatures,
         "ConnectionAllowlist,ConnectionAllowlistEmbeddedEnforcement");
   }
+
+ protected:
+  // Appends an iframe carrying `connectionallowlist` to the current document
+  // and waits for the framed document's navigation to finish. Returns whether
+  // that navigation committed, which is false when embedded enforcement blocks
+  // the response.
+  bool NavigateFramedDocument(std::string_view connectionallowlist,
+                              const GURL& child_url) {
+    TestNavigationManager manager(shell()->web_contents(), child_url);
+    if (!ExecJs(shell()->web_contents(),
+                JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', $1);
+        f.src = $2;
+        document.body.appendChild(f);
+      )",
+                          connectionallowlist, child_url))) {
+      return false;
+    }
+    if (!manager.WaitForNavigationFinished()) {
+      return false;
+    }
+    return manager.was_successful();
+  }
 };
 
 // The renderer parses the `connectionallowlist` attribute into a
@@ -6218,6 +6242,145 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, SandboxedIframeOpaqueOrigin) {
   EXPECT_EQ(monitor.WaitForRequestCompletion(denied_url).error_code,
             net::ERR_NETWORK_ACCESS_REVOKED);
   EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+}
+
+// Each embedded enforcement outcome is recorded against the embedder via a
+// UseCounter, so that origin trial usage can be monitored.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       UseCounterOptIn) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  RenderFrameHost* embedder = shell()->web_contents()->GetPrimaryMainFrame();
+  // Unrelated features may also be counted during the navigation.
+  EXPECT_CALL(*content_browser_client_,
+              LogWebFeatureForCurrentPage(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder,
+          blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcement));
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder, blink::mojom::WebFeature::
+                        kConnectionAllowlistEmbeddedEnforcementAllowedByOptIn));
+
+  EXPECT_TRUE(NavigateFramedDocument("(response-origin)", child_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       UseCounterDeliveredAllowlist) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse(
+      "/child.html",
+      ResponseEntry("<html><body>child</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  RenderFrameHost* embedder = shell()->web_contents()->GetPrimaryMainFrame();
+  // Unrelated features may also be counted during the navigation.
+  EXPECT_CALL(*content_browser_client_,
+              LogWebFeatureForCurrentPage(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder,
+          blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcement));
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder,
+          blink::mojom::WebFeature::
+              kConnectionAllowlistEmbeddedEnforcementAllowedByDeliveredAllowlist));
+
+  EXPECT_TRUE(NavigateFramedDocument("(response-origin)", child_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       UseCounterBlocked) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  RenderFrameHost* embedder = shell()->web_contents()->GetPrimaryMainFrame();
+  // The blocked frame commits an error page, which counts unrelated features.
+  EXPECT_CALL(*content_browser_client_,
+              LogWebFeatureForCurrentPage(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder,
+          blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcement));
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          embedder, blink::mojom::WebFeature::
+                        kConnectionAllowlistEmbeddedEnforcementBlocked));
+
+  EXPECT_FALSE(NavigateFramedDocument("(response-origin)", child_url));
+}
+
+// A frame with no embedder requirement records no embedded enforcement
+// UseCounter.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       UseCounterNotRecordedWithoutRequirement) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  // Unrelated features may also be counted during the navigation.
+  EXPECT_CALL(*content_browser_client_,
+              LogWebFeatureForCurrentPage(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          testing::_,
+          blink::mojom::WebFeature::kConnectionAllowlistEmbeddedEnforcement))
+      .Times(0);
+
+  TestNavigationManager manager(shell()->web_contents(), child_url);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                                        child_url)));
+  EXPECT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_TRUE(manager.was_successful());
 }
 
 }  // namespace
