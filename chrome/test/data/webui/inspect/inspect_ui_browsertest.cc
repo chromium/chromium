@@ -250,4 +250,36 @@ IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest,
   EXPECT_FALSE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
 }
 
+IN_PROC_BROWSER_TEST_F(InspectUIRemoteDebuggingTest, DynamicPolicyChange) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  // 1. Start with remote debugging allowed and enabled.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingEnabled, true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  ASSERT_TRUE(RunTestCase("Empty"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "assertRemoteDebuggingCheckbox(true, false);"));
+
+  // 2. Dynamically change policy to disallowed without re-navigating.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, false);
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "assertRemoteDebuggingCheckbox(false, true);"));
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kDevToolsRemoteDebuggingEnabled));
+
+  // 3. Dynamically change policy back to allowed without re-navigating.
+  // The UI should show AllowedAndDisabled because the enabled pref was cleared.
+  local_state->SetBoolean(prefs::kDevToolsRemoteDebuggingAllowed, true);
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "assertRemoteDebuggingCheckbox(false, false);"));
+}
+
 }  // namespace

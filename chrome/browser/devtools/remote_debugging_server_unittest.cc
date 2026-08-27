@@ -92,6 +92,27 @@ TEST_F(RemoteDebuggingServerTest, StartsAndStopsWithPref) {
   testing::Mock::VerifyAndClearExpectations(server.get());
 }
 
+TEST_F(RemoteDebuggingServerTest, DoesNotStartWhenPolicyAllowedDynamically) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  auto server = std::make_unique<NiceMock<MockRemoteDebuggingServer>>();
+
+  // Start with policy disallowed, but user pref enabled.
+  local_state->SetManagedPref(prefs::kDevToolsRemoteDebuggingAllowed,
+                              std::make_unique<base::Value>(false));
+  local_state->SetUserPref(prefs::kDevToolsRemoteDebuggingEnabled,
+                           std::make_unique<base::Value>(true));
+
+  EXPECT_CALL(*server, StartHttpServer).Times(0);
+  server->StartHttpServerInApprovalModeIfEnabled(local_state);
+
+  // Policy dynamically changes to allowed.
+  // The server should NOT automatically start.
+  local_state->SetManagedPref(prefs::kDevToolsRemoteDebuggingAllowed,
+                              std::make_unique<base::Value>(true));
+  testing::Mock::VerifyAndClearExpectations(server.get());
+}
+
 TEST_F(RemoteDebuggingServerTest, DoesNotStartWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(

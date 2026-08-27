@@ -807,6 +807,18 @@ void InspectUI::StartListeningNotifications() {
       prefs::kDevToolsTCPDiscoveryConfig,
       base::BindRepeating(&InspectUI::UpdateTCPDiscoveryConfig,
                           base::Unretained(this)));
+
+  if (g_browser_process && g_browser_process->local_state()) {
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        prefs::kDevToolsRemoteDebuggingAllowed,
+        base::BindRepeating(&InspectUI::UpdateRemoteDebuggingEnabled,
+                            base::Unretained(this)));
+    local_state_pref_change_registrar_.Add(
+        prefs::kDevToolsRemoteDebuggingEnabled,
+        base::BindRepeating(&InspectUI::UpdateRemoteDebuggingEnabled,
+                            base::Unretained(this)));
+  }
 }
 
 void InspectUI::StopListeningNotifications() {
@@ -819,6 +831,7 @@ void InspectUI::StopListeningNotifications() {
   port_status_serializer_.reset();
 
   pref_change_registrar_.RemoveAll();
+  local_state_pref_change_registrar_.RemoveAll();
 }
 
 void InspectUI::UpdateDiscoverUsbDevicesEnabled() {

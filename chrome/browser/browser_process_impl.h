@@ -301,6 +301,10 @@ class BrowserProcessImpl : public BrowserProcess,
       base::expected<chrome::IsolationState, HRESULT> result);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+  void OnDevToolsRemoteDebuggingAllowedChanged();
+#endif
+
   // Methods called to control our lifetime. The browser process can be "pinned"
   // to make sure it keeps running.
   void Pin();

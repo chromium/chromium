@@ -88,9 +88,32 @@ suite('InspectUITest', function() {
         '#remote-debugging-enabled', 'updateRemoteDebuggingEnabled');
     assertEquals(1, elements.length);
     const checkbox = elements[0] as HTMLInputElement;
+    if (checkbox.checked !== expectedChecked ||
+        checkbox.disabled !== expectedDisabled) {
+      await new Promise<void>(resolve => {
+        const windowObj = window as unknown as {[key: string]: Function};
+        const original = windowObj['updateRemoteDebuggingEnabled']!;
+        assertTrue(!!original);
+        const intercept = function() {
+          original.apply(window, arguments);
+          if (checkbox.checked === expectedChecked &&
+              checkbox.disabled === expectedDisabled) {
+            windowObj['updateRemoteDebuggingEnabled'] = original;
+            resolve();
+          }
+        };
+        windowObj['updateRemoteDebuggingEnabled'] = intercept;
+      });
+    }
     assertEquals(expectedChecked, checkbox.checked);
     assertEquals(expectedDisabled, checkbox.disabled);
+    return true;
   }
+
+  // Export helper functions on window so browser tests can invoke them
+  // directly.
+  Object.assign(
+      window, {assertNativeUIButtonDisabled, assertRemoteDebuggingCheckbox});
 
   async function assertServerAddress(
       expectAddress: boolean, expectedText?: string) {

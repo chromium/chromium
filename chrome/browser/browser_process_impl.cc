@@ -493,6 +493,14 @@ void BrowserProcessImpl::Init() {
       metrics::prefs::kMetricsReportingEnabled,
       base::BindRepeating(&metrics::ApplyMetricsReportingPolicy));
 
+#if !BUILDFLAG(IS_ANDROID)
+  pref_change_registrar_.Add(
+      prefs::kDevToolsRemoteDebuggingAllowed,
+      base::BindRepeating(
+          &BrowserProcessImpl::OnDevToolsRemoteDebuggingAllowedChanged,
+          base::Unretained(this)));
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // If the user pref on disk differs from the actual trusted state, it means
   // either the registry was modified out-of-band, or the untrusted JSON was
@@ -1089,21 +1097,42 @@ void BrowserProcessImpl::CreateDevToolsProtocolHandler() {
     case RemoteDebuggingServer::NotStartedReason::kNotRequested:
       break;
     case RemoteDebuggingServer::NotStartedReason::kDisabledByPolicy:
-      UNSAFE_TODO(fputs(
-          "\nDevTools remote debugging is disallowed by the system admin.\n",
-          stderr));
+      fprintf(
+          stderr, "%s",
+          "\nDevTools remote debugging is disallowed by the system admin.\n");
       fflush(stderr);
       break;
     case RemoteDebuggingServer::NotStartedReason::kDisabledByDefaultUserDataDir:
-      UNSAFE_TODO(fputs(
+      fprintf(
+          stderr, "%s",
           "\nDevTools remote debugging requires a non-default data directory. "
-          "Specify this using --user-data-dir.\n",
-          stderr));
+          "Specify this using --user-data-dir.\n");
       fflush(stderr);
       break;
   }
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void BrowserProcessImpl::OnDevToolsRemoteDebuggingAllowedChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // On policy change to disallowed, immediately shut down the server cancelling
+  // all active debugging sessions, while keeping listeners alive. Also clear
+  // the user preference so that when the policy is dynamically allowed again,
+  // the UI reflects the disabled state and an explicit user action is required
+  // to restart.
+  if (!local_state()->GetBoolean(prefs::kDevToolsRemoteDebuggingAllowed)) {
+    local_state()->ClearPref(prefs::kDevToolsRemoteDebuggingEnabled);
+    if (remote_debugging_server_) {
+      remote_debugging_server_->StopServer();
+      fprintf(
+          stderr, "%s",
+          "\nDevTools remote debugging is disallowed by the system admin.\n");
+      fflush(stderr);
+    }
+  }
+}
+#endif
 
 void BrowserProcessImpl::CreateDevToolsAutoOpener() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

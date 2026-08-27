@@ -8,7 +8,7 @@ desc: |-
         If this policy is set to Disabled, users are not allowed to use remote debugging.
 example_value: true
 features:
-  dynamic_refresh: false
+  dynamic_refresh: true
   per_profile: false
 future_on:
 - fuchsia
