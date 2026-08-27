@@ -137,7 +137,7 @@ def convert(
         unit = 'unitless_biggerIsBetter'
 
     if metric:
-      story_name = value.get('cb_story', 'Default')
+      story_name = value.get('cb_story') or story or 'Default'
       data_point = histogram.Histogram.Create(metric, unit, value['values'])
       data_point.diagnostics[reserved_infos.STORIES.name] = (
           generic_set.GenericSet([story_name]))
@@ -146,10 +146,6 @@ def convert(
   if benchmark:
     results.AddSharedDiagnosticToAllHistograms(
       reserved_infos.BENCHMARKS.name, generic_set.GenericSet([benchmark])
-    )
-  if story:
-    results.AddSharedDiagnosticToAllHistograms(
-      reserved_infos.STORIES.name, generic_set.GenericSet([story])
     )
   if results_label:
     results.AddSharedDiagnosticToAllHistograms(
