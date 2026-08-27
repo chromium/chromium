@@ -47,6 +47,10 @@ void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
   LOG_POLICY(INFO, POLICY_FETCHING) << "Element added: " << message;
 }
 
+size_t GetLogCount(PolicyLogger* logger) {
+  return logger->GetAsList().size();
+}
+
 }  // namespace
 
 class PolicyLoggerTest : public PlatformTest {
@@ -83,11 +87,11 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
 #endif
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
-  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t log_count_before_adding = GetLogCount(policy_logger);
   AddLogs("when the feature is enabled.", policy_logger);
 
-  EXPECT_EQ(policy_logger->GetAsList().size(), logs_size_before_adding + 1);
-  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding]
+  EXPECT_EQ(GetLogCount(policy_logger), log_count_before_adding + 1);
+  EXPECT_EQ(*(policy_logger->GetAsList()[log_count_before_adding]
                   .GetDict()
                   .FindString("message")),
             "Element added: when the feature is enabled.");
@@ -102,7 +106,7 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
 #endif
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
   policy_logger->EnableLogDeletion();
-  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t log_count_before_adding = GetLogCount(policy_logger);
 
   AddLogs("First log at t=0.", policy_logger);
   AddLogs("Second log at t=0+delta.", policy_logger);
@@ -115,8 +119,8 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   // deleted and that the one that did not expire is still in the list.
   task_environment_.FastForwardBy(first_time_elapsed);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(1));
-  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding]
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(1));
+  EXPECT_EQ(*(policy_logger->GetAsList()[log_count_before_adding]
                   .GetDict()
                   .FindString("message")),
             "Element added: Third log at t=TimeToLive/2.");
@@ -125,12 +129,12 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   // that a second deleting task was scheduled after deleting the old ones.
   task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(0));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(0));
 }
 
-// Checks that the first log  added is deleted when `PolicyLogger::kMaxLogSize`
+// Checks that the first log added is deleted when `PolicyLogger::kMaxLogCount`
 // is exceeded.
-TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
+TEST_F(PolicyLoggerTest, MaxCountExceededDeletesOldestLog) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!PolicyLogger::IsPolicyLoggingEnabled()) {
     GTEST_SKIP() << "Policy logging is disabled on ChromeOS stable";
@@ -140,25 +144,23 @@ TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
 
   AddLogs("First log that will be removed.", policy_logger);
 
-  // Adds kMaxLogsSize` - 1 more elements until `kMaxLogsSize` is reached.
-  for (int i = 0; i < static_cast<int>(policy::PolicyLogger::kMaxLogsSize) - 1;
-       i++) {
+  // Adds `kMaxLogCount` - 1 more elements until `kMaxLogCount` is reached.
+  for (size_t i = 0; i < policy::PolicyLogger::kMaxLogCount - 1; i++) {
     AddLogs(base::NumberToString(i + 1), policy_logger);
   }
-  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
-            policy::PolicyLogger::kMaxLogsSize);
+  EXPECT_EQ(GetLogCount(policy_logger), policy::PolicyLogger::kMaxLogCount);
 
   AddLogs("Last log added and size is exceeded.", policy_logger);
 
-  size_t current_size = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t current_count = GetLogCount(policy_logger);
   base::ListValue current_logs = policy_logger->GetAsList();
 
-  EXPECT_EQ(current_size, policy::PolicyLogger::kMaxLogsSize);
+  EXPECT_EQ(current_count, policy::PolicyLogger::kMaxLogCount);
 
   EXPECT_EQ(*(current_logs[0].GetDict().FindString("message")),
             "Element added: 1");
 
-  EXPECT_EQ(*(current_logs[current_size - 1].GetDict().FindString("message")),
+  EXPECT_EQ(*(current_logs[current_count - 1].GetDict().FindString("message")),
             "Element added: Last log added and size is exceeded.");
 }
 
@@ -183,7 +185,7 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreaded) {
 #endif
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
   policy_logger->EnableLogDeletion();
-  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  size_t log_count_before_adding = GetLogCount(policy_logger);
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&AddLogs, "First log at t=0.", policy_logger));
@@ -192,7 +194,7 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreaded) {
       base::BindOnce(&AddLogs, "Second log at t=0+delta.", policy_logger));
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(2));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(2));
 
   base::TimeDelta first_time_elapsed = policy::PolicyLogger::kTimeToLive / 2;
   task_environment_.FastForwardBy(first_time_elapsed + base::Minutes(1));
@@ -204,8 +206,8 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreaded) {
   // deleted and that the one that did not expire is still in the list.
   task_environment_.FastForwardBy(first_time_elapsed);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(1));
-  EXPECT_EQ(*(policy_logger->GetAsList()[logs_size_before_adding]
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(1));
+  EXPECT_EQ(*(policy_logger->GetAsList()[log_count_before_adding]
                   .GetDict()
                   .FindString("message")),
             "Element added: Third log at t=TimeToLive/2.");
@@ -214,7 +216,7 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreaded) {
   // that a second deleting task was scheduled after deleting the old ones.
   task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(0));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(0));
 }
 
 // Checks that the deletion of expired logs works does not happen when no
@@ -237,7 +239,7 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreadedNoSequencedTaskRunner) {
       base::BindOnce(&AddLogs, "Second log at t=0+delta.", policy_logger));
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(2));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(2));
 
   base::TimeDelta first_time_elapsed = policy::PolicyLogger::kTimeToLive / 2;
   task_environment_.FastForwardBy(first_time_elapsed + base::Minutes(1));
@@ -251,12 +253,12 @@ TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreadedNoSequencedTaskRunner) {
   // not deleted.
   task_environment_.FastForwardBy(first_time_elapsed);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(3));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(3));
 
   // Check that the last log no logs were deleted after `kTimeToLive` minutes.
   task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(policy_logger->GetAsList().size(), size_t(3));
+  EXPECT_EQ(GetLogCount(policy_logger), size_t(3));
 }
 
 }  // namespace policy

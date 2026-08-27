@@ -259,9 +259,9 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   {
     base::AutoLock lock(lock_);
 
-    // The logs deque size should not exceed `kMaxLogsSize`. Remove the first
+    // The logs deque size should not exceed `kMaxLogCount`. Remove the first
     // log if the size is reached before adding the new log.
-    if (logs_.size() == kMaxLogsSize) {
+    if (logs_.size() == kMaxLogCount) {
       logs_.pop_front();
     }
 
@@ -334,12 +334,6 @@ void PolicyLogger::RecordPerformanceMetrics() {
                              memory_usage);
   base::UmaHistogramCounts10000("Enterprise.PolicyLogger.LogCount.Uncompressed",
                                 log_count);
-}
-
-size_t PolicyLogger::GetPolicyLogsSizeForTesting() {
-  CHECK_IS_TEST();
-  base::AutoLock lock(lock_);
-  return logs_.size();
 }
 
 void PolicyLogger::ResetLoggerForTesting() {

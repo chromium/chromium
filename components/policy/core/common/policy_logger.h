@@ -160,7 +160,7 @@ class POLICY_EXPORT PolicyLogger {
   };
 
   static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
-  static constexpr size_t kMaxLogsSize = 200;
+  static constexpr size_t kMaxLogCount = 200;
 
   static PolicyLogger* GetInstance();
 
@@ -182,9 +182,6 @@ class POLICY_EXPORT PolicyLogger {
 
   // Records memory usage and log count UMA metrics.
   void RecordPerformanceMetrics();
-
-  // Returns the logs size for testing purposes.
-  size_t GetPolicyLogsSizeForTesting();
 
   // Clears `logs_` and sets `is_log_deletion_scheduled_` as cleanup after every
   // test.
