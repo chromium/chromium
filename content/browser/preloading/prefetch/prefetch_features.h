@@ -151,6 +151,12 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncPrefetchHandleCallback);
 // See crbug.com/404416345 to track this issue.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMatchResolverUnblockAsync);
 
+// Kill switch for a couple of changes to the "Accept" request header for
+// prefetch requests: when enabled,
+// - SXG is removed from the "Accept" request header value.
+// - "Accept" request header is added on non-UI thread.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRevampAcceptHeader);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

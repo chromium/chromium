@@ -415,6 +415,24 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase1(
   AddSpeculationTagsHeader(headers_update_params.modified_headers,
                            request_url_origin, prefetch_request);
 
+  // ------------------------------------------------------------------------
+  // [2] `Accept`:
+  if (base::FeatureList::IsEnabled(features::kPrefetchRevampAcceptHeader)) {
+    // When `kPrefetchRevampAcceptHeader` is enabled, `allow_sxg_responses`
+    // is set to false because the prefetch cache doesn't recognize SXG
+    // responses, and therefore `Accept` header value can be different between
+    // prefetch and would-be navigation.
+    // Also the "Accept" header is added in Phase1 which is executed in a non-UI
+    // thread for OMT Prefetch.
+    //
+    // `browser_context` is set to null because this can run on non-UI threads,
+    // and `browser_context` isn't needed when `allow_sxg_responses` is false.
+    headers_update_params.modified_headers.SetHeader(
+        net::HttpRequestHeaders::kAccept,
+        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false,
+                               /*browser_context=*/nullptr));
+  }
+
   return headers_update_params;
 }
 
@@ -429,11 +447,16 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
   url::Origin request_url_origin = url::Origin::Create(request_url);
 
   // [2] `Accept`:
-  CHECK(prefetch_request.browser_context());
-  headers_update_params.modified_headers.SetHeader(
-      net::HttpRequestHeaders::kAccept,
-      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
-                             prefetch_request.browser_context()));
+  if (!base::FeatureList::IsEnabled(features::kPrefetchRevampAcceptHeader)) {
+    // When `kPrefetchRevampAcceptHeader` is disabled, "Accept" header is added
+    // in Phase2 and `allow_sxg_responses` is set to true to keep the existing
+    // behavior.
+    CHECK(prefetch_request.browser_context());
+    headers_update_params.modified_headers.SetHeader(
+        net::HttpRequestHeaders::kAccept,
+        FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
+                               prefetch_request.browser_context()));
+  }
 
   // ------------------------------------------------------------------------
   // [2] `X-Client-Data`:

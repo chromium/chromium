@@ -942,7 +942,7 @@ void VerifyCommonRequestState(const GURL& url,
 
   EXPECT_EQ(request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
             std::optional<std::string>(FrameAcceptHeaderValue(
-                /*allow_sxg_responses=*/true, browser_context)));
+                /*allow_sxg_responses=*/false, browser_context)));
 
   EXPECT_EQ(request.headers.GetHeader("Upgrade-Insecure-Requests"),
             std::optional<std::string>("1"));

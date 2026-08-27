@@ -16,6 +16,11 @@ class BrowserContext;
 // Includes signed exchange and image decoder information (when applicable) that
 // are not available from the network service. This may also accept signed
 // exchange responses when |allow_sxg_responses| is true.
+//
+// - When `allow_sxg_responses` is true, this must run on the UI thread.
+// - When `allow_sxg_responses` is false, this can run on any thread, and
+//   `browser_context` is not used. Namely, this is used for off-the-main-thread
+//   prefetch.
 CONTENT_EXPORT std::string FrameAcceptHeaderValue(
     bool allow_sxg_responses,
     BrowserContext* browser_context);
