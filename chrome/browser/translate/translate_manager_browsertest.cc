@@ -404,7 +404,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 
   virtual void InitFeatures() {
     scoped_feature_list_.InitWithFeatures(
-        {toast_features::kTranslateToast, features::kImmersiveReadAnything},
+        {toast_features::kTranslateToast, features::kReadAnythingImprovedUi},
         {});
   }
 
