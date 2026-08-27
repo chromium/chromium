@@ -2699,11 +2699,12 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 StoragePartitionImpl::CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
     const network::OriginatingProcessId& process_id,
-    const url::Origin& worker_origin) {
+    const url::Origin& worker_origin,
+    const std::optional<blink::StorageKey>& storage_key) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      URLLoaderNetworkContext(process_id, worker_origin));
+      URLLoaderNetworkContext(process_id, worker_origin, storage_key));
   return remote;
 }
 
@@ -3815,8 +3816,19 @@ std::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
     return std::nullopt;
   }
 
-  NavigationOrDocumentHandle* handle =
-      url_loader_network_observers_.current_context().navigation_or_document();
+  const URLLoaderNetworkContext& context =
+      url_loader_network_observers_.current_context();
+  if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
+    if (context.storage_key().has_value()) {
+      if (nonce) {
+        return blink::StorageKey::CreateWithNonce(origin, *nonce);
+      }
+      return context.storage_key()->WithOrigin(origin);
+    }
+    return std::nullopt;
+  }
+
+  NavigationOrDocumentHandle* handle = context.navigation_or_document();
   if (!handle) {
     return std::nullopt;
   }
@@ -3924,10 +3936,12 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     const network::OriginatingProcessId& process_id,
-    const url::Origin& worker_origin)
+    const url::Origin& worker_origin,
+    const std::optional<blink::StorageKey>& storage_key)
     : type_(Type::kSharedOrServiceWorkerContext),
       process_id_(process_id),
-      worker_origin_(worker_origin) {}
+      worker_origin_(worker_origin),
+      storage_key_(storage_key) {}
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     const URLLoaderNetworkContext& other) = default;

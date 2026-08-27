@@ -552,7 +552,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           GetStoragePartitionImpl()
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
                   ToOriginatingProcessId(GetProcessHost()->GetID()),
-                  origin_lock),
+                  origin_lock, GetWorkerStorageKey()),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_), network_restrictions_id_,
           /*debug_tag=*/
