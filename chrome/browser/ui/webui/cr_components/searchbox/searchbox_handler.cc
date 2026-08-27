@@ -1258,6 +1258,7 @@ void SearchboxHandler::QueryAutocomplete(
       input_with_keyword, cursor_position, page_classification,
       ChromeAutocompleteSchemeClassifier(profile_));
   autocomplete_input.set_current_url(client()->GetURL());
+  autocomplete_input.set_current_title(client()->GetTitle());
   autocomplete_input.set_focus_type(
       is_on_focus ? metrics::OmniboxFocusType::INTERACTION_FOCUS
                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
