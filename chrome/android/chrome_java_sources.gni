@@ -74,6 +74,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/actor/ActorTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/actor/BackgroundTabPool.java",
   "java/src/org/chromium/chrome/browser/actor/BackgroundTabPoolManager.java",
+  "java/src/org/chromium/chrome/browser/actor/BackgroundTabRestorationHelper.java",
   "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
   "java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java",

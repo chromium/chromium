@@ -175,6 +175,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/BackgroundTabDataStoreTest.java",
     "java/src/org/chromium/chrome/browser/actor/BackgroundTabPoolManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/BackgroundTabPoolTest.java",
+    "java/src/org/chromium/chrome/browser/actor/BackgroundTabRestorationHelperTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorNavigationConfirmationDialogTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
