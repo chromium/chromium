@@ -933,6 +933,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.iOS.VisualClassificationEarlyReturnReason"
+    enum="SBClientPhishingVisualClassificationEarlyReturnReason"
+    expires_after="2027-03-12">
+  <owner>jdh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the reason why visual phishing classification returned early on iOS
+    before ML scoring could complete, such as a missing scorer or snapshot
+    generation failure.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.IsErrorDocumentOnSupportedMimeType"
     enum="Boolean" expires_after="2027-01-02">
   <owner>nwokedi@chromium.org</owner>

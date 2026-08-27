@@ -15,12 +15,15 @@
 #import "base/timer/timer.h"
 #import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/web_state_observer.h"
 #import "net/http/http_status_code.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 class PrefService;
+@class UIImage;
 
 namespace history {
 class HistoryService;
@@ -39,6 +42,20 @@ namespace safe_browsing {
 class ClientSideDetectionService;
 class ClientSideDetectionHostIOSTest;
 class VerdictCacheManager;
+
+// Reasons why visual classification returned early on iOS.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(VisualClassificationEarlyReturnReason)
+enum class VisualClassificationEarlyReturnReason {
+  kScorerMissingBeforeSnapshot = 0,
+  kSnapshotHelperMissing = 1,
+  kSnapshotFailed = 2,
+  kScorerMissingAfterSnapshot = 3,
+  kMaxValue = kScorerMissingAfterSnapshot,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingVisualClassificationEarlyReturnReason)
 
 // Host that manages client-side phishing detection for a WebState.
 class ClientSideDetectionHostIOS
@@ -104,6 +121,17 @@ class ClientSideDetectionHostIOS
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Simulates visual classification completion for testing by bypassing UI
+  // snapshotting and asynchronous ML inference (`PhishingClassifier`).
+  // Synthesizes the provided `visual_scores` into a `ClientPhishingRequest`
+  // verdict and feeds it directly into `OnClassificationDone()`. Does not
+  // mutate `last_request_type()`, so tests should set the expected trigger type
+  // (via `MaybeStartPreClassification()` or `set_last_request_type()`) prior to
+  // calling this method.
+  void OnVisualClassificationDoneForTesting(
+      const GURL& url,
+      const std::vector<double>& visual_scores);
+
  private:
   friend class ClientSideDetectionHostIOSTest;
 
@@ -154,6 +182,23 @@ class ClientSideDetectionHostIOS
   // trigger sampling rate.
   bool ShouldStopAtPreClassification();
 
+  // Handles visual classification early returns by resetting CSD running state
+  // and recording the early return reason histogram.
+  void HandleVisualClassificationEarlyReturn(
+      VisualClassificationEarlyReturnReason reason);
+
+  // Callback invoked when `SnapshotTabHelper` produces a snapshot of the page.
+  void OnSnapshotReceived(const GURL& url, UIImage* ui_image);
+
+  // Callback invoked when `PhishingClassifier` completes visual phishing
+  // classification.
+  void OnClassificationDone(const GURL& url,
+                            const gfx::Image& image,
+                            ClientSideDetectionType request_type,
+                            base::TimeTicks classification_start_time,
+                            const ClientPhishingRequest& verdict,
+                            PhishingClassifier::Result result);
+
   // Associated WebState.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
@@ -162,6 +207,12 @@ class ClientSideDetectionHostIOS
 
   // Reference to the identity manager.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  std::unique_ptr<PhishingClassifier> classifier_;
+
+  // Cached page snapshot image associated with active visual classification.
+  // Retained on classification success for downstream visual image embedding.
+  gfx::Image classification_image_;
 
   bool is_preclassifying_ = false;
   bool is_page_loaded_ = false;

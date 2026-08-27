@@ -76,6 +76,28 @@ ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
   }
 }
 
+PhishingDetectorResult GetPhishingDetectorResult(
+    PhishingClassifier::Result result) {
+  switch (result) {
+    case PhishingClassifier::Result::kSuccess:
+      return PhishingDetectorResult::CLASSIFICATION_SUCCESS;
+    case PhishingClassifier::Result::kInvalidScore:
+      return PhishingDetectorResult::INVALID_SCORE;
+    case PhishingClassifier::Result::kInvalidURLFormatRequest:
+      return PhishingDetectorResult::INVALID_URL_FORMAT_REQUEST;
+    case PhishingClassifier::Result::kInvalidDocumentLoader:
+      return PhishingDetectorResult::INVALID_DOCUMENT_LOADER;
+    case PhishingClassifier::Result::kURLFeatureExtractionFailed:
+      return PhishingDetectorResult::URL_FEATURE_EXTRACTION_FAILED;
+    case PhishingClassifier::Result::kDOMExtractionFailed:
+      return PhishingDetectorResult::DOM_EXTRACTION_FAILED;
+    case PhishingClassifier::Result::kTermExtractionFailed:
+      return PhishingDetectorResult::TERM_EXTRACTION_FAILED;
+    case PhishingClassifier::Result::kVisualExtractionFailed:
+      return PhishingDetectorResult::VISUAL_EXTRACTION_FAILED;
+  }
+}
+
 }  // namespace
 
 #pragma mark - Public
@@ -103,6 +125,7 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
       identity_manager_(identity_manager) {
   CHECK(web_state_);
   web_state_->AddObserver(this);
+  classifier_ = std::make_unique<PhishingClassifier>();
 }
 
 ClientSideDetectionHostIOS::~ClientSideDetectionHostIOS() {
@@ -162,7 +185,9 @@ void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
 
 void ClientSideDetectionHostIOS::ClassifyPhishingThroughThresholds(
     ClientPhishingRequest* verdict) {
-  // TODO(crbug.com/502615476): Implement threshold scoring.
+  if (service_) {
+    service_->ClassifyPhishingThroughThresholds(verdict);
+  }
 }
 
 void ClientSideDetectionHostIOS::MaybeStartImageEmbedding(
@@ -235,9 +260,13 @@ void ClientSideDetectionHostIOS::MaybeStartPreClassification(
 
 void ClientSideDetectionHostIOS::CancelPendingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  if (classifier_ && classifier_->is_ready()) {
+    classifier_->CancelPendingClassification();
+  }
   is_preclassifying_ = false;
   set_is_classifying(false);
   set_is_csd_running(false);
+  classification_image_ = gfx::Image();
   ClientSideDetectionHostBase::CancelPendingRequests();
 }
 
@@ -292,6 +321,7 @@ void ClientSideDetectionHostIOS::DidFinishNavigation(
     set_should_send_as_force_request(false);
     set_trigger_model_request_sent_as_force_request(false);
     clear_clipboard_extracted_data();
+    classification_image_ = gfx::Image();
 
     MaybeRunUserReportCallback();
 
@@ -322,6 +352,36 @@ void ClientSideDetectionHostIOS::WebStateDestroyed(web::WebState* web_state) {
   stabilization_timer_.Stop();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+#pragma mark - Testing
+
+void ClientSideDetectionHostIOS::
+    OnVisualClassificationDoneForTesting(  // IN-TEST
+        const GURL& url,
+        const std::vector<double>& visual_scores) {
+  set_current_url(url);
+  ClientPhishingRequest verdict;
+  verdict.set_url(url.spec());
+  verdict.set_client_score(0.0);
+  verdict.set_is_phishing(false);
+
+  Scorer* scorer = service_ ? service_->GetScorer() : nullptr;
+
+  for (size_t i = 0; i < visual_scores.size(); i++) {
+    ClientPhishingRequest::CategoryScore* category =
+        verdict.add_tflite_model_scores();
+    if (scorer && i < static_cast<size_t>(scorer->tflite_thresholds().size())) {
+      category->set_label(scorer->tflite_thresholds().at(i).label());
+    } else {
+      category->set_label("dummy_label");
+    }
+    category->set_value(visual_scores[i]);
+  }
+
+  OnClassificationDone(url, gfx::Image(), last_request_type(),
+                       /*classification_start_time=*/tick_clock()->NowTicks(),
+                       verdict, PhishingClassifier::Result::kSuccess);
 }
 
 #pragma mark - WebPerformanceMetricsTabHelper::Observer
@@ -637,7 +697,7 @@ void ClientSideDetectionHostIOS::ContinueClassificationAfterAllowlistChecks(
     return;
   }
 
-  if (last_request_type() != ClientSideDetectionType::USER_REPORT &&
+  if (last_request_type() != ClientSideDetectionType::USER_REPORT && service_ &&
       service_->AtPhishingReportLimit()) {
     base::UmaHistogramExactLinear("SBClientPhishing.RequestTypeAtReportLimit",
                                   last_request_type(),
@@ -653,8 +713,24 @@ void ClientSideDetectionHostIOS::ContinueClassificationAfterAllowlistChecks(
 
   set_is_csd_running(true);
 
-  // TODO(crbug.com/502615476): Trigger a snapshot and the visual classification
-  // logic once implemented.
+  if (!service_->GetScorer()) {
+    HandleVisualClassificationEarlyReturn(
+        VisualClassificationEarlyReturnReason::kScorerMissingBeforeSnapshot);
+    return;
+  }
+
+  SnapshotTabHelper* snapshot_helper =
+      SnapshotTabHelper::FromWebState(web_state_);
+  if (!snapshot_helper) {
+    HandleVisualClassificationEarlyReturn(
+        VisualClassificationEarlyReturnReason::kSnapshotHelperMissing);
+    return;
+  }
+
+  snapshot_helper->GenerateSnapshotWithoutOverlaysWithCallback(
+      base::CallbackToBlock(
+          base::BindOnce(&ClientSideDetectionHostIOS::OnSnapshotReceived,
+                         weak_ptr_factory_.GetWeakPtr(), url)));
 }
 
 bool ClientSideDetectionHostIOS::ShouldStopAtPreClassification() {
@@ -672,6 +748,70 @@ bool ClientSideDetectionHostIOS::ShouldStopAtPreClassification() {
       break;
   }
   return false;
+}
+
+void ClientSideDetectionHostIOS::HandleVisualClassificationEarlyReturn(
+    VisualClassificationEarlyReturnReason reason) {
+  set_is_csd_running(false);
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.iOS.VisualClassificationEarlyReturnReason", reason);
+}
+
+void ClientSideDetectionHostIOS::OnSnapshotReceived(const GURL& url,
+                                                    UIImage* ui_image) {
+  if (!ui_image) {
+    HandleVisualClassificationEarlyReturn(
+        VisualClassificationEarlyReturnReason::kSnapshotFailed);
+    return;
+  }
+
+  if (!service_->GetScorer()) {
+    HandleVisualClassificationEarlyReturn(
+        VisualClassificationEarlyReturnReason::kScorerMissingAfterSnapshot);
+    return;
+  }
+
+  gfx::Image input_image(ui_image);
+
+  classifier_->set_scorer(service_->GetScorer());
+
+  LogClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageClassificationBegin, last_request_type());
+
+  ClientSideDetectionType request_type = last_request_type();
+  if (IsEnhancedProtectionEnabled() &&
+      request_type == ClientSideDetectionType::TRIGGER_MODELS &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
+    request_type = ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
+  }
+
+  set_is_classifying(true);
+  classifier_->SetClientSideDetectionType(request_type);
+  base::TimeTicks classification_start_time = tick_clock()->NowTicks();
+  classifier_->BeginClassification(
+      url, input_image,
+      base::BindOnce(&ClientSideDetectionHostIOS::OnClassificationDone,
+                     weak_ptr_factory_.GetWeakPtr(), url, input_image,
+                     request_type, classification_start_time));
+}
+
+void ClientSideDetectionHostIOS::OnClassificationDone(
+    const GURL& url,
+    const gfx::Image& image,
+    ClientSideDetectionType request_type,
+    base::TimeTicks classification_start_time,
+    const ClientPhishingRequest& verdict,
+    PhishingClassifier::Result result) {
+  if (result == PhishingClassifier::Result::kSuccess) {
+    // Retain the snapshot image for subsequent image embedding
+    // matching and reporting.
+    classification_image_ = image;
+  }
+
+  PhishingDetectionDone(request_type, send_sample_ping_,
+                        did_match_high_confidence_allowlist_,
+                        /*is_invalid_ip=*/false, classification_start_time,
+                        GetPhishingDetectorResult(result), verdict);
 }
 
 }  // namespace safe_browsing

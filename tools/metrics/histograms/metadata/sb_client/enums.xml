@@ -458,6 +458,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="MODEL_MISSING_FIELDS"/>
 </enum>
 
+<!-- LINT.IfChange(SBClientPhishingVisualClassificationEarlyReturnReason) -->
+
+<enum name="SBClientPhishingVisualClassificationEarlyReturnReason">
+  <int value="0" label="Scorer is missing before snapshot"/>
+  <int value="1" label="Snapshot tab helper is missing"/>
+  <int value="2" label="Snapshot generation failed or returned empty image"/>
+  <int value="3" label="Scorer is missing after snapshot"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h:VisualClassificationEarlyReturnReason) -->
+
 <enum name="SBDeepScanEvent">
   <int value="0" label="Prompt shown"/>
   <int value="1" label="Prompt bypassed"/>
