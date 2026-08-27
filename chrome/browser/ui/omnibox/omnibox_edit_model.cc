@@ -685,10 +685,8 @@ void OmniboxEditModel::Revert() {
 void OmniboxEditModel::StartAutocomplete(bool prevent_inline_autocomplete) {
   const std::u16string input_text = MaybePrependKeyword(user_text_);
 
-  // This method currently only works when there's a view, but ideally the
-  // model should be primary for determining such state.
-  CHECK(view_);
-  size_t cursor_position = view_->GetSelectionBounds().end();
+  size_t cursor_position =
+      view_ ? view_->GetSelectionBounds().end() : user_text_.length();
 
   // For keyword searches, the text that AutocompleteInput expects is
   // of the form "<keyword> <query>", where our query is |user_text_|.

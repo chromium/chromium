@@ -681,6 +681,35 @@ TEST_F(OmniboxEditModelTest, SpaceInMiddleWithoutKeywordSelectionDoesNotCrash) {
   EXPECT_FALSE(model()->is_keyword_selected());
 }
 
+TEST_F(OmniboxEditModelTest, StartAutocompleteWithoutViewDoesNotCrash) {
+  // Disconnect the view to simulate headless / WebUI searchbox usage.
+  controller_->SetView(nullptr);
+  ASSERT_EQ(model()->view(), nullptr);
+
+  model()->SetUserText(u"search query");
+  EXPECT_NO_FATAL_FAILURE(
+      model()->StartAutocomplete(/*prevent_inline_autocomplete=*/false));
+  EXPECT_EQ(model()->GetInputForTesting().text(), u"search query");
+  EXPECT_EQ(model()->GetInputForTesting().cursor_position(), 12u);
+
+  // Also test in keyword mode without a view.
+  TemplateURLData data;
+  data.SetShortName(u"custom");
+  data.SetKeyword(u"@custom");
+  data.SetURL("https://custom.com?q={searchTerms}");
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  model()->SetUserText(u"hello");
+  model()->SetKeywordInfo(KeywordState::kKeyword, u"@custom", u"",
+                          OmniboxEventProto::TAB);
+  EXPECT_NO_FATAL_FAILURE(
+      model()->StartAutocomplete(/*prevent_inline_autocomplete=*/true));
+  EXPECT_EQ(model()->GetInputForTesting().text(), u"@custom hello");
+  EXPECT_EQ(model()->GetInputForTesting().cursor_position(), 13u);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Popup-related tests
 
