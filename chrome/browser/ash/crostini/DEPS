@@ -25,7 +25,6 @@ include_rules = [
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
   "+chrome/browser/extensions/api/terminal",
-  "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -37,6 +36,8 @@ include_rules = [
   "+chrome/browser/ui/webui/ash",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
+
+  "+ui/message_center",
 ]
 
 specific_include_rules = {
@@ -53,19 +54,6 @@ specific_include_rules = {
 
   "crostini_export_import_notification_controller\\.cc": [
     "+chrome/grit",
-  ],
-
-  "crostini_low_disk_notification\\.cc": [
-    "+ui/message_center/message_center.h",
-  ],
-
-  "crostini_low_disk_notification_unittest\\.cc": [
-    "+ui/message_center/message_center.h",
-    "+ui/message_center/message_center_observer.h",
-  ],
-
-  "crostini_manager_unittest\\.cc": [
-    "+ui/message_center/message_center.h",
   ],
 
   ".*test.*": [
