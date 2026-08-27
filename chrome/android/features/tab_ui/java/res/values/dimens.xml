@@ -236,7 +236,6 @@ found in the LICENSE file.
     <dimen name="vertical_tab_action_button_touch_target_height_tablet">40dp</dimen>
 
     <!-- Dimens for Vertical Tabs pinned tabs -->
-    <dimen name="vertical_tab_pinned_item_width">42dp</dimen>
     <dimen name="vertical_tab_pinned_item_min_width">32dp</dimen>
     <dimen name="vertical_tab_pinned_item_height">32dp</dimen>
     <dimen name="vertical_tab_pinned_item_gap">4dp</dimen>

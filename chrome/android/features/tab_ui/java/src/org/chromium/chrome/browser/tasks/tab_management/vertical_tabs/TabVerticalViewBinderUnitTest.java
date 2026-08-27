@@ -1975,7 +1975,7 @@ public class TabVerticalViewBinderUnitTest {
         int defaultXmlWidth =
                 pinnedView
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
         int expectedHeight =
                 pinnedView
                         .getResources()

@@ -704,7 +704,9 @@ public class VerticalTabListCoordinator {
                             ListObservable source, int index, int count, @Nullable Void payload) {}
 
                     @Override
-                    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {}
+                    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
+                        mPinnedTabsRecyclerView.invalidateItemDecorations();
+                    }
                 };
         pinnedTabsModelList.addObserver(mPinnedTabsListObserver);
         mReorderStrategy =
@@ -1779,10 +1781,6 @@ public class VerticalTabListCoordinator {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         int column = position % spanCount;
-        if (view.getLayoutParams() instanceof GridLayoutManager.LayoutParams gridLp
-                && gridLp.getSpanIndex() >= 0) {
-            column = gridLp.getSpanIndex();
-        }
         int left = column * minHorizontalGap / spanCount;
         int right = minHorizontalGap - (column + 1) * minHorizontalGap / spanCount;
         boolean isRtl = LocalizationUtils.isLayoutRtl();

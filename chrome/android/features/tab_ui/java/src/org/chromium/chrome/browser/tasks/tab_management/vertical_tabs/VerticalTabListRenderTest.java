@@ -132,7 +132,7 @@ public class VerticalTabListRenderTest {
         mPinnedItemWidthPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
     }
 
     private ViewGroup inflateAndAttachView(int layoutResId) {

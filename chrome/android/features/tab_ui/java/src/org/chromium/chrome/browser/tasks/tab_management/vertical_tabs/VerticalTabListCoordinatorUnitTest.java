@@ -251,6 +251,8 @@ public class VerticalTabListCoordinatorUnitTest {
     private final List<TabGroupObserver> mTabGroupObservers = new ArrayList<>();
     private final List<TabModelObserver> mTabModelObservers = new ArrayList<>();
     private VerticalTabListCoordinator mCoordinator;
+    private int mMinPinnedTabGap;
+    private int mMinPinnedTabWidth;
 
     @Before
     public void setUp() {
@@ -271,6 +273,14 @@ public class VerticalTabListCoordinatorUnitTest {
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mMinPinnedTabGap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
+        mMinPinnedTabWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
         IncognitoUtils.setEnabledForTesting(true);
 
         mCurrentTabModelSupplier.set(mTabModel);
@@ -1845,6 +1855,10 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabHoverCardView).hide();
     }
 
+    // =============================================================================================
+    // Dynamically Balancing Pinned Tabs
+    // =============================================================================================
+
     @Test
     @SmallTest
     public void testDynamicSpanCountOnWidthChange() {
@@ -1854,17 +1868,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Simulate measuring container with a width that fits exactly 2 columns.
         View containerView = mCoordinator.getView();
-        int itemWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
-        int itemMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         int testWidthPx =
-                itemWidthPx * 2
-                        + itemMarginPx
+                mMinPinnedTabWidth * 2
+                        + mMinPinnedTabGap
                         + containerView.getPaddingStart()
                         + containerView.getPaddingEnd();
         containerView.measure(
@@ -1886,7 +1892,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Verify narrow width (e.g. 90dp equivalent) allows 1 column when width only fits 1.
         int narrowWidthPx =
-                itemWidthPx + containerView.getPaddingStart() + containerView.getPaddingEnd();
+                mMinPinnedTabWidth
+                        + containerView.getPaddingStart()
+                        + containerView.getPaddingEnd();
         containerView.measure(
                 View.MeasureSpec.makeMeasureSpec(narrowWidthPx, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
@@ -1905,17 +1913,9 @@ public class VerticalTabListCoordinatorUnitTest {
         containerView.setVisibility(View.GONE);
 
         // Simulate layout change while hidden with a width that would fit 2 columns.
-        int itemWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
-        int itemMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         int testWidthPx =
-                itemWidthPx * 2
-                        + itemMarginPx
+                mMinPinnedTabWidth * 2
+                        + mMinPinnedTabGap
                         + containerView.getPaddingStart()
                         + containerView.getPaddingEnd();
         containerView.measure(
@@ -1935,20 +1935,12 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
 
         View containerView = mCoordinator.getView();
-        int itemWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
-        int itemMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
 
         // Simulate width that fits exactly 5 columns: 5 * itemWidth + 4 * itemMargin + container
         // paddings.
         int widthFor5Cols =
-                itemWidthPx * 5
-                        + itemMarginPx * 4
+                mMinPinnedTabWidth * 5
+                        + mMinPinnedTabGap * 4
                         + containerView.getPaddingStart()
                         + containerView.getPaddingEnd();
         containerView.measure(
@@ -2000,19 +1992,11 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
 
         View containerView = mCoordinator.getView();
-        int itemWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
-        int itemMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
 
         // Container width that can fit 7 columns physically.
         int widthFor7Cols =
-                itemWidthPx * 7
-                        + itemMarginPx * 6
+                mMinPinnedTabWidth * 7
+                        + mMinPinnedTabGap * 6
                         + containerView.getPaddingStart()
                         + containerView.getPaddingEnd();
         containerView.measure(
@@ -2042,19 +2026,11 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
 
         View containerView = mCoordinator.getView();
-        int itemWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
-        int itemMarginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
 
         // Container width that fits exactly 2 columns (e.g. 92dp).
         int widthFor2Cols =
-                itemWidthPx * 2
-                        + itemMarginPx * 1
+                mMinPinnedTabWidth * 2
+                        + mMinPinnedTabGap
                         + containerView.getPaddingStart()
                         + containerView.getPaddingEnd();
         containerView.measure(
@@ -2088,11 +2064,6 @@ public class VerticalTabListCoordinatorUnitTest {
         RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
         assertNotNull(decoration);
 
-        int minHorizontalGap =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-
         Rect outRect = new Rect();
         View child0 = new View(mActivity);
         GridLayoutManager.LayoutParams lp0 =
@@ -2103,7 +2074,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
         assertEquals(0, outRect.left);
-        assertEquals(minHorizontalGap - minHorizontalGap / 4, outRect.right);
+        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect.right);
     }
 
     @Test
@@ -2116,11 +2087,6 @@ public class VerticalTabListCoordinatorUnitTest {
         RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
         assertNotNull(decoration);
 
-        int minHorizontalGap =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-
         Rect outRect = new Rect();
         View child0 = new View(mActivity);
         GridLayoutManager.LayoutParams lp0 =
@@ -2130,8 +2096,87 @@ public class VerticalTabListCoordinatorUnitTest {
         pinnedRecyclerView.addView(child0);
 
         decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
-        assertEquals(minHorizontalGap - minHorizontalGap / 4, outRect.left);
+        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect.left);
         assertEquals(0, outRect.right);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsItemDecoration_OffsetsCorrectAcrossColumnsAndAfterMove() {
+        createCoordinator();
+        RecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
+        assertNotNull(decoration);
+
+        // Add 4 children representing 4 columns (spanCount = 4).
+        View child0 = new View(mActivity);
+        View child1 = new View(mActivity);
+        View child2 = new View(mActivity);
+        View child3 = new View(mActivity);
+
+        // Give child1 a stale LayoutParams with spanIndex = 0 (as if it was moved from position 0).
+        GridLayoutManager.LayoutParams lp1 =
+                new GridLayoutManager.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ReflectionHelpers.setField(lp1, "mSpanIndex", 0);
+        child1.setLayoutParams(lp1);
+
+        pinnedRecyclerView.addView(child0);
+        pinnedRecyclerView.addView(child1);
+        pinnedRecyclerView.addView(child2);
+        pinnedRecyclerView.addView(child3);
+
+        Rect outRect0 = new Rect();
+        Rect outRect1 = new Rect();
+        Rect outRect2 = new Rect();
+        Rect outRect3 = new Rect();
+
+        decoration.getItemOffsets(outRect0, child0, pinnedRecyclerView, new RecyclerView.State());
+        decoration.getItemOffsets(outRect1, child1, pinnedRecyclerView, new RecyclerView.State());
+        decoration.getItemOffsets(outRect2, child2, pinnedRecyclerView, new RecyclerView.State());
+        decoration.getItemOffsets(outRect3, child3, pinnedRecyclerView, new RecyclerView.State());
+
+        // Column 0: 0px left, 3/4 gap right
+        assertEquals(0, outRect0.left);
+        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect0.right);
+
+        // Column 1 (despite stale spanIndex=0): 1/4 gap left, 2/4 gap right
+        assertEquals(mMinPinnedTabGap / 4, outRect1.left);
+        assertEquals(mMinPinnedTabGap - 2 * mMinPinnedTabGap / 4, outRect1.right);
+
+        // Inter-item gap between child 0 and child 1 equals mMinPinnedTabGap.
+        assertEquals(mMinPinnedTabGap, outRect0.right + outRect1.left);
+
+        // Column 2: 2/4 gap left, 1/4 gap right
+        assertEquals(2 * mMinPinnedTabGap / 4, outRect2.left);
+        assertEquals(mMinPinnedTabGap - 3 * mMinPinnedTabGap / 4, outRect2.right);
+        assertEquals(mMinPinnedTabGap, outRect1.right + outRect2.left);
+
+        // Column 3: 3/4 gap left, 0px right
+        assertEquals(3 * mMinPinnedTabGap / 4, outRect3.left);
+        assertEquals(0, outRect3.right);
+        assertEquals(mMinPinnedTabGap, outRect2.right + outRect3.left);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabs_ItemMoved_InvalidatesItemDecorations() {
+        createCoordinator();
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        TabListRecyclerView spyRecyclerView = spy(pinnedRecyclerView);
+        ReflectionHelpers.setField(mCoordinator, "mPinnedTabsRecyclerView", spyRecyclerView);
+
+        TabListModel pinnedTabsModelList = mCoordinator.getPinnedTabsModelListForTesting();
+        PropertyModel model0 = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+        PropertyModel model1 = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+        pinnedTabsModelList.add(new MVCListAdapter.ListItem(UiType.PINNED_TAB, model0));
+        pinnedTabsModelList.add(new MVCListAdapter.ListItem(UiType.PINNED_TAB, model1));
+
+        clearInvocations(spyRecyclerView);
+        pinnedTabsModelList.moveItem(0, 1);
+        verify(spyRecyclerView).invalidateItemDecorations();
     }
 
     // =============================================================================================

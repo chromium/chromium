@@ -8,7 +8,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pinned_tab_item_container"
-    android:layout_width="@dimen/vertical_tab_pinned_item_width"
+    android:layout_width="@dimen/vertical_tab_pinned_item_min_width"
     android:layout_height="@dimen/vertical_tab_pinned_item_height"
     android:background="@drawable/vertical_tab_pinned_item_background"
     android:foreground="@drawable/vertical_tab_focus_ring"
