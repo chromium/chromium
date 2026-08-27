@@ -125,7 +125,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * #createChromeAndroidTaskWithMockDeps}.
      */
     public static final class ChromeAndroidTaskWithMockDeps {
-        public final ChromeAndroidTask mChromeAndroidTask;
+        public final ChromeAndroidTaskImpl mChromeAndroidTask;
         public final ChromeAndroidTask.ActivityScopedObjects mActivityScopedObjects;
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
         public final Profile mMockProfile;
@@ -136,7 +136,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         final AndroidBrowserWindow.@Nullable Natives mMockAndroidBrowserWindowNatives;
 
         ChromeAndroidTaskWithMockDeps(
-                ChromeAndroidTask chromeAndroidTask,
+                ChromeAndroidTaskImpl chromeAndroidTask,
                 ChromeAndroidTask.ActivityScopedObjects activityScopedObjects,
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
                 Profile mockProfile,
@@ -204,7 +204,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param isPendingTask If true, the returned {@link ChromeAndroidTask} will be in the pending
      *     state. The returned mock dependencies will not be connected with the pending {@link
      *     ChromeAndroidTask}. To connect the mocks with the pending {@link ChromeAndroidTask}, pass
-     *     them to {@link ChromeAndroidTask#addActivityScopedObjects}.
+     *     them to {@link ChromeAndroidTaskImpl#addActivityScopedObjects}.
      * @param isDesktopMode if true, mock the activity in a desktop mode with proper insets and
      *     screen bounds.
      * @return A new instance of {@link ChromeAndroidTaskWithMockDeps}.
@@ -222,7 +222,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param isPendingTask If true, the returned {@link ChromeAndroidTask} will be in the pending
      *     state. The returned mock dependencies will not be connected with the pending {@link
      *     ChromeAndroidTask}. To connect the mocks with the pending {@link ChromeAndroidTask}, pass
-     *     them to {@link ChromeAndroidTask#addActivityScopedObjects}.
+     *     them to {@link ChromeAndroidTaskImpl#addActivityScopedObjects}.
      * @param isDesktopMode if true, mock the activity in a desktop mode with proper insets and
      *     screen bounds.
      * @param profileType The {@link SupportedProfileType} for the task.
@@ -256,10 +256,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
                                         WindowShowState.DEFAULT,
                                         profile),
                                 null)
-                        : chromeAndroidTaskTracker.obtainTask(
-                                BrowserWindowType.NORMAL,
-                                activityScopedObjects,
-                                /* pendingId= */ null);
+                        : (ChromeAndroidTaskImpl)
+                                chromeAndroidTaskTracker.obtainTask(
+                                        BrowserWindowType.NORMAL,
+                                        activityScopedObjects,
+                                        /* pendingId= */ null);
         assertNonNull(chromeAndroidTask);
         ResettersForTesting.register(chromeAndroidTaskTracker::removeAllForTesting);
 
@@ -489,16 +490,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
         return sMultiInstanceOrchestrator;
     }
 
-    static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo() {
+    static PendingTaskInfo createPendingTaskInfo() {
         return createPendingTaskInfo(createMockAndroidBrowserWindowCreateParams());
     }
 
-    static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo(
-            AndroidBrowserWindowCreateParams createParams) {
+    static PendingTaskInfo createPendingTaskInfo(AndroidBrowserWindowCreateParams createParams) {
         JniOnceCallback<Long> mockCallback = mock();
 
-        return new ChromeAndroidTask.PendingTaskInfo(
-                IdSequencer.next(), createParams, mockCallback);
+        return new PendingTaskInfo(IdSequencer.next(), createParams, mockCallback);
     }
 
     /**

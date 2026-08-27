@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
@@ -56,26 +55,6 @@ public interface ChromeAndroidTaskTracker {
             @BrowserWindowType int browserWindowType,
             ActivityScopedObjects activityScopedObjects,
             @Nullable Integer pendingId);
-
-    /**
-     * Creates a pending {@link ChromeAndroidTask} that is not yet associated with an {@code
-     * Activity}.
-     *
-     * @param createParams The {@link AndroidBrowserWindowCreateParams} that will determine the
-     *     newly created {@code Activity}'s startup state.
-     * @param callback The callback to be invoked when the pending {@link ChromeAndroidTask} is
-     *     fully initialized (i.e., when it's associated with an {@code Activity}). The callback's
-     *     parameter is a pointer to the native {@code AndroidBrowserWindow}. If a pending Task
-     *     can't be created, the callback will be invoked with 0 (value of a null pointer). If we
-     *     don't need to wait for the full initialization of the pending Task, pass {@code null} as
-     *     the callback.
-     * @return The pending {@link ChromeAndroidTask}, or {@code null} if a pending Task can't be
-     *     created.
-     * @see BrowserWindowCreatorBridge
-     */
-    @Nullable ChromeAndroidTask createPendingTask(
-            AndroidBrowserWindowCreateParams createParams,
-            @Nullable JniOnceCallback<Long> callback);
 
     /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.

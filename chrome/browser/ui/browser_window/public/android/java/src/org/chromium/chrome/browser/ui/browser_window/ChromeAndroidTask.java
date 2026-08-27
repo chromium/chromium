@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Rect;
 
-import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -79,53 +77,6 @@ public interface ChromeAndroidTask {
     }
 
     /**
-     * Information used to create a pending {@link ChromeAndroidTask}.
-     *
-     * @see ChromeAndroidTaskTracker#createPendingTask
-     */
-    final class PendingTaskInfo {
-        /**
-         * Unique ID of the pending {@link ChromeAndroidTask}.
-         *
-         * <p>Note that this is not the same as {@link ChromeAndroidTask#getId()}. A pending ID is
-         * only for when {@link ChromeAndroidTask} isn't associated with an {@code Activity}. {@link
-         * ChromeAndroidTaskTracker} uses pending IDs to track pending Tasks, and the {@code
-         * Activity} will be launched with the pending ID in its {@link Intent} Extra. This allows
-         * {@link ChromeAndroidTaskTracker} to pair a pending Task and a live {@code Activity} and
-         * turn the pending Task into a fully initialized Task.
-         */
-        final int mPendingTaskId;
-
-        /** Parameters used to create the pending {@link ChromeAndroidTask}. */
-        final AndroidBrowserWindowCreateParams mCreateParams;
-
-        /**
-         * Callback to notify native callers when a native {@code AndroidBrowserWindow} is created
-         * and fully initialized.
-         *
-         * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow} for
-         * the initial profile. On mobile, there may be multiple {@code AndroidBrowserWindow}s for
-         * different profiles.
-         */
-        final @Nullable JniOnceCallback<Long> mTaskCreationCallbackForNative;
-
-        PendingTaskInfo(
-                int pendingTaskId,
-                AndroidBrowserWindowCreateParams createParams,
-                @Nullable JniOnceCallback<Long> callback) {
-            mPendingTaskId = pendingTaskId;
-            mCreateParams = createParams;
-            mTaskCreationCallbackForNative = callback;
-        }
-
-        void destroy() {
-            if (mTaskCreationCallbackForNative != null) {
-                mTaskCreationCallbackForNative.destroy();
-            }
-        }
-    }
-
-    /**
      * Returns an {@link Integer} holding the the ID of this {@link ChromeAndroidTask}, which is the
      * same as defined by {@link android.app.TaskInfo#taskId}, if the {@link Integer} is non-null.
      * The {@link Integer} will be null for a {@code State.PENDING_CREATE} {@link ChromeAndroidTask}
@@ -134,47 +85,7 @@ public interface ChromeAndroidTask {
     @Nullable Integer getId();
 
     /**
-     * Returns {@link PendingTaskInfo} if {@link ChromeAndroidTask} is in the {@code PENDING_CREATE}
-     * state, otherwise {@code null}.
-     */
-    @Nullable PendingTaskInfo getPendingTaskInfo();
-
-    /**
-     * Adds an instance of {@link ActivityScopedObjects}.
-     *
-     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but {@link
-     * ActivityScopedObjects} is associated with a {@code ChromeActivity}, this method is needed to
-     * support the difference in their lifecycles and the fact that a Task can contain multiple
-     * {@code Activities}.
-     *
-     * <p>The most recent {@link ActivityScopedObjects} added to a Task is considered as objects for
-     * the "top" {@code Activity} in the Task.
-     *
-     * @param activityScopedObjects The {@link ActivityScopedObjects} to be associated with this
-     *     {@link ChromeAndroidTask}.
-     * @see #removeActivityScopedObjects
-     */
-    void addActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
-
-    /**
-     * Removes the {@link ActivityScopedObjects} matching the given {@link ActivityWindowAndroid}.
-     *
-     * <p>This method should be called when the {@link ActivityWindowAndroid} is about to be
-     * destroyed.
-     *
-     * <p>Note that this method may not remove {@link ActivityScopedObjects} for the top {@code
-     * Activity}, as an Android Task isn't an FIFO stack. For example, the system can destroy an
-     * {@code Activity} in the background and keep the foreground {@code Activity}.
-     *
-     * @see #addActivityScopedObjects
-     */
-    void removeActivityScopedObjects(ActivityWindowAndroid activityWindowAndroid);
-
-    /**
      * Returns the top {@link ActivityWindowAndroid} in this Task, or {@code null} if there is none.
-     *
-     * @see #addActivityScopedObjects
-     * @see #removeActivityScopedObjects
      */
     @Nullable ActivityWindowAndroid getTopActivityWindowAndroid();
 

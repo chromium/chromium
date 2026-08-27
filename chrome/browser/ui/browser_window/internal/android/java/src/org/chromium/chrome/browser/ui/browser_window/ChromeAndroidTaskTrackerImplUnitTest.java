@@ -385,8 +385,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Act.
         var task =
-                mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, newActivityScopedObjects, pendingId);
+                (ChromeAndroidTaskImpl)
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL, newActivityScopedObjects, pendingId);
         pendingTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert.
@@ -849,7 +850,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     /**
      * @see #createPendingTaskWithExistingTask(AndroidBrowserWindowCreateParams, JniOnceCallback)
      */
-    private @Nullable ChromeAndroidTask createPendingTaskWithExistingTask(
+    private @Nullable ChromeAndroidTaskImpl createPendingTaskWithExistingTask(
             AndroidBrowserWindowCreateParams createParams) {
         return createPendingTaskWithExistingTask(
                 createParams, /* taskCreationCallbackForNative= */ null);
@@ -862,7 +863,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
      * existing Task. For example, a pending Task of "NORMAL" type requires the {@code
      * MultiInstanceManager} associated with an existing Task.
      */
-    private @Nullable ChromeAndroidTask createPendingTaskWithExistingTask(
+    private @Nullable ChromeAndroidTaskImpl createPendingTaskWithExistingTask(
             AndroidBrowserWindowCreateParams createParams,
             @Nullable JniOnceCallback<Long> taskCreationCallbackForNative) {
         var activityScopedObjects =
