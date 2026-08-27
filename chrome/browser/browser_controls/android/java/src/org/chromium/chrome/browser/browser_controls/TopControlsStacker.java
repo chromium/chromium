@@ -704,6 +704,23 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         return INVALID_HEIGHT;
     }
 
+    /**
+     * See {@link #getHeightFromLayerToTop(int)}. This method also includes the height of the {@code
+     * stopLayer} if it's visible.
+     */
+    public int getHeightFromLayerBottomToTop(@TopControlType int stopLayer) {
+        int height = getHeightFromLayerToTop(stopLayer);
+        if (height != INVALID_HEIGHT) {
+            TopControlLayer layer = mControls.get(stopLayer);
+            if (!isLayerHidden(layer) && layer.contributesToTotalHeight()) {
+                height += layer.getTopControlHeight();
+            }
+            return height;
+        }
+
+        return INVALID_HEIGHT;
+    }
+
     // BrowserControlsStateProvider.Observer implementation:
 
     @Override

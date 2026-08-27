@@ -464,6 +464,52 @@ public class TopControlsStackerUnitTest {
     }
 
     @Test
+    public void getHeightFromLayerBottomToTop() {
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer bookmarkBar = TestLayer.bookmarkLayer();
+        TestLayer hairline = TestLayer.hairlineLayer();
+        TestLayer progressBar = TestLayer.progressBarLayer();
+
+        tabStrip.mVisibility = TopControlVisibility.HIDDEN;
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.addControl(bookmarkBar);
+        mTopControlsStacker.addControl(hairline);
+        mTopControlsStacker.addControl(progressBar);
+
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        assertControlsHeight(220, 0);
+
+        assertEquals(0, mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TABSTRIP));
+        assertEquals(
+                100, mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TOOLBAR));
+        assertEquals(
+                220,
+                mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.BOOKMARK_BAR));
+        assertEquals(
+                220, mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.HAIRLINE));
+        assertEquals(
+                220,
+                mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.PROGRESS_BAR));
+
+        // When tabStrip is visible, its height (50) is included.
+        tabStrip.mVisibility = TopControlVisibility.VISIBLE;
+        mTopControlsStacker.requestLayerUpdateSync(false);
+        assertControlsHeight(270, 0);
+
+        assertEquals(
+                50, mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TABSTRIP));
+        assertEquals(
+                150, mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TOOLBAR));
+        assertEquals(
+                270,
+                mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.BOOKMARK_BAR));
+    }
+
+    @Test
     public void testIsLayerAtBottom() {
         // Create test layers. The bookmark bar is hidden, and the hairline is visible but does not
         // contribute to total height, so neither will prevent the above from being bottom layer.
