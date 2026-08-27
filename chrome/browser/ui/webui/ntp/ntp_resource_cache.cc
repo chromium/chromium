@@ -77,6 +77,10 @@ const char kLearnMoreGuestSessionUrl[] =
     "https://support.google.com/chrome/?p=ui_guest";
 #endif
 
+// The URL for the Learn More page shown on isolated mode new tab.
+const char kLearnMoreIsolatedModeUrl[] =
+    "https://support.google.com/chrome?p=isolated_mode";
+
 std::string ReplaceTemplateExpressions(
     const scoped_refptr<base::RefCountedMemory>& bytes,
     const ui::TemplateReplacements& replacements) {
@@ -312,7 +316,7 @@ void NTPResourceCache::CreateNewTabIsolatedHTML(
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_DESCRIPTION);
   replacements["learnMore"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_LEARN_MORE_LINK);
-  replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
+  replacements["learnMoreLink"] = kLearnMoreIsolatedModeUrl;
   replacements["isolatedVisibilityWarning"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_VISIBILITY_WARNING);
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
