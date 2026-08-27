@@ -405,15 +405,23 @@ bool TabDialogManager::MaybeActivateDialog() {
 
 void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   CHECK_EQ(widget, widget_.get());
+  // Check if we had blocked the web contents in this iteration.
+  const bool did_block_web_contents = params_ && params_->disable_input;
   widget_ = nullptr;
   params_.reset();
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   web_contents_modal_dialog_host_observer_.reset();
   bounds_animation_.reset();
-  tab_interface_->GetBrowserWindowInterface()
-      ->capabilities()
-      ->SetWebContentsBlocked(tab_interface_->GetContents(), /*blocked=*/false);
+  // Only clobber the blocked web contents bit if we were also the one that
+  // blocked it. Otherwise leave it alone, since it may have been set by some
+  // other legacy dialog.
+  if (did_block_web_contents) {
+    tab_interface_->GetBrowserWindowInterface()
+        ->capabilities()
+        ->SetWebContentsBlocked(tab_interface_->GetContents(),
+                                /*blocked=*/false);
+  }
   // Resetting ScopedTabModalUI may cause the showing of a new dialog.
   // Leaving it at the end of the function to prevent its side effects
   // from being overridden.
