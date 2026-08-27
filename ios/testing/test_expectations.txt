@@ -72,6 +72,7 @@ crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTap
 crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndResize [ Pass Failure ]
 crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndReturnToFullscreen [ Pass Failure ]
 crbug.com/508127830 [ iOS27 Device ] SearchEngineTestCase/testOpenSecondWindow [ Pass Failure ]
+crbug.com/508127830 [ iOS27 Device ] AssistantSidePanelTestCase/testMultitaskingTransitionBetweenSheetAndSidePanel [ Pass Failure ]
 
 # Gardening suppression 2026-07-31
 crbug.com/541234788 [ iPhone Simulator ] SaveToDriveTestCase/testDownloadToDriveAppUninstalledUpdatesButton [ Pass Failure ]
