@@ -162,7 +162,7 @@ class AssertPageLoadMetricsObserver final
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override {}
-  void OnSoftNavigationCommit(
+  void OnSoftNavigationFirstContentfulPaint(
       const page_load_metrics::mojom::SoftNavigationMetrics&
           soft_navigation_metrics) override {}
   void OnSoftNavigationCompleted(const page_load_metrics::SoftNavigationData&

@@ -501,9 +501,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     // followup, segment incoming event timings and layout shifts by
     // navigation_id.
     soft_navigation_tracker_.UpdateMainFrameMetrics(
-        render_frame_host->GetGlobalFrameToken(),
-        std::move(soft_navigation_metrics), event_timings,
-        render_data->new_layout_shifts, soft_largest_contentful_paint);
+        render_frame_host->GetGlobalFrameToken(), soft_navigation_metrics,
+        event_timings, render_data->new_layout_shifts,
+        soft_largest_contentful_paint);
   }
 
   client_->UpdateFeaturesUsage(render_frame_host, new_features);

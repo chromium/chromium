@@ -282,14 +282,14 @@ void PrerenderPageLoadMetricsObserver::RecordLayoutShiftBeforeSoftNavigation() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void PrerenderPageLoadMetricsObserver::OnSoftNavigationCommit(
+void PrerenderPageLoadMetricsObserver::OnSoftNavigationFirstContentfulPaint(
     const page_load_metrics::mojom::SoftNavigationMetrics&
         soft_navigation_metrics) {
   CHECK_GE(soft_navigation_count_, 0);
   soft_navigation_count_++;
 
-  // When the 1st soft navigation comes in, we record the CWVs before then, so
-  // that we can blend them. We also require:
+  // When the 1st soft navigation presents FCP, we record the CWVs before then,
+  // so that we can blend them. We also require:
   //
   // * Must have been prerendered and activated in the foreground.
   //

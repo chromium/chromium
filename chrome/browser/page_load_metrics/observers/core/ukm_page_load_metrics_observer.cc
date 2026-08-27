@@ -722,12 +722,12 @@ void UkmPageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::OnSoftNavigationCommit(
+void UkmPageLoadMetricsObserver::OnSoftNavigationFirstContentfulPaint(
     const page_load_metrics::mojom::SoftNavigationMetrics&
         soft_navigation_metrics) {
   CHECK_GE(soft_navigation_count_, 0);
   soft_navigation_count_++;
-  // When the 1st soft navigation comes in, we record the CWVs before then;
+  // When the 1st soft navigation presents FCP, we record the CWVs before then;
   // these may (eventually) be used for blending.
   if (soft_navigation_count_ == 1) {
     RecordLargestContentfulPaintBeforeSoftNavigation();

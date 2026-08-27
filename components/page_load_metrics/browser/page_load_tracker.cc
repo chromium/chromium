@@ -1096,10 +1096,10 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::OnSoftNavigationCommit(
+void PageLoadTracker::OnSoftNavigationFirstContentfulPaint(
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   for (const auto& observer : observers_) {
-    observer->OnSoftNavigationCommit(soft_navigation_metrics);
+    observer->OnSoftNavigationFirstContentfulPaint(soft_navigation_metrics);
   }
 }
 

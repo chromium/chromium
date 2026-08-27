@@ -33,9 +33,9 @@ struct CompletedSoftNavigationRecord {
 
 class TestObserver : public SoftNavigationTracker::Client {
  public:
-  void OnSoftNavigationCommit(
+  void OnSoftNavigationFirstContentfulPaint(
       const mojom::SoftNavigationMetrics& metrics) override {
-    commits.push_back(metrics.Clone());
+    fcps.push_back(metrics.Clone());
   }
   void OnSoftNavigationCompleted(const SoftNavigationData& data) override {
     if (data.metrics) {
@@ -50,7 +50,7 @@ class TestObserver : public SoftNavigationTracker::Client {
     }
   }
 
-  std::vector<mojom::SoftNavigationMetricsPtr> commits;
+  std::vector<mojom::SoftNavigationMetricsPtr> fcps;
   std::vector<uint64_t> completed_nav_ids;
   std::vector<CompletedSoftNavigationRecord> completed_navs;
 };
@@ -94,6 +94,101 @@ TEST(SoftNavigationTrackerTest, CountSoftNavigations) {
   ASSERT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                              std::move(soft_navigations)));
   EXPECT_EQ(tracker.soft_navigation_count(), 2u);
+}
+
+TEST(SoftNavigationTrackerTest, FirstContentfulPaintDispatchesObserverEvent) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // 1. Commit arrives without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav_commits;
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav_commits)));
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+  EXPECT_EQ(observer.fcps.size(), 0u);
+
+  // Standalone FCP arrives for navigation 2.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav_fcps;
+  nav_fcps.push_back(CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav_fcps)));
+  EXPECT_EQ(observer.fcps.size(), 1u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+  EXPECT_EQ(observer.fcps[0]->performance_timeline_navigation_id, 2u);
+  EXPECT_EQ(observer.fcps[0]->first_contentful_paint, base::Milliseconds(120));
+
+  // Duplicate FCP is rejected and does not dispatch another event.
+  std::vector<mojom::SoftNavigationMetricsPtr> duplicate_fcps;
+  duplicate_fcps.push_back(
+      CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+  ASSERT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
+                                              std::move(duplicate_fcps)));
+  EXPECT_EQ(observer.fcps.size(), 1u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+
+  // 2. Navigation 3 arrives with bundled Commit and FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> bundled_navs;
+  bundled_navs.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250),
+      base::UnguessableToken::Create(),
+      blink::mojom::NavigationTypeForNavigationApi::kPush,
+      base::Milliseconds(230)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(bundled_navs)));
+  EXPECT_EQ(tracker.soft_navigation_count(), 2u);
+  EXPECT_EQ(observer.fcps.size(), 2u);
+  EXPECT_EQ(observer.fcps[1]->performance_timeline_navigation_id, 3u);
+  EXPECT_EQ(observer.fcps[1]->first_contentful_paint, base::Milliseconds(230));
+  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
+  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
+}
+
+TEST(SoftNavigationTrackerTest,
+     OutOfOrderFirstContentfulPaintDispatchedInFifoOrder) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // 1. Navigation 2 and Navigation 3 commit in order without FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav_commits;
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+  nav_commits.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav_commits)));
+  EXPECT_EQ(tracker.soft_navigation_count(), 2u);
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // 2. Standalone FCP arrives for Navigation 3 FIRST (out of order).
+  // Neither FCP nor completion should be dispatched yet because Navigation 2
+  // has not presented FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav3_fcp;
+  nav3_fcp.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(220)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav3_fcp)));
+  EXPECT_TRUE(observer.fcps.empty());
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // 3. Standalone FCP arrives for Navigation 2.
+  // Events must be dispatched in FIFO order:
+  // Navigation 2 FCP -> Navigation 2 Completed -> Navigation 3 FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> nav2_fcp;
+  nav2_fcp.push_back(CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+  ASSERT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(nav2_fcp)));
+
+  EXPECT_EQ(observer.fcps.size(), 2u);
+  EXPECT_EQ(observer.fcps[0]->performance_timeline_navigation_id, 2u);
+  EXPECT_EQ(observer.fcps[0]->first_contentful_paint, base::Milliseconds(120));
+  EXPECT_EQ(observer.fcps[1]->performance_timeline_navigation_id, 3u);
+  EXPECT_EQ(observer.fcps[1]->first_contentful_paint, base::Milliseconds(220));
+  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
+  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
 }
 
 TEST(SoftNavigationTrackerTest,
@@ -214,6 +309,19 @@ TEST(SoftNavigationTrackerTest,
         CreateSoftNavigationFcpUpdate(2, base::Milliseconds(100)));
     EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                std::move(soft_navigations)));
+  }
+
+  {
+    // Multiple FCP updates for the same navigation in a single batch are
+    // rejected.
+    SoftNavigationTracker tracker(&observer);
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
+    soft_navigations.push_back(
+        CreateSoftNavigationFcpUpdate(2, base::Milliseconds(100)));
+    soft_navigations.push_back(
+        CreateSoftNavigationFcpUpdate(2, base::Milliseconds(120)));
+    EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
+                                                std::move(soft_navigations)));
   }
 }
 
@@ -469,8 +577,8 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
       2, base::Milliseconds(80), base_time + base::Milliseconds(100)));
   EXPECT_TRUE(
       tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs_1)));
-  EXPECT_EQ(observer.commits.size(), 1u);
-  EXPECT_EQ(observer.commits[0]->performance_timeline_navigation_id, 2u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
+  EXPECT_NE(tracker.GetSoftNavigationDataForTest(2), nullptr);
   EXPECT_TRUE(observer.completed_nav_ids.empty());
 
   // Step 2: Events for Soft Nav 1 arrive.
@@ -500,8 +608,8 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
   // It has not been dispatched yet because it is awaiting its own FCP and the
   // next navigation's FCP.
   EXPECT_TRUE(observer.completed_nav_ids.empty());
-  ASSERT_EQ(observer.commits.size(), 2u);
-  EXPECT_EQ(observer.commits[1]->performance_timeline_navigation_id, 3u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 2u);
+  EXPECT_NE(tracker.GetSoftNavigationDataForTest(3), nullptr);
 
   // Soft Nav 1 is still accessible while in the queue, so in-flight events for
   // Soft Nav 1 continue to be aggregated.
@@ -586,7 +694,7 @@ TEST(SoftNavigationTrackerTest, CompletedNavigationsAwaitingReportingCriteria) {
       4, base::Milliseconds(300), base_time + base::Milliseconds(300)));
   EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(navs)));
 
-  EXPECT_EQ(observer.commits.size(), 3u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 3u);
   EXPECT_TRUE(observer.completed_nav_ids.empty());
 
   // Nav 1 gets FCP -> still in queue because Nav 2 has no FCP.
@@ -680,8 +788,7 @@ TEST(SoftNavigationTrackerTest, UncommittedNavigationsPrunedOnHigherCommit) {
   EXPECT_EQ(tracker.GetSoftNavigationDataForTest(3), nullptr);
   // Navigation 4 is active.
   EXPECT_NE(tracker.GetSoftNavigationDataForTest(4), nullptr);
-  EXPECT_EQ(observer.commits.size(), 1u);
-  EXPECT_EQ(observer.commits[0]->performance_timeline_navigation_id, 4u);
+  EXPECT_EQ(tracker.soft_navigation_count(), 1u);
 }
 
 }  // namespace page_load_metrics

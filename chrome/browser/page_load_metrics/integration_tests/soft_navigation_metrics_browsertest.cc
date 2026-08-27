@@ -865,9 +865,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
     num_interactions_before_softnavs = GetMetricFromUkmEntry(
         page_load_entry,
         PageLoad::kInteractiveTimingBeforeSoftNavigation_NumInteractionsName);
-    // TODO(crbug.com/515874398): This should be exactly 2, but due to a race,
-    // sometimes it's counted toward the first softnav.
-    EXPECT_THAT(num_interactions_before_softnavs, testing::AnyOf(1, 2));
+    EXPECT_THAT(num_interactions_before_softnavs, testing::Eq(2));
     EXPECT_THAT(
         page_load_entry,
         HasMetric(

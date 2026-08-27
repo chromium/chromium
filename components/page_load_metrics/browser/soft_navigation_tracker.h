@@ -25,7 +25,7 @@ class SoftNavigationTracker {
   class Client {
    public:
     virtual ~Client() = default;
-    virtual void OnSoftNavigationCommit(
+    virtual void OnSoftNavigationFirstContentfulPaint(
         const mojom::SoftNavigationMetrics& metrics) = 0;
     virtual void OnSoftNavigationCompleted(const SoftNavigationData& data) = 0;
   };
@@ -43,13 +43,13 @@ class SoftNavigationTracker {
 
   // Updates the tracker with newly arrived main frame metrics.
   // Performs validation, updates per-navigation buckets, and pushes completed
-  // and committed navigation updates to `client_` in chronological order.
+  // and FCP navigation updates to `client_` in chronological order.
   // Returns true if all incoming soft navigations are valid.
   // TODO(crbug.com/494593459): Handle or taint reports on validation failure in
   // production.
   bool UpdateMainFrameMetrics(
       content::GlobalRenderFrameHostToken frame_token,
-      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      base::span<const mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       base::span<const mojom::EventTimingPtr> event_timings = {},
       base::span<const mojom::LayoutShiftPtr> layout_shifts = {},
       base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps = {});
@@ -91,6 +91,10 @@ class SoftNavigationTracker {
   void AddMainFrameLargestContentfulPaints(
       base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps);
 
+  // Registers a committed soft navigation and marks it active.
+  void AddMainFrameSoftNavigationCommit(
+      const mojom::SoftNavigationMetrics& soft_navigation);
+
   // Adds or updates the main frame first contentful paint for an existing
   // soft navigation.
   void AddMainFrameFirstContentfulPaint(uint64_t navigation_id,
@@ -108,11 +112,12 @@ class SoftNavigationTracker {
   bool HasCommitAndFirstContentfulPaint(const SoftNavigationData* data) const;
 
   SoftNavigationData* GetOrCreateNavigationData(uint64_t navigation_id);
-  bool ValidateMetrics(const std::vector<mojom::SoftNavigationMetricsPtr>&
+  bool ValidateMetrics(base::span<const mojom::SoftNavigationMetricsPtr>
                            soft_navigation_metrics) const;
   void ProcessCompletedNavigationsAwaitingReportingCriteria();
 
   uint64_t soft_navigation_count_ = 0;
+  uint64_t last_committed_navigation_id_ = 0;
   uint64_t active_navigation_id_ = 0;
   raw_ptr<Client> client_ = nullptr;
 
@@ -122,10 +127,8 @@ class SoftNavigationTracker {
   //
   // A navigation's state in this map is implicit:
   // - Pending (Uncommitted): `!metrics || !metrics->commit`
+  // - Awaiting FCP / Turn: `id > active_navigation_id_` with `metrics->commit`
   // - Active: `id == active_navigation_id_`
-  // - Completed (Awaiting Reporting Criteria): `id < active_navigation_id_`
-  // with
-  //   `metrics->commit != nullptr`
   // - Dispatched: Erased from `navigations_` upon being reported to
   //   `OnSoftNavigationCompleted`.
   //

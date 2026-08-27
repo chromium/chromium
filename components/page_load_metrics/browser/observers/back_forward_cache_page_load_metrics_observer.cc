@@ -311,9 +311,10 @@ void BackForwardCachePageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void BackForwardCachePageLoadMetricsObserver::OnSoftNavigationCommit(
-    const page_load_metrics::mojom::SoftNavigationMetrics&
-        soft_navigation_metrics) {
+void BackForwardCachePageLoadMetricsObserver::
+    OnSoftNavigationFirstContentfulPaint(
+        const page_load_metrics::mojom::SoftNavigationMetrics&
+            soft_navigation_metrics) {
   if (!has_ever_entered_back_forward_cache_) {
     // This is a soft navigation after a prerender (see
     // PrerenderPageLoadMetricsObserver) or a traditional navigation (See

@@ -143,8 +143,9 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubFrameRenderDataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameRenderDataUpdate& render_data) = 0;
-    void OnSoftNavigationCommit(const mojom::SoftNavigationMetrics&
-                                    soft_navigation_metrics) override = 0;
+    void OnSoftNavigationFirstContentfulPaint(
+        const mojom::SoftNavigationMetrics& soft_navigation_metrics) override =
+        0;
     void OnSoftNavigationCompleted(
         const SoftNavigationData& soft_navigation_data) override = 0;
     virtual void OnSoftNavigationLargestContentfulPaint(

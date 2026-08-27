@@ -65,7 +65,7 @@ class PrerenderPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnSoftNavigationCommit(
+  void OnSoftNavigationFirstContentfulPaint(
       const page_load_metrics::mojom::SoftNavigationMetrics&
           soft_navigation_metrics) override;
   void OnFirstInputInPage(

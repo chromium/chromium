@@ -230,7 +230,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameMetadataChanged() override;
   void OnSubframeMetadataChanged(content::RenderFrameHost* rfh,
                                  const mojom::FrameMetadata& metadata) override;
-  void OnSoftNavigationCommit(
+  void OnSoftNavigationFirstContentfulPaint(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
   void OnSoftNavigationCompleted(
       const SoftNavigationData& soft_navigation_data) override;

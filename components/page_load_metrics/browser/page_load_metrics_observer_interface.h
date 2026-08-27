@@ -361,9 +361,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                               const mojom::PageLoadTiming& timing) = 0;
 
-  // The callback is invoked when a soft navigation commit is observed.
+  // The callback is invoked when a soft navigation first contentful paint is
+  // observed.
   // See https://github.com/WICG/soft-navigations for more details.
-  virtual void OnSoftNavigationCommit(
+  virtual void OnSoftNavigationFirstContentfulPaint(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics) = 0;
 
   // The callback is invoked when a soft navigation has completed.

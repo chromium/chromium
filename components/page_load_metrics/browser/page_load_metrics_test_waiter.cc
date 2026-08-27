@@ -54,7 +54,7 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
-  void OnSoftNavigationCommit(
+  void OnSoftNavigationFirstContentfulPaint(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
 
   void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override;
@@ -867,7 +867,7 @@ void WaiterMetricsObserver::OnTimingUpdate(
   }
 }
 
-void WaiterMetricsObserver::OnSoftNavigationCommit(
+void WaiterMetricsObserver::OnSoftNavigationFirstContentfulPaint(
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   if (waiter_) {
     waiter_->OnSoftNavigation();
