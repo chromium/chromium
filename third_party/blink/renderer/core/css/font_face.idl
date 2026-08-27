@@ -47,6 +47,7 @@ typedef (ArrayBuffer or ArrayBufferView) BinaryData;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString family;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString style;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString weight;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, ImplementedAs=stretch] attribute CSSOMString width;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString stretch;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString unicodeRange;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString variant;

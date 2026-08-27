@@ -2671,7 +2671,6 @@ crbug.com/545692281 [ Win ] external/wpt/css/css-values/acos-asin-atan-atan2-com
 crbug.com/545676304 [ Win ] external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Pass Timeout ]
 crbug.com/545718484 external/wpt/mathml/relations/html5-tree/href-target-base.html [ Failure Pass Timeout ]
 crbug.com/543836267 [ Win ] external/wpt/WebCryptoAPI/generateKey/failures_kmac.tentative.https.any.html [ Pass Timeout ]
-crbug.com/543938492 external/wpt/css/css-font-loading/font-face-width-descriptor-aliasing.html [ Failure ]
 crbug.com/543919183 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-flat-tree-order.html [ Timeout ]
 crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.html [ Failure ]
 crbug.com/543877472 external/wpt/html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.worker.html [ Failure ]

@@ -3120,6 +3120,7 @@ interface FontFace
     getter variant
     getter variationSettings
     getter weight
+    getter width
     method constructor
     method load
     setter ascentOverride
@@ -3135,6 +3136,7 @@ interface FontFace
     setter variant
     setter variationSettings
     setter weight
+    setter width
 interface FontFaceSet : EventTarget
     attribute @@toStringTag
     getter onloading

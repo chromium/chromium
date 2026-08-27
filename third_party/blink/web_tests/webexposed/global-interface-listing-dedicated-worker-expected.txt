@@ -715,6 +715,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter variant
 [Worker]     getter variationSettings
 [Worker]     getter weight
+[Worker]     getter width
 [Worker]     method constructor
 [Worker]     method load
 [Worker]     setter ascentOverride
@@ -730,6 +731,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter variant
 [Worker]     setter variationSettings
 [Worker]     setter weight
+[Worker]     setter width
 [Worker] interface FontFaceSet : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onloading

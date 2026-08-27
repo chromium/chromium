@@ -7,6 +7,7 @@
 dictionary FontFaceDescriptors {
     CSSOMString style = "normal";
     CSSOMString weight = "normal";
+    CSSOMString width;
     CSSOMString stretch = "normal";
     CSSOMString unicodeRange = "U+0-10FFFF";
     CSSOMString variant = "normal";
