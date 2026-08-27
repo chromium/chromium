@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "crypto/crypto_export.h"
+#include "crypto/sign.h"
 #include "crypto/tpm.rs.h"
 
 namespace crypto::tpm {
@@ -33,6 +34,7 @@ using enum TpmSt;
 // Enumerates the TPM 2.0 commands implemented by this module.
 enum class TpmCommand {
   kCertify,            // TPM2_Certify
+  kCreate,             // TPM2_Create
   kFlushContext,       // TPM2_FlushContext
   kHash,               // TPM2_Hash
   kHashSequenceStart,  // TPM2_HashSequenceStart
@@ -46,6 +48,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
   switch (command) {
     case TpmCommand::kCertify:
       sink.Append("Certify");
+      return;
+    case TpmCommand::kCreate:
+      sink.Append("Create");
       return;
     case TpmCommand::kFlushContext:
       sink.Append("FlushContext");
@@ -144,6 +149,19 @@ struct CRYPTO_EXPORT CertifyResponse {
                          const CertifyResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_Create response.
+struct CRYPTO_EXPORT CreateResponse {
+  static constexpr auto kCommand = TpmCommand::kCreate;
+
+  // The serialized TPM2B_PRIVATE structure returned by the TPM.
+  std::vector<uint8_t> out_private;
+  // The serialized TPM2B_PUBLIC structure returned by the TPM.
+  std::vector<uint8_t> out_public;
+
+  friend bool operator==(const CreateResponse&,
+                         const CreateResponse&) = default;
+};
+
 // Response from parsing a TPM2_FlushContext response.
 struct CRYPTO_EXPORT FlushContextResponse {
   static constexpr auto kCommand = TpmCommand::kFlushContext;
@@ -200,7 +218,7 @@ struct CRYPTO_EXPORT SignResponse {
   friend bool operator==(const SignResponse&, const SignResponse&) = default;
 };
 
-// TPM algorithm IDs returned by the parser, solely for telemetry.
+// TPM algorithm IDs for a given SignatureAlgorithm.
 struct CRYPTO_EXPORT SignatureAlgorithms {
   TpmAlg sig_alg = TPM_ALG_NULL;
   TpmAlg hash_alg = TPM_ALG_NULL;
@@ -243,6 +261,22 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildCertifyCommand(
 CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
     base::span<const uint8_t> expected_extra_data);
+
+// Builds a serialized TPM2_Create command buffer for an Attestation Identity
+// Key (AIK) configured according to the provided `kind` under `parent_handle`.
+//
+// Returns nullopt if `kind` is not supported for AIK creation.
+CRYPTO_EXPORT std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
+    uint32_t parent_handle,
+    sign::SignatureKind kind);
+
+// Parses a serialized TPM2_Create response and extracts the private area and
+// public area.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code.
+CRYPTO_EXPORT TpmParseErrorOr<CreateResponse> ParseCreateResponse(
+    base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_FlushContext command buffer.
 //

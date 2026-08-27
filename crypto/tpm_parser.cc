@@ -139,6 +139,41 @@ SignatureErrorOr<void> VerifyEcdsaSignature(
   return base::ok();
 }
 
+std::optional<SignatureAlgorithms> ToSignatureAlgorithms(
+    sign::SignatureKind kind) {
+  switch (kind) {
+    case sign::SignatureKind::RSA_PKCS1_SHA256:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
+                                 .hash_alg = TPM_ALG_SHA256};
+    case sign::SignatureKind::RSA_PKCS1_SHA384:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
+                                 .hash_alg = TPM_ALG_SHA384};
+    case sign::SignatureKind::RSA_PKCS1_SHA512:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSASSA,
+                                 .hash_alg = TPM_ALG_SHA512};
+    case sign::SignatureKind::RSA_PSS_SHA256:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
+                                 .hash_alg = TPM_ALG_SHA256};
+    case sign::SignatureKind::RSA_PSS_SHA384:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
+                                 .hash_alg = TPM_ALG_SHA384};
+    case sign::SignatureKind::RSA_PSS_SHA512:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_RSAPSS,
+                                 .hash_alg = TPM_ALG_SHA512};
+    case sign::SignatureKind::ECDSA_SHA256:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
+                                 .hash_alg = TPM_ALG_SHA256};
+    case sign::SignatureKind::ECDSA_SHA384:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
+                                 .hash_alg = TPM_ALG_SHA384};
+    case sign::SignatureKind::ECDSA_SHA512:
+      return SignatureAlgorithms{.sig_alg = TPM_ALG_ECDSA,
+                                 .hash_alg = TPM_ALG_SHA512};
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 std::vector<uint8_t> BuildCertifyCommand(
@@ -160,6 +195,29 @@ TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     return CertifyResponse{
         .statement = base::ToVector(raw_response.statement),
         .signature = base::ToVector(raw_response.signature),
+    };
+  });
+}
+
+std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
+    uint32_t parent_handle,
+    sign::SignatureKind kind) {
+  return ToSignatureAlgorithms(kind).transform(
+      [parent_handle](const auto& algs) {
+        return base::ToVector(build_create_aik_command(
+            parent_handle, algs.sig_alg, algs.hash_alg));
+      });
+}
+
+TpmParseErrorOr<CreateResponse> ParseCreateResponse(
+    base::span<const uint8_t> response_blob) {
+  RawCreateResponse raw_response =
+      parse_create_response(base::SpanToRustSlice(response_blob));
+
+  return MapResponseStatus(raw_response.status).transform([&] {
+    return CreateResponse{
+        .out_private = base::ToVector(raw_response.out_private),
+        .out_public = base::ToVector(raw_response.out_public),
     };
   });
 }

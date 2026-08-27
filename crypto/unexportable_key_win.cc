@@ -609,6 +609,8 @@ std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   switch (command) {
     case tpm::TpmCommand::kCertify:
       return TPMOperation::kKeyCertification;
+    case tpm::TpmCommand::kCreate:
+      return TPMOperation::kNewAttestationKeyCreation;
     case tpm::TpmCommand::kSign:
       return TPMOperation::kRestrictedMessageSigning;
 
