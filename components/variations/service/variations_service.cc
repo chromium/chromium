@@ -1397,7 +1397,7 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
       return kUpdateFeatureStateFailed;
     }
     // TODO(crbug.com/536852124): Rather than calling these callbacks here,
-    // put `update` into a container, so that all premutation callbacks can
+    // put `update` into a container, so that all pre-mutation callbacks can
     // be called, then all mutation callbacks, then all postmutation callbacks.
     update->RunPreMutationCallback();
     update->UpdateState();
