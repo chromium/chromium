@@ -37,7 +37,7 @@ bool IsHistoryStateChangeValid(const GURL& current_url, const GURL& to_url) {
 GURL GetHistoryStateChangeUrl(const GURL& current_url,
                               const GURL& base_url,
                               std::string_view destination) {
-  if (!base_url.is_valid()) {
+  if (!current_url.is_valid() || !base_url.is_valid()) {
     return GURL();
   }
   GURL to_url = base_url.Resolve(destination);

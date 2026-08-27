@@ -125,6 +125,17 @@ TEST_F(HistoryStateUtilTest, TestGetHistoryStateChangeUrlWithInvalidBase) {
   EXPECT_FALSE(result.is_valid());
 }
 
+// Ensures that an invalid currentURL gracefully returns an invalid destination.
+TEST_F(HistoryStateUtilTest, TestGetHistoryStateChangeUrlWithInvalidUrl) {
+  GURL fromUrl("http://not a url");
+  GURL baseUrl("http://foo.com");
+  std::string destination = "baz";
+
+  GURL result = history_state_util::GetHistoryStateChangeUrl(fromUrl, baseUrl,
+                                                             destination);
+  EXPECT_FALSE(result.is_valid());
+}
+
 // Tests that blob URLs with the same inner origin are allowed, while blob URLs
 // with different inner origins (different host, scheme, or port) are rejected.
 TEST_F(HistoryStateUtilTest, TestBlobUrlHistoryStateChange) {

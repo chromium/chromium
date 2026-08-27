@@ -156,10 +156,10 @@ GURL URLEscapedForHistory(const GURL& url) {
   const web::NavigationManagerImpl& navigationManagerImpl =
       webStateImpl->GetNavigationManagerImpl();
   web::NavigationItemImpl* navItem = navigationManagerImpl.GetCurrentItemImpl();
-  // ReplaceState happened before first navigation entry or called right
-  // after window.open when the url is empty/not valid.
-  if (!navItem || (navigationManagerImpl.GetItemCount() <= 1 &&
-                   navItem->GetURL().is_empty())) {
+  // ReplaceState happened before first navigation entry or called when the
+  // navigation entry does not contain a valid URL (for example, right after
+  // window.open when the url is empty/not valid).
+  if (!navItem || !navItem->GetURL().is_valid()) {
     return;
   }
   if (!web::history_state_util::IsHistoryStateChangeValid(navItem->GetURL(),
