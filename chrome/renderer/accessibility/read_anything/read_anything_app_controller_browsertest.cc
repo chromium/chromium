@@ -4832,6 +4832,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
             ReadAnythingAppModel::DistillationMethod::kReadability);
   EXPECT_EQ(model().next_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -5986,6 +5988,7 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   std::string stale_content = "<div>Old stale article content</div>";
   controller().UpdateContent("Old Title", stale_content);
   model().set_requires_readability_distillation(true);
+  model().set_readability_distillation_complete_for_current_tree(false);
 
   // Sanity check: Ensure content is actually there before we start.
   ASSERT_EQ(controller().GetDomDistillerContentHtml(), stale_content);
@@ -5996,6 +5999,84 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   EXPECT_FALSE(model().requires_readability_distillation());
   EXPECT_TRUE(controller().GetDomDistillerContentHtml().empty());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       ProcessModelUpdates_Readability_AvoidsRedundantDistillation) {
+  // Set up an active tree with a valid URL.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://example.com/page");
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Complete a readability distillation on this tree.
+  controller().UpdateContent("Title", "<div>Some distilled content</div>");
+  ASSERT_TRUE(model().readability_distillation_complete_for_current_tree());
+
+  // Now, request readability distillation again (mimicking kLoadComplete).
+  model().set_requires_readability_distillation(true);
+
+  // Since the URL of the active tree is still "https://example.com/page",
+  // RequestReadabilityDistillation() should NOT be called.
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(0);
+
+  ProcessModelUpdates();
+
+  // The model's completed flag remains true.
+  EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
+}
+
+TEST_F(
+    ReadAnythingAppControllerReadabilitySelectTextTest,
+    ProcessModelUpdates_Readability_SameDocumentNavigationTriggersDistillation) {
+  // Set up an active tree with URL Page 1.
+  ui::AXTreeUpdate update1;
+  test::SetUpdateTreeID(&update1, tree_id_);
+  ui::AXNodeData root1;
+  root1.id = 1;
+  root1.role = ax::mojom::Role::kRootWebArea;
+  root1.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                           "https://example.com/page1");
+  update1.root_id = root1.id;
+  update1.nodes = {std::move(root1)};
+  AccessibilityEventReceived({std::move(update1)});
+
+  // Complete a readability distillation on Page 1.
+  controller().UpdateContent("Title 1", "<div>Page 1 content</div>");
+  ASSERT_TRUE(model().readability_distillation_complete_for_current_tree());
+
+  // Simulate a same-document / SPA navigation to Page 2.
+  // The AXTree ID (tree_id_) remains the same, but the URL on the root node is
+  // updated.
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, tree_id_);
+  ui::AXNodeData root2;
+  root2.id = 1;
+  root2.role = ax::mojom::Role::kRootWebArea;
+  root2.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                           "https://example.com/page2");
+  update2.root_id = root2.id;
+  update2.nodes = {std::move(root2)};
+  AccessibilityEventReceived({std::move(update2)});
+
+  // Set readability distillation to required again (e.g.,
+  // kDocumentTitleChanged/etc).
+  model().set_requires_readability_distillation(true);
+
+  // Since the URL changed to "https://example.com/page2",
+  // RequestReadabilityDistillation() SHOULD be called.
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation()).Times(1);
+
+  ProcessModelUpdates();
+
+  // The model requires_readability_distillation should be reset back to false.
+  EXPECT_FALSE(model().requires_readability_distillation());
 }
 
 TEST_F(ReadAnythingAppControllerTest,

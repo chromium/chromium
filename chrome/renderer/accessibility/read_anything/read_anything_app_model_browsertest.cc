@@ -1640,6 +1640,109 @@ TEST_F(
   EXPECT_TRUE(model().requires_readability_distillation());
 }
 
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       ResetDistillationCompleteIfNeeded_SameUrl) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Initial setup of active tree with URL: https://example.com/page1
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://example.com/page1");
+  update.nodes = {root};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+
+  // Mark initial distillation complete (stores "https://example.com/page1").
+  model().set_readability_distillation_complete_for_current_tree(true);
+
+  // Trigger same URL event check.
+  model().ResetDistillationCompleteIfNeeded();
+
+  // The distillation should remain complete.
+  EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       ResetDistillationCompleteIfNeeded_SameUrlWithRef) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Initial setup of active tree with URL: https://example.com/page1
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://example.com/page1");
+  update.nodes = {root};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+
+  // Mark initial distillation complete.
+  model().set_readability_distillation_complete_for_current_tree(true);
+
+  // Update URL to include a hash ref fragment.
+  ui::AXTreeUpdate update_ref;
+  test::SetUpdateTreeID(&update_ref, tree_id_);
+  update_ref.root_id = 1;
+  ui::AXNodeData root_ref = root;
+  root_ref.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                              "https://example.com/page1#section1");
+  update_ref.nodes = {root_ref};
+  ApplyAccessibilityUpdates(tree_id_, {update_ref});
+
+  // Trigger the same-document check.
+  model().ResetDistillationCompleteIfNeeded();
+
+  // Hash fragment changes are ignored; distillation should remain complete.
+  EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       ResetDistillationCompleteIfNeeded_DifferentUrl) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Initial setup of active tree with URL: https://example.com/page1
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://example.com/page1");
+  update.nodes = {root};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+
+  // Mark initial distillation complete.
+  model().set_readability_distillation_complete_for_current_tree(true);
+
+  // Update URL to a different page on the same active tree (simulating SPA
+  // navigation).
+  ui::AXTreeUpdate update_diff;
+  test::SetUpdateTreeID(&update_diff, tree_id_);
+  update_diff.root_id = 1;
+  ui::AXNodeData root_diff = root;
+  root_diff.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                               "https://example.com/page2");
+  update_diff.nodes = {root_diff};
+  ApplyAccessibilityUpdates(tree_id_, {update_diff});
+
+  // Trigger the same-document check.
+  model().ResetDistillationCompleteIfNeeded();
+
+  // Different URL requires a new distillation; complete flag must reset to
+  // false.
+  EXPECT_FALSE(model().readability_distillation_complete_for_current_tree());
+}
+
 TEST_F(ReadAnythingAppModelTest, IsWhatsNew_FalseForOtherPage) {
   ui::AXTreeID tree_id = SetupTree("https://www.google.com");
   model().SetRootTreeId(tree_id);
@@ -2461,6 +2564,26 @@ TEST_F(ReadAnythingAppModelTest, MaybeHasKeyPointsSection_ReturnsFalseForH1) {
   model().SetActiveTreeId(tree_id_);
 
   EXPECT_FALSE(model().MaybeHasKeyPointsSection());
+}
+
+TEST_F(ReadAnythingAppModelTest, GetActiveTreeUrl) {
+  // Returns an empty GURL when there is no URL on the active tree root.
+  EXPECT_TRUE(model().GetActiveTreeUrl().is_empty());
+
+  // Set up an active tree with a valid URL on the root node.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://www.example.com/page");
+  update.nodes = {root};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+
+  // Verify it retrieves the URL.
+  EXPECT_EQ(model().GetActiveTreeUrl(), GURL("https://www.example.com/page"));
 }
 
 // Explicitly tests behavior when Screen2x is the next distillation method.

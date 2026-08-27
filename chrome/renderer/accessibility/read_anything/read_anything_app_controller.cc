@@ -710,8 +710,21 @@ void ReadAnythingAppController::ProcessModelUpdates() {
   }
 
   if (IsReadabilityEnabled() && model_.requires_readability_distillation()) {
-    PrepareForNewContentDistillation();
-    page_handler_->RequestReadabilityDistillation();
+    // Readability distillation is triggered immediately when the active tree
+    // changes. Subsequent page events like kLoadComplete also
+    // request distillation (primarily to handle same-document or SPA
+    // navigations where the active AXTree ID remains the same).
+    //
+    // Check if the distillation request can be safely filtered out to avoid
+    // re-distilling a page that has already successfully loaded.
+    model_.ResetDistillationCompleteIfNeeded();
+    if (model_.readability_distillation_complete_for_current_tree()) {
+      // Clear the distillation flag as no further distillation is needed.
+      model_.set_requires_readability_distillation(false);
+    } else {
+      PrepareForNewContentDistillation();
+      page_handler_->RequestReadabilityDistillation();
+    }
   }
 
   if (model_.redraw_required()) {
@@ -894,6 +907,7 @@ void ReadAnythingAppController::PrepareForNewContentDistillation() {
   active_tree_changed_start_time_ = base::TimeTicks::Now();
 
   model_.set_requires_readability_distillation(false);
+  model_.set_readability_distillation_complete_for_current_tree(false);
 
   // TODO: crbug.com/526701545: Show Loading screen when re-distilling.
 
@@ -3382,6 +3396,8 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
     VLOG(1) << "Distillation terminated because speech is playing";
     return;
   }
+
+  model_.set_readability_distillation_complete_for_current_tree(true);
 
   // Set both active and target distillation to readability since distillation
   // was successful.
