@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -39,6 +38,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/android/policy_service_android.h"
@@ -476,7 +476,7 @@ PolicyBundle PolicyServiceImpl::MergePolicyBundles(
 #if BUILDFLAG(IS_CHROMEOS)
     chrome_apps_migrator.Migrate(&chrome_clone);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    bundle.Get(chrome_namespace).MergeFrom(chrome_clone);
+    bundle.Get(chrome_namespace).MergeFrom(std::move(chrome_clone));
   }
 
   auto& chrome_policies = bundle.Get(chrome_namespace);

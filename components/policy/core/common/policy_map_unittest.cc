@@ -43,11 +43,9 @@ const char kTestPolicyName8[] = "policy.test.8";
 // Dummy error message.
 const char16_t kTestError[] = u"Test error message";
 
-const PolicyDetails kExternalDetails_ =
-  {
+const PolicyDetails kExternalDetails_ = {
     false, false, false, kProfile, kSourceRestrictionNone, 0, 10, {}};
-const PolicyDetails kNonExternalDetails_ =
-  {
+const PolicyDetails kNonExternalDetails_ = {
     false, false, false, kProfile, kSourceRestrictionNone, 0, 0, {}};
 #if !BUILDFLAG(IS_CHROMEOS)
 const PolicyDetails kUsesLocalStateAndProfilePrefsDetails = {
@@ -71,8 +69,9 @@ void SetPolicy(PolicyMap* map,
 template <class T>
 base::ListValue GetList(const std::vector<T>& entry) {
   base::ListValue result;
-  for (const auto& it : entry)
+  for (const auto& it : entry) {
     result.Append(it);
+  }
   return result;
 }
 
@@ -1657,6 +1656,40 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
   policy_map_1.MergeFrom(policy_map_2);
 
   EXPECT_TRUE(policy_map_1.Equals(policy_map_expected));
+}
+
+TEST_F(PolicyMapTest, MergeFromRvalueMatchesConstReference) {
+  PolicyMap destination;
+  destination.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                  POLICY_SOURCE_CLOUD, base::Value("destination"), nullptr);
+  destination.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                  base::Value("default"), nullptr);
+
+  PolicyMap source;
+  source.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+             POLICY_SOURCE_CLOUD, base::Value("source"), nullptr);
+  source.Set(kTestPolicyName2, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+             POLICY_SOURCE_CLOUD, std::nullopt,
+             CreateExternalDataFetcher("external"));
+  source.Set(kTestPolicyName3, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+             POLICY_SOURCE_PLATFORM, base::Value("platform"), nullptr);
+  source.Set(key::kCloudPolicyOverridesPlatformPolicy, POLICY_LEVEL_MANDATORY,
+             POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM, base::Value(true),
+             nullptr);
+
+  PolicyMap copied_destination = destination.Clone();
+  PolicyMap copied_source = source.Clone();
+  const ExternalDataFetcher* external_data_fetcher =
+      source.Get(kTestPolicyName2)->external_data_fetcher.get();
+
+  copied_destination.MergeFrom(copied_source);
+  destination.MergeFrom(std::move(source));
+
+  EXPECT_TRUE(destination.Equals(copied_destination));
+  ASSERT_TRUE(destination.Get(kTestPolicyName2));
+  EXPECT_EQ(external_data_fetcher,
+            destination.Get(kTestPolicyName2)->external_data_fetcher.get());
 }
 
 TEST_P(PolicyMapMergeTest, MergeFrom_Metapolicies) {

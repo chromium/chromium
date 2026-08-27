@@ -277,19 +277,16 @@ class POLICY_EXPORT PolicyMap {
   PolicyMap CloneIf(
       const base::RepeatingCallback<bool(const_reference)>& filter) const;
 
-  // Helper method used to merge entries corresponding to the same policy.
-  // Setting |using_default_precedence| to true results in external factors,
-  // such as the value of precedence metapolicies and user affiliation, to be
-  // considered during the priority check.
-  void MergePolicy(const std::string& policy_name,
-                   const PolicyMap& other,
-                   bool using_default_precedence);
-
   // Merges policies from |other| into |this|. Existing policies are only
   // overridden by those in |other| if they have a higher priority, as defined
   // by EntryHasHigherPriority(). If a policy is contained in both maps with the
   // same priority, the current value in |this| is preserved.
   void MergeFrom(const PolicyMap& other);
+
+  // Merges policies from |other| into |this|, transferring ownership of
+  // entries instead of copying them. The caller must not rely on the contents
+  // of |other| after this call.
+  void MergeFrom(PolicyMap&& other);
 
   // Merge the policy values that are coming from different sources.
   void MergeValues(const std::vector<PolicyMerger*>& mergers);
@@ -361,6 +358,15 @@ class POLICY_EXPORT PolicyMap {
   // or NULL if not found. Ownership is retained by the PolicyMap.
   const Entry* GetUntrusted(const std::string& policy) const;
   Entry* GetMutableUntrusted(const std::string& policy);
+
+  // Merges a single incoming entry. If |movable_other_policy| is non-null,
+  // ownership is transferred from it whenever the entry must be retained.
+  void MergePolicy(const std::string& policy_name,
+                   const Entry& other_policy,
+                   Entry* movable_other_policy,
+                   bool using_default_precedence);
+
+  void MergeFromInternal(const PolicyMap& other, PolicyMap* movable_other);
 
   // Helper function for Equals().
   static bool MapEntryEquals(const_reference& a, const_reference& b);
