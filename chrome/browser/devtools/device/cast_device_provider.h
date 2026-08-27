@@ -45,6 +45,12 @@ class CastDeviceProvider
   void OnDeviceCacheFlushed(const std::string& service_type) override;
   void OnPermissionRejected() override;
 
+  void OnDeviceChangedWithPref(
+      const std::string& service_type,
+      bool added,
+      const local_discovery::ServiceDescription& service_description,
+      bool allow_all_ips);
+
  private:
   class DeviceListerDelegate;
   friend class CastDeviceProviderTest;

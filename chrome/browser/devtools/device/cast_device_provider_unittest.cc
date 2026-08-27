@@ -132,6 +132,75 @@ TEST_F(CastDeviceProviderTest, ServiceDiscovery) {
   ASSERT_FALSE(was_run);
 }
 
+TEST_F(CastDeviceProviderTest, LoopbackAddressIgnored) {
+  const std::string cast_service_type = "_googlecast._tcp.local";
+  const std::string loopback_host = "127.0.0.1";
+
+  ServiceDescription cast_service;
+  cast_service.service_name = "abcdefgh." + cast_service_type;
+  cast_service.address = net::HostPortPair(loopback_host, 8009);
+  cast_service.metadata.push_back("md=Fake Cast Device");
+  cast_service.metadata.push_back("fn=FakeCast1337");
+  ASSERT_TRUE(cast_service.ip_address.AssignFromIPLiteral(loopback_host));
+  ASSERT_TRUE(cast_service.ip_address.IsLoopback());
+
+  device_provider()->OnDeviceChanged(cast_service_type, true, cast_service);
+
+  // Cast devices are expected to be on the local network, so a service
+  // resolving to a publicly routable address must not be added.
+  EXPECT_TRUE(service_hostname_map().empty());
+  bool was_run = false;
+  device_provider()->QueryDeviceInfo(loopback_host,
+                                     base::BindOnce(&DummyCallback, &was_run));
+  EXPECT_FALSE(was_run);
+}
+
+TEST_F(CastDeviceProviderTest, PubliclyRoutableAddressIgnored) {
+  const std::string cast_service_type = "_googlecast._tcp.local";
+  const std::string public_host = "8.8.8.8";
+
+  ServiceDescription cast_service;
+  cast_service.service_name = "abcdefgh." + cast_service_type;
+  cast_service.address = net::HostPortPair(public_host, 8009);
+  cast_service.metadata.push_back("md=Fake Cast Device");
+  cast_service.metadata.push_back("fn=FakeCast1337");
+  ASSERT_TRUE(cast_service.ip_address.AssignFromIPLiteral(public_host));
+  ASSERT_TRUE(cast_service.ip_address.IsPubliclyRoutable());
+
+  device_provider()->OnDeviceChanged(cast_service_type, true, cast_service);
+
+  // Cast devices are expected to be on the local network, so a service
+  // resolving to a publicly routable address must not be added.
+  EXPECT_TRUE(service_hostname_map().empty());
+  bool was_run = false;
+  device_provider()->QueryDeviceInfo(public_host,
+                                     base::BindOnce(&DummyCallback, &was_run));
+  EXPECT_FALSE(was_run);
+}
+
+TEST_F(CastDeviceProviderTest, PubliclyRoutableAddressAcceptedWhenAllowed) {
+  const std::string cast_service_type = "_googlecast._tcp.local";
+  const std::string public_host = "8.8.8.8";
+
+  ServiceDescription cast_service;
+  cast_service.service_name = "abcdefgh." + cast_service_type;
+  cast_service.address = net::HostPortPair(public_host, 8009);
+  cast_service.metadata.push_back("md=Fake Cast Device");
+  cast_service.metadata.push_back("fn=FakeCast1337");
+  ASSERT_TRUE(cast_service.ip_address.AssignFromIPLiteral(public_host));
+  ASSERT_TRUE(cast_service.ip_address.IsPubliclyRoutable());
+
+  // Call OnDeviceChangedWithPref directly with allow_all_ips=true.
+  device_provider()->OnDeviceChangedWithPref(cast_service_type, true, cast_service, true);
+
+  // The service should be added since allow_all_ips is true.
+  EXPECT_FALSE(service_hostname_map().empty());
+  bool was_run = false;
+  device_provider()->QueryDeviceInfo(public_host,
+                                     base::BindOnce(&DummyCallback, &was_run));
+  EXPECT_TRUE(was_run);
+}
+
 TEST_F(CastDeviceProviderTest, OnPermissionRejected) {
   SimulateAddDeviceToHostnameMap();
   EXPECT_FALSE(service_hostname_map().empty());

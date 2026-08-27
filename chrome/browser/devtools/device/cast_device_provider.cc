@@ -16,7 +16,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -118,10 +120,15 @@ class CastDeviceProvider::DeviceListerDelegate final
   void OnDeviceChanged(const std::string& service_type,
                        bool added,
                        const ServiceDescription& service_description) override {
+    bool allow_all_ips = false;
+    if (g_browser_process && g_browser_process->local_state()) {
+      allow_all_ips = media_router::GetCastAllowAllIPsPref(
+          g_browser_process->local_state());
+    }
     runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&CastDeviceProvider::OnDeviceChanged, provider_,
-                       service_type, added, service_description));
+        base::BindOnce(&CastDeviceProvider::OnDeviceChangedWithPref, provider_,
+                       service_type, added, service_description, allow_all_ips));
   }
 
   void OnDeviceRemoved(const std::string& service_type,
@@ -196,13 +203,25 @@ void CastDeviceProvider::OnDeviceChanged(
     const std::string& service_type,
     bool added,
     const ServiceDescription& service_description) {
+  OnDeviceChangedWithPref(service_type, added, service_description, false);
+}
+
+void CastDeviceProvider::OnDeviceChangedWithPref(
+    const std::string& service_type,
+    bool added,
+    const ServiceDescription& service_description,
+    bool allow_all_ips) {
   VLOG(1) << "Device " << (added ? "added: " : "changed: ")
           << service_description.service_name;
   if (service_description.service_type() != kCastServiceType)
     return;
   const net::IPAddress& ip_address = service_description.ip_address;
-  if (!ip_address.IsValid()) {
-    // An invalid IP address is not queryable.
+  if (!ip_address.IsValid() ||
+      (!allow_all_ips &&
+       (ip_address.IsPubliclyRoutable() || ip_address.IsLoopback()))) {
+    // Cast devices are discovered via mDNS and are expected to be on the local
+    // network, so only valid non-publicly-routable addresses are accepted.
+    // Requirements should match CastMediaSinkServiceImpl::OpenChannel.
     return;
   }
   const std::string& name = service_description.service_name;
