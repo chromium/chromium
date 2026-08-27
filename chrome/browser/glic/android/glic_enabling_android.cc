@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/android/jni_headers/GlicEnabling_jni.h"
@@ -14,6 +18,18 @@
 #include "components/prefs/pref_service.h"
 
 namespace glic {
+
+namespace {
+std::vector<
+    std::unique_ptr<GlicEnabling::ScopedBypassEnablementChecksForTesting>>&
+GetScopedBypassStack() {
+  static base::NoDestructor<std::vector<
+      std::unique_ptr<GlicEnabling::ScopedBypassEnablementChecksForTesting>>>
+      stack;
+  return *stack;
+}
+}  // namespace
+
 bool JNI_GlicEnabling_IsEnabledByFlags(JNIEnv* env) {
   return GlicEnabling::IsEnabledByGlobalCriteria();
 }
@@ -61,7 +77,13 @@ bool JNI_GlicEnabling_IsPolicyEnforced(JNIEnv* env, Profile* profile) {
 
 void JNI_GlicEnabling_SetBypassEnablementChecksForTesting(JNIEnv* env,
                                                           bool bypass) {
-  GlicEnabling::SetBypassEnablementChecksForTesting(bypass);
+  auto& stack = GetScopedBypassStack();
+  if (bypass) {
+    stack.push_back(std::make_unique<
+                    GlicEnabling::ScopedBypassEnablementChecksForTesting>());
+  } else if (!stack.empty()) {
+    stack.pop_back();
+  }
 }
 }  // namespace glic
 DEFINE_JNI(GlicEnabling)

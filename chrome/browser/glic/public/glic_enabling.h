@@ -553,10 +553,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     base::AutoReset<bool> auto_reset_;
   };
 
-  // Test-only method to bypass enablement checks. Prefer using
-  // ScopedBypassEnablementChecksForTesting in tests.
-  static void SetBypassEnablementChecksForTesting(bool bypass);
-
   // Test-only method to bypass system requirement checks.
   static void SetSystemRequirementMetForTesting(std::optional<bool> met);
 

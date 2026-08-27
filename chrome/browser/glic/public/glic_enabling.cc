@@ -544,11 +544,6 @@ GlicEnabling::ScopedBypassEnablementChecksForTesting::
     ~ScopedBypassEnablementChecksForTesting() = default;
 
 // static
-void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
-  g_bypass_enablement_checks_for_testing = bypass;
-}
-
-// static
 void GlicEnabling::SetSystemRequirementMetForTesting(std::optional<bool> met) {
   g_system_requirement_met_for_testing = met;
 }
