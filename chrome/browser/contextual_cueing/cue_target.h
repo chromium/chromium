@@ -31,7 +31,8 @@ namespace contextual_cueing {
 enum class CueTargetType {
   kGlic = 0,
   kTestSource = 1,
-  kMaxValue = kTestSource
+  kIndigo = 2,
+  kMaxValue = kIndigo
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueTargetType)
 

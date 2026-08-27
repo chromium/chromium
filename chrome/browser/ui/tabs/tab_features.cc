@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
@@ -714,6 +715,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     indigo_page_action_controller_ =
         std::make_unique<indigo::IndigoPageActionController>(
             tab, *page_action_controller_);
+    if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2) &&
+        base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2)) {
+      indigo::IndigoCueTarget::Register(tab);
+    }
   }
 }
 

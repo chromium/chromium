@@ -1934,5 +1934,187 @@ TEST_F(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
                                       1);
 }
 
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityForced) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(kForceIndigoSwitch);
+
+  CreateController();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// ChromeOS profiles in browser tests have multi profiles.
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityNotLocallyEligible) {
+  CreateController();
+  // Ensure not locally eligible.
+  identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+#endif
+
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityOptGuideTrue) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  // Navigate to set the state.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       CheckEligibilityOptGuideFalseNoHeuristic) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kIndigoMetadataKeywordHeuristic);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kFalse);
+
+  // Navigate.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       CheckEligibilityOptGuideFalseHeuristicTrue) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+  SetupHeuristicConfig();
+
+  // URL in allowlist for heuristic, but OptGuide will say False.
+  GURL url("https://allowed1.com/product1");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kFalse);
+
+  FakeDocumentMetadata fake_metadata;
+  auto result = blink::mojom::ProductClassificationResult::New();
+  result->allowed_keyword_found = true;
+  result->blocked_keyword_found = false;
+  fake_metadata.SetResult(std::move(result));
+
+  auto* rfh = tab_interface_->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+  content::RenderFrameHostTester::For(rfh)->InitializeRenderFrameIfNeeded();
+  auto* remote_interfaces = rfh->GetRemoteInterfaces();
+  ASSERT_TRUE(remote_interfaces);
+
+  mojo::Receiver<blink::mojom::DocumentMetadata> receiver(&fake_metadata);
+  service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
+  test_api.SetBinderForName(
+      blink::mojom::DocumentMetadata::Name_,
+      base::BindRepeating(
+          [](mojo::Receiver<blink::mojom::DocumentMetadata>* receiver,
+             mojo::ScopedMessagePipeHandle pipe) {
+            receiver->Bind(
+                mojo::PendingReceiver<blink::mojom::DocumentMetadata>(
+                    std::move(pipe)));
+          },
+          base::Unretained(&receiver)));
+
+  // Navigate.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+
+  // Expect true because heuristic says true.
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingOptGuide) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  GURL url("https://example.com");
+
+  optimization_guide::OptimizationGuideDecisionCallback opt_guide_callback;
+  EXPECT_CALL(
+      *mock_optimization_guide_,
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::INDIGO,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(
+          [&opt_guide_callback](
+              const GURL& url,
+              optimization_guide::proto::OptimizationType optimization_type,
+              optimization_guide::OptimizationGuideDecisionCallback callback) {
+            opt_guide_callback = std::move(callback);
+          });
+
+  // Navigate.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  std::move(opt_guide_callback)
+      .Run(OptimizationGuideDecision::kTrue,
+           optimization_guide::OptimizationMetadata());
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(IndigoPageActionControllerTest, CheckEligibilityPendingTimeout) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  GURL url("https://example.com");
+
+  optimization_guide::OptimizationGuideDecisionCallback opt_guide_callback;
+  EXPECT_CALL(
+      *mock_optimization_guide_,
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::INDIGO,
+          testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(
+          [&opt_guide_callback](
+              const GURL& url,
+              optimization_guide::proto::OptimizationType optimization_type,
+              optimization_guide::OptimizationGuideDecisionCallback callback) {
+            opt_guide_callback = std::move(callback);
+          });
+
+  // Navigate.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::test::TestFuture<bool> future;
+  controller_->CheckEligibility(future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
 }  // namespace
 }  // namespace indigo

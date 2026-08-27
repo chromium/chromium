@@ -27,6 +27,8 @@ const char* GetName(CueTargetType type) {
       return "Glic";
     case CueTargetType::kTestSource:
       return "TestSource";
+    case CueTargetType::kIndigo:
+      return "Indigo";
   }
 }
 

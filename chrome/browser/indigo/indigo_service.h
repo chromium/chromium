@@ -170,6 +170,9 @@ class IndigoService : public KeyedService,
 
   void SetRemoteEligibilityFetcherForTesting(RemoteEligibilityFetcher fetcher);
   void SetPromptsLoadedCallbackForTesting(base::OnceClosure callback);
+  void SetLocalEligibilityForTesting(LocalEligibility eligibility) {
+    last_known_local_eligibility_ = eligibility;
+  }
 
  private:
   LocalEligibility ComputeLocalEligibility() const;

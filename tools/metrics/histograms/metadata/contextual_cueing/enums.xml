@@ -323,6 +323,7 @@ chromium-metrics-reviews@google.com.
 <enum name="CueTargetType">
   <int value="0" label="Glic"/>
   <int value="1" label="Test Source"/>
+  <int value="2" label="Indigo"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/cue_target.h:CueTargetType) -->

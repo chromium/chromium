@@ -18,6 +18,7 @@ source_set("indigo") {
   sources = [
     "api_client.h",
     "indigo_agent_host.h",
+    "indigo_cue_target.h",
     "indigo_extension_utils.h",
     "indigo_image_replacement.h",
     "indigo_image_replacement_manager.h",
@@ -30,6 +31,7 @@ source_set("indigo") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/tabs",
@@ -37,6 +39,7 @@ source_set("indigo") {
     "//chrome/common:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",
@@ -54,6 +57,7 @@ source_set("impl") {
   sources = [
     "api_client.cc",
     "indigo_agent_host.cc",
+    "indigo_cue_target.cc",
     "indigo_extension_utils.cc",
     "indigo_image_replacement.cc",
     "indigo_image_replacement_manager.cc",
@@ -74,6 +78,8 @@ source_set("impl") {
     "//chrome/browser/enterprise",
     "//chrome/browser/extensions",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/indigo/onboarding",
     "//chrome/browser/indigo/resources:browser_resources",
     "//chrome/browser/indigo/resources:indigo_strings",
@@ -130,6 +136,7 @@ source_set("unit_tests") {
   sources = [
     "api_client_unittest.cc",
     "indigo_agent_host_unittest.cc",
+    "indigo_cue_target_unittest.cc",
     "indigo_menu_model_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
     "indigo_service_unittest.cc",
@@ -142,6 +149,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/component_updater",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/extensions",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/indigo/onboarding",
@@ -151,6 +159,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/views/page_action:test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
     "//components/skills/mocks",
     "//services/network:test_support",
     "//services/network/public/cpp",

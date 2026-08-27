@@ -43,6 +43,8 @@ class IndigoOnboardingDialog;
 struct OnboardingResult;
 class IndigoService;
 
+extern const char kForceIndigoSwitch[];
+
 // LINT.IfChange(IndigoTransformationResult)
 
 // Results of Indigo action invocation.
@@ -170,6 +172,14 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Opens the settings page for Indigo.
   virtual void OpenSettings();
 
+  using EligibilityCallback = base::OnceCallback<void(bool)>;
+
+  // Evaluates page-level eligibility for this tab. If the decision is already
+  // known for the current navigation, resolves immediately. Otherwise, stores
+  // the callback and waits until the decision arrives, page navigates, or a
+  // time out occurs.
+  void CheckEligibility(EligibilityCallback callback);
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -228,20 +238,37 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
       controller_->last_anchored_message_priority_ = priority;
     }
 
+    void SetHeuristicResultForTesting(std::optional<bool> result) {
+      controller_->heuristic_result_ = result;
+    }
+
+    void SetOptimizationGuideDecisionForTesting(
+        optimization_guide::OptimizationGuideDecision decision) {
+      controller_->optimization_guide_decision_ = decision;
+    }
+
    private:
     raw_ptr<IndigoPageActionController> controller_;
   };
 
  private:
+  // Returns the primary main frame if it is live and eligible for
+  // classification.
+  content::RenderFrameHost* GetLiveMainFrameIfEligible();
+
   // Resets the page triggering and classification state.
   void ResetTriggeringState();
 
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
 
-  // Determines the source that triggered the Indigo page action, if it should
-  // be shown. Returns std::nullopt if the page action should not be shown.
-  std::optional<IndigoTriggerSource> DetermineTriggerSource() const;
+  struct TriggerEvaluation {
+    bool is_pending = false;
+    std::optional<IndigoTriggerSource> source;
+  };
+
+  // Evaluates the current trigger state.
+  TriggerEvaluation EvaluateTriggerState() const;
 
   // Shows the onboarding dialog with the appropriate URL based on disposition.
   void ShowOnboardingDialog(OnboardingDisposition disposition,
@@ -351,12 +378,20 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void ClearTrackedBoundsAndHideToolbar();
   void TriggerMetadataClassification();
   void OnProductClassified(blink::mojom::ProductClassificationResultPtr result);
+  void ResolvePendingEligibilityCallbacks(bool eligible);
+  void OnEligibilityTimeout();
 
   raw_ptr<content::RenderWidgetHost> current_host_ = nullptr;
 
-  // True if the metadata heuristic determined this page has an allowed
-  // category.
-  bool page_has_allowed_category_by_heuristic_ = false;
+  // Result of the metadata classification heuristic.
+  // std::nullopt if classification is pending or not started.
+  // true/false if classification completed with/without finding allowed
+  // keywords.
+  std::optional<bool> heuristic_result_;
+
+  // Pending callbacks for CheckEligibility.
+  std::vector<EligibilityCallback> pending_eligibility_callbacks_;
+  base::OneShotTimer eligibility_timeout_timer_;
 
   // Remote to the Blink-side metadata extraction service.
   mojo::Remote<blink::mojom::DocumentMetadata> metadata_remote_;
