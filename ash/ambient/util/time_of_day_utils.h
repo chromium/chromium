@@ -15,28 +15,9 @@
 
 namespace ash {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// See enum AmbientDlcError in tools/metrics/histograms/ash/enums.xml.
-enum class DlcError {
-  kUnknown = 0,
-  kNone = 1,
-  kInternal = 2,
-  kBusy = 3,
-  kNeedReboot = 4,
-  kInvalidDlc = 5,
-  kAllocation = 6,
-  kNoImageFound = 7,
-  kMaxValue = kNoImageFound,
-};
-
 // Returns full path to the html required to render the TimeOfDay screen saver.
 // The returned path will be empty if an error occurred and the html is
 // temporarily unavailable.
-//
-// `dlc_metrics_label` is part of the UMA metric name
-// ("Ash.AmbientMode.VideoDlcInstall.<dlc_metrics_label>.Error") that tracks the
-// success/failure of the DLC installation performed within this function.
 ASH_EXPORT void GetAmbientVideoHtmlPath(
     std::string dlc_metrics_label,
     base::OnceCallback<void(base::FilePath)> on_done);

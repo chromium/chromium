@@ -12,14 +12,11 @@
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -29,35 +26,11 @@ namespace ash {
 
 namespace {
 
-DlcError ConvertToDlcErrorEnum(const std::string& error_str) {
-  const base::flat_map<std::string, DlcError> error_mapping = {
-      {dlcservice::kErrorNone, DlcError::kNone},
-      {dlcservice::kErrorInternal, DlcError::kInternal},
-      {dlcservice::kErrorBusy, DlcError::kBusy},
-      {dlcservice::kErrorNone, DlcError::kNone},
-      {dlcservice::kErrorNeedReboot, DlcError::kNeedReboot},
-      {dlcservice::kErrorInvalidDlc, DlcError::kInvalidDlc},
-      {dlcservice::kErrorAllocation, DlcError::kAllocation},
-      {dlcservice::kErrorNoImageFound, DlcError::kNoImageFound}};
-  auto error_found_iter = error_mapping.find(error_str);
-  if (error_found_iter != error_mapping.end()) {
-    return error_found_iter->second;
-  }
-  // Return unknown if we can't recognize the error.
-  LOG(ERROR) << "Wrong error message received from DLC Service";
-  return DlcError::kUnknown;
-}
-
-void OnInstallDlcComplete(const std::string& dlc_metrics_label,
-                          base::OnceCallback<void(base::FilePath)> on_done,
+void OnInstallDlcComplete(base::OnceCallback<void(base::FilePath)> on_done,
                           const DlcserviceClient::InstallResult& result) {
   CHECK(on_done);
   VLOG(1) << "Finished installing " << kTimeOfDayDlcId << " with error code "
           << result.error;
-  base::UmaHistogramEnumeration(
-      base::StringPrintf("Ash.AmbientMode.VideoDlcInstall.%s.Error",
-                         dlc_metrics_label.c_str()),
-      ConvertToDlcErrorEnum(result.error));
   base::FilePath install_dir;
   if (result.error == dlcservice::kErrorNone) {
     install_dir = base::FilePath(result.root_path);
@@ -85,18 +58,15 @@ void BuildAmbientVideoHtmlPath(base::OnceCallback<void(base::FilePath)> on_done,
 // located. Returns an empty `base::FilePath` if the install fails.
 //
 // This is a successful no-op if the DLC is already installed.
-void InstallTimeOfDayDlc(std::string dlc_metrics_label,
-                         base::OnceCallback<void(base::FilePath)> on_done) {
+void InstallTimeOfDayDlc(base::OnceCallback<void(base::FilePath)> on_done) {
   DlcserviceClient* client = DlcserviceClient::Get();
   CHECK(client);
   dlcservice::InstallRequest install_request;
   install_request.set_id(kTimeOfDayDlcId);
   VLOG(1) << "Installing " << kTimeOfDayDlcId;
-  client->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(dlc_metrics_label),
-                     std::move(on_done)),
-      /*ProgressCallback=*/base::DoNothing());
+  client->Install(install_request,
+                  base::BindOnce(&OnInstallDlcComplete, std::move(on_done)),
+                  /*ProgressCallback=*/base::DoNothing());
 }
 
 // Whether the customization_id of this device is the special customization_id
@@ -113,7 +83,6 @@ bool IsJupiterCustomizationId() {
 void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
                              base::OnceCallback<void(base::FilePath)> on_done) {
   InstallTimeOfDayDlc(
-      std::move(dlc_metrics_label),
       base::BindOnce(&BuildAmbientVideoHtmlPath, std::move(on_done)));
 }
 
