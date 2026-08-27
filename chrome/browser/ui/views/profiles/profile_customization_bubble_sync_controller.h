@@ -10,6 +10,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -31,8 +32,15 @@ class ProfileCustomizationBubbleSyncController {
   };
   using ShowBubbleCallback = base::OnceCallback<void(Outcome outcome)>;
 
+  DECLARE_USER_DATA(ProfileCustomizationBubbleSyncController);
+
   ProfileCustomizationBubbleSyncController(BrowserWindowInterface* bwi,
                                            Profile* profile);
+
+  // Returns the controller for `bwi`'s window, or null if it does not have
+  // one.
+  static ProfileCustomizationBubbleSyncController* From(
+      BrowserWindowInterface* bwi);
   ~ProfileCustomizationBubbleSyncController();
 
   ProfileCustomizationBubbleSyncController(
@@ -63,6 +71,9 @@ class ProfileCustomizationBubbleSyncController {
   static bool CanThemeSyncStart(Profile* profile);
 
  private:
+  ui::ScopedUnownedUserData<ProfileCustomizationBubbleSyncController>
+      scoped_unowned_user_data_;
+
   // Note: Both `sync_service` and `theme_service` must outlive `this`.
   void ShowOnSyncFailedOrDefaultThemeInternal(
       SkColor suggested_profile_color,

@@ -496,8 +496,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   profile_customization_bubble_sync_controller_ =
-      std::make_unique<ProfileCustomizationBubbleSyncController>(browser,
-                                                                 profile);
+      GetUserDataFactory()
+          .CreateInstance<ProfileCustomizationBubbleSyncController>(
+              *browser, browser, profile);
   session_restore_infobar_controller_ =
       GetUserDataFactory()
           .CreateInstance<

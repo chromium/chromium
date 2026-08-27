@@ -57,10 +57,20 @@ bool ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
   return ProfileCustomizationSyncedThemeWaiter::CanThemeSyncStart(sync_service);
 }
 
+DEFINE_USER_DATA(ProfileCustomizationBubbleSyncController);
+
+// static
+ProfileCustomizationBubbleSyncController*
+ProfileCustomizationBubbleSyncController::From(BrowserWindowInterface* bwi) {
+  return Get(bwi->GetUnownedUserDataHost());
+}
+
 ProfileCustomizationBubbleSyncController::
     ProfileCustomizationBubbleSyncController(BrowserWindowInterface* bwi,
                                              Profile* profile)
-    : bwi_(CHECK_DEREF(bwi)), profile_(CHECK_DEREF(profile)) {}
+    : scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this),
+      bwi_(CHECK_DEREF(bwi)),
+      profile_(CHECK_DEREF(profile)) {}
 
 ProfileCustomizationBubbleSyncController::
     ~ProfileCustomizationBubbleSyncController() {

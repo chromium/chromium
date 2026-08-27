@@ -432,7 +432,7 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
 #if !BUILDFLAG(IS_CHROMEOS)
   signin_dialog_displayed_or_pending =
       signin_dialog_displayed_or_pending ||
-      browser_features.profile_customization_bubble_sync_controller()
+      ProfileCustomizationBubbleSyncController::From(&browser)
           ->IsWaitingForTheme();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (signin_dialog_displayed_or_pending) {

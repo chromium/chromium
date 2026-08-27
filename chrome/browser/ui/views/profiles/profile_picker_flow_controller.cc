@@ -120,7 +120,7 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
     // For sync users, their profile color has not been applied yet. Call a
     // helper class that applies the color and shows the bubble only if there is
     // no conflict with a synced theme / color.
-    features.profile_customization_bubble_sync_controller()
+    ProfileCustomizationBubbleSyncController::From(browser)
         ->ShowOnSyncFailedOrDefaultTheme(new_profile_color.value());
   } else {
     // For non syncing users, simply show the bubble.

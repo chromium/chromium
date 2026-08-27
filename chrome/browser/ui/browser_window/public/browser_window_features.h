@@ -392,13 +392,6 @@ class BrowserWindowFeatures {
     return pinned_toolbar_actions_;
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  ProfileCustomizationBubbleSyncController*
-  profile_customization_bubble_sync_controller() {
-    return profile_customization_bubble_sync_controller_.get();
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
   ProfileMenuCoordinator* profile_menu_coordinator() {
     return profile_menu_coordinator_.get();
   }
