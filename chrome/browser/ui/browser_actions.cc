@@ -474,53 +474,28 @@ void BrowserActions::InitializeSidePanelActions() {
     reading_mode_shortcut = reading_mode_accelerator.GetShortcutText();
   }
 
-  if (features::IsReadAnythingOmniboxChipEnabled() ||
-      features::IsImmersiveReadAnythingEnabled()) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  read_anything::ReadAnythingEntryPointController::
-                      InvokePageAction(bwi, context);
-                },
-                bwi))
-            .SetActionId(kActionSidePanelShowReadAnything)
-            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
-            .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
-                                                       reading_mode_shortcut))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? kMenuBookIcon
-                    : kMenuBookChromeRefreshOldIcon,
-                ui::kColorIcon))
-            .SetProperty(
-                actions::kActionItemPinnableKey,
-                static_cast<
-                    std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kPinnable))
-            .Build());
-  } else {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            CreateToggleSidePanelActionCallback(
-                SidePanelEntryKey(SidePanelEntryId::kReadAnything), bwi))
-            .SetActionId(kActionSidePanelShowReadAnything)
-            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
-            .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
-                                                       reading_mode_shortcut))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? kMenuBookIcon
-                    : kMenuBookChromeRefreshOldIcon,
-                ui::kColorIcon))
-            .SetProperty(
-                actions::kActionItemPinnableKey,
-                static_cast<
-                    std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kPinnable))
-            .Build());
-  }
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                read_anything::ReadAnythingEntryPointController::
+                    InvokePageAction(bwi, context);
+              },
+              bwi))
+          .SetActionId(kActionSidePanelShowReadAnything)
+          .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+          .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
+                                                     reading_mode_shortcut))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kMenuBookIcon
+                                                : kMenuBookChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .SetProperty(
+              actions::kActionItemPinnableKey,
+              static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+                  actions::ActionPinnableState::kPinnable))
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

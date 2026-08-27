@@ -299,10 +299,6 @@ AX_BASE_EXPORT bool IsReadAloudNativeEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXTreeFixing);
 AX_BASE_EXPORT bool IsAXTreeFixingEnabled();
 
-// Enable Immersive Mode for Read Anything.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImmersiveReadAnything);
-AX_BASE_EXPORT bool IsImmersiveReadAnythingEnabled();
-
 // Identify and annotate the main node of the AXTree where one was not already
 // provided.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);

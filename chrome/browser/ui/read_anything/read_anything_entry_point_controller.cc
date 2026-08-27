@@ -268,23 +268,13 @@ void ReadAnythingEntryPointController::ShowUI(
                                   open_trigger);
   }
 
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    // TODO(crbug.com/471001915): Once IRM flag is enabled by default, change
-    // IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, one of the triggers of this
-    // method, to reflect that it's opening Immersive mode instead of Side
-    // Panel.
-    if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
-      auto* controller = ReadAnythingController::From(tab);
-      CHECK(controller);
-      controller->ShowInPreferredUI(open_trigger);
-    }
-  } else {
-    SidePanelOpenTrigger side_panel_open_trigger =
-        ReadAnythingToSidePanelOpenTrigger(open_trigger);
-
-    bwi->GetFeatures().side_panel_ui()->Show(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything),
-        side_panel_open_trigger);
+  // TODO(crbug.com/471001915): Change IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+  // one of the triggers of this method, to reflect that it's opening Immersive
+  // mode instead of Side Panel.
+  if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+    auto* controller = ReadAnythingController::From(tab);
+    CHECK(controller);
+    controller->ShowInPreferredUI(open_trigger);
   }
 }
 
@@ -301,26 +291,17 @@ void ReadAnythingEntryPointController::ToggleUI(
                                   open_trigger);
   }
 
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
-      auto* controller = ReadAnythingController::From(tab);
-      CHECK(controller);
-      controller->ToggleUI(open_trigger);
-    }
-  } else {
-    SidePanelOpenTrigger side_panel_open_trigger =
-        ReadAnythingToSidePanelOpenTrigger(open_trigger);
-
-    bwi->GetFeatures().side_panel_ui()->Toggle(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything),
-        side_panel_open_trigger);
+  if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+    auto* controller = ReadAnythingController::From(tab);
+    CHECK(controller);
+    controller->ToggleUI(open_trigger);
   }
 }
 
 // static
 bool ReadAnythingEntryPointController::IsUIShowing(
     BrowserWindowInterface* bwi) {
-  if (!features::IsImmersiveReadAnythingEnabled() || !bwi) {
+  if (!bwi) {
     return IsReadAnythingEntryShowing(bwi);
   }
 

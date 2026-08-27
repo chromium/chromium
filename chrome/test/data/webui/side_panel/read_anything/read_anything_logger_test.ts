@@ -309,7 +309,6 @@ suite('Logger', () => {
   test(
       'logSpeechPlaySession records time with page type and view mode',
       async () => {
-        visualBrowserProxy.immersiveEnabled = true;
         const startTime = Date.now();
 
         visualBrowserProxy.pdf = false;

@@ -53,27 +53,19 @@ void RegisterReadAnythingProfilePrefs(
       prefs::kAccessibilityReadAnythingLinksEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityReadAnythingImagesEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  } else {
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityReadAnythingImagesEnabled, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityReadAnythingImagesEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   if (features::IsReadAnythingOmniboxChipEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    registry->RegisterIntegerPref(
-        prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
-        static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
-                             kInImmersiveOverlay),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(
       prefs::kAccessibilityReadAnythingRecentUsagesStartTimes,
       base::ListValue());

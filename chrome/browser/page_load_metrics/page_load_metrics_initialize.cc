@@ -315,10 +315,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   tracker->AddObserver(std::make_unique<ZstdPageLoadMetricsObserver>());
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    tracker->AddObserver(
-        std::make_unique<ReadAnythingSoftNavigationObserver>());
-  }
+  tracker->AddObserver(std::make_unique<ReadAnythingSoftNavigationObserver>());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

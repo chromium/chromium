@@ -98,7 +98,6 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   explicit ReadAnythingControllerBrowserTest(
       std::vector<base::test::FeatureRef> enabled_features = {},
       std::vector<base::test::FeatureRef> disabled_features = {}) {
-    enabled_features.push_back(features::kImmersiveReadAnything);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     enabled_features.push_back(features::kWasmTtsEngineAutoInstallDisabled);
 #endif

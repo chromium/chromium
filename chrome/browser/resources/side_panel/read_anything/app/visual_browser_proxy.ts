@@ -18,7 +18,6 @@ export interface VisualBrowserProxy {
   getInImmersiveOverlayPresentationState(): number;
   getInHiddenPresentationState(): number;
   getActivePresentationState(): number;
-  isImmersiveEnabled(): boolean;
   isReadAnythingImprovedUiEnabled(): boolean;
   isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean;
   isReadAnythingTranslateEntryPointEnabled(): boolean;
@@ -129,10 +128,6 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getActivePresentationState(): number {
     return chrome.readingMode.activePresentationState;
-  }
-
-  isImmersiveEnabled(): boolean {
-    return chrome.readingMode.isImmersiveEnabled;
   }
 
   isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean {

@@ -337,9 +337,6 @@ void ReadAnythingWebContentsObserver::DidFinishNavigation(
 }
 
 void ReadAnythingUntrustedPageHandler::MaybeUpdateImmersivePinStatus() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   CHECK(pinned_toolbar_);
   const bool is_pinned_in_toolbar =
       pinned_toolbar_->Contains(kActionSidePanelShowReadAnything);
@@ -383,26 +380,15 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 #else
   extension_wrapper_->ActivateSpeechEngine(profile_);
 #endif
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    read_anything_controller_ =
-        ReadAnythingControllerGlue::FromWebContents(web_ui_->GetWebContents())
-            ->controller();
-    CHECK(read_anything_controller_);
-    read_anything_controller_->AddObserver(this);
-    tab_ = read_anything_controller_->tab();
-    pinned_toolbar_ =
-        PinnedToolbarActionsModel::Get(Profile::FromWebUI(web_ui));
-    pinned_toolbar_actions_observation_.Observe(pinned_toolbar_);
-    MaybeUpdateImmersivePinStatus();
-  } else {
-    side_panel_controller_ =
-        ReadAnythingSidePanelControllerGlue::FromWebContents(
-            web_ui_->GetWebContents())
-            ->controller();
-    side_panel_controller_->AddPageHandlerAsObserver(
-        weak_factory_.GetWeakPtr());
-    tab_ = side_panel_controller_->tab();
-  }
+  read_anything_controller_ =
+      ReadAnythingControllerGlue::FromWebContents(web_ui_->GetWebContents())
+          ->controller();
+  CHECK(read_anything_controller_);
+  read_anything_controller_->AddObserver(this);
+  tab_ = read_anything_controller_->tab();
+  pinned_toolbar_ = PinnedToolbarActionsModel::Get(Profile::FromWebUI(web_ui));
+  pinned_toolbar_actions_observation_.Observe(pinned_toolbar_);
+  MaybeUpdateImmersivePinStatus();
 
   tab_discard_subscription_ = tab_->RegisterWillDiscardContents(
       base::BindRepeating(&ReadAnythingUntrustedPageHandler::OnTabDiscarded,
@@ -726,33 +712,24 @@ void ReadAnythingUntrustedPageHandler::SendNextLanguageRequest() {
 }
 #endif
 
-// Will only return a valid state if IsImmersiveReadAnythingEnabled() is true,
-// otherwise do nothing.
-// TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
-// longer flag-guarded code.
 ReadAnythingController*
 ReadAnythingUntrustedPageHandler::GetReadAnythingController() {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    content::WebContents* main_web_contents = main_observer_->web_contents();
-    CHECK(main_web_contents);
+  content::WebContents* main_web_contents = main_observer_->web_contents();
+  CHECK(main_web_contents);
 
-    tabs::TabInterface* tab =
-        tabs::TabInterface::GetFromContents(main_web_contents);
-    CHECK(tab);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(main_web_contents);
+  CHECK(tab);
 
-    auto* ra_controller = ReadAnythingController::From(tab);
-    return ra_controller;
-  }
-  return nullptr;
+  auto* ra_controller = ReadAnythingController::From(tab);
+  return ra_controller;
 }
 
 void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    auto* ra_controller = GetReadAnythingController();
-    CHECK(ra_controller);
+  auto* ra_controller = GetReadAnythingController();
+  CHECK(ra_controller);
 
-    page_->OnGetPresentationState(ra_controller->GetPresentationState());
-  }
+  page_->OnGetPresentationState(ra_controller->GetPresentationState());
 }
 
 void ReadAnythingUntrustedPageHandler::GetPresentationState() {
@@ -761,31 +738,29 @@ void ReadAnythingUntrustedPageHandler::GetPresentationState() {
 
 void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
     read_anything::mojom::ReadAnythingDistillationState new_state) {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    // Distillation state transitions to kNotAttempted are only valid during
-    // initialization (i.e. when the current state is kUndefined).
-    if (distillation_state_ !=
-            read_anything::mojom::ReadAnythingDistillationState::kUndefined &&
-        new_state == read_anything::mojom::ReadAnythingDistillationState::
-                         kNotAttempted) {
-      mojo::ReportBadMessage("Invalid distillation state transition");
-      return;
-    }
-
-    // Distillation state transitions to kUndefined are not valid, regardless of
-    // what the current state is.
-    if (new_state ==
-        read_anything::mojom::ReadAnythingDistillationState::kUndefined) {
-      mojo::ReportBadMessage("Invalid distillation state transition");
-      return;
-    }
-
-    distillation_state_ = new_state;
-    auto* ra_controller = GetReadAnythingController();
-    CHECK(ra_controller);
-
-    ra_controller->OnDistillationStateChanged(new_state);
+  // Distillation state transitions to kNotAttempted are only valid during
+  // initialization (i.e. when the current state is kUndefined).
+  if (distillation_state_ !=
+          read_anything::mojom::ReadAnythingDistillationState::kUndefined &&
+      new_state ==
+          read_anything::mojom::ReadAnythingDistillationState::kNotAttempted) {
+    mojo::ReportBadMessage("Invalid distillation state transition");
+    return;
   }
+
+  // Distillation state transitions to kUndefined are not valid, regardless of
+  // what the current state is.
+  if (new_state ==
+      read_anything::mojom::ReadAnythingDistillationState::kUndefined) {
+    mojo::ReportBadMessage("Invalid distillation state transition");
+    return;
+  }
+
+  distillation_state_ = new_state;
+  auto* ra_controller = GetReadAnythingController();
+  CHECK(ra_controller);
+
+  ra_controller->OnDistillationStateChanged(new_state);
 }
 
 void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
@@ -1211,9 +1186,6 @@ void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
 }
 
 void ReadAnythingUntrustedPageHandler::CloseUI() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   CHECK(read_anything_controller_);
   // Because Mojo messages from the untrusted WebUI arrive asynchronously, the
   // presentation state may have already changed away from kInImmersiveOverlay
@@ -1230,9 +1202,6 @@ void ReadAnythingUntrustedPageHandler::CloseUI() {
 }
 
 void ReadAnythingUntrustedPageHandler::TogglePinState() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   CHECK(pinned_toolbar_);
   immersive_read_anything_pin_state_ = !immersive_read_anything_pin_state_;
   pinned_toolbar_->UpdatePinnedState(kActionSidePanelShowReadAnything,
@@ -1244,17 +1213,13 @@ void ReadAnythingUntrustedPageHandler::SendPinStateRequest() {
 }
 
 void ReadAnythingUntrustedPageHandler::TogglePresentation() {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    CHECK(read_anything_controller_);
-    read_anything_controller_->TogglePresentation(/*is_user_initiated=*/true);
-  }
+  CHECK(read_anything_controller_);
+  read_anything_controller_->TogglePresentation(/*is_user_initiated=*/true);
 }
 
 void ReadAnythingUntrustedPageHandler::AckReadingModeHidden() {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    ack_timed_out_for_testing_ = false;
-    reading_mode_hidden_ack_timer_.Stop();
-  }
+  ack_timed_out_for_testing_ = false;
+  reading_mode_hidden_ack_timer_.Stop();
 }
 
 void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
@@ -1400,11 +1365,9 @@ void ReadAnythingUntrustedPageHandler::Activate(
         static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
             open_trigger));
     tab_will_detach_ = false;
-    if (features::IsImmersiveReadAnythingEnabled()) {
-      // Signal that reading mode has been re-opened and is no longer hidden if
-      // it was previously marked as hidden.
-      OnGetPresentationState();
-    }
+    // Signal that reading mode has been re-opened and is no longer hidden if
+    // it was previously marked as hidden.
+    OnGetPresentationState();
     RestoreSettingsFromPrefs();
   }
   if (!active && !tab_will_detach_) {
@@ -1424,21 +1387,15 @@ void ReadAnythingUntrustedPageHandler::Activate(
     // hidden because if the user notices a crash they will likely try to close
     // and reopen RM. Detecting a crash programmatically is often slower than
     // the user noticing, so this handles that case.
-    if (features::IsImmersiveReadAnythingEnabled()) {
-      reading_mode_hidden_ack_timer_.Start(
-          FROM_HERE, kReadingModeHiddenAckTimeout,
-          base::BindOnce(
-              &ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout,
-              base::Unretained(this)));
-    }
+    reading_mode_hidden_ack_timer_.Start(
+        FROM_HERE, kReadingModeHiddenAckTimeout,
+        base::BindOnce(
+            &ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout,
+            base::Unretained(this)));
   }
 }
 
 void ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
-
   ack_timed_out_for_testing_ = true;
   CHECK(read_anything_controller_);
   read_anything_controller_->RecreateWebUIWrapper();
@@ -1452,9 +1409,6 @@ void ReadAnythingUntrustedPageHandler::OnReadingModePresenterChanged() {
 // the main frame.
 void ReadAnythingUntrustedPageHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!active_ && !features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       !navigation_handle->IsSameDocument()) {
@@ -1566,17 +1520,6 @@ void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   is_pdf_with_frame_ = false;
   is_waiting_for_pdf_frame_ = false;
-
-  // If the side panel is not active, we should not send the active tree id.
-  // This check is skipped when immersive read anything is enabled because
-  // there are times when the side panel is inactive but the Reading Mode
-  // application is still running, so we do need to send the active tree id.
-  if (!active_ && !features::IsImmersiveReadAnythingEnabled()) {
-    VLOG(1) << "Sending unknown tree because not active";
-    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
-                                   /*is_pdf=*/false);
-    return;
-  }
 
   content::WebContents* contents = !!pdf_observer_
                                        ? pdf_observer_->web_contents()

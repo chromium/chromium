@@ -219,9 +219,6 @@ export class ReadAnythingLogger {
 
     const playbackTime = Date.now() - startTime;
     this.metrics.recordSpeechPlaybackLengthLegacy(playbackTime);
-    if (!this.visualBrowserProxy_.isImmersiveEnabled()) {
-      return;
-    }
 
     const activePresentationState =
         this.visualBrowserProxy_.getActivePresentationState();

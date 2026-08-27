@@ -104,9 +104,6 @@ declare namespace chrome {
     let lineFocusStaticLine: number;
     let lineFocusCursorLine: number;
 
-    // Whether the Immersive Read Anything feature flag is enabled.
-    let isImmersiveEnabled: boolean;
-
     // Whether the Improved Read Aloud feature flag is enabled.
     let isImprovedReadAloudEnabled: boolean;
 

@@ -54,11 +54,9 @@ ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(
   // If the UI has been shown once, the reused WebUI will be available but
   // won't send a new "showUI" message. Manually call ShowUI() to unblock the
   // SidePanelEntryWaiter and make the view visible.
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    auto* controller = ReadAnythingController::From(&scope.GetTabInterface());
-    if (controller && controller->has_shown_ui()) {
-      ShowUI();
-    }
+  auto* controller = ReadAnythingController::From(&scope.GetTabInterface());
+  if (controller && controller->has_shown_ui()) {
+    ShowUI();
   }
 }
 

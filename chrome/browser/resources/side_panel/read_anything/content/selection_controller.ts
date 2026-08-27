@@ -1,8 +1,6 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
-import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {isDistilledByReadability} from '../shared/common.js';
 import {getNearestTextBoundaryPoint, getTextNodeOffsets} from '../shared/dom_queries.js';
 
@@ -35,8 +33,6 @@ export interface SelectionEndpoint {
 export class SelectionController {
   private contentBrowserProxy_: ContentBrowserProxy =
       ContentBrowserProxyImpl.getInstance();
-  private visualBrowserProxy_: VisualBrowserProxy =
-      VisualBrowserProxyImpl.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private scrollingOnSelection_: boolean = false;
   private currentSelection_: Selection|null = null;
@@ -50,38 +46,6 @@ export class SelectionController {
   }
 
   getCurrentSelectionStart(): ContentPosition|null {
-    if (this.visualBrowserProxy_.isImmersiveEnabled()) {
-      return this.getCurrentSelectionStartImmersive_();
-    }
-
-    const anchorNodeId = this.contentBrowserProxy_.getStartNodeId();
-    const anchorOffset = this.contentBrowserProxy_.getStartOffset();
-    const focusNodeId = this.contentBrowserProxy_.getEndNodeId();
-    const focusOffset = this.contentBrowserProxy_.getEndOffset();
-
-    // If only one of the ids is present, use that one.
-    let nodeId: number|undefined = anchorNodeId ? anchorNodeId : focusNodeId;
-    let offset = anchorNodeId ? anchorOffset : focusOffset;
-    // If both are present, start with the node that is sooner in the page.
-    if (anchorNodeId && focusNodeId) {
-      const selection = this.currentSelection_;
-      if (anchorNodeId === focusNodeId) {
-        offset = Math.min(anchorOffset, focusOffset);
-      } else if (selection && selection.anchorNode && selection.focusNode) {
-        const pos =
-            selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
-        nodeId = focusIsFirst ? focusNodeId : anchorNodeId;
-        offset = focusIsFirst ? focusOffset : anchorOffset;
-      }
-    }
-
-    const node = this.nodeStore_.getDomNode(nodeId);
-    return node ? {node, offset, source: ContentPositionSource.SELECTION} :
-                  null;
-  }
-
-  private getCurrentSelectionStartImmersive_(): ContentPosition|null {
     const selection = this.currentSelection_;
     if (!selection || !selection.anchorNode || !selection.focusNode) {
       return null;

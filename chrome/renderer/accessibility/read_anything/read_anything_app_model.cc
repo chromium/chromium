@@ -971,8 +971,7 @@ void ReadAnythingAppModel::SetDefaultDistillationMethod() {
 void ReadAnythingAppModel::OnScroll(bool on_selection,
                                     bool from_reading_mode) const {
   // Scroll events shouldn't be logged when reading mode is inactive.
-  if (features::IsImmersiveReadAnythingEnabled() &&
-      !is_active_presentation_state_opened()) {
+  if (!is_active_presentation_state_opened()) {
     return;
   }
   // Enum for logging how a scroll occurs.

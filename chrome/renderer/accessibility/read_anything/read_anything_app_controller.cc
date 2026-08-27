@@ -674,10 +674,8 @@ void ReadAnythingAppController::DistillNewTree() {
           &ReadAnythingAppController::RecordScreen2xDistillationStatus,
           base::Unretained(this), /*just_hidden=*/false));
 
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
-                             kDistillationInProgress);
-  }
+  SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                           kDistillationInProgress);
 
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
@@ -825,10 +823,8 @@ void ReadAnythingAppController::Distill() {
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   distillation_attempts_++;
   model_.set_screen2x_distiller_running(true);
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
-                             kDistillationInProgress);
-  }
+  SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                           kDistillationInProgress);
   VLOG(1) << "Distilling tree with ID: " << tree->GetAXTreeID();
   distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
 
@@ -952,18 +948,13 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // wait for the page to finish loading.
     if (!pdf_draw_debouncer_->IsRunning() &&
         (!IsGoogleDocs() || model_.page_finished_loading())) {
-      if (features::IsImmersiveReadAnythingEnabled()) {
-        SetDistillationState(
-            read_anything::mojom::ReadAnythingDistillationState::
-                kDistillationEmpty);
-      }
+      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                               kDistillationEmpty);
       DrawEmptyState();
     }
   } else if (!model_.is_pdf() || !pdf_draw_debouncer_->IsRunning()) {
-    if (features::IsImmersiveReadAnythingEnabled()) {
-      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationWithContent);
-    }
+    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationWithContent);
   }
 
   // AXNode's language code is BCP 47. Only the base language is needed to
@@ -994,14 +985,11 @@ void ReadAnythingAppController::OnPdfDebounceFinished() {
     Draw(/*recompute_display_nodes=*/false);
   }
 
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    SetDistillationState(
-        model_.is_empty()
-            ? read_anything::mojom::ReadAnythingDistillationState::
-                  kDistillationEmpty
-            : read_anything::mojom::ReadAnythingDistillationState::
-                  kDistillationWithContent);
-  }
+  SetDistillationState(
+      model_.is_empty() ? read_anything::mojom::ReadAnythingDistillationState::
+                              kDistillationEmpty
+                        : read_anything::mojom::ReadAnythingDistillationState::
+                              kDistillationWithContent);
 }
 
 bool ReadAnythingAppController::PostProcessSelection() {
@@ -1263,8 +1251,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isPdf", &ReadAnythingAppController::IsPdf)
-      .SetProperty("isImmersiveEnabled",
-                   &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isImprovedReadAloudEnabled",
                    &ReadAnythingAppController::IsImprovedReadAloudEnabled)
       .SetProperty("isReadAnythingImprovedUiEnabled",
@@ -1856,12 +1842,8 @@ std::string ReadAnythingAppController::GetHtmlId(
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
 }
 
-// TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
-// longer flag-guarded code.
 void ReadAnythingAppController::SendGetPresentationStateRequest() const {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    page_handler_->GetPresentationState();
-  }
+  page_handler_->GetPresentationState();
 }
 
 void ReadAnythingAppController::OnGetPresentationState(
@@ -1988,10 +1970,6 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
     return false;
   }
   return ax_node->IsLeaf();
-}
-
-bool ReadAnythingAppController::IsImmersiveEnabled() const {
-  return features::IsImmersiveReadAnythingEnabled();
 }
 
 bool ReadAnythingAppController::IsImprovedReadAloudEnabled() const {
@@ -2632,26 +2610,14 @@ void ReadAnythingAppController::OnTabWillDetach() {
 }
 
 void ReadAnythingAppController::ReadingModeWillClose() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
-
   ExecuteJavaScript("chrome.readingMode.readingModeWillClose();");
 }
 
 void ReadAnythingAppController::CloseUI() {
-  // This CloseUI() method is only used for the immersive UI, so skip if flag is
-  // not enabled
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   page_handler_->CloseUI();
 }
 
 void ReadAnythingAppController::TogglePresentation() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
   page_handler_->TogglePresentation();
 }
 
@@ -2680,7 +2646,7 @@ void ReadAnythingAppController::OnIsSpeechActiveChanged(bool is_speech_active) {
   if (read_aloud_model_.speech_playing() == is_speech_active) {
     return;
   }
-  if (is_speech_active && IsImmersiveEnabled()) {
+  if (is_speech_active) {
     read_aloud_model_.LogPlaybackContext(
         model_.active_presentation_state() ==
                 read_anything::mojom::ReadAnythingPresentationState::
@@ -3236,5 +3202,5 @@ void ReadAnythingAppController::AttemptLogEarlySelection(bool from_side_panel) {
 }
 
 bool ReadAnythingAppController::IsHidden() const {
-  return IsImmersiveEnabled() && !model_.is_active_presentation_state_opened();
+  return !model_.is_active_presentation_state_opened();
 }

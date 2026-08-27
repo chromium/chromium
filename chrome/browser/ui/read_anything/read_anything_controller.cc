@@ -117,10 +117,6 @@ ReadAnythingController::ReadAnythingController(
               tab,
               side_panel_registry)),
       distillation_state_locked_for_testing_(freeze_distillation_for_testing_) {
-  // This controller should only be instantiated if
-  // IsImmersiveReadAnythingEnabled is enabled
-  CHECK(features::IsImmersiveReadAnythingEnabled());
-
   // Point the FindBar to IRM's WebContents, if it's open. We already call
   // MaybeUpdateFindBarController when IRM opens and closes, but if IRM is open
   // on a split view, it can stay open even if the tab is not active, so we need

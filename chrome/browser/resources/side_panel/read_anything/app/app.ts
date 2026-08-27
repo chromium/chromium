@@ -111,7 +111,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected accessor hasValidSelection_: boolean = false;
   protected accessor isReadAnythingPinned_: boolean = false;
-  protected isImmersiveEnabled_: boolean = false;
   protected isReadAnythingImprovedUiEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
@@ -183,7 +182,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (this.contentBrowserProxy_.isReadabilityEnabled()) {
       this.contentController_.configureTrustedTypes();
     }
-    this.isImmersiveEnabled_ = this.visualBrowserProxy_.isImmersiveEnabled();
     this.isReadAnythingImprovedUiEnabled_ =
         this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled();
   }
@@ -349,15 +347,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.selectionController_.onScroll();
     this.speechController_.onScroll();
     // Add fading effect to Immersive Mode text when scrolling.
-    if (this.isImmersiveEnabled_) {
-      const fontSize = Number.parseInt(window.getComputedStyle(this.$.container)
-                                           .getPropertyValue('font-size'));
-      // Add fade to scroller after the first line of text to avoid fading the
-      // top of the text.
-      this.$.containerScroller.scrollTop > fontSize ?
-          this.$.containerScroller.classList.add('fade') :
-          this.$.containerScroller.classList.remove('fade');
-    }
+    const fontSize = Number.parseInt(window.getComputedStyle(this.$.container)
+                                         .getPropertyValue('font-size'));
+    // Add fade to scroller after the first line of text to avoid fading the
+    // top of the text.
+    this.$.containerScroller.scrollTop > fontSize ?
+        this.$.containerScroller.classList.add('fade') :
+        this.$.containerScroller.classList.remove('fade');
     this.onTextLocationsChange_();
   }
 
@@ -880,10 +876,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected getImmersiveClass_(): string {
-    if (!this.isImmersiveEnabled_) {
-      return '';
-    }
-
     const immersiveClass = 'immersive';
     return this.isImmersiveMode() ? `${immersiveClass} full-page` :
                                     immersiveClass;

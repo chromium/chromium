@@ -295,7 +295,6 @@ class ReadAnythingAppController
   std::string GetDomDistillerContentHtml() const;
   // Serializes accessibility tree anchors into a V8 object for the frontend.
   v8::Local<v8::Value> GetDomDistillerAnchors() const;
-  // Will only return a state if IsImmersiveReadAnythingEnabled() is true.
   // Returns the presentation through the OnGetPresentationState callback.
   void SendGetPresentationStateRequest() const;
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
@@ -327,7 +326,6 @@ class ReadAnythingAppController
   v8::Local<v8::Value> GetAXMapping(int index);
   bool IsGoogleDocs() const;
   bool IsPdf() const;
-  bool IsImmersiveEnabled() const;
   bool IsImprovedReadAloudEnabled() const;
   bool IsReadAnythingImprovedUiEnabled() const;
   bool IsReadAnythingTranslateEntryPointEnabled() const;
