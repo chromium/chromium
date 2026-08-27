@@ -30,6 +30,32 @@ void UpdateProgress(CGFloat& progress, CGFloat scroll, CGFloat delta) {
   progress = std::clamp<CGFloat>(progress - incremental_progress, 0, 1);
 }
 
+// Returns `amount` adjusted for resistance as progress approaches the
+// breakover threshold.
+CGFloat ApplyResistance(CGFloat amount,
+                        CGFloat progress,
+                        FullscreenState settled_state) {
+  if ((settled_state == FullscreenState::kUIExpanded && amount <= 0) ||
+      (settled_state == FullscreenState::kUICollapsed && amount >= 0)) {
+    return amount;
+  }
+
+  CGFloat remaining_ratio = 1.0;
+  if (settled_state == FullscreenState::kUIExpanded) {
+    remaining_ratio = (progress - kEnterFullscreenProgressThreshold) /
+                      (1.0 - kEnterFullscreenProgressThreshold);
+  } else if (settled_state == FullscreenState::kUICollapsed) {
+    remaining_ratio = (kExitFullscreenProgressThreshold - progress) /
+                      kExitFullscreenProgressThreshold;
+  }
+  remaining_ratio = std::clamp<CGFloat>(remaining_ratio, 0.0, 1.0);
+
+  CGFloat resistance_factor =
+      kEasedTransitionMinResistance +
+      (1.0 - kEasedTransitionMinResistance) * remaining_ratio;
+  return amount * resistance_factor;
+}
+
 // Animation duration and initial spring velocity for an eased transition.
 struct SpringAnimationParams {
   base::TimeDelta duration = kEasedTransitionMaxDuration;
@@ -121,7 +147,10 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount,
   CGFloat pre_scroll_bottom_progress = bottom_progress_;
 
   if (IsFullscreenEasedTransitionsEnabled()) {
-    UpdateProgress(top_progress_, amount, kEasedTransitionScrollDistance);
+    CGFloat effective_amount =
+        ApplyResistance(amount, top_progress_, settled_state_);
+    UpdateProgress(top_progress_, effective_amount,
+                   kEasedTransitionScrollDistance);
     if (settled_state_ == FullscreenState::kUIExpanded) {
       top_progress_ =
           std::max(top_progress_, kEnterFullscreenProgressThreshold);

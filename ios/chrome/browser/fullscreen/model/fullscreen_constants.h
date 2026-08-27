@@ -23,6 +23,10 @@ inline constexpr CGFloat kEasedTransitionScrollDistance = 175.0;
 // The scroll distance threshold for snapping to a fullscreen state.
 inline constexpr CGFloat kFullscreenSnapThreshold = 10.0;
 
+// Minimum scaling factor applied to scroll delta as progress approaches
+// the breakover threshold, creating a resistance effect.
+inline constexpr CGFloat kEasedTransitionMinResistance = 0.25;
+
 // Minimum and maximum duration for eased scroll transitions.
 inline constexpr base::TimeDelta kEasedTransitionMinDuration =
     base::Milliseconds(200);
