@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -41,6 +42,8 @@
 #pragma mark - AutofillAIPrivateInferenceNoticeMutator
 
 - (void)markNoticeShown {
+  autofill::AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+      autofill::AutofillMetrics::PopupNoticeInteractions::kShown);
   _prefService->SetTime(
       autofill::prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
       base::Time::Now());
@@ -51,6 +54,8 @@
     return;
   }
   _interactionHandled = YES;
+  autofill::AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+      autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
   _prefService->SetTime(
       autofill::prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
       base::Time::Now());
@@ -62,6 +67,8 @@
     return;
   }
   _interactionHandled = YES;
+  autofill::AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+      autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
   _prefService->SetTime(
       autofill::prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
       base::Time::Now());
@@ -74,6 +81,8 @@
     return;
   }
   _interactionHandled = YES;
+  autofill::AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+      autofill::AutofillMetrics::PopupNoticeInteractions::kDismissed);
   [_autofillHandler dismissAutofillAIPrivateInferenceNotice];
 }
 
