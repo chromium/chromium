@@ -980,6 +980,7 @@ suite(`NewTabPageComposeboxTest`, () => {
 
   test('handleFuseboxAction applies and resets action state', async () => {
     const composebox = new NtpComposeboxElement();
+    assertTrue(composebox.shouldHandleSuggestionFuseboxActions());
     const inputStateRequested =
         testProxy.searchboxHandler.whenCalled('getInputState');
     document.body.appendChild(composebox);

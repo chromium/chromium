@@ -108,6 +108,19 @@ export class ComposeboxMatchElement extends CrLitElement {
 
     e.preventDefault();  // Prevents default browser action (navigation).
 
+    if (this.match.fuseboxAction) {
+      const event = new CustomEvent('match-pre-accept', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        detail: {match: this.match},
+      });
+      this.dispatchEvent(event);
+      if (event.defaultPrevented) {
+        return;
+      }
+    }
+
     this.searchboxHandler_.openAutocompleteMatch(
         this.matchIndex, this.match.destinationUrl,
         /*areMatchesShowing=*/ true,

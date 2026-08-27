@@ -142,6 +142,12 @@ export class TestComposeboxMixinElement extends TestElementBase {
     // clang-format on
   }
 
+  suggestionFuseboxActionsEnabled = false;
+
+  override shouldHandleSuggestionFuseboxActions(): boolean {
+    return this.suggestionFuseboxActionsEnabled;
+  }
+
   override getInputElement(): ComposeboxInputElement {
     return this.$.input;
   }
