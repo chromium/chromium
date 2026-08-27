@@ -2334,42 +2334,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DeskApi.CloseAllUndo" enum="BooleanClicked"
-    expires_after="2025-03-17">
-  <owner>aprilzhou@google.com</owner>
-  <owner>mclare@google.com</owner>
-  <summary>
-    Emitted after a virtual desk being removed by Desk API and undo toast being
-    clicked.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DeskApi.RemoveDeskType" enum="DeskCloseType"
-    expires_after="2025-03-17">
-  <owner>aprilzhou@google.com</owner>
-  <owner>mclare@google.com</owner>
-  <summary>
-    Emitted when a virtual desk is removed by Desk Api to specify the category
-    of this remove operation among close all, combine desk, and close all and
-    wait.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DeskApi.{Method}.Result" enum="BooleanSuccess"
-    expires_after="2025-06-08">
-  <owner>aprilzhou@google.com</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Recorded when a desk API {Method} method succeeded or failed.
-  </summary>
-  <token key="Method">
-    <variant name="AllDesk" summary="set to all desks"/>
-    <variant name="LaunchDesk" summary="launch desk"/>
-    <variant name="RemoveDesk" summary="remove desk"/>
-    <variant name="SwitchDesk" summary="switch desk"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Desks.AnimationLatency.DeskActivation" units="ms"
     expires_after="2027-07-31">
   <owner>tclaiborne@chromium.org</owner>

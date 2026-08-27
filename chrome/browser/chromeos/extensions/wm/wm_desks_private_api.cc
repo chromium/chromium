@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
@@ -19,10 +18,6 @@
 namespace extensions {
 
 namespace {
-constexpr char kApiLaunchDeskResult[] = "Ash.DeskApi.LaunchDesk.Result";
-constexpr char kApiRemoveDeskResult[] = "Ash.DeskApi.RemoveDesk.Result";
-constexpr char kApiSwitchDeskResult[] = "Ash.DeskApi.SwitchDesk.Result";
-constexpr char kApiAllDeskResult[] = "Ash.DeskApi.AllDesk.Result";
 constexpr char kInvalidIdError[] = "InvalidIdError";
 constexpr char kStorageError[] = "StorageError";
 }  // namespace
@@ -113,11 +108,9 @@ void WmDesksPrivateLaunchDeskFunction::OnLaunchDesk(
     std::string error,
     const base::Uuid& desk_uuid) {
   if (!error.empty()) {
-    base::UmaHistogramBoolean(kApiLaunchDeskResult, false);
     Respond(Error(std::move(error)));
     return;
   }
-  base::UmaHistogramBoolean(kApiLaunchDeskResult, true);
   Respond(ArgumentList(api::wm_desks_private::LaunchDesk::Results::Create(
       desk_uuid.AsLowercaseString())));
 }
@@ -138,7 +131,6 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
           : false;
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_id);
   if (!uuid.is_valid()) {
-    base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
   }
   WMDesksPrivateFeatureAsh().RemoveDesk(
@@ -149,12 +141,9 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
 
 void WmDesksPrivateRemoveDeskFunction::OnRemoveDesk(std::string error) {
   if (!error.empty()) {
-    base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
-
     Respond(Error(std::move(error)));
     return;
   }
-  base::UmaHistogramBoolean(kApiRemoveDeskResult, true);
 
   Respond(NoArguments());
 }
@@ -202,11 +191,9 @@ WmDesksPrivateSetWindowPropertiesFunction::Run() {
 void WmDesksPrivateSetWindowPropertiesFunction::OnSetWindowProperties(
     std::string error_string) {
   if (!error_string.empty()) {
-    base::UmaHistogramBoolean(kApiAllDeskResult, false);
     Respond(Error(std::move(error_string)));
     return;
   }
-  base::UmaHistogramBoolean(kApiAllDeskResult, true);
   Respond(NoArguments());
 }
 
@@ -325,7 +312,6 @@ ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_uuid);
   if (!uuid.is_valid()) {
-    base::UmaHistogramBoolean(kApiSwitchDeskResult, false);
     return RespondNow(Error(kInvalidIdError));
   }
   WMDesksPrivateFeatureAsh().SwitchDesk(
@@ -336,11 +322,9 @@ ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
 
 void WmDesksPrivateSwitchDeskFunction::OnSwitchDesk(std::string error_string) {
   if (!error_string.empty()) {
-    base::UmaHistogramBoolean(kApiSwitchDeskResult, false);
     Respond(Error(std::move(error_string)));
     return;
   }
-  base::UmaHistogramBoolean(kApiSwitchDeskResult, true);
   Respond(NoArguments());
 }
 
