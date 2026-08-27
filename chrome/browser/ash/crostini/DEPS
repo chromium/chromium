@@ -55,6 +55,19 @@ specific_include_rules = {
     "+chrome/grit",
   ],
 
+  "crostini_low_disk_notification\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+
+  "crostini_low_disk_notification_unittest\\.cc": [
+    "+ui/message_center/message_center.h",
+    "+ui/message_center/message_center_observer.h",
+  ],
+
+  "crostini_manager_unittest\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+
   ".*test.*": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",

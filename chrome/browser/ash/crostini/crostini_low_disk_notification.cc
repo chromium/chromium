@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -23,6 +22,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -87,8 +87,8 @@ void CrostiniLowDiskNotification::ShowNotificationIfAppropriate(
   if (severity != last_notification_severity_ ||
       (severity == Severity::HIGH &&
        now - last_notification_time_ > notification_interval_)) {
-    SystemNotificationHelper::GetInstance()->Display(
-        *CreateNotification(severity));
+    message_center::MessageCenter::Get()->AddNotification(
+        CreateNotification(severity));
     last_notification_time_ = now;
     last_notification_severity_ = severity;
   }

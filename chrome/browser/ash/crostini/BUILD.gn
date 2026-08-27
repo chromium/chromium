@@ -111,7 +111,6 @@ static_library("crostini") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/terminal:startup_status",
     "//chrome/browser/notifications",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/select_file_policy",
@@ -149,6 +148,7 @@ static_library("crostini") {
     "//ui/base/ime/ash",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/display/types",
+    "//ui/message_center",
   ]
 
   allow_circular_includes_from = [
@@ -304,6 +304,7 @@ source_set("unit_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/display",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/shell_dialogs",
     "//ui/views",

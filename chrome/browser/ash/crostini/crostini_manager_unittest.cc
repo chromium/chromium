@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 
 #include <memory>
-#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
@@ -34,8 +33,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -66,6 +63,7 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace crostini {
 using base::test::TestFuture;
@@ -160,6 +158,8 @@ class CrostiniManagerTest : public testing::Test {
   ~CrostiniManagerTest() override = default;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
+
     ash::AnomalyDetectorClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
@@ -182,9 +182,6 @@ class CrostiniManagerTest : public testing::Test {
             component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeComponentManager(component_manager_);
-
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
 
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
@@ -230,6 +227,8 @@ class CrostiniManagerTest : public testing::Test {
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
     ash::AnomalyDetectorClient::Shutdown();
+
+    message_center::MessageCenter::Shutdown();
   }
 
  protected:
@@ -386,7 +385,6 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
 
 TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   const base::FilePath& disk_path = base::FilePath("unused");
-  NotificationDisplayServiceTester notification_service(nullptr);
   vm_tools::concierge::StartVmResponse response;
 
   response.set_free_bytes(0);
@@ -402,14 +400,15 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
 
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  auto notification = notification_service.GetNotification("crostini_low_disk");
-  EXPECT_NE(std::nullopt, notification);
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          "crostini_low_disk");
+  EXPECT_NE(nullptr, notification);
 }
 
 TEST_F(CrostiniManagerTest,
        StartTerminaVmLowDiskNotificationNotShownIfNoValue) {
   const base::FilePath& disk_path = base::FilePath("unused");
-  NotificationDisplayServiceTester notification_service(nullptr);
   vm_tools::concierge::StartVmResponse response;
 
   response.set_free_bytes(1234);
@@ -425,8 +424,10 @@ TEST_F(CrostiniManagerTest,
 
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  auto notification = notification_service.GetNotification("crostini_low_disk");
-  EXPECT_EQ(std::nullopt, notification);
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          "crostini_low_disk");
+  EXPECT_EQ(nullptr, notification);
 }
 
 TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
