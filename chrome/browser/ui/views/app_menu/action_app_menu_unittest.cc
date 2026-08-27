@@ -8,12 +8,15 @@
 #include <utility>
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,6 +26,7 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -230,6 +234,50 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
       .Times(1);
   plus_action->InvokeAction();
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // The last MenuItemView in the submenu corresponds to the footer row.
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(footer_item, nullptr);
+
+  // Check that the footer container is an ActionAppMenuFooterView containing
+  // left container, spacer, and right container.
+  ASSERT_EQ(footer_item->children().size(), 1u);
+  views::View* footer_container = footer_item->children()[0];
+  EXPECT_TRUE(views::IsViewClass<ActionAppMenuFooterView>(footer_container));
+  ASSERT_EQ(footer_container->children().size(), 3u);
+
+  views::View* left_container = footer_container->children()[0];
+  ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
+
+  views::View* right_container = footer_container->children()[2];
+  if (browser_defaults::kShowExitMenuItem) {
+    ASSERT_EQ(right_container->children().size(), 1u);  // Exit
+    EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
+        right_container->children()[0]));
+  } else {
+    EXPECT_EQ(right_container->children().size(), 0u);
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

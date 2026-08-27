@@ -9,8 +9,10 @@ import("//build/config/ui.gni")
 source_set("app_menu") {
   public = [
     "action_app_menu.h",
+    "action_app_menu_footer_view.h",
     "action_app_menu_manager.h",
     "action_app_menu_zoom_view.h",
+    "app_menu_footer_button.h",
     "app_menu_section_action_item.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
@@ -38,8 +40,10 @@ source_set("app_menu") {
 source_set("impl") {
   sources = [
     "action_app_menu.cc",
+    "action_app_menu_footer_view.cc",
     "action_app_menu_manager.cc",
     "action_app_menu_zoom_view.cc",
+    "app_menu_footer_button.cc",
     "app_menu_section_action_item.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
@@ -93,6 +97,7 @@ source_set("impl") {
     "//components/sync_sessions",
     "//components/tabs:public",
     "//components/user_education/common",
+    "//components/vector_icons",
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",

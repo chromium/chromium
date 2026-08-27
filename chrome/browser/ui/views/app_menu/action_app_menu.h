@@ -53,6 +53,9 @@ class ActionAppMenu : public views::MenuDelegate {
   void PopulateMenu(views::MenuItemView* view_parent,
                     actions::BaseAction* action_item);
 
+  void PopulateFooter(views::MenuItemView* view_parent,
+                      actions::ActionItem* footer_action_item);
+
   // The browser window interface associated with this menu.
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 

@@ -84,11 +84,17 @@ class AppMenuBuilder {
   using DisplayType = ActionAppMenuManager::DisplayType;
 
   explicit AppMenuBuilder(actions::ActionItem* parent,
-                          std::optional<ui::ColorId> bg_color = std::nullopt)
-      : AppMenuBuilder(static_cast<actions::BaseAction*>(parent), bg_color) {}
+                          std::optional<ui::ColorId> bg_color = std::nullopt,
+                          DisplayType default_display_type = DisplayType::kRow)
+      : AppMenuBuilder(static_cast<actions::BaseAction*>(parent),
+                       bg_color,
+                       default_display_type) {}
   explicit AppMenuBuilder(actions::BaseAction* parent,
-                          std::optional<ui::ColorId> bg_color = std::nullopt)
-      : parent_(parent), bg_color_(bg_color) {}
+                          std::optional<ui::ColorId> bg_color = std::nullopt,
+                          DisplayType default_display_type = DisplayType::kRow)
+      : parent_(parent),
+        bg_color_(bg_color),
+        default_display_type_(default_display_type) {}
   AppMenuBuilder(const AppMenuBuilder&) = delete;
   AppMenuBuilder& operator=(const AppMenuBuilder&) = delete;
   ~AppMenuBuilder() = default;
@@ -96,12 +102,12 @@ class AppMenuBuilder {
   // Adds a standard row item.
   AppMenuBuilder& AddAction(
       actions::ActionId id,
-      DisplayType type = DisplayType::kRow,
+      std::optional<DisplayType> type = std::nullopt,
       std::optional<std::u16string> text_override = std::nullopt,
       std::optional<ui::ImageModel> icon_override = std::nullopt) {
     auto item = ActionAppMenuManager::CreateIndirectActionItem(
-        id, type, bg_color_, std::move(text_override),
-        std::move(icon_override));
+        id, type.value_or(default_display_type_), bg_color_,
+        std::move(text_override), std::move(icon_override));
     if (item && parent_) {
       parent_->AddChild(std::move(item));
     }
@@ -110,7 +116,7 @@ class AppMenuBuilder {
 
   AppMenuBuilder& AddSectionHeader(int string_id) {
     auto section_item = ActionAppMenuManager::CreateSectionActionItem(
-        l10n_util::GetStringUTF16(string_id), DisplayType::kRow, bg_color_);
+        l10n_util::GetStringUTF16(string_id), default_display_type_, bg_color_);
     if (parent_) {
       parent_ = parent_->AddChild(std::move(section_item));
     }
@@ -129,9 +135,9 @@ class AppMenuBuilder {
   AppMenuBuilder& AddSubmenu(
       actions::ActionId id,
       base::FunctionRef<void(AppMenuBuilder&)> build_submenu,
-      DisplayType type = DisplayType::kRow) {
-    auto item =
-        ActionAppMenuManager::CreateIndirectActionItem(id, type, bg_color_);
+      std::optional<DisplayType> type = std::nullopt) {
+    auto item = ActionAppMenuManager::CreateIndirectActionItem(
+        id, type.value_or(default_display_type_), bg_color_);
     if (!item || !parent_) {
       return *this;
     }
@@ -148,7 +154,7 @@ class AppMenuBuilder {
       std::optional<base::FunctionRef<void(AppMenuBuilder&)>> build_submenu =
           std::nullopt) {
     auto item = ActionAppMenuManager::CreateIndirectActionItem(
-        id, DisplayType::kRow, bg_color_);
+        id, default_display_type_, bg_color_);
     if (!item || !parent_) {
       return *this;
     }
@@ -165,6 +171,7 @@ class AppMenuBuilder {
  private:
   raw_ptr<actions::BaseAction> parent_;
   std::optional<ui::ColorId> bg_color_;
+  DisplayType default_display_type_ = DisplayType::kRow;
 };
 
 }  // namespace
@@ -422,37 +429,44 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
   });
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void AddHelpSubmenuActions(AppMenuBuilder& sub, BrowserWindowInterface* bwi) {
+  sub.AddAction(kActionAbout);
+
+  if (whats_new::IsEnabled()) {
+    sub.AddAction(kActionChromeWhatsNew);
+  }
+
+  sub.AddAction(kActionHelpPageViaMenu);
+
+  Profile* profile = bwi->GetProfile();
+  if (chrome::CanShowFeedback(profile)) {
+    sub.AddAction(kActionFeedback);
+
+    if (feedback::ReportUnsafeSiteDialog::IsEnabled(*profile)) {
+      sub.AddAction(kActionReportUnsafeSite);
+    }
+  }
+}
+#endif
+
 void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
-  auto builder = AppMenuBuilder(root);
-  builder.AddAction(kActionOptions, DisplayType::kFooter);
+  auto footer_section = CreateSectionActionItem(u"", DisplayType::kFooter);
+  auto* footer_section_ptr = root->AddChild(std::move(footer_section));
+
+  auto builder =
+      AppMenuBuilder(footer_section_ptr, std::nullopt, DisplayType::kFooter);
+  builder.AddAction(kActionOptions);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  builder.AddSubmenu(
-      kActionHelpSubmenu,
-      [this](AppMenuBuilder& sub) {
-        sub.AddAction(kActionAbout);
-
-        if (whats_new::IsEnabled()) {
-          sub.AddAction(kActionChromeWhatsNew);
-        }
-
-        sub.AddAction(kActionHelpPageViaMenu);
-
-        Profile* profile = browser_window_interface_->GetProfile();
-        if (chrome::CanShowFeedback(profile)) {
-          sub.AddAction(kActionFeedback);
-
-          if (feedback::ReportUnsafeSiteDialog::IsEnabled(*profile)) {
-            sub.AddAction(kActionReportUnsafeSite);
-          }
-        }
-      },
-      DisplayType::kFooter);
+  builder.AddSubmenu(kActionHelpSubmenu, [this](AppMenuBuilder& sub) {
+    AddHelpSubmenuActions(sub, browser_window_interface_);
+  });
 #else
-  builder.AddAction(kActionAbout, DisplayType::kFooter);
+  builder.AddAction(kActionAbout);
 #endif
 
   if (browser_defaults::kShowExitMenuItem) {
-    builder.AddAction(kActionExit, DisplayType::kFooter);
+    builder.AddAction(kActionExit);
   }
 }

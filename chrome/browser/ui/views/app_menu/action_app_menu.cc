@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
@@ -146,6 +147,13 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       continue;
     }
 
+    // Handle footer-style entry type.
+    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
+        ActionAppMenuManager::DisplayType::kFooter) {
+      PopulateFooter(view_parent, child_ptr);
+      continue;
+    }
+
     // If the child is a section action item, append it as a MenuItem that
     // represents a section header.
     if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
@@ -248,4 +256,14 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       }
     }
   }
+}
+
+void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
+                                   actions::ActionItem* footer_action_item) {
+  auto* footer_item = view_parent->AppendMenuItem(0);
+  footer_item->SetTriggerActionWithNonIconChildViews(false);
+  footer_item->set_children_use_full_width(true);
+
+  footer_item->AddChildView(std::make_unique<ActionAppMenuFooterView>(
+      footer_action_item, &action_view_controller_, &command_to_action_map_));
 }
