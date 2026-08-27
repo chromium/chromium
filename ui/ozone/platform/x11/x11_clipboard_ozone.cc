@@ -39,6 +39,13 @@ void X11ClipboardOzone::OfferClipboardData(
     helper_->InsertMapping(item.first, item.second);
 
   helper_->TakeOwnershipOfSelection(buffer);
+
+  // On X11, taking ownership of a selection updates the clipboard content
+  // synchronously, but the corresponding SelectionChanged event telling us
+  // to bump the sequence number will be received asynchronously.
+  // So we update the sequence number here synchronously to ensure there's
+  // no window where a stale sequence number could be observed.
+  OnSelectionChanged(buffer);
 }
 
 void X11ClipboardOzone::RequestClipboardData(
@@ -127,6 +134,10 @@ void X11ClipboardOzone::SetClipboardDataChangedCallback(
 
 bool X11ClipboardOzone::IsSelectionBufferAvailable() const {
   return true;
+}
+
+x11::Window X11ClipboardOzone::GetSelectionOwnerWindowForTesting() const {
+  return helper_->GetSelectionOwnerWindowForTesting();  // IN-TEST
 }
 
 void X11ClipboardOzone::OnSelectionChanged(ClipboardBuffer buffer) {

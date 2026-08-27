@@ -48,6 +48,10 @@ class SelectionChangeObserver : public x11::EventObserver {
     callback_ = std::move(callback);
   }
 
+  void set_owner_window(x11::Window owner_window) {
+    owner_window_ = owner_window;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<SelectionChangeObserver>;
 
@@ -59,6 +63,7 @@ class SelectionChangeObserver : public x11::EventObserver {
 
   const x11::Atom clipboard_atom_{};
   SelectionChangeCallback callback_;
+  x11::Window owner_window_ = x11::Window::None;
 };
 
 SelectionChangeObserver::SelectionChangeObserver()
@@ -90,6 +95,13 @@ void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
     if ((ev->selection == x11::Atom::PRIMARY ||
          ev->selection == clipboard_atom_) &&
         callback_) {
+      // Ignore the XFixes echo of our own writes. When our process takes
+      // ownership of a selection, we bump the sequence number synchronously
+      // at write time. The asynchronous SelectionNotify echo of that write must
+      // not bump it a second time.
+      if (ev->owner == owner_window_) {
+        return;
+      }
       callback_.Run(ev->selection == x11::Atom::PRIMARY
                         ? ClipboardBuffer::kSelection
                         : ClipboardBuffer::kCopyPaste);
@@ -159,12 +171,14 @@ XClipboardHelper::XClipboardHelper(
 
   SelectionChangeObserver::Get()->set_callback(
       std::move(selection_change_callback));
+  SelectionChangeObserver::Get()->set_owner_window(x_window_);
 }
 
 XClipboardHelper::~XClipboardHelper() {
   connection_->RemoveEventObserver(this);
   connection_->DestroyWindow({x_window_});
   SelectionChangeObserver::Get()->set_callback(SelectionChangeCallback());
+  SelectionChangeObserver::Get()->set_owner_window(x11::Window::None);
 }
 
 void XClipboardHelper::CreateNewClipboardData() {

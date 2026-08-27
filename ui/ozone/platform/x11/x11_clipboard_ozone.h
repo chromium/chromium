@@ -53,6 +53,8 @@ class X11ClipboardOzone : public PlatformClipboard {
       ClipboardDataChangedCallback data_changed_callback) override;
   bool IsSelectionBufferAvailable() const override;
 
+  x11::Window GetSelectionOwnerWindowForTesting() const;
+
  private:
   void OnSelectionChanged(ClipboardBuffer buffer);
 

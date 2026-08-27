@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
 
   SelectionRequester* GetSelectionRequesterForTest();
 
+  x11::Window GetSelectionOwnerWindowForTesting() const { return x_window_; }
+
   base::WeakPtr<XClipboardHelper> GetWeakPtr();
 
  private:
