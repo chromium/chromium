@@ -613,14 +613,9 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
     std::u16string selected_text,
     bool is_widget,
     base::WeakPtr<content::WebContents> web_contents,
-    GlicNudgeActivity activity,
     std::u16string prompt_override,
     const GlicSelectionWidgetDelegate::SkillOption& skill,
     const std::string& skill_prompt) {
-  if (activity != GlicNudgeActivity::kNudgeClicked) {
-    return;
-  }
-
   bool is_post_fre = false;
   if (web_contents) {
     Profile* profile =
@@ -1087,8 +1082,7 @@ void GlicSelectionObserver::OnAskGemini() {
   }
   DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 void GlicSelectionObserver::OnAskGeminiWithSkill(
@@ -1127,8 +1121,7 @@ void GlicSelectionObserver::OnAskGeminiWithSkill(
   DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(
       last_selected_text_, /*is_widget=*/true, web_contents()->GetWeakPtr(),
-      GlicNudgeActivity::kNudgeClicked, /*prompt_override=*/u"", skill,
-      skill_prompt);
+      /*prompt_override=*/u"", skill, skill_prompt);
 }
 
 std::vector<GlicSelectionWidgetDelegate::SkillOption>
@@ -1202,8 +1195,7 @@ void GlicSelectionObserver::OnAskGeminiForQuery(const std::u16string& query) {
   }
   DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(query, /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 void GlicSelectionObserver::OnAskGeminiMoreAboutThis(
@@ -1222,7 +1214,6 @@ void GlicSelectionObserver::OnAskGeminiMoreAboutThis(
   InvokeGlicFromSelectionAffordance(
       last_selected_text_, /*is_widget=*/true,
       web_contents()->GetWeakPtr(),
-      GlicNudgeActivity::kNudgeClicked,
       /*prompt_override=*/prompt);
 }
 
@@ -1256,8 +1247,7 @@ void GlicSelectionObserver::OnCopyLink() {
 void GlicSelectionObserver::OnOpenInSidePanel() {
   DismissUI(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 void GlicSelectionObserver::OnWidgetClose() {

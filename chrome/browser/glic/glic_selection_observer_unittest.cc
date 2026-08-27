@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
@@ -307,13 +306,12 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
       std::u16string selected_text,
       bool is_widget,
       base::WeakPtr<content::WebContents> web_contents,
-      GlicNudgeActivity activity,
       std::u16string prompt_override = u"",
       const GlicSkillOption& skill = {},
       const std::string& skill_prompt = "") {
     GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
-        selected_text, is_widget, web_contents, activity, prompt_override,
-        skill, skill_prompt);
+        selected_text, is_widget, web_contents, prompt_override, skill,
+        skill_prompt);
   }
 
   std::optional<GURL> GetGeneratedLink() const {
@@ -1394,8 +1392,7 @@ TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {
 
   std::u16string text = u"   one   two\nthree\t ";
   InvokeGlicFromSelectionAffordance(text, /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
@@ -1473,8 +1470,7 @@ TEST_F(GlicSelectionObserverPromptTest,
       .Times(1);
 
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
@@ -1502,8 +1498,7 @@ TEST_F(GlicSelectionObserverPromptTest,
       .Times(1);
 
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
@@ -1531,7 +1526,6 @@ TEST_F(GlicSelectionObserverPromptTest,
 
   InvokeGlicFromSelectionAffordance(
       u"Sample text", /*is_widget=*/true, web_contents()->GetWeakPtr(),
-      GlicNudgeActivity::kNudgeClicked,
       /*prompt_override=*/u"Tell me more about \"Sample text\"");
 }
 
@@ -1554,8 +1548,7 @@ TEST_F(GlicSelectionObserverPromptTest,
       .Times(1);
 
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
-                                    web_contents()->GetWeakPtr(),
-                                    GlicNudgeActivity::kNudgeClicked);
+                                    web_contents()->GetWeakPtr());
 }
 
 TEST_F(GlicSelectionObserverTest, ShouldShowSelectionWidgetSiteBlocked) {

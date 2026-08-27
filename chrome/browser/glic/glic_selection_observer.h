@@ -47,8 +47,6 @@ class PageContextEligibility;
 
 namespace glic {
 
-enum class GlicNudgeActivity;
-
 class ExplainSelectionTrigger;
 class GlicSelectionWidgetDelegate;
 class GlicKeyedService;
@@ -153,7 +151,6 @@ class GlicSelectionObserver
       std::u16string selected_text,
       bool is_widget,
       base::WeakPtr<content::WebContents> web_contents,
-      GlicNudgeActivity activity,
       std::u16string prompt_override = u"",
       const GlicSkillOption& skill = {},
       const std::string& skill_prompt = "");
