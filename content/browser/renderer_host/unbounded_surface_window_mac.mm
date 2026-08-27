@@ -27,6 +27,7 @@
 #include "content/public/browser/context_factory.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #import "ui/base/cocoa/base_view.h"
@@ -73,6 +74,12 @@
 - (void)mouseEvent:(NSEvent*)theEvent {
   if (_owner) {
     _owner->RouteMouseEvent(theEvent);
+  }
+}
+
+- (void)scrollWheel:(NSEvent*)theEvent {
+  if (_owner) {
+    _owner->RouteWheelEvent(theEvent);
   }
 }
 
@@ -376,35 +383,18 @@ void UnboundedSurfaceWindowMac::EnsureSurfaceSynchronizedForWebTest() {
   }
 }
 
+RenderWidgetHostViewBase* UnboundedSurfaceWindowMac::GetParentView() const {
+  return parent_view_;
+}
+
 void UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent* ns_event) {
   RouteMouseEvent(
       input::WebMouseEventBuilder::Build(ns_event, window_.contentView));
 }
 
-void UnboundedSurfaceWindowMac::RouteMouseEvent(
-    const blink::WebMouseEvent& event) {
-  if (!parent_view_ || !parent_view_->host() ||
-      !parent_view_->host()->delegate() ||
-      !parent_view_->host()->delegate()->GetInputEventRouter()) {
-    return;
-  }
-  RenderWidgetHostViewBase* root_view =
-      static_cast<RenderWidgetHostViewBase*>(parent_view_->GetRootView());
-  if (!root_view) {
-    return;
-  }
-
-  blink::WebMouseEvent web_event = event;
-  gfx::PointF screen_point(web_event.PositionInScreen());
-  gfx::Point root_origin = root_view->GetViewBounds().origin();
-  gfx::PointF root_point =
-      screen_point - gfx::Vector2dF(root_origin.x(), root_origin.y());
-  gfx::PointF parent_local_point =
-      parent_view_->TransformRootPointToViewCoordSpace(root_point);
-  web_event.SetPositionInWidget(parent_local_point.x(), parent_local_point.y());
-
-  parent_view_->host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
-      parent_view_, &web_event, ui::LatencyInfo());
+void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
+  RouteMouseWheelEvent(
+      input::WebMouseWheelEventBuilder::Build(ns_event, window_.contentView));
 }
 
 void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {

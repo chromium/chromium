@@ -149,11 +149,8 @@ void UnboundedSurfaceWindowAndroid::GetCompositorFrameSink(
       /*render_input_router_config=*/nullptr);
 }
 
-void UnboundedSurfaceWindowAndroid::RouteMouseEvent(
-    const blink::WebMouseEvent& event) {
-  NOTREACHED()
-      << "Mouse events are not routed through UnboundedSurfaceWindow on "
-         "Android.";
+RenderWidgetHostViewBase* UnboundedSurfaceWindowAndroid::GetParentView() const {
+  return parent_view_.get();
 }
 
 gfx::Rect UnboundedSurfaceWindowAndroid::GetBounds() const {

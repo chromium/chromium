@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -791,6 +792,72 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
             EvalJs(primary_main_frame_host(), "window.__mouse_x"));
   EXPECT_EQ(kExpectedMouseY,
             EvalJs(primary_main_frame_host(), "window.__mouse_y"));
+}
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PopupOutsideViewportMouseWheelEventRouting \
+  DISABLED_PopupOutsideViewportMouseWheelEventRouting
+#else
+#define MAYBE_PopupOutsideViewportMouseWheelEventRouting \
+  PopupOutsideViewportMouseWheelEventRouting
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_PopupOutsideViewportMouseWheelEventRouting) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const int kOutsideElementLeft = 50;
+  const int kOutsideElementTop = 400;
+  std::string script = base::StringPrintf(
+      R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="child" style="width:100px; height:100px; position:absolute;
+           top:%dpx; left:%dpx;" unbounded></div>
+    `;
+    const div = document.getElementById('child');
+    div.addEventListener('wheel', (e) => {
+      window.__wheel_x = e.clientX;
+      window.__wheel_y = e.clientY;
+      window.__wheel_delta_y = e.deltaY;
+    });
+    div.showUnboundedElement();
+  )",
+      kOutsideElementTop, kOutsideElementLeft);
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+
+  blink::WebMouseWheelEvent event(blink::WebInputEvent::Type::kMouseWheel,
+                                  blink::WebInputEvent::kNoModifiers,
+                                  base::TimeTicks::Now());
+  event.button = blink::WebMouseEvent::Button::kNoButton;
+  gfx::Rect popup_bounds = window->GetBounds();
+  const int kMouseOffsetX = 50;
+  const int kMouseOffsetY = 70;
+  event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
+  event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
+                            popup_bounds.y() + kMouseOffsetY);
+  event.delta_y = -50.0f;
+  event.wheel_ticks_y = -1.0f;
+  event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+
+  window->RouteMouseWheelEvent(event);
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  constexpr int kExpectedMouseX = kOutsideElementLeft + kMouseOffsetX;
+  constexpr int kExpectedMouseY = kOutsideElementTop + kMouseOffsetY;
+  EXPECT_EQ(kExpectedMouseX,
+            EvalJs(primary_main_frame_host(), "window.__wheel_x"));
+  EXPECT_EQ(kExpectedMouseY,
+            EvalJs(primary_main_frame_host(), "window.__wheel_y"));
+  EXPECT_GT(EvalJs(primary_main_frame_host(), "window.__wheel_delta_y")
+                .ExtractDouble(),
+            0.0);
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,

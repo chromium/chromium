@@ -60,7 +60,7 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client)
       override;
 
-  void RouteMouseEvent(const blink::WebMouseEvent& event) override;
+  RenderWidgetHostViewBase* GetParentView() const override;
   gfx::Rect GetBounds() const override;
   void CopyFromSurface(
       const gfx::Rect& src_subrect,
@@ -97,6 +97,7 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
   // ui::EventHandler overrides (from WindowDelegate):
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
   // viz::HostFrameSinkClient overrides:

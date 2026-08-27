@@ -22,9 +22,12 @@
 
 namespace blink {
 class WebMouseEvent;
+class WebMouseWheelEvent;
 }
 
 namespace content {
+
+class RenderWidgetHostViewBase;
 
 class CONTENT_EXPORT UnboundedSurfaceWindow
     : public blink::mojom::UnboundedSurfaceHost {
@@ -34,6 +37,7 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
 
   virtual bool IsValid() const = 0;
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
+  virtual RenderWidgetHostViewBase* GetParentView() const = 0;
 
   // Shared lifecycle and dismissal logic.
   // To initiate the dismissal of this window, call Dismiss().
@@ -43,7 +47,8 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
   virtual viz::FrameSinkId GetFrameSinkId() const = 0;
   virtual viz::LocalSurfaceId GetLocalSurfaceId() const = 0;
 
-  virtual void RouteMouseEvent(const blink::WebMouseEvent& event) = 0;
+  virtual void RouteMouseEvent(const blink::WebMouseEvent& event);
+  virtual void RouteMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   virtual gfx::Rect GetBounds() const = 0;
   virtual void CopyFromSurface(
       const gfx::Rect& src_subrect,

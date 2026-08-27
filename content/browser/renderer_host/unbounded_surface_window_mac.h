@@ -72,9 +72,13 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   // blink::mojom::UnboundedSurfaceHost overrides:
   void UpdateBounds(const gfx::Rect& bounds) override;
 
+  RenderWidgetHostViewBase* GetParentView() const override;
+
   // Event Routing:
+  using UnboundedSurfaceWindow::RouteMouseEvent;
+  using UnboundedSurfaceWindow::RouteMouseWheelEvent;
   void RouteMouseEvent(NSEvent* event);
-  void RouteMouseEvent(const blink::WebMouseEvent& event) override;
+  void RouteWheelEvent(NSEvent* event);
   void RouteKeyboardEvent(NSEvent* event);
 
   // viz::HostFrameSinkClient overrides:
