@@ -168,6 +168,9 @@ void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,
   vpcc[5] = level;
   vpcc[6] |= bit_depth << 4;
   vpcc[6] |= chroma_subsampling << 1;
+  if (color_space.range() == gfx::ColorSpace::RangeID::FULL) {
+    vpcc[6] |= 1;
+  }
   vpcc[7] = primaries;
   vpcc[8] = transfer;
   vpcc[9] = matrix;
