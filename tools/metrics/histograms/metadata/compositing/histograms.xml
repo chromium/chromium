@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Animation.MissingPropertyNodeForElementId"
     enum="PropertyMutation" expires_after="2026-01-31">
   <owner>kevers@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
   <summary>
     Tally failures resulting from missing a map entry from element id to
     property node.
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2027-01-31">
   <owner>pdr@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent updating layers, in microseconds. Recorded when layers are
