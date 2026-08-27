@@ -631,6 +631,25 @@ TEST_F(ButtonTest, HideInkDropOnBlur) {
   EXPECT_TRUE(button()->pressed());
 }
 
+TEST_F(ButtonTest, DontHideAnchorHighlightOnBlur) {
+  gfx::Point center(10, 10);
+
+  TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
+
+  Button::ScopedAnchorHighlight highlight = button()->AddAnchorHighlight();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  button()->OnFocus();
+
+  button()->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_EQ(Button::ButtonState::STATE_PRESSED, button()->GetState());
+
+  button()->OnBlur();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
 TEST_F(ButtonTest, HideInkDropHighlightOnDisable) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
