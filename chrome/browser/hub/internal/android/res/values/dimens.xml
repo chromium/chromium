@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <resources>
     <!-- go/keep-sorted start -->
-    <dimen name="hub_edge_swipe_gutter_width">80dp</dimen>
+    <dimen name="hub_edge_swipe_gutter_width">32dp</dimen>
     <dimen name="hub_pane_switcher_card_height">48dp</dimen>
     <dimen name="hub_pane_switcher_horizontal_padding">2dp</dimen>
     <dimen name="hub_pane_switcher_tab_item_horizontal_margin">2dp</dimen>

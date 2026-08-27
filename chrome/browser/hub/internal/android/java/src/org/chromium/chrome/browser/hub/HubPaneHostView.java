@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SETTLE_MIN_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SLIDE_ANIMATION_DURATION_MS;
 
 import android.animation.Animator;
@@ -30,6 +31,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.animation.AnimationHandler;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.Objects;
 
@@ -273,7 +275,7 @@ public class HubPaneHostView extends FrameLayout {
                                     && ((mSwipeDirectionIsLeft && velocityX < 0)
                                             || (!mSwipeDirectionIsLeft && velocityX > 0));
 
-                    boolean isDisplacementEnough = Math.abs(dx) > getWidth() / 2f;
+                    boolean isDisplacementEnough = Math.abs(dx) > getWidth() / 3f;
 
                     boolean shouldSwitch = isDisplacementEnough || isFlingInCorrectDirection;
                     if (shouldSwitch) {
@@ -307,14 +309,21 @@ public class HubPaneHostView extends FrameLayout {
         float currentTargetX = isSwitch ? (mSwipeDirectionIsLeft ? -width : width) : 0f;
         float adjacentTargetX = isSwitch ? 0f : (mSwipeDirectionIsLeft ? width : -width);
 
-        Animator currentAnim =
+        ValueAnimator currentAnim =
                 ObjectAnimator.ofFloat(currentView, View.TRANSLATION_X, currentTargetX);
         Animator adjacentAnim =
                 ObjectAnimator.ofFloat(adjacentView, View.TRANSLATION_X, adjacentTargetX);
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(currentAnim, adjacentAnim);
-        animatorSet.setDuration(PANE_SLIDE_ANIMATION_DURATION_MS);
+        animatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+
+        float remainingFraction = Math.abs(currentTargetX - currentView.getTranslationX()) / width;
+        long settleDuration =
+                Math.max(
+                        PANE_SETTLE_MIN_DURATION_MS,
+                        Math.round(PANE_SLIDE_ANIMATION_DURATION_MS * remainingFraction));
+        animatorSet.setDuration(settleDuration);
 
         ValueAnimator.AnimatorUpdateListener updateListener =
                 animation -> {
@@ -324,8 +333,8 @@ public class HubPaneHostView extends FrameLayout {
                         mPaneViewProvider.onSwipeDragProgress(progress, mSwipeDirectionIsLeft);
                     }
                 };
-        if (currentAnim instanceof ValueAnimator) {
-            ((ValueAnimator) currentAnim).addUpdateListener(updateListener);
+        if (currentAnim != null) {
+            currentAnim.addUpdateListener(updateListener);
         }
 
         animatorSet.addListener(
@@ -435,6 +444,7 @@ public class HubPaneHostView extends FrameLayout {
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(slideOut, slideIn);
+        animatorSet.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
                     @Override

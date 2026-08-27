@@ -48,5 +48,8 @@ public class HubAnimationConstants {
             PANE_COLOR_BLEND_ANIMATION_DURATION_MS / 2;
 
     /** Duration in milliseconds of slide animations for Hub pane changes. */
-    public static final long PANE_SLIDE_ANIMATION_DURATION_MS = 250;
+    public static final long PANE_SLIDE_ANIMATION_DURATION_MS = 250L;
+
+    /** Minimum duration in milliseconds for the settle slide animation. */
+    public static final long PANE_SETTLE_MIN_DURATION_MS = 160L;
 }
