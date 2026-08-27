@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
@@ -846,5 +847,28 @@ HEADLESS_PROTOCOL_TEST(GetCanvasContextWebGL,
                        "shared/get-canvas-context-webgl.js")
 
 HEADLESS_PROTOCOL_TEST(GetBrowserContexts, "shared/get-browser-contexts.js")
+
+class HeadlessProtocolBrowserTestWithDownload
+    : public HeadlessProtocolBrowserTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(download_dir_.CreateUniqueTempDir());
+    HeadlessProtocolBrowserTest::SetUp();
+  }
+
+ protected:
+  base::DictValue GetPageUrlExtraParams() override {
+    base::DictValue dict;
+    dict.Set("downloadPath", download_dir_.GetPath().AsUTF8Unsafe());
+    return dict;
+  }
+
+ private:
+  base::ScopedTempDir download_dir_;
+};
+
+HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithDownload,
+                         FileDownload,
+                         "shared/file-download.js")
 
 }  // namespace headless

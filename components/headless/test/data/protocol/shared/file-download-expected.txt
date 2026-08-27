@@ -1,0 +1,25 @@
+Tests file download.
+Setting download behavior to allow...
+Downloading file by clicking an anchor link...
+Browser.downloadWillBegin: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : download.txt
+        url : data:text/plain;charset=utf-8,Hello_headless_world!
+    }
+    sessionId : <string>
+}
+Browser.downloadProgress: {
+    method : Browser.downloadProgress
+    params : {
+        filePath : <string>
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 21
+    }
+    sessionId : <string>
+}
+Downloaded file path: <some file path>/download.txt
