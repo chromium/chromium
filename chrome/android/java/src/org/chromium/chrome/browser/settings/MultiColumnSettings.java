@@ -222,6 +222,19 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // two-column mode, fallback to super.onCreateInitialDetailFragment() to populate the
         // default detail pane.
         if (SettingsInTab.isEnabled() && !isTwoColumn()) {
+            // Remove any existing stale detail fragments (e.g. after a sign-out or when returning
+            // to root settings in single-column mode) and clear the back stack so that stale
+            // detail fragments are not resurrected when transitioning to two-column mode.
+            getChildFragmentManager()
+                    .popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            Fragment currentDetail =
+                    getChildFragmentManager().findFragmentById(R.id.preferences_detail);
+            if (currentDetail != null) {
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .remove(currentDetail)
+                        .commitAllowingStateLoss();
+            }
             return null;
         }
 
