@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
@@ -43,6 +44,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/save_page_type.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/check_deref.h"
@@ -405,6 +407,11 @@ base::FilePath DownloadPrefs::GetDefaultDownloadDirectoryForProfile() const {
 // static
 const base::FilePath& DownloadPrefs::GetDefaultDownloadDirectory() {
   return GetDefaultDownloadDirectorySingleton().path();
+}
+
+// static
+std::string DownloadPrefs::GetDefaultDownloadName() {
+  return l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME);
 }
 
 // static

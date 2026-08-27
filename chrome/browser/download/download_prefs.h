@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -50,6 +51,9 @@ class DownloadPrefs {
 
   // Returns the default download directory.
   static const base::FilePath& GetDefaultDownloadDirectory();
+
+  // Returns the default download name.
+  static std::string GetDefaultDownloadName();
 
   // Returns the default download directory for the current profile.
   base::FilePath GetDefaultDownloadDirectoryForProfile() const;

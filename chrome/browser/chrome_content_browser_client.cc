@@ -236,7 +236,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -446,7 +445,6 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -5001,7 +4999,7 @@ base::FilePath ChromeContentBrowserClient::GetDefaultDownloadDirectory() {
 }
 
 std::string ChromeContentBrowserClient::GetDefaultDownloadName() {
-  return l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME);
+  return DownloadPrefs::GetDefaultDownloadName();
 }
 
 base::FilePath ChromeContentBrowserClient::GetShaderDiskCacheDirectory() {
