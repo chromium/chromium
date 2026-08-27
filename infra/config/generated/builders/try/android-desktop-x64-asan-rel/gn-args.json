@@ -2,7 +2,7 @@
   "gn_args": {
     "android_static_analysis": "off",
     "dcheck_always_on": false,
-    "debuggable_apks": false,
+    "debuggable_apks": true,
     "enable_r8_tracerefs": true,
     "ffmpeg_branding": "Chrome",
     "is_asan": true,

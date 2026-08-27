@@ -155,6 +155,13 @@ def ci_builder(
     if platform_short_name:
         gn_configs.append(platform_short_name)
 
+    # android:debuggable="true" is needed when using ASan or HWASan.
+    # See https://developer.android.com/ndk/guides/wrap-script#packaging_wrapsh
+    if target_platform == builder_config.target_platform.ANDROID and (
+        "asan" in gn_configs or "hwasan" in gn_configs
+    ):
+        gn_configs.append("debuggable_apks")
+
     android_config = None
     if android_config_name:
         android_config = builder_config.android_config(

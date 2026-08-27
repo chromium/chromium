@@ -61,6 +61,14 @@ gn_args.config(
     },
 )
 
+# For builds requiring debuggable_apks.
+gn_args.config(
+    name = "debuggable_apks",
+    args = {
+        "debuggable_apks": True,
+    },
+)
+
 # For Android builds requiring is_desktop_android.
 gn_args.config(
     name = "android_desktop",
