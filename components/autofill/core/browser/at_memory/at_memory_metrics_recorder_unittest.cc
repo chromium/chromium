@@ -1034,6 +1034,98 @@ INSTANTIATE_TEST_SUITE_P(
                                    /*entries=*/{}),
                                .expected_status = std::nullopt}));
 
+// Tests that closing the popup without typing any query emits
+// kDismissedBeforeQuery.
+TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeQuery) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt);
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kDismissedBeforeQuery, 1);
+}
+
+// Tests that closing the popup after submitting a query but before receiving
+// results emits kDismissedBeforeResults.
+TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeResults) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt);
+    metrics.OnQuerySubmitted(u"query");
+    // Destructor called before SendResponse(metrics).
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kDismissedBeforeResults, 1);
+}
+
+// Tests that closing the popup after receiving search results without
+// accepting a suggestion emits kDismissedResultsBeforeAcceptance.
+TEST_F(AtMemoryMetricsRecorderTest,
+       UiSessionOutcome_DismissedResultsBeforeAcceptance) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt);
+    metrics.OnQuerySubmitted(u"query");
+    SendResponse(metrics);
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kDismissedResultsBeforeAcceptance, 1);
+}
+
+// Tests that accepting a suggestion without filling emits
+// kSuggestionAcceptedNotFilled.
+TEST_F(AtMemoryMetricsRecorderTest,
+       UiSessionOutcome_SuggestionAcceptedNotFilled) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt);
+    metrics.OnQuerySubmitted(u"query");
+    SendResponse(metrics);
+    metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kSuggestionAcceptedNotFilled, 1);
+}
+
+// Tests that accepting and filling a suggestion emits kSuggestionFilled.
+TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_SuggestionFilled) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt);
+    metrics.OnQuerySubmitted(u"query");
+    SendResponse(metrics);
+    metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
+    metrics.MarkFilled();
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kSuggestionFilled, 1);
+}
+
 }  // namespace
 
 }  // namespace autofill

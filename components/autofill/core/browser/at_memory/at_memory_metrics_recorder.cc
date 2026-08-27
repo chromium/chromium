@@ -213,6 +213,26 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
     return;
   }
 
+  AtMemoryUiSessionOutcome session_outcome;
+  if (suggestion_filled_in_session_) {
+    session_outcome = AtMemoryUiSessionOutcome::kSuggestionFilled;
+  } else if (suggestion_accepted_in_session_) {
+    session_outcome = AtMemoryUiSessionOutcome::kSuggestionAcceptedNotFilled;
+  } else if (query_count_ == 0) {
+    session_outcome = AtMemoryUiSessionOutcome::kDismissedBeforeQuery;
+  } else if (query_response_count_ == 0) {
+    // TODO(crbug.com/535486238): Reconsider calculating this once statefulness
+    // is implemented.
+    session_outcome = AtMemoryUiSessionOutcome::kDismissedBeforeResults;
+  } else if (suggestion_acceptance_.suggestions_received) {
+    session_outcome =
+        AtMemoryUiSessionOutcome::kDismissedResultsBeforeAcceptance;
+  } else {
+    session_outcome = AtMemoryUiSessionOutcome::kDismissedEmptyResults;
+  }
+  base::UmaHistogramEnumeration("Autofill.AtMemory.UiSessionOutcome",
+                                session_outcome);
+
   base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
                             query_count_ > 0);
   MaybeLogSuggestionAccepted();
@@ -395,6 +415,7 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
 
 void AtMemoryMetricsRecorder::OnQueryResponseReceived(
     const MemorySearchResults& result) {
+  ++query_response_count_;
   if (std::optional<AtMemoryQueryCompletedStatus> status =
           GetQueryCompletedStatus(result)) {
     base::UmaHistogramEnumeration("Autofill.AtMemory.QueryCompleted", *status);

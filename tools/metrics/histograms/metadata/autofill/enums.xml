@@ -688,6 +688,19 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Keyboard shortcut"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAtMemoryUiSessionOutcome) -->
+
+<enum name="AutofillAtMemoryUiSessionOutcome">
+  <int value="0" label="Dismissed before query"/>
+  <int value="1" label="Dismissed before results"/>
+  <int value="2" label="Dismissed empty results"/>
+  <int value="3" label="Dismissed results before acceptance"/>
+  <int value="4" label="Suggestion accepted but not filled"/>
+  <int value="5" label="Suggestion filled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h:AtMemoryUiSessionOutcome) -->
+
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>

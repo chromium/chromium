@@ -57,6 +57,32 @@ enum class AtMemoryQueryCompletedStatus {
   kMaxValue = kInternalError
 };
 
+// LINT.IfChange(AutofillAtMemoryUiSessionOutcome)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Key terminal outcome events for an AtMemory UI session.
+enum class AtMemoryUiSessionOutcome {
+  // The popup was dismissed before any search query was submitted.
+  kDismissedBeforeQuery = 0,
+  // A query was submitted, but the popup was dismissed before receiving any
+  // query response.
+  kDismissedBeforeResults = 1,
+  // A query completed, but the query returned empty results when the popup
+  // was dismissed.
+  kDismissedEmptyResults = 2,
+  // The last query response returned suggestions, but the popup was dismissed
+  // without accepting a suggestion.
+  kDismissedResultsBeforeAcceptance = 3,
+  // A suggestion was accepted, but not filled (e.g. authentication failed or
+  // was cancelled).
+  kSuggestionAcceptedNotFilled = 4,
+  // A suggestion was accepted and successfully filled.
+  kSuggestionFilled = 5,
+  kMaxValue = kSuggestionFilled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryUiSessionOutcome)
+
 // Encapsulates the state and logging logic for the AtMemory search funnel.
 // This class tracks the progression of a user's interaction with the AtMemory
 // suggestions, from the initial display to the submission of a query.
@@ -159,6 +185,9 @@ class AtMemoryMetricsRecorder {
 
   // Counts the number of queries submitted during this session.
   size_t query_count_ = 0;
+
+  // Counts the number of query responses received during this session.
+  size_t query_response_count_ = 0;
 
   // Whether any suggestion has been accepted during the lifetime of `this`.
   bool suggestion_accepted_in_session_ = false;
