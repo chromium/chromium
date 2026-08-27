@@ -82,13 +82,10 @@ public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.I
                     }
                 });
 
+        // Now ensure that the snapshots in recents are all cleared for Tabbed
+        // activities to remove any trace of incognito mode.
         PostTask.runSynchronously(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    // Now ensure that the snapshots in recents are all cleared for Tabbed
-                    // activities to remove any trace of incognito mode.
-                    removeNonVisibleChromeTabbedRecentEntries();
-                });
+                TaskTraits.UI_DEFAULT, this::removeNonVisibleChromeTabbedRecentEntries);
     }
 
     private void removeNonVisibleChromeTabbedRecentEntries() {

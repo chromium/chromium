@@ -284,11 +284,10 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             assert getProfileProviderSupplier().get() != null;
             getProfileProviderSupplier()
                     .runSyncOrOnAvailable(
-                            (profileProvider) -> {
-                                WarmupManager.getInstance()
-                                        .maybePreconnectUrlAndSubResources(
-                                                profileProvider.getOriginalProfile(), url);
-                            });
+                            (ProfileProvider profileProvider) ->
+                                    WarmupManager.getInstance()
+                                            .maybePreconnectUrlAndSubResources(
+                                                    profileProvider.getOriginalProfile(), url));
         } finally {
             TraceEvent.end("maybePreconnect");
         }
@@ -306,10 +305,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         // Set up the initial orientation of the device.
         checkOrientation();
         findViewById(android.R.id.content)
-                .addOnLayoutChangeListener(
-                        (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                            checkOrientation();
-                        });
+                .addOnLayoutChangeListener((_, _, _, _, _, _, _, _, _) -> checkOrientation());
         mNativeInitializationController.onNativeInitializationComplete();
         mLifecycleDispatcher.dispatchNativeInitializationFinished();
     }
@@ -573,7 +569,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      * @return The timestamp for OnPause event before activity restarts due to unfolding in ms.
      */
     protected long getOnPauseBeforeFoldRecreateTimestampMs() {
-        try (TraceEvent e =
+        try (TraceEvent _ =
                 TraceEvent.scoped(
                         "AsyncInit.getOnPauseBeforeFoldRecreateTimestampMs",
                         Long.toString(mOnPauseBeforeFoldRecreateTimestampMs))) {
@@ -582,7 +578,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     protected void setOnPauseBeforeFoldRecreateTimestampMs() {
-        try (TraceEvent e =
+        try (TraceEvent _ =
                 TraceEvent.scoped(
                         "AsyncInit.setOnPauseBeforeFoldRecreateTimestampMs",
                         Long.toString(mOnPauseTimestampMs))) {

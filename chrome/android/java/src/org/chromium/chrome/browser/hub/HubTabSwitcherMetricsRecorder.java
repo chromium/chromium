@@ -72,7 +72,7 @@ public class HubTabSwitcherMetricsRecorder {
         Tab previousTab = tabModel.getTabById(lastId);
         if (previousTab == null) return;
 
-        if (mPaneIdWhenShown.intValue() == currentPane.getPaneId()) {
+        if (mPaneIdWhenShown == currentPane.getPaneId()) {
             if (tab.getId() == mTabIdWhenShown) {
                 // TODO(crbug.com/40132120): Differentiate list.
                 RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");

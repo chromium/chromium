@@ -325,7 +325,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             animate = false;
         }
 
-        try (TraceEvent e = TraceEvent.scoped("HubLayout.show")) {
+        try (TraceEvent _ = TraceEvent.scoped("HubLayout.show")) {
             super.show(time, animate);
 
             forceAnimationToFinish();
@@ -381,7 +381,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
             mRootView.setVisibility(View.VISIBLE);
             containerView.setVisibility(View.INVISIBLE);
-            LayoutParams params = (LayoutParams) containerView.getLayoutParams();
+            LayoutParams params = containerView.getLayoutParams();
             // TODO(crbug.com/41495991): Change this to an assert and fix any broken tests.
             if (params == null) {
                 params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -404,7 +404,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void doneShowing() {
-        try (TraceEvent e = TraceEvent.scoped("HubLayout.doneShowing")) {
+        try (TraceEvent _ = TraceEvent.scoped("HubLayout.doneShowing")) {
             super.doneShowing();
             mCurrentSceneLayer = mEmptySceneLayer;
             mCurrentAnimationRunner = null;
@@ -424,7 +424,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     public void startHiding() {
         if (isStartingToHide()) return;
 
-        try (TraceEvent e = TraceEvent.scoped("HubLayout.startHiding")) {
+        try (TraceEvent _ = TraceEvent.scoped("HubLayout.startHiding")) {
             super.startHiding();
 
             // Since we are hiding this is no-longer fully shown.
@@ -495,7 +495,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void doneHiding() {
-        try (TraceEvent e = TraceEvent.scoped("HubLayout.doneHiding")) {
+        try (TraceEvent _ = TraceEvent.scoped("HubLayout.doneHiding")) {
             HubContainerView containerView = mHubController.getContainerViewUnchecked();
             containerView.setVisibility(View.INVISIBLE);
             mRootView.removeView(containerView);
@@ -916,7 +916,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                     // stale.
                     assumeNonNull(mTabContentManager);
                     mTabContentManager.getEtc1TabThumbnailWithCallback(
-                            currentTab.getId(), result -> bitmapPromise.fulfill(result));
+                            currentTab.getId(), bitmapPromise::fulfill);
                 });
     }
 

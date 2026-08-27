@@ -243,7 +243,7 @@ class NativeInitializationController {
     }
 
     private void startNowAndProcessPendingItems() {
-        try (TraceEvent te = TraceEvent.scoped("startNowAndProcessPendingItems")) {
+        try (TraceEvent _ = TraceEvent.scoped("startNowAndProcessPendingItems")) {
             // onNewIntent and onActivityResult are called only when the activity is paused.
             // To match the non-deferred behavior, onStart should be called before any processing
             // of pending intents and activity results.

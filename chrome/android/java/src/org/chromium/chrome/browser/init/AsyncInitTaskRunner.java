@@ -113,9 +113,7 @@ public abstract class AsyncInitTaskRunner {
                         () -> {
                             final ProcessInitException libraryLoadException = loadNativeLibrary();
                             ThreadUtils.postOnUiThread(
-                                    () -> {
-                                        tasksPossiblyComplete(libraryLoadException);
-                                    });
+                                    () -> tasksPossiblyComplete(libraryLoadException));
                         });
     }
 

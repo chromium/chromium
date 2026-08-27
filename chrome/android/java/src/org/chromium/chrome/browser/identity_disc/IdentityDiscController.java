@@ -166,7 +166,7 @@ public class IdentityDiscController
                                                 .getContentDescriptionForIdentityDisc(
                                                         mContext, null, UserActionableError.NONE),
                                         /* supportsTinting= */ false)
-                                .setOnClickListener(view -> onClick())
+                                .setOnClickListener(_ -> onClick())
                                 .setIphCommandBuilder(
                                         new IphCommandBuilder(
                                                 mContext.getResources(),

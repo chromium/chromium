@@ -89,7 +89,6 @@ public class HubProviderUnitTest {
     @Mock private SearchActivityClient mSearchActivityClient;
 
     private ActivityController<TestActivity> mActivityController;
-    private Activity mActivity;
     private HubProvider mHubProvider;
 
     @Before
@@ -122,11 +121,10 @@ public class HubProviderUnitTest {
     }
 
     private void onActivity(Activity activity) {
-        mActivity = activity;
 
         mHubProvider =
                 new HubProvider(
-                        mActivity,
+                        activity,
                         mProfileProviderSupplier,
                         new DefaultPaneOrderController(),
                         mBackPressManagerMock,

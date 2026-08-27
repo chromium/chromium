@@ -124,7 +124,7 @@ import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
-import org.chromium.components.optimization_guide.proto.HintsProto;
+import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.EnterpriseInfo;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -148,7 +148,6 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -216,7 +215,7 @@ public class ProcessInitializationHandler {
      * startup.
      */
     public final void initializePreNative() {
-        try (TraceEvent e =
+        try (TraceEvent _ =
                 TraceEvent.scoped("ProcessInitializationHandler.initializePreNative()")) {
             ThreadUtils.checkUiThread();
             if (mInitializedPreNative) return;
@@ -246,7 +245,7 @@ public class ProcessInitializationHandler {
      * startup.
      */
     public final void initializePreNativeLibraryLoad() {
-        try (TraceEvent e =
+        try (TraceEvent _ =
                 TraceEvent.scoped(
                         "ProcessInitializationHandler.initializePreNativeLibraryLoad()")) {
             ThreadUtils.checkUiThread();
@@ -286,7 +285,7 @@ public class ProcessInitializationHandler {
         // if a locale change occurs before post-native initialization.
         ChromeLifetimeController.initialize();
         ApplicationStatus.registerStateListenerForAllActivities(
-                (activity, newState) -> {
+                (_, newState) -> {
                     if (newState == ActivityState.CREATED || newState == ActivityState.DESTROYED) {
                         // When the app locale is overridden a change in system locale will not
                         // effect Chrome's UI language. There is race condition where the initial
@@ -318,10 +317,7 @@ public class ProcessInitializationHandler {
      */
     private void warmUpSharedPrefs() {
         PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> {
-                    DownloadManagerService.warmUpSharedPrefs();
-                });
+                TaskTraits.BEST_EFFORT_MAY_BLOCK, DownloadManagerService::warmUpSharedPrefs);
     }
 
     /**
@@ -410,9 +406,7 @@ public class ProcessInitializationHandler {
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
         DecoderServiceHost.setIntentSupplier(
-                () -> {
-                    return new Intent(ContextUtils.getApplicationContext(), DecoderService.class);
-                });
+                () -> new Intent(ContextUtils.getApplicationContext(), DecoderService.class));
 
         SelectFileDialog.setPhotoPickerDelegate(
                 (windowAndroid, listener, allowMultiple, mimeTypes) -> {
@@ -759,7 +753,7 @@ public class ProcessInitializationHandler {
                         // OptimizationTypes which we give a guarantee will be registered when we
                         // pass the onDeferredStartup() signal to OptimizationGuide.
                         optimizationGuideBridge.registerOptimizationTypes(
-                                Arrays.asList(HintsProto.OptimizationType.PRICE_TRACKING));
+                                List.of(OptimizationType.PRICE_TRACKING));
                         optimizationGuideBridge.onDeferredStartup();
                     }
                     // TODO(crbug.com/40236066) Move to PersistedTabData.onDeferredStartup

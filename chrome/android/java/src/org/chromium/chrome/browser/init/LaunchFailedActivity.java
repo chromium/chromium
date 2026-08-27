@@ -36,7 +36,7 @@ public class LaunchFailedActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.update_needed))
-                .setPositiveButton(getString(R.string.ok), (dialog, id) -> finish());
+                .setPositiveButton(getString(R.string.ok), (_, _) -> finish());
         builder.create().show();
     }
 }
