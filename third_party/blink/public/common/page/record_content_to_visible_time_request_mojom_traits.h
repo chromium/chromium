@@ -30,6 +30,11 @@ struct BLINK_COMMON_EXPORT StructTraits<
     return reason.had_saved_frame_at_start;
   }
 
+  static bool destination_is_frozen(
+      const blink::VisibleTimeEvent::TabSwitchReason& reason) {
+    return reason.destination_is_frozen;
+  }
+
   static bool Read(blink::mojom::VisibleTimeTabSwitchReasonDataView data,
                    blink::VisibleTimeEvent::TabSwitchReason* out);
 };

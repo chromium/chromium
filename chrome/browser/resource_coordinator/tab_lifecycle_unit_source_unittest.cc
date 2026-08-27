@@ -782,6 +782,9 @@ TEST_F(TabLifecycleUnitSourceTest, Freeze) {
   LifecycleUnit* second_lifecycle_unit = nullptr;
   CreateTwoTabs(/*focus_tab_strip=*/true, &first_lifecycle_unit,
                 &second_lifecycle_unit);
+  content::WebContents* second_web_contents =
+      second_lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents();
+  EXPECT_FALSE(ResourceCoordinatorTabHelper::IsFrozen(second_web_contents));
 
   // Pretend that the tab is frozen. The observer should be notified and the
   // `LifecyleState` should become `FROZEN`.
@@ -789,10 +792,10 @@ TEST_F(TabLifecycleUnitSourceTest, Freeze) {
                                  _, ::mojom::LifecycleUnitState::ACTIVE,
                                  ::mojom::LifecycleUnitState::FROZEN, _));
   TabLifecycleUnitSource::OnLifecycleStateChanged(
-      second_lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
-      performance_manager::mojom::LifecycleState::kFrozen);
+      second_web_contents, performance_manager::mojom::LifecycleState::kFrozen);
   EXPECT_EQ(second_lifecycle_unit->GetState(),
             ::mojom::LifecycleUnitState::FROZEN);
+  EXPECT_TRUE(ResourceCoordinatorTabHelper::IsFrozen(second_web_contents));
 }
 
 }  // namespace resource_coordinator

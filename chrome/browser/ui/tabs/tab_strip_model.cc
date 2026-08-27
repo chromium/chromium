@@ -4129,7 +4129,9 @@ TabStripSelectionChange TabStripModel::SetSelection(
               base::TimeTicks::Now(),
               resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
                   selection.new_contents),
-              view && view->HasSavedCompositorFrame());
+              view && view->HasSavedCompositorFrame(),
+              resource_coordinator::ResourceCoordinatorTabHelper::IsFrozen(
+                  selection.new_contents));
         }
       }
 

@@ -19,6 +19,7 @@ bool StructTraits<blink::mojom::VisibleTimeTabSwitchReasonDataView,
          blink::VisibleTimeEvent::TabSwitchReason* out) {
   out->destination_is_loaded = data.destination_is_loaded();
   out->had_saved_frame_at_start = data.had_saved_frame_at_start();
+  out->destination_is_frozen = data.destination_is_frozen();
   return true;
 }
 

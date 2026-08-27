@@ -414,7 +414,9 @@ void TabAndroid::InitWebContents(
         base::TimeTicks::Now(),
         resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
             web_contents_.get()),
-        /*had_saved_frame_at_start=*/false);
+        /*had_saved_frame_at_start=*/false,
+        resource_coordinator::ResourceCoordinatorTabHelper::IsFrozen(
+            web_contents_.get()));
   }
 
   const SessionID session_id =
@@ -864,8 +866,10 @@ void TabAndroid::OnShow() {
       !web_contents_->IsLoading();
   const content::RenderWidgetHostView* view =
       web_contents_->GetRenderWidgetHostView();
-  web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded,
-                                       view && view->HasSavedCompositorFrame());
+  web_contents_->SetTabSwitchStartTime(
+      base::TimeTicks::Now(), loaded, view && view->HasSavedCompositorFrame(),
+      resource_coordinator::ResourceCoordinatorTabHelper::IsFrozen(
+          web_contents_.get()));
 }
 
 void TabAndroid::NotifyPinnedStateChanged(bool is_pinned) {

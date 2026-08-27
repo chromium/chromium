@@ -5,11 +5,13 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <variant>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -29,7 +31,7 @@ namespace {
 
 using TabSwitchResult = ContentToVisibleTimeReporter::TabSwitchResult;
 
-const char* GetHistogramSuffix(
+const char* GetSavedFrameHistogramSuffix(
     const VisibleTimeEvent::TabSwitchReason& start_state) {
   if (start_state.had_saved_frame_at_start) {
     return "WithSavedFrames";
@@ -40,6 +42,26 @@ const char* GetHistogramSuffix(
   } else {
     return "NoSavedFrames_NotLoaded";
   }
+}
+
+const char* GetFrozenStateHistogramSuffix(
+    const VisibleTimeEvent::TabSwitchReason& start_state) {
+  if (!start_state.destination_is_loaded) {
+    return "FrozenState.NotLoaded";
+  }
+  return start_state.destination_is_frozen ? "FrozenState.Loaded_Frozen"
+                                           : "FrozenState.Loaded_Unfrozen";
+}
+
+void RecordTabSwitchHistogramVariants(
+    std::string_view histogram_name,
+    const VisibleTimeEvent::TabSwitchReason& start_state,
+    base::FunctionRef<void(std::string_view)> record_histogram) {
+  record_histogram(histogram_name);
+  record_histogram(base::StrCat(
+      {histogram_name, ".", GetSavedFrameHistogramSuffix(start_state)}));
+  record_histogram(base::StrCat(
+      {histogram_name, ".", GetFrozenStateHistogramSuffix(start_state)}));
 }
 
 void RecordBackForwardCacheRestoreMetric(
@@ -117,33 +139,30 @@ void RecordTabSwitchHistogramsAndTraceEvent(
 
   const auto tab_switch_duration = presentation_timestamp - start_time;
 
-  const char* suffix = GetHistogramSuffix(start_state);
   base::trace_event::HistogramScope scoped_event(event_id);
 
   // Record result histogram.
-  base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult3",
-                                tab_switch_result);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Browser.Tabs.TabSwitchResult3.", suffix}),
-      tab_switch_result);
+  RecordTabSwitchHistogramVariants(
+      "Browser.Tabs.TabSwitchResult3", start_state,
+      [tab_switch_result](std::string_view histogram_name) {
+        base::UmaHistogramEnumeration(histogram_name, tab_switch_result);
+      });
 
   // Record latency histogram.
+  const auto record_duration_histogram =
+      [tab_switch_duration](std::string_view histogram_name) {
+        base::UmaHistogramMediumTimes(histogram_name, tab_switch_duration);
+      };
   switch (tab_switch_result) {
     case TabSwitchResult::kSuccess:
-      base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration3",
-                                    tab_switch_duration);
-      base::UmaHistogramMediumTimes(
-          base::StrCat({"Browser.Tabs.TotalSwitchDuration3.", suffix}),
-          tab_switch_duration);
+      RecordTabSwitchHistogramVariants("Browser.Tabs.TotalSwitchDuration3",
+                                       start_state, record_duration_histogram);
       break;
     case TabSwitchResult::kMissedTabHide:
     case TabSwitchResult::kIncomplete:
-      base::UmaHistogramMediumTimes(
-          "Browser.Tabs.TotalIncompleteSwitchDuration3", tab_switch_duration);
-      base::UmaHistogramMediumTimes(
-          base::StrCat(
-              {"Browser.Tabs.TotalIncompleteSwitchDuration3.", suffix}),
-          tab_switch_duration);
+      RecordTabSwitchHistogramVariants(
+          "Browser.Tabs.TotalIncompleteSwitchDuration3", start_state,
+          record_duration_histogram);
       break;
   }
 }

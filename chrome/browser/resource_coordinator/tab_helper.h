@@ -28,6 +28,10 @@ class ResourceCoordinatorTabHelper
   // default if there's no TabHelper for this content.
   static bool IsLoaded(content::WebContents* contents);
 
+  // Helper function to check if a given WebContents is frozen. Returns false by
+  // default if there's no TabHelper for this content.
+  static bool IsFrozen(content::WebContents* contents);
+
   // WebContentsObserver overrides.
   void DidStopLoading() override;
   void PrimaryMainFrameRenderProcessGone(

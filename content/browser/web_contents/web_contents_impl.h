@@ -691,7 +691,8 @@ class CONTENT_EXPORT WebContentsImpl
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
                              bool destination_is_loaded,
-                             bool had_saved_frame_at_start) override;
+                             bool had_saved_frame_at_start,
+                             bool destination_is_frozen) override;
   WindowOpenDisposition GetOriginalWindowOpenDisposition() const override;
 
   // Implementation of PageNavigator.

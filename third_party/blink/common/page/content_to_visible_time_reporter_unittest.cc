@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,11 +31,12 @@ constexpr char kBothReasonsHistogram[] =
 constexpr base::TimeDelta kDuration = base::Milliseconds(42);
 constexpr base::TimeDelta kOtherDuration = base::Milliseconds(4242);
 
-// Combinations of tab states that log different histogram suffixes.
+// Combinations of tab states relevant to histogram recording.
 struct TabStateParams {
   bool has_saved_frames;
   bool destination_is_loaded;
-  const char* histogram_suffix;
+  bool destination_is_frozen;
+  std::array<const char*, 2> histogram_suffixes;
 };
 
 constexpr TabStateParams kTabStatesToTest[] = {
@@ -42,19 +44,40 @@ constexpr TabStateParams kTabStatesToTest[] = {
     {
         .has_saved_frames = true,
         .destination_is_loaded = true,
-        .histogram_suffix = "WithSavedFrames",
+        .destination_is_frozen = false,
+        .histogram_suffixes = {"WithSavedFrames",
+                               "FrozenState.Loaded_Unfrozen"},
+    },
+    // Loaded and frozen, with saved frames.
+    {
+        .has_saved_frames = true,
+        .destination_is_loaded = true,
+        .destination_is_frozen = true,
+        .histogram_suffixes = {"WithSavedFrames", "FrozenState.Loaded_Frozen"},
     },
     // NoSavedFrames_Loaded
     {
         .has_saved_frames = false,
         .destination_is_loaded = true,
-        .histogram_suffix = "NoSavedFrames_Loaded",
+        .destination_is_frozen = false,
+        .histogram_suffixes = {"NoSavedFrames_Loaded",
+                               "FrozenState.Loaded_Unfrozen"},
+    },
+    // Loaded and frozen, without saved frames.
+    {
+        .has_saved_frames = false,
+        .destination_is_loaded = true,
+        .destination_is_frozen = true,
+        .histogram_suffixes = {"NoSavedFrames_Loaded",
+                               "FrozenState.Loaded_Frozen"},
     },
     // NoSavedFrames_NotLoaded
     {
         .has_saved_frames = false,
         .destination_is_loaded = false,
-        .histogram_suffix = "NoSavedFrames_NotLoaded",
+        .destination_is_frozen = false,
+        .histogram_suffixes = {"NoSavedFrames_NotLoaded",
+                               "FrozenState.NotLoaded"},
     },
 };
 
@@ -62,22 +85,23 @@ class ContentToVisibleTimeReporterTest
     : public ::testing::TestWithParam<TabStateParams> {
  protected:
   ContentToVisibleTimeReporterTest() : tab_state_(GetParam()) {
-    duration_histograms_.push_back("Browser.Tabs.TotalSwitchDuration3");
-    duration_histograms_.push_back(base::StrCat(
-        {"Browser.Tabs.TotalSwitchDuration3.", tab_state_.histogram_suffix}));
-
-    incomplete_duration_histograms_.push_back(
-        "Browser.Tabs.TotalIncompleteSwitchDuration3");
-    incomplete_duration_histograms_.push_back(
-        base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration3.",
-                      tab_state_.histogram_suffix}));
-
-    result_histograms_.push_back("Browser.Tabs.TabSwitchResult3");
-    result_histograms_.push_back(base::StrCat(
-        {"Browser.Tabs.TabSwitchResult3.", tab_state_.histogram_suffix}));
+    AddExpectedHistogramVariants("Browser.Tabs.TotalSwitchDuration3",
+                                 duration_histograms_);
+    AddExpectedHistogramVariants("Browser.Tabs.TotalIncompleteSwitchDuration3",
+                                 incomplete_duration_histograms_);
+    AddExpectedHistogramVariants("Browser.Tabs.TabSwitchResult3",
+                                 result_histograms_);
 
     // Expect all histograms to be empty.
     ExpectHistogramsEmptyExcept({});
+  }
+
+  void AddExpectedHistogramVariants(const char* histogram_name,
+                                    std::vector<std::string>& histogram_names) {
+    histogram_names.emplace_back(histogram_name);
+    for (const char* suffix : tab_state_.histogram_suffixes) {
+      histogram_names.push_back(base::StrCat({histogram_name, ".", suffix}));
+    }
   }
 
   VisibleTimeEvent CreateTabSwitchEvent(base::TimeTicks start_time) {
@@ -85,7 +109,8 @@ class ContentToVisibleTimeReporterTest
         .event_start_time = start_time,
         .reason = VisibleTimeEvent::TabSwitchReason{
             .destination_is_loaded = tab_state_.destination_is_loaded,
-            .had_saved_frame_at_start = tab_state_.has_saved_frames}};
+            .had_saved_frame_at_start = tab_state_.has_saved_frames,
+            .destination_is_frozen = tab_state_.destination_is_frozen}};
   }
 
   VisibleTimeEvent CreateBFCacheRestoreEvent(base::TimeTicks start_time) {
@@ -100,16 +125,27 @@ class ContentToVisibleTimeReporterTest
         "Browser.Tabs.TotalSwitchDuration3.WithSavedFrames",
         "Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded",
         "Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_NotLoaded",
+        "Browser.Tabs.TotalSwitchDuration3.FrozenState.Loaded_Frozen",
+        "Browser.Tabs.TotalSwitchDuration3.FrozenState.Loaded_Unfrozen",
+        "Browser.Tabs.TotalSwitchDuration3.FrozenState.NotLoaded",
         "Browser.Tabs.TotalIncompleteSwitchDuration3",
         "Browser.Tabs.TotalIncompleteSwitchDuration3.WithSavedFrames",
         "Browser.Tabs.TotalIncompleteSwitchDuration3.NoSavedFrames_"
         "Loaded",
         "Browser.Tabs.TotalIncompleteSwitchDuration3.NoSavedFrames_"
         "NotLoaded",
+        "Browser.Tabs.TotalIncompleteSwitchDuration3.FrozenState.Loaded_"
+        "Frozen",
+        "Browser.Tabs.TotalIncompleteSwitchDuration3.FrozenState.Loaded_"
+        "Unfrozen",
+        "Browser.Tabs.TotalIncompleteSwitchDuration3.FrozenState.NotLoaded",
         "Browser.Tabs.TabSwitchResult3",
         "Browser.Tabs.TabSwitchResult3.WithSavedFrames",
         "Browser.Tabs.TabSwitchResult3.NoSavedFrames_Loaded",
         "Browser.Tabs.TabSwitchResult3.NoSavedFrames_NotLoaded",
+        "Browser.Tabs.TabSwitchResult3.FrozenState.Loaded_Frozen",
+        "Browser.Tabs.TabSwitchResult3.FrozenState.Loaded_Unfrozen",
+        "Browser.Tabs.TabSwitchResult3.FrozenState.NotLoaded",
         // Non-tab switch.
         kBfcacheRestoreHistogram};
     std::vector<std::string> unexpected_histograms;

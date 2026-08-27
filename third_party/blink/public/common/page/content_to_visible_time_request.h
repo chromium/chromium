@@ -29,6 +29,7 @@ struct BLINK_COMMON_EXPORT VisibleTimeEvent {
   struct TabSwitchReason {
     bool destination_is_loaded = false;
     bool had_saved_frame_at_start = false;
+    bool destination_is_frozen = false;
 
     friend bool operator==(const TabSwitchReason&,
                            const TabSwitchReason&) = default;

@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/record_content_to_visible_time_request_mojom_traits.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
 namespace blink {
 
@@ -17,6 +20,20 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
+
+TEST(ContentToVisibleTimeRequestTest, MojoRoundTripPreservesFrozenState) {
+  const RecordContentToVisibleTimeRequest input{
+      .events = {VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
+                                  .reason = VisibleTimeEvent::TabSwitchReason{
+                                      .destination_is_loaded = true,
+                                      .had_saved_frame_at_start = false,
+                                      .destination_is_frozen = true}}}};
+  RecordContentToVisibleTimeRequest output;
+
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::RecordContentToVisibleTimeRequest>(input, output));
+  EXPECT_EQ(input, output);
+}
 
 TEST(ContentToVisibleTimeRequestTest, ExtractTabSwitchEvents_Empty) {
   RecordContentToVisibleTimeRequest request{.events = {}};

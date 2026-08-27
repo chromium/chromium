@@ -1768,9 +1768,12 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // event and the time when the WebContents is painted.
   // `had_saved_frame_at_start` is true if a compositor frame for this view was
   // already available when the tab switch started.
+  // `destination_is_frozen` is true if the destination tab was frozen when the
+  // tab switch started.
   virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
                                      bool destination_is_loaded,
-                                     bool had_saved_frame_at_start) = 0;
+                                     bool had_saved_frame_at_start,
+                                     bool destination_is_frozen) = 0;
 
   // Starts browser-initiated prefetch, triggered by embedder.
   // - `prefetch_url` is the url the prefetch will be performed.

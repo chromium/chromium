@@ -11,6 +11,9 @@ struct VisibleTimeTabSwitchReason {
   // Indicates if the destination tab is loaded when initiating the tab switch.
   bool destination_is_loaded;
   bool had_saved_frame_at_start;
+  // True if the destination tab's page lifecycle was frozen when the switch
+  // started.
+  bool destination_is_frozen;
 };
 
 // Any event that can start a RecordContentToVisibleTimeRequest. The member that's set

@@ -12950,12 +12950,14 @@ void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {
 
 void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded,
-                                            bool had_saved_frame_at_start) {
+                                            bool had_saved_frame_at_start,
+                                            bool destination_is_frozen) {
   GetVisibleTimeRequestTrigger().UpdateRequest(blink::VisibleTimeEvent{
       .event_start_time = start_time,
       .reason = blink::VisibleTimeEvent::TabSwitchReason{
           .destination_is_loaded = destination_is_loaded,
-          .had_saved_frame_at_start = had_saved_frame_at_start}});
+          .had_saved_frame_at_start = had_saved_frame_at_start,
+          .destination_is_frozen = destination_is_frozen}});
 }
 
 VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {
