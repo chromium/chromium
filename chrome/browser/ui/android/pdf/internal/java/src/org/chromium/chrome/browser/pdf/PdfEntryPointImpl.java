@@ -16,6 +16,7 @@ import androidx.pdf.viewer.fragment.PdfViewerFragment;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class PdfEntryPointImpl implements PdfEntryPoint {
             String url,
             @Nullable String filepath,
             String title,
-            int tabId,
+            Object tab,
             PdfFragmentViewTracker pdfFragmentViewTracker) {
         return new PdfCoordinator(
                 (NativePageHost) host,
@@ -40,7 +41,7 @@ public class PdfEntryPointImpl implements PdfEntryPoint {
                 activity,
                 filepath,
                 title,
-                tabId,
+                (Tab) tab,
                 url,
                 pdfFragmentViewTracker);
     }

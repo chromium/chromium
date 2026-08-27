@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
+import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -66,6 +67,70 @@ public class TabRemoverImpl implements TabRemover {
 
     @Override
     public void prepareCloseTabs(
+            TabClosureParams tabClosureParams,
+            boolean allowDialog,
+            @Nullable TabModelActionListener listener,
+            Callback<TabClosureParams> onPreparedCallback) {
+        if (!allowDialog) {
+            proceedWithClose(tabClosureParams, allowDialog, listener, onPreparedCallback);
+            return;
+        }
+
+        List<Tab> tabsToClose =
+                tabClosureParams.isAllTabs
+                        ? TabModelUtils.convertTabListToListOfTabs(
+                                mTabModelRemover.getTabModelInternal())
+                        : tabClosureParams.tabs;
+        checkBeforeUnloadAndProceed(
+                tabsToClose, 0, tabClosureParams, allowDialog, listener, onPreparedCallback);
+    }
+
+    private void checkBeforeUnloadAndProceed(
+            @Nullable List<Tab> tabs,
+            int index,
+            TabClosureParams tabClosureParams,
+            boolean allowDialog,
+            @Nullable TabModelActionListener listener,
+            Callback<TabClosureParams> onPreparedCallback) {
+        if (tabs == null || index >= tabs.size()) {
+            proceedWithClose(tabClosureParams, allowDialog, listener, onPreparedCallback);
+            return;
+        }
+
+        Tab tab = tabs.get(index);
+        BeforeUnloadCallback callback =
+                !tab.isDestroyed() && tab.getUserDataHost() != null
+                        ? tab.getUserDataHost().getUserData(BeforeUnloadCallback.class)
+                        : null;
+        if (allowDialog && callback != null) {
+            Runnable onProceed =
+                    () -> {
+                        checkBeforeUnloadAndProceed(
+                                tabs,
+                                index + 1,
+                                tabClosureParams,
+                                allowDialog,
+                                listener,
+                                onPreparedCallback);
+                    };
+            Runnable onCancel =
+                    () -> {
+                        if (listener != null) {
+                            listener.onConfirmationDialogResult(
+                                    DialogType.NONE,
+                                    ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+                        }
+                    };
+            if (callback.handleBeforeUnload(onProceed, onCancel)) {
+                return; // Paused for dialog
+            }
+        }
+
+        checkBeforeUnloadAndProceed(
+                tabs, index + 1, tabClosureParams, allowDialog, listener, onPreparedCallback);
+    }
+
+    private void proceedWithClose(
             TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener,

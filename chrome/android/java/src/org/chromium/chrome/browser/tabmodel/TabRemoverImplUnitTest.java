@@ -10,8 +10,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
+import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -131,6 +134,103 @@ public class TabRemoverImplUnitTest {
 
         handler.performAction();
         verify(mTabClosureCallback).onResult(eq(params));
+    }
+
+    @Test
+    public void testPrepareCloseTabs_BeforeUnload_Proceed() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        BeforeUnloadCallback callback =
+                (onProceed, onCancel) -> {
+                    onProceed.run();
+                    return true;
+                };
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+    }
+
+    @Test
+    public void testPrepareCloseTabs_BeforeUnload_Cancel() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        BeforeUnloadCallback callback =
+                (onProceed, onCancel) -> {
+                    onCancel.run();
+                    return true;
+                };
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mTabModelRemover, never()).doTabRemovalFlow(any(), anyBoolean());
+    }
+
+    @Test
+    public void testPrepareCloseTabs_BeforeUnload_DisallowedDialog() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        BeforeUnloadCallback callback = mock(BeforeUnloadCallback.class);
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ false, mListener, mTabClosureCallback);
+        verify(callback, never()).handleBeforeUnload(any(), any());
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
+    }
+
+    @Test
+    public void testPrepareCloseTabs_MultipleTabs_BeforeUnload_ProceedAll() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        BeforeUnloadCallback callback0 =
+                (onProceed, onCancel) -> {
+                    onProceed.run();
+                    return true;
+                };
+        BeforeUnloadCallback callback1 =
+                (onProceed, onCancel) -> {
+                    onProceed.run();
+                    return true;
+                };
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback0);
+        tab1.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback1);
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(tab0, tab1)).build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+    }
+
+    @Test
+    public void testPrepareCloseTabs_MultipleTabs_BeforeUnload_CancelSecondTab() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        BeforeUnloadCallback callback0 =
+                (onProceed, onCancel) -> {
+                    onProceed.run();
+                    return true;
+                };
+        BeforeUnloadCallback callback1 =
+                (onProceed, onCancel) -> {
+                    onCancel.run();
+                    return true;
+                };
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback0);
+        tab1.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback1);
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(tab0, tab1)).build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mTabModelRemover, never()).doTabRemovalFlow(any(), anyBoolean());
     }
 
     @Test

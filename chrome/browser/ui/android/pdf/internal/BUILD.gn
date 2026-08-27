@@ -28,6 +28,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/gsa:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/android/pdf:java_resources",

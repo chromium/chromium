@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
@@ -311,6 +312,7 @@ class TabImpl implements Tab, TabInternal {
             ObservableSuppliers.createNonNull(false);
 
     private boolean mIsDestroyed;
+    private boolean mBypassBeforeUnload;
     private boolean mFocusChangesSuppressed;
 
     private int mThemeColor;
@@ -859,6 +861,10 @@ class TabImpl implements Tab, TabInternal {
     public LoadUrlResult loadUrl(LoadUrlParams params) {
         try {
             TraceEvent.begin("Tab.loadUrl");
+            if (maybeHandleBeforeUnload(() -> loadUrl(params))) {
+                return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, null);
+            }
+
             // TODO(tedchoc): When showing the android NTP, delay the call to
             // TabImplJni.get().loadUrl until the android view has entirely rendered.
             if (!mIsNativePageCommitPending) {
@@ -1182,14 +1188,43 @@ class TabImpl implements Tab, TabInternal {
                 && getWebContents().getNavigationController().canGoForward();
     }
 
+    private boolean maybeHandleBeforeUnload(Runnable proceedAction) {
+        if (!mBypassBeforeUnload) {
+            BeforeUnloadCallback callback =
+                    !isDestroyed() && getUserDataHost() != null
+                            ? getUserDataHost().getUserData(BeforeUnloadCallback.class)
+                            : null;
+            if (callback != null) {
+                Runnable onProceed =
+                        () -> {
+                            if (!isDestroyed()) {
+                                mBypassBeforeUnload = true;
+                                try {
+                                    proceedAction.run();
+                                } finally {
+                                    mBypassBeforeUnload = false;
+                                }
+                            }
+                        };
+                Runnable onCancel = () -> {};
+                return callback.handleBeforeUnload(onProceed, onCancel);
+            }
+        }
+        return false;
+    }
+
     @Override
     public void goBack() {
-        if (getWebContents() != null) getWebContents().getNavigationController().goBack();
+        if (!canGoBack()) return;
+        if (maybeHandleBeforeUnload(this::goBack)) return;
+        assumeNonNull(getWebContents()).getNavigationController().goBack();
     }
 
     @Override
     public void goForward() {
-        if (getWebContents() != null) getWebContents().getNavigationController().goForward();
+        if (!canGoForward()) return;
+        if (maybeHandleBeforeUnload(this::goForward)) return;
+        assumeNonNull(getWebContents()).getNavigationController().goForward();
     }
 
     // TabLifecycle implementation.

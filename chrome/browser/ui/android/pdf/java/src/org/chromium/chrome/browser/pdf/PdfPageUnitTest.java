@@ -105,6 +105,9 @@ public class PdfPageUnitTest {
                             doReturn(activity).when(mMockNativePageHost).getContext();
                         });
         doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginAdapter(any());
+        doReturn(TAB_ID).when(mMockTab).getId();
+        UserDataHost userDataHost = new UserDataHost();
+        doReturn(userDataHost).when(mMockTab).getUserDataHost();
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         PdfCoordinator.skipLoadPdfForTesting(true);

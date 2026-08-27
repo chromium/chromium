@@ -5053,14 +5053,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_RELOAD_TITLE" desc="Title for the dialog shown when a user tries to reload a PDF page with unsaved changes.">
         Reload site?
       </message>
+      <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_LEAVE_TITLE" desc="Title for the dialog shown when a user tries to leave a PDF page with unsaved changes.">
+        Leave site?
+      </message>
       <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_MESSAGE" desc="Message of the dialog shown when leaving or reloading a PDF document with unsaved changes.">
         Changes you made may not be saved.
       </message>
       <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_CANCEL_BUTTON" desc="Button text to cancel leaving or reloading the PDF document with unsaved changes.">
         Cancel
       </message>
-      <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_RELOAD_BUTTON" desc="Button text for the dialog to confirm reloading the PDF document.">
+      <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_RELOAD_BUTTON" desc="Button text for the dialog to confirm reloading the PDF document with unsaved changes.">
         Reload
+      </message>
+      <message name="IDS_PDF_UNSAVED_CHANGES_DIALOG_LEAVE_BUTTON" desc="Button text for the dialog to confirm leaving the PDF document with unsaved changes.">
+        Leave
       </message>
       <message name="IDS_PDF_CANNOT_EDIT_PDF" desc="Toast message shown when a PDF document cannot be edited.">
         Cannot edit PDF
