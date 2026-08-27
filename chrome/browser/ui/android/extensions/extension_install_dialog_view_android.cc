@@ -38,18 +38,23 @@ void ShowExtensionInstallDialogAndroid(
     std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<InstallPromptData> prompt) {
-  content::WebContents* web_contents = show_params->GetParentWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  ui::ViewAndroid* view_android = web_contents->GetNativeView();
-  DCHECK(view_android);
-  ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
+  // A parent window is required to retrieve the ModalDialogManager. If
+  // show_params was configured with a WebContents, GetParentWindow() computes
+  // the window from the WebContents's top-level native window.
+  ui::WindowAndroid* window_android = show_params->GetParentWindow();
   if (!window_android) {
+    LOG(ERROR) << "Parent window not found.";
+    if (done_callback) {
+      std::move(done_callback)
+          .Run(ExtensionInstallPrompt::DoneCallbackPayload(
+              ExtensionInstallPrompt::Result::ABORTED));
+    }
     return;
   }
 
+  // WebContents is optional (e.g. for permission prompts requested from a
+  // background context) and is only used if the user clicks a Web Store link.
+  content::WebContents* web_contents = show_params->GetParentWebContents();
   auto* dialog_view = new extensions::ExtensionInstallDialogViewAndroid(
       web_contents, std::move(prompt), std::move(done_callback));
   dialog_view->ShowDialog(window_android);
