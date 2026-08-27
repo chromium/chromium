@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
@@ -87,6 +88,7 @@ JingleAuthentication CreateTestAuthentication() {
   auth.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
   auth.spake_message = std::vector<uint8_t>(32, 0x01);
   auth.verification_hash = std::vector<uint8_t>(32, 0xAA);
+  auth.certificate = std::vector<uint8_t>(32, 0xBB);
   auth.session_authz_host_token = kSessionAuthzHostToken;
   auth.session_authz_session_token = kSessionAuthzSessionToken;
   return auth;
@@ -98,6 +100,7 @@ void VerifyAuthentication(const JingleAuthentication& actual,
   EXPECT_EQ(actual.method, expected.method);
   EXPECT_EQ(actual.spake_message, expected.spake_message);
   EXPECT_EQ(actual.verification_hash, expected.verification_hash);
+  EXPECT_EQ(actual.certificate, expected.certificate);
   EXPECT_EQ(actual.session_authz_host_token, expected.session_authz_host_token);
   EXPECT_EQ(actual.session_authz_session_token,
             expected.session_authz_session_token);
@@ -203,6 +206,44 @@ TEST_F(JingleMessageProtoConverterTest,
             auth.session_authz_host_token);
 }
 
+TEST_F(JingleMessageProtoConverterTest, ConvertSessionInitiate_StandardPin) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_initiate_002a";
+  message.sid = "crd_sess_987654321";
+  message.initiator = kFromLocalId;
+
+  SessionInitiate initiate;
+  JingleAuthentication auth;
+  auth.supported_methods = {
+      AuthenticationMethod::PAIRED_SPAKE2_CURVE25519,
+      AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519};
+  initiate.authentication = auth;
+  message.description = std::make_unique<ContentDescription>(auth);
+  message.SetPayload(std::move(initiate));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_initiate());
+  EXPECT_THAT(
+      stanza.jingle().session_initiate().authentication().supported_methods(),
+      testing::ElementsAre(
+          ftl::AUTHENTICATION_METHOD_PAIRED_SPAKE2_CURVE25519,
+          ftl::AUTHENTICATION_METHOD_SPAKE2_CURVE25519));
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  auto* converted_initiate = std::get_if<SessionInitiate>(&converted.payload());
+  ASSERT_TRUE(converted_initiate);
+  ASSERT_TRUE(converted_initiate->authentication.has_value());
+  EXPECT_THAT(
+      converted_initiate->authentication->supported_methods,
+      testing::ElementsAre(
+          AuthenticationMethod::PAIRED_SPAKE2_CURVE25519,
+          AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519));
+}
+
 TEST_F(JingleMessageProtoConverterTest, ConvertSessionAccept_CorpSessionAuthz) {
   JingleMessage message;
   message.from = from_address_;
@@ -254,6 +295,54 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionAccept_CorpSessionAuthz) {
   EXPECT_THAT(converted.attachments[0].host_attributes->attribute,
               testing::ElementsAre("Debug-Build", "HWEncoder",
                                    "SupportsIceDatagramTransport"));
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionAccept_Spake2HostCertificate) {
+  constexpr char kTestCertificateBase64[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyN3rL6u+eG8H9o3F7w4f1mK2s8u1"
+      "v9X0y5z6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8"
+      "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4"
+      "c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+      "c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9IDAQAB";
+  std::string decoded_cert;
+  ASSERT_TRUE(base::Base64Decode(kTestCertificateBase64, &decoded_cert));
+
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = "msg_accept_003b";
+  message.sid = "crd_sess_987654321";
+
+  SessionAccept accept;
+  JingleAuthentication auth;
+  auth.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
+  auth.certificate.assign(decoded_cert.begin(), decoded_cert.end());
+  auth.spake_message = std::vector<uint8_t>(32, 0x01);
+  accept.authentication = auth;
+  message.description = std::make_unique<ContentDescription>(auth);
+  message.SetPayload(std::move(accept));
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+  ASSERT_TRUE(stanza.jingle().has_session_accept());
+  EXPECT_EQ(stanza.jingle().session_accept().authentication().method(),
+            ftl::AUTHENTICATION_METHOD_SPAKE2_CURVE25519);
+  EXPECT_EQ(stanza.jingle().session_accept().authentication().certificate(),
+            decoded_cert);
+  EXPECT_EQ(stanza.jingle().session_accept().authentication().spake_message(),
+            std::string(32, '\x01'));
+
+  JingleMessage converted;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted, &error)) << error;
+  auto* converted_accept = std::get_if<SessionAccept>(&converted.payload());
+  ASSERT_TRUE(converted_accept);
+  ASSERT_TRUE(converted_accept->authentication.has_value());
+  EXPECT_EQ(converted_accept->authentication->method,
+            AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
+  EXPECT_EQ(converted_accept->authentication->certificate, auth.certificate);
+  EXPECT_EQ(converted_accept->authentication->spake_message,
+            auth.spake_message);
 }
 
 TEST_F(JingleMessageProtoConverterTest, ConvertSessionTerminate) {

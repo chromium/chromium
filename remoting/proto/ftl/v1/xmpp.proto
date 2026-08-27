@@ -173,6 +173,9 @@ message Authentication {
 
   // SessionAuthz session token.
   optional bytes session_authz_session_token = 6;
+
+  // Raw certificate bytes.
+  optional bytes certificate = 7;
 }
 
 // Jingle action "session-initiate": Sent by client to start a session.

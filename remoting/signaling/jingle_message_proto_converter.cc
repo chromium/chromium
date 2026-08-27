@@ -70,6 +70,9 @@ void JingleAuthenticationToProto(const JingleAuthentication& auth,
     proto->set_verification_hash(auth.verification_hash.data(),
                                  auth.verification_hash.size());
   }
+  if (!auth.certificate.empty()) {
+    proto->set_certificate(auth.certificate.data(), auth.certificate.size());
+  }
   if (!auth.session_authz_host_token.empty()) {
     std::string decoded;
     if (base::Base64Decode(auth.session_authz_host_token, &decoded)) {
@@ -104,6 +107,10 @@ void JingleAuthenticationFromProto(const ftl::Authentication& proto,
   if (proto.has_verification_hash()) {
     auth->verification_hash.assign(proto.verification_hash().begin(),
                                    proto.verification_hash().end());
+  }
+  if (proto.has_certificate()) {
+    auth->certificate.assign(proto.certificate().begin(),
+                             proto.certificate().end());
   }
   if (proto.has_session_authz_host_token()) {
     // TODO(joedow): Note that if raw bytes happen to form a valid Base64 string
