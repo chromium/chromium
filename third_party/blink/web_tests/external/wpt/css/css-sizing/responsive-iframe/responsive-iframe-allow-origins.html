@@ -11,6 +11,9 @@
 <meta name="variant" content="?origin=same,allowed=self,expect=400">
 <meta name="variant" content="?origin=same,allowed=none,expect=150">
 <meta name="variant" content="?origin=same,allowed=multiple,expect=400">
+<meta name="variant" content="?origin=same,allowed=no-prefix,expect=150">
+<meta name="variant" content="?origin=same,allowed=invalid-prefix,expect=150">
+<meta name="variant" content="?origin=same,allowed=uppercase-prefix,expect=150">
 <meta name="variant" content="?origin=same,allowed=space,expect=150">
 <meta name="variant" content="?origin=same,allowed=empty,expect=150">
 <meta name="variant" content="?origin=same,allowed=missing,expect=150">
@@ -48,23 +51,26 @@ const currentContainerOrigin = location.origin;
 
 function computeAllowedParam() {
   switch (allowedType) {
-    case 'star': return '*';
-    case 'parent': return currentContainerOrigin;
+    case 'star': return 'allow-origins=*';
+    case 'parent': return 'allow-origins=' + currentContainerOrigin;
     case 'child':
       switch (originType) {
-        case 'cross': return hostInfo.HTTP_NOTSAMESITE_ORIGIN;
-        case 'subdomain': return hostInfo.HTTP_REMOTE_ORIGIN;
+        case 'cross': return 'allow-origins=' + hostInfo.HTTP_NOTSAMESITE_ORIGIN;
+        case 'subdomain': return 'allow-origins=' + hostInfo.HTTP_REMOTE_ORIGIN;
       }
-      return currentContainerOrigin;
-    case 'other': return 'https://invalid-origin.example';
-    case 'wildcard': return 'http://*.' + hostInfo.ORIGINAL_HOST + ':' + hostInfo.HTTP_PORT;
-    case 'http': return 'http:';
-    case 'https': return 'https:';
-    case 'self': return "'self'";
-    case 'none': return "'none'";
-    case 'multiple': return 'https://invalid-origin.example ' + currentContainerOrigin;
-    case 'space': return ' ';
-    case 'empty':
+      return 'allow-origins=' + currentContainerOrigin;
+    case 'other': return 'allow-origins=https://invalid-origin.example';
+    case 'wildcard': return 'allow-origins=http://*.' + hostInfo.ORIGINAL_HOST + ':' + hostInfo.HTTP_PORT;
+    case 'http': return 'allow-origins=http:';
+    case 'https': return 'allow-origins=https:';
+    case 'self': return "allow-origins='self'";
+    case 'none': return "allow-origins='none'";
+    case 'multiple': return 'allow-origins=https://invalid-origin.example ' + currentContainerOrigin;
+    case 'no-prefix': return '*';
+    case 'invalid-prefix': return 'alloworigins=*';
+    case 'uppercase-prefix': return 'ALLOW-ORIGINS=*';
+    case 'space': return 'allow-origins= ';
+    case 'empty': return 'allow-origins=';
     default: return '';
   }
 }

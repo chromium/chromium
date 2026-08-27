@@ -382,21 +382,28 @@ TEST_F(HTMLMetaElementSimTest, WebMonetizationNotCountedInSubFrame) {
 
 TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOrigins) {
   struct TestCase {
-    const char* allow_origins_attr;
+    const char* content_attr;
     bool expected_allowed;
   } cases[] = {
       {nullptr, false},
+      {"", false},
       {" ", false},
-      {"*", true},
+      {"*", false},
+      {"allow-origins", false},
+      {"allow-origins=", false},
+      {"allow-origins= ", false},
+      {"allow-origins=*", true},
+      {"ALLOW-ORIGINS=*", false},
+      {"Allow-Origins=*", false},
       // Origin matches parent container origin (https://parent.example).
-      {"https://parent.example", true},
+      {"allow-origins=https://parent.example", true},
       // Origin matches child document origin (https://child.example) but NOT
       // parent container origin, so it must be disallowed.
-      {"https://child.example", false},
-      {"https://other.example", false},
-      {"https:", true},
+      {"allow-origins=https://child.example", false},
+      {"allow-origins=https://other.example", false},
+      {"allow-origins=https:", true},
       // Per CSP spec, scheme-source "http:" allows both HTTP and HTTPS origins.
-      {"http:", true},
+      {"allow-origins=http:", true},
   };
 
   for (const auto& test : cases) {
@@ -415,9 +422,9 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOrigins) {
     test::RunPendingTasks();
 
     String meta_tag;
-    if (test.allow_origins_attr) {
+    if (test.content_attr) {
       meta_tag = StrCat({R"(<meta name="responsive-embedded-sizing" content=")",
-                         test.allow_origins_attr, R"(">)"});
+                         test.content_attr, R"(">)"});
     } else {
       meta_tag = R"(<meta name="responsive-embedded-sizing">)";
     }
@@ -440,8 +447,8 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOrigins) {
     DummyExceptionStateForTesting exception_state;
     child_doc->RequestResizeResponsiveIframe(&exception_state);
     EXPECT_EQ(!test.expected_allowed, exception_state.HadException())
-        << "Failed for allow-origins: "
-        << (test.allow_origins_attr ? test.allow_origins_attr : "(missing)");
+        << "Failed for content: "
+        << (test.content_attr ? test.content_attr : "(missing)");
   }
 }
 
@@ -462,7 +469,7 @@ TEST_F(HTMLMetaElementSimTest, ResponsiveEmbeddedSizingAllowOriginsHttp) {
   test::RunPendingTasks();
 
   child_frame_resource.Complete(
-      R"(<head><meta name="responsive-embedded-sizing" content="https:"></head>)");
+      R"(<head><meta name="responsive-embedded-sizing" content="allow-origins=https:"></head>)");
   Compositor().BeginFrame();
   test::RunPendingTasks();
 

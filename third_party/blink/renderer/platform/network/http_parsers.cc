@@ -1147,7 +1147,7 @@ ParseContentSecurityPolicyHeaders(
 }
 
 network::mojom::blink::CSPSourceListPtr ParseAllowOrigins(
-    const String& raw_value) {
+    const StringView& raw_value) {
   std::vector<std::string> parsing_errors;
   // `allow-origins` uses the same syntax as CSP `frame-ancestors`.
   return network::mojom::ConvertToBlink(
