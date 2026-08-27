@@ -80,6 +80,7 @@ source_set("side_panel") {
     "//ui/actions:actions_headers",
     "//ui/base",
     "//ui/base/mojom:ui_base_types",
+    "//ui/base/unowned_user_data",
     "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/animation",

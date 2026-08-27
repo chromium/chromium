@@ -434,11 +434,6 @@ class BrowserWindowFeatures {
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
-  TabsFromOtherDevicesSidePanelCoordinator*
-  tabs_from_other_devices_side_panel_coordinator() {
-    return tabs_from_other_devices_side_panel_coordinator_.get();
-  }
-
   // Returns a pointer to the ToastController for the browser window. This can
   // return nullptr for non-normal browser windows because toasts are not
   // supported for those cases.

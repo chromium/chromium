@@ -50,10 +50,21 @@ std::unique_ptr<views::View> CreateTabsFromOtherDevicesWebView(
 }
 }  // namespace
 
+DEFINE_USER_DATA(TabsFromOtherDevicesSidePanelCoordinator);
+
+// static
+TabsFromOtherDevicesSidePanelCoordinator*
+TabsFromOtherDevicesSidePanelCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 TabsFromOtherDevicesSidePanelCoordinator::
     TabsFromOtherDevicesSidePanelCoordinator(BrowserWindowInterface* browser,
                                              Profile* profile)
-    : browser_(CHECK_DEREF(browser)), profile_(CHECK_DEREF(profile)) {}
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
+      profile_(CHECK_DEREF(profile)) {}
 
 TabsFromOtherDevicesSidePanelCoordinator::
     ~TabsFromOtherDevicesSidePanelCoordinator() = default;
