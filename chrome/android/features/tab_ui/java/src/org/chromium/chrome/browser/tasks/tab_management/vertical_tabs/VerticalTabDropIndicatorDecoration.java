@@ -46,7 +46,8 @@ public class VerticalTabDropIndicatorDecoration extends BaseVerticalTabDropIndic
 
     @Override
     protected boolean shouldDraw(DropTargetResult result) {
-        return result.targetType == DropTargetResult.TargetType.MAIN_LIST
+        return (result.targetType == DropTargetResult.TargetType.MAIN_LIST
+                        && !result.isZeroNormalTabsState)
                 || result.isZeroPinnedState;
     }
 

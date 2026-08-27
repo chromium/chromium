@@ -126,6 +126,7 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
                 /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
                 /* isPinned= */ false,
                 /* isZeroPinnedState= */ false,
+                /* isZeroNormalTabsState= */ false,
                 vh,
                 /* adapterPosition= */ 0,
                 /* insertBefore= */ true,

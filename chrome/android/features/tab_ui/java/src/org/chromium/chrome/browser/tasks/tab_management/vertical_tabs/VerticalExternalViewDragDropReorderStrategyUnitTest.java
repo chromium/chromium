@@ -1212,7 +1212,9 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     @Test
     @SmallTest
     public void testRegularTab_OverPinnedGrid_Rejects() {
+        when(mTabModel.getCount()).thenReturn(4);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
 
         DropTargetResult result =
                 mStrategy.calculateDropTarget(
@@ -1228,7 +1230,9 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     @Test
     @SmallTest
     public void testTabGroup_OverPinnedGrid_Rejects() {
+        when(mTabModel.getCount()).thenReturn(4);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
 
         DropTargetResult result =
                 mStrategy.calculateDropTarget(
@@ -1239,6 +1243,58 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                         /* isPinnedDrag= */ false);
 
         assertNull(result);
+    }
+
+    @Test
+    @SmallTest
+    public void testRegularTab_OverPinnedGrid_ZeroNormalTabs_ReturnsEmptyMainListDropTarget() {
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 50,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertEquals(TabList.INVALID_TAB_INDEX, result.destGroupTabId);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertTrue(result.isZeroNormalTabsState);
+        assertNull(result.targetViewHolder);
+        assertTrue(result.insertBefore);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroup_OverPinnedGrid_ZeroNormalTabs_ReturnsEmptyMainListDropTarget() {
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 50,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ true,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertEquals(TabList.INVALID_TAB_INDEX, result.destGroupTabId);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertTrue(result.isZeroNormalTabsState);
+        assertNull(result.targetViewHolder);
+        assertTrue(result.insertBefore);
     }
 
     @Test
@@ -1444,6 +1500,7 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         assertEquals(0, resultSingleTab.adapterPosition);
         assertTrue(resultSingleTab.insertBefore);
         assertFalse(resultSingleTab.isGroupTopOrBottomBoundary);
+        assertTrue(resultSingleTab.isZeroNormalTabsState);
 
         // Tab group drag into empty destination window.
         DropTargetResult resultGroup =
@@ -1460,10 +1517,136 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         assertEquals(TabList.INVALID_TAB_INDEX, resultGroup.destGroupTabId);
         assertFalse(resultGroup.isPinned);
         assertFalse(resultGroup.isZeroPinnedState);
+        assertTrue(resultGroup.isZeroNormalTabsState);
         assertNull(resultGroup.targetViewHolder);
         assertEquals(0, resultGroup.adapterPosition);
         assertTrue(resultGroup.insertBefore);
         assertFalse(resultGroup.isGroupTopOrBottomBoundary);
+    }
+
+    @Test
+    @SmallTest
+    public void testDestinationWindow_ZeroPinnedAndZeroNormalTabs_ReturnsFlagsFalse() {
+        when(mTabModel.getCount()).thenReturn(0);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+        when(mRecyclerView.getChildCount()).thenReturn(0);
+        assertEquals(0, mModelList.size());
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(0, result.destTabIndex);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertFalse(result.isZeroNormalTabsState);
+        assertNull(result.targetViewHolder);
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyViewHierarchy_NonEmptyTabModel_ZeroNormalTabsIsFalse() {
+        when(mTabModel.getCount()).thenReturn(4);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mRecyclerView.getChildCount()).thenReturn(0);
+        assertEquals(0, mModelList.size());
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(1, result.destTabIndex);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertFalse(result.isZeroNormalTabsState);
+    }
+
+    @Test
+    @SmallTest
+    public void testRegularTab_OverMainList_ZeroNormalTabs_WithPinnedItemsInModelList() {
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        PropertyModel pinnedModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 1)
+                        .with(TabProperties.IS_PINNED, true)
+                        .build();
+        PropertyModel pinnedModel2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 2)
+                        .with(TabProperties.IS_PINNED, true)
+                        .build();
+        addMainListItem(pinnedModel1, TabProperties.UiType.PINNED_TAB, 0, 0, 0, 0);
+        addMainListItem(pinnedModel2, TabProperties.UiType.PINNED_TAB, 0, 0, 0, 0);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertTrue(result.isZeroNormalTabsState);
+        assertNull(result.targetViewHolder);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroup_OverMainList_ZeroNormalTabs_WithPinnedItemsInModelList() {
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        PropertyModel pinnedModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 1)
+                        .with(TabProperties.IS_PINNED, true)
+                        .build();
+        PropertyModel pinnedModel2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 2)
+                        .with(TabProperties.IS_PINNED, true)
+                        .build();
+        addMainListItem(pinnedModel1, TabProperties.UiType.PINNED_TAB, 0, 0, 0, 0);
+        addMainListItem(pinnedModel2, TabProperties.UiType.PINNED_TAB, 0, 0, 0, 0);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ true,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertTrue(result.isZeroNormalTabsState);
+        assertNull(result.targetViewHolder);
     }
 
     @Test
