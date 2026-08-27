@@ -44,7 +44,6 @@ import java.util.HashMap;
 /** Used by notification scheduler to display the notification in Android UI. */
 @NullMarked
 public class DisplayAgent {
-    private static final String TAG = "DisplayAgent";
     private static final String DISPLAY_AGENT_TAG = "NotificationSchedulerDisplayAgent";
 
     private static final String EXTRA_INTENT_TYPE =

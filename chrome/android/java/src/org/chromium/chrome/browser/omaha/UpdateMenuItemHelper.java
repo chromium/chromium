@@ -169,11 +169,7 @@ public class UpdateMenuItemHelper {
         mMenuDismissedRunnableExecuted = false;
         // Post a task to record the item clicked histogram. Post task is used so that the runnable
         // executes after #onMenuItemClicked is called (if it's going to be called).
-        Choreographer.getInstance()
-                .postFrameCallback(
-                        (long frameTimeNanos) -> {
-                            mMenuDismissedRunnableExecuted = true;
-                        });
+        Choreographer.getInstance().postFrameCallback(_ -> mMenuDismissedRunnableExecuted = true);
     }
 
     /**

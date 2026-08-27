@@ -169,17 +169,18 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             PageInfoView.Params viewParams, Consumer<Runnable> runAfterDismiss) {
         if (isShowingOfflinePage() && OfflinePageUtils.isConnected()) {
             viewParams.openOnlineButtonClickCallback =
-                    () -> {
-                        runAfterDismiss.accept(
-                                () -> {
-                                    // Attempt to reload to an online version of the viewed offline
-                                    // web page.
-                                    // This attempt might fail if the user is offline, in which case
-                                    // an offline copy will be reloaded.
-                                    OfflinePageUtils.reload(
-                                            mWebContents, mOfflinePageLoadUrlDelegate);
-                                });
-                    };
+                    () ->
+                            runAfterDismiss.accept(
+                                    () -> {
+                                        // Attempt to reload to an online version of the viewed
+                                        // offline
+                                        // web page.
+                                        // This attempt might fail if the user is offline, in which
+                                        // case
+                                        // an offline copy will be reloaded.
+                                        OfflinePageUtils.reload(
+                                                mWebContents, mOfflinePageLoadUrlDelegate);
+                                    });
         } else {
             viewParams.openOnlineButtonShown = false;
         }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications.tips;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -374,9 +375,7 @@ public class TipsUtils {
         BaseNotificationManagerProxyFactory.create()
                 .getNotificationChannel(
                         ChromeChannelDefinitions.ChannelId.TIPS_V2,
-                        (channel) -> {
-                            callback.onResult(channel != null);
-                        });
+                        (NotificationChannel channel) -> callback.onResult(channel != null));
     }
 
     /**
@@ -499,18 +498,15 @@ public class TipsUtils {
                 new AccountPickerBottomSheetStrings.Builder(title)
                         .setSubtitleString(subtitle)
                         .build();
-        BottomSheetSigninAndHistorySyncConfig config =
-                new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                accountPickerBottomSheetStrings,
-                                BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
-                                        .BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
-                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                HistorySyncConfig.OptInMode.OPTIONAL,
-                                context.getString(R.string.history_sync_title),
-                                context.getString(R.string.history_sync_subtitle))
-                        .build();
-        return config;
+        return new BottomSheetSigninAndHistorySyncConfig.Builder(
+                        accountPickerBottomSheetStrings,
+                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        HistorySyncConfig.OptInMode.OPTIONAL,
+                        context.getString(R.string.history_sync_title),
+                        context.getString(R.string.history_sync_subtitle))
+                .build();
     }
 
     /**

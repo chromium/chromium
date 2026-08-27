@@ -113,10 +113,9 @@ public class PageInfoAboutThisSiteController {
                     /* canPromoteToNewTab= */ true,
                     /* shouldHaveContextMenu= */ false,
                     /* initiatorOrigin= */ null,
-                    () -> {
-                        assumeNonNull(mEphemeralTabCoordinator)
-                                .removeObserver(assumeNonNull(mEphemeralTabObserver));
-                    });
+                    () ->
+                            assumeNonNull(mEphemeralTabCoordinator)
+                                    .removeObserver(assumeNonNull(mEphemeralTabObserver)));
 
             mMainController.dismiss();
         } else {

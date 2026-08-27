@@ -38,13 +38,7 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         // Wrap to a Callback<Boolean> because JNI generator can't recognize TaskFinishedCallback as
         // a Java interface in the function parameter.
-        Callback<Boolean> taskCallback =
-                new Callback<>() {
-                    @Override
-                    public void onResult(Boolean needsReschedule) {
-                        callback.taskFinished(needsReschedule);
-                    }
-                };
+        Callback<Boolean> taskCallback = callback::taskFinished;
 
         NotificationSchedulerTaskJni.get().onStartTask(taskCallback);
     }
