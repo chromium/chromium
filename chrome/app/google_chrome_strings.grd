@@ -3347,17 +3347,17 @@ Google Chrome is unable to recover your settings.
       <if expr="not is_android">
         <if expr="use_titlecase">
           <message name="IDS_DICTATION_CONTEXT_MENU_STRING" desc="The string shown in the right-click context menu to start using the dictation feature." translateable="false">
-            Voice Typing
+            Talk to Type
           </message>
         </if>
         <if expr="not use_titlecase">
           <message name="IDS_DICTATION_CONTEXT_MENU_STRING" desc="The string shown in the right-click context menu to start using the dictation feature." translateable="false">
-            Voice typing
+            Talk to type
           </message>
         </if>
 
         <message name="IDS_DICTATION_ONBOARDING_TITLE" desc="The title string in the onboarding dialog for the dictation feature." translateable="false">
-          Allow voice typing to use your microphone and page content to generate polished text?
+          Allow Talk to type to use your microphone and page content to generate polished text?
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
           Your microphone will be used to capture your voice

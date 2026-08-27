@@ -26,7 +26,7 @@ const SettingsDictationPageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
 
 /**
- * Polymer element for the Voice Typing (Dictation) settings page.
+ * Polymer element for the Talk to type (Dictation) settings page.
  * Handles configuration of the dictation hotkey.
  */
 export class SettingsDictationPageElement extends

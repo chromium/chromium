@@ -1,7 +1,7 @@
-caption: Settings for Voice Typing
+caption: Settings for Talk to type
 
 desc: |-
-  Voice Typing is an AI-based feature that allows users to input and edit text using their voice, powered by generative AI models to provide high-quality transcription and formatting.
+  Talk to type is an AI-based feature that allows users to input and edit text using their voice, powered by generative AI models to provide high-quality transcription and formatting.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
 
@@ -20,13 +20,13 @@ features:
 future_on:
 - chrome_os
 items:
-- caption: Allow Voice Typing.
+- caption: Allow Talk to type.
   name: Allowed
   value: 0
-- caption: Allow Voice Typing without data collection.
+- caption: Allow Talk to type without data collection.
   name: AllowedWithoutLogging
   value: 1
-- caption: Do not allow Voice Typing.
+- caption: Do not allow Talk to type.
   name: Disabled
   value: 2
 owners:
