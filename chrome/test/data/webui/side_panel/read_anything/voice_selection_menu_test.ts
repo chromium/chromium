@@ -6,14 +6,15 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {LanguageMenuElement, SettingsOption, VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LanguageMenuElement, SettingsOption, VoiceNotificationManager, VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
+import {createSpeechSynthesisVoice, setupTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -28,6 +29,8 @@ function isPositionedOnPage(element: HTMLElement) {
 suite('VoiceSelectionMenu', () => {
   let voiceSelectionMenu: VoiceSelectionMenuElement;
   let dots: HTMLElement;
+  let audioBrowserProxy: TestAudioBrowserProxy;
+  let voiceNotificationManager: VoiceNotificationManager;
   let voice1 =
       createSpeechSynthesisVoice({name: 'Google test voice 1', lang: 'lang'});
   let voice2 =
@@ -62,8 +65,9 @@ suite('VoiceSelectionMenu', () => {
   }
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    voiceNotificationManager = result.notificationManager;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);
     await microtasksFinished();
@@ -516,13 +520,13 @@ suite('VoiceSelectionMenu', () => {
   suite('with installing voices', () => {
     function setVoiceStatus(
         status: VoiceClientSideStatusCode, lang: string): Promise<void> {
-      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+      voiceNotificationManager.onVoiceStatusChange(
           lang, status, voiceSelectionMenu.availableVoices, true);
       return microtasksFinished();
     }
 
     function setOfflineError(lang: string): Promise<void> {
-      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+      voiceNotificationManager.onVoiceStatusChange(
           lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
           voiceSelectionMenu.availableVoices, false);
       return microtasksFinished();
@@ -540,7 +544,16 @@ suite('VoiceSelectionMenu', () => {
     }
 
     setup(() => {
-      VoiceNotificationManager.getInstance().clear();
+      voiceNotificationManager.clear();
+      audioBrowserProxy.localeToDisplayName = {
+        'en': 'English (United States)',
+        'en-us': 'English (United States)',
+        'es': 'Español (España)',
+        'es-es': 'Español (España)',
+        'fr': 'Français',
+        'hi': 'हिन्दी',
+        'ja': '日本語',
+      };
       return microtasksFinished();
     });
 

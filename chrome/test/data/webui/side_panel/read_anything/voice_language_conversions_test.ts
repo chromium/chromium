@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getNotification, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 
 suite('voice and language conversions', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   setup(() => {
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
   });
 
   test('mojoVoicePackStatusToVoicePackStatusEnum', () => {

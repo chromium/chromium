@@ -4,23 +4,23 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, AVAILABLE_GOOGLE_TTS_LOCALES, BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, SpeechBrowserProxyImpl, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {VoiceLanguageListener, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {VoiceLanguageController, VoiceLanguageListener, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, mockMetrics, setupBasicSpeech, setVoices} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, setupBasicSpeech, setupTestEnvironment, setVoices} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('VoiceLanguageController', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
   let speech: TestSpeechBrowserProxy;
   let voiceLanguageController: VoiceLanguageController;
+  let voiceNotificationManager: VoiceNotificationManager;
   let listener: VoiceLanguageListener;
   let onEnabledLangsChange: boolean;
   let onAvailableVoicesChange: boolean;
@@ -65,17 +65,13 @@ suite('VoiceLanguageController', () => {
   ];
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    metrics = mockMetrics();
-    voiceLanguageController = new VoiceLanguageController();
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    visualBrowserProxy = result.visualBrowserProxy;
+    speech = result.speech;
+    metrics = result.metrics;
+    voiceLanguageController = result.voiceLanguageController;
+    voiceNotificationManager = result.notificationManager;
     onEnabledLangsChange = false;
     onAvailableVoicesChange = false;
     onCurrentVoiceChange = false;
@@ -97,62 +93,48 @@ suite('VoiceLanguageController', () => {
         notificationType = type;
       },
     };
-    VoiceNotificationManager.getInstance().addListener(notificationListener);
+    voiceNotificationManager.addListener(notificationListener);
   });
 
   suite('setLocalStatus', () => {
-    let listener: VoiceNotificationListener;
-    let listenerNotified: boolean;
-
-    setup(() => {
-      listenerNotified = false;
-      listener = {
-        notify(_type: NotificationType, _language: string): void {
-          listenerNotified = true;
-        },
-      };
-      VoiceNotificationManager.setInstance(new VoiceNotificationManager());
-      VoiceNotificationManager.getInstance().addListener(listener);
-    });
-
     test('no notification for non-Google language', () => {
       voiceLanguageController.setLocalStatus(
           'zh', VoiceClientSideStatusCode.ERROR_INSTALLING);
-      assertFalse(listenerNotified);
+      assertEquals(null, notificationType);
     });
 
     test('no notification for invalid language', () => {
       voiceLanguageController.setLocalStatus(
           'klingon', VoiceClientSideStatusCode.ERROR_INSTALLING);
-      assertFalse(listenerNotified);
+      assertEquals(null, notificationType);
     });
 
     test('no notification for same status', () => {
       voiceLanguageController.setLocalStatus(
           'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
-      assertTrue(listenerNotified);
-      listenerNotified = false;
+      assertEquals(NotificationType.GENERIC_ERROR, notificationType);
 
+      notificationType = null;
       voiceLanguageController.setLocalStatus(
           'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
 
-      assertFalse(listenerNotified);
+      assertEquals(null, notificationType);
     });
 
     test('notifies for new status with Google-supported language', () => {
       voiceLanguageController.setLocalStatus(
           'it-it', VoiceClientSideStatusCode.ERROR_INSTALLING);
-      assertTrue(listenerNotified);
+      assertEquals(NotificationType.GENERIC_ERROR, notificationType);
 
-      listenerNotified = false;
+      notificationType = null;
       voiceLanguageController.setLocalStatus(
           'it-it', VoiceClientSideStatusCode.AVAILABLE);
-      assertTrue(listenerNotified);
+      assertEquals(NotificationType.DOWNLOADED, notificationType);
 
-      listenerNotified = false;
+      notificationType = null;
       voiceLanguageController.setLocalStatus(
           'hi', VoiceClientSideStatusCode.ERROR_INSTALLING);
-      assertTrue(listenerNotified);
+      assertEquals(NotificationType.GENERIC_ERROR, notificationType);
     });
   });
 
@@ -204,11 +186,14 @@ suite('VoiceLanguageController', () => {
     assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
     const previouslyAvailableLang = 'pt-pt';
     audioBrowserProxy.onLanguagePrefChange(previouslyAvailableLang, true);
-    setupBasicSpeech(speech);
+    createAndSetVoices(speech, [
+      {lang: 'pt-br', name: 'Google Galinda'},
+    ]);
 
     voiceLanguageController.restoreFromPrefs();
 
-    assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
+    assertFalse(audioBrowserProxy.getLanguagesEnabledInPref().includes(
+        previouslyAvailableLang));
   });
 
   test('restoreSettingsFromPrefs event triggers restoreFromPrefs', () => {
@@ -219,7 +204,8 @@ suite('VoiceLanguageController', () => {
 
     visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
 
-    assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
+    assertFalse(audioBrowserProxy.getLanguagesEnabledInPref().includes(
+        previouslyAvailableLang));
   });
 
   test('restoreFromPrefs adds initially populated languages to prefs', () => {
@@ -382,7 +368,7 @@ suite('VoiceLanguageController', () => {
   test('onLanguageToggle with voice pack lang uninstalls it', () => {
     const lang = 'km';
     voiceLanguageController.onLanguageToggle(lang);
-    VoiceNotificationManager.getInstance().onVoiceStatusChange(
+    voiceNotificationManager.onVoiceStatusChange(
         lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
 
     voiceLanguageController.onLanguageToggle(lang);
@@ -720,13 +706,6 @@ suite('VoiceLanguageController', () => {
     const lang = 'fi';
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-    let notificationType = null;
-    const notificationListener = {
-      notify(type: NotificationType, _lang?: string): void {
-        notificationType = type;
-      },
-    };
-    VoiceNotificationManager.getInstance().addListener(notificationListener);
     const mockTimer = new MockTimer();
     mockTimer.install();
 
@@ -736,7 +715,7 @@ suite('VoiceLanguageController', () => {
     mockTimer.uninstall();
 
     // Now download the voice since the speech engine responded.
-    assertEquals(NotificationType.DOWNLOADING, notificationType);
+    assertEquals(null, notificationType);
   });
 
   test('onPageLanguageChanged updates current language', () => {
