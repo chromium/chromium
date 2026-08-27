@@ -195,6 +195,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -3091,10 +3092,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (id == R.id.tab_group_tab_menu_item) {
             assert menuItemData != null
                     && menuItemData.containsKey(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
-            TabModelUtils.selectTabById(
-                    getTabModelSelector(),
-                    menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY),
-                    TabSelectionType.FROM_USER);
+            @TabId int tabId = menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
+            if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
+                Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
+                if (tab != null) {
+                    getTabCreator(tab.isIncognito())
+                            .createNewTab(
+                                    new LoadUrlParams(tab.getUrl()),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    /* parent= */ null);
+                }
+            } else {
+                TabModelUtils.selectTabById(
+                        getTabModelSelector(), tabId, TabSelectionType.FROM_USER);
+            }
             RecordUserAction.record("MobileMenuSelectTabFromGroup");
             return true;
         }

@@ -20,6 +20,7 @@ import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.ViewGroup;
 import android.window.OnBackInvokedDispatcher;
@@ -53,8 +54,10 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -68,9 +71,11 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
@@ -480,5 +485,76 @@ public class ChromeActivityUnitTest {
 
         // Verify that the standard settings activity was launched.
         verify(mSettingsNavigation).startSettings(chromeActivity);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testSelectTabFromGroup_CrossWindowOperationsEnabled() {
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        UserActionTester userActionTester = new UserActionTester();
+
+        doReturn(mActivityTab).when(chromeActivity).getActivityTab();
+        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        doReturn(mTabCreator).when(chromeActivity).getTabCreator(eq(false));
+
+        int tabId = 123;
+        Tab targetTab = mock(Tab.class);
+        when(targetTab.getId()).thenReturn(tabId);
+        when(targetTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(targetTab.isIncognito()).thenReturn(false);
+
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        when(tabWindowManager.getTabById(tabId)).thenReturn(targetTab);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+
+        Bundle menuItemData = new Bundle();
+        menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, tabId);
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(
+                        R.id.tab_group_tab_menu_item,
+                        /* fromMenu= */ true,
+                        menuItemData,
+                        /* triggeringMotion= */ null));
+
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        assertEquals(JUnitTestGURLs.URL_1.getSpec(), paramsCaptor.getValue().getUrl());
+        assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testSelectTabFromGroup_CrossWindowOperationsDisabled() {
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        UserActionTester userActionTester = new UserActionTester();
+
+        doReturn(mActivityTab).when(chromeActivity).getActivityTab();
+        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        doReturn(mTabModelSelector).when(chromeActivity).getTabModelSelector();
+
+        int tabId = 123;
+        Tab targetTab = mock(Tab.class);
+        when(targetTab.getId()).thenReturn(tabId);
+
+        when(mTabModelSelector.getModelForTabId(tabId)).thenReturn(mTabModel);
+        when(mTabModel.getTabById(tabId)).thenReturn(targetTab);
+        when(mTabModel.indexOf(targetTab)).thenReturn(1);
+
+        Bundle menuItemData = new Bundle();
+        menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, tabId);
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(
+                        R.id.tab_group_tab_menu_item,
+                        /* fromMenu= */ true,
+                        menuItemData,
+                        /* triggeringMotion= */ null));
+
+        verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
+        assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
     }
 }
