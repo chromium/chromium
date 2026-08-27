@@ -949,6 +949,23 @@ TEST(RegistrationFetcherParamTest, AikRequiredInvalidValue) {
   EXPECT_TRUE(params.empty());
 }
 
+TEST(RegistrationFetcherParamTest, AikRequiredWithoutChallenge) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionsForSingleSignOn);
+
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(kRegistrationHeaderName,
+                              "(ES256);path=\"startsession\";aik_required=?1");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(
+          registration_request, response_headers.get(),
+          /*restricted_sites=*/std::vector<SchemefulSite>());
+
+  EXPECT_TRUE(params.empty());
+}
+
 }  // namespace
 
 }  // namespace net::device_bound_sessions

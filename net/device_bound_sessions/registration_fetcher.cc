@@ -10,21 +10,25 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/concurrent_closures.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -78,84 +82,246 @@ void RecordNetworkResultMetrics(bool is_for_refresh,
   }
 }
 
-void OnDataSigned(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    const std::vector<uint8_t>& pubkey,
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    std::string header_and_payload,
+// Invokes `callback` with `result`, mapping any transient errors to
+// `kTransientSigningError` and persistent errors to `persistent_error`.
+void RunSessionCallback(
     base::OnceCallback<
         void(SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback,
-    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(
-        base::unexpected(unexportable_keys::IsPersistentError(result.error())
-                             ? SessionError::kSigningError
-                             : SessionError::kTransientSigningError));
-    return;
-  }
-
-  const std::vector<uint8_t>& signature = result.value();
-  std::optional<std::string> registration_token =
-      AppendSignatureToHeaderAndPayload(header_and_payload, algorithm, pubkey,
-                                        signature);
-  if (!registration_token.has_value()) {
-    std::move(callback).Run(base::unexpected(SessionError::kSigningError));
-    return;
-  }
-  std::move(callback).Run(std::move(registration_token).value());
+    SessionError::ErrorType persistent_error,
+    unexportable_keys::ServiceErrorOr<RegistrationFetcher::RegistrationToken>
+        result) {
+  std::move(callback).Run(result.transform_error(
+      [persistent_error](unexportable_keys::ServiceError error) {
+        return unexportable_keys::IsPersistentError(error)
+                   ? persistent_error
+                   : SessionError::kTransientSigningError;
+      }));
 }
 
+// Holds the signature algorithm and SubjectPublicKeyInfo (SPKI) bytes of an
+// unexportable key.
+struct KeyInfo {
+  crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  std::vector<uint8_t> pubkey;
+};
+
+// Retrieves the signature algorithm and SubjectPublicKeyInfo (SPKI) for
+// `key_id` from `key_service`.
+unexportable_keys::ServiceErrorOr<KeyInfo> GetKeyInfo(
+    unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id) {
+  KeyInfo info;
+  ASSIGN_OR_RETURN(info.algorithm, key_service.GetAlgorithm(key_id));
+  ASSIGN_OR_RETURN(info.pubkey, key_service.GetSubjectPublicKeyInfo(key_id));
+  return info;
+}
+
+// Creates the unsigned JWT header and payload for either session registration
+// or refresh.
+unexportable_keys::ServiceErrorOr<std::string> CreateInnerHeaderAndPayload(
+    bool is_for_refresh,
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id,
+    std::optional<std::string> challenge,
+    std::optional<std::string> authorization) {
+  ASSIGN_OR_RETURN(KeyInfo key_info,
+                   GetKeyInfo(unexportable_key_service, key_id));
+  return base::OptionalToExpected(
+      is_for_refresh ? CreateKeyRefreshHeaderAndPayload(std::move(challenge),
+                                                        key_info.algorithm)
+                     : CreateKeyRegistrationHeaderAndPayload(
+                           std::move(challenge), key_info.algorithm,
+                           key_info.pubkey, std::move(authorization)),
+      unexportable_keys::ServiceError::kCryptoApiFailed);
+}
+
+// Appends the signature resulting from key signing to `header_and_payload`
+// using key info from `key_service`.
+unexportable_keys::ServiceErrorOr<std::string> AppendSignature(
+    unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id,
+    std::string_view header_and_payload,
+    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> sign_result) {
+  ASSIGN_OR_RETURN(std::vector<uint8_t> signature, std::move(sign_result));
+  ASSIGN_OR_RETURN(KeyInfo key_info, GetKeyInfo(key_service, key_id));
+  return base::OptionalToExpected(
+      AppendSignatureToHeaderAndPayload(header_and_payload, key_info.algorithm,
+                                        key_info.pubkey, signature),
+      unexportable_keys::ServiceError::kCryptoApiFailed);
+}
+
+// Asynchronously creates and signs a registration or refresh token using
+// `key_id` without attestation.
 void SignChallengeWithKey(
     bool is_for_refresh,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     unexportable_keys::UnexportableSigningKeyId key_id,
     unexportable_keys::BackgroundTaskPriority priority,
-    const GURL& registration_url,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
-    std::optional<std::string> session_identifier,
     base::OnceCallback<void(
         SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback) {
-  auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
-  if (!expected_algorithm.has_value()) {
-    std::move(callback).Run(base::unexpected(
-        unexportable_keys::IsPersistentError(expected_algorithm.error())
-            ? SessionError::kSigningError
-            : SessionError::kTransientSigningError));
-    return;
-  }
+  ASSIGN_OR_RETURN(std::string header_and_payload,
+                   CreateInnerHeaderAndPayload(
+                       is_for_refresh, unexportable_key_service, key_id,
+                       std::move(challenge), std::move(authorization)),
+                   [&](unexportable_keys::ServiceError error) {
+                     RunSessionCallback(std::move(callback),
+                                        SessionError::kSigningError,
+                                        base::unexpected(error));
+                   });
 
-  auto expected_public_key =
-      unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-  if (!expected_public_key.has_value()) {
-    std::move(callback).Run(base::unexpected(
-        unexportable_keys::IsPersistentError(expected_public_key.error())
-            ? SessionError::kSigningError
-            : SessionError::kTransientSigningError));
-    return;
-  }
+  // TODO(crbug.com/501306421): Encapsulate this flow into a dedicated helper
+  // class owned by `RegistrationFetcherImpl` to establish clear object
+  // ownership, consolidate signing logic, and support early cancellation via
+  // `base::WeakPtr` if `RegistrationFetcherImpl` is destroyed during background
+  // operations.
+  unexportable_key_service.SignSlowlyAsync(
+      key_id, base::as_byte_span(header_and_payload), priority,
+      base::BindOnce(&AppendSignature, std::ref(unexportable_key_service),
+                     key_id, header_and_payload)
+          .Then(base::BindOnce(&RunSessionCallback, std::move(callback),
+                               SessionError::kSigningError)));
+}
 
-  std::optional<std::string> header_and_payload;
-  if (is_for_refresh) {
-    header_and_payload =
-        CreateKeyRefreshHeaderAndPayload(challenge, expected_algorithm.value());
-  } else {
-    header_and_payload = CreateKeyRegistrationHeaderAndPayload(
-        challenge, expected_algorithm.value(), expected_public_key.value(),
-        std::move(authorization));
-  }
+// Tracks intermediate state across asynchronous operations when creating an
+// attested registration token.
+struct AttestedTokenSigningState {
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service;
+  const unexportable_keys::UnexportableAttestationKeyId attestation_key_id;
+  const unexportable_keys::BackgroundTaskPriority priority;
+  const std::string audience;
+  base::OnceCallback<void(
+      SessionErrorOr<RegistrationFetcher::RegistrationToken>)>
+      callback;
 
-  if (!header_and_payload.has_value()) {
-    std::move(callback).Run(base::unexpected(SessionError::kSigningError));
-    return;
-  }
+  std::optional<unexportable_keys::ServiceErrorOr<std::string>> inner_jws;
+  std::optional<unexportable_keys::ServiceErrorOr<crypto::AttestationStatement>>
+      attestation_statement;
+};
+
+// Creates the unsigned outer JWT header and payload wrapping `inner_jws` with
+// an attestation statement.
+unexportable_keys::ServiceErrorOr<std::string> CreateOuterHeaderAndPayload(
+    unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableAttestationKeyId attestation_key_id,
+    std::string_view inner_jws,
+    const crypto::AttestationStatement& attestation_statement,
+    std::string_view audience) {
+  ASSIGN_OR_RETURN(KeyInfo aik_info,
+                   GetKeyInfo(key_service, attestation_key_id));
+  return base::OptionalToExpected(
+      CreateOuterRegistrationHeaderAndPayload(inner_jws, aik_info.algorithm,
+                                              aik_info.pubkey, audience,
+                                              attestation_statement),
+      unexportable_keys::ServiceError::kCryptoApiFailed);
+}
+
+// Combines the inner token and attestation statement into an outer token, then
+// initiates signing with the attestation identity key.
+void SignOuterToken(std::unique_ptr<AttestedTokenSigningState> state) {
+  CHECK(state->inner_jws);
+  CHECK(state->attestation_statement);
+
+  ASSIGN_OR_RETURN(const std::string& inner_jws, *state->inner_jws,
+                   [&](unexportable_keys::ServiceError error) {
+                     RunSessionCallback(std::move(state->callback),
+                                        SessionError::kSigningError,
+                                        base::unexpected(error));
+                   });
+  ASSIGN_OR_RETURN(const crypto::AttestationStatement& attestation_stmt,
+                   *state->attestation_statement,
+                   [&](unexportable_keys::ServiceError error) {
+                     RunSessionCallback(
+                         std::move(state->callback),
+                         SessionError::kAttestationCertificationError,
+                         base::unexpected(error));
+                   });
+  ASSIGN_OR_RETURN(std::string header_and_payload,
+                   CreateOuterHeaderAndPayload(
+                       *state->key_service, state->attestation_key_id,
+                       inner_jws, attestation_stmt, state->audience),
+                   [&](unexportable_keys::ServiceError error) {
+                     RunSessionCallback(std::move(state->callback),
+                                        SessionError::kAttestationSigningError,
+                                        base::unexpected(error));
+                   });
+
+  state->key_service->SignSlowlyAsync(
+      state->attestation_key_id, base::as_byte_span(header_and_payload),
+      state->priority,
+      base::BindOnce(&AppendSignature, std::ref(*state->key_service),
+                     state->attestation_key_id, header_and_payload)
+          .Then(base::BindOnce(&RunSessionCallback, std::move(state->callback),
+                               SessionError::kAttestationSigningError)));
+}
+
+// Stores `value` into `target` and runs `done_closure`.
+template <typename T>
+auto StoreAndRun(std::optional<T>& target, base::OnceClosure done_closure) {
+  return base::BindOnce(
+      [](std::optional<T>& target, base::OnceClosure done_closure, T value) {
+        target = std::move(value);
+        std::move(done_closure).Run();
+      },
+      std::ref(target), std::move(done_closure));
+}
+
+// Asynchronously creates and signs an attested registration token using
+// `key_id` and `attestation_key_id`.
+void SignChallengeWithAttestationKey(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id,
+    unexportable_keys::UnexportableAttestationKeyId attestation_key_id,
+    unexportable_keys::BackgroundTaskPriority priority,
+    std::string audience,
+    std::optional<std::string> challenge,
+    std::optional<std::string> authorization,
+    base::OnceCallback<void(
+        SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback) {
+  ASSIGN_OR_RETURN(std::string header_and_payload,
+                   CreateInnerHeaderAndPayload(
+                       /*is_for_refresh=*/false, unexportable_key_service,
+                       key_id, challenge, std::move(authorization)),
+                   [&](unexportable_keys::ServiceError error) {
+                     RunSessionCallback(std::move(callback),
+                                        SessionError::kSigningError,
+                                        base::unexpected(error));
+                   });
+
+  // SAFETY: `key_service` is referenced via `raw_ref` in
+  // `AttestedTokenSigningState`. The caller ensures `unexportable_key_service`
+  // outlives the async token creation request. When both asynchronous signing
+  // and certification tasks complete, `base::BarrierClosure` synchronously
+  // invokes `SignOuterToken`, which performs the final signing step before
+  // releasing `state`.
+  auto state = base::WrapUnique(new AttestedTokenSigningState{
+      .key_service{unexportable_key_service},
+      .attestation_key_id = attestation_key_id,
+      .priority = priority,
+      .audience = std::move(audience),
+      .callback = std::move(callback),
+  });
+
+  // TODO(crbug.com/501306421): Encapsulate this flow into a dedicated helper
+  // class owned by `RegistrationFetcherImpl` to establish clear object
+  // ownership, consolidate signing logic, and support early cancellation via
+  // `base::WeakPtr` if `RegistrationFetcherImpl` is destroyed during background
+  // operations.
+  AttestedTokenSigningState& state_ref = *state;
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2, base::BindOnce(&SignOuterToken, std::move(state)));
 
   unexportable_key_service.SignSlowlyAsync(
-      key_id, base::as_byte_span(*header_and_payload), priority,
-      base::BindOnce(&OnDataSigned, expected_algorithm.value(),
-                     std::move(expected_public_key).value(),
-                     std::ref(unexportable_key_service), *header_and_payload,
-                     std::move(callback)));
+      key_id, base::as_byte_span(header_and_payload), priority,
+      base::BindOnce(&AppendSignature, std::ref(unexportable_key_service),
+                     key_id, header_and_payload)
+          .Then(StoreAndRun(state_ref.inner_jws, barrier_closure)));
+
+  unexportable_key_service.CertifySlowlyAsync(
+      attestation_key_id, key_id, base::as_byte_span(challenge.value_or("")),
+      priority,
+      StoreAndRun(state_ref.attestation_statement, std::move(barrier_closure)));
 }
 
 // Returns the registrable origin label for `origin_str`, or empty if the origin
@@ -326,24 +492,30 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
+    CHECK(callback_);
 
-    base::ConcurrentClosures concurrent;
-    key_service_->GenerateSigningKeySlowlyAsync(
-        supported_algos, priority_,
-        base::BindOnce(&RegistrationFetcherImpl::OnSigningKeyGenerated,
-                       GetWeakPtr(), concurrent.CreateClosure()));
+    const bool aik_required =
+        registration_params.attestation_mode() == AttestationMode::kRequired;
+    if (aik_required) {
+      CHECK(registration_params.challenge().has_value());
+    }
+    base::RepeatingClosure barrier_closure = base::BarrierClosure(
+        aik_required ? 2 : 1,
+        base::BindOnce(&RegistrationFetcherImpl::StartFetch, GetWeakPtr(),
+                       registration_params.TakeChallenge(),
+                       registration_params.TakeAuthorization()));
 
-    if (registration_params.attestation_mode() == AttestationMode::kRequired) {
+    if (aik_required) {
       key_service_->GenerateAttestationKeySlowlyAsync(
           supported_algos, priority_,
           base::BindOnce(&RegistrationFetcherImpl::OnAttestationKeyGenerated,
-                         GetWeakPtr(), concurrent.CreateClosure()));
+                         GetWeakPtr(), barrier_closure));
     }
 
-    std::move(concurrent)
-        .Done(base::BindOnce(&RegistrationFetcherImpl::StartFetch, GetWeakPtr(),
-                             registration_params.TakeChallenge(),
-                             registration_params.TakeAuthorization()));
+    key_service_->GenerateSigningKeySlowlyAsync(
+        supported_algos, priority_,
+        base::BindOnce(&RegistrationFetcherImpl::OnSigningKeyGenerated,
+                       GetWeakPtr(), std::move(barrier_closure)));
     // `this` may be deleted.
   }
 
@@ -610,10 +782,19 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // Track a new signing attempt.
     session_service_->AddSigningOccurrence(site);
 
-    SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
-                         priority_, fetcher_endpoint_, current_challenge_,
-                         current_authorization_, session_identifier_,
-                         std::move(callback));
+    if (attestation_key_id_.has_value()) {
+      // AIK attestation is strictly supported for registration requests, not
+      // refresh requests.
+      CHECK(!IsForRefreshRequest());
+      SignChallengeWithAttestationKey(
+          *key_service_, *key_id_, *attestation_key_id_, priority_,
+          fetcher_endpoint_.spec(), current_challenge_, current_authorization_,
+          std::move(callback));
+    } else {
+      SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
+                           priority_, current_challenge_,
+                           current_authorization_, std::move(callback));
+    }
     // `this` may be deleted.
   }
 
@@ -904,6 +1085,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void RunCallback(RegistrationResult registration_result) {
+    // When generating signing and attestation keys in parallel, both steps can
+    // fail independently. If the first failure invokes `RunCallback()`,
+    // `callback_` is consumed. Ignore subsequent calls.
+    if (!callback_) {
+      return;
+    }
     AddNetLogResult(registration_result);
     if (IsForRefreshRequest()) {
       base::UmaHistogramCounts100(
@@ -1033,27 +1220,27 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
   unexportable_key_service.GenerateSigningKeySlowlyAsync(
       kSupportedAlgos, unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(
-          [](unexportable_keys::UnexportableKeyService& key_service,
-             const std::string& challenge,
-             std::optional<std::string>&& authorization,
+          [](unexportable_keys::UnexportableKeyService&
+                 unexportable_key_service,
+             std::optional<std::string> challenge,
+             std::optional<std::string> authorization,
              base::OnceCallback<void(
                  SessionErrorOr<RegistrationFetcher::RegistrationToken>)>
                  callback,
              unexportable_keys::ServiceErrorOr<
                  unexportable_keys::UnexportableSigningKeyId> key_result) {
-            if (!key_result.has_value()) {
-              std::move(callback).Run(base::unexpected(
-                  unexportable_keys::IsPersistentError(key_result.error())
-                      ? SessionError::kSigningError
-                      : SessionError::kTransientSigningError));
-              return;
-            }
-
+            ASSIGN_OR_RETURN(unexportable_keys::UnexportableSigningKeyId key_id,
+                             std::move(key_result),
+                             [&](unexportable_keys::ServiceError error) {
+                               RunSessionCallback(std::move(callback),
+                                                  SessionError::kSigningError,
+                                                  base::unexpected(error));
+                             });
             SignChallengeWithKey(
-                /*is_for_refresh=*/false, key_service, key_result.value(),
-                unexportable_keys::BackgroundTaskPriority::kBestEffort, GURL(),
-                challenge, std::move(authorization),
-                /*session_identifier=*/std::nullopt, std::move(callback));
+                /*is_for_refresh=*/false, unexportable_key_service, key_id,
+                unexportable_keys::BackgroundTaskPriority::kBestEffort,
+                std::move(challenge), std::move(authorization),
+                std::move(callback));
           },
           std::ref(unexportable_key_service), std::move(challenge),
           std::move(authorization), std::move(callback)));

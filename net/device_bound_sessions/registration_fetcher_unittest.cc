@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -23,6 +24,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -68,17 +70,22 @@ namespace {
 
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::base::test::DictionaryHasValue;
+using ::base::test::DictionaryHasValues;
 using ::base::test::RunOnceCallback;
 using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::DoDefault;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -500,6 +507,16 @@ std::optional<std::string> GetRequestChallenge(
   return *challenge;
 }
 
+std::optional<base::DictValue> Base64UrlEncodedJsonToDict(
+    std::string_view input) {
+  return base::Base64UrlDecode(input,
+                               base::Base64UrlDecodePolicy::DISALLOW_PADDING)
+      .and_then([](base::span<const uint8_t> json) {
+        return base::JSONReader::ReadDict(base::as_string_view(json),
+                                          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      });
+}
+
 TEST_F(RegistrationTest, BasicSuccess) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
@@ -685,6 +702,35 @@ TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
             SessionError::kAttestationKeyGenerationError);
 }
 
+TEST_F(RegistrationTest, AttestationSigningKeyGenerationFailure) {
+  unexportable_keys::MockUnexportableKeyService mock_service;
+
+  // Mock signing key generation to fail
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync)
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), /*session_identifier=*/std::nullopt, kChallenge,
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info, isolation_info.site_for_cookies(),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kSigningKeyGenerationError);
+}
+
 TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
@@ -718,6 +764,178 @@ TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
 
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
+}
+
+TEST_F(RegistrationTest, AttestationSuccessWithChallenge) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  std::string outer_jwt;
+  server_.RegisterRequestHandler(
+      base::BindLambdaForTesting([&](const test_server::HttpRequest& request) {
+        outer_jwt = CHECK_DEREF(
+            base::FindOrNull(request.headers, kSessionResponseHeaderName));
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), /*session_identifier=*/std::nullopt,
+      std::string(kChallenge),
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      param, session_service(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  const Session& session = callback.outcome().SessionForTesting();
+  EXPECT_THAT(session.maybe_unexportable_attestation_key_id(),
+              ValueIs(Optional(_)));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
+
+  EXPECT_TRUE(VerifyEs256Jwt(outer_jwt));
+
+  std::vector<std::string> outer_sections = base::SplitString(
+      outer_jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(outer_sections.size(), 3u);
+
+  ASSERT_OK_AND_ASSIGN(base::DictValue outer_header,
+                       Base64UrlEncodedJsonToDict(outer_sections[0]));
+  EXPECT_THAT(outer_header, DictionaryHasValues(base::DictValue()
+                                                    .Set("alg", "ES256")
+                                                    .Set("typ", "dbsc+aik")
+                                                    .Set("cty", "jwt")));
+  EXPECT_TRUE(outer_header.FindDict("jwk"));
+
+  ASSERT_OK_AND_ASSIGN(base::DictValue outer_payload,
+                       Base64UrlEncodedJsonToDict(outer_sections[1]));
+  EXPECT_THAT(outer_payload,
+              DictionaryHasValue("aud", base::Value(GetBaseURL().spec())));
+
+  const base::DictValue& att = CHECK_DEREF(outer_payload.FindDict("att"));
+  EXPECT_THAT(att, DictionaryHasValue("fmt", base::Value("TPM")));
+  EXPECT_THAT(att.FindString("stmt"), Pointee(Not(IsEmpty())));
+  EXPECT_THAT(att.FindString("sig"), Pointee(Not(IsEmpty())));
+
+  const std::string& inner_jwt = CHECK_DEREF(outer_payload.FindString("jti"));
+  EXPECT_TRUE(VerifyEs256Jwt(inner_jwt));
+
+  std::vector<std::string> inner_sections = base::SplitString(
+      inner_jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(inner_sections.size(), 3u);
+
+  ASSERT_OK_AND_ASSIGN(base::DictValue inner_header,
+                       Base64UrlEncodedJsonToDict(inner_sections[0]));
+  EXPECT_THAT(
+      inner_header,
+      DictionaryHasValues(
+          base::DictValue().Set("alg", "ES256").Set("typ", "dbsc+jwt")));
+  EXPECT_TRUE(inner_header.FindDict("jwk"));
+
+  ASSERT_OK_AND_ASSIGN(base::DictValue inner_payload,
+                       Base64UrlEncodedJsonToDict(inner_sections[1]));
+  EXPECT_THAT(inner_payload,
+              DictionaryHasValue("jti", base::Value(kChallenge)));
+}
+
+TEST_F(RegistrationTest, AttestationCertificationFailure) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  unexportable_keys::MockUnexportableKeyService mock_service;
+  mock_service.DelegateToService(unexportable_key_service());
+
+  EXPECT_CALL(mock_service, CertifySlowlyAsync)
+      .WillOnce(RunOnceCallback<4>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), /*session_identifier=*/std::nullopt,
+      std::string(kChallenge),
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info, isolation_info.site_for_cookies(),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kAttestationCertificationError);
+}
+
+TEST_F(RegistrationTest, AttestationInnerSigningFailure) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  unexportable_keys::MockUnexportableKeyService mock_service;
+  mock_service.DelegateToService(unexportable_key_service());
+
+  EXPECT_CALL(mock_service, SignSlowlyAsync)
+      .WillOnce(RunOnceCallback<3>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), /*session_identifier=*/std::nullopt,
+      std::string(kChallenge),
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info, isolation_info.site_for_cookies(),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kSigningError);
+}
+
+TEST_F(RegistrationTest, AttestationOuterSigningFailure) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  unexportable_keys::MockUnexportableKeyService mock_service;
+  mock_service.DelegateToService(unexportable_key_service());
+
+  EXPECT_CALL(mock_service, SignSlowlyAsync)
+      .WillOnce(DoDefault())
+      .WillOnce(RunOnceCallback<3>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GURL("https://a.test"), /*session_identifier=*/std::nullopt,
+      std::string(kChallenge),
+      /*authorization=*/std::nullopt, AttestationMode::kRequired);
+
+  auto fetcher = RegistrationFetcher::CreateFetcher(
+      request_param, session_service(), mock_service, context_.get(),
+      isolation_info, isolation_info.site_for_cookies(),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt,
+      unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  TestRegistrationCallback callback;
+  fetcher->StartCreateTokenAndFetch(request_param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kAttestationSigningError);
 }
 
 TEST_F(RegistrationTest, NoScopeJson) {

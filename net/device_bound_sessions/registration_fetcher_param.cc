@@ -228,6 +228,10 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     return std::nullopt;
   }
 
+  if (aik_required && !challenge.has_value()) {
+    return std::nullopt;
+  }
+
   auto [is_valid, provider_params] = ParseProviderRegistrationParams(
       std::move(provider_key), std::move(provider_url),
       std::move(provider_session_id));
