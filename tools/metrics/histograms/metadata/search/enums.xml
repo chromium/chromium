@@ -325,6 +325,71 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java:DialogSuppressionStatus) -->
 
+<!-- LINT.IfChange(OseSplitEngineState) -->
+
+<enum name="OseSplitEngineState">
+  <summary>
+    Detailed configuration state of an individual search engine definition
+    undergoing an ID split / migration.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="LegacyDse">
+    Legacy (pre-migration), Default Search Engine, Default Config
+  </int>
+  <int value="2" label="LegacyDseCustomized">
+    Legacy (pre-migration), Default Search Engine, User Customized
+  </int>
+  <int value="3" label="LegacyNotDse">
+    Legacy (pre-migration), Not Default, Default Config
+  </int>
+  <int value="4" label="LegacyNotDseCustomized">
+    Legacy (pre-migration), Not Default, User Customized
+  </int>
+  <int value="5" label="NewDse">
+    New (post-migration), Default Search Engine, Default Config
+  </int>
+  <int value="6" label="NewDseCustomized">
+    New (post-migration), Default Search Engine, User Customized
+  </int>
+  <int value="7" label="NewNotDse">
+    New (post-migration), Not Default, Default Config
+  </int>
+  <int value="8" label="NewNotDseCustomized">
+    New (post-migration), Not Default, User Customized
+  </int>
+  <int value="9" label="LegacyDseDeviceChoice">
+    Legacy (pre-migration), Default Search Engine, Device Choice
+  </int>
+  <int value="10" label="LegacyNotDseDeviceChoice">
+    Legacy (pre-migration), Not Default, Device Choice
+  </int>
+  <int value="11" label="NewDseDeviceChoice">
+    New (post-migration), Default Search Engine, Device Choice
+  </int>
+  <int value="12" label="NewNotDseDeviceChoice">
+    New (post-migration), Not Default, Device Choice
+  </int>
+  <int value="13" label="CustomDse">Custom, Default Search Engine</int>
+  <int value="14" label="CustomNotDse">Custom, Not Default</int>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_split_metrics.h:OseSplitEngineState) -->
+
+<!-- LINT.IfChange(OseSplitType) -->
+
+<enum name="OseSplitType">
+  <summary>
+    Classification of search engine definitions undergoing an ID split /
+    migration (e.g. Yahoo! JAPAN in JP).
+  </summary>
+  <int value="0" label="Unknown">Unknown / Unexpected ID</int>
+  <int value="1" label="Legacy">Legacy (pre-migration)</int>
+  <int value="2" label="New">New (post-migration)</int>
+  <int value="3" label="Custom">Custom</int>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_split_metrics.h:OseSplitType) -->
+
 <!-- LINT.IfChange(PendingChoiceScreenDisplayStateStatus) -->
 
 <enum name="PendingChoiceScreenDisplayStateStatus">

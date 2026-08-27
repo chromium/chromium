@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/search_engines/edit_search_engine_controller.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service_observer.h"
 
 class Profile;
+class TemplateURLService;
 
 namespace settings {
 
@@ -107,6 +109,10 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Records the search hijacking heuristic metric if not already recorded.
   void RecordSearchHijackingHeuristicMetric();
 
+  // Records search engine split metrics for split regions on settings load.
+  void RecordSearchEngineSplitMetrics(
+      TemplateURL::TemplateURLVectorSpan displayed_engines);
+
   const raw_ptr<Profile> profile_;
 
   KeywordEditorController list_controller_;
@@ -115,6 +121,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
       scoped_url_service_observation_{this};
 
   bool has_recorded_hijacking_metric_ = false;
+  bool has_recorded_search_engine_split_metrics_ = false;
 };
 
 }  // namespace settings

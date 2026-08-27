@@ -1,0 +1,124 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/search_engines/search_engine_split_metrics.h"
+
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "components/metrics/profile_metrics_service.h"
+#include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
+
+namespace search_engines {
+
+namespace {
+
+bool IsYahooEngineType(SearchEngineType type) {
+  return type == SEARCH_ENGINE_YAHOO || type == SEARCH_ENGINE_YAHOO_JP;
+}
+
+}  // namespace
+
+std::optional<OseSplitType> InspectYahooEngineType(
+    const TemplateURL& turl,
+    const SearchTermsData& search_terms_data) {
+  SearchEngineType engine_type = turl.GetEngineType(search_terms_data);
+  if (!IsYahooEngineType(engine_type)) {
+    return std::nullopt;
+  }
+
+  int prepopulate_id = turl.prepopulate_id();
+  if (prepopulate_id == TemplateURLPrepopulateData::yahoo_jp.id) {
+    return OseSplitType::kLegacy;
+  }
+  if (prepopulate_id == TemplateURLPrepopulateData::yahoo_jp_next.id) {
+    return OseSplitType::kNew;
+  }
+  if (prepopulate_id == 0) {
+    return OseSplitType::kCustom;
+  }
+  return OseSplitType::kUnknown;
+}
+
+std::optional<OseSplitEngineState> InspectYahooEngineState(
+    const TemplateURL& turl,
+    const TemplateURL* default_search_provider,
+    const SearchTermsData& search_terms_data) {
+  std::optional<OseSplitType> type =
+      InspectYahooEngineType(turl, search_terms_data);
+  if (!type.has_value()) {
+    return std::nullopt;
+  }
+
+  bool is_dse = (default_search_provider == &turl);
+  bool is_customized = !turl.safe_for_autoreplace();
+  bool is_device_choice = turl.CreatedByRegulatoryProgram();
+
+  switch (*type) {
+    case OseSplitType::kLegacy:
+      if (is_device_choice) {
+        return is_dse ? OseSplitEngineState::kLegacyDseDeviceChoice
+                      : OseSplitEngineState::kLegacyNotDseDeviceChoice;
+      }
+      if (is_customized) {
+        return is_dse ? OseSplitEngineState::kLegacyDseCustomized
+                      : OseSplitEngineState::kLegacyNotDseCustomized;
+      }
+      return is_dse ? OseSplitEngineState::kLegacyDse
+                    : OseSplitEngineState::kLegacyNotDse;
+
+    case OseSplitType::kNew:
+      if (is_device_choice) {
+        return is_dse ? OseSplitEngineState::kNewDseDeviceChoice
+                      : OseSplitEngineState::kNewNotDseDeviceChoice;
+      }
+      if (is_customized) {
+        return is_dse ? OseSplitEngineState::kNewDseCustomized
+                      : OseSplitEngineState::kNewNotDseCustomized;
+      }
+      return is_dse ? OseSplitEngineState::kNewDse
+                    : OseSplitEngineState::kNewNotDse;
+
+    case OseSplitType::kCustom:
+      return is_dse ? OseSplitEngineState::kCustomDse
+                    : OseSplitEngineState::kCustomNotDse;
+
+    case OseSplitType::kUnknown:
+      return OseSplitEngineState::kUnknown;
+  }
+}
+
+void RecordSearchEngineSplitSettingsPageLoadMetrics(
+    TemplateURL::TemplateURLVectorSpan template_urls,
+    const TemplateURL* default_search_provider,
+    const SearchTermsData& search_terms_data,
+    metrics::ProfileMetricsService& profile_metrics_service) {
+  if (default_search_provider) {
+    if (std::optional<OseSplitType> dse_type =
+            InspectYahooEngineType(*default_search_provider, search_terms_data);
+        dse_type.has_value()) {
+      profile_metrics_service.UmaHistogramEnumeration(
+          "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad", *dse_type);
+    }
+  }
+
+  int yahoo_count = 0;
+  for (const TemplateURL* turl : template_urls) {
+    const TemplateURL& deref_turl = CHECK_DEREF(turl);
+    if (std::optional<OseSplitEngineState> state = InspectYahooEngineState(
+            deref_turl, default_search_provider, search_terms_data);
+        state.has_value()) {
+      yahoo_count++;
+      profile_metrics_service.UmaHistogramEnumeration(
+          "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad", *state);
+    }
+  }
+
+  profile_metrics_service.UmaHistogramCounts100(
+      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", yahoo_count);
+}
+
+}  // namespace search_engines

@@ -423,6 +423,10 @@ RegionalCapabilitiesService::GetRegionalVariants() {
   return std::vector<raw_ptr<const PrepopulatedEngine>>();
 }
 
+bool RegionalCapabilitiesService::IsSearchEngineSplitRegion() {
+  return GetCountryIdInternal() == CountryId("JP");
+}
+
 bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
   return GetChoiceScreenEligibilityConfig().has_value();
 }

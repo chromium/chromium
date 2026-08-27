@@ -1192,6 +1192,19 @@ TEST_F(RegionalCapabilitiesServiceTest, GetRegionalVariants) {
   }
 }
 
+TEST_F(RegionalCapabilitiesServiceTest, IsSearchEngineSplitRegion) {
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+
+  SetCommandLineCountry("US");
+  EXPECT_FALSE(service->IsSearchEngineSplitRegion());
+
+  SetCommandLineCountry("FR");
+  EXPECT_FALSE(service->IsSearchEngineSplitRegion());
+
+  SetCommandLineCountry("JP");
+  EXPECT_TRUE(service->IsSearchEngineSplitRegion());
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryInRegion) {
   AsyncRegionalCapabilitiesServiceClient client;

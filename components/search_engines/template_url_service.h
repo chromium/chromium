@@ -106,6 +106,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
  public:
   using TemplateURLVector = TemplateURL::TemplateURLVector;
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
+  using TemplateURLVectorSpan = TemplateURL::TemplateURLVectorSpan;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
   using OwnedTemplateURLDataVector =
       EnterpriseSearchManager::OwnedTemplateURLDataVector;
