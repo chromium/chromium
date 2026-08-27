@@ -3852,6 +3852,18 @@
       "features": [
         "reset_tex_storage_base_level"
       ]
+    },
+    {
+      "id": 491,
+      "cr_bugs": [548085797],
+      "description": "Limit max texture image units to 13 on PowerVR GPUs.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "max_texture_image_units_13"
+      ]
     }
   ]
 }

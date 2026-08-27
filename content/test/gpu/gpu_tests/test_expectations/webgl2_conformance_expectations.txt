@@ -818,6 +818,7 @@ crbug.com/446122639 [ android android-pixel-10 imagination-technologies ] WebglE
 crbug.com/446122639 [ android android-pixel-10 ] WebglExtension_OES_texture_float_linear [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/context/context-size-change.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/glsl/functions/glsl-function-cross.html [ Failure ]
+crbug.com/551573368 [ android android-pixel-10 ] conformance/glsl/variables/glsl-built-ins.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/rendering/gl-scissor-fbo-test.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
@@ -846,6 +847,8 @@ crbug.com/446941342 [ android android-pixel-10 ] conformance2/rendering/read-dra
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/compressed-tex-image.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/integerstatequery.html [ Failure ]
+crbug.com/551573368 [ android android-pixel-10 ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] deqp/functional/gles3/shaderstruct.html [ Failure ]
 crbug.com/527094637 [ android android-pixel-10 ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 

@@ -412,6 +412,9 @@ ContextGroup::InitializeWithCompleteFramebufferForWorkarounds(
     return was_lost ? gpu::ContextResult::kTransientFailure
                     : gpu::ContextResult::kFatalFailure;
   }
+  if (feature_info_->workarounds().max_texture_image_units_13) {
+    max_texture_image_units_ = std::min(max_texture_image_units_, 13u);
+  }
   if (!QueryGLFeatureU(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
                        kMinVertexTextureImageUnits,
                        &max_vertex_texture_image_units_)) {
