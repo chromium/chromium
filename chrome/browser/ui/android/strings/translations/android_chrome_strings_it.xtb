@@ -632,7 +632,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 preferito è stato salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{# preferiti sono stati salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>
-<translation id="3699022356773522638">Vuoi scaricare il file?</translation>
+<translation id="3699022356773522638">Scaricare il file?</translation>
 <translation id="3701515417135397388">Ricevi un avviso se una password è stata compromessa a causa di una violazione dei dati</translation>
 <translation id="3703166520839776970">Se il problema persiste, scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3708100450779900829">Quando il dispositivo è chiuso, puoi scegliere un'opzione o toccare e tenere premuta la barra degli indirizzi per cambiare la posizione</translation>

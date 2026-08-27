@@ -217,7 +217,7 @@
 <translation id="1670861525135254448">Fahrzeug speichern</translation>
 <translation id="1671568970992212376">Du kannst Fotos in Google Fotos speichern und jederzeit auf sie zugreifen.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1678855624321223424">Aufgrund der Richtlinien deiner Organisation kann diese Datei vertrauliche Informationen enthalten</translation>
+<translation id="1678855624321223424">Diese Datei kann Informationen enthalten, die gemäß den Richtlinien deiner Organisation vertraulich sind</translation>
 <translation id="1683276189281028863">Passwortcheck</translation>
 <translation id="168389590065701766">Du kannst Google Lens jetzt über die Adressleiste öffnen und nach allem suchen, was du siehst</translation>
 <translation id="1689333818294560261">Alias</translation>
@@ -492,7 +492,7 @@
 <translation id="2584994295315085351">Neuen Tab öffnen, wenn du nach 4 Stunden zu Chrome zurückkehrst</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Preissenkungen von Produkten beobachten</translation>
-<translation id="2602372807870028932">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät gespeichert sind</translation>
+<translation id="2602372807870028932">Dadurch werden die ausgewählten Informationen vom Gerät gelöscht</translation>
 <translation id="260378315836159338">Tippe oben auf dem Bildschirm auf +</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="261305050785128654">Gib für Websites an, welche Sprachen du sprichst. Sofern möglich, werden Inhalte in diesen Sprachen angezeigt.</translation>
@@ -2254,7 +2254,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8490629238792920282">Link kann nicht erstellt werden</translation>
 <translation id="8501469528283376592">Downloads automatisch löschen</translation>
 <translation id="8503813439785031346">Nutzername</translation>
-<translation id="8505361906966222822">Speichern unter…</translation>
+<translation id="8505361906966222822">Speichern in…</translation>
 <translation id="850600235656508448">Im Inkognitomodus öffnen</translation>
 <translation id="8515534223594179607">Browserdaten exportieren</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}other{{count} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
@@ -2304,7 +2304,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
-<translation id="8639963783467694461">AutoFill-Einstellungen</translation>
+<translation id="8639963783467694461">Autofill-Einstellungen</translation>
 <translation id="8642417828095157370">Damit du relevantere Antworten erhältst, werden Tabs mit Gemini geteilt</translation>
 <translation id="8643403533759285912">Gruppe löschen</translation>
 <translation id="8647280737650867362">Tracking des Preises konnte nicht beendet werden.</translation>

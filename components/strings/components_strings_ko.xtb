@@ -434,7 +434,7 @@
 <translation id="1656489000284462475">수령</translation>
 <translation id="1658111267661135323">TV 및 동영상</translation>
 <translation id="1658918301167915956">블루투스 기기</translation>
-<translation id="1662550410081243962">결제 수단 저장 및 자동 입력</translation>
+<translation id="1662550410081243962">결제 수단 저장 및 자동 완성</translation>
 <translation id="1662980953334786797">동일한 주문</translation>
 <translation id="1663943134801823270">카드와 주소는 Chrome에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="1664389769577564606">Flexo 포토폴리머</translation>
@@ -833,7 +833,7 @@
 <translation id="2277753418458118549">연결 세부정보 표시</translation>
 <translation id="2277949605527755300"><ph name="URL" />에서 손을 추적하려고 합니다.</translation>
 <translation id="22792995594807632">다운로드하기 전에 검토 필요</translation>
-<translation id="2283340219607151381">주소 저장 및 자동 입력</translation>
+<translation id="2283340219607151381">주소 저장 및 자동 완성</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' 삭제됨</translation>
 <translation id="2283599456633275070">여행</translation>
 <translation id="2285709459648658719">여권</translation>
@@ -1913,7 +1913,7 @@
 <translation id="3965672182149944205">주소를 저장하시겠습니까?</translation>
 <translation id="3966044442021752214">제품 안전</translation>
 <translation id="396761677631735618">터치하여 입력할 수 있는 포인트 카드가 절반 높이로 열렸습니다.</translation>
-<translation id="3970239200223030389">발행일</translation>
+<translation id="3970239200223030389">발급일</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3975852104434126461">자동차 산업</translation>
@@ -4816,7 +4816,7 @@
 <translation id="8449036207308062757">저장용량 관리</translation>
 <translation id="8449155699563577224">17x24인치</translation>
 <translation id="8449836157089738489">새로운 탭 그룹에서 모두 열기</translation>
-<translation id="8451518040456311377">신원 확인 문서 저장 및 자동 입력</translation>
+<translation id="8451518040456311377">신원 확인 문서 저장 및 자동 완성</translation>
 <translation id="84561192812921051">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">하단 시트가 닫혔습니다.</translation>
 <translation id="8456775115498700722">이제 <ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 <ph name="CARD_ISSUER_NAME" /> 카드를 자동 완성할 수 있습니다.</translation>
@@ -5008,7 +5008,7 @@
 <translation id="8781278378794969337">페이지 번역 버튼, Google 번역으로 이 페이지를 번역하려면 활성화하세요.</translation>
 <translation id="8785658048882205566">오토바이</translation>
 <translation id="8790007591277257123">삭제 다시 실행(&amp;R)</translation>
-<translation id="8790668801880409584">여행 정보 저장 및 입력</translation>
+<translation id="8790668801880409584">여행 정보 저장 및 자동 완성</translation>
 <translation id="8792272652220298572">플라스틱(유광)</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="8792626944327216835">마이크</translation>

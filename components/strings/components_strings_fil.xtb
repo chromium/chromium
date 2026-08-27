@@ -565,7 +565,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="186539747722034544">Mga Cable at Satellite Provider</translation>
 <translation id="1870473978371099486">Mga Serbisyo sa Pribadong Pag-tutor</translation>
 <translation id="1871208020102129563">Nakatakda ang proxy upang gumamit ng mga hindi nababagong proxy server, hindi ng isang .pac script URL.</translation>
-<translation id="1871284979644508959">Kinakailangang field</translation>
+<translation id="1871284979644508959">Nire-require na field</translation>
 <translation id="1871739799120352748">Mataas ang presyo</translation>
 <translation id="1874224422119691492">Puwede mong baguhin kung gagamitin mo ang iyong lock ng screen para sa paglalagay ng mga password sa <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Tray para sa Larawan</translation>
@@ -3750,7 +3750,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6805030849054648206">Envelope B6/C4</translation>
 <translation id="6807791860691150411">Edukasyon</translation>
 <translation id="6808579246645021886">Mga naka-share na tab at file</translation>
-<translation id="681021252041861472">Kinakailangang Field</translation>
+<translation id="681021252041861472">Nire-require na Field</translation>
 <translation id="6810899417690483278">Customization ID</translation>
 <translation id="6816109178681043245">Mga Produktong Pang-sports</translation>
 <translation id="681631578600400068">I-save ang lisensya sa pagmamaneho</translation>

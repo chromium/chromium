@@ -2029,7 +2029,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9190355771000652811">En la barra de direcciones, usa esta combinación de teclas con atajos para buscadores y búsquedas en sitios.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de Incógnito fija seleccionada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
-<translation id="9202894533863490414">¿Descargar desde este sitio?</translation>
+<translation id="9202894533863490414">¿Descargar de este sitio?</translation>
 <translation id="9204836675896933765">1 archivo restante</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a buscarla en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

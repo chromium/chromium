@@ -236,7 +236,7 @@
 <translation id="1358223345833465883">你在 Chromium 中的搜尋引擎</translation>
 <translation id="1359836962251219822">餐廚用具</translation>
 <translation id="1360955481084547712">開啟新的無痕視窗以進行私密瀏覽</translation>
-<translation id="1361528602584216624">每筆 Pix 交易的上限為 R$ <ph name="TRANSACTION_LIMIT" /> 巴西雷亞爾</translation>
+<translation id="1361528602584216624">每筆 Pix 交易的上限為 R$ <ph name="TRANSACTION_LIMIT" /> 巴西黑奧</translation>
 <translation id="1363015776076529485">已完整開啟可供選取的付款方式，以便繼續付款。</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1364822246244961190">這項政策遭到封鎖，系統會忽略其設定值。</translation>
@@ -2544,7 +2544,7 @@
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙活動</translation>
-<translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會提供給 Google</translation>
+<translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會分享給 Google</translation>
 <translation id="4954891067389874142">儲存卡片可加快付款速度。卡片資料會以加密方式存在 Google 錢包。</translation>
 <translation id="4957080528849277028">「查看 Chrome 歷史記錄」按鈕，啟動後即可在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
@@ -3643,7 +3643,7 @@
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
 <translation id="6655085656059574817">保持帳戶連結有助於透過「<ph name="BNPL_ISSUER_NAME" />」快速付款。如要取消連結，可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
-<translation id="6656935431494847393">加入航班預訂和車輛資訊等相關細節</translation>
+<translation id="6656935431494847393">包含航班預訂和車輛資訊等</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659246032834639189">這個價格屬於低價位</translation>
 <translation id="6660413144148052430">位置</translation>
@@ -4096,7 +4096,7 @@
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
-<translation id="73750335798090836">安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
+<translation id="73750335798090836">為了安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{未允許任何網站}=1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="7375818412732305729">附加檔案</translation>
 <translation id="7376031331622621328">商務底部功能表</translation>

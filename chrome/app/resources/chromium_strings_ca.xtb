@@ -245,7 +245,7 @@
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet canviar entre perfils de Chromium</translation>
 <translation id="3509308970982693815">Tanqueu totes les finestres de Chromium i torneu-ho a provar.</translation>
 <translation id="3522404737534491619">Per compartir la finestra, permet que Chromium gravi la pantalla a Configuració del sistema</translation>
-<translation id="3530103706039034513"><ph name="EXISTING_USER" /> ja ha iniciat la sessió.  Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil (<ph name="USER_EMAIL_ADDRESS" />).</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> ja ha iniciat la sessió.  Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3531741627422851418">Codi QR per baixar el navegador Chromium en dispositius mòbils</translation>
 <translation id="354621070532799440">Recordatori: les millors funcions de seguretat de Google a la butxaca</translation>
 <translation id="3561853857681580870">Per compartir la pantalla, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>

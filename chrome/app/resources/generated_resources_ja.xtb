@@ -2246,7 +2246,7 @@
 <translation id="2667463864537187133">スペルチェックの管理</translation>
 <translation id="2668604389652548400">削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。</translation>
 <translation id="2669250147452250961">オンにすると、他のデバイスの閲覧履歴とタブにアクセスできます</translation>
-<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
+<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスのすべてのユーザーが確認できます</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>
 <translation id="2670168377011445813">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。<ph name="BEGIN_LINK" />自動パスワード変更の詳細<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">アニメーションを減らす</translation>
@@ -4895,7 +4895,7 @@
 <translation id="4621866192918370652">このページを Google で検索して、追加の関連情報を確認できます</translation>
 <translation id="4622051949285931942">自動更新をオフにしますか？</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
-<translation id="4623894491222334521">ID ドキュメント</translation>
+<translation id="4623894491222334521">身分証明書</translation>
 <translation id="4624054169152573743">色のテーマ</translation>
 <translation id="4625078469366263107">アプリを有効にする</translation>
 <translation id="4625350031596795804">フォーカス（大）のスタイル</translation>
@@ -9263,7 +9263,7 @@
 <translation id="7939062555109487992">詳細オプション</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
-<translation id="7939918959917132075">拡張機能によってこの検索プロバイダに変更されました</translation>
+<translation id="7939918959917132075">拡張機能によって設定された検索プロバイダ</translation>
 <translation id="7940087892955752820">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 <ph name="SPECIFIC_NAME" /> をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
