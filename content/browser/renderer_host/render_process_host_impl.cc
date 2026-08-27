@@ -1995,7 +1995,8 @@ bool RenderProcessHostImpl::Init() {
   if (std::optional<int> override =
           GetContentClient()->browser()->GetCpuPerformanceTierOverride(
               GetBrowserContext())) {
-    cpu_tier = content::cpu_performance::TierFromInt(*override);
+    cpu_tier = content::cpu_performance::TierFromInt(*override).value_or(
+        content::cpu_performance::Tier::kUnknown);
   } else {
     cpu_tier = content::cpu_performance::GetTier();
   }

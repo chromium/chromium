@@ -4,6 +4,7 @@
 
 #include "content/browser/cpu_performance/cpu_performance.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -180,8 +181,8 @@ TEST_F(CpuPerformanceTest, TierFromInt) {
   EXPECT_EQ(Tier::kHigh, cpu_performance::TierFromInt(3));
   EXPECT_EQ(Tier::kUltra, cpu_performance::TierFromInt(4));
 
-  EXPECT_DEATH_IF_SUPPORTED(cpu_performance::TierFromInt(-1), "");
-  EXPECT_DEATH_IF_SUPPORTED(cpu_performance::TierFromInt(5), "");
+  EXPECT_EQ(std::nullopt, cpu_performance::TierFromInt(-1));
+  EXPECT_EQ(std::nullopt, cpu_performance::TierFromInt(5));
 }
 
 }  // namespace content

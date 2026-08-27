@@ -68,9 +68,11 @@ Manufacturer GetManufacturer(std::string_view cpu_model) {
 
 }  // anonymous namespace
 
-Tier TierFromInt(int value) {
-  CHECK_LE(static_cast<int>(Tier::kUnknown), value);
-  CHECK_GE(static_cast<int>(Tier::kUltra), value);
+std::optional<Tier> TierFromInt(int value) {
+  if (value < static_cast<int>(Tier::kMinValue) ||
+      value > static_cast<int>(Tier::kMaxValue)) {
+    return {};
+  }
   return static_cast<Tier>(value);
 }
 
