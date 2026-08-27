@@ -105,7 +105,6 @@ public class PlatformAPIWrapperTest {
             ContentCaptureSession mockedContentCaptureSession =
                     Mockito.mock(ContentCaptureSession.class);
             // Prevent the below methods being called from the class other than PlatformAPIWrapper.
-            final String errorMsg = "Shall be called from PlatformAPIWrapper.";
             doThrow(new RuntimeException("Shall be called from PlatformAPIWrapper."))
                     .when(mockedContentCaptureSession)
                     .createContentCaptureSession(ArgumentMatchers.any());
