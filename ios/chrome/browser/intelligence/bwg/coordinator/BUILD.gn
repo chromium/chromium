@@ -121,6 +121,7 @@ source_set("unit_tests") {
   sources = [
     "gemini_container_mediator_unittest.mm",
     "gemini_first_run_coordinator_unittest.mm",
+    "gemini_first_run_mediator_unittest.mm",
   ]
 
   deps = [
@@ -138,6 +139,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/intelligence/bwg/metrics",

@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "gemini_first_run_carousel_view_unittest.mm",
     "gemini_first_run_page_view_controller_unittest.mm",
     "gemini_first_run_wrapper_view_controller_unittest.mm",
+    "gemini_lightweight_view_controller_unittest.mm",
     "gemini_promo_view_controller_unittest.mm",
     "gemini_ui_utils_unittest.mm",
     "gemini_visual_rich_view_controller_unittest.mm",

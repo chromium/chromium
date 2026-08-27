@@ -11,15 +11,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
-#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_page_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_wrapper_view_controller.h"
@@ -27,7 +23,6 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -40,7 +35,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -74,9 +68,6 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
                               base::BindOnce(&CreateTestTracker));
-    builder.AddTestingFactory(
-        OptimizationGuideServiceFactory::GetInstance(),
-        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
@@ -392,62 +383,4 @@ TEST_F(GeminiFirstRunCoordinatorTest, SynchronousDeallocOnStopDoesNotCrash) {
 
   [localCoordinator stopWithCompletion:nil];
   EXPECT_EQ(localCoordinator, nil);
-}
-
-// Tests that the mediator returns the expected steps and branding header
-// visibility for NewUser and Live first run types.
-TEST_F(GeminiFirstRunCoordinatorTest, TestMediatorStepsAndBrandingHeader) {
-  ProfileIOS* profile = profile_manager_.GetProfileWithName(kFirstProfileName);
-  PrefService* prefs = profile->GetPrefs();
-  auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
-      feature_engagement::TrackerFactory::GetForProfile(profile));
-
-  GeminiFirstRunMediator* mediator = [[GeminiFirstRunMediator alloc]
-        initWithPrefService:prefs
-               webStateList:browser_->GetWebStateList()
-         baseViewController:base_view_controller_
-              geminiService:GeminiServiceFactory::GetForProfile(profile)
-      authenticationService:AuthenticationServiceFactory::GetForProfile(profile)
-            identityManager:IdentityManagerFactory::GetForProfile(profile)
-                    tracker:tracker
-                 entryPoint:gemini::EntryPoint::Promo
-          completionHandler:nil];
-
-  std::vector<GeminiFirstRunStepIdentifier> newUserSteps =
-      [mediator stepsForFirstRunType:GeminiFirstRunType::kNewUser];
-  std::vector<GeminiFirstRunStepIdentifier> expected_new_user_steps = {
-      GeminiFirstRunStepIdentifier::kPromo,
-      GeminiFirstRunStepIdentifier::kConsent,
-  };
-  EXPECT_EQ(newUserSteps, expected_new_user_steps);
-  EXPECT_TRUE([mediator
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
-
-  std::vector<GeminiFirstRunStepIdentifier> liveSteps =
-      [mediator stepsForFirstRunType:GeminiFirstRunType::kLive];
-  std::vector<GeminiFirstRunStepIdentifier> expected_live_steps = {
-      GeminiFirstRunStepIdentifier::kConsent,
-  };
-  EXPECT_EQ(liveSteps, expected_live_steps);
-  EXPECT_FALSE([mediator
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kLive]);
-
-  // When Visual Rich is enabled, NewUser presents only the single VisualRich
-  // step.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{kGeminiFRERefactor, {}},
-         {kGeminiFREExperiment,
-          {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
-        {});
-    std::vector<GeminiFirstRunStepIdentifier> visualRichSteps =
-        [mediator stepsForFirstRunType:GeminiFirstRunType::kNewUser];
-    std::vector<GeminiFirstRunStepIdentifier> expected_visual_rich_steps = {
-        GeminiFirstRunStepIdentifier::kVisualRich,
-    };
-    EXPECT_EQ(visualRichSteps, expected_visual_rich_steps);
-    EXPECT_FALSE([mediator
-        shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
-  }
 }
