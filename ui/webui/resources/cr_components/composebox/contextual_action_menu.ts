@@ -251,7 +251,7 @@ export class ContextualActionMenuElement extends
       [
         ModelMode.kGeminiFlashLatest,
         {
-          icon: 'composebox:bolt',
+          icon: 'composebox:regularModel',
         },
       ],
     ]);
