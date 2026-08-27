@@ -2228,6 +2228,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Audio and Video"/>
 </enum>
 
+<!-- LINT.IfChange(MetricKitExitData) -->
+
 <enum name="MetricKitExitData">
   <int value="0" label="App exited normally"/>
   <int value="1" label="App exited abnormally"/>
@@ -2240,6 +2242,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Illegal or undefined instruction"/>
   <int value="9" label="Exceeded allocated time for background task"/>
 </enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/metrics/model/histogram_bridge.h:MetricKitExitReason) -->
 
 <!-- LINT.IfChange(NonModalSignInPromoAction) -->
 

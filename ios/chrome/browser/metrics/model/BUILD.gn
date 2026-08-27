@@ -527,8 +527,24 @@ source_set("eg_test_support+eg2") {
   ]
 }
 
+source_set("histogram_bridge") {
+  sources = [
+    "histogram_bridge.h",
+    "histogram_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/version_info",
+  ]
+}
+
 swift_source_set("activity_reporter") {
-  sources = [ "activity_reporter.swift" ]
+  bridge_header = "histogram_bridge.h"
+  sources = [
+    "activity_reporter.swift",
+    "metric_kit_report_subscriber.swift",
+  ]
+  deps = [ ":histogram_bridge" ]
   frameworks = [ "Foundation.framework" ]
   weak_frameworks = [ "MetricKit.framework" ]
 }

@@ -128,6 +128,7 @@ source_set("metric_kit_subscriber") {
     "//components/previous_session_info",
     "//components/version_info",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/metrics/model:activity_reporter",
   ]
 }
 

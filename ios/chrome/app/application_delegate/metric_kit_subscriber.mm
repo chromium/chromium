@@ -21,27 +21,8 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-
-// The different causes of app exit as reported by MetricKit.
-// This enum is used in UMA. Do not change the order.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum MetricKitExitReason {
-  kNormalAppExit = 0,
-  kAbnormalAppExit = 1,
-  kWatchdogExit = 2,
-  kCPUResourceLimitExit = 3,
-  kMemoryResourceLimitExit = 4,
-  kMemoryPressureExit = 5,
-  kSuspendedWithLockedFileExit = 6,
-  kBadAccessExit = 7,
-  kIllegalInstructionExit = 8,
-  kBackgroundTaskAssertionTimeoutExit = 9,
-
-  // Must be the last enum entries.
-  kMetricKitExitReasonMaxValue = kBackgroundTaskAssertionTimeoutExit,
-  kMetricKitExitReasonCount = kMetricKitExitReasonMaxValue + 1
-};
+#import "ios/chrome/browser/metrics/model/activity_reporter.h"
+#import "ios/chrome/browser/metrics/model/histogram_bridge.h"
 
 namespace {
 
@@ -54,7 +35,8 @@ void ReportExitReason(base::HistogramBase* histogram,
   if (!count) {
     return;
   }
-  histogram->AddCount(bucket, count);
+  histogram->AddCount(base::saturated_cast<int>(bucket),
+                      base::saturated_cast<int>(count));
 }
 
 void ReportLongDuration(const std::string& histogram_name,
@@ -199,6 +181,9 @@ std::string HistogramPrefix(bool include_mismatch) {
   } else {
     [[MXMetricManager sharedManager] removeSubscriber:self];
   }
+  if (@available(iOS 27.0, *)) {
+    [[MetricKitReportSubscriber sharedInstance] setEnabled:enable];
+  }
 }
 
 - (void)didReceiveMetricPayloads:(NSArray<MXMetricPayload*>*)payloads {
@@ -245,49 +230,52 @@ std::string HistogramPrefix(bool include_mismatch) {
 
 - (void)logForegroundExit:(MXForegroundExitData*)exitData
           histogramPrefix:(const std::string&)prefix {
+  int exclusive_max = static_cast<int>(MetricKitExitReasonMaxValue) + 1;
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
-      prefix + "ForegroundExitData", 1, kMetricKitExitReasonCount,
-      kMetricKitExitReasonCount + 1,
+      prefix + "ForegroundExitData", 1, exclusive_max,
+      static_cast<size_t>(exclusive_max + 1),
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  ReportExitReason(histogramUMA, kNormalAppExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonNormal,
                    exitData.cumulativeNormalAppExitCount);
-  ReportExitReason(histogramUMA, kAbnormalAppExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonAbnormal,
                    exitData.cumulativeAbnormalExitCount);
-  ReportExitReason(histogramUMA, kWatchdogExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonWatchdog,
                    exitData.cumulativeAppWatchdogExitCount);
-  ReportExitReason(histogramUMA, kMemoryResourceLimitExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonMemoryLimit,
                    exitData.cumulativeMemoryResourceLimitExitCount);
-  ReportExitReason(histogramUMA, kBadAccessExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonBadAccess,
                    exitData.cumulativeBadAccessExitCount);
-  ReportExitReason(histogramUMA, kIllegalInstructionExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonIllegalInstruction,
                    exitData.cumulativeIllegalInstructionExitCount);
 }
 
 - (void)logBackgroundExit:(MXBackgroundExitData*)exitData
           histogramPrefix:(const std::string&)prefix {
+  int exclusive_max = static_cast<int>(MetricKitExitReasonMaxValue) + 1;
   base::HistogramBase* histogramUMA = base::LinearHistogram::FactoryGet(
-      prefix + "BackgroundExitData", 1, kMetricKitExitReasonCount,
-      kMetricKitExitReasonCount + 1,
+      prefix + "BackgroundExitData", 1, exclusive_max,
+      static_cast<size_t>(exclusive_max + 1),
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  ReportExitReason(histogramUMA, kNormalAppExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonNormal,
                    exitData.cumulativeNormalAppExitCount);
-  ReportExitReason(histogramUMA, kAbnormalAppExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonAbnormal,
                    exitData.cumulativeAbnormalExitCount);
-  ReportExitReason(histogramUMA, kWatchdogExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonWatchdog,
                    exitData.cumulativeAppWatchdogExitCount);
-  ReportExitReason(histogramUMA, kCPUResourceLimitExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonCpuLimit,
                    exitData.cumulativeCPUResourceLimitExitCount);
-  ReportExitReason(histogramUMA, kMemoryResourceLimitExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonMemoryLimit,
                    exitData.cumulativeMemoryResourceLimitExitCount);
-  ReportExitReason(histogramUMA, kMemoryPressureExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonMemoryPressure,
                    exitData.cumulativeMemoryPressureExitCount);
-  ReportExitReason(histogramUMA, kSuspendedWithLockedFileExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonSuspendedWithLockedFile,
                    exitData.cumulativeSuspendedWithLockedFileExitCount);
-  ReportExitReason(histogramUMA, kBadAccessExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonBadAccess,
                    exitData.cumulativeBadAccessExitCount);
-  ReportExitReason(histogramUMA, kIllegalInstructionExit,
+  ReportExitReason(histogramUMA, MetricKitExitReasonIllegalInstruction,
                    exitData.cumulativeIllegalInstructionExitCount);
-  ReportExitReason(histogramUMA, kBackgroundTaskAssertionTimeoutExit,
+  ReportExitReason(histogramUMA,
+                   MetricKitExitReasonBackgroundTaskAssertionTimeout,
                    exitData.cumulativeBackgroundTaskAssertionTimeoutExitCount);
 }
 

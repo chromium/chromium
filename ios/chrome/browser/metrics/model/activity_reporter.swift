@@ -27,7 +27,7 @@ public enum ActivityReportDomain: Int {
   case tab
   case ntp
   case signin
-  case cobrowse
+  case assistant
   case tabgrid
   case settings
   case test
@@ -38,7 +38,7 @@ public enum ActivityReportDomain: Int {
     case .tab: return "tab"
     case .ntp: return "ntp"
     case .signin: return "signin"
-    case .cobrowse: return "assistant"
+    case .assistant: return "assistant"
     case .tabgrid: return "tabgrid"
     case .settings: return "settings"
     case .test: return "test"

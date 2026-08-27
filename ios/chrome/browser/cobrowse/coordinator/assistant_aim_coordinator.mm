@@ -115,7 +115,7 @@ class AssistantAIMUIStateProvider
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _activityReporter =
-        [[ActivityReporter alloc] initWithDomain:ActivityReportDomainCobrowse];
+        [[ActivityReporter alloc] initWithDomain:ActivityReportDomainAssistant];
   }
   return self;
 }

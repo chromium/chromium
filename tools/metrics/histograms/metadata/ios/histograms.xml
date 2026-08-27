@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ActivityReportDomain">
+  <variant name="" summary="Recorded across all app states."/>
+  <variant name=".Assistant"
+      summary="Recorded while the Assistant UI is active. This histogram only
+               receives data from users on iOS 27 and later."/>
+  <variant name=".NTP"
+      summary="Recorded while the New Tab Page is active. This histogram only
+               receives data from users on iOS 27 and later."/>
+  <variant name=".Settings"
+      summary="Recorded while Settings UI is active. This histogram only
+               receives data from users on iOS 27 and later."/>
+  <variant name=".Signin"
+      summary="Recorded while the sign-in screen is active. This histogram
+               only receives data from users on iOS 27 and later."/>
+  <variant name=".Tab"
+      summary="Recorded while a browser tab is active. This histogram only
+               receives data from users on iOS 27 and later."/>
+  <variant name=".TabGrid"
+      summary="Recorded while the tab grid UI is active. This histogram only
+               receives data from users on iOS 27 and later."/>
+</variants>
+
 <variants name="AppVersion">
   <variant name=""
       summary="Recorded when the current app version number matches the last
@@ -4427,8 +4449,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}ApplicationHangTime" units="ms"
-    expires_after="never">
+<histogram
+    name="IOS.MetricKit.{MXVersion}ApplicationHangTime{ActivityReportDomain}"
+    units="ms" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>justincohen@chromium.org</owner>
@@ -4465,10 +4488,13 @@ chromium-metrics-reviews@google.com.
 
     {MXVersion}
 
+    {ActivityReportDomain}
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationResumeTime" units="ms"
@@ -4493,8 +4519,9 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory" units="MB"
-    expires_after="2027-01-31">
+<histogram
+    name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory{ActivityReportDomain}"
+    units="MB" expires_after="2027-01-31">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4512,11 +4539,15 @@ chromium-metrics-reviews@google.com.
     be later than the user activity it corresponds to.
 
     {MXVersion}
+
+    {ActivityReportDomain}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}BackgroundExitData"
+<histogram
+    name="IOS.MetricKit.{MXVersion}BackgroundExitData{ActivityReportDomain}"
     enum="MetricKitExitData" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -4546,14 +4577,18 @@ chromium-metrics-reviews@google.com.
 
     {MXVersion}
 
+    {ActivityReportDomain}
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}BackgroundTimePerDay" units="ms"
-    expires_after="2027-07-20">
+<histogram
+    name="IOS.MetricKit.{MXVersion}BackgroundTimePerDay{ActivityReportDomain}"
+    units="ms" expires_after="2027-07-20">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4572,12 +4607,15 @@ chromium-metrics-reviews@google.com.
     be later than the user activity it corresponds to.
 
     {MXVersion}
+
+    {ActivityReportDomain}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay" units="s"
-    expires_after="2027-02-07">
+<histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay{ActivityReportDomain}"
+    units="s" expires_after="2027-02-07">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4594,8 +4632,11 @@ chromium-metrics-reviews@google.com.
     be later than the user activity it corresponds to.
 
     {MXVersion}
+
+    {ActivityReportDomain}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ExtendedLaunch" units="ms"
@@ -4634,7 +4675,8 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}ForegroundExitData"
+<histogram
+    name="IOS.MetricKit.{MXVersion}ForegroundExitData{ActivityReportDomain}"
     enum="MetricKitExitData" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -4666,14 +4708,18 @@ chromium-metrics-reviews@google.com.
 
     {MXVersion}
 
+    {ActivityReportDomain}
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}ForegroundTimePerDay" units="s"
-    expires_after="2026-10-25">
+<histogram
+    name="IOS.MetricKit.{MXVersion}ForegroundTimePerDay{ActivityReportDomain}"
+    units="s" expires_after="2026-10-25">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4695,8 +4741,11 @@ chromium-metrics-reviews@google.com.
     be later than the user activity it corresponds to.
 
     {MXVersion}
+
+    {ActivityReportDomain}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}OptimizedTimeToFirstDraw" units="ms"
@@ -4725,8 +4774,9 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
-<histogram name="IOS.MetricKit.{MXVersion}PeakMemoryUsage" units="MB"
-    expires_after="2027-01-31">
+<histogram
+    name="IOS.MetricKit.{MXVersion}PeakMemoryUsage{ActivityReportDomain}"
+    units="MB" expires_after="2027-01-31">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -4749,8 +4799,11 @@ chromium-metrics-reviews@google.com.
     be later than the user activity it corresponds to.
 
     {MXVersion}
+
+    {ActivityReportDomain}
   </summary>
   <token key="MXVersion" variants="MXVersion"/>
+  <token key="ActivityReportDomain" variants="ActivityReportDomain"/>
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}TimeToFirstDraw" units="ms"
