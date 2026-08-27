@@ -419,7 +419,15 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
               trusted_vault::TrustedVaultUserActionTriggerForUMA::
                   kPasswordManagerKeyboardAccessory);
       return;
-    default:
+    case autofill::AccessoryAction::AUTOFILL_SUGGESTION:
+    case autofill::AccessoryAction::MANAGE_CREDIT_CARDS:
+    case autofill::AccessoryAction::MANAGE_ADDRESSES:
+    case autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS:
+    case autofill::AccessoryAction::MANAGE_LOYALTY_CARDS:
+    case autofill::AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
+    case autofill::AccessoryAction::DISMISS:
+    case autofill::AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
+    case autofill::AccessoryAction::COUNT:
       NOTREACHED() << "Unhandled selected action: "
                    << static_cast<int>(selected_action);
   }

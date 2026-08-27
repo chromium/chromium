@@ -50,17 +50,18 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
-using password_manager::MockPasswordFormManagerForUI;
-using password_manager::PasswordForm;
-using password_manager::PasswordFormManagerForUI;
-using password_manager::PasswordFormMetricsRecorder;
+namespace {
+
+using ::password_manager::MockPasswordFormManagerForUI;
+using ::password_manager::PasswordForm;
+using ::password_manager::PasswordFormManagerForUI;
+using ::password_manager::PasswordFormMetricsRecorder;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-namespace {
 constexpr char kDefaultUrl[] = "http://example.com";
 constexpr char16_t kUsername[] = u"username";
 constexpr char16_t kUsername2[] = u"username2";
@@ -74,9 +75,6 @@ constexpr char kSaveUIDismissalReasonHistogramName[] =
 constexpr char kUpdateUIDismissalReasonHistogramName[] =
     "PasswordManager.UpdateUIDismissalReason";
 
-}  // namespace
-
-namespace {
 class TestDeviceLockBridge : public DeviceLockBridge {
  public:
   TestDeviceLockBridge() = default;

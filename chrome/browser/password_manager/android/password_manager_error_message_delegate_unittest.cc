@@ -21,16 +21,19 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using testing::Return;
-
 namespace {
+
+using ::testing::Return;
+
 constexpr char kErrorMessageDismissalReasonHistogramName[] =
     "PasswordManager.ErrorMessageDismissalReason.";
 constexpr char kErrorMessageDisplayReasonHistogramName[] =
     "PasswordManager.ErrorMessageDisplayReason";
+
 }  // namespace
 
 class PasswordManagerErrorMessageDelegateTest
