@@ -206,6 +206,12 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   LanguageTag WithExtension(const PrivateUseSubtags& extension) const;
   LanguageTag WithExtension(const Extension& extension) const;
 
+  // Removes the extension keyed by `key`.
+  // Examples:
+  // "en-u-ca-gregory".WithExtensionRemoved("u") -> "en"
+  // "en-u-ca-gregory".WithExtensionRemoved("t") -> "en-u-ca-gregory"
+  LanguageTag WithExtensionRemoved(char key) const;
+
  private:
   friend class LanguageTagConverter;
   friend consteval LanguageTag GetKnownLanguageTag(std::string_view);

@@ -158,6 +158,21 @@ LanguageTag LanguageTag::WithExtension(const Extension& extension) const {
                                      extension.SubtagsString());
 }
 
+LanguageTag LanguageTag::WithExtensionRemoved(char key) const {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag_.AsString());
+  if (!parsed) {
+    return *this;
+  }
+  char normalized_key = base::ToLowerASCII(key);
+  if (normalized_key == 'x') {
+    parsed->private_use.clear();
+  } else {
+    parsed->extensions.erase(normalized_key);
+  }
+  return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
+}
+
 std::ostream& operator<<(std::ostream& os, const LanguageTag& lt) {
   return os << lt.tag_string();
 }

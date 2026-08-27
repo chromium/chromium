@@ -834,6 +834,61 @@ TEST(LanguageTagTest, ExtensionMutation) {
   }
 }
 
+TEST(LanguageTagTest, WithExtensionRemoved) {
+  // Removing an extension from a tag with no extensions should return the same
+  // tag.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US"));
+    EXPECT_EQ(lc.WithExtensionRemoved('a').tag_string(), "en-US");
+    EXPECT_EQ(lc.WithExtensionRemoved('x').tag_string(), "en-US");
+  }
+
+  // Removing an existing Unicode extension ('u').
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory"));
+    EXPECT_EQ(lc.WithExtensionRemoved('u').tag_string(), "en-US");
+    // Also test case insensitivity for 'U'.
+    EXPECT_EQ(lc.WithExtensionRemoved('U').tag_string(), "en-US");
+  }
+
+  // Removing an existing generic extension ('a').
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-a-foo-bar"));
+    EXPECT_EQ(lc.WithExtensionRemoved('a').tag_string(), "en-US");
+    // Also test case insensitivity for 'A'.
+    EXPECT_EQ(lc.WithExtensionRemoved('A').tag_string(), "en-US");
+  }
+
+  // Removing an existing private use extension ('x').
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-x-private"));
+    EXPECT_EQ(lc.WithExtensionRemoved('x').tag_string(), "en-US");
+    // Also test 'X'.
+    EXPECT_EQ(lc.WithExtensionRemoved('X').tag_string(), "en-US");
+  }
+
+  // Removing an extension from a tag with multiple extensions.
+  {
+    ASSERT_OK_AND_ASSIGN(LanguageTag lc,
+                         LanguageTagConverter::GetInstance().FromString(
+                             "en-US-a-foo-u-ca-gregory-x-private"));
+    EXPECT_EQ(lc.WithExtensionRemoved('a').tag_string(),
+              "en-US-u-ca-gregory-x-private");
+    EXPECT_EQ(lc.WithExtensionRemoved('u').tag_string(),
+              "en-US-a-foo-x-private");
+    EXPECT_EQ(lc.WithExtensionRemoved('x').tag_string(),
+              "en-US-a-foo-u-ca-gregory");
+  }
+}
+
 struct LanguageTestData {
   std::string_view tag;
   std::string_view name;
