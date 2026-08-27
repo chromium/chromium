@@ -1122,11 +1122,11 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   auto get_scaled_physical_memory_based_limit = []() -> size_t {
     const base::ByteSize physical_memory =
         base::SysInfo::AmountOfTotalPhysicalMemory();
-    if (physical_memory > base::GiBU(64)) {
+    if (physical_memory > base::GiB(64)) {
       return 64 * GB;
-    } else if (physical_memory > base::GiBU(32)) {
+    } else if (physical_memory > base::GiB(32)) {
       return 32 * GB;
-    } else if (physical_memory > base::GiBU(16)) {
+    } else if (physical_memory > base::GiB(16)) {
       return 16 * GB;
     }
     return 8 * GB;
