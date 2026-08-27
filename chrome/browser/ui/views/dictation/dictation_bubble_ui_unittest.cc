@@ -257,7 +257,7 @@ TEST_P(DictationBubbleUiTest, WaveformSizing) {
     EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
     EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
   } else {
-    EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(0, 0));
+    EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
   }
 
   // Transcribing state

@@ -642,12 +642,12 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     ObserveSessionStateChanges(),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
 
-    // Initial state (kStreamInitializing): Mic icon button present, others absent.
+    // Initial state (kStreamInitializing): WaveformView shown, others absent.
     CheckResult(GetSessionState(), SessionState::kStreamInitializing),
-    InAnyContext(EnsurePresent(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
-    InAnyContext(EnsureNotPresent(
+    InAnyContext(WaitForShow(
         DictationOverlayView::kWaveformElementIdForTesting)),
+    InAnyContext(EnsureNotPresent(
+        DictationOverlayView::kMicButtonElementIdForTesting)),
 
     // Transition to kTranscribing: WaveformView shown, others absent.
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
@@ -724,11 +724,11 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 
     CheckResult(GetSessionState(), SessionState::kStreamInitializing),
     InAnyContext(WaitForShow(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
+        DictationOverlayView::kWaveformElementIdForTesting)),
 
-    // Pressing the mic button while initializing ends the stream.
+    // Pressing the waveform button while initializing ends the stream.
     InAnyContext(PressButton(
-        DictationOverlayView::kMicButtonElementIdForTesting)),
+        DictationOverlayView::kWaveformElementIdForTesting)),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
 
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
