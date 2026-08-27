@@ -85,9 +85,10 @@ bool HasAnyCreditCardSuggestion(NSArray<FormSuggestion*>* suggestions) {
   return false;
 }
 
-// Returns true if `suggestions` consists of only the save-and-fill suggestion.
+// Returns true if the first suggestion is the save-and-fill suggestion.
 bool HasScanCardSaveAndFillSuggestion(NSArray<FormSuggestion*>* suggestions) {
-  return [suggestions count] == 1 &&
+  // AtMemory appends an additional suggestion whenever other suggestions exist.
+  return [suggestions count] >= 1 &&
          suggestions[0].type ==
              autofill::SuggestionType::kSaveAndFillCreditCardEntry;
 }

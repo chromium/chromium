@@ -268,6 +268,55 @@ TEST_F(FormInputAccessoryViewControllerTest,
   EXPECT_OCMOCK_VERIFY(mock_view_controller);
 }
 
+// Tests that when the only suggestion is kAutocompleteAtMemoryButton, manual
+// fill buttons are shown instead of the expand button.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_OnlyAtMemorySuggestionShowsManualFillButtons) {
+  FormInputAccessoryView* accessory_view =
+      base::apple::ObjCCastStrict<FormInputAccessoryView>(
+          view_controller_.view);
+
+  FormSuggestion* atMemorySuggestion = SimpleFormSuggestion(
+      u"AtMemory", autofill::SuggestionType::kAutocompleteAtMemoryButton);
+
+  [view_controller_ showAccessorySuggestions:@[ atMemorySuggestion ]];
+
+  EXPECT_EQ(accessory_view.currentGroup,
+            FormInputAccessoryViewSubitemGroup::kManualFillButtons);
+}
+
+// Tests that special suggestions (AtMemory and Ambient) are preserved when
+// suggestions exceed the limit.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_SpecialSuggestionsPreservedWhenTruncated) {
+  id mock_view_controller = OCMPartialMock(view_controller_);
+
+  NSMutableArray<FormSuggestion*>* suggestions =
+      [SimpleFormSuggestions(kKeyboardAccessorySuggestionsLimit + 5)
+          mutableCopy];
+
+  FormSuggestion* ambientSuggestion = SimpleFormSuggestion(
+      u"Ambient", autofill::SuggestionType::kFetchingAmbientData);
+  FormSuggestion* atMemorySuggestion = SimpleFormSuggestion(
+      u"AtMemory", autofill::SuggestionType::kAutocompleteAtMemoryButton);
+
+  [suggestions addObject:ambientSuggestion];
+  [suggestions addObject:atMemorySuggestion];
+
+  OCMExpect([mock_view_controller
+      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
+                                           NSArray* resultSuggestions) {
+        return resultSuggestions.count ==
+                   kKeyboardAccessorySuggestionsLimit + 2 &&
+               [resultSuggestions containsObject:ambientSuggestion] &&
+               [resultSuggestions containsObject:atMemorySuggestion];
+      }]]);
+
+  [mock_view_controller showAccessorySuggestions:suggestions];
+
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+}
+
 // Tests that updateFormSuggestionView takes less than a threshold with the
 // amount of suggestions we intend to support. Updating suggestions should be
 // done within this threshold to maintain smooth UI animations.

@@ -86,6 +86,71 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   }
 }
 
+// Filters out suggestions that have neither text, nor display description, nor
+// an icon to display.
+NSArray<FormSuggestion*>* FilterValidSuggestions(
+    NSArray<FormSuggestion*>* suggestions) {
+  NSMutableArray<FormSuggestion*>* valid_suggestions =
+      [[NSMutableArray alloc] init];
+  for (FormSuggestion* suggestion in suggestions) {
+    if (!suggestion.value.length && !suggestion.displayDescription.length &&
+        !suggestion.icon &&
+        suggestion.suggestionIconType == SuggestionIconType::kNone) {
+      continue;
+    }
+    [valid_suggestions addObject:suggestion];
+  }
+  return valid_suggestions;
+}
+
+// Returns true if based on the `suggestions` content the expand button should
+// be used instead of the manual fill buttons.
+bool HasActionableSuggestions(NSArray<FormSuggestion*>* suggestions) {
+  if (suggestions.count == 0) {
+    return false;
+  }
+  if (suggestions.count == 1 &&
+      suggestions.firstObject.type ==
+          autofill::SuggestionType::kAutocompleteAtMemoryButton) {
+    return false;
+  }
+  return true;
+}
+
+// Returns true if the suggestion is a special trailing suggestion (AtMemory or
+// Ambient Autofill).
+bool IsSpecialSuggestion(FormSuggestion* suggestion) {
+  return suggestion.type ==
+             autofill::SuggestionType::kAutocompleteAtMemoryButton ||
+         suggestion.type == autofill::SuggestionType::kFetchingAmbientData;
+}
+
+// Truncates standard suggestions to `kKeyboardAccessorySuggestionsLimit` while
+// preserving trailing special suggestions (Ambient Autofill and AtMemory).
+NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
+    NSArray<FormSuggestion*>* suggestions) {
+  if (suggestions.count <= kKeyboardAccessorySuggestionsLimit) {
+    return suggestions;
+  }
+
+  NSMutableArray<FormSuggestion*>* standard_suggestions =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<FormSuggestion*>* special_suggestions =
+      [[NSMutableArray alloc] init];
+
+  for (FormSuggestion* suggestion in suggestions) {
+    if (IsSpecialSuggestion(suggestion)) {
+      [special_suggestions addObject:suggestion];
+    } else if (standard_suggestions.count <
+               kKeyboardAccessorySuggestionsLimit) {
+      [standard_suggestions addObject:suggestion];
+    }
+  }
+
+  [standard_suggestions addObjectsFromArray:special_suggestions];
+  return standard_suggestions;
+}
+
 }  // namespace
 
 @interface FormInputAccessoryViewController () <FormSuggestionViewDelegate>
@@ -225,21 +290,13 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  NSMutableArray<FormSuggestion*>* validSuggestions = [[NSMutableArray alloc]
-      initWithCapacity:kKeyboardAccessorySuggestionsLimit];
+  NSArray<FormSuggestion*>* validSuggestions =
+      FilterValidSuggestions(suggestions);
 
-  for (FormSuggestion* suggestion in suggestions) {
-    // Skip suggestions that have neither text nor an icon to display.
-    if (!suggestion.value.length && !suggestion.displayDescription.length &&
-        !suggestion.icon &&
-        suggestion.suggestionIconType == SuggestionIconType::kNone) {
-      continue;
-    }
-    [validSuggestions addObject:suggestion];
-    if (validSuggestions.count == kKeyboardAccessorySuggestionsLimit) {
-      break;
-    }
-  }
+  NSArray<FormSuggestion*>* truncatedSuggestions =
+      TruncateSuggestionsIfNeeded(validSuggestions);
+
+  BOOL hasSuggestions = HasActionableSuggestions(truncatedSuggestions);
 
   FormInputAccessoryViewSubitemGroup group;
   if (self.isContentEditable) {
@@ -256,7 +313,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     } else {
       group = FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
     }
-  } else if ([self hasSingleManualFillButton:validSuggestions.count > 0]) {
+  } else if ([self hasSingleManualFillButton:hasSuggestions]) {
     group = FormInputAccessoryViewSubitemGroup::kExpandButton;
   } else {
     group = FormInputAccessoryViewSubitemGroup::kManualFillButtons;
@@ -269,7 +326,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     self.formInputAccessoryView.manualFillButton.hidden = YES;
   }
 
-  [self updateFormSuggestionView:validSuggestions];
+  [self updateFormSuggestionView:truncatedSuggestions];
 }
 
 - (void)showNavigationButtons {
