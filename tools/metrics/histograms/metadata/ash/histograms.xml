@@ -2275,7 +2275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ContentTransfer.AuthenticationResult"
-    enum="ContentTransferAuthenticationResult" expires_after="2026-10-07">
+    enum="ContentTransferAuthenticationResult" expires_after="2027-04-07">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -2298,7 +2298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ContentTransfer.ShowNudgeFailed"
-    enum="ContentTransferShowNudgeFailureReason" expires_after="2026-10-07">
+    enum="ContentTransferShowNudgeFailureReason" expires_after="2027-04-07">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
