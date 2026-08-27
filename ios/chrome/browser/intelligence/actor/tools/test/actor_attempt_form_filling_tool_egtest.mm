@@ -273,9 +273,6 @@ void SetTargetFromNodeResult(optimization_guide::proto::ActionTarget* target,
   [ChromeEarlGrey waitForJavaScriptCondition:@"window.scrollY > 0;"];
 }
 
-// TODO(crbug.com/472287741): Add
-// `testAttemptFormFillingTool_scrollsAndFillsFormsByCoordinates` if needed.
-
 // Tests that the `AttemptFormFillingTool` fails when the targeted trigger field
 // is not a form input element.
 - (void)testAttemptFormFillingTool_targetNotAutofillElement_fails {
