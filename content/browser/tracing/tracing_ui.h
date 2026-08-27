@@ -5,21 +5,10 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACING_UI_H_
 #define CONTENT_BROWSER_TRACING_TRACING_UI_H_
 
-#include <stdint.h>
-
-#include <string>
-
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
-
-namespace base {
-namespace trace_event {
-class TraceConfig;
-}  // namespace trace_event
-}  // namespace base
 
 namespace content {
 
@@ -40,14 +29,6 @@ class CONTENT_EXPORT TracingUI : public WebUIController {
   TracingUI& operator=(const TracingUI&) = delete;
 
   ~TracingUI() override;
-
-  // Public for testing.
-  static bool GetTracingOptions(const std::string& data64,
-                                base::trace_event::TraceConfig& trace_config,
-                                std::string& out_stream_format);
-
- private:
-  base::WeakPtrFactory<TracingUI> weak_factory_{this};
 };
 
 }  // namespace content
