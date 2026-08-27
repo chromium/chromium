@@ -37,13 +37,13 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_provider"
   cargo_pkg_description =
       "Trait and struct definitions for the ICU data provider"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.2.0"
+  cargo_pkg_version = "2.3.1"
 
   allow_unsafe = true
 
