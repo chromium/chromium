@@ -123,6 +123,9 @@ class OmniboxPopupPresenterBase
   virtual std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const = 0;
 
+  // Returns whether resize events should be debounced.
+  virtual bool ShouldDebounceResize() const = 0;
+
   // Returns if the WebContents should be detached when the popup is hidden.
   virtual bool ShouldDetachWebContentsOnHide() const = 0;
 

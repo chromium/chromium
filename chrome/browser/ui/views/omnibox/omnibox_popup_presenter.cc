@@ -92,6 +92,10 @@ OmniboxPopupPresenter::ShouldDeferUntilVisualStateReady() const {
       omnibox::kOmniboxWebUIDeferShowUntilVisualStateReadyTimeoutMs.Get());
 }
 
+bool OmniboxPopupPresenter::ShouldDebounceResize() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIDebounceResize);
+}
+
 bool OmniboxPopupPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxWebUIDetachWebContentsOnHide);

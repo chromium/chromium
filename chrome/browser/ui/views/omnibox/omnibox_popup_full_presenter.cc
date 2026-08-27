@@ -161,6 +161,10 @@ OmniboxPopupFullPresenter::ShouldDeferUntilVisualStateReady() const {
       omnibox::kOmniboxFullWebUIDeferShowUntilVisualStateReadyTimeoutMs.Get());
 }
 
+bool OmniboxPopupFullPresenter::ShouldDebounceResize() const {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIDebounceResize);
+}
+
 bool OmniboxPopupFullPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxFullWebUIDetachWebContentsOnHide);

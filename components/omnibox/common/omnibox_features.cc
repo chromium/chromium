@@ -219,6 +219,12 @@ BASE_FEATURE(kOmniboxWebUIDeferShowUntilVisualStateReady, DISABLED);
 // with a stale frame.
 // TODO(b/549125538): Figure out why timeout is consistently being hit.
 BASE_FEATURE(kOmniboxFullWebUIDeferShowUntilVisualStateReady, DISABLED);
+// When enabled, the Omnibox WebUI popup will debounce auto-resize events.
+BASE_FEATURE(kOmniboxWebUIDebounceResize, ENABLED);
+// When enabled, the AIM WebUI popup will debounce auto-resize events.
+BASE_FEATURE(kOmniboxAimDebounceResize, DISABLED);
+// When enabled, the Omnibox Full WebUI popup will debounce auto-resize events.
+BASE_FEATURE(kOmniboxFullWebUIDebounceResize, ENABLED);
 // If enabled, stabilizes the popup showing behavior on startup by forcing
 // layout with a 1px height and hiding it initially to avoid visual artifacts.
 BASE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow, ENABLED);

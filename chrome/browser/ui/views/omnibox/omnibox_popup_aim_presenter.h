@@ -37,6 +37,7 @@ class OmniboxPopupAimPresenter
   std::string_view GetPopupMetricPrefix() const override;
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override;
+  bool ShouldDebounceResize() const override;
   bool ShouldDetachWebContentsOnHide() const override;
   // Triggered when a file selection dialog opened by this popup is closed,
   // initiating the focus restoration flow (only active when
