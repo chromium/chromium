@@ -8,6 +8,7 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
 import android.util.ArrayMap;
+import android.util.ArraySet;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
@@ -21,6 +22,8 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -51,6 +54,24 @@ public class TabCache {
         assertOnUiThread();
         mDirScope = dirScope;
         mCipherFactory = cipherFactory;
+    }
+
+    /**
+     * Returns a set of all tab IDs currently tracked in this {@link TabCache}'s SharedPreferences.
+     *
+     * @return A {@link Set} of {@link TabId} integers.
+     */
+    public Set<@TabId Integer> getAllTabIds() {
+        assertOnUiThread();
+        Map<String, ?> allPrefs = mDirScope.getSharedPreferences().getAll();
+        ArraySet<@TabId Integer> tabIds = new ArraySet<>(allPrefs.size());
+        for (Object value : allPrefs.values()) {
+            assert value instanceof Integer : "TabCache pref value must be an Integer tab ID.";
+            @TabId int tabId = (Integer) value;
+            assert tabId != Tab.INVALID_TAB_ID : "TabCache pref must not contain INVALID_TAB_ID.";
+            tabIds.add(tabId);
+        }
+        return tabIds;
     }
 
     /** Returns the tag used for this cache instance. */

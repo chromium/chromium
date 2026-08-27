@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -172,6 +173,41 @@ public class TabCacheUnitTest {
         LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(key);
         assertNotNull(loaded);
         assertEquals(10, loaded.tabId);
+    }
+
+    @Test
+    public void testGetAllTabIds() {
+        initTabCache(/* hasCipherFactory= */ false);
+        assertTrue(mTabCache.getAllTabIds().isEmpty());
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
+        TabStateExtractor.setTabStateForTesting(10, createMockTabState());
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
+        TabStateExtractor.setTabStateForTesting(20, createMockTabState());
+
+        TabCacheKey key1 = new TabCacheKey("0", /* isIncognito= */ false);
+        TabCacheKey key2 = new TabCacheKey("1", /* isIncognito= */ false);
+
+        mTabCache.saveTab(key1, tab1);
+        mTabCache.saveTab(key2, tab2);
+        mExecutor.runAll();
+
+        Set<Integer> tabIds = mTabCache.getAllTabIds();
+        assertEquals(2, tabIds.size());
+        assertTrue(tabIds.contains(10));
+        assertTrue(tabIds.contains(20));
+
+        mTabCache.clear(key1);
+        mExecutor.runAll();
+
+        tabIds = mTabCache.getAllTabIds();
+        assertEquals(1, tabIds.size());
+        assertTrue(tabIds.contains(20));
     }
 
     @Test

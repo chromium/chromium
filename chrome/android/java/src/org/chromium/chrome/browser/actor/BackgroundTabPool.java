@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor;
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
 import android.util.ArrayMap;
+import android.util.ArraySet;
 
 import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
@@ -29,7 +30,9 @@ import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Profile-scoped pool managing background actor tabs.
@@ -121,13 +124,17 @@ public class BackgroundTabPool
     }
 
     /**
-     * Returns an unmodifiable list of all active live tab IDs in memory.
+     * Returns a set of all tab IDs managed by this pool (both in-memory live tabs and cached tabs).
      *
-     * @return A list of live {@link TabId} integers.
+     * @return A {@link Set} of all {@link TabId} integers in the pool.
      */
-    public List<@TabId Integer> getLiveTabIds() {
+    public Set<@TabId Integer> getAllTabIds() {
         checkNotDestroyed();
-        return List.copyOf(mLiveEntries.keySet());
+        Set<@TabId Integer> cachedIds = mTabCache.getAllTabIds();
+        ArraySet<@TabId Integer> allIds = new ArraySet<>(cachedIds.size() + mLiveEntries.size());
+        allIds.addAll(cachedIds);
+        allIds.addAll(mLiveEntries.keySet());
+        return Collections.unmodifiableSet(allIds);
     }
 
     /**
