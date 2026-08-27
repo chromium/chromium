@@ -38,6 +38,8 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/grit",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

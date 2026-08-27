@@ -106,6 +106,7 @@ static_library("signin") {
     "//services/network/public/cpp",
     "//ui/base",
     "//ui/base/idle",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//url",
   ]
@@ -180,6 +181,7 @@ source_set("unit_tests") {
 
   deps = [
     ":signin",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
@@ -192,6 +194,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -206,6 +209,7 @@ source_set("unit_tests") {
     "//google_apis:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }
