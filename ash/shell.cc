@@ -92,7 +92,6 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -1017,9 +1016,6 @@ Shell::~Shell() {
   // https://crbug.com/1350711.
   capture_mode_controller_.reset();
 
-  // Relies on `overview_controller`.
-  post_login_glanceables_metrics_reporter_.reset();
-
   // Has to happen before `~OverviewController` since it's an observer.
   informed_restore_controller_.reset();
 
@@ -1850,8 +1846,6 @@ void Shell::Init(
   if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
-  post_login_glanceables_metrics_reporter_ =
-      std::make_unique<PostLoginGlanceablesMetricsRecorder>();
 
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   annotator_controller_ = std::make_unique<AnnotatorController>();

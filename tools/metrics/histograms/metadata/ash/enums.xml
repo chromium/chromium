@@ -583,12 +583,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="5" label="UserShutdown"/>
 </enum>
 
-<enum name="DataFetchEventSource">
-  <int value="0" label="PostLoginFullRestore"/>
-  <int value="1" label="Overview"/>
-  <int value="2" label="Calendar"/>
-</enum>
-
 <enum name="DemoModeApp">
   <summary>
     Pre-installed app or other window type available in Chrome OS Demo Mode.
