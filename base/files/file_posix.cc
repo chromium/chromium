@@ -533,6 +533,7 @@ File::Error File::OSErrorToFileError(int saved_errno) {
     case EISDIR:
     case EROFS:
     case EPERM:
+    case EAGAIN:  // EWOULDBLOCK has the same value on all supported platforms.
       return FILE_ERROR_ACCESS_DENIED;
     case EBUSY:
     case ETXTBSY:

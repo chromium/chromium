@@ -29,6 +29,10 @@
 #include "base/test/android/content_uri_test_utils.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_POSIX)
+#include <errno.h>
+#endif  // BUILDFLAG(IS_POSIX)
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -825,6 +829,21 @@ TEST(FileTest, AddFlagsForPassingToUntrustedProcess) {
     EXPECT_EQ(flags,
               File::FLAG_OPEN | File::FLAG_WRITE | File::FLAG_WIN_NO_EXECUTE);
   }
+}
+
+TEST(FileTest, OSErrorToFileError) {
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            File::OSErrorToFileError(ERROR_ACCESS_DENIED));
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            File::OSErrorToFileError(ERROR_LOCK_VIOLATION));
+#elif BUILDFLAG(IS_POSIX)
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED, File::OSErrorToFileError(EACCES));
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED, File::OSErrorToFileError(EAGAIN));
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            File::OSErrorToFileError(EWOULDBLOCK));
+  EXPECT_EQ(File::FILE_ERROR_ACCESS_DENIED, File::OSErrorToFileError(EPERM));
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)

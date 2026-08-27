@@ -201,8 +201,10 @@ class FileLockingTest : public testing::Test {
 TEST_F(FileLockingTest, LockAndUnlockExclusive) {
   StartChildAndSignalLock(File::LockMode::kExclusive, kFileUnlock);
 
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kShared));
   ASSERT_TRUE(SignalEvent(kSignalLockFileUnlock));
   ASSERT_TRUE(WaitForEventOrTimeout(kSignalLockFileUnlocked));
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
@@ -217,7 +219,8 @@ TEST_F(FileLockingTest, LockAndUnlockShared) {
 
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
   ASSERT_TRUE(SignalEvent(kSignalLockFileUnlock));
   ASSERT_TRUE(WaitForEventOrTimeout(kSignalLockFileUnlocked));
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
@@ -232,8 +235,10 @@ TEST_F(FileLockingTest, LockAndUnlockShared) {
 TEST_F(FileLockingTest, UnlockOnCloseExclusive) {
   StartChildAndSignalLock(File::LockMode::kExclusive, kCloseUnlock);
 
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kShared));
   ASSERT_TRUE(SignalEvent(kSignalLockFileClose));
   ASSERT_TRUE(WaitForEventOrTimeout(kSignalLockFileClosed));
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
@@ -248,7 +253,8 @@ TEST_F(FileLockingTest, UnlockOnCloseShared) {
 
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
   ASSERT_TRUE(SignalEvent(kSignalLockFileClose));
   ASSERT_TRUE(WaitForEventOrTimeout(kSignalLockFileClosed));
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
@@ -263,8 +269,10 @@ TEST_F(FileLockingTest, UnlockOnCloseShared) {
 TEST_F(FileLockingTest, UnlockOnExitExclusive) {
   StartChildAndSignalLock(File::LockMode::kExclusive, kExitUnlock);
 
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kShared));
   ExitChildCleanly();
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
@@ -276,7 +284,8 @@ TEST_F(FileLockingTest, UnlockOnExitShared) {
 
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
   ExitChildCleanly();
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
@@ -295,7 +304,8 @@ TEST_F(FileLockingTest, MAYBE_UnlockOnTerminate) {
   // The child will wait for an exit which never arrives.
   StartChildAndSignalLock(File::LockMode::kExclusive, kExitUnlock);
 
-  ASSERT_NE(File::FILE_OK, lock_file_.Lock(File::LockMode::kExclusive));
+  ASSERT_EQ(File::FILE_ERROR_ACCESS_DENIED,
+            lock_file_.Lock(File::LockMode::kExclusive));
   ASSERT_TRUE(TerminateMultiProcessTestChild(lock_child_, 0, true));
   ASSERT_EQ(File::FILE_OK, lock_file_.Lock(File::LockMode::kShared));
   ASSERT_EQ(File::FILE_OK, lock_file_.Unlock());
