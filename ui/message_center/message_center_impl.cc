@@ -661,9 +661,6 @@ void MessageCenterImpl::RemoveNotificationsIfOverLimit() {
              notification_count - GetTargetCountAfterRemoval())) {
       RemoveNotification(id, /*by_user=*/false);
     }
-
-    base::UmaHistogramBoolean("Ash.Notification.RemovedByLimitEnforcement",
-                              true);
   }
 }
 
