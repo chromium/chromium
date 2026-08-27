@@ -4,12 +4,12 @@
 
 #include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/notimplemented.h"
-#include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/bookmark_management_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -32,11 +32,10 @@ AddBookmarkToolRequest& AddBookmarkToolRequest::operator=(
 ToolRequest::CreateToolResult AddBookmarkToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  NOTIMPLEMENTED();
-  return {/*tool=*/nullptr,
-          MakeResult(mojom::ActionResultCode::kToolUnknown,
-                     /*requires_page_stabilization=*/false,
-                     "AddBookmarkTool is not yet implemented.")};
+  return {/*tool=*/std::make_unique<BookmarkManagementTool>(
+              task_id, tool_delegate, BookmarkManagementTool::Action::kAdd,
+              url_, title_),
+          MakeOkResult()};
 }
 
 void AddBookmarkToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
@@ -61,11 +60,10 @@ RemoveBookmarkToolRequest& RemoveBookmarkToolRequest::operator=(
 ToolRequest::CreateToolResult RemoveBookmarkToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  NOTIMPLEMENTED();
-  return {/*tool=*/nullptr,
-          MakeResult(mojom::ActionResultCode::kToolUnknown,
-                     /*requires_page_stabilization=*/false,
-                     "RemoveBookmarkTool is not yet implemented.")};
+  return {/*tool=*/std::make_unique<BookmarkManagementTool>(
+              task_id, tool_delegate, BookmarkManagementTool::Action::kRemove,
+              url_),
+          MakeOkResult()};
 }
 
 void RemoveBookmarkToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
