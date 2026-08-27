@@ -185,6 +185,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
       maxShortcutsInExpandedState: {type: Number, reflect: true},
       maxMostVisitedTilesInExpandedState: {type: Number, reflect: true},
       maxEnterpriseShortcuts: {type: Number, reflect: true},
+      /**
+       * If greater than 0, caps the total number of tiles to this value.
+       */
+      maxTiles: {type: Number, reflect: true},
       showAll_: {type: Boolean, state: true},
       showShowMore_: {type: Boolean, state: true},
       showShowLess_: {type: Boolean, state: true},
@@ -206,6 +210,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor maxShortcutsInExpandedState: number = 10;
   accessor maxMostVisitedTilesInExpandedState: number = 8;
   accessor maxEnterpriseShortcuts: number = 10;
+  accessor maxTiles: number = 0;
   private accessor showAll_: boolean = false;
   protected accessor showShowMore_: boolean = false;
   protected accessor showShowLess_: boolean = false;
@@ -337,10 +342,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
       this.enterpriseShortcutsEnabled_ = this.info_.enterpriseShortcutsEnabled;
-      this.maxTiles_ =
+      const totalMax =
           (this.customLinksEnabled_ ? this.maxShortcutsInExpandedState :
                                       this.maxMostVisitedTilesInExpandedState) +
           (this.enterpriseShortcutsEnabled_ ? this.maxEnterpriseShortcuts : 0);
+      this.maxTiles_ =
+          this.maxTiles > 0 ? Math.min(this.maxTiles, totalMax) : totalMax;
       this.tiles_ = this.info_.tiles.slice(0, this.maxTiles_);
     }
 
@@ -784,9 +791,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.maxVisibleColumnCount_ =
           3 + (index > -1 ? queryLists.length - index : 0);
     };
+    const tileSize =
+        parseInt(
+            getComputedStyle(this).getPropertyValue('--most-visited-tile-size'),
+            10) ||
+        112;
     const maxColumnCount = this.singleRow ? 10 : 5;
     for (let i = maxColumnCount; i >= 4; i--) {
-      const query = `(min-width: ${112 * (i + 1)}px)`;
+      const query = `(min-width: ${tileSize * (i + 1)}px)`;
       const queryList = this.windowProxy_.matchMedia(query);
       this.mediaEventTracker_.add(queryList, 'change', updateCount);
       queryLists.push(queryList);

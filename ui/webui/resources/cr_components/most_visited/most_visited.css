@@ -122,6 +122,7 @@
 #addShortcut,
 #showMore,
 #showLess {
+  -webkit-app-region: no-drag;
   -webkit-tap-highlight-color: transparent;
   align-items: center;
   border-radius: 4px;
@@ -213,9 +214,9 @@
   flex-shrink: 0;
   height: 24px;
   justify-content: center;
-  left: 68px;
+  left: var(--most-visited-managed-icon-left, 68px);
   position: absolute;
-  top: 40px;
+  top: var(--most-visited-managed-icon-top, 40px);
   width: 24px;
 }
 
