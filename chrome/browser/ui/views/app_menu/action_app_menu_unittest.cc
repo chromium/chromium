@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
+#include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +28,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_utils.h"
@@ -151,31 +155,129 @@ TEST_F(ActionAppMenuTest, PopulatesStaticSubmenus) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuTest, PopulatesTextAndIconOverrides) {
+TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
   menu.RunMenu(button_->button_controller());
-  ASSERT_TRUE(menu.IsShowing());
+  EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
 
-  // Verify text override is applied (kActionNewIncognitoWindow).
-  views::MenuItemView* incognito_item =
-      root->GetMenuItemByID(kActionNewIncognitoWindow);
-  ASSERT_TRUE(incognito_item);
-  EXPECT_EQ(incognito_item->title(), l10n_util::GetStringUTF16(IDS_INCOGNITO));
+  // The top MenuItemView in the submenu corresponds to the block container row.
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
 
-  // Verify icon override is applied (kActionNewTab).
-  views::MenuItemView* new_tab_item = root->GetMenuItemByID(kActionNewTab);
-  ASSERT_TRUE(new_tab_item);
-  EXPECT_FALSE(new_tab_item->GetIcon().IsEmpty());
+  // Check that the container contains child block buttons.
+  ASSERT_EQ(block_item->children().size(), 1u);
+  views::View* row_view = block_item->children()[0];
+  ASSERT_EQ(row_view->children().size(), 3u);
 
-  // Verify an item without text override inherits delegate title.
-  views::MenuItemView* window_item = root->GetMenuItemByID(kActionNewWindow);
-  ASSERT_TRUE(window_item);
-  EXPECT_EQ(window_item->title(), u"New Window");
+  // Verify text override is applied for incognito button.
+  auto* incognito_button =
+      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[2]);
+  ASSERT_TRUE(incognito_button);
+  views::Label* incognito_label = nullptr;
+  for (views::View* child : incognito_button->children()) {
+    if (auto* label = views::AsViewClass<views::Label>(child)) {
+      incognito_label = label;
+      break;
+    }
+  }
+  ASSERT_TRUE(incognito_label);
+  EXPECT_EQ(incognito_label->GetText(),
+            l10n_util::GetStringUTF16(IDS_INCOGNITO));
+
+  // Verify icon override is applied for new tab button.
+  auto* new_tab_button =
+      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[0]);
+  ASSERT_TRUE(new_tab_button);
+  views::ImageView* new_tab_icon = nullptr;
+  for (views::View* child : new_tab_button->children()) {
+    if (auto* icon = views::AsViewClass<views::ImageView>(child)) {
+      new_tab_icon = icon;
+      break;
+    }
+  }
+  ASSERT_TRUE(new_tab_icon);
+  EXPECT_FALSE(new_tab_icon->GetImageModel().IsEmpty());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  // Find and invoke the New Tab action item. Verify its callback is triggered.
+  actions::ActionItem* new_tab_action =
+      actions::ActionManager::Get().FindAction(kActionNewTab);
+  ASSERT_TRUE(new_tab_action);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
+      .Times(1);
+  new_tab_action->InvokeAction();
+  testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+
+  // Find and invoke the New Window action item. Verify its callback is
+  // triggered.
+  actions::ActionItem* new_window_action =
+      actions::ActionManager::Get().FindAction(kActionNewWindow);
+  ASSERT_TRUE(new_window_action);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionNewWindow, testing::_, testing::_))
+      .Times(1);
+  new_window_action->InvokeAction();
+  testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+
+  // Find and invoke the New Incognito Window action item. Verify its callback
+  // is triggered.
+  actions::ActionItem* incognito_action =
+      actions::ActionManager::Get().FindAction(kActionNewIncognitoWindow);
+  ASSERT_TRUE(incognito_action);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionNewIncognitoWindow, testing::_, testing::_))
+      .Times(1);
+  incognito_action->InvokeAction();
+  testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+}
+
+// Tests that changing the enabled state of a delegate action item
+// dynamically synchronizes and updates the BlockMenuEntryButton view state.
+TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  views::View* row_view = block_item->children()[0];
+  ASSERT_TRUE(row_view);
+
+  auto* new_tab_button =
+      views::AsViewClass<BlockMenuEntryButton>(row_view->children()[0]);
+  ASSERT_TRUE(new_tab_button);
+  EXPECT_TRUE(new_tab_button->GetEnabled());
+
+  // Disable the delegate ActionItem.
+  actions::ActionItem* new_tab_action =
+      actions::ActionManager::Get().FindAction(kActionNewTab);
+  ASSERT_TRUE(new_tab_action);
+  new_tab_action->SetEnabled(false);
+
+  EXPECT_FALSE(new_tab_button->GetEnabled());
+
+  // Re-enable the delegate ActionItem.
+  new_tab_action->SetEnabled(true);
+  EXPECT_TRUE(new_tab_button->GetEnabled());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

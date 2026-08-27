@@ -14,6 +14,7 @@ source_set("app_menu") {
     "action_app_menu_zoom_view.h",
     "app_menu_footer_button.h",
     "app_menu_section_action_item.h",
+    "block_menu_entry_button.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
   ]
@@ -45,6 +46,7 @@ source_set("impl") {
     "action_app_menu_zoom_view.cc",
     "app_menu_footer_button.cc",
     "app_menu_section_action_item.cc",
+    "block_menu_entry_button.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
   ]

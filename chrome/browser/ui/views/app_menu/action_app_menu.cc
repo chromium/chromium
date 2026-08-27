@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
-#include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,6 +29,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -154,16 +155,21 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       continue;
     }
 
+    // Handle block-style entry type (creation of action buttons row).
+    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
+        ActionAppMenuManager::DisplayType::kBlock) {
+      PopulateBlockMenuItem(view_parent, child_ptr);
+      continue;
+    }
+
     // If the child is a section action item, append it as a MenuItem that
     // represents a section header.
     if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
       auto* header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
       header_menu_item->SetEnabled(false);
-      const int vertical_margin =
-          views::LayoutProvider::Get()->GetDistanceMetric(
-              views::DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL);
-      header_menu_item->set_vertical_margin(vertical_margin);
+      header_menu_item->set_vertical_margin(provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN));
       // Recursive call using the same parent to keep the children in
       // the same menu section as the header.
       PopulateMenu(view_parent, child_base);
@@ -266,4 +272,47 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
 
   footer_item->AddChildView(std::make_unique<ActionAppMenuFooterView>(
       footer_action_item, &action_view_controller_, &command_to_action_map_));
+}
+
+void ActionAppMenu::PopulateBlockMenuItem(
+    views::MenuItemView* view_parent,
+    actions::ActionItem* block_action_item) {
+  auto* block_item = view_parent->AppendMenuItem(0);
+  block_item->SetTriggerActionWithNonIconChildViews(false);
+  block_item->set_children_use_full_width(true);
+
+  const auto* provider = ChromeLayoutProvider::Get();
+  auto row_view = std::make_unique<views::BoxLayoutView>();
+  row_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  row_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  row_view->SetInsideBorderInsets(
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ROW));
+  row_view->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING));
+  row_view->SetDefaultFlex(1);
+
+  for (const auto& block_child : block_action_item->GetChildren().children()) {
+    actions::ActionItem* block_child_ptr = block_child->GetActionItem();
+    std::optional<actions::ActionId> action_id = block_child_ptr->GetActionId();
+    CHECK(action_id.has_value());
+
+    auto button = std::make_unique<BlockMenuEntryButton>();
+    action_view_controller_.CreateActionViewRelationship(
+        button.get(), block_child_ptr->GetAsWeakPtr());
+    command_to_action_map_[action_id.value()] = block_child_ptr;
+
+    if (std::u16string* text_override =
+            block_child->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {
+      button->SetText(*text_override);
+    }
+
+    if (ui::ImageModel* icon_override =
+            block_child->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
+      button->SetImageModel(*icon_override);
+    }
+
+    row_view->AddChildView(std::move(button));
+  }
+  block_item->AddChildView(std::move(row_view));
 }

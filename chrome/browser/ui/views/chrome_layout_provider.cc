@@ -100,6 +100,10 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // Relies on the parent menu's margins for vertical alignment
       // with other items.
       return gfx::Insets::VH(0, 12);
+    case INSETS_ACTION_APP_MENU_BLOCK_ROW:
+      return gfx::Insets::VH(4, 4);
+    case INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON:
+      return gfx::Insets::VH(8, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -282,8 +286,12 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING:
       return 12;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING:
-      return 8;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS:
+    case DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN:
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING:
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS:
+      return 8;
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 4;
   }
   NOTREACHED();

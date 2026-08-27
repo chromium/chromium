@@ -37,6 +37,10 @@ enum ChromeInsetsMetric {
   INSETS_ACTION_APP_MENU_FOOTER_BUTTON,
   // Padding for the profile sign-in status chip in the app menu.
   INSETS_PROFILE_SIGNIN_STATUS_CHIP,
+  // Padding for the block creation action buttons row container.
+  INSETS_ACTION_APP_MENU_BLOCK_ROW,
+  // Internal padding for a block entry button.
+  INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON,
 };
 
 enum ChromeDistanceMetric {
@@ -235,6 +239,14 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING,
   // Corner radius for a Block-style Action App Menu footer button.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS,
+  // Vertical margin for section headers in the Action App Menu.
+  DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN,
+  // Spacing between buttons in a block action row.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING,
+  // Rounded corner radius for a block entry button.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS,
+  // Vertical spacing between icon and label inside a block entry button.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

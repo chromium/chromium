@@ -270,7 +270,10 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 }
 
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
-  auto builder = AppMenuBuilder(root);
+  auto block_section = CreateSectionActionItem(u"", DisplayType::kBlock);
+  auto* block_section_ptr = root->AddChild(std::move(block_section));
+
+  auto builder = AppMenuBuilder(block_section_ptr);
   builder
       .AddAction(kActionNewTab, DisplayType::kBlock,
                  /*text_override=*/std::nullopt,
@@ -336,7 +339,6 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 void ActionAppMenuManager::AddToolsAndActionsActions(
     actions::ActionItem* root) {
   AppMenuBuilder builder(root, kColorAppMenuToolsAndActionsBackground);
-
   builder.AddSectionHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
       .AddSubmenu(
           kActionZoomSubmenu,

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/test/base/testing_profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -25,7 +26,7 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
   ASSERT_NE(root, nullptr);
   actions::ActionItem* passwords_proxy = root->GetChildren()
-                                             .children()[3]
+                                             .children()[1]
                                              ->GetChildren()
                                              .children()[0]
                                              ->GetChildren()
@@ -50,6 +51,24 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
       .Times(1);
   passwords_proxy->InvokeAction();
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+}
+
+TEST_F(ActionAppMenuManagerTest, BlockActionsGuestSessionExcludesIncognito) {
+  profile_->SetGuestSession(true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  // The block section is at index 0.
+  actions::ActionItem* block_section =
+      root->GetChildren().children()[0]->GetActionItem();
+  ASSERT_NE(block_section, nullptr);
+
+  // Only New Tab and New Window should be present for a guest session.
+  EXPECT_EQ(block_section->GetChildren().children().size(), 2u);
 }
 
 }  // namespace
