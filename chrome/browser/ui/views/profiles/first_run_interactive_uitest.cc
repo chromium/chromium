@@ -360,6 +360,7 @@ class FirstRunInteractiveUiBaseTest
             [&](FirstRunVersion::Legacy) {
               disabled_features.push_back(switches::kFirstRunDesktopRefresh);
               disabled_features.push_back(switches::kFirstRunDesktopRevamp);
+              disabled_features.push_back(switches::kPreFirstRunDesktopRefresh);
             },
             [&](FirstRunVersion::Refreshed refreshed) {
               enabled_features.push_back(
@@ -369,7 +370,9 @@ class FirstRunInteractiveUiBaseTest
                          refreshed.variant)}}});
               enabled_features.push_back(
                   {switches::kFirstRunDesktopChoiceScreenRefresh, {}});
+
               disabled_features.push_back(switches::kFirstRunDesktopRevamp);
+              disabled_features.push_back(switches::kPreFirstRunDesktopRefresh);
             },
             [&](FirstRunVersion::Revamped revamped) {
               enabled_features.push_back(
@@ -389,6 +392,8 @@ class FirstRunInteractiveUiBaseTest
                 disabled_features.push_back(
                     switches::kFirstRunDesktopRevampSound);
               }
+
+              disabled_features.push_back(switches::kPreFirstRunDesktopRefresh);
             },
             [&](FirstRunVersion::PreFirstRunRefreshed) {
               enabled_features.push_back(
