@@ -4,8 +4,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {SearchApiProxyImpl} from './search_api_proxy.js';
 import type {ItemData, SplitViewData, TabData, TabGroupData} from './tab_data.js';
-import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 // Regex covering Hiragana, Katakana, Kanji, and Hangul (CJK ranges).
 const CJK_REGEX = new RegExp(
@@ -104,7 +104,7 @@ async function exactSearch<T extends ItemData>(
   // case-insensitivity, diacritic-insensitivity, and quotation folding
   // natively.
   const {ranges} =
-      await TabSearchApiProxyImpl.getInstance().getRangesIgnoringCaseAndAccents(
+      await SearchApiProxyImpl.getInstance().getRangesIgnoringCaseAndAccents(
           searchText, targets);
 
   // Perform an exact match search with range discovery.

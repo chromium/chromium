@@ -28,6 +28,7 @@ build_webui("build") {
     "app.html.ts",
     "app.ts",
     "search.ts",
+    "search_api_proxy.ts",
     "selectable_lazy_list.ts",
     "split_new_tab_page.ts",
     "split_view/app.html.ts",

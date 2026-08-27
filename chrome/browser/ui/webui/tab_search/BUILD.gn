@@ -21,12 +21,14 @@ mojom("mojo_bindings") {
 
 source_set("tab_search") {
   sources = [
+    "search_handler.cc",
     "tab_search_page_handler.cc",
     "tab_search_prefs.cc",
     "tab_search_sync_handler.cc",
     "tab_search_ui.cc",
   ]
   public = [
+    "search_handler.h",
     "tab_search_page_handler.h",
     "tab_search_prefs.h",
     "tab_search_sync_handler.h",
@@ -36,6 +38,7 @@ source_set("tab_search") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//base:i18n",
     "//chrome/app:command_ids",
     "//chrome/browser/favicon",
     "//chrome/browser/glic/resources:grit",

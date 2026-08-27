@@ -644,7 +644,9 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
   registry.AddGlobal<metrics_reporter::mojom::PageMetricsHost>(
       base::BindRepeating(&BindMetricsReporterService));
 
-  registry.ForWebUI<TabSearchUI>().Add<tab_search::mojom::PageHandlerFactory>();
+  registry.ForWebUI<TabSearchUI>()
+      .Add<tab_search::mojom::PageHandlerFactory>()
+      .Add<tab_search::mojom::SearchHandler>();
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     registry.ForWebUI<NewTabFooterUI>()

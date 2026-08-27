@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageRemote, ProfileData, SwitchToTabInfo, TabSearchApiProxy, TokenRange} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {PageRemote, ProfileData, SwitchToTabInfo, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {PageCallbackRouter} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -11,7 +11,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   callbackRouter: PageCallbackRouter;
   callbackRouterRemote: PageRemote;
   private profileData_?: ProfileData;
-  private ranges_?: TokenRange[][];
   private isSplit_: boolean = false;
 
   constructor() {
@@ -26,7 +25,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
       'maybeShowUi',
-      'getRangesIgnoringCaseAndAccents',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -91,35 +89,5 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setIsSplit(isSplit: boolean) {
     this.isSplit_ = isSplit;
-  }
-
-  setRanges(ranges: TokenRange[][]) {
-    this.ranges_ = ranges;
-  }
-
-  getRangesIgnoringCaseAndAccents(searchText: string, targets: string[]) {
-    this.methodCalled('getRangesIgnoringCaseAndAccents', [searchText, targets]);
-    // If ranges were explicitly set for the test, use them.
-    if (this.ranges_) {
-      return Promise.resolve({ranges: this.ranges_});
-    }
-    // Otherwise, simulate a basic case-insensitive substring search in the
-    // mock. This is required because existing WebUI page tests (which mock this
-    // proxy) rely on the search actually filtering the tab list when they type
-    // in the search box.
-    const query = searchText.toLowerCase();
-    const ranges = targets.map(target => {
-      const targetLower = target.toLowerCase();
-      const matchRanges: TokenRange[] = [];
-      if (query.length > 0) {
-        let idx = targetLower.indexOf(query);
-        while (idx !== -1) {
-          matchRanges.push({start: idx, length: query.length});
-          idx = targetLower.indexOf(query, idx + query.length);
-        }
-      }
-      return matchRanges;
-    });
-    return Promise.resolve({ranges});
   }
 }

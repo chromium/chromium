@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/tab_search/search_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -150,6 +151,11 @@ void TabSearchUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void TabSearchUI::BindInterface(
+    mojo::PendingReceiver<tab_search::mojom::SearchHandler> receiver) {
+  search_handler_ = std::make_unique<SearchHandler>(std::move(receiver));
 }
 
 void TabSearchUI::BeforeBubbleWidgetShowed() {

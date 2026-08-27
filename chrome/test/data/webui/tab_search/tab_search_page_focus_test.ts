@@ -4,13 +4,14 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {ProfileData, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SearchApiProxyImpl, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, sampleSiteNames, sampleToken} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, getStylePropertyPixelValue, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {TestSearchApiProxy} from './test_search_api_proxy.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
@@ -24,6 +25,7 @@ suite('TabSearchAppFocusTest', () => {
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.setInstance(testProxy);
+    SearchApiProxyImpl.setInstance(new TestSearchApiProxy());
 
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
