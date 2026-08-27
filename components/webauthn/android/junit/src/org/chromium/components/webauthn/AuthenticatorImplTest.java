@@ -64,7 +64,6 @@ public class AuthenticatorImplTest {
     @Mock private WebauthnBrowserBridge.Natives mWebauthnBrowserBridgeNativesMock;
     @Mock private UkmRecorder.Natives mUkmRecorderNativesMock;
 
-    @Captor private ArgumentCaptor<IsUvpaaResponseCallback> mIsUvpaaCallbackCaptor;
     @Captor private ArgumentCaptor<WebAuthnClientCapability[]> mCapabilitiesCaptor;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
