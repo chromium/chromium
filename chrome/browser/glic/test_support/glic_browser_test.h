@@ -312,8 +312,10 @@ class GlicBrowserTestMixin : public T {
     // paint-as-active lock. This prevents the default window from being
     // permanently locked active, allowing mock deactivation to work correctly
     // during the test.
-    activation_controller_ =
-        std::make_unique<views::test::MockActivationController>();
+    if (!ui_controls::IsUIControlsEnabled()) {
+      activation_controller_ =
+          std::make_unique<views::test::MockActivationController>();
+    }
 #endif
     T::SetUp();
   }

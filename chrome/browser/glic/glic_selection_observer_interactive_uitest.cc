@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_selection_observer.h"
-
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_interactive_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -18,15 +16,15 @@
 namespace glic {
 namespace {
 
-// TODO(crbug.com/537847327): Migrate this test suite to GlicBrowserTest.
+// TODO(b/537847327): This test should be migrated to use GlicApiBrowserTest,
+// and not the test client.
 class GlicSelectionObserverInteractiveUiTest
-    : public test::InteractiveGlicTest {
+    : public GlicBrowserInteractiveTest {
  public:
   GlicSelectionObserverInteractiveUiTest() {
+    glic_test_environment().SetGlicPagePath("/glic/test_client/index.html");
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlic, {}},
-         {features::kGlicSelectionPrompt, {{"updates_only", "true"}}}},
-        {});
+        {{features::kGlicSelectionPrompt, {{"updates_only", "true"}}}}, {});
   }
 
  protected:
@@ -43,7 +41,7 @@ class GlicSelectionObserverInteractiveUiTest
   auto SelectAll() {
     return Do([this] {
       content::WebContents* web_contents =
-          browser()->tab_strip_model()->GetActiveWebContents();
+          GetTabListInterface()->GetActiveTab()->GetContents();
       web_contents->SelectAll();
     });
   }
@@ -61,12 +59,23 @@ IN_PROC_BROWSER_TEST_F(GlicSelectionObserverInteractiveUiTest,
       "body",
   };
 
-  RunTestSequence(InstrumentTab(kActiveTab, std::nullopt, browser(), true),
-                  NavigateWebContents(kActiveTab, url), OpenGlic(),
-                  WaitForWebContentsPainted(kActiveTab),
+  RunTestSequence(InstrumentTab(kActiveTab),
+                  NavigateWebContents(kActiveTab, url));
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  RunTestSequence(WaitForWebContentsPainted(kActiveTab),
                   MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(),
-                  ClickMouse(), SelectAll(),
-                  WaitForJsResult(kGlicContentsElementId, kCheckContextJs));
+                  ClickMouse(), SelectAll());
+
+  EXPECT_TRUE(RunUntil(
+      [&]() {
+        auto* guest_frame = instance->host().GetGuestMainFrame();
+        return guest_frame &&
+               content::EvalJs(guest_frame, base::StrCat({"(", kCheckContextJs,
+                                                          ")()"})) == true;
+      },
+      "Timeout waiting for selection context in Glic"));
 }
 
 }  // namespace
