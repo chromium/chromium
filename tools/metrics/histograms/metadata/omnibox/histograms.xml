@@ -992,31 +992,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
-    expires_after="2027-01-31">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    For each answer received in suggest responses, the number that are
-    well-formed and contain all the required elements.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.AnswerParseType" enum="SuggestionAnswerType"
-    expires_after="2027-02-07">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The number of times each omnibox suggestion answer type (e.g., weather,
-    sports score) was received and parsed successfully. Can be normalized with
-    the count of emits to Omnibox.SuggestRequest.Success.GoogleResponseTime,
-    which counts all successful suggest responses from Google, not just those
-    with answers attached. Note that GoogleResponseTime is technically off given
-    that it will still count cases where we fail to extract, deserialize, or
-    parse the response. But these cases are rare to non-existent.
-  </summary>
-</histogram>
-
 <histogram
     name="Omnibox.AsyncAutocompletionTime2.Provider.{Provider}{Completed}"
     units="ms" expires_after="2027-02-07">
@@ -4481,19 +4456,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
   <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
-</histogram>
-
-<histogram name="Omnibox.SuggestionUsed.AnswerInSuggest"
-    enum="SuggestionAnswerOptionalType" expires_after="2027-01-17">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Counts how often omnibox suggestions are used, and in the case an Answer
-    suggestion was selected - records the type of an answer. This histogram is
-    useful because there is no distinct suggestion type recorded for answers so
-    their use is not recorded by Omnibox.SuggestionUsed.ProviderAndResultType.
-  </summary>
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ClientSummarizedResultType"

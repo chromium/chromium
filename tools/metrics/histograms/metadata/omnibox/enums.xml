@@ -669,42 +669,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="SuggestionAnswerOptionalType">
-  <summary>
-    Type of Answer in omnibox suggestion list or No Answer, if not an answer.
-  </summary>
-  <int value="0" label="No Answer"/>
-  <int value="1" label="Dictionary"/>
-  <int value="2" label="Finance"/>
-  <int value="3" label="Knowledge graph"/>
-  <int value="4" label="Local"/>
-  <int value="5" label="Sports"/>
-  <int value="6" label="Sunrise"/>
-  <int value="7" label="Translation"/>
-  <int value="8" label="Weather"/>
-  <int value="9" label="When is"/>
-  <int value="10" label="Currency"/>
-  <int value="11" label="Local time"/>
-  <int value="12" label="Play install"/>
-</enum>
-
-<enum name="SuggestionAnswerType">
-  <summary>Type of Answer shown in omnibox suggestion list.</summary>
-  <int value="0" label="Invalid (unknown type)"/>
-  <int value="1" label="Dictionary"/>
-  <int value="2" label="Finance"/>
-  <int value="3" label="Knowledge graph"/>
-  <int value="4" label="Local"/>
-  <int value="5" label="Sports"/>
-  <int value="6" label="Sunrise"/>
-  <int value="7" label="Translation"/>
-  <int value="8" label="Weather"/>
-  <int value="9" label="When is"/>
-  <int value="10" label="Currency"/>
-  <int value="11" label="Local time"/>
-  <int value="12" label="Play install"/>
-</enum>
-
 <enum name="SuggestionPedalType">
   <summary>
     Type of pedal shown or selected in the omnibox suggestion list.
