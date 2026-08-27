@@ -43,7 +43,7 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   // This view draws the shadow over the web contents below the
   // lowest infobar. A separate view with a layer is used so it can
   // draw outside the bounds of |this|.
-  raw_ptr<views::View> content_shadow_;
+  raw_ptr<views::View> content_shadow_ = nullptr;
 
   // True when the focused view was inside this container at the moment an
   // infobar removal started. Used to restore focus back to the infobar region

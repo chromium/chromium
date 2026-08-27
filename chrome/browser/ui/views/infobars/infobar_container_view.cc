@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <numeric>
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -76,11 +77,10 @@ END_METADATA
 constexpr int kSeparatorHeightDip = 1;
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
-    : infobars::InfoBarContainerWithPriority(delegate),
-      content_shadow_(new ContentShadow()) {
+    : infobars::InfoBarContainerWithPriority(delegate) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
   SetProperty(views::kElementIdentifierKey, kInfoBarContainerElementId);
-  AddChildViewRaw(content_shadow_.get());
+  content_shadow_ = AddChildView(std::make_unique<ContentShadow>());
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
                                         kColorToolbar);
   SetBackground(
