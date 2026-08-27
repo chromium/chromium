@@ -97,14 +97,20 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
       AddKeyframe(offset, timing_function, interpolation_value);
     }
   }
+  if (!style_dependent_keyframe_indices_.empty()) {
+    UpdateStyleDependencies(*element);
+  }
+
   return true;
 }
 
 scoped_refptr<CompositorAnimationCurve>
 CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
+#if !EXPENSIVE_DCHECKS_ARE_ON()
   if (!HasStyleDependency()) {
     return base::WrapRefCounted(this);
   }
+#endif
 
   KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
   const KeyframeEffectModelBase* model = effect->Model();
@@ -121,6 +127,7 @@ CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
   }
 
   if (maybe_copy) {
+    maybe_copy->UpdateStyleDependencies(*element);
     return maybe_copy;
   }
 

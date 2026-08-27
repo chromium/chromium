@@ -60,6 +60,9 @@ class CORE_EXPORT NativePaintWorkletData
 
   bool SetStatus(CompositedPaintStatus status);
 
+  void MaybeSetNeedsKeyframeSnapshot(const Element& element,
+                                     const ComputedStyle& new_style,
+                                     bool forced_update);
   void SetNeedsKeyframeSnapshot();
 
   void SetAnimation(Animation* animation);
@@ -70,6 +73,10 @@ class CORE_EXPORT NativePaintWorkletData
 
   void SetAnimationCurve(scoped_refptr<CompositorAnimationCurve> curve) {
     animation_curve_ = std::move(curve);
+  }
+
+  bool NeedsKeyframeSnapshotUpdate() {
+    return needs_keyframes_snapshot_update_;
   }
 
   void Trace(Visitor*) const;

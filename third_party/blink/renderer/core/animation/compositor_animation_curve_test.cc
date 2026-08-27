@@ -134,28 +134,6 @@ TEST_F(CompositorAnimationCurveTest, VariableSubstitedColors) {
   EXPECT_EQ(color_curve->GetTypedKeyframe(1).value, Color::kWhite);
 }
 
-TEST_F(CompositorAnimationCurveTest, UnsupportedColorValue) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes text-reveal {
-        from { background-color: currentcolor; }
-        to { background-color: transparent; }
-      }
-      #target {
-        height: 100px;
-        width: 100x;
-        animation: text-reveal 1s linear;
-      }
-    }
-    </style>
-    <div id='target'></div>
-  )HTML");
-
-  scoped_refptr<CompositorAnimationColorCurve> curve =
-      ExtractColorCurve(CSSPropertyID::kBackgroundColor);
-  EXPECT_TRUE(!curve);
-}
-
 TEST_F(CompositorAnimationCurveTest, ColorCurveWithNeutralKeyframe) {
   SetBodyInnerHTML(R"HTML(
     <style>

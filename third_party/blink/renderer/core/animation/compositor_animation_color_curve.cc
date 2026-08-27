@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 
 namespace blink {
 
@@ -16,32 +18,6 @@ bool CompositorAnimationColorCurve::ValidateColorValue(
     const CSSValue* css_value,
     const TypedInterpolationValue* interpolation_value) {
   if (css_value) {
-    if (css_value->IsIdentifierValue()) {
-      CSSValueID value_id = To<CSSIdentifierValue>(css_value)->GetValueID();
-      if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-        // The color depends on the color-scheme. Though we can resolve the
-        // color values, we presently lack a method to update the colors should
-        // the color-scheme change during the course of the animation.
-        // TODO(crbug.com/40795239): handle system color.
-        return false;
-      }
-      if (value_id == CSSValueID::kCurrentcolor) {
-        // Do not composite a background color animation that depends on
-        // currentcolor until we have a mechanism to update the compositor
-        // keyframes when currentcolor changes.
-        return false;
-      }
-    } else if (css_value->IsColorMixValue()) {
-      const cssvalue::CSSColorMixValue* color_mix =
-          To<cssvalue::CSSColorMixValue>(css_value);
-      if (!ValidateColorValue(element, &color_mix->Color1(), nullptr) ||
-          !ValidateColorValue(element, &color_mix->Color2(), nullptr)) {
-        // Unresolved color mix or a color mix with a system color dependency.
-        // Either way, fall back to main.
-        return false;
-      }
-    }
-
     const CSSPropertyName property_name =
         CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value =
@@ -75,13 +51,7 @@ CompositorAnimationColorCurve::Create(Animation* animation,
   if (!curve->PopulateKeyframes(animation, ValidateColorValue)) {
     return nullptr;
   }
-  const auto& keyframes = curve->GetKeyframes();
-  for (const TypedKeyframe& item : keyframes) {
-    if (!item.value.IsOpaque()) {
-      curve->is_opaque_ = false;
-      break;
-    }
-  }
+  curve->UpdateIsOpaque();
   return curve;
 }
 
@@ -133,6 +103,43 @@ Color CompositorAnimationColorCurve::InterpolateKeyframes(wtf_size_t index,
 
   return Color::InterpolateColors(first.GetColorSpace(), std::nullopt, first,
                                   second, progress);
+}
+
+void CompositorAnimationColorCurve::UpdateStyleDependencies(
+    const Element& element) {
+  const ComputedStyle* style = element.GetComputedStyle();
+  color_scheme_ = style->UsedColorScheme();
+  current_color_ = style->VisitedDependentColor(GetCSSPropertyColor());
+  UpdateIsOpaque();
+}
+
+void CompositorAnimationColorCurve::UpdateIsOpaque() {
+  is_opaque_ = true;
+  const auto& keyframes = GetKeyframes();
+  for (const TypedKeyframe& item : keyframes) {
+    if (!item.value.IsOpaque()) {
+      is_opaque_ = false;
+      break;
+    }
+  }
+}
+
+bool CompositorAnimationColorCurve::NeedsKeyframeSnapshotUpdate(
+    const Document& document,
+    const ComputedStyle& style) const {
+  if (!HasStyleDependency()) {
+    return false;
+  }
+
+  if (style.UsedColorScheme() != color_scheme_) {
+    return true;
+  }
+
+  if (style.VisitedDependentColor(GetCSSPropertyColor()) != current_color_) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace blink

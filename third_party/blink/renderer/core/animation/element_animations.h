@@ -102,7 +102,9 @@ class CORE_EXPORT ElementAnimations final
 
   void RecalcCompositedStatusForKeyframeChange(
       Element& element,
-      Animation::NativePaintWorkletReasons properties);
+      const ComputedStyle& new_style,
+      Animation::NativePaintWorkletReasons properties,
+      bool force_update);
   void RecalcCompositedStatus(Element* element,
                               Animation::CompositorPendingReason reason);
 

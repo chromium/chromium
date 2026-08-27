@@ -43,6 +43,13 @@ class CORE_EXPORT CompositorAnimationCurve
     return !style_dependent_keyframe_indices_.empty();
   }
 
+  virtual bool NeedsKeyframeSnapshotUpdate(const Document& document,
+                                           const ComputedStyle& style) const {
+    return false;
+  }
+
+  virtual void UpdateStyleDependencies(const Element& element) {}
+
   // Updates style dependent keyframe values. A new curve is created if any
   // of the keyframe values were altered.
   scoped_refptr<CompositorAnimationCurve> UpdateKeyframeSnapshot(
@@ -153,6 +160,14 @@ class TypedCompositorAnimationCurve : public CompositorAnimationCurve {
                       const CSSValue* value) override {
     T updated_value = ConvertCssValue(value);
     if (keyframes_[index].value != updated_value) {
+#if DCHECK_IS_ON()
+      if (VLOG_IS_ON(1)) {
+        VLOG(1) << __PRETTY_FUNCTION__ << ":"
+                << "\n  base value = " << value->CssText()
+                << "\n  resolved value = " << updated_value
+                << "\n  prior resolution = " << keyframes_[index].value;
+      }
+#endif
       if (!clone) {
         clone = Clone();
       }

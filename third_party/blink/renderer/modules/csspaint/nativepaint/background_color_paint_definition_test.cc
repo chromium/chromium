@@ -19,12 +19,14 @@
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -113,6 +115,11 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
     }
     return base::WrapRefCounted(
         static_cast<CompositorAnimationColorCurve*>(curve.get()));
+  }
+
+  Color CurrentColor(Element* element) {
+    const ComputedStyle* style = element->GetComputedStyle();
+    return style->VisitedDependentColor(GetCSSPropertyColor());
   }
 
  private:
@@ -447,8 +454,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainForcedDarkMode) {
                    ->key->HasActiveAnimationsOnCompositor());
 }
 
-// Lack mechanism to re-snapshot keyframes on a change to current color.
-TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCurrentColor) {
+TEST_F(BackgroundColorPaintDefinitionTest, UpdateCurrentColor) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes text-reveal {
@@ -456,31 +462,48 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCurrentColor) {
         to { background-color: transparent; }
       }
       #target {
+        height: 100px;
+        width: 100px;
+        color: yellow;
         animation: text-reveal 1s forwards;
       }
+      #target.update {
+        color: blue;
+      }
     </style>
-    <div id ="target" style="width: 100px; height: 100px">
+    <div id ="target">
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
   Element* element = GetElementById("target");
-  EXPECT_TRUE(element->GetElementAnimations());
-  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
-  EXPECT_FALSE(element->GetElementAnimations()
-                   ->Animations()
-                   .begin()
-                   ->key->HasActiveAnimationsOnCompositor());
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetAnimation(element);
+  ASSERT_TRUE(animation);
+  EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      ColorCurve(animation);
+  ASSERT_TRUE(color_curve);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color(255, 255, 0));
+  EXPECT_TRUE(color_curve->HasStyleDependency());
+  element->classList().add({"update"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  color_curve = ColorCurve(GetAnimation(element));
+  ASSERT_TRUE(color_curve);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, Color(0, 0, 255));
 }
 
-// System colors depend on theme. Presently lack mechanism to re-snapshot the
-// keyframes on a change to the color scheme.
-TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainSystemColor) {
+TEST_F(BackgroundColorPaintDefinitionTest, UpdateColorScheme) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
   SetBodyInnerHTML(R"HTML(
     <style>
+      :root {
+        color-scheme: light dark;
+      }
       @keyframes fade-background {
-        from { background-color: ButtonFace; }
+        from { background-color: Canvas; }
         to { background-color: transparent; }
       }
       #target {
@@ -490,16 +513,27 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainSystemColor) {
     <div id ="target" style="width: 100px; height: 100px">
     </div>
   )HTML");
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
   Element* element = GetElementById("target");
-  EXPECT_TRUE(element->GetElementAnimations());
-  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  Animation* animation = GetAnimation(element);
+  ASSERT_TRUE(animation);
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
-  EXPECT_FALSE(element->GetElementAnimations()
-                   ->Animations()
-                   .begin()
-                   ->key->HasActiveAnimationsOnCompositor());
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      ColorCurve(animation);
+  ASSERT_TRUE(color_curve);
+  // See StyleEngine::UpdateColorSchemeBackground
+  ASSERT_EQ(color_curve->GetTypedKeyframe(0).value, Color(18, 18, 18));
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+  UpdateAllLifecyclePhasesForTest();
+  color_curve = ColorCurve(GetAnimation(element));
+  ASSERT_EQ(color_curve->GetTypedKeyframe(0).value, Color(255, 255, 255));
 }
 
 // Composite even with a complex color expression provided it evaluates to
@@ -513,6 +547,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, CompositeColorMix) {
       }
       #target {
         animation: colorize 1s forwards;
+        color: color-mix(in lch, plum, pink);
       }
     </style>
     <div id ="target" style="width: 100px; height: 100px">
@@ -524,22 +559,29 @@ TEST_F(BackgroundColorPaintDefinitionTest, CompositeColorMix) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kComposited);
-  EXPECT_TRUE(element->GetElementAnimations()
-                  ->Animations()
-                  .begin()
-                  ->key->HasActiveAnimationsOnCompositor());
+  Animation* animation = GetAnimation(element);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      ColorCurve(animation);
+  EXPECT_FALSE(color_curve->HasStyleDependency());
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value, CurrentColor(element));
 }
 
-TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainOnUnresolvedColorMix) {
+TEST_F(BackgroundColorPaintDefinitionTest, UnresolvedColorMix) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes colorize {
-        from { background-color: color-mix(in lch, currentcolor, pink); }
+        from { background-color: color-mix(in srgb, currentcolor, red); }
         to { background-color: transparent; }
       }
       #target {
         animation: colorize 1s forwards;
+        color: black;
       }
+      #target.update {
+        color: white;
+      }
+    }
     </style>
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -549,11 +591,19 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainOnUnresolvedColorMix) {
   EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
-  EXPECT_FALSE(element->GetElementAnimations()
-                   ->Animations()
-                   .begin()
-                   ->key->HasActiveAnimationsOnCompositor());
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  Animation* animation = GetAnimation(element);
+  ASSERT_TRUE(animation);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  scoped_refptr<CompositorAnimationColorCurve> color_curve =
+      ColorCurve(animation);
+  ASSERT_TRUE(color_curve);
+  EXPECT_TRUE(color_curve->HasStyleDependency());
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value.Rgb(), 0xFF800000);
+  element->classList().add({"update"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  color_curve = ColorCurve(animation);
+  EXPECT_EQ(color_curve->GetTypedKeyframe(0).value.Rgb(), 0xFFFF8080);
 }
 
 // Test that paint is invalidated in the case that a second background color

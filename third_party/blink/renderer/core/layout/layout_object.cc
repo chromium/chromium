@@ -238,6 +238,20 @@ bool HasNativeBackgroundPainter(Node* node) {
          ElementAnimations::CompositedPaintStatus::kComposited;
 }
 
+bool NeedsForcedUpdateForBackgroundPainter(Node* node) {
+  Element* element = To<Element>(node);
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  CHECK(element_animations);
+  NativePaintWorkletData* npw_data =
+      element_animations->GetBackgroundColorNpwData();
+  CHECK(npw_data);
+  if (npw_data->NeedsKeyframeSnapshotUpdate()) {
+    return true;
+  }
+
+  return false;
+}
+
 bool HasClipPathPaintWorklet(Node* node) {
   if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled())
     return false;
@@ -262,7 +276,9 @@ StyleDifference AdjustForCompositableAnimationPaint(
   DCHECK(new_style);
 
   bool skip_background_color_paint_invalidation =
-      !diff.background_color_changed || HasNativeBackgroundPainter(node);
+      HasNativeBackgroundPainter(node)
+          ? !NeedsForcedUpdateForBackgroundPainter(node)
+          : !diff.background_color_changed;
   if (!skip_background_color_paint_invalidation)
     diff.SetNeedsNormalPaintInvalidation();
 

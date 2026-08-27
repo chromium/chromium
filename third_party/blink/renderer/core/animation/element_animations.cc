@@ -94,26 +94,34 @@ bool ElementAnimations::HasCompositedPaintWorkletAnimation() {
 
 void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
     Element& element,
-    Animation::NativePaintWorkletReasons properties) {
+    const ComputedStyle& new_style,
+    Animation::NativePaintWorkletReasons properties,
+    bool force_update) {
   // Usually kInStyleRecalc or kInLayout, but sometimes SMIL can cause updates
   // post-style/layout. See crbug.com/523313381.
   if ((element.GetDocument().Lifecycle().GetState() <
        DocumentLifecycle::kInStyleRecalc) ||
-      (element.GetDocument().Lifecycle().GetState() >
-       DocumentLifecycle::kLayoutClean)) {
+      (element.GetDocument().Lifecycle().GetState() >=
+       DocumentLifecycle::kInPrePaint)) {
+    LOG(ERROR) << "Lifecycle phase: "
+               << static_cast<int>(
+                      element.GetDocument().Lifecycle().GetState());
     DCHECK(false) << "RecalcCompositedStatusForKeyframeChange must not be "
                   << "called outside of style/layout.";
     base::debug::DumpWithoutCrashing();
   }
+
   if (!element.GetLayoutObject()) {
     return;
   }
 
   if (background_color_npw_data_) {
-    background_color_npw_data_->SetNeedsKeyframeSnapshot();
+    background_color_npw_data_->MaybeSetNeedsKeyframeSnapshot(
+        element, new_style, force_update);
   }
   if (clip_path_npw_data_) {
-    clip_path_npw_data_->SetNeedsKeyframeSnapshot();
+    clip_path_npw_data_->MaybeSetNeedsKeyframeSnapshot(element, new_style,
+                                                       force_update);
   }
 }
 

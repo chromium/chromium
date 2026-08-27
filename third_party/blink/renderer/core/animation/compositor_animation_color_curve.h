@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_COLOR_CURVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_COLOR_CURVE_H_
 
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/compositor_animation_curve.h"
 
 namespace blink {
@@ -33,6 +34,11 @@ class CORE_EXPORT CompositorAnimationColorCurve
 
   bool IsOpaque() { return is_opaque_; }
 
+  bool NeedsKeyframeSnapshotUpdate(const Document& document,
+                                   const ComputedStyle& style) const override;
+
+  void UpdateStyleDependencies(const Element& element) override;
+
  protected:
   scoped_refptr<CompositorAnimationCurve> Clone() override;
 
@@ -40,6 +46,8 @@ class CORE_EXPORT CompositorAnimationColorCurve
   Color ConvertTypedInterpolationValue(
       const TypedInterpolationValue* value) override;
   Color InterpolateKeyframes(wtf_size_t index, double progress) override;
+
+  void UpdateIsOpaque();
 
  private:
   explicit CompositorAnimationColorCurve(CSSPropertyName property_name)
@@ -49,6 +57,8 @@ class CORE_EXPORT CompositorAnimationColorCurve
         is_opaque_(other.is_opaque_) {}  // NOLINT(modernize-use-equals-default)
 
   bool is_opaque_ = true;
+  Color current_color_ = Color::kBlack;
+  mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kDark;
 };
 
 }  // namespace blink

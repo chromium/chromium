@@ -1767,23 +1767,19 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
     return false;
   };
 
-  Animation::NativePaintWorkletReasons properties_for_force_update = 0;
-
+  Animation::NativePaintWorkletReasons npw_reasons = 0;
   for (auto& entry : element_animations->Animations()) {
     Animation& animation = *entry.key;
     if (snapshot(animation.effect())) {
       update.UpdateCompositorKeyframes(&animation);
     }
-    if (force_update) {
-      properties_for_force_update |= animation.GetNativePaintWorkletReasons();
-    }
+    npw_reasons |= animation.GetNativePaintWorkletReasons();
   }
 
-  if (properties_for_force_update !=
-      Animation::NativePaintWorkletProperties::kNoPaintWorklet) {
+  if (npw_reasons != Animation::NativePaintWorkletProperties::kNoPaintWorklet) {
     CHECK(NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled());
     element_animations->RecalcCompositedStatusForKeyframeChange(
-        animating_element, properties_for_force_update);
+        animating_element, style, npw_reasons, force_update);
   }
 
   for (auto& entry : element_animations->GetWorkletAnimations()) {
