@@ -740,6 +740,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivitySecurityIndicatorTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTypeTestUtils.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuRenderTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabAutoplayUnmutedTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabDeferredStartupTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabExternalNavigationTest.java",

@@ -456,4 +456,43 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
         ExtensionUi.setBackendForTesting(null);
     }
+
+    @Test
+    public void testShouldShowPageInfoItem() {
+        assertFalse(
+                createPropertiesDelegate(CustomTabsUiType.TRUSTED_WEB_ACTIVITY)
+                        .shouldShowPageInfoItem());
+        assertTrue(createPropertiesDelegate(CustomTabsUiType.DEFAULT).shouldShowPageInfoItem());
+    }
+
+    private CustomTabAppMenuPropertiesDelegate createPropertiesDelegate(
+            @CustomTabsUiType int uiType) {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        return new CustomTabAppMenuPropertiesDelegate(
+                context,
+                mActivityTabProvider,
+                mMultiWindowModeStateDispatcher,
+                mTabModelSelector,
+                mToolbarManager,
+                mDecorView,
+                mBookmarkModelSupplier,
+                mVerifier,
+                uiType,
+                /* menuEntries= */ new ArrayList<>(),
+                /* isOpenedByChrome= */ true,
+                /* showShare= */ true,
+                /* showStar= */ true,
+                /* showDownload= */ true,
+                /* isIncognitoBranded= */ false,
+                /* isOffTheRecord= */ false,
+                /* isStartIconMenu= */ true,
+                mReadAloudControllerSupplier,
+                /* contextualPageActionControllerSupplier= */ SupplierUtils.ofNull(),
+                /* hasClientPackage= */ false,
+                /* pageZoomManager= */ null,
+                /* openInAppMenuItemProvider= */ null,
+                /* webAppHeaderLayoutCoordinatorSupplier= */ () -> null);
+    }
 }
