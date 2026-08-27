@@ -1320,6 +1320,9 @@ void HistoryBackend::InitImpl(
     }
   }
   db_->BeginExclusiveMode();  // Must be after the mem backend read the data.
+  if (!local_device_originator_cache_guid_.empty()) {
+    db_->SetLocalDeviceOriginatorCacheGuid(local_device_originator_cache_guid_);
+  }
 
   // Favicon database.
   favicon_backend_ = favicon::FaviconBackend::Create(favicon_name, this);
@@ -3717,6 +3720,9 @@ void HistoryBackend::SetLocalDeviceOriginatorCacheGuid(
     std::string local_device_originator_cache_guid) {
   local_device_originator_cache_guid_ =
       std::move(local_device_originator_cache_guid);
+  if (db_) {
+    db_->SetLocalDeviceOriginatorCacheGuid(local_device_originator_cache_guid_);
+  }
 }
 
 void HistoryBackend::SetCanAddForeignVisitsToSegments(bool add_foreign_visits) {

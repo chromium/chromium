@@ -1061,6 +1061,76 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange_RestrictToSyncedUrls) {
   EXPECT_EQ(visit2.visit_time, results[0].visit_time);
 }
 
+TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange_ClientIds) {
+  GURL url1("http://www.google.com/url1");
+  URLRow url_row1(url1);
+  URLID url_id1 = AddURL(url_row1);
+  ASSERT_NE(0, url_id1);
+
+  // Visit 1: Local visit (empty originator_cache_guid).
+  VisitRow visit1(url_id1, base::Time::Now(), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  visit1.source = SOURCE_BROWSED;
+  visit1.originator_cache_guid = "";
+  ASSERT_TRUE(AddVisit(&visit1));
+
+  // Visit 2: Foreign visit from client_1.
+  VisitRow visit2(url_id1, base::Time::Now() + base::Seconds(1), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  visit2.source = SOURCE_BROWSED;
+  visit2.originator_cache_guid = "client_1";
+  ASSERT_TRUE(AddVisit(&visit2));
+
+  // Visit 3: Foreign visit from client_2.
+  VisitRow visit3(url_id1, base::Time::Now() + base::Seconds(2), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  visit3.source = SOURCE_BROWSED;
+  visit3.originator_cache_guid = "client_2";
+  ASSERT_TRUE(AddVisit(&visit3));
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  VisitVector results;
+
+  // By default (empty client_ids), all 3 visits should be returned.
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(3U, results.size());
+
+  // Filter for client_1 when local device GUID is not set or different.
+  options.client_ids = {"client_1"};
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(visit2.visit_time, results[0].visit_time);
+
+  // Set the local device cache GUID to "client_1".
+  SetLocalDeviceOriginatorCacheGuid("client_1");
+
+  // Filtering for "client_1" should now match both local visit1 and visit2.
+  options.client_ids = {"client_1"};
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(2U, results.size());
+
+  // Filtering for "client_2" should only match foreign visit3.
+  options.client_ids = {"client_2"};
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(visit3.visit_time, results[0].visit_time);
+
+  // Filtering for both "client_1" and "client_2" should match all 3 visits.
+  options.client_ids = {"client_1", "client_2"};
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(3U, results.size());
+}
+
 TEST_F(VisitDatabaseTest, VisitSource) {
   // Add visits.
   VisitRow visit_info1(111, Time::Now(), 0, ui::PAGE_TRANSITION_LINK, 0, false,
