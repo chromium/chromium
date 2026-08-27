@@ -1318,7 +1318,9 @@ crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout 
 crbug.com/479913865 external/wpt/ai/translator/translator-locale.https.window.html [ Skip Timeout ]
 crbug.com/525227294 external/wpt/ai/translator/translator-translate-post-abort.tentative.https.window.html [ Failure Pass Timeout ]
 crbug.com/525227294 external/wpt/ai/translator/translator-translate-streaming-post-abort.tentative.https.window.html [ Failure Pass ]
-crbug.com/510552929 external/wpt/ai/translator/translator.optional.https.window.html [ Failure Pass Timeout ]
+
+# Precondition failed when models are available.
+crbug.com/510552929 external/wpt/ai/translator/translator-create-user-activation.optional.https.window.html [ Failure Pass ]
 
 # Built-In AI echo backends do not support response constraints or prefixes
 crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/* [ Failure ]
