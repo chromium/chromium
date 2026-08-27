@@ -54,6 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -496,5 +497,70 @@ public class BookmarkToolbarTest {
         assertEquals(
                 mBookmarkToolbar.getContext().getString(R.string.accessibility_toolbar_exit_select),
                 ViewCompat.getAccessibilityPaneTitle(mBookmarkToolbar));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelection_preservesSelectionBack_noneState() {
+        initializeNormal();
+        mBookmarkToolbar.setNavigationButtonState(NavigationButton.NONE);
+        mBookmarkToolbar.setChromeIconVisible(true);
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Enter selection mode.
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE));
+        mBookmarkToolbar.setChromeIconVisible(false);
+
+        assertEquals(
+                NavigationButton.SELECTION_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Update navigation button state while in selection mode (e.g. during drag/folder update).
+        mBookmarkToolbar.setNavigationButtonState(NavigationButton.NONE);
+        assertEquals(
+                NavigationButton.SELECTION_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Exit selection mode.
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(List.of());
+
+        assertEquals(NavigationButton.NONE, mBookmarkToolbar.getNavigationButtonForTests());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelection_preservesSelectionBack_normalViewBackState() {
+        initializeNormal();
+        mBookmarkToolbar.setNavigationButtonState(NavigationButton.NORMAL_VIEW_BACK);
+        assertEquals(
+                NavigationButton.NORMAL_VIEW_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Enter selection mode.
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(List.of(BOOKMARK_ID_ONE));
+        mBookmarkToolbar.setChromeIconVisible(false);
+
+        assertEquals(
+                NavigationButton.SELECTION_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Update navigation button state while in selection mode (e.g. during drag/folder update).
+        mBookmarkToolbar.setNavigationButtonState(NavigationButton.NORMAL_VIEW_BACK);
+        assertEquals(
+                NavigationButton.SELECTION_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
+
+        // Exit selection mode.
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(List.of());
+
+        assertEquals(
+                NavigationButton.NORMAL_VIEW_BACK, mBookmarkToolbar.getNavigationButtonForTests());
+        assertNotNull(mBookmarkToolbar.getNavigationIcon());
     }
 }

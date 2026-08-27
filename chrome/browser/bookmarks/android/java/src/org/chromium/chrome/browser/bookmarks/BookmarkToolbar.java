@@ -121,7 +121,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
                     AppCompatResources.getDrawable(getContext(), R.drawable.chrome_logo_24dp));
             setNavigationContentDescription(null);
             setNavigationOnClickListener(null);
-        } else if (mNavigationButtonState == NavigationButton.NONE) {
+        } else if (!mIsSelectionEnabled && mNavigationButtonState == NavigationButton.NONE) {
             setNavigationIcon(null);
         }
     }
@@ -170,9 +170,11 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
         mNavigationButtonState = navigationButtonState;
-        setNavigationButton(navigationButtonState);
-        if (mChromeIconVisible && navigationButtonState == NavigationButton.NONE) {
-            setChromeIconVisible(true);
+        if (!mIsSelectionEnabled) {
+            setNavigationButton(navigationButtonState);
+            if (mChromeIconVisible && navigationButtonState == NavigationButton.NONE) {
+                setChromeIconVisible(true);
+            }
         }
     }
 
@@ -238,6 +240,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         super.showNormalView();
 
         // SelectableListToolbar will show/hide the entire group.
+        setNavigationButtonState(mNavigationButtonState);
         setEditButtonVisible(mEditButtonVisible);
         setNewFolderButtonVisible(mNewFolderButtonVisible);
         setNewFolderButtonEnabled(mNewFolderButtonEnabled);

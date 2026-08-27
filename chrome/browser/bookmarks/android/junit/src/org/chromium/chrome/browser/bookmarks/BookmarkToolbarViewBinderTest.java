@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -100,5 +101,15 @@ public class BookmarkToolbarViewBinderTest {
 
         mModel.set(BookmarkToolbarProperties.CHROME_ICON_VISIBLE, false);
         verify(mBookmarkToolbar).setChromeIconVisible(false);
+    }
+
+    @Test
+    public void testBindNavigationButtonState() {
+        mModel.set(
+                BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE,
+                NavigationButton.NORMAL_VIEW_BACK);
+        PropertyModelChangeProcessor.create(
+                mModel, mBookmarkToolbar, BookmarkToolbarViewBinder::bind);
+        verify(mBookmarkToolbar).setNavigationButtonState(NavigationButton.NORMAL_VIEW_BACK);
     }
 }
