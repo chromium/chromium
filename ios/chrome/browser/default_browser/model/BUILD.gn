@@ -60,13 +60,15 @@ source_set("unit_tests") {
   sources = [ "utils_unittest.mm" ]
   deps = [
     ":default_browser_interest_signals",
+    ":features",
     ":test_support",
     ":utils",
     "//base/test:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",

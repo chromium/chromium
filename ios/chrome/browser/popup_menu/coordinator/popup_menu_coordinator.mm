@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
@@ -325,6 +326,8 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
   mediator.whatsNewHandler = HandlerForProtocol(dispatcher, WhatsNewCommands);
   mediator.levelUpHandler = HandlerForProtocol(dispatcher, LevelUpCommands);
+  mediator.pictureInPictureHandler =
+      HandlerForProtocol(dispatcher, PictureInPictureCommands);
   mediator.webStateList = browser->GetWebStateList();
   mediator.navigationAgent = WebNavigationBrowserAgent::FromBrowser(browser);
   mediator.baseViewController = self.baseViewController;

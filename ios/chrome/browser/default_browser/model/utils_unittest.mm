@@ -9,8 +9,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -388,5 +390,69 @@ TEST_F(DefaultBrowserUtilsTest,
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion180",
                                        false, 1);
   }
+}
+
+// Tests ShouldShowDefaultBrowserPromoOverflowMenu under various
+// conditions including multi-window and dismissal behavior.
+TEST_F(DefaultBrowserUtilsTest, TestShouldShowDefaultBrowserPromoOverflowMenu) {
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
+
+  EXPECT_FALSE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, nullptr));
+
+  EXPECT_FALSE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  // Enable feature flag with Shortcuts variation.
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserPromoOverflowMenu,
+      {{kDefaultBrowserPromoOverflowMenuTypeParam, "1"}});
+
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             (base::Time::Now() - base::Days(2)).ToNSDate());
+  EXPECT_TRUE(IsChromeLikelyDefaultBrowser());
+  EXPECT_FALSE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  // Clear HTTP URL open time so Chrome is not default.
+  ClearDefaultBrowserPromoData();
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser());
+
+  EXPECT_CALL(mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  EXPECT_CALL(mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  // In multi-window setup, ShouldTriggerHelpUI is NOT queried again and returns
+  // true.
+  EXPECT_TRUE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  // Dismissing first window should not dismiss FET yet.
+  EXPECT_CALL(mock_tracker,
+              Dismissed(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
+      .Times(0);
+  DismissDefaultBrowserPromoOverflowMenuShortcuts(&mock_tracker);
+
+  // Dismissing second window should dismiss FET.
+  EXPECT_CALL(mock_tracker,
+              Dismissed(testing::Ref(
+                  feature_engagement::
+                      kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
+      .Times(1);
+  DismissDefaultBrowserPromoOverflowMenuShortcuts(&mock_tracker);
 }
 }  // namespace

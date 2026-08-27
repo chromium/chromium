@@ -1460,6 +1460,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Obsolete in M152 - Signin"/>
   <int value="25" label="Identity"/>
   <int value="26" label="CustomizeHomePage"/>
+  <int value="27" label="DefaultBrowser"/>
 </enum>
 
 <!-- LINT.ThenChange(

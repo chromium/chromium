@@ -893,6 +893,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE" desc="Text for the title of a Tips notification that takes the user to the Whats New page">
         What's New in Chromium
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SET_CHROME_AS_DEFAULT" desc="The iOS menu item for setting Chromium as the default browser." meaning="[iOS only] [Length: Unlimited]">
+        Set Chromium as Default
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[iOS only] [Length: Unlimited]">
         Share Chromium
       </message>

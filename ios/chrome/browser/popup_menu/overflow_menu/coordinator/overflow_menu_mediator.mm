@@ -45,6 +45,9 @@
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
@@ -103,6 +106,7 @@
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -290,6 +294,12 @@ void GetPresetNTPBackgroundPreview(
   // Bridge to register for IdentityManager changes.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
+
+  // Whether an action (tap) was taken on the default browser promo shortcut.
+  BOOL _defaultBrowserActionTaken;
+
+  // Whether the default browser promo shortcut is shown in this menu.
+  BOOL _defaultBrowserPromoShortcutsShown;
 }
 
 // The current web state.
@@ -351,6 +361,7 @@ void GetPresetNTPBackgroundPreview(
 @property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
 @property(nonatomic, strong) OverflowMenuAction* helpAction;
 @property(nonatomic, strong) OverflowMenuAction* shareChromeAction;
+@property(nonatomic, strong) OverflowMenuAction* defaultBrowserAction;
 
 @property(nonatomic, strong) OverflowMenuAction* editActionsAction;
 @property(nonatomic, strong) OverflowMenuAction* lensOverlayAction;
@@ -383,6 +394,12 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)disconnect {
+  if (!_defaultBrowserActionTaken && _defaultBrowserPromoShortcutsShown) {
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserPromo.OverflowMenu",
+        IOSDefaultBrowserPromoOverflowMenuAction::kNoAction);
+  }
+
   // Remove the model link so the other deallocations don't update the model
   // and thus the UI as the UI is dismissing.
   self.model = nil;
@@ -412,6 +429,11 @@ void GetPresetNTPBackgroundPreview(
         self.engagementTracker->Dismissed(
             feature_engagement::kIPHWhatsNewUpdatedFeature);
       }
+    }
+
+    if (_defaultBrowserPromoShortcutsShown) {
+      DismissDefaultBrowserPromoOverflowMenuShortcuts(self.engagementTracker);
+      _defaultBrowserPromoShortcutsShown = NO;
     }
 
     self.engagementTracker = nullptr;
@@ -906,6 +928,20 @@ void GetPresetNTPBackgroundPreview(
                                  handler:^{
                                    [weakSelf showShareSheetForChromeApp];
                                  }];
+
+  self.defaultBrowserAction =
+      [self createOverflowMenuActionWithNameID:
+                IDS_IOS_OVERFLOW_MENU_SET_CHROME_AS_DEFAULT
+                                    actionType:overflow_menu::ActionType::
+                                                   DefaultBrowser
+                                    symbolName:kChromeProductSymbol
+                                  systemSymbol:NO
+                              monochromeSymbol:NO
+                               accessibilityID:kToolsMenuDefaultBrowserId
+                                  hideItemText:nil
+                                       handler:^{
+                                         [weakSelf openDefaultBrowserSettings];
+                                       }];
 
   if ([self isLensOverlayAvailable]) {
     self.lensOverlayAction = [self openLensOverlayAction];
@@ -1769,6 +1805,8 @@ void GetPresetNTPBackgroundPreview(
       return self.helpAction;
     case overflow_menu::ActionType::ShareChrome:
       return self.shareChromeAction;
+    case overflow_menu::ActionType::DefaultBrowser:
+      return self.defaultBrowserAction;
     case overflow_menu::ActionType::EditActions:
       return self.editActionsAction;
     case overflow_menu::ActionType::LensOverlay:
@@ -1960,6 +1998,14 @@ void GetPresetNTPBackgroundPreview(
 
   [helpActions addObject:self.helpAction];
   [helpActions addObject:self.shareChromeAction];
+
+  if (_defaultBrowserPromoShortcutsShown ||
+      ShouldShowDefaultBrowserPromoOverflowMenu(
+          DefaultBrowserPromoOverflowMenuType::kShortcuts,
+          self.engagementTracker)) {
+    _defaultBrowserPromoShortcutsShown = YES;
+    [helpActions addObject:self.defaultBrowserAction];
+  }
 
   self.helpActionsGroup.actions = helpActions;
 
@@ -2675,6 +2721,7 @@ void GetPresetNTPBackgroundPreview(
     case overflow_menu::ActionType::ReportAnIssue:
     case overflow_menu::ActionType::Help:
     case overflow_menu::ActionType::ShareChrome:
+    case overflow_menu::ActionType::DefaultBrowser:
     case overflow_menu::ActionType::EditActions:
     case overflow_menu::ActionType::ShareThisPage:
     case overflow_menu::ActionType::SigninDeprecated:
@@ -3040,6 +3087,26 @@ void GetPresetNTPBackgroundPreview(
 - (void)showShareSheetForChromeApp {
   [self dismissMenu];
   [self.activityServiceHandler showShareSheetForChromeApp];
+}
+
+// Dismisses the menu and opens default browser settings.
+- (void)openDefaultBrowserSettings {
+  _defaultBrowserActionTaken = YES;
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserPromo.OverflowMenu",
+      IOSDefaultBrowserPromoOverflowMenuAction::kTapped);
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::
+            kDefaultBrowserPromoOverflowMenuShortcutsUsed);
+  }
+  __weak id<PictureInPictureCommands> weakPipHandler =
+      self.pictureInPictureHandler;
+  [self dismissMenuWithCompletion:^{
+    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+                                      /*ui_application_to_use=*/nil,
+                                      weakPipHandler);
+  }];
 }
 
 // Dismisses the menu and opens history.

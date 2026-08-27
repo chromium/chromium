@@ -161,6 +161,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::CustomizeHomePage:
         finalExpectedActionType = overflow_menu::ActionType::CustomizeHomePage;
         break;
+      case overflow_menu::ActionType::DefaultBrowser:
+        finalExpectedActionType = overflow_menu::ActionType::DefaultBrowser;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through
