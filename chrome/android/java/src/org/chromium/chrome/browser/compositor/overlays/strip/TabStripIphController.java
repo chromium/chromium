@@ -270,7 +270,7 @@ public class TabStripIphController {
             case IphType.TAB_TEARING_XR:
                 return R.string.iph_tab_tearing_xr;
             case IphType.GLIC_PROMO:
-                return R.string.iph_glic_promo_text;
+                return R.string.iph_tab_strip_glic_promo_text;
             case IphType.VERTICAL_TABS_PROMO:
                 return DeviceInput.supportsPrecisionPointer()
                         ? R.string.iph_android_vertical_tabs_promo_mouse

@@ -305,7 +305,7 @@ public class TabStripIphControllerUnitTest {
 
         // Assert: feature name and iph string.
         assertEquals(FeatureConstants.GLIC_PROMO_ANDROID_FEATURE, cmd.featureName);
-        assertEquals(R.string.iph_glic_promo_text, cmd.stringId);
+        assertEquals(R.string.iph_tab_strip_glic_promo_text, cmd.stringId);
 
         // Assert: anchor rect bounds.
         assertEquals(10, cmd.anchorRect.left);

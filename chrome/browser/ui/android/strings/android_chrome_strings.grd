@@ -6203,7 +6203,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_ANDROID_VERTICAL_TABS_PROMO_MOUSE" desc="The in-product-help promotion message to try Vertical Tabs, displayed to users with a mouse.">
         Right click here to show tabs vertically
       </message>
-      <message name="IDS_IPH_GLIC_PROMO_TEXT" desc="The in-product-help promotion message to try Glic.">
+      <message name="IDS_IPH_TAB_STRIP_GLIC_PROMO_TEXT" desc="The in-product-help promotion message to try Glic, shown on the tab strip button.">
+        Try Gemini in Chrome to get answers, key takeaways and more
+      </message>
+      <message name="IDS_IPH_GLIC_PROMO_TEXT" desc="The in-product-help promotion message to try Glic, shown on the toolbar button.">
         Get the best of Gemini from your Chrome toolbar. Long-press to customize.
       </message>
       <message name="IDS_IPH_GLIC_PROMO_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to try Glic.">
