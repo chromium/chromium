@@ -261,10 +261,14 @@ void RegisterInfoBars() {
 }
 
 void RegisterPreProfileInitInfoBars() {
+  auto* browser_infobar_manager =
+      BrowserInfoBarManager::From(g_browser_process);
+  if (!browser_infobar_manager) {
+    return;
+  }
+
 #if BUILDFLAG(CHROME_FOR_TESTING)
   if (IsInfoBarMigrated(InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE)) {
-    auto* browser_infobar_manager =
-        BrowserInfoBarManager::From(g_browser_process);
     CHECK(browser_infobar_manager);
     auto spec =
         InfoBarSpec::Builder(
@@ -282,6 +286,19 @@ void RegisterPreProfileInitInfoBars() {
     browser_infobar_manager->Register(std::move(spec));
   }
 #endif
+
+  if (IsInfoBarMigrated(InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE)
+            .SetMessageText(
+                l10n_util::GetStringUTF16(IDS_CONTROLLED_BY_AUTOMATION))
+            .SetScope(InfoBarScope::kGlobal)
+            .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
+            .SetExpireOnNavigation(false)
+            .SetShouldAnimate(false)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 }
 
 }  // namespace infobars

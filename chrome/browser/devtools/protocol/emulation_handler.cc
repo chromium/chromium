@@ -12,8 +12,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/display/display.h"
 #include "ui/display/display_util.h"
 #include "ui/display/headless/headless_screen_manager.h"
@@ -132,6 +137,40 @@ Response EmulationHandler::Disable() {
 }
 
 Response EmulationHandler::SetAutomationOverride(bool enabled) {
+  bool is_migrated = infobars::IsInfoBarMigrated(
+      infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE);
+  if (is_migrated) {
+    if (!enabled) {
+      if (automation_info_bar_) {
+        automation_info_bar_->RemoveSelf();
+      }
+      return Response::FallThrough();
+    }
+    if (automation_info_bar_) {
+      return Response::FallThrough();
+    }
+    content::WebContents* web_contents = agent_host_->GetWebContents();
+    if (!web_contents) {
+      return Response::FallThrough();
+    }
+    tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+        web_contents->GetOutermostWebContents());
+    if (!tab) {
+      return Response::FallThrough();
+    }
+    if (auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process)) {
+      infobars::InfoBarShowParams params;
+      params.scope = infobars::InfoBarScope::kTab;
+      if (auto* infobar = browser_infobar_manager->Show(
+              tab, infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE,
+              std::move(params))) {
+        automation_info_bar_ = infobar->AsWeakPtr();
+      }
+    }
+    return Response::FallThrough();
+  }
+
   if (!enabled) {
     if (automation_info_bar_) {
       automation_info_bar_->RemoveSelf();
@@ -150,12 +189,8 @@ Response EmulationHandler::SetAutomationOverride(bool enabled) {
     return Response::FallThrough();
   }
 
-  // Note since the observer removes itself when the info bar is removed, the
-  // observer is added at most once because of the info bar nullity check
-  // above.
-  automation_info_bar_ = AutomationInfoBarDelegate::Create(info_bar_manager);
-  if (automation_info_bar_) {
-    info_bar_manager->AddObserver(this);
+  if (auto* infobar = AutomationInfoBarDelegate::Create(info_bar_manager)) {
+    automation_info_bar_ = infobar->AsWeakPtr();
   }
   return Response::FallThrough();
 }
@@ -372,12 +407,4 @@ infobars::ContentInfoBarManager* EmulationHandler::GetContentInfoBarManager() {
   }
   return infobars::ContentInfoBarManager::FromWebContents(
       web_contents->GetOutermostWebContents());
-}
-
-void EmulationHandler::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                        bool animate) {
-  if (automation_info_bar_ == infobar) {
-    infobar->owner()->RemoveObserver(this);
-    automation_info_bar_ = nullptr;
-  }
 }
