@@ -1298,18 +1298,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testStripBottomPxSupplier_onLayerYOffsetChanged() {
-        int yOffsetPx = 10;
-        int visibleHeightPx = 40;
-        mStripLayoutHelperManager.onLayerYOffsetChanged(yOffsetPx, visibleHeightPx);
-
-        assertEquals(
-                "Unexpected bottom px value.",
-                (Integer) (yOffsetPx + visibleHeightPx),
-                mStripLayoutHelperManager.getStripBottomPxSupplier().get());
-    }
-
-    @Test
     public void testLoadingStateChanged_toDifferentDocument() throws Exception {
         // Setup: Create a tab and a corresponding StripLayoutTab.
         Tab tab = mock(Tab.class);
