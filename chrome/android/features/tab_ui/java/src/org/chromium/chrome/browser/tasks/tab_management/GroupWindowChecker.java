@@ -8,7 +8,6 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -113,7 +112,7 @@ public class GroupWindowChecker {
             return false;
         }
         if (state == GroupWindowState.IN_ANOTHER) {
-            return ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+            return TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled();
         }
         return true;
     }
@@ -136,7 +135,7 @@ public class GroupWindowChecker {
             }
         }
         if (!foundGroup) {
-            if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+            if (TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
                     && isWindowForGroupNotActive(groupId)) {
                 return GroupWindowState.HIDDEN;
             }

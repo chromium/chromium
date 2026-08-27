@@ -15,7 +15,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -90,7 +89,7 @@ public class TabGroupMenuActionHandler {
      */
     public void handleAddToGroupAction(Tab tab) {
         Collection<TabModelSelector> selectors =
-                ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+                TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
                         ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
                         : null;
         if (!TabGroupUtils.hasTabGroups(mTabModel, selectors)) {
