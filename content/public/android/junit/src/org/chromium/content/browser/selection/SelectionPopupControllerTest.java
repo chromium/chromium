@@ -112,7 +112,7 @@ import java.util.List;
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+@Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
 public class SelectionPopupControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MenuModelBridge mMenuModelBridge;
@@ -864,7 +864,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsCachedForSameSelectionStateIfDelegateIsNull() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 
@@ -887,7 +886,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testCacheHitBypassesClassificationRequest() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 
@@ -920,7 +918,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuCacheClearedOnWindowAndroidChanged() {
         showSelectionMenu(
                 mController,
@@ -936,7 +933,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testSelectionHandlesCleared_clearsClassificationResult() {
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
         mTestSelectionClient.setResult(resultForNoChange());
@@ -960,7 +956,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testSelectionChangedToEmpty_clearsClassificationResult() {
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
         mTestSelectionClient.setResult(resultForNoChange());
@@ -984,7 +979,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testSelectionHandlesMovedDuringDrag_clearsClassificationResult() {
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
         mTestSelectionClient.setResult(resultForNoChange());
@@ -1016,7 +1010,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testSelectionHandlesMovedNotDuringDrag_doesNotClearClassificationResult() {
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
         mTestSelectionClient.setResult(resultForNoChange());
@@ -1039,7 +1032,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsProcessedForSameSelectionStateIfCachingNotEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
@@ -1067,7 +1059,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsCachedForSameSelectionStateIfCachingEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
@@ -1096,7 +1087,6 @@ public class SelectionPopupControllerTest {
 
     @Test
     @SuppressWarnings("AssertSameIncompatible")
-    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testNewMenuIsProcessedForDifferentSelectionState() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 
