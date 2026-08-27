@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("web_performance_metrics") {
@@ -30,18 +31,32 @@ source_set("unit_tests") {
   deps = [
     ":web_performance_metrics",
     "//base",
+    "//base/test:test_support",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  sources = [ "web_performance_metrics_java_script_feature_unittest.mm" ]
+  sources = [
+    "web_performance_metrics_java_script_feature_unittest.mm",
+    "web_performance_metrics_java_script_feature_util_unittest.mm",
+    "web_performance_metrics_tab_helper_unittest.mm",
+  ]
+}
+
+compile_ts("interaction_manager_js") {
+  sources = [ "resources/interaction_manager.ts" ]
 }
 
 optimize_ts("web_performance_metrics_js") {
   visibility = [ ":web_performance_metrics" ]
 
   sources = [ "resources/web_performance_metrics.ts" ]
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    ":interaction_manager_js",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }

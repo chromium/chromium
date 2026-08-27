@@ -18,26 +18,9 @@
 #import "ios/web/public/js_messaging/script_message.h"
 
 namespace {
-const char kPerformanceMetricsScript[] = "web_performance_metrics";
-const char kWebPerformanceMetricsScriptName[] = "WebPerformanceMetricsHandler";
-
-// The time range's expected min and max values for FirstContentfulPaint
-// histograms.
-constexpr base::TimeDelta kTimeRangePaintHistogramMin = base::Milliseconds(10);
-constexpr base::TimeDelta kTimeRangePaintHistogramMax = base::Minutes(10);
-
-// Number of buckets for the FirstContentfulPaint histograms.
-constexpr int kTimeRangePaintHistogramBucketCount = 100;
-
-// The time range's expected min and max values for FirstInputDelay
-// histograms.
-constexpr base::TimeDelta kTimeRangeInputDelayHistogramMin =
-    base::Milliseconds(1);
-constexpr base::TimeDelta kTimeRangeInputDelayHistogramMax = base::Seconds(60);
-
-// Number of buckets for the FirstInputDelay histograms.
-constexpr int kTimeRangeInputDelayHistogramBucketCount = 50;
-
+constexpr char kPerformanceMetricsScript[] = "web_performance_metrics";
+constexpr char kWebPerformanceMetricsScriptName[] =
+    "WebPerformanceMetricsHandler";
 }  // namespace
 
 WebPerformanceMetricsJavaScriptFeature::WebPerformanceMetricsJavaScriptFeature()
@@ -71,22 +54,23 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::DictValue& body_dict = message.legacy_body()->GetDict();
+  const base::DictValue& body_dict = message.legacy_body()->GetDict();
 
-  std::string* metric = body_dict.FindString("metric");
+  const std::string* metric =
+      body_dict.FindString(web_performance_metrics::kMetricKey);
   if (!metric || metric->empty()) {
     return;
   }
 
-  std::optional<double> value = body_dict.FindDouble("value");
-  if (!value) {
-    return;
-  }
-
-  if (*metric == "FirstContentfulPaint") {
-    std::optional<double> frame_navigation_start_time =
-        body_dict.FindDouble("frameNavigationStartTime");
-    if (!frame_navigation_start_time) {
+  if (*metric == web_performance_metrics::kFirstContentfulPaintMetric) {
+    std::optional<double> value =
+        body_dict.FindDouble(web_performance_metrics::kValueKey);
+    if (!value.has_value()) {
+      return;
+    }
+    std::optional<double> frame_navigation_start_time = body_dict.FindDouble(
+        web_performance_metrics::kFrameNavigationStartTimeKey);
+    if (!frame_navigation_start_time.has_value()) {
       return;
     }
 
@@ -94,8 +78,14 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     LogAggregateFirstContentfulPaint(web_state,
                                      frame_navigation_start_time.value(),
                                      value.value(), message.is_main_frame());
-  } else if (*metric == "FirstInputDelay") {
-    std::optional<bool> loaded_from_cache = body_dict.FindBool("cached");
+  } else if (*metric == web_performance_metrics::kFirstInputDelayMetric) {
+    std::optional<double> value =
+        body_dict.FindDouble(web_performance_metrics::kValueKey);
+    if (!value.has_value()) {
+      return;
+    }
+    std::optional<bool> loaded_from_cache =
+        body_dict.FindBool(web_performance_metrics::kCachedKey);
     if (!loaded_from_cache.has_value()) {
       return;
     }
@@ -104,6 +94,51 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
                                loaded_from_cache.value());
     LogAggregateFirstInputDelay(web_state, value.value(),
                                 loaded_from_cache.value());
+  } else if (*metric ==
+             web_performance_metrics::kInteractionToNextPaintMetric) {
+    LogInteractionToNextPaint(web_state, body_dict, message.is_main_frame());
+  }
+}
+
+void WebPerformanceMetricsJavaScriptFeature::LogInteractionToNextPaint(
+    web::WebState* web_state,
+    const base::DictValue& body_dict,
+    bool is_main_frame) {
+  // Extract durations data for the frame.
+  const auto* durations_list =
+      body_dict.FindList(web_performance_metrics::kDurationsKey);
+  if (!durations_list) {
+    return;
+  }
+
+  std::vector<base::TimeDelta> durations;
+  durations.reserve(durations_list->size());
+  for (const auto& val : *durations_list) {
+    std::optional<double> duration = val.GetIfDouble();
+    if (duration.has_value()) {
+      durations.push_back(base::Milliseconds(duration.value()));
+    }
+  }
+
+  // Double-check that durations did contain double values.
+  if (durations.empty()) {
+    return;
+  }
+
+  const std::string* frame_id =
+      body_dict.FindString(web_performance_metrics::kFrameIdKey);
+  int interaction_count = std::max(
+      0, body_dict.FindInt(web_performance_metrics::kInteractionCountKey)
+             .value_or(0));
+  if (interaction_count == 0) {
+    interaction_count = static_cast<int>(durations.size());
+  }
+
+  // Store the per-frame INP metrics in the TabHelper.
+  if (WebPerformanceMetricsTabHelper* tab_helper =
+          WebPerformanceMetricsTabHelper::FromWebState(web_state)) {
+    tab_helper->SetFrameInteractionData(frame_id ? *frame_id : "", durations,
+                                        interaction_count, is_main_frame);
   }
 }
 
@@ -113,13 +148,15 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstContentfulPaint(
   if (is_main_frame) {
     UmaHistogramCustomTimes(
         "IOS.Frame.FirstContentfulPaint.MainFrame", base::Milliseconds(value),
-        kTimeRangePaintHistogramMin, kTimeRangePaintHistogramMax,
-        kTimeRangePaintHistogramBucketCount);
+        web_performance_metrics::kTimeRangePaintHistogramMin,
+        web_performance_metrics::kTimeRangePaintHistogramMax,
+        web_performance_metrics::kTimeRangePaintHistogramBucketCount);
   } else {
     UmaHistogramCustomTimes(
         "IOS.Frame.FirstContentfulPaint.SubFrame", base::Milliseconds(value),
-        kTimeRangePaintHistogramMin, kTimeRangePaintHistogramMax,
-        kTimeRangePaintHistogramBucketCount);
+        web_performance_metrics::kTimeRangePaintHistogramMin,
+        web_performance_metrics::kTimeRangePaintHistogramMax,
+        web_performance_metrics::kTimeRangePaintHistogramBucketCount);
   }
 }
 
@@ -153,8 +190,10 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
             aggregate, frame);
     UmaHistogramCustomTimes(
         "PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
-        aggregate_first_contentful_paint, kTimeRangePaintHistogramMin,
-        kTimeRangePaintHistogramMax, kTimeRangePaintHistogramBucketCount);
+        aggregate_first_contentful_paint,
+        web_performance_metrics::kTimeRangePaintHistogramMin,
+        web_performance_metrics::kTimeRangePaintHistogramMax,
+        web_performance_metrics::kTimeRangePaintHistogramBucketCount);
 
     if (main_frame_absolute < aggregate) {
       tab_helper->SetAggregateAbsoluteFirstContentfulPaint(main_frame_absolute);
@@ -174,29 +213,37 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
 
   if (is_main_frame) {
     if (!loaded_from_cache) {
-      UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.MainFrame2", delta,
-                              kTimeRangeInputDelayHistogramMin,
-                              kTimeRangeInputDelayHistogramMax,
-                              kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache) {
+      UmaHistogramCustomTimes(
+          "IOS.Frame.FirstInputDelay.MainFrame2", delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
+    } else {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2",
-          delta, kTimeRangeInputDelayHistogramMin,
-          kTimeRangeInputDelayHistogramMax,
-          kTimeRangeInputDelayHistogramBucketCount);
+          delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
     }
   } else {
     if (!loaded_from_cache) {
-      UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.SubFrame2", delta,
-                              kTimeRangeInputDelayHistogramMin,
-                              kTimeRangeInputDelayHistogramMax,
-                              kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache) {
+      UmaHistogramCustomTimes(
+          "IOS.Frame.FirstInputDelay.SubFrame2", delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
+    } else {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2",
-          delta, kTimeRangeInputDelayHistogramMin,
-          kTimeRangeInputDelayHistogramMax,
-          kTimeRangeInputDelayHistogramBucketCount);
+          delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
     }
   }
 }
@@ -226,11 +273,14 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
                               100);
       // This is a version of the above metric that uses the same bucketing as
       // non-iOS platforms.
-      UmaHistogramCustomTimes("PageLoad.InteractiveTiming.FirstInputDelay."
-                              "AfterBackForwardCacheRestore_iOSFixed",
-                              delta, kTimeRangeInputDelayHistogramMin,
-                              kTimeRangeInputDelayHistogramMax,
-                              kTimeRangeInputDelayHistogramBucketCount);
+      UmaHistogramCustomTimes(
+          "PageLoad.InteractiveTiming.FirstInputDelay."
+          "AfterBackForwardCacheRestore_iOSFixed",
+          delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
     } else {
       // This is an input metric for WebVitals.FirstInputDelay{2, 3} so should
       // not be deleted while those metrics still exist.
@@ -239,11 +289,14 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
                               100);
       // This is a version of the above metric that uses the same bucketing as
       // non-iOS platforms.
-      UmaHistogramCustomTimes("PageLoad.InteractiveTiming."
-                              "FirstInputDelay4_iOSFixed",
-                              delta, kTimeRangeInputDelayHistogramMin,
-                              kTimeRangeInputDelayHistogramMax,
-                              kTimeRangeInputDelayHistogramBucketCount);
+      UmaHistogramCustomTimes(
+          "PageLoad.InteractiveTiming."
+          "FirstInputDelay4_iOSFixed",
+          delta,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMin,
+          web_performance_metrics::kTimeRangeInteractionTimingHistogramMax,
+          web_performance_metrics::
+              kTimeRangeInteractionTimingHistogramBucketCount);
     }
     tab_helper->SetFirstInputDelayLoggingStatus(true);
   }

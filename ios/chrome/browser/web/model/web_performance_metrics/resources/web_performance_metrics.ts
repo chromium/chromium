@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {InteractionManager} from '//ios/chrome/browser/web/model/web_performance_metrics/resources/interaction_manager.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const EVENT_TYPES = [
@@ -14,6 +16,10 @@ const FIRST_CONTENTFUL_PAINT = 'first-contentful-paint';
 const WEB_PERFORMANCE_METRICS_HANDLER_NAME = 'WebPerformanceMetricsHandler';
 
 let loadedFromCache = false;
+let inpObserver: PerformanceObserver|null = null;
+
+// Manager to handle the Interaction To Next Paint (INP) metric.
+const interactionManager = new InteractionManager();
 
 // Sends the First Contentful Paint time for each
 // frame in a website to the browser. Due to WebKit's
@@ -23,9 +29,9 @@ let loadedFromCache = false;
 // main frame.
 function processPaintEvents(paintEvents: PerformanceObserverEntryList,
                             observer: PerformanceObserver): void {
+  // The performance.timing.navigationStart property has been deprecated.
+  // TODO(crbug.com/40806748)
   for (const event of paintEvents.getEntriesByName(FIRST_CONTENTFUL_PAINT)){
-    // The performance.timing.navigationStart property has been deprecated.
-    // TODO(crbug.com/40806748)
     const response = {
       'metric': 'FirstContentfulPaint',
       'frameNavigationStartTime': performance.timing.navigationStart,
@@ -36,6 +42,35 @@ function processPaintEvents(paintEvents: PerformanceObserverEntryList,
 
     observer.disconnect();
   }
+}
+
+// Processes Event Timing entries to collect interaction durations for INP.
+function processINPEvents(eventEntries: PerformanceObserverEntryList): void {
+  for (const eventTiming of eventEntries.getEntries() as
+       PerformanceEventTiming[]) {
+    // Ignore entries without an interaction ID, such as scroll and zoom.
+    if (eventTiming.interactionId) {
+      interactionManager.record(
+          eventTiming.interactionId, eventTiming.duration);
+    }
+  }
+}
+
+// Sends INP data for the frame upon page unload/hide.
+// Note that the INP metric will be calculated later when the WebState is
+// destroyed or the page is navigated away from. This only sends to the browser
+// the data needed to calculate the metric.
+function sendINPData(): void {
+  if (interactionManager.totalCount === 0) {
+    return;
+  }
+  const response = {
+    'metric': 'InteractionToNextPaint',
+    'durations': interactionManager.getLongestDurations(),
+    'interactionCount': interactionManager.totalCount,
+    'frameId': gCrWeb.getFrameId(),
+  };
+  sendWebKitMessage(WEB_PERFORMANCE_METRICS_HANDLER_NAME, response);
 }
 
 // Sends the First Input Delay time for
@@ -71,11 +106,12 @@ function processPageShowEvent(pageshow: PageTransitionEvent): void {
   }
 }
 
-// Unregisters the passive event listeners
-// used for collecting the First Input Delay
-// upon the user navigating away from the
-// webpage
+// Unregisters passive event listeners and flushes metrics on pagehide.
 function processPageHideEvent(): void {
+  // Sends the INP data for the frame on pagehide, so we don't
+  // send the data on every interaction.
+  sendINPData();
+
   EVENT_TYPES.forEach((type) => {
     window.removeEventListener(type, processInputEvent, { capture: true });
   });
@@ -89,6 +125,18 @@ function processPageHideEvent(): void {
 function registerPerformanceObserver(): void {
   const observer = new PerformanceObserver(processPaintEvents);
   observer.observe({ entryTypes : ['paint'] });
+}
+
+// Register PerformanceObserver to observe 'event' timing entries for INP.
+function registerINPObserver(): void {
+  try {
+    inpObserver = new PerformanceObserver(processINPEvents);
+    inpObserver.observe(
+        {type: 'event', buffered: true, durationThreshold: 16} as
+        PerformanceObserverInit);
+  } catch (e) {
+    inpObserver = null;
+  }
 }
 
 // Registers a passive event listener for each predefined
@@ -118,5 +166,6 @@ function registerPageCacheListeners(): void {
 }
 
 registerPerformanceObserver();
+registerINPObserver();
 registerInputEventListeners();
 registerPageCacheListeners();

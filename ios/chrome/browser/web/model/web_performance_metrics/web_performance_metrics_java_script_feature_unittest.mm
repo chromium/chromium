@@ -4,104 +4,115 @@
 
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 
-#import <limits>
 #import <memory>
 
-#import "base/time/time.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/values.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 using WebPerformanceMetricsJavaScriptFeatureTest = PlatformTest;
 
-namespace {
-struct TestParams {
-  web_performance_metrics::FirstContentfulPaint frame;
-  bool is_main_frame;
-};
+// Tests that ScriptMessageReceived parses an INP message and updates
+// the metric.
+TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
+       ScriptMessageReceived_InteractionToNextPaint) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState fake_web_state;
+  WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(&fake_web_state);
 
-struct TestCase {
-  TestParams params;
-  base::TimeDelta expected;
-};
+  base::DictValue main_frame_dict;
+  main_frame_dict.Set(web_performance_metrics::kMetricKey,
+                      web_performance_metrics::kInteractionToNextPaintMetric);
+  base::ListValue main_durations;
+  main_durations.Append(85.0);
+  main_frame_dict.Set(web_performance_metrics::kDurationsKey,
+                      std::move(main_durations));
+  main_frame_dict.Set(web_performance_metrics::kInteractionCountKey, 1);
+  main_frame_dict.Set(web_performance_metrics::kFrameIdKey, "main_1");
+  web::ScriptMessage main_frame_message(
+      std::make_unique<base::Value>(std::move(main_frame_dict)),
+      /*is_user_interacting=*/true, /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://chromium.org"),
+      url::Origin::Create(GURL("https://chromium.org")));
 
-// Iterates over the test cases and validates the results against the
-// expected value for Aggregate First Contetnful Paint test caess.
-template <int N>
-void ValidateAggregateFirstContentfulPaintTestCases(
-    const TestCase (&test_cases)[N]) {
-  double absolute_aggregate_first_contentful_paint =
-      std::numeric_limits<double>::max();
+  WebPerformanceMetricsJavaScriptFeature::GetInstance()->ScriptMessageReceived(
+      &fake_web_state, main_frame_message);
 
-  // Stores the first subframe's absolute first contentful paint
-  // and uses it in the calculation of the aggregate first
-  // contentful paint which occurs on the appearance of the
-  // main frame.
-  for (const TestCase& test_case : test_cases) {
-    if (test_case.params.is_main_frame) {
-      base::TimeDelta aggregate_first_contentful_paint =
-          web_performance_metrics::CalculateAggregateFirstContentfulPaint(
-              absolute_aggregate_first_contentful_paint,
-              test_case.params.frame);
-      EXPECT_EQ(aggregate_first_contentful_paint, test_case.expected);
-    } else if (absolute_aggregate_first_contentful_paint ==
-               std::numeric_limits<double>::max()) {
-      absolute_aggregate_first_contentful_paint =
-          test_case.params.frame.absolute_time;
-    }
-  }
+  // Directly flush the tab helper to verify that the message was recorded.
+  tab_helper->FlushInteractionToNextPaintMetrics();
+
+  histogram_tester.ExpectUniqueSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 85,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 85,
+      1);
 }
 
-}  // namespace
+// Tests that LogInteractionToNextPaint parses dictionary payloads and records
+// interaction timing data for both main frame and subframes.
+TEST_F(WebPerformanceMetricsJavaScriptFeatureTest, LogInteractionToNextPaint) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState fake_web_state;
+  WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
 
-// Simulates the event where a subframe loads before the main frame
-// and has a faster first contentful paint.
-TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
-       AggregateFirstContentfulPaintWithSubframeLoadingFirst) {
-  static const TestCase kTestCases[] = {
-      {{{160, 10, 170}, false}, base::TimeDelta::Max()},
-      {{{150, 30, 180}, true}, base::Milliseconds(20)}};
-  ValidateAggregateFirstContentfulPaintTestCases(kTestCases);
-}
+  // 1. Direct call with main frame dictionary.
+  base::DictValue main_dict;
+  base::ListValue main_durations;
+  main_durations.Append(110.0);
+  main_dict.Set(web_performance_metrics::kDurationsKey,
+                std::move(main_durations));
+  main_dict.Set(web_performance_metrics::kInteractionCountKey, 1);
+  main_dict.Set(web_performance_metrics::kFrameIdKey, "main_frame_1");
 
-// Simulates the event where the mainframe loads before the subframe
-// and has a faster first contentful paint.
-TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
-       AggregateFirstContentfulPaintWithMainFrameLoadingFirst) {
-  static const TestCase kTestCases[] = {
-      {{{100, 40, 140}, true}, base::Milliseconds(40)},
-      {{{250, 50, 300}, false}, base::TimeDelta::Max()}};
-  ValidateAggregateFirstContentfulPaintTestCases(kTestCases);
-}
+  WebPerformanceMetricsJavaScriptFeature::GetInstance()
+      ->LogInteractionToNextPaint(&fake_web_state, main_dict,
+                                  /*is_main_frame=*/true);
 
-// Simulates the event where the mainframe loads before the subframe
-// and a slower first contentful paint.
-TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
-       AggregateFirstContentfulPaintWithOnlyMainFrame) {
-  static const TestCase kTestCases[] = {
-      {{{100, 40, 140}, true}, base::Milliseconds(40)}};
-  ValidateAggregateFirstContentfulPaintTestCases(kTestCases);
-}
+  // 2. Direct call with subframe dictionary.
+  base::DictValue sub_dict;
+  base::ListValue sub_durations;
+  sub_durations.Append(75.0);
+  sub_dict.Set(web_performance_metrics::kDurationsKey,
+               std::move(sub_durations));
+  sub_dict.Set(web_performance_metrics::kInteractionCountKey, 1);
+  sub_dict.Set(web_performance_metrics::kFrameIdKey, "sub_frame_1");
 
-// Tests the function responsible for calculating the
-// absolute first contentful paint time.
-TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
-       AbsoluteFirstContentfulPaint) {
-  static const TestCase kTestCases[] = {
-      {{{100, 40, 140}, true}, base::Milliseconds(140)},
-      {{{120, 30, 150}, true}, base::Milliseconds(150)},
-      {{{0, 90, 90}, true}, base::Milliseconds(90)},
-      {{{100, 220, 320}, true}, base::Milliseconds(320)}};
+  WebPerformanceMetricsJavaScriptFeature::GetInstance()
+      ->LogInteractionToNextPaint(&fake_web_state, sub_dict,
+                                  /*is_main_frame=*/false);
 
-  for (const TestCase& test_case : kTestCases) {
-    base::TimeDelta result = base::Milliseconds(
-        web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
-            test_case.params.frame.navigation_start_time,
-            test_case.params.frame.relative_time));
-    EXPECT_EQ(result, test_case.expected);
-  }
+  // 3. Direct call with empty durations (should be safely ignored).
+  base::DictValue empty_dict;
+  empty_dict.Set(web_performance_metrics::kDurationsKey, base::ListValue());
+  empty_dict.Set(web_performance_metrics::kFrameIdKey, "empty_frame");
+  WebPerformanceMetricsJavaScriptFeature::GetInstance()
+      ->LogInteractionToNextPaint(&fake_web_state, empty_dict,
+                                  /*is_main_frame=*/false);
+
+  // Trigger navigation flush.
+  web::FakeNavigationContext navigation_context;
+  fake_web_state.OnNavigationStarted(&navigation_context);
+
+  histogram_tester.ExpectUniqueSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 110,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 75, 1);
+  histogram_tester.ExpectUniqueSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 110,
+      1);
 }
 
 class MockObserver : public WebPerformanceMetricsTabHelper::Observer {

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 // A feature which captures Web Vitals metrics that determine
@@ -43,6 +44,13 @@ class WebPerformanceMetricsJavaScriptFeature : public web::JavaScriptFeature {
   void LogAggregateFirstInputDelay(web::WebState* web_state,
                                    double first_input_delay,
                                    bool loaded_from_cache);
+
+  // Logs Interaction to Next Paint timing data reported from JavaScript into
+  // the tab helper. Metrics are flushed to UMA when navigating to a new page
+  // or when the tab is closed.
+  void LogInteractionToNextPaint(web::WebState* web_state,
+                                 const base::DictValue& body_dict,
+                                 bool is_main_frame);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_JAVA_SCRIPT_FEATURE_H_

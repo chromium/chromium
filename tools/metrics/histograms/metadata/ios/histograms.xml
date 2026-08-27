@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
 
+<variants name="IOSFrameType">
+  <variant name="MainFrame" summary="Main frame of the webpage"/>
+  <variant name="SubFrame" summary="Subframes (iframes) of the webpage"/>
+</variants>
+
 <variants name="IOSSaveToDriveQueryTypeVariant">
   <variant name="CreateFolder"
       summary="Recorded once when a query to create a Drive folder returns a
@@ -2537,8 +2542,8 @@ chromium-metrics-reviews@google.com.
     between the a user's first interaction with the page and the page receiving
     the input event for this interaction. This histogram captures the First
     Input Delay time for user's subframes that is loaded from the Back/Forward
-    cache. This histogram's understanding of First Contentful Paint differs from
-    the traditional understanding because it does not aggregate and compare the
+    cache. This histogram's understanding of First Input Delay differs from the
+    traditional understanding because it does not aggregate and compare the
     First Input Delay times across the frames on a page.
   </summary>
 </histogram>
@@ -2558,6 +2563,25 @@ chromium-metrics-reviews@google.com.
     does not aggregate and compare the First Input Delay times across the frames
     on a page.
   </summary>
+</histogram>
+
+<histogram name="IOS.Frame.InteractionToNextPaint.{FrameType}" units="ms"
+    expires_after="2027-03-30">
+  <owner>jfle@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Interaction to Next Paint (INP) is a Core Web Vital metric that assesses
+    responsiveness by observing the latency of all click, tap, and keyboard
+    interactions throughout a user's visit to a page, capturing the 98th
+    percentile latency (discarding outliers).
+
+    Note that this histogram captures INP isolated to the {FrameType} and does
+    not aggregate interactions across all frames on the page.
+
+    Recorded when the page is navigated away from or the web state is destroyed,
+    for each {FrameType} where user interactions occurred.
+  </summary>
+  <token key="FrameType" variants="IOSFrameType"/>
 </histogram>
 
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
