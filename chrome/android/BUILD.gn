@@ -3024,6 +3024,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
       "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
       "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetBridge.java",
       "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridge.java",
       "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridge.java",
       "java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsDelegate.java",

@@ -170,6 +170,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogProperties.java",
   "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogView.java",
   "java/src/org/chromium/chrome/browser/autofill/anchored_dialog/AnchoredDialogViewBinder.java",
+  "java/src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetCoordinator.java",
   "java/src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetMediator.java",

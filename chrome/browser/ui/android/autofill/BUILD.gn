@@ -44,6 +44,8 @@ source_set("autofill") {
     "credit_card_scanner_view_android.h",
     "dialog/autofill_dialog_view_android.cc",
     "dialog/autofill_dialog_view_android.h",
+    "email_verification_bottom_sheet_bridge.cc",
+    "email_verification_bottom_sheet_bridge.h",
     "manual_filling_view_android.cc",
     "manual_filling_view_android.h",
     "otp_verification_dialog_view_android.cc",
@@ -112,6 +114,7 @@ source_set("unit_tests") {
     "autofill_save_card_delegate_android_unittest.cc",
     "autofill_save_iban_delegate_unittest.cc",
     "autofill_vcn_enroll_bottom_sheet_bridge_unittest.cc",
+    "email_verification_bottom_sheet_bridge_unittest.cc",
     "save_update_address_profile_flow_manager_unittest.cc",
     "wallet_reminder_notice_ui_delegate_android_unittest.cc",
   ]

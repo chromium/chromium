@@ -78,6 +78,7 @@ class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 class AutofillDialogController;
 class TouchToFillAutofillController;
+class EmailVerificationBottomSheetBridge;
 #endif
 
 class ActorAutofillManager;
@@ -442,6 +443,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       autofill_snackbar_controller_impl_;
   std::unique_ptr<TouchToFillAutofillController>
       touch_to_fill_autofill_controller_;
+  std::unique_ptr<EmailVerificationBottomSheetBridge>
+      email_verification_bottom_sheet_bridge_;
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;

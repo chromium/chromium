@@ -199,7 +199,9 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
+#include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
@@ -1374,7 +1376,22 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
 #if BUILDFLAG(IS_ANDROID)
-  std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
+  if (!email_verification_bottom_sheet_bridge_) {
+    auto* window_android = web_contents()->GetTopLevelNativeWindow();
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    if (window_android && tab_model) {
+      email_verification_bottom_sheet_bridge_ =
+          std::make_unique<EmailVerificationBottomSheetBridge>(window_android,
+                                                               tab_model);
+    }
+  }
+  if (!email_verification_bottom_sheet_bridge_) {
+    std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
+    return;
+  }
+  email_verification_bottom_sheet_bridge_->RequestShowContent(
+      base::UTF8ToUTF16(issuer_site.Serialize()), email, std::move(callback));
 #else
   if (!email_verification_popup_controller_) {
     email_verification_popup_controller_ =
