@@ -34,6 +34,17 @@ import java.util.Objects;
 @NullMarked
 public class TabGroupUiUtils {
 
+    /** Returns whether cross-window tab group operations are enabled. */
+    public static boolean isCrossWindowTabGroupOperationsEnabled() {
+        return ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+    }
+
+    /** Returns whether remote group operations are enabled. */
+    public static boolean isRemoteGroupOperationsEnabled() {
+        return isCrossWindowTabGroupOperationsEnabled()
+                && ChromeFeatureList.sCrossWindowTabGroupOperationsRemoteGroupOperations.getValue();
+    }
+
     /**
      * Returns the string resource ID for the 'add to group' menu item ("Add tab to group" vs "Add
      * tab to new group" vs "Move tab to group").
@@ -62,7 +73,7 @@ public class TabGroupUiUtils {
             return R.string.menu_move_tab_to_group;
         }
         Collection<TabModelSelector> selectors =
-                ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+                isCrossWindowTabGroupOperationsEnabled()
                         ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
                         : Collections.emptyList();
         return getAddToGroupMenuItemString(
@@ -112,7 +123,7 @@ public class TabGroupUiUtils {
             return;
         }
 
-        if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
+        if (isCrossWindowTabGroupOperationsEnabled()) {
             TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
             if (windowManager != null) {
                 int windowId = windowManager.findWindowIdForTabGroup(destinationGroupId);

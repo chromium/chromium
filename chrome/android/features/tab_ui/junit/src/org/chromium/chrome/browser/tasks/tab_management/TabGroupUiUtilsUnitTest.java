@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -265,5 +266,36 @@ public class TabGroupUiUtilsUnitTest {
                 R.string.menu_add_tab_to_group,
                 TabGroupUiUtils.getAddToGroupMenuItemString(
                         mTabModel, /* currentTabGroupId= */ null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testIsCrossWindowTabGroupOperationsEnabled() {
+        assertTrue(TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testIsCrossWindowTabGroupOperationsEnabled_disabled() {
+        assertFalse(TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testIsRemoteGroupOperationsEnabled() {
+        assertTrue(TabGroupUiUtils.isRemoteGroupOperationsEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testIsRemoteGroupOperationsEnabled_defaultFalse() {
+        assertFalse(TabGroupUiUtils.isRemoteGroupOperationsEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testIsRemoteGroupOperationsEnabled_disabled() {
+        assertFalse(TabGroupUiUtils.isRemoteGroupOperationsEnabled());
     }
 }
