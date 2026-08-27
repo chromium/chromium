@@ -87,6 +87,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"cloud_and_arrow_up", SymbolType::kCustom};
     case SymbolCloudSlash:
       return {@"cloud_slash", SymbolType::kCustom};
+    case SymbolCustomShield:
+      return {@"shield", SymbolType::kCustom};
     case SymbolDangerousOmnibox:
       return {@"dangerous_omnibox", SymbolType::kCustom};
     case SymbolDeepSearch:
@@ -165,8 +167,6 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"checkermark_shield", SymbolType::kCustom};
     case SymbolSharedDrives:
       return {@"shared_drives", SymbolType::kCustom};
-    case SymbolShield:
-      return {@"shield", SymbolType::kCustom};
     case SymbolSquareNumber:
       return {@"square_number", SymbolType::kCustom};
     case SymbolTextAnalysis:
@@ -588,6 +588,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"gearshape.fill", SymbolType::kSystem};
     case SymbolShare:
       return {@"square.and.arrow.up", SymbolType::kSystem};
+    case SymbolShield:
+      return {@"shield", SymbolType::kSystem};
     case SymbolShippingBoxFill:
       return {@"shippingbox.fill", SymbolType::kSystem};
     case SymbolShowAction:
