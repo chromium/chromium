@@ -50,8 +50,29 @@ class ActionAppMenu : public views::MenuDelegate {
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
 
  private:
+  // Recursively populates the menu item with the `base_action_item`'s
+  // children.
   void PopulateMenu(views::MenuItemView* view_parent,
-                    actions::BaseAction* action_item);
+                    actions::BaseAction* base_action_item);
+
+  // Appends and returns a menu item to the `parent_menu_item` and adds the
+  // `base_action_item` to the command to action map.
+  views::MenuItemView* AppendMenuItem(actions::BaseAction* base_action_item,
+                                      views::MenuItemView* parent_menu_item);
+
+  // Configures the section header in a menu to display the correct text. A
+  // section header is essentially a non-interactive piece of text within the
+  // menu to helps break up the menu into sections.
+  void ConfigureSectionHeader(views::MenuItemView* header_menu_item);
+
+  // Configures the menu item to populate with the correct icon, text, and
+  // padding. ConfigureMenuItem() differs from ConfigureSectionHeader() in that
+  // ConfigureMenuItem() should only be used for clickable menu items within the
+  // action app menu or have a sub-menu.
+  void ConfigureMenuItem(views::MenuItemView* menu_item,
+                         actions::BaseAction* child_base,
+                         bool is_first_item,
+                         bool is_last_item);
 
   void PopulateFooter(views::MenuItemView* view_parent,
                       actions::ActionItem* footer_action_item);

@@ -30,6 +30,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -135,15 +136,14 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
 }
 
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
-                                 actions::BaseAction* action_item) {
-  const auto& children = action_item->GetChildren().children();
-  const size_t child_count = children.size();
-
-  const auto* provider = ChromeLayoutProvider::Get();
+                                 actions::BaseAction* base_action_item) {
+  const auto& children_action_items =
+      base_action_item->GetChildren().children();
+  const size_t child_count = children_action_items.size();
 
   for (size_t i = 0; i < child_count; ++i) {
-    actions::BaseAction* child_base = children[i].get();
-    actions::ActionItem* child_ptr = child_base->GetActionItem();
+    actions::BaseAction* const child_base = children_action_items[i].get();
+    actions::ActionItem* const child_ptr = child_base->GetActionItem();
     if (!child_ptr) {
       continue;
     }
@@ -162,105 +162,128 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       continue;
     }
 
-    // If the child is a section action item, append it as a MenuItem that
-    // represents a section header.
-    if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
-      auto* header_menu_item =
+    if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
+        ActionAppMenuManager::DisplayType::kDivider) {
+      view_parent->AppendSeparator();
+    } else if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
+      views::MenuItemView* const section_header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
-      header_menu_item->SetEnabled(false);
-      header_menu_item->set_vertical_margin(provider->GetDistanceMetric(
-          DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN));
-      // Recursive call using the same parent to keep the children in
+      ConfigureSectionHeader(section_header_menu_item);
+      // Recursively call using the same parent to keep the children in
       // the same menu section as the header.
       PopulateMenu(view_parent, child_base);
-    } else if (child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey) ==
-               ActionAppMenuManager::DisplayType::kDivider) {
-      view_parent->AppendSeparator();
     } else {
-      // Otherwise, append it as a MenuItemView that represents an action item.
-      std::optional<actions::ActionId> action_id = child_ptr->GetActionId();
-      int command_id = action_id.value_or(next_id_++);
-
-      // Even though the zoom menu item has children, it should not be treated
-      // as a submenu because its children are laid out within the the same top
-      // level menu item.
-      const bool is_zoom_menu_item =
-          child_ptr->GetActionId() == kActionZoomSubmenu;
-      const bool has_children =
-          !is_zoom_menu_item && !child_base->GetChildren().children().empty();
-
-      auto* menu_item =
-          has_children ? view_parent->AppendSubMenu(
-                             command_id, std::u16string(child_ptr->GetText()))
-                       : view_parent->AppendMenuItem(command_id);
-      action_view_controller_.CreateActionViewRelationship(
-          menu_item, child_ptr->GetAsWeakPtr());
-      command_to_action_map_[command_id] = child_ptr;
-
-      if (std::u16string* text_override = children[i]->GetProperty(
-              ActionAppMenuManager::kTextOverrideKey)) {
-        menu_item->SetTitle(*text_override);
-      }
-
-      if (ui::ImageModel* icon_override = children[i]->GetProperty(
-              ActionAppMenuManager::kIconOverrideKey)) {
-        menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));
-      } else if (!child_ptr->GetImage().IsEmpty()) {
-        menu_item->SetIcon(StandardizeMenuIconSize(child_ptr->GetImage()));
-      }
-
-      if (is_zoom_menu_item) {
+      auto* const menu_item = AppendMenuItem(child_base, view_parent);
+      ConfigureMenuItem(menu_item, child_base, i == 0, i == child_count - 1);
+      if (child_ptr->GetActionId() == kActionZoomSubmenu) {
         menu_item->AddChildView(std::make_unique<ActionAppMenuZoomView>(
             browser_window_interface_, &action_view_controller_,
-            command_to_action_map_, children[i].get()));
+            command_to_action_map_, child_base));
       } else {
-        // Display shortcut text if the ActionItem has one.
-        ui::Accelerator accel = child_ptr->GetAccelerator();
-        if (accel.key_code() != ui::VKEY_UNKNOWN) {
-          menu_item->SetMinorText(accel.GetShortcutText());
-        }
-        // Recursively populate the menu item with the ActionItem's children.
+        // Recursively populate the menu with the base action item's children.
         PopulateMenu(menu_item, child_base);
       }
+    }
+  }
+}
 
-      // Set the border radius depending on the position a menu item has in
-      // its section.
-      int top_radius =
-          (i == 0) ? provider->GetDistanceMetric(
+views::MenuItemView* ActionAppMenu::AppendMenuItem(
+    actions::BaseAction* base_action_item,
+    views::MenuItemView* parent_menu_item) {
+  actions::ActionItem* action_item = base_action_item->GetActionItem();
+  CHECK(action_item);
+  std::optional<actions::ActionId> action_id = action_item->GetActionId();
+  const int command_id = action_id.value_or(next_id_++);
+
+  // Even though the zoom menu item has children, it should not be treated
+  // as a submenu because its children are laid out within the same top
+  // level menu item.
+  const bool is_zoom_menu_item =
+      action_item->GetActionId() == kActionZoomSubmenu;
+  const bool has_children =
+      !is_zoom_menu_item && !base_action_item->GetChildren().children().empty();
+
+  views::MenuItemView* menu_item =
+      has_children ? parent_menu_item->AppendSubMenu(
+                         command_id, std::u16string(action_item->GetText()))
+                   : parent_menu_item->AppendMenuItem(command_id);
+
+  action_view_controller_.CreateActionViewRelationship(
+      menu_item, action_item->GetAsWeakPtr());
+  command_to_action_map_[command_id] = action_item;
+  return menu_item;
+}
+
+void ActionAppMenu::ConfigureSectionHeader(
+    views::MenuItemView* header_menu_item) {
+  header_menu_item->SetEnabled(false);
+  header_menu_item->set_vertical_margin(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN));
+}
+
+void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
+                                      actions::BaseAction* child_base,
+                                      bool is_first_item,
+                                      bool is_last_item) {
+  if (std::u16string* text_override =
+          child_base->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {
+    menu_item->SetTitle(*text_override);
+  }
+
+  actions::ActionItem* const action_item = child_base->GetActionItem();
+  CHECK(action_item);
+  if (ui::ImageModel* icon_override =
+          child_base->GetProperty(ActionAppMenuManager::kIconOverrideKey)) {
+    menu_item->SetIcon(StandardizeMenuIconSize(*icon_override));
+  } else if (!action_item->GetImage().IsEmpty()) {
+    menu_item->SetIcon(StandardizeMenuIconSize(action_item->GetImage()));
+  }
+
+  // Display shortcut text if the ActionItem has one.
+  const ui::Accelerator& accel = action_item->GetAccelerator();
+  if (accel.key_code() != ui::VKEY_UNKNOWN) {
+    menu_item->SetMinorText(accel.GetShortcutText());
+  }
+
+  const auto* provider = ChromeLayoutProvider::Get();
+
+  // Set the border radius depending on the position a menu item has in
+  // its section.
+  const int top_radius =
+      is_first_item ? provider->GetDistanceMetric(
+                          DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS)
+                    : 0;
+  const int top_padding =
+      is_first_item
+          ? provider->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_ITEM_FIRST_TOP_PADDING)
+          : provider->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_ITEM_DEFAULT_VERTICAL_MARGIN);
+
+  const int bottom_radius =
+      is_last_item ? provider->GetDistanceMetric(
                          DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS)
                    : 0;
-      int top_padding =
-          (i == 0) ? provider->GetDistanceMetric(
-                         DISTANCE_ACTION_APP_MENU_ITEM_FIRST_TOP_PADDING)
+
+  const int bottom_padding =
+      is_last_item ? provider->GetDistanceMetric(
+                         DISTANCE_ACTION_APP_MENU_ITEM_LAST_BOTTOM_PADDING)
                    : provider->GetDistanceMetric(
                          DISTANCE_ACTION_APP_MENU_ITEM_DEFAULT_VERTICAL_MARGIN);
 
-      int bottom_radius =
-          (i == child_count - 1)
-              ? provider->GetDistanceMetric(
-                    DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS)
-              : 0;
+  menu_item->SetBorder(views::CreateEmptyBorder(
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM)));
 
-      int bottom_padding =
-          (i == child_count - 1)
-              ? provider->GetDistanceMetric(
-                    DISTANCE_ACTION_APP_MENU_ITEM_LAST_BOTTOM_PADDING)
-              : provider->GetDistanceMetric(
-                    DISTANCE_ACTION_APP_MENU_ITEM_DEFAULT_VERTICAL_MARGIN);
+  const ui::ColorId container_color =
+      action_item->GetProperty(ActionAppMenuManager::kContainerColorKey);
 
-      menu_item->SetBorder(views::CreateEmptyBorder(
-          provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM)));
-
-      // Get the styling from the ActionItem and apply it to its menu item.
-      const ui::ColorId container_color =
-          child_ptr->GetProperty(ActionAppMenuManager::kContainerColorKey);
-      if (container_color != ui::kColorMenuBackground) {
-        menu_item->SetContainerStyle(container_color, top_radius, bottom_radius,
-                                     top_padding, bottom_padding);
-        // Apply darker hover selection states matching section theme.
-        menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
-      }
-    }
+  // Get the styling from the ActionItem and apply it to its menu item.
+  if (container_color != ui::kColorMenuBackground) {
+    menu_item->SetContainerStyle(container_color, top_radius, bottom_radius,
+                                 top_padding, bottom_padding);
+    // Apply darker hover selection states matching section theme.
+    menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
   }
 }
 
