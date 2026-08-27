@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -693,6 +694,9 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
           element_font_description.SpecifiedSize());
       element_font_description.SetAdjustedSize(
           element_font_description.SpecifiedSize());
+      // Reset the orientation to avoid inheriting the vertical
+      // writing-mode/text-orientation from the <canvas> element.
+      element_font_description.SetOrientation(FontOrientation::kHorizontal);
 
       font_style_builder.SetFontDescription(element_font_description);
       const ComputedStyle* font_style = font_style_builder.TakeStyle();
