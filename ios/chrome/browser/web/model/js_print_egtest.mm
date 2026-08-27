@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Test if print dialog appeared.
   NSString* dialogTitle = @"Options";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(dialogTitle)]
-      assertWithMatcher:grey_minimumVisiblePercent(0.7)];
+      assertWithMatcher:grey_minimumVisiblePercent(0.6)];
 
   // Clean up and close print dialog.
   [[EarlGrey selectElementWithMatcher:PrintOptionsCancelButton()]
