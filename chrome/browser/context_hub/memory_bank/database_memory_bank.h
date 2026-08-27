@@ -27,6 +27,11 @@ class DatabaseMemoryBank : public MemoryBank {
   // MemoryBank implementation:
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            OperationCompleteCallback callback) override;
+  void UpdateEntryAnnotations(int64_t id,
+                              std::vector<std::string> tags,
+                              std::optional<std::string> note,
+                              std::optional<std::string> collection,
+                              OperationCompleteCallback callback) override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
   void GetAllEntries(GetEntriesCallback callback) const override;

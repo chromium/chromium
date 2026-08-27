@@ -1078,6 +1078,42 @@ TEST_F(ContextHubServiceTest, GetEntriesByIds) {
   EXPECT_EQ(entries[0].tab_title, selected_entries[0].tab_title);
 }
 
+TEST_F(ContextHubServiceTest, UpdateMemoryBankEntryAnnotations) {
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Original Title", "Page text"),
+      base::DoNothing());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
+  service_.GetAllEntries(get_entries_future.GetCallback());
+  auto entries = get_entries_future.Get();
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  base::test::TestFuture<bool> update_future;
+  service_.UpdateMemoryBankEntryAnnotations(
+      id, {"tag1", "tag2"}, "Updated Note", "Updated Collection",
+      update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_updated_future;
+  service_.GetAllEntries(get_updated_future.GetCallback());
+  auto updated_entries = get_updated_future.Get();
+  ASSERT_EQ(1u, updated_entries.size());
+  EXPECT_EQ(id, updated_entries[0].id);
+  EXPECT_EQ("Original Title", updated_entries[0].tab_title);
+  EXPECT_EQ("Updated Note", updated_entries[0].note);
+  EXPECT_EQ("Updated Collection", updated_entries[0].collection);
+  EXPECT_THAT(updated_entries[0].tags, ElementsAre("tag1", "tag2"));
+}
+
+TEST_F(ContextHubServiceTest, UpdateMemoryBankEntryAnnotations_NotFound) {
+  base::test::TestFuture<bool> update_future;
+  service_.UpdateMemoryBankEntryAnnotations(
+      999999, {"tag1"}, "Note", "Collection", update_future.GetCallback());
+  EXPECT_FALSE(update_future.Get());
+}
+
 TEST_F(ContextHubServiceTest, GetAllMemoryBankTags) {
   MemoryBankEntry entry1(MemoryBankType::kTab, GURL("https://example1.com"),
                          "Title1", "Page text 1");

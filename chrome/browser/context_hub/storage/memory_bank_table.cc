@@ -177,6 +177,48 @@ bool MemoryBankTable::AddOrUpdateEntry(const MemoryBankEntry& entry) {
   return statement.Run();
 }
 
+bool MemoryBankTable::UpdateEntryAnnotations(
+    int64_t id,
+    const std::vector<std::string>& tags,
+    const std::optional<std::string>& note,
+    const std::optional<std::string>& collection) {
+  if (!db_) {
+    return false;
+  }
+
+  static constexpr char kQuery[] =
+      "UPDATE memory_bank_entries SET tags = ?, note = ?, collection = ? "
+      "WHERE id = ?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kQuery));
+
+  if (!tags.empty()) {
+    base::ListValue tags_list;
+    for (const auto& tag : tags) {
+      tags_list.Append(tag);
+    }
+    std::string tags_json = base::WriteJson(tags_list).value_or("");
+    statement.BindString(0, tags_json);
+  } else {
+    statement.BindNull(0);
+  }
+
+  if (note.has_value() && !note->empty()) {
+    statement.BindString(1, *note);
+  } else {
+    statement.BindNull(1);
+  }
+
+  if (collection.has_value() && !collection->empty()) {
+    statement.BindString(2, *collection);
+  } else {
+    statement.BindNull(2);
+  }
+
+  statement.BindInt64(3, id);
+
+  return statement.Run() && db_->GetLastChangeCount() > 0;
+}
+
 std::optional<MemoryBankEntry> MemoryBankTable::GetEntry(int64_t id) {
   if (!db_) {
     return std::nullopt;

@@ -67,6 +67,13 @@ class MemoryBankTable {
   // success.
   bool AddOrUpdateEntry(const MemoryBankEntry& entry);
 
+  // Updates the annotations (tags, note, collection) for an existing entry.
+  // Returns true on success, or false if not found or on error.
+  bool UpdateEntryAnnotations(int64_t id,
+                              const std::vector<std::string>& tags,
+                              const std::optional<std::string>& note,
+                              const std::optional<std::string>& collection);
+
   // Retrieves a single entry by ID. Returns std::nullopt if not found.
   std::optional<MemoryBankEntry> GetEntry(int64_t id);
 

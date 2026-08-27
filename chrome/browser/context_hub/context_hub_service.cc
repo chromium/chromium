@@ -831,6 +831,17 @@ void ContextHubService::SaveMemoryBankEntry(
   memory_bank_->SaveMemoryBankEntry(std::move(entry), std::move(callback));
 }
 
+void ContextHubService::UpdateMemoryBankEntryAnnotations(
+    int64_t id,
+    std::vector<std::string> tags,
+    std::optional<std::string> note,
+    std::optional<std::string> collection,
+    MemoryBank::OperationCompleteCallback callback) {
+  memory_bank_->UpdateEntryAnnotations(id, std::move(tags), std::move(note),
+                                       std::move(collection),
+                                       std::move(callback));
+}
+
 void ContextHubService::DeleteEntries(
     base::span<const int64_t> ids,
     MemoryBank::OperationCompleteCallback callback) {

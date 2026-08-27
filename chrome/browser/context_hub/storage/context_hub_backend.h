@@ -27,6 +27,13 @@ class ContextHubBackend {
   virtual void AddOrUpdateMemoryBankEntry(
       MemoryBankEntry entry,
       OperationCompleteCallback callback) = 0;
+  // Updates annotations for an existing entry in the MemoryBankTable.
+  virtual void UpdateMemoryBankEntryAnnotations(
+      int64_t id,
+      std::vector<std::string> tags,
+      std::optional<std::string> note,
+      std::optional<std::string> collection,
+      OperationCompleteCallback callback) = 0;
   // Deletes entries in the MemoryBankTable with the given ids.
   virtual void DeleteMemoryBankEntries(base::span<const int64_t> ids,
                                        OperationCompleteCallback callback) = 0;

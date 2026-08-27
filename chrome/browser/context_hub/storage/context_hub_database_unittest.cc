@@ -253,6 +253,28 @@ TEST_F(ContextHubDatabaseTest, GetNonExistentMemoryBankEntry) {
   EXPECT_FALSE(db_->GetMemoryBankEntry(999).has_value());
 }
 
+// Tests updating annotations for a memory bank entry.
+TEST_F(ContextHubDatabaseTest, UpdateMemoryBankEntryAnnotations) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  MemoryBankEntry data = CreateTestData();
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(data));
+
+  std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
+  ASSERT_EQ(all_entries.size(), 1u);
+  int64_t id = all_entries[0].id;
+
+  EXPECT_TRUE(db_->UpdateMemoryBankEntryAnnotations(
+      id, {"tagA", "tagB"}, "Updated Note", "Updated Collection"));
+
+  std::optional<MemoryBankEntry> retrieved = db_->GetMemoryBankEntry(id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->tab_title, data.tab_title);
+  EXPECT_EQ(retrieved->note, "Updated Note");
+  EXPECT_EQ(retrieved->collection, "Updated Collection");
+  EXPECT_THAT(retrieved->tags, testing::ElementsAre("tagA", "tagB"));
+}
+
 // Tests retrieving all memory bank entries.
 TEST_F(ContextHubDatabaseTest, GetAllMemoryBankEntries) {
   ASSERT_TRUE(db_->Init(GetDbPath()));

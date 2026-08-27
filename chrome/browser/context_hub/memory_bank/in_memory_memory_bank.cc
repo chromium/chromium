@@ -40,6 +40,27 @@ void InMemoryMemoryBank::SaveMemoryBankEntry(
   }
 }
 
+void InMemoryMemoryBank::UpdateEntryAnnotations(
+    int64_t id,
+    std::vector<std::string> tags,
+    std::optional<std::string> note,
+    std::optional<std::string> collection,
+    OperationCompleteCallback callback) {
+  auto it = entries_.Peek(id);
+  if (it == entries_.end()) {
+    if (callback) {
+      std::move(callback).Run(/*success=*/false);
+    }
+    return;
+  }
+  it->second.tags = std::move(tags);
+  it->second.note = std::move(note);
+  it->second.collection = std::move(collection);
+  if (callback) {
+    std::move(callback).Run(/*success=*/true);
+  }
+}
+
 void InMemoryMemoryBank::GetAllEntries(GetEntriesCallback callback) const {
   std::vector<MemoryBankEntry> result;
   for (const auto& [id, entry] : entries_) {

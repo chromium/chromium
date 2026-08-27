@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -43,6 +44,38 @@ TEST(InMemoryMemoryBankTest, SaveMemoryBankEntry_Tab) {
   EXPECT_EQ(url, entries[0].url);
   EXPECT_EQ("Google", entries[0].tab_title);
   EXPECT_EQ("Page text", entries[0].selected_text);
+}
+
+TEST(InMemoryMemoryBankTest, UpdateEntryAnnotations) {
+  InMemoryMemoryBank memory_bank;
+  GURL url("https://www.google.com");
+  memory_bank.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, url, "Google", "Page text"),
+      base::DoNothing());
+
+  std::vector<MemoryBankEntry> entries = GetAllEntriesSync(memory_bank);
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  base::test::TestFuture<bool> update_future;
+  memory_bank.UpdateEntryAnnotations(id, {"tag1", "tag2"}, "New Note", "Work",
+                                     update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  std::vector<MemoryBankEntry> updated = GetAllEntriesSync(memory_bank);
+  ASSERT_EQ(1u, updated.size());
+  EXPECT_EQ(updated[0].tab_title, "Google");
+  EXPECT_EQ(updated[0].note, "New Note");
+  EXPECT_EQ(updated[0].collection, "Work");
+  EXPECT_THAT(updated[0].tags, testing::ElementsAre("tag1", "tag2"));
+}
+
+TEST(InMemoryMemoryBankTest, UpdateEntryAnnotations_NotFound) {
+  InMemoryMemoryBank memory_bank;
+  base::test::TestFuture<bool> update_future;
+  memory_bank.UpdateEntryAnnotations(999999, {"tag1"}, "Note", "Work",
+                                     update_future.GetCallback());
+  EXPECT_FALSE(update_future.Get());
 }
 
 TEST(InMemoryMemoryBankTest, SaveMemoryBankEntry_WithText) {

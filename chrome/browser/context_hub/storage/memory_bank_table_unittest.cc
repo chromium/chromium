@@ -166,6 +166,43 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   EXPECT_EQ("Updated Collection", fetched_entry->collection.value());
 }
 
+TEST_F(MemoryBankTableTest, UpdateEntryAnnotations) {
+  MemoryBankEntry entry;
+  entry.type = MemoryBankType::kTextSelection;
+  entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry.url = GURL("https://www.google.com");
+  entry.tab_title = "Original Title";
+  entry.selected_text = "Original Selected Text";
+  entry.tags = {"tag1"};
+  entry.note = "Original Note";
+  entry.collection = "General";
+
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+
+  std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  EXPECT_TRUE(table_.UpdateEntryAnnotations(id, {"new_tag1", "new_tag2"},
+                                            "New Note", "Work"));
+
+  auto fetched_entry = table_.GetEntry(id);
+  ASSERT_TRUE(fetched_entry.has_value());
+  EXPECT_EQ("Original Title", fetched_entry->tab_title);
+  EXPECT_EQ("Original Selected Text", fetched_entry->selected_text.value());
+  EXPECT_THAT(fetched_entry->tags,
+              testing::ElementsAre("new_tag1", "new_tag2"));
+  ASSERT_TRUE(fetched_entry->note.has_value());
+  EXPECT_EQ("New Note", fetched_entry->note.value());
+  ASSERT_TRUE(fetched_entry->collection.has_value());
+  EXPECT_EQ("Work", fetched_entry->collection.value());
+}
+
+TEST_F(MemoryBankTableTest, UpdateEntryAnnotations_NotFound) {
+  EXPECT_FALSE(
+      table_.UpdateEntryAnnotations(999999, {"tag1"}, "Note", "Collection"));
+}
+
 TEST_F(MemoryBankTableTest, GetAllEntriesOrdering) {
   base::Time base_time = base::Time::FromSecondsSinceUnixEpoch(10000);
 
@@ -312,8 +349,7 @@ TEST_F(MemoryBankTableTest, GetEntriesByIds) {
   std::vector<MemoryBankEntry> all = table_.GetAllEntries();
   ASSERT_EQ(2u, all.size());
 
-  std::vector<MemoryBankEntry> retrieved =
-      table_.GetEntriesByIds({all[0].id});
+  std::vector<MemoryBankEntry> retrieved = table_.GetEntriesByIds({all[0].id});
   ASSERT_EQ(1u, retrieved.size());
   EXPECT_EQ(all[0].id, retrieved[0].id);
   EXPECT_EQ(all[0].tab_title, retrieved[0].tab_title);

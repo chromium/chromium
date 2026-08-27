@@ -23,6 +23,12 @@ class MemoryBank {
   // Saves or updates an entry in the memory bank.
   virtual void SaveMemoryBankEntry(MemoryBankEntry entry,
                                    OperationCompleteCallback callback) = 0;
+  // Updates the annotations (tags, note, collection) for an existing entry.
+  virtual void UpdateEntryAnnotations(int64_t id,
+                                      std::vector<std::string> tags,
+                                      std::optional<std::string> note,
+                                      std::optional<std::string> collection,
+                                      OperationCompleteCallback callback) = 0;
   // Deletes entries from the memory bank.
   virtual void DeleteEntries(base::span<const int64_t> ids,
                              OperationCompleteCallback callback) = 0;

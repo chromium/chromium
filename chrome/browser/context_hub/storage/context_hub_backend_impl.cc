@@ -73,6 +73,31 @@ void ContextHubBackendImpl::AddOrUpdateMemoryBankEntry(
   }
 }
 
+void ContextHubBackendImpl::UpdateMemoryBankEntryAnnotations(
+    int64_t id,
+    std::vector<std::string> tags,
+    std::optional<std::string> note,
+    std::optional<std::string> collection,
+    OperationCompleteCallback callback) {
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      queued_operations_.push_back(base::BindOnce(
+          &ContextHubBackendImpl::UpdateMemoryBankEntryAnnotations,
+          weak_ptr_factory_.GetWeakPtr(), id, std::move(tags), std::move(note),
+          std::move(collection), std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::UpdateMemoryBankEntryAnnotations)
+          .WithArgs(id, std::move(tags), std::move(note), std::move(collection))
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(callback).Run(false);
+      break;
+  }
+}
+
 void ContextHubBackendImpl::DeleteMemoryBankEntries(
     base::span<const int64_t> ids,
     OperationCompleteCallback callback) {

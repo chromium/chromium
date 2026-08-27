@@ -93,11 +93,40 @@ void TabContextSyncMemoryBank::SaveMemoryBankEntry(
 
   entries_.Put(entry_id, std::move(entry));
 
+  // Note: Only `selected_text` is currently uploaded to TabContextSyncService.
+  // All other fields and annotations (URL, tab title, timestamp, tags, note,
+  // collection) are only stored in the local in-memory LRU cache and will not
+  // be synced or persisted across restarts.
   bool upload_success = tab_context_sync_service_->UploadPageContext(
       *container_id, base::NumberToString(entry_id), std::move(payload));
 
   if (callback) {
     std::move(callback).Run(upload_success);
+  }
+}
+
+void TabContextSyncMemoryBank::UpdateEntryAnnotations(
+    int64_t id,
+    std::vector<std::string> tags,
+    std::optional<std::string> note,
+    std::optional<std::string> collection,
+    OperationCompleteCallback callback) {
+  // `TabContextSyncService` does not currently support syncing or persisting
+  // entry annotations (tags, note, collection). Updates are only
+  // stored in the local in-memory LRU cache, so they will not be synced or
+  // persisted across restarts.
+  auto it = entries_.Peek(id);
+  if (it == entries_.end()) {
+    if (callback) {
+      std::move(callback).Run(/*success=*/false);
+    }
+    return;
+  }
+  it->second.tags = std::move(tags);
+  it->second.note = std::move(note);
+  it->second.collection = std::move(collection);
+  if (callback) {
+    std::move(callback).Run(/*success=*/true);
   }
 }
 

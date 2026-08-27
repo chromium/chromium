@@ -51,6 +51,36 @@ TEST_F(DatabaseMemoryBankTest, SaveMemoryBankEntryAndRetrieve) {
   EXPECT_EQ("Page content", entries[0].selected_text.value());
 }
 
+TEST_F(DatabaseMemoryBankTest, UpdateEntryAnnotations) {
+  base::test::TestFuture<bool> save_future;
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Example", "Page content"),
+      save_future.GetCallback());
+  ASSERT_TRUE(save_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_future;
+  memory_bank_->GetAllEntries(get_future.GetCallback());
+  auto entries = get_future.Get();
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  base::test::TestFuture<bool> update_future;
+  memory_bank_->UpdateEntryAnnotations(id, {"tag1"}, "Updated Note",
+                                       "Updated Collection",
+                                       update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_updated_future;
+  memory_bank_->GetAllEntries(get_updated_future.GetCallback());
+  auto updated_entries = get_updated_future.Get();
+  ASSERT_EQ(1u, updated_entries.size());
+  EXPECT_EQ(updated_entries[0].tab_title, "Example");
+  EXPECT_EQ(updated_entries[0].note, "Updated Note");
+  EXPECT_EQ(updated_entries[0].collection, "Updated Collection");
+  EXPECT_THAT(updated_entries[0].tags, testing::ElementsAre("tag1"));
+}
+
 TEST_F(DatabaseMemoryBankTest, SaveMemoryBankEntryAndDelete) {
   base::test::TestFuture<bool> save_future;
   memory_bank_->SaveMemoryBankEntry(
