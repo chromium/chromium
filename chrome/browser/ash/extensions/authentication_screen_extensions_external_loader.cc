@@ -93,12 +93,15 @@ void AuthenticationScreenExtensionsExternalLoader::
 }
 
 AuthenticationScreenExtensionsExternalLoader::
-    AuthenticationScreenExtensionsExternalLoader(Profile* profile)
+    AuthenticationScreenExtensionsExternalLoader(
+        scoped_refptr<network::SharedURLLoaderFactory>
+            shared_url_loader_factory,
+        Profile* profile)
     : profile_(profile),
       // TODO(crbug.com/447583060): Separate cache for lock screen.
       external_cache_(
           base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_EXTENSIONS),
-          g_browser_process->shared_url_loader_factory(),
+          std::move(shared_url_loader_factory),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),

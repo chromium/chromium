@@ -23,6 +23,10 @@
 
 class Profile;
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace chromeos {
 
 // Loader of extensions force-installed into the sign-in and lock screen
@@ -40,7 +44,10 @@ class AuthenticationScreenExtensionsExternalLoader
       public session_manager::SessionManagerObserver,
       public ProfileManagerObserver {
  public:
-  explicit AuthenticationScreenExtensionsExternalLoader(Profile* profile);
+  // `shared_url_loader_factory` must be non-null.
+  AuthenticationScreenExtensionsExternalLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      Profile* profile);
   AuthenticationScreenExtensionsExternalLoader(
       const AuthenticationScreenExtensionsExternalLoader&) = delete;
   AuthenticationScreenExtensionsExternalLoader& operator=(
