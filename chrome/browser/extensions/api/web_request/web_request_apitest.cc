@@ -8690,20 +8690,45 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // uses ui_test_utils
 
+enum class AutoPreloadOptimizationTestMode {
+  kDisabled,
+  kEnabledDefault,
+  kEnabledAllowDNR,
+};
+
 class ManifestV3WebRequestServiceWorkerAutoPreloadTest
     : public ManifestV3WebRequestApiTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<AutoPreloadOptimizationTestMode> {
  public:
   ManifestV3WebRequestServiceWorkerAutoPreloadTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
-        GetParam());
+    switch (GetParam()) {
+      case AutoPreloadOptimizationTestMode::kDisabled:
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload);
+        break;
+      case AutoPreloadOptimizationTestMode::kEnabledDefault:
+        scoped_feature_list_.InitAndEnableFeature(
+            features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload);
+        break;
+      case AutoPreloadOptimizationTestMode::kEnabledAllowDNR:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
+            {{"allow_declarative_net_request", "true"}});
+        break;
+    }
   }
   ~ManifestV3WebRequestServiceWorkerAutoPreloadTest() override = default;
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return base::StrCat({"Optimization", info.param ? "Enabled" : "Disabled"});
+    switch (info.param) {
+      case AutoPreloadOptimizationTestMode::kDisabled:
+        return "Disabled";
+      case AutoPreloadOptimizationTestMode::kEnabledDefault:
+        return "EnabledDefault";
+      case AutoPreloadOptimizationTestMode::kEnabledAllowDNR:
+        return "EnabledAllowDNR";
+    }
   }
 
  private:
@@ -8713,7 +8738,9 @@ class ManifestV3WebRequestServiceWorkerAutoPreloadTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ManifestV3WebRequestServiceWorkerAutoPreloadTest,
-    testing::Bool(),
+    testing::Values(AutoPreloadOptimizationTestMode::kDisabled,
+                    AutoPreloadOptimizationTestMode::kEnabledDefault,
+                    AutoPreloadOptimizationTestMode::kEnabledAllowDNR),
     ManifestV3WebRequestServiceWorkerAutoPreloadTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestServiceWorkerAutoPreloadTest,
@@ -8813,6 +8840,82 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestServiceWorkerAutoPreloadTest,
 
   // Ensure no unexpected error message was received.
   EXPECT_FALSE(error_listener.was_satisfied());
+}
+
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestServiceWorkerAutoPreloadTest,
+                       DeclarativeNetRequestNavigation) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 DeclarativeNetRequest AutoPreload",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["declarativeNetRequest"],
+           "host_permissions": ["<all_urls>"]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to sw_register.html on localhost (secure context).
+  const GURL sw_register_url = embedded_test_server()->GetURL(
+      "localhost", "/web_apps/simple_isolated_app/sw_register.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(NavigateToURL(web_contents, sw_register_url));
+    ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+
+  EXPECT_EQ("SW_REGISTERED",
+            content::EvalJs(web_contents, "window.swActivationPromise"));
+
+  content::StoragePartition* storage_partition =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+  content::ServiceWorkerContext* sw_context =
+      storage_partition->GetServiceWorkerContext();
+
+  const blink::StorageKey& sw_storage_key =
+      web_contents->GetPrimaryMainFrame()->GetStorageKey();
+  GURL sw_scope = sw_storage_key.origin().GetURL().Resolve(
+      "/web_apps/simple_isolated_app/sw/");
+
+  ASSERT_TRUE(extensions::service_worker_test_utils::StopServiceWorkerForScope(
+      sw_context, sw_scope, sw_storage_key));
+
+  // Now navigate to sw scope.
+  const GURL sw_scope_url = embedded_test_server()->GetURL(
+      "localhost", "/web_apps/simple_isolated_app/sw/index.html");
+
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(NavigateToURL(web_contents, sw_scope_url));
+    ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+
+  EXPECT_EQ("SW Scope Page", content::EvalJs(web_contents, "document.title"));
+
+  switch (GetParam()) {
+    case AutoPreloadOptimizationTestMode::kDisabled:
+    case AutoPreloadOptimizationTestMode::kEnabledDefault:
+      histogram_tester.ExpectUniqueSample(
+          "ServiceWorker.AutoPreload.Dispatched", false, 1);
+      break;
+    case AutoPreloadOptimizationTestMode::kEnabledAllowDNR: {
+      const bool expected_dispatched = !base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest);
+      histogram_tester.ExpectUniqueSample(
+          "ServiceWorker.AutoPreload.Dispatched", expected_dispatched, 1);
+      break;
+    }
+  }
 }
 
 // Tests behavior when a service worker is stopped while processing an event.

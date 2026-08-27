@@ -2304,6 +2304,11 @@ bool ChromeContentBrowserClient::HasWebRequestAPIProxy(
   } else if (base::FeatureList::IsEnabled(
                  features::
                      kOptimizeWebRequestProxyForServiceWorkerAutoPreload)) {
+    if (features::
+            kOptimizeWebRequestProxyForServiceWorkerAutoPreloadAllowDeclarativeNetRequest
+                .Get()) {
+      return web_request_api->HasWebRequestExtension();
+    }
     return web_request_api->HasWebRequestOrDeclarativeWebRequestExtension();
   } else {
     return web_request_api->MayHaveProxies();
