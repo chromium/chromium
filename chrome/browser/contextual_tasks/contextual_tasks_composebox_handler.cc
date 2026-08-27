@@ -1222,9 +1222,6 @@ void ContextualTasksComposeboxHandler::MaybeTriggerLens() {
     if (controller->invocation_source() ==
             lens::LensOverlayInvocationSource::kOmniboxPageAction) {
       DCHECK(controller->invocation_source().has_value());
-      controller->SetThumbnailCreatedCallback(base::BindRepeating(
-          &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,
-          weak_factory_.GetWeakPtr()));
       controller->OpenLensOverlay(controller->invocation_source().value());
     }
   }
