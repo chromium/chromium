@@ -308,7 +308,7 @@ group("gn_all") {
     if (enable_pdf) {
       deps += [
         "//pdf/pdfium/fuzzers",
-        "//third_party/pdfium/testing:pdfium_test",
+        "//third_party/pdfium/testing/pdfium_test",
       ]
     }
 
@@ -1606,7 +1606,7 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     if (!is_chromeos) {
       data_deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
       if (enable_pdf) {
-        data_deps += [ "//third_party/pdfium/testing:pdfium_test" ]
+        data_deps += [ "//third_party/pdfium/testing/pdfium_test" ]
       }
     }
   }

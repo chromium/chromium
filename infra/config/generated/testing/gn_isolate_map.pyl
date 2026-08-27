@@ -1716,7 +1716,7 @@
     "module_scheme": "gtest",
   },
   "pdfium_test": {
-    "label": "//third_party/pdfium/testing:pdfium_test",
+    "label": "//third_party/pdfium/testing/pdfium_test",
     "type": "additional_compile_target",
   },
   "perfetto_diff_tests": {
