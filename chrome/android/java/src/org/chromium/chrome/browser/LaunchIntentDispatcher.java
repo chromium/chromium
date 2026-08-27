@@ -279,6 +279,7 @@ public class LaunchIntentDispatcher {
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
 
         WebAppLaunchHandler.copyFilePermissions(mActivity, intent, launchIntent);
+        WebAppLaunchHandler.copyShareDataPermissions(mActivity, intent, launchIntent);
 
         Uri extraReferrer = mActivity.getReferrer();
 

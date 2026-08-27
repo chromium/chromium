@@ -58,6 +58,7 @@ import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
+import androidx.browser.trusted.sharing.ShareData;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
@@ -2790,5 +2791,21 @@ public class CustomTabIntentDataProviderTest {
         when(connection.isFirstParty(eq(PACKAGE))).thenReturn(true);
         CustomTabsConnection.setInstanceForTesting(connection);
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
+    }
+
+    @Test
+    public void testGetShareData() {
+        Intent intent = new Intent();
+        Uri fileUri = Uri.parse("content://com.example/file.jpg");
+        ShareData rawData = new ShareData("title", "text", Arrays.asList(fileUri));
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, rawData.toBundle());
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        ShareData result = dataProvider.getShareData();
+        assertNotNull(result);
+        assertEquals("title", result.title);
+        assertEquals(fileUri, result.uris.get(0));
     }
 }

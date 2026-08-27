@@ -9,6 +9,7 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA;
+import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
@@ -28,6 +29,7 @@ import android.text.TextUtils;
 
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode.ClientMode;
+import androidx.browser.trusted.sharing.ShareData;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -143,7 +145,7 @@ public class WebAppLaunchHandler {
         return true;
     }
 
-    private static boolean isValidLaunchUri(Uri uri) {
+    public static boolean isValidLaunchUri(Uri uri) {
         if (uri == null) return false;
 
         // Only content URIs are allowed. Legitimate file launching on Android should
@@ -652,6 +654,127 @@ public class WebAppLaunchHandler {
         }
         targetIntent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE, canWriteArray);
+    }
+
+    /**
+     * Checks caller permissions for any file URIs in sourceIntent's share data and stashes the
+     * verified results in targetIntent.
+     *
+     * @param activity The launcher activity.
+     * @param sourceIntent The incoming intent containing client extras.
+     * @param targetIntent The launch intent being prepared for CustomTabActivity.
+     */
+    public static void copyShareDataPermissions(
+            Activity activity, Intent sourceIntent, Intent targetIntent) {
+        // Strip EXTRA_VERIFIED_SHARE_DATA if present on targetIntent so that it cannot be spoofed
+        // by CCT client apps.
+        IntentUtils.safeRemoveExtra(
+                targetIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+
+        Bundle shareDataBundle = IntentUtils.safeGetBundleExtra(sourceIntent, EXTRA_SHARE_DATA);
+        if (shareDataBundle == null) {
+            return;
+        }
+
+        ShareData shareData;
+        try {
+            shareData = ShareData.fromBundle(shareDataBundle);
+        } catch (Throwable e) {
+            Log.w(TAG, "Failed to parse share data", e);
+            return;
+        }
+        if (shareData == null) {
+            return;
+        }
+        if (shareData.uris == null || shareData.uris.isEmpty()) {
+            targetIntent.putExtra(
+                    CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, shareData.toBundle());
+            return;
+        }
+
+        Object caller = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            try {
+                caller = activity.getInitialCaller();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to get initial caller. Falling back.", e);
+            }
+        }
+
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(sourceIntent);
+        List<Uri> verifiedUris = new ArrayList<>();
+        for (Uri uri : shareData.uris) {
+            if (isValidLaunchUri(uri)
+                    && doesCallerHavePermissionForUri(
+                            activity,
+                            caller,
+                            session,
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                verifiedUris.add(uri);
+            } else {
+                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+            }
+        }
+
+        ShareData verifiedShareData = new ShareData(shareData.title, shareData.text, verifiedUris);
+        targetIntent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA,
+                verifiedShareData.toBundle());
+    }
+
+    /**
+     * Filters incoming share data to retain only URIs that the launching client app has permission
+     * to access.
+     *
+     * @param intentDataProvider Provides incoming intent and session customization data.
+     * @param activity The activity context, if available.
+     * @param caller The caller object (e.g. ComponentCaller on Android 15+), if available.
+     * @return The filtered ShareData object containing authorized URIs, or null if input was null.
+     */
+    public static @Nullable ShareData filterShareData(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            @Nullable Activity activity,
+            @Nullable Object caller) {
+        Intent intent = intentDataProvider.getIntent();
+        if (intent != null) {
+            Bundle verifiedBundle =
+                    IntentUtils.safeGetBundleExtra(
+                            intent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+            if (verifiedBundle != null) {
+                try {
+                    return ShareData.fromBundle(verifiedBundle);
+                } catch (Throwable e) {
+                    Log.w(TAG, "Failed to unparcel verified share data", e);
+                }
+            }
+        }
+
+        ShareData shareData = intentDataProvider.getShareData();
+        if (shareData == null || shareData.uris == null || shareData.uris.isEmpty()) {
+            return shareData;
+        }
+
+        if (activity == null) {
+            return new ShareData(shareData.title, shareData.text, new ArrayList<>());
+        }
+
+        List<Uri> filteredUris = new ArrayList<>();
+        for (Uri uri : shareData.uris) {
+            if (isValidLaunchUri(uri)
+                    && doesCallerHavePermissionForUri(
+                            activity,
+                            caller,
+                            intentDataProvider.getSession(),
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                filteredUris.add(uri);
+            } else {
+                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+            }
+        }
+
+        return new ShareData(shareData.title, shareData.text, filteredUris);
     }
 
     private String getScopeUrl(String url) {

@@ -269,6 +269,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_VERIFIED_FILE_CAN_WRITE =
             "org.chromium.chrome.browser.customtabs.EXTRA_VERIFIED_FILE_CAN_WRITE";
 
+    /** Extra that contains the verified ShareData bundle. */
+    public static final String EXTRA_VERIFIED_SHARE_DATA =
+            "org.chromium.chrome.browser.customtabs.EXTRA_VERIFIED_SHARE_DATA";
+
     /**
      * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
      * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
@@ -1683,7 +1687,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public @Nullable ShareData getShareData() {
         Bundle bundle =
-                IntentUtils.safeGetParcelableExtra(
+                IntentUtils.safeGetBundleExtra(
                         getIntent(), TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA);
         if (bundle == null) return null;
         try {
