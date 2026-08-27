@@ -1098,10 +1098,9 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
       if (!DispatchDelayedMessages()) {
         return false;
       }
-    } else if (result == DispatchResult::kNotEnoughData) {
+    } else if (result == DispatchResult::kNotEnoughData ||
+               result == DispatchResult::kMissingHandles) {
       return true;
-    } else if (result == DispatchResult::kMissingHandles) {
-      break;
     } else if (result == DispatchResult::kError) {
       return false;
     }

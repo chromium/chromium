@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
@@ -426,7 +427,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
 
   std::string read_buffer(100, '\0');
   uint32_t num_bytes = static_cast<uint32_t>(read_buffer.size());
-  std::array<MojoHandle, 255> handles;  // Maximum number to receive.
+  std::array<MojoHandle, 512> handles;  // Maximum number to receive.
   uint32_t num_handlers = std::size(handles);
 
   CHECK_EQ(MojoReadMessage(h, &read_buffer[0], &num_bytes, &handles[0],
@@ -457,6 +458,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
   return 0;
 }
 
+// Android multi-process tests are not executing the new process. This is flaky.
 #if !BUILDFLAG(IS_ANDROID)
 class MultiprocessMessagePipeTestWithPipeCount
     : public MultiprocessMessagePipeTest,
@@ -503,10 +505,18 @@ TEST_P(MultiprocessMessagePipeTestWithPipeCount, PlatformHandlePassing) {
   });
 }
 
-// Android multi-process tests are not executing the new process. This is flaky.
+// This needs to test message sharding which occurs when platform handles reach
+// certain limits: ZX_CHANNEL_MAX_MSG_HANDLES, kMaxSendmsgHandles,
+// kMaxAttachedHandles.
 INSTANTIATE_TEST_SUITE_P(PipeCount,
                          MultiprocessMessagePipeTestWithPipeCount,
-                         testing::Values(1u, 64u, 128u, 255u));
+// Mac crashes with too many handles: crbug.com/553026855
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+                         testing::Values(1u, 64u, 128u, 255u)
+#else
+                         testing::Values(1u, 64u, 128u, 255u, 512u)
+#endif
+);
 #endif
 
 DEFINE_TEST_CLIENT_WITH_PIPE(CheckMessagePipe, MultiprocessMessagePipeTest, h) {
