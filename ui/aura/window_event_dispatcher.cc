@@ -430,6 +430,9 @@ void WindowEventDispatcher::UpdateCapture(Window* old_capture,
   if (mouse_moved_handler_ && !window()->Contains(mouse_moved_handler_))
     mouse_moved_handler_ = nullptr;
 
+  // Block the deletion of the root window, its host thus this dispatcher.
+  Window::ScopedDeleteBlocker root_window_blocker(window());
+
   std::unique_ptr<Window::ScopedDeleteBlocker> new_capture_blocker;
   if (new_capture) {
     new_capture_blocker =

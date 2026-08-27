@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
+#include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/client/event_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
@@ -2613,6 +2614,22 @@ class DeleteOtherWindowOnCaptureLostDelegate : public test::TestWindowDelegate {
   raw_ptr<Window> other_ = nullptr;
 };
 
+class DeleteHostOnCaptureLostDelegate : public test::TestWindowDelegate {
+ public:
+  DeleteHostOnCaptureLostDelegate() = default;
+  ~DeleteHostOnCaptureLostDelegate() override = default;
+
+  void set_host(std::unique_ptr<WindowTreeHost> host) {
+    host_ = std::move(host);
+  }
+
+  // test::TestWindowDelegate:
+  void OnCaptureLost() override { host_.reset(); }
+
+ private:
+  std::unique_ptr<WindowTreeHost> host_;
+};
+
 }  // namespace
 
 // Verifies handling loss of capture by the capture window being hidden.
@@ -2652,6 +2669,31 @@ TEST_F(WindowEventDispatcherDeathTest, DeleteNewCaptureDuringOnCaptureLost) {
   // w1's OnCaptureLost will delete w2, which should crash due to
   // ScopedDeleteBlocker.
   EXPECT_DEATH(client::GetCaptureClient(root_window())->SetCapture(w2), "");
+}
+
+// Verifies that deleting the host/root window during OnCaptureLost of the
+// capture window causes a crash (due to ScopedDeleteBlocker).
+TEST_F(WindowEventDispatcherDeathTest, DeleteHostDuringOnCaptureLost) {
+  DeleteHostOnCaptureLostDelegate delegate;
+  std::unique_ptr<WindowTreeHost> host = WindowTreeHost::Create(
+      ui::PlatformWindowInitProperties{gfx::Rect{100, 100}});
+  host->InitHost();
+  host->window()->Show();
+
+  client::DefaultCaptureClient capture_client(host->window());
+
+  Window* w = CreateNormalWindow(1, host->window(), &delegate);
+  delegate.set_host(std::move(host));
+
+  client::GetCaptureClient(w->GetRootWindow())->SetCapture(w);
+  EXPECT_EQ(w,
+            client::GetCaptureClient(w->GetRootWindow())->GetCaptureWindow());
+
+  // This will trigger UpdateCapture(w, nullptr).
+  // w's OnCaptureLost will attempt to delete the host, which should crash due
+  // to ScopedDeleteBlocker on the root window.
+  EXPECT_DEATH(client::GetCaptureClient(w->GetRootWindow())->ReleaseCapture(w),
+               "");
 }
 
 namespace {
