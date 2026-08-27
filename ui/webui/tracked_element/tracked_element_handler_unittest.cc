@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -610,7 +611,9 @@ TEST_F(TrackedElementHandlerTest, VisibilityLockPreventsHiding) {
   // Release lock.
   lock.reset();
   // Now it should be hidden.
-  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !tracker->IsElementVisible(kTestElementIdentifier1, context);
+  }));
 }
 
 TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
@@ -634,7 +637,9 @@ TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
   EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
 
   lock2.reset();
-  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !tracker->IsElementVisible(kTestElementIdentifier1, context);
+  }));
 }
 
 // Tests for multiple elements with the same ElementIdentifier but different

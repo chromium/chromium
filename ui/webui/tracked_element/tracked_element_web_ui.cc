@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -34,9 +36,7 @@ TrackedElementVisibilityLock::TrackedElementVisibilityLock(
 }
 
 TrackedElementVisibilityLock::~TrackedElementVisibilityLock() {
-  if (element_) {
-    element_->RemoveVisibilityLock();
-  }
+  Release();
 }
 
 TrackedElementVisibilityLock::TrackedElementVisibilityLock(
@@ -48,13 +48,32 @@ TrackedElementVisibilityLock::TrackedElementVisibilityLock(
 TrackedElementVisibilityLock& TrackedElementVisibilityLock::operator=(
     TrackedElementVisibilityLock&& other) noexcept {
   if (this != &other) {
-    if (element_) {
-      element_->RemoveVisibilityLock();
-    }
+    Release();
     element_ = std::move(other.element_);
     other.element_.reset();
   }
   return *this;
+}
+
+void TrackedElementVisibilityLock::Release() {
+  if (element_) {
+    // Release the visibility lock via PostTask, since loss of visibility can
+    // lead to destruction of HelpBubble instances -- we might have just dropped
+    // a visibility lock in one of the closing callbacks of a HelpBubble, and
+    // are still in the process of iterating over the remaining closing
+    // callbacks.
+    //
+    // This can happen (for instance) if a window is closed when an IPH
+    // tutorial is active. See crbug.com/543464750 for details.
+    if (base::SequencedTaskRunner::HasCurrentDefault()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&TrackedElementWebUI::RemoveVisibilityLock, element_));
+    } else {
+      element_->RemoveVisibilityLock();
+    }
+    element_.reset();
+  }
 }
 
 TrackedElementWebUI::HighlightHandle::HighlightHandle(

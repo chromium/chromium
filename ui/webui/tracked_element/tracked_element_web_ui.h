@@ -39,6 +39,8 @@ class TrackedElementVisibilityLock {
       TrackedElementVisibilityLock&&) noexcept;
 
  private:
+  void Release();
+
   base::WeakPtr<TrackedElementWebUI> element_;
 };
 

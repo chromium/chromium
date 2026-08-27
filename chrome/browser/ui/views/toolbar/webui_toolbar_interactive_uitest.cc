@@ -56,6 +56,8 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,6 +68,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -102,6 +105,7 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 
 namespace {
 
@@ -1080,6 +1084,70 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   EXPECT_EQ(observer.num_started_navigations(), 3u);
   EXPECT_EQ(observer.num_finished_navigations(), 3u);
   EXPECT_EQ(observer.num_committed_navigations(), 2u);
+}
+
+// Test that closing a WebUI help bubble does not cause a CHECK(!iterating_)
+// crash when element hidden callbacks (such as sequence abort or tutorial
+// reset) destroy the help bubble during visibility lock cleanup.
+IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
+                       CloseBrowserWithHelpBubbleShowing) {
+  if (!IsWebUIReloadButtonEnabled()) {
+    GTEST_SKIP() << "Test requires WebUI toolbar buttons enabled";
+  }
+
+  ui::TrackedElement* element = nullptr;
+  RunTestSequence(
+      SetUpReloadButtonTest(),
+      InAnyContext(WaitForShow(kReloadButtonElementId)), Do([&]() {
+        element =
+            ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kReloadButtonElementId);
+        ASSERT_NE(nullptr, element);
+        ASSERT_NE(nullptr, element->AsA<ui::TrackedElementWebUI>());
+      }));
+
+  user_education::HelpBubbleParams params;
+  params.body_text = u"Test help bubble";
+  auto* user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  std::unique_ptr<user_education::HelpBubble> help_bubble =
+      user_education_service->help_bubble_factory_registry().CreateHelpBubble(
+          element, std::move(params));
+  ASSERT_NE(nullptr, help_bubble);
+
+  // Hide WebContents. Because visibility_lock is held by HelpBubbleHandlerBase,
+  // effective_visibility remains true until visibility_lock is released.
+  auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
+  webui_element->handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // Simulate TutorialService / InteractionSequence behavior: when element
+  // hidden notification fires (triggered when visibility_lock is released while
+  // WebContents is hidden), destroy the help_bubble.
+  base::RunLoop run_loop;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          kReloadButtonElementId, element->context(),
+          base::BindLambdaForTesting([&](ui::TrackedElement*) {
+            help_bubble.reset();
+            run_loop.Quit();
+          }));
+
+  // Close the help bubble. Without the PostTask fix in
+  // TrackedElementVisibilityLock, resetting visibility_lock inside
+  // OnFloatingHelpBubbleClosed synchronously fires
+  // ElementTracker::NotifyElementHidden (since WebContents is hidden), which
+  // invokes the callback above to destroy help_bubble while its
+  // on_closing_callbacks_ list is iterating, causing a CHECK(!iterating_)
+  // crash.
+  help_bubble->Close(
+      user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
+
+  // Wait for the deferred visibility lock destruction task to run and trigger
+  // the hidden callback.
+  run_loop.Run();
+
+  EXPECT_EQ(nullptr, help_bubble);
 }
 
 #if BUILDFLAG(IS_MAC)
