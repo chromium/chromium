@@ -130,7 +130,7 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 
     recovery_factor_ = std::make_unique<ICloudKeychainRecoveryFactor>(
         kKeychainAccessGroupPrefix, SecurityDomainId::kChromeSync,
-        storage_.get(), connection_.get(), account_info);
+        storage_.get(), storage_.get(), connection_.get(), account_info);
   }
 
   CoreAccountInfo account_info() {

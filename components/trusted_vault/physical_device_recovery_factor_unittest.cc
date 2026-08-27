@@ -87,8 +87,8 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
 
     recovery_factor_ = std::make_unique<PhysicalDeviceRecoveryFactor>(
-        SecurityDomainId::kChromeSync, storage_.get(), connection_.get(),
-        account_info);
+        SecurityDomainId::kChromeSync, storage_.get(), storage_.get(),
+        connection_.get(), account_info);
   }
 
   CoreAccountInfo account_info() {
@@ -404,8 +404,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
       file_access()->GetStoredLocalTrustedVault();
   ASSERT_THAT(proto.user_size(), Eq(1));
   // Ensure that the failure is cleared, since registration succeeded.
-  EXPECT_FALSE(
-      proto.user(0).has_last_registration_returned_local_data_obsolete());
+  EXPECT_FALSE(proto.user(0).last_registration_returned_local_data_obsolete());
   // Additionally ensure that |local_device_registration_info| has correct
   // state.
   EXPECT_TRUE(

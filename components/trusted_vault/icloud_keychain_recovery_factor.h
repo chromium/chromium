@@ -25,12 +25,11 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   // `storage` and `connection` must not be null and must outlive this object.
   // `storage` must contain a vault for `primary_account` when calling any
   // method of this class.
-  // TODO(crbug.com/405381481): Refactor / remove the usage of
-  // StandaloneTrustedVaultStorage in this class.
   ICloudKeychainRecoveryFactor(
       const std::string& icloud_keychain_access_group_prefix,
       const SecurityDomainId security_domain_id,
-      StandaloneTrustedVaultStorage* storage,
+      ICloudKeychainStorage* storage,
+      KeyStorage* key_storage,
       TrustedVaultThrottlingConnection* connection,
       CoreAccountInfo primary_account);
   ICloudKeychainRecoveryFactor(const ICloudKeychainRecoveryFactor&) = delete;
@@ -49,8 +48,6 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
       RegisterCallback cb) override;
 
  private:
-  const UserVault& GetPrimaryAccountVault();
-
   void OnICloudKeysRetrievedForRecovery(
       AttemptRecoveryCallback cb,
       std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys);
@@ -77,7 +74,8 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
 
   const std::string icloud_keychain_access_group_;
   const SecurityDomainId security_domain_id_;
-  const raw_ptr<StandaloneTrustedVaultStorage> storage_;
+  const raw_ptr<ICloudKeychainStorage> storage_;
+  const raw_ptr<KeyStorage> key_storage_;
   const raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo primary_account_;
 

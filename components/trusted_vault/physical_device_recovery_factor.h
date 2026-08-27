@@ -27,10 +27,9 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   // `storage` and `connection` must not be null and must outlive this object.
   // `storage` must contain a vault for `primary_account` when calling any
   // method of this class.
-  // TODO(crbug.com/405381481): Refactor / remove the usage of
-  // StandaloneTrustedVaultStorage in this class.
   PhysicalDeviceRecoveryFactor(SecurityDomainId security_domain_id,
-                               StandaloneTrustedVaultStorage* storage,
+                               PhysicalDeviceStorage* storage,
+                               KeyStorage* key_storage,
                                TrustedVaultThrottlingConnection* connection,
                                CoreAccountInfo primary_account);
   PhysicalDeviceRecoveryFactor(const PhysicalDeviceRecoveryFactor&) = delete;
@@ -49,8 +48,6 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
       RegisterCallback cb) override;
 
  private:
-  const UserVault& GetPrimaryAccountVault();
-
   void OnKeysDownloaded(AttemptRecoveryCallback cb,
                         TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& new_vault_keys,
@@ -66,7 +63,8 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
                                       RegisterCallback cb);
 
   const SecurityDomainId security_domain_id_;
-  const raw_ptr<StandaloneTrustedVaultStorage> storage_;
+  const raw_ptr<PhysicalDeviceStorage> storage_;
+  const raw_ptr<KeyStorage> key_storage_;
   const raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo primary_account_;
 

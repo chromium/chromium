@@ -145,7 +145,8 @@ class LocalRecoveryFactorsFactoryImpl
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     local_recovery_factors.emplace_back(
         std::make_unique<PhysicalDeviceRecoveryFactor>(
-            security_domain_id, storage, connection, primary_account));
+            security_domain_id, /*storage=*/storage, /*key_storage=*/storage,
+            connection, primary_account));
 #if BUILDFLAG(IS_MAC)
     // Note: The iCloud Keychain recovery factor needs to come after the
     // physical device recovery factor.
@@ -155,8 +156,9 @@ class LocalRecoveryFactorsFactoryImpl
     // first.
     local_recovery_factors.emplace_back(
         std::make_unique<ICloudKeychainRecoveryFactor>(
-            icloud_keychain_access_group_prefix_, security_domain_id, storage,
-            connection, primary_account));
+            icloud_keychain_access_group_prefix_, security_domain_id,
+            /*storage=*/storage, /*key_storage=*/storage, connection,
+            primary_account));
 #endif
 
     return local_recovery_factors;
@@ -289,8 +291,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
 
   const UserVault* per_user_vault = storage_->FindUserVault(account_info.gaia);
 
-  if (per_user_vault &&
-      StandaloneTrustedVaultStorage::HasNonConstantKey(*per_user_vault) &&
+  if (per_user_vault && storage_->HasNonConstantKey(account_info.gaia) &&
       !per_user_vault->keys_marked_as_stale_by_consumer()) {
     // There are locally available keys, which weren't marked as stale. Keys
     // download attempt is not needed.

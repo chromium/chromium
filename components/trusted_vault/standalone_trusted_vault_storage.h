@@ -114,6 +114,13 @@ class KeyStorage {
   // Creates the user vault if it does not exist, and commits changes to disk.
   virtual void SetKeysMarkedAsStaleByConsumer(const GaiaId& gaia_id,
                                               bool stale) = 0;
+
+  // Checks whether there is any non-constant key for `gaia_id`.
+  // This indicates that the corresponding security domain is not in the
+  // pre-enrollment state, but contains usable key material.
+  // Returns false if the user vault does not exist or only contains constant
+  // keys.
+  virtual bool HasNonConstantKey(const GaiaId& gaia_id) const = 0;
 };
 
 // Storage interface for connection request throttling state.
@@ -226,16 +233,12 @@ class StandaloneTrustedVaultStorage : public PhysicalDeviceStorage,
   bool GetKeysMarkedAsStaleByConsumer(const GaiaId& gaia_id) const override;
   void SetKeysMarkedAsStaleByConsumer(const GaiaId& gaia_id,
                                       bool stale) override;
+  bool HasNonConstantKey(const GaiaId& gaia_id) const override;
 
   // ConnectionThrottlingStorage implementation:
   int64_t GetLastFailedRequestMillis(const GaiaId& gaia_id) const override;
   void SetLastFailedRequestMillis(const GaiaId& gaia_id,
                                   int64_t last_failed_request_millis) override;
-
-  // Checks whether there is any non-constant key in `per_user_vault`.
-  // This indicates that the corresponding security domain is not in the
-  // pre-enrollment state, but contains usable key material.
-  static bool HasNonConstantKey(const UserVault& per_user_vault);
 
   // Helper method to get all keys in `per_user_vault`.
   static std::vector<std::vector<uint8_t>> GetAllVaultKeys(

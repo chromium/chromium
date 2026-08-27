@@ -458,14 +458,17 @@ void StandaloneTrustedVaultStorage::SetLastFailedRequestMillis(
   });
 }
 
-// static
 bool StandaloneTrustedVaultStorage::HasNonConstantKey(
-    const UserVault& per_user_vault) {
+    const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  if (!user_vault) {
+    return false;
+  }
   std::string constant_key_as_proto_string;
   AssignBytesToProtoString(GetConstantTrustedVaultKey(),
                            &constant_key_as_proto_string);
   for (const trusted_vault_pb::LocalTrustedVaultKey& key :
-       per_user_vault.vault_key()) {
+       user_vault->vault_key()) {
     if (key.key_material() != constant_key_as_proto_string) {
       return true;
     }
