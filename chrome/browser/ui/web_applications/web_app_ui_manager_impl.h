@@ -142,14 +142,6 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
   void TriggerInstallDialog(content::WebContents* web_contents,
                             webapps::WebappInstallSource source,
                             InstallCallback callback) override;
-  // TODO(crbug.com/520025525): Remove install_url code.
-  void TriggerInstallDialogForBackgroundInstall(
-      content::WebContents* initiating_web_contents,
-      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-      const GURL& install_url,
-      const std::optional<GURL>& manifest_id,
-      const GURL& last_committed_url,
-      InstallCallback callback) override;
   void TriggerInstallDialogForManifestInstall(
       content::WebContents* initiating_web_contents,
       base::WeakPtr<content::Page> initiating_page,

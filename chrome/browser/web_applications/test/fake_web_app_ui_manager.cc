@@ -212,16 +212,6 @@ void FakeWebAppUiManager::TriggerInstallDialog(
   std::move(callback).Run("", trigger_install_dialog_result_code_);
 }
 
-void FakeWebAppUiManager::TriggerInstallDialogForBackgroundInstall(
-    content::WebContents* initiating_web_contents,
-    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-    const GURL& install_url,
-    const std::optional<GURL>& manifest_id,
-    const GURL& last_committed_url,
-    InstallCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void FakeWebAppUiManager::TriggerInstallDialogForManifestInstall(
     content::WebContents* initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,

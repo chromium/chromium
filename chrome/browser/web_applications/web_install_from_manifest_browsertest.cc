@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,17 +19,25 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -40,6 +49,8 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -99,6 +110,7 @@ namespace {
 constexpr char kAbortError[] = "AbortError";
 constexpr char kDataError[] = "DataError";
 constexpr char kSecurityError[] = "SecurityError";
+constexpr int kMaxInstalledBySize = 10;
 constexpr char kTestPageWithId[] = "/banners/manifest_with_id_test_page.html";
 constexpr char kValidManifestNoId[] = "/banners/manifest.json";
 constexpr char kValidManifestWithId[] = "/banners/manifest_with_id.json";
@@ -146,10 +158,16 @@ constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 // ManifestManager mojo interface via ParseManifestFromStringJob.
 class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebInstallFromManifestBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppInstallation},
-        {features::kWebAppInstallDialog});
+  explicit WebInstallFromManifestBrowserTest(
+      bool disable_install_dialog = true) {
+    if (disable_install_dialog) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kWebAppInstallation},
+          {features::kWebAppInstallDialog});
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kWebAppInstallation);
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -329,6 +347,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 
   EXPECT_TRUE(ResultExists());
   EXPECT_FALSE(ErrorExists());
+  EXPECT_FALSE(
+      content::EvalJs(web_contents(), "'manifestId' in webInstallResult")
+          .ExtractBool());
 
   // Verify the app is registered.
   GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
@@ -698,6 +719,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 
   // Fire install #2 — should be rejected by the concurrent install guard.
   ASSERT_TRUE(TryInstallFromManifest(manifest_url));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebInstallFromManifestBrowserTest,
+    ConcurrentCurrentDocumentAndManifestInstalls_AbortError) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(kTestPageWithId)));
+  SetPermissionResponse(/*permission_granted=*/true);
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "navigator.install()"
+                              ".then(result => { webInstallResult = result; })"
+                              ".catch(error => { webInstallError = error; });",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_TRUE(TryInstallFromManifest(
+      embedded_https_test_server().GetURL(kValidManifestWithId)));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -2086,6 +2127,316 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestPolicyDisabledTest,
             ukm::SourceIdType::APP_ID);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       InstalledByFieldNewEntryAndNoDuplicates) {
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  provider().SetClockForTesting(&test_clock);
+  base::ScopedClosureRunner reset_clock(base::BindLambdaForTesting(
+      [this]() { provider().SetClockForTesting(nullptr); }));
+
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+
+  const GURL second_requesting_url =
+      embedded_https_test_server().GetURL("/web_apps/simple/index.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_requesting_url));
+  SetPermissionResponse(/*permission_granted=*/true);
+  test_clock.Advance(base::Hours(1));
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  const std::deque<AppInstalledBy> after_second = GetInstalledBy(app_id);
+  ASSERT_EQ(2u, after_second.size());
+  EXPECT_EQ(embedded_https_test_server().GetURL("/simple.html"),
+            after_second[0].requesting_url());
+  EXPECT_EQ(second_requesting_url, after_second[1].requesting_url());
+  EXPECT_GT(after_second[1].install_api_call_time(),
+            after_second[0].install_api_call_time());
+  const base::Time second_install_time =
+      after_second[1].install_api_call_time();
+
+  const GURL first_requesting_url =
+      embedded_https_test_server().GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_requesting_url));
+  SetPermissionResponse(/*permission_granted=*/true);
+  test_clock.Advance(base::Hours(1));
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  const std::deque<AppInstalledBy> after_third = GetInstalledBy(app_id);
+  ASSERT_EQ(2u, after_third.size());
+  EXPECT_EQ(second_requesting_url, after_third[0].requesting_url());
+  EXPECT_EQ(second_install_time, after_third[0].install_api_call_time());
+  EXPECT_EQ(first_requesting_url, after_third[1].requesting_url());
+  EXPECT_GT(after_third[1].install_api_call_time(), second_install_time);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       InstalledByFieldMaxEntries) {
+  const GURL install_url = embedded_https_test_server().GetURL(kTestPageWithId);
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+
+  auto info_result = WebAppInstallInfo::Create(
+      manifest_url, webapps::ManifestId(manifest_id), install_url);
+  ASSERT_TRUE(info_result.has_value());
+  const webapps::AppId app_id = test::InstallWebApp(
+      profile(),
+      std::make_unique<WebAppInstallInfo>(std::move(info_result.value())),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  auto* server = &embedded_https_test_server();
+  base::test::TestFuture<void> fill_future;
+  provider().scheduler().ScheduleCallback<AppLock>(
+      "InstalledByFieldMaxEntries", AppLockDescription(app_id),
+      base::BindLambdaForTesting(
+          [&](AppLock& lock, base::DictValue& debug_value) {
+            ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+            WebApp* app_to_update = update->UpdateApp(app_id);
+            EXPECT_TRUE(app_to_update);
+            if (!app_to_update) {
+              return;
+            }
+            const base::Time base_time = base::Time::Now();
+            for (int i = 1; i <= kMaxInstalledBySize; ++i) {
+              app_to_update->AddInstalledByInfo(AppInstalledBy(
+                  base_time + base::Seconds(i),
+                  server->GetURL("/page" + base::NumberToString(i) + ".html")));
+            }
+          }),
+      fill_future.GetCallback());
+  ASSERT_TRUE(fill_future.Wait());
+  ASSERT_EQ(static_cast<size_t>(kMaxInstalledBySize),
+            GetInstalledBy(app_id).size());
+
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  const std::deque<AppInstalledBy> installed_by = GetInstalledBy(app_id);
+  ASSERT_EQ(static_cast<size_t>(kMaxInstalledBySize), installed_by.size());
+  for (int i = 0; i < kMaxInstalledBySize - 1; ++i) {
+    EXPECT_EQ(server->GetURL("/page" + base::NumberToString(i + 2) + ".html"),
+              installed_by[i].requesting_url());
+  }
+  EXPECT_EQ(embedded_https_test_server().GetURL("/simple.html"),
+            installed_by.back().requesting_url());
+}
+
+enum class NotLaunchableFromInstallApi {
+  kNoOSIntegration,
+  kDisplayModeBrowser,
+};
+
+class WebInstallFromManifestNotLaunchableBrowserTest
+    : public WebInstallFromManifestBrowserTest,
+      public testing::WithParamInterface<NotLaunchableFromInstallApi> {};
+
+IN_PROC_BROWSER_TEST_P(WebInstallFromManifestNotLaunchableBrowserTest,
+                       Reinstalls) {
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const GURL install_url = embedded_https_test_server().GetURL(kTestPageWithId);
+  auto info_result = WebAppInstallInfo::Create(
+      manifest_url, webapps::ManifestId(manifest_id), install_url);
+  ASSERT_TRUE(info_result.has_value());
+  auto info =
+      std::make_unique<WebAppInstallInfo>(std::move(info_result.value()));
+
+  webapps::AppId app_id;
+  switch (GetParam()) {
+    case NotLaunchableFromInstallApi::kNoOSIntegration:
+      app_id = test::InstallWebAppWithoutOsIntegration(
+          profile(), std::move(info),
+          /*overwrite_existing_manifest_fields=*/false,
+          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+      break;
+    case NotLaunchableFromInstallApi::kDisplayModeBrowser:
+      info->user_display_mode = mojom::UserDisplayMode::kBrowser;
+      app_id =
+          test::InstallWebApp(profile(), std::move(info),
+                              /*overwrite_existing_manifest_fields=*/false,
+                              webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+      break;
+  }
+  ASSERT_FALSE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::HistogramTester histograms;
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+  test::CompletePageLoadForAllWebContents();
+  histograms.ExpectUniqueSample("WebApp.Install.Source.Success", kInstallSource,
+                                1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kSuccess, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebInstallFromManifestNotLaunchableBrowserTest,
+    testing::Values(NotLaunchableFromInstallApi::kNoOSIntegration,
+                    NotLaunchableFromInstallApi::kDisplayModeBrowser));
+
+class WebInstallFromManifestInstallDialogFeatureBrowserTest
+    : public base::test::WithFeatureOverride,
+      public WebInstallFromManifestBrowserTest {
+ public:
+  WebInstallFromManifestInstallDialogFeatureBrowserTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog),
+        WebInstallFromManifestBrowserTest(
+            /*disable_install_dialog=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
+                       AlreadyInstalled_LaunchDialogClosesOnTabSwitch) {
+  const GURL install_url = embedded_https_test_server().GetURL(kTestPageWithId);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppInNewTabAndClose(browser(), install_url);
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebInstallLaunchDialog");
+  base::HistogramTester histograms;
+  ASSERT_TRUE(FireInstallFromManifestNoResolve(
+      embedded_https_test_server().GetURL(kValidManifestWithId)));
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  destroyed.Wait();
+
+  chrome::SelectPreviousTab(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(),
+                           "typeof webInstallError !== 'undefined'")
+        .ExtractBool();
+  }));
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(kAbortError, GetErrorName());
+  histograms.ExpectBucketCount("WebApp.LaunchSource", kLaunchSource, 0);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
+                       ManifestInstall_FromPWAWindow) {
+  const GURL caller_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  BrowserWindowInterface* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(browser(), caller_url);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(app_web_contents);
+  const GURL requesting_url = app_web_contents->GetLastCommittedURL();
+
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  SetPermissionResponse(/*permission_granted=*/true, app_web_contents);
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id,
+                                           app_web_contents));
+  EXPECT_TRUE(ResultExists(app_web_contents));
+  EXPECT_FALSE(ErrorExists(app_web_contents));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  const std::deque<AppInstalledBy> installed_by = GetInstalledBy(app_id);
+  ASSERT_EQ(1u, installed_by.size());
+  EXPECT_EQ(requesting_url, installed_by.front().requesting_url());
+  EXPECT_FALSE(installed_by.front().install_api_call_time().is_null());
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
+                       AlreadyInstalled_UserAcceptsLaunchDialog_FromPWAWindow) {
+  const GURL install_url = embedded_https_test_server().GetURL(kTestPageWithId);
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  BrowserWindowInterface* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(browser(), install_url);
+  ASSERT_TRUE(app_browser);
+  ASSERT_EQ(app_id, AppBrowserController::From(app_browser)->app_id());
+  content::WebContents* app_web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(app_web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      app_browser, embedded_https_test_server().GetURL("/simple.html")));
+
+  SetPermissionResponse(/*permission_granted=*/true, app_web_contents);
+  base::HistogramTester histograms;
+  ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id,
+                                           app_web_contents));
+  EXPECT_TRUE(ResultExists(app_web_contents));
+  EXPECT_FALSE(ErrorExists(app_web_contents));
+
+  test::CompletePageLoadForAllWebContents();
+  histograms.ExpectBucketCount("WebApp.LaunchSource", kLaunchSource, 1);
+  histograms.ExpectTotalCount("WebApp.Install.Source.Success", 0);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebInstallFromManifestInstallDialogFeatureBrowserTest);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Install dialog contents.

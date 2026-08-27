@@ -78,8 +78,6 @@ constexpr char kVariantedInstallTypeUma[] =
     "WebApp.WebInstallService.Api.InstallType";
 constexpr char kVariantedInstallResultUma[] =
     "WebApp.WebInstallService.Api.Result";
-constexpr char kRequestingPageUkm[] = "ResultByRequestingPage";
-constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 constexpr char kTestPageWithId[] = "/banners/manifest_with_id_test_page.html";
 constexpr char kNestedScopeCurrentDocument[] =
     "/web_apps/nesting/nested/parent_manifest_page.html";
@@ -625,84 +623,6 @@ IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
-                       NotSupportedDialogInIncognito_BackgroundDocument) {
-  // Open incognito window and navigate to a valid URL.
-  GURL test_url = embedded_https_test_server().GetURL("/simple.html");
-  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, test_url));
-
-  const GURL background_doc_install_url =
-      embedded_https_test_server().GetURL(kTestPageWithId);
-
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
-  content::WebContents* incognito_web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
-
-  base::HistogramTester histograms;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  // Trigger the Install Not Supported dialog by initiating an install request.
-  ExecuteScriptAsync(incognito_web_contents,
-                     "navigator.install('" + background_doc_install_url.spec() +
-                         "')"
-                         ".then(result => {"
-                         "  webInstallResult = result;"
-                         "}).catch(error => {"
-                         "  webInstallError = error;"
-                         "});");
-
-  // Wait for the dialog to show.
-  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
-  ASSERT_NE(widget, nullptr);
-  views::test::WidgetDestroyedWaiter destroyed(widget);
-
-  // Verify dialog title for Incognito mode.
-  EXPECT_EQ(
-      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
-      u"Web app installs aren't supported in Incognito mode");
-
-  // Simulate the user accepting the dialog.
-  views::test::AcceptDialog(widget);
-  destroyed.Wait();
-
-  // Validate JS results.
-  EXPECT_FALSE(ResultExists(incognito_web_contents));
-  EXPECT_TRUE(ErrorExists(incognito_web_contents));
-  EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
-
-  histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
-      1);
-  histograms.ExpectBucketCount(
-      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
-  // Check the varianted UMAs.
-  histograms.ExpectBucketCount(
-      kVariantedInstallResultUma,
-      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(
-      kVariantedInstallTypeUma,
-      web_app::WebInstallServiceType::kBackgroundDocument, 1);
-
-  // Verify UKM entries.
-  auto ukm_entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::WebApp_WebInstall::kEntryName);
-  ASSERT_EQ(2u, ukm_entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      ukm_entries[0], kRequestingPageUkm,
-      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
-  // First entry should be of source type, NAVIGATION_ID.
-  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
-            ukm::SourceIdType::NAVIGATION_ID);
-  ukm_recorder.ExpectEntryMetric(
-      ukm_entries[1], kInstalledAppUkm,
-      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
-  // Second entry should be of source type, APP_ID.
-  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
-            ukm::SourceIdType::APP_ID);
-}
-
-IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a page with a valid manifest.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
@@ -831,91 +751,6 @@ IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
   histograms.ExpectBucketCount(kVariantedInstallTypeUma,
                                web_app::WebInstallServiceType::kCurrentDocument,
                                1);
-}
-
-IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
-                       NotSupportedDialogInGuestMode_BackgroundDocument) {
-  // Open a new guest mode window.
-#if BUILDFLAG(IS_CHROMEOS)
-  BrowserWindowInterface* guest_browser = browser();
-#else
-  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
-
-  // Navigate to a valid URL in the guest browser.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      guest_browser, embedded_https_test_server().GetURL("/simple.html")));
-
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
-  content::WebContents* guest_web_contents =
-      guest_browser->tab_strip_model()->GetActiveWebContents();
-
-  const GURL background_doc_install_url =
-      embedded_https_test_server().GetURL(kTestPageWithId);
-
-  base::HistogramTester histograms;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  // Trigger the Install Not Supported dialog by initiating an install request.
-  ExecuteScriptAsync(guest_web_contents, "navigator.install('" +
-                                             background_doc_install_url.spec() +
-                                             "')"
-                                             ".then(result => {"
-                                             "  webInstallResult = result;"
-                                             "}).catch(error => {"
-                                             "  webInstallError = error;"
-                                             "});");
-
-  // Confirm Install Not Supported Dialog shows.
-  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
-  ASSERT_NE(widget, nullptr);
-  views::test::WidgetDestroyedWaiter destroyed(widget);
-
-  // Verify dialog title for Guest mode.
-  EXPECT_EQ(
-      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
-      u"Web app installs aren't supported in Guest mode");
-
-  // Simulate the user accepting the dialog.
-  views::test::AcceptDialog(widget);
-  destroyed.Wait();
-
-  // Validate JS results.
-  EXPECT_FALSE(ResultExists(guest_web_contents));
-  EXPECT_TRUE(ErrorExists(guest_web_contents));
-  EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
-
-  histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
-      1);
-  histograms.ExpectBucketCount(
-      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
-  // Check the varianted UMAs.
-  histograms.ExpectBucketCount(
-      kVariantedInstallResultUma,
-      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(
-      kVariantedInstallTypeUma,
-      web_app::WebInstallServiceType::kBackgroundDocument, 1);
-
-  // Verify UKM entries.
-  auto ukm_entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::WebApp_WebInstall::kEntryName);
-  ASSERT_EQ(2u, ukm_entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      ukm_entries[0], kRequestingPageUkm,
-      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
-  // First entry should be of source type, NAVIGATION_ID.
-  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
-            ukm::SourceIdType::NAVIGATION_ID);
-  ukm_recorder.ExpectEntryMetric(
-      ukm_entries[1], kInstalledAppUkm,
-      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
-  // Second entry should be of source type, APP_ID.
-  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
-            ukm::SourceIdType::APP_ID);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

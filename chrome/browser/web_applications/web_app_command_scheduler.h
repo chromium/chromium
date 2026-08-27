@@ -136,9 +136,6 @@ class WebAppCommandScheduler {
                      CleanupOrphanedIsolatedWebAppsCommandError>)>;
   using WebAppIconDiagnosticResultCallback =
       base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
-  using WebInstallFromUrlCommandCallback =
-      base::OnceCallback<void(const webapps::AppId& app_id,
-                              webapps::InstallResultCode code)>;
   using WebInstallFromManifestCommandCallback =
       base::OnceCallback<void(const webapps::AppId& app_id,
                               webapps::InstallResultCode code)>;
@@ -367,7 +364,6 @@ class WebAppCommandScheduler {
                               RemoveObsoleteBundleVersionsError>)> callback,
       const base::Location& call_location = FROM_HERE);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
 
   // Gets the StoragePartitionConfig for a <controlledframe> within the given
   // Isolated Web App. If the partition is persistent (not `in_memory`), it is
@@ -644,18 +640,6 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
-
-  // TODO(crbug.com/520025525): Remove install_url code.
-  // Implements the Web Install API (`navigator.install()`).
-  // Calls `installed_callback` with the `InstallResultCode` and the computed
-  // manifest id if successful. Used by Web Install API.
-  void InstallAppFromUrl(const GURL& install_url,
-                         const std::optional<GURL>& manifest_id,
-                         base::WeakPtr<content::WebContents> web_contents,
-                         const GURL& last_committed_url,
-                         WebAppInstallDialogCallback dialog_callback,
-                         WebInstallFromUrlCommandCallback installed_callback,
-                         const base::Location& location = FROM_HERE);
 
   // Implements the Web Install API manifest_url flow
   // (`navigator.install({manifest_url})`). Installs a web app from a

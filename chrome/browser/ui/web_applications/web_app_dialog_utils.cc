@@ -397,27 +397,6 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   return true;
 }
 
-void CreateWebAppForBackgroundInstall(
-    content::WebContents* initiating_web_contents,
-    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-    const GURL& install_url,
-    const std::optional<GURL>& manifest_id,
-    const GURL& last_committed_url,
-    WebAppInstalledCallback installed_callback) {
-  auto* provider = WebAppProvider::GetForWebContents(initiating_web_contents);
-  CHECK(provider);
-
-  provider->scheduler().InstallAppFromUrl(
-      install_url, manifest_id, initiating_web_contents->GetWeakPtr(),
-      last_committed_url,
-      base::BindOnce(&OnWebAppInstallShowInstallDialog,
-                     WebAppInstallFlow::kInstallSite,
-                     webapps::WebappInstallSource::WEB_INSTALL,
-                     PwaInProductHelpState::kNotShown, std::move(tracker),
-                     /*show_initiating_origin=*/true),
-      std::move(installed_callback));
-}
-
 void CreateWebAppForManifestInstall(
     content::WebContents* initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,

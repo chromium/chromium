@@ -42,22 +42,10 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
                              std::move(handle)));
   }
 
-  void IsInstalled(mojom::blink::InstallOptionsPtr options,
+  // mojom::blink::WebInstallService impl:
+  void IsInstalled(mojom::blink::ManifestInstallOptionsPtr options,
                    IsInstalledCallback callback) override {
     std::move(callback).Run(false);
-  }
-
-  void Install(mojom::blink::InstallOptionsPtr options,
-               InstallCallback callback) override {
-    CHECK(!callback_) << "Keep the tests simple: one call at a time.";
-    options_ = std::move(options);
-    callback_ = std::move(callback);
-    called_.SetValue();
-  }
-
-  void InstallFromElement(mojom::blink::InstallOptionsPtr options,
-                          InstallCallback callback) override {
-    NOTIMPLEMENTED();
   }
 
   void InstallFromManifest(mojom::blink::ManifestInstallOptionsPtr options,
@@ -74,32 +62,10 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
     NOTIMPLEMENTED();
   }
 
-  void WaitForCall() { EXPECT_TRUE(called_.Wait()); }
   void WaitForManifestCall() { EXPECT_TRUE(manifest_called_.Wait()); }
 
   const mojom::blink::ManifestInstallOptions* manifest_options() const {
     return manifest_options_.get();
-  }
-
-  void RespondWithSuccess(const KURL& manifest_id = KURL()) {
-    CHECK(callback_);
-    std::move(callback_).Run(mojom::blink::WebInstallServiceResult::kSuccess,
-                             manifest_id);
-    called_.Clear();
-  }
-
-  void RespondWithAbortError() {
-    CHECK(callback_);
-    std::move(callback_).Run(mojom::blink::WebInstallServiceResult::kAbortError,
-                             KURL());
-    called_.Clear();
-  }
-
-  void RespondWithDataError() {
-    CHECK(callback_);
-    std::move(callback_).Run(mojom::blink::WebInstallServiceResult::kDataError,
-                             KURL());
-    called_.Clear();
   }
 
   void RespondToManifestInstallWithSuccess() {
@@ -125,9 +91,6 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
 
  private:
   mojo::ReceiverSet<mojom::blink::WebInstallService> receivers_;
-  mojom::blink::InstallOptionsPtr options_;
-  InstallCallback callback_;
-  base::test::TestFuture<void> called_;
   mojom::blink::ManifestInstallOptionsPtr manifest_options_;
   InstallFromManifestCallback manifest_callback_;
   base::test::TestFuture<void> manifest_called_;
@@ -206,11 +169,6 @@ TEST_F(NavigatorWebInstallTest, Success) {
       conversion_exception_state);
   ASSERT_FALSE(conversion_exception_state.HadException());
   ASSERT_TRUE(result);
-  // TODO(crbug.com/520025525): Remove this when install_url code is removed.
-  // `manifestId` is currently the only member of WebInstallResult. When it
-  // is eventually removed from the IDL, `hasManifestId()` will no longer exist
-  // and this assertion should be removed.
-  EXPECT_FALSE(result->hasManifestId());
 }
 
 TEST_F(NavigatorWebInstallTest, AbortError) {
@@ -303,63 +261,6 @@ TEST_F(NavigatorWebInstallTest, BlockedWithoutUserActivation) {
   EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_TRUE(promise.IsEmpty());
-}
-
-TEST_F(NavigatorWebInstallTest, EmptyInstallUrl) {
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-
-  DummyExceptionStateForTesting exception_state;
-  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
-                                              String(""), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  ScriptPromiseTester tester(GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
-}
-
-TEST_F(NavigatorWebInstallTest, InvalidInstallUrl) {
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-
-  DummyExceptionStateForTesting exception_state;
-  auto promise = NavigatorWebInstall::install(
-      GetScriptState(), *GetNavigator(), String("://invalid"), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  ScriptPromiseTester tester(GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
-}
-
-TEST_F(NavigatorWebInstallTest, WhitespaceOnlyInstallUrl) {
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-
-  DummyExceptionStateForTesting exception_state;
-  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
-                                              String("   "), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  ScriptPromiseTester tester(GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
-}
-
-TEST_F(NavigatorWebInstallTest, EmptyManifestId) {
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-
-  DummyExceptionStateForTesting exception_state;
-  auto promise = NavigatorWebInstall::install(GetScriptState(), *GetNavigator(),
-                                              String("https://example.com"),
-                                              String(""), exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-
-  ScriptPromiseTester tester(GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsRejected());
 }
 
 TEST_F(NavigatorWebInstallTest, InstallFromManifest_Success) {

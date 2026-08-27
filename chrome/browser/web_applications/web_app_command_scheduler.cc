@@ -62,7 +62,6 @@
 #include "chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/commands/web_install_from_manifest_command.h"
-#include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
@@ -416,7 +415,6 @@ void WebAppCommandScheduler::RemoveObsoleteIsolatedWebAppVersionsCache(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-
 void WebAppCommandScheduler::GetControlledFramePartition(
     const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name,
@@ -725,22 +723,6 @@ void WebAppCommandScheduler::RunIconDiagnosticsForApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppIconDiagnosticCommand>(&profile_.get(), app_id,
                                                     std::move(result_callback)),
-      location);
-}
-
-void WebAppCommandScheduler::InstallAppFromUrl(
-    const GURL& install_url,
-    const std::optional<GURL>& manifest_id,
-    base::WeakPtr<content::WebContents> web_contents,
-    const GURL& last_committed_url,
-    WebAppInstallDialogCallback dialog_callback,
-    WebInstallFromUrlCommandCallback installed_callback,
-    const base::Location& location) {
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebInstallFromUrlCommand>(
-          profile_.get(), install_url, manifest_id, web_contents,
-          last_committed_url, std::move(dialog_callback),
-          std::move(installed_callback)),
       location);
 }
 

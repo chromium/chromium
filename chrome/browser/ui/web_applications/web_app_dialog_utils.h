@@ -17,7 +17,7 @@ class Profile;
 namespace content {
 class Page;
 class WebContents;
-}
+}  // namespace content
 
 namespace webapps {
 enum class WebappInstallSource;
@@ -55,18 +55,6 @@ bool CreateWebAppFromManifest(
     webapps::WebappInstallSource install_source,
     WebAppInstalledCallback installed_callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
-
-// Starts the background install of a WebApp at `install_url`, initiated from a
-// `navigator.install` call from within `initiating_web_contents`. This must be
-// called from a context where `WebAppProvider` exists and is supported.
-// Used for the Web Install API.
-void CreateWebAppForBackgroundInstall(
-    content::WebContents* initiating_web_contents,
-    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-    const GURL& install_url,
-    const std::optional<GURL>& manifest_id,
-    const GURL& last_committed_url,
-    WebAppInstalledCallback installed_callback);
 
 // Starts the background install of a WebApp using a pre-parsed manifest,
 // initiated from a `navigator.install({manifest_url})` call from within

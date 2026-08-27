@@ -43,7 +43,7 @@ class Page;
 namespace webapps {
 class MlInstallOperationTracker;
 enum class WebappUninstallSource;
-}
+}  // namespace webapps
 namespace web_app {
 class FakeWebAppUiManager;
 class WithAppResources;
@@ -63,7 +63,6 @@ using UninstallCompleteCallback =
 using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 using FirstRunServiceCompletedCallback = base::OnceCallback<void(bool success)>;
-
 
 class WebAppUiManagerObserver : public base::CheckedObserver {
  public:
@@ -209,7 +208,6 @@ class WebAppUiManager {
       const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) = 0;
 
-
   // Shows the dialog for installing sub-apps.
   virtual void ShowSubAppsInstallDialog(
       content::WebContents* initiating_web_contents,
@@ -274,18 +272,6 @@ class WebAppUiManager {
   virtual void TriggerInstallDialog(content::WebContents* web_contents,
                                     webapps::WebappInstallSource source,
                                     InstallCallback callback) = 0;
-
-  // Triggers the web app install dialog for a background install of the
-  // contents at `install_url`, with the optional `manifest_id`. The dialog will
-  // be anchored to `initiating_web_contents`. This assumes the app is not
-  // already installed. Used for the Web Install API.
-  virtual void TriggerInstallDialogForBackgroundInstall(
-      content::WebContents* initiating_web_contents,
-      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-      const GURL& install_url,
-      const std::optional<GURL>& manifest_id,
-      const GURL& last_committed_url,
-      InstallCallback callback) = 0;
 
   // Triggers the web app install dialog for a background install using a
   // pre-parsed manifest. The dialog will be anchored to

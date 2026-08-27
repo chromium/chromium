@@ -72,10 +72,6 @@ HTMLInstallElement::HTMLInstallElement(Document& document)
   UseCounter::CountWebDXFeature(document, WebDXFeature::kDRAFT_InstallElement);
 }
 
-const String& HTMLInstallElement::InstallUrl() const {
-  return FastGetAttribute(html_names::kInstallurlAttr).GetString();
-}
-
 const String& HTMLInstallElement::ManifestId() const {
   return FastGetAttribute(html_names::kManifestidAttr).GetString();
 }
@@ -96,7 +92,7 @@ void HTMLInstallElement::UpdateAppearance() {
   }
 
   // If no attributes provided, check if current document is already installed.
-  if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
+  if (ManifestId().empty() && Manifest().empty()) {
     // TODO(crbug.com/485281836): For now, always return false while we discuss
     // the appropriate long-term mitigation for width-based side channel
     // attacks. ("Launch" is slightly wider than "Install").
@@ -166,7 +162,6 @@ void HTMLInstallElement::UpdateIcon(mojom::blink::PermissionName permission) {
 
 bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
   return attr.GetName() == html_names::kManifestidAttr ||
-         attr.GetName() == html_names::kInstallurlAttr ||
          attr.GetName() == html_names::kManifestAttr ||
          HTMLElement::IsURLAttribute(attr);
 }
@@ -217,8 +212,14 @@ void HTMLInstallElement::OnActivated() {
     return;
   }
 
-  // If no attributes provided, install current document.
-  if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
+  if (FastHasAttribute(html_names::kInstallurlAttr)) {
+    DispatchInstallResultEvent(InstallResult::kDataError);
+    return;
+  }
+
+  // If no supported install target attributes are provided, install the
+  // current document.
+  if (ManifestId().empty() && Manifest().empty()) {
     WebInstallService()->ElementInstallFromManifest(
         /*options=*/nullptr,
         BindOnce(&HTMLInstallElement::OnManifestInstallResult,
@@ -226,24 +227,8 @@ void HTMLInstallElement::OnActivated() {
     return;
   }
 
-  // Install URL takes priority over manifest attribute if both are set.
-  // TODO(crbug.com/520025525): Remove install url code.
-  if (!InstallUrl().empty()) {
-    mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
-    if (!options) {
-      DispatchInstallResultEvent(InstallResult::kDataError);
-      return;
-    }
-
-    WebInstallService()->InstallFromElement(
-        std::move(options), BindOnce(&HTMLInstallElement::OnInstallResult,
-                                     WrapWeakPersistent(this)));
-    return;
-  }
-
-  // No Install URL was provided, but a manifest attribute was set. Initiate the
-  // browser's manifest install flow, which directly fetches the manifest file
-  // instead of loading the install URL and retrieving the manifest from there.
+  // A manifest attribute was set. Initiate the browser's manifest install
+  // flow, which directly fetches the manifest file.
   if (!Manifest().empty()) {
     mojom::blink::ManifestInstallOptionsPtr options =
         GetCheckedManifestInstallOptions();
@@ -262,49 +247,6 @@ void HTMLInstallElement::OnActivated() {
   // If we get here, only the manifest ID was set, which is considered an error
   // case.
   DispatchInstallResultEvent(InstallResult::kDataError);
-}
-
-// TODO(crbug.com/520025525): Remove install url code.
-mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
-  mojom::blink::InstallOptionsPtr options;
-
-  KURL install_url = KURL(InstallUrl());
-  if (!install_url.IsValid()) {
-    return nullptr;
-  }
-  options = mojom::blink::InstallOptions::New();
-  options->install_url = install_url;
-  // TODO(crbug.com469801429): Evaluate how to handle manifestid validation
-  // and resolution.
-  // TODO(crbug.com/469940918): Evaluate whether to accept manifestid alone.
-  // manifestid is only used if installurl was also provided, as it's used
-  // for data validation on the installurl. manifestid match check is handled
-  // by WebInstallUrlCommand.
-  KURL manifest_id_url = KURL(ManifestId());
-  if (!ManifestId().empty()) {
-    if (!manifest_id_url.IsValid()) {
-      return nullptr;
-    }
-    options->manifest_id = manifest_id_url;
-  }
-  return options;
-}
-
-// TODO(crbug.com/520025525): Remove install url code.
-void HTMLInstallElement::OnInstallResult(
-    mojom::blink::WebInstallServiceResult result,
-    const KURL& manifest_id) {
-  DispatchInstallResultEvent(ToInstallResult(result));
-}
-
-void HTMLInstallElement::DispatchInstallResultEvent(
-    const InstallResult result) {
-  auto* event_init = InstallResultEventInit::Create();
-  event_init->setResult(V8InstallResult(ToV8InstallResult(result)));
-  event_init->setBubbles(true);
-  EnqueueEvent(
-      *InstallResultEvent::Create(event_type_names::kInstallresult, event_init),
-      TaskType::kUserInteraction);
 }
 
 mojom::blink::ManifestInstallOptionsPtr
@@ -326,6 +268,16 @@ HTMLInstallElement::GetCheckedManifestInstallOptions() {
   }
 
   return options;
+}
+
+void HTMLInstallElement::DispatchInstallResultEvent(
+    const InstallResult result) {
+  auto* event_init = InstallResultEventInit::Create();
+  event_init->setResult(V8InstallResult(ToV8InstallResult(result)));
+  event_init->setBubbles(true);
+  EnqueueEvent(
+      *InstallResultEvent::Create(event_type_names::kInstallresult, event_init),
+      TaskType::kUserInteraction);
 }
 
 void HTMLInstallElement::OnManifestInstallResult(

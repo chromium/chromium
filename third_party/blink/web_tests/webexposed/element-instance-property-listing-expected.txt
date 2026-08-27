@@ -906,7 +906,6 @@ html element ins
     property dateTime
 html element install
     property initialPermissionStatus
-    property installURL
     property invalidReason
     property isValid
     property manifest

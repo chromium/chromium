@@ -514,18 +514,6 @@ void WebAppUiManagerImpl::TriggerInstallDialog(
   web_app::CreateWebAppFromManifest(web_contents, source, std::move(callback));
 }
 
-void WebAppUiManagerImpl::TriggerInstallDialogForBackgroundInstall(
-    content::WebContents* initiating_web_contents,
-    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-    const GURL& install_url,
-    const std::optional<GURL>& manifest_id,
-    const GURL& last_committed_url,
-    InstallCallback callback) {
-  web_app::CreateWebAppForBackgroundInstall(
-      initiating_web_contents, std::move(tracker), install_url, manifest_id,
-      last_committed_url, std::move(callback));
-}
-
 void WebAppUiManagerImpl::TriggerInstallDialogForManifestInstall(
     content::WebContents* initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,

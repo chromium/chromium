@@ -4,7 +4,4 @@
 
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/WebInstall/explainer.md
 
-dictionary WebInstallResult {
-  // TODO(crbug.com/520025525): Remove install_url code.
-  USVString manifestId;
-};
+dictionary WebInstallResult {};

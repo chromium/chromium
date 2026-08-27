@@ -137,23 +137,6 @@ class WebInstallServiceImplTest : public WebAppTest {
     return future.Take();
   }
 
-  // Calls Install() with an install_url (background document install) and
-  // waits for the mojo callback.
-  std::pair<blink::mojom::WebInstallServiceResult, GURL> InstallFromUrl(
-      const GURL& install_url,
-      const std::optional<GURL>& manifest_id = std::nullopt) {
-    auto options = blink::mojom::InstallOptions::New();
-    options->install_url = install_url;
-    options->manifest_id = manifest_id;
-
-    base::test::TestFuture<blink::mojom::WebInstallServiceResult, const GURL&>
-        future;
-    service_remote_->Install(std::move(options), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    return {future.Get<blink::mojom::WebInstallServiceResult>(),
-            future.Get<GURL>()};
-  }
-
   // Creates a manifest with the given properties. If `custom_id` is provided,
   // sets the id field explicitly. Otherwise, the FakeWebContentsManager will
   // default it to start_url (and set has_custom_id = false).
@@ -300,32 +283,6 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_CrossOriginManifestId) {
       kInstallApiResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
   histograms.ExpectBucketCount(kInstallApiTypeUma,
                                WebInstallServiceType::kCurrentDocument, 1);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Install URL scheme validation tests.
-// These test the shared validation in Install() that rejects non-HTTPS URLs.
-///////////////////////////////////////////////////////////////////////////////
-
-// Install target with file:// scheme should fail.
-TEST_F(WebInstallServiceImplTest, FileSchemeRejected) {
-  base::HistogramTester histograms;
-
-  BindService();
-  auto [result, manifest_id] =
-      InstallFromUrl(GURL("file:///tmp/app/index.html"));
-
-  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
-  EXPECT_TRUE(manifest_id.is_empty());
-
-  histograms.ExpectBucketCount(kInstallApiResultUma,
-                               WebInstallServiceResult::kUnexpectedFailure, 1);
-  histograms.ExpectBucketCount(kInstallApiTypeUma,
-                               WebInstallServiceType::kBackgroundDocument, 1);
-  histograms.ExpectBucketCount(kVariantedInstallResultUma,
-                               WebInstallServiceResult::kUnexpectedFailure, 1);
-  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
-                               WebInstallServiceType::kBackgroundDocument, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -559,6 +516,8 @@ TEST_F(WebInstallServiceImplTest,
             webapps::InstallResultCode::kWebAppProviderNotReady);
 }
 
+// TODO(crbug.com/485281836): Only explicit manifest IDs are supported for now.
+// Re-evaluate current document and manifest-only tests when implementing this.
 ///////////////////////////////////////////////////////////////////////////////
 // IsInstalled rate limiting tests.
 // These verify that cross-origin IsInstalled queries are rate limited by both
@@ -597,21 +556,9 @@ class WebInstallServiceImplRateLimitTest : public WebAppTest {
         service_remote_.BindNewPipeAndPassReceiver());
   }
 
-  bool IsInstalled(const GURL& install_url) {
-    auto options = blink::mojom::InstallOptions::New();
-    options->install_url = install_url;
-
-    base::test::TestFuture<bool> future;
-    service_remote_->IsInstalled(std::move(options), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-
-    return future.Get();
-  }
-
-  bool IsInstalledWithManifestId(const GURL& install_url,
-                                 const GURL& manifest_id) {
-    auto options = blink::mojom::InstallOptions::New();
-    options->install_url = install_url;
+  bool IsInstalled(const GURL& manifest_id) {
+    auto options = blink::mojom::ManifestInstallOptions::New();
+    options->manifest_url = GURL(kManifestUrl);
     options->manifest_id = manifest_id;
 
     base::test::TestFuture<bool> future;
@@ -621,9 +568,14 @@ class WebInstallServiceImplRateLimitTest : public WebAppTest {
     return future.Get();
   }
 
-  bool IsInstalledSameOrigin() {
+  bool IsInstalledWithManifestId(const GURL& manifest_url,
+                                 const GURL& manifest_id) {
+    auto options = blink::mojom::ManifestInstallOptions::New();
+    options->manifest_url = manifest_url;
+    options->manifest_id = manifest_id;
+
     base::test::TestFuture<bool> future;
-    service_remote_->IsInstalled(/*options=*/nullptr, future.GetCallback());
+    service_remote_->IsInstalled(std::move(options), future.GetCallback());
     EXPECT_TRUE(future.Wait());
 
     return future.Get();
@@ -638,6 +590,34 @@ class WebInstallServiceImplRateLimitTest : public WebAppTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/485281836): Update when current-document lookups are updated.
+TEST_F(WebInstallServiceImplRateLimitTest, NullOptions_ReturnsFalse) {
+  test::InstallDummyWebApp(profile(), "Current Document App",
+                           GURL(kDocumentUrl));
+  BindService();
+
+  base::test::TestFuture<bool> future;
+  service_remote()->IsInstalled(/*options=*/nullptr, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(future.Get());
+}
+
+// TODO(crbug.com/485281836): Update when manifest-only lookups are updated.
+TEST_F(WebInstallServiceImplRateLimitTest, ManifestOnly_ReturnsFalse) {
+  test::InstallDummyWebApp(profile(), "Manifest URL App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  auto options = blink::mojom::ManifestInstallOptions::New();
+  options->manifest_url = GURL(kCrossOriginUrl);
+  base::test::TestFuture<bool> future;
+  service_remote()->IsInstalled(std::move(options), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(WebInstallServiceImplRateLimitTest, SingleCrossOriginQuery_Allowed) {
   BindService();
 
@@ -650,7 +630,7 @@ TEST_F(WebInstallServiceImplRateLimitTest, SingleCrossOriginQuery_Allowed) {
   EXPECT_TRUE(IsInstalled(GURL(kCrossOriginUrl)));
 }
 
-// Same-origin queries should not be rate limited.
+// Same-origin manifest ID queries should not be rate limited.
 TEST_F(WebInstallServiceImplRateLimitTest, SameOriginQuery_NotRateLimited) {
   // Use a small limit to avoid looping 100 times.
   base::AutoReset<size_t> max_queries =
@@ -661,7 +641,7 @@ TEST_F(WebInstallServiceImplRateLimitTest, SameOriginQuery_NotRateLimited) {
 
   // Issue well past the cross-origin cap; none should be blocked.
   for (size_t i = 0; i < kMaxQueries * 2; ++i) {
-    EXPECT_TRUE(IsInstalledSameOrigin());
+    EXPECT_TRUE(IsInstalled(GURL(kDocumentUrl)));
   }
 }
 
@@ -704,8 +684,9 @@ TEST_F(WebInstallServiceImplRateLimitTest,
 
   // Back-to-back second query is deferred -- not ready until the interval
   // elapses.
-  auto options = blink::mojom::InstallOptions::New();
-  options->install_url = GURL(kCrossOriginUrl);
+  auto options = blink::mojom::ManifestInstallOptions::New();
+  options->manifest_url = GURL(kManifestUrl);
+  options->manifest_id = GURL(kCrossOriginUrl);
   base::test::TestFuture<bool> deferred;
   service_remote()->IsInstalled(std::move(options), deferred.GetCallback());
 
@@ -737,8 +718,9 @@ TEST_F(WebInstallServiceImplRateLimitTest,
 
   // The next query's reserved slot is in the past; it must dispatch now
   // without waiting.
-  auto options = blink::mojom::InstallOptions::New();
-  options->install_url = GURL(kCrossOriginUrl);
+  auto options = blink::mojom::ManifestInstallOptions::New();
+  options->manifest_url = GURL(kManifestUrl);
+  options->manifest_id = GURL(kCrossOriginUrl);
   base::test::TestFuture<bool> future;
   service_remote()->IsInstalled(std::move(options), future.GetCallback());
   service_remote().FlushForTesting();
@@ -763,8 +745,9 @@ TEST_F(WebInstallServiceImplRateLimitTest, DeferredQuery_ConsumesCountBudget) {
   // deferred at the minimum interval. Each one consumes one count of budget.
   std::array<base::test::TestFuture<bool>, kMaxQueries> futures;
   for (auto& future : futures) {
-    auto options = blink::mojom::InstallOptions::New();
-    options->install_url = GURL(kCrossOriginUrl);
+    auto options = blink::mojom::ManifestInstallOptions::New();
+    options->manifest_url = GURL(kManifestUrl);
+    options->manifest_id = GURL(kCrossOriginUrl);
     service_remote()->IsInstalled(std::move(options), future.GetCallback());
   }
   // Flush so all IsInstalled calls reach the service and post their tasks.
@@ -801,8 +784,9 @@ TEST_F(WebInstallServiceImplRateLimitTest,
   // Issue three back-to-back queries at t=0.
   std::array<base::test::TestFuture<bool>, 3> futures;
   for (auto& future : futures) {
-    auto options = blink::mojom::InstallOptions::New();
-    options->install_url = GURL(kCrossOriginUrl);
+    auto options = blink::mojom::ManifestInstallOptions::New();
+    options->manifest_url = GURL(kManifestUrl);
+    options->manifest_id = GURL(kCrossOriginUrl);
     service_remote()->IsInstalled(std::move(options), future.GetCallback());
   }
   service_remote().FlushForTesting();
@@ -833,9 +817,9 @@ TEST_F(WebInstallServiceImplRateLimitTest,
 
 // The cross-origin check follows the registrar lookup origin: when a
 // same-origin manifest_id is provided, queries are not rate-limited even if
-// the install_url is cross-origin.
+// the manifest_url is cross-origin.
 TEST_F(WebInstallServiceImplRateLimitTest,
-       CrossOriginInstallUrl_SameOriginManifestId_NotRateLimited) {
+       CrossOriginManifestUrl_SameOriginManifestId_NotRateLimited) {
   // Use a small limit to avoid looping 100 times.
   base::AutoReset<size_t> max_queries =
       WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
@@ -845,7 +829,7 @@ TEST_F(WebInstallServiceImplRateLimitTest,
   BindService();
 
   // Issue well past the cross-origin cap. Each query pairs a cross-origin
-  // install_url with a same-origin manifest_id, so the lookup is treated as
+  // manifest_url with a same-origin manifest_id, so the lookup is treated as
   // same-origin and none should be rate-limited.
   for (size_t i = 0; i < kMaxQueries * 2; ++i) {
     EXPECT_TRUE(
@@ -855,9 +839,9 @@ TEST_F(WebInstallServiceImplRateLimitTest,
 
 // The cross-origin check follows the registrar lookup origin: when a
 // cross-origin manifest_id is provided, queries are rate-limited even if the
-// install_url is same-origin.
+// manifest_url is same-origin.
 TEST_F(WebInstallServiceImplRateLimitTest,
-       SameOriginInstallUrl_CrossOriginManifestId_RateLimited) {
+       SameOriginManifestUrl_CrossOriginManifestId_RateLimited) {
   // Use a small limit to avoid looping 100 times.
   base::AutoReset<size_t> max_queries =
       WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);

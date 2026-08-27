@@ -4751,7 +4751,6 @@ interface HTMLInputElement : HTMLElement
 interface HTMLInstallElement : HTMLElement
     attribute @@toStringTag
     getter initialPermissionStatus
-    getter installURL
     getter invalidReason
     getter isValid
     getter manifest
@@ -4762,7 +4761,6 @@ interface HTMLInstallElement : HTMLElement
     getter onvalidationstatuschange
     getter permissionStatus
     method constructor
-    setter installURL
     setter manifest
     setter manifestId
     setter oninstallresult
