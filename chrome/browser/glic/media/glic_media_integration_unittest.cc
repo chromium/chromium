@@ -219,9 +219,6 @@ TEST_F(GlicMediaIntegrationTest, GetWithNullReturnsNull) {
 }
 
 TEST_F(GlicMediaIntegrationTest, GetReturnsNullIfSwitchIsOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(media::kHeadlessLiveCaption);
-
   EXPECT_EQ(GlicMediaIntegration::GetFor(web_contents()), nullptr);
   EXPECT_EQ(GetMediaTranscriptProvider(), nullptr);
 }
@@ -272,19 +269,14 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsTranscript) {
   }
 
   {
-    // AppendContext is a legacy path and no longer contains transcripts when
-    // kAnnotatedPageContentWithMediaData is enabled.
+    // Expect a leaf node with the entire context when we query with the
+    // WebContents instead.
     optimization_guide::proto::ContentNode root_node;
     integration->AppendContext(web_contents(), &root_node);
     EXPECT_EQ(root_node.children_nodes_size(), 0);
-    if (base::FeatureList::IsEnabled(
-            optimization_guide::features::kAnnotatedPageContentWithMediaData)) {
-      EXPECT_FALSE(root_node.has_content_attributes());
-    } else {
-      EXPECT_TRUE(root_node.has_content_attributes());
-      EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
-                "ABCDEFGHIJ");
-    }
+    EXPECT_TRUE(root_node.has_content_attributes());
+    EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
+              "ABCDEFGHIJ");
   }
 }
 
@@ -293,11 +285,13 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsNoTranscript) {
 
   // Send no strings.
 
-  // Expect no content attributes when there is no transcript.
+  // Expect a leaf node with no text.
   optimization_guide::proto::ContentNode root_node;
   integration->AppendContextForFrame(rfh(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
-  EXPECT_FALSE(root_node.has_content_attributes());
+  EXPECT_TRUE(root_node.has_content_attributes());
+  EXPECT_EQ(root_node.content_attributes().text_data().text_content().length(),
+            0u);
 }
 
 TEST_F(GlicMediaIntegrationTest, ContextTruncatesUTF8Correctly) {
@@ -453,11 +447,12 @@ TEST_F(GlicMediaIntegrationTest, ExcludedOriginsDontReturnTranscriptions) {
   // Exclude the origin after adding the transcript.
   integration->SetExcludedOrigins({excluded_origin});
 
-  // Expect no content attributes when the origin is excluded.
+  // Expect an empty transcript.
   optimization_guide::proto::ContentNode root_node;
-  integration->AppendContextForFrame(rfh(), &root_node);
+  integration->AppendContext(web_contents(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
-  EXPECT_FALSE(root_node.has_content_attributes());
+  EXPECT_TRUE(root_node.has_content_attributes());
+  EXPECT_EQ(root_node.content_attributes().text_data().text_content(), "");
 }
 
 TEST_F(GlicMediaIntegrationTest, DefaultExcludedOriginsStopTranscription) {
@@ -523,7 +518,7 @@ TEST_F(GlicMediaIntegrationTest,
 
   // Expect an empty transcript.
   optimization_guide::proto::ContentNode root_node;
-  integration->AppendContextForFrame(rfh(), &root_node);
+  integration->AppendContext(web_contents(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_FALSE(root_node.has_content_attributes());
 }

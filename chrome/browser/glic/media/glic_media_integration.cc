@@ -330,6 +330,9 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
   if (!rfh) {
     return;
   }
+  context_root->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+
   if (IsExcludedByOrigin(content::WebContents::FromRenderFrameHost(rfh))) {
     return;
   }
@@ -368,10 +371,9 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
 
   // Include the entire context in one node.  This could be split into multiple
   // nodes too.
-  auto* content_attributes = context_root->mutable_content_attributes();
-  content_attributes->set_attribute_type(
-      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
-  content_attributes->mutable_text_data()->set_text_content(std::move(result));
+  context_root->mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content(std::move(result));
 }
 
 void GlicMediaIntegrationImpl::OnContextUpdated(
