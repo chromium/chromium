@@ -88,6 +88,42 @@ TEST_F(WinPlatformDelegateTest, ResolveFilePath_Fail) {
   EXPECT_EQ(resolved_fp, base::FilePath());
 }
 
+TEST_F(WinPlatformDelegateTest, ResolveFilePath_NetworkAndNtPaths) {
+  const std::vector<std::string> invalid_paths = {
+      "//server/share/file.txt",
+      "\\\\server\\share\\file.txt",
+      "\\??\\UNC\\server\\share\\file.txt",
+      "/??/UNC/server/share/file.txt",
+      "\\??\\C:\\file.txt",
+      "/??/C:/file.txt",
+      "\\Device\\HarddiskVolume1\\file.txt",
+      "/Device/HarddiskVolume1/file.txt",
+  };
+
+  for (const auto& invalid_path : invalid_paths) {
+    base::FilePath resolved_fp;
+    EXPECT_FALSE(platform_delegate_.ResolveFilePath(
+        base::FilePath::FromUTF8Unsafe(invalid_path), &resolved_fp));
+    EXPECT_EQ(resolved_fp, base::FilePath());
+  }
+
+  // Environment variable expanding to a network path.
+  env_->SetVar("UncEnvVar", "\\\\server\\share");
+  base::FilePath resolved_fp;
+  EXPECT_FALSE(platform_delegate_.ResolveFilePath(
+      base::FilePath::FromUTF8Unsafe("%UncEnvVar%\\file.txt"), &resolved_fp));
+  EXPECT_EQ(resolved_fp, base::FilePath());
+
+  // Environment variable expanding to an NT-object path.
+  env_->SetVar("NtEnvVar", "\\??\\UNC\\server\\share");
+  EXPECT_FALSE(platform_delegate_.ResolveFilePath(
+      base::FilePath::FromUTF8Unsafe("%NtEnvVar%\\file.txt"), &resolved_fp));
+  EXPECT_EQ(resolved_fp, base::FilePath());
+
+  env_->UnSetVar("UncEnvVar");
+  env_->UnSetVar("NtEnvVar");
+}
+
 TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeys_InvalidPath) {
   auto public_keys =
       platform_delegate_.GetSigningCertificatesPublicKeys(base::FilePath());

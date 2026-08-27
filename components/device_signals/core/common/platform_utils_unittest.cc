@@ -47,4 +47,39 @@ TEST_F(PlatformUtilsTest, NormalizeMacAddresses_EmptyInput) {
   EXPECT_TRUE(result.empty());
 }
 
+TEST_F(PlatformUtilsTest, IsSupportedLocalPath) {
+  // Empty paths are not supported.
+  EXPECT_FALSE(IsSupportedLocalPath(base::FilePath()));
+
+  // Network and UNC paths.
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("//server/share/file.txt")));
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("\\\\server\\share\\file.txt")));
+
+  // NT-object namespace paths.
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("\\??\\UNC\\server\\share\\file.txt")));
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("/??/UNC/server/share/file.txt")));
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("\\??\\C:\\file.txt")));
+  EXPECT_FALSE(
+      IsSupportedLocalPath(base::FilePath::FromUTF8Unsafe("/??/C:/file.txt")));
+
+  // Device paths.
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("\\Device\\HarddiskVolume1\\file.txt")));
+  EXPECT_FALSE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("/Device/HarddiskVolume1/file.txt")));
+
+  // Valid local paths.
+  EXPECT_TRUE(
+      IsSupportedLocalPath(base::FilePath::FromUTF8Unsafe("/tmp/file.txt")));
+  EXPECT_TRUE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("C:\\Windows\\file.txt")));
+  EXPECT_TRUE(IsSupportedLocalPath(
+      base::FilePath::FromUTF8Unsafe("relative/path.txt")));
+}
+
 }  // namespace device_signals

@@ -134,4 +134,31 @@ TEST_F(PosixPlatformDelegateTest, ResolveFilePath_PathTraversal) {
   EXPECT_TRUE(base::ContentsEqual(resolved_file_path, binary_path_));
 }
 
+TEST_F(PosixPlatformDelegateTest, ResolveFilePath_NetworkAndNtPaths) {
+  const std::vector<std::string> invalid_paths = {
+      "//server/share/file",
+      "\\\\server\\share\\file",
+      "\\??\\UNC\\server\\share\\file",
+      "/??/UNC/server/share/file",
+      "\\??\\C:\\file",
+      "/??/C:/file",
+      "\\Device\\HarddiskVolume1\\file",
+      "/Device/HarddiskVolume1/file",
+  };
+
+  for (const auto& invalid_path : invalid_paths) {
+    base::FilePath resolved_file_path;
+    EXPECT_FALSE(platform_delegate_.ResolveFilePath(
+        base::FilePath::FromUTF8Unsafe(invalid_path), &resolved_file_path));
+  }
+
+  base::ScopedEnvironmentVariableOverride env_override(kHome2EnvVariableName,
+                                                       "//server/share");
+  base::FilePath resolved_file_path;
+  EXPECT_FALSE(platform_delegate_.ResolveFilePath(
+      base::FilePath::FromUTF8Unsafe(
+          base::StringPrintf("$%s/%s", kHome2EnvVariableName, kTestFileName)),
+      &resolved_file_path));
+}
+
 }  // namespace device_signals

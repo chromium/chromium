@@ -39,6 +39,7 @@
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
+#include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -675,7 +676,7 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(base::IsStringUTF8(api_options_param.path));
     base::FilePath file_path =
         base::FilePath::FromUTF8Unsafe(api_options_param.path);
-    if (file_path.IsNetwork()) {
+    if (!device_signals::IsSupportedLocalPath(file_path)) {
       return RespondNow(Error("Network paths are not supported."));
     }
   }

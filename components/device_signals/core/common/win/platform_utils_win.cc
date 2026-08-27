@@ -193,6 +193,9 @@ bool GetPropVariantAsInt64(PROPVARIANT variant, int64_t* out_value) {
 
 bool ResolvePath(const base::FilePath& file_path,
                  base::FilePath* resolved_file_path) {
+  if (!IsSupportedLocalPath(file_path)) {
+    return false;
+  }
   auto expanded_path_wstring =
       base::win::ExpandEnvironmentVariables(file_path.value());
   if (!expanded_path_wstring) {
@@ -200,10 +203,20 @@ bool ResolvePath(const base::FilePath& file_path,
   }
 
   auto expanded_file_path = base::FilePath(expanded_path_wstring.value());
-  if (!base::PathExists(expanded_file_path)) {
+  if (!IsSupportedLocalPath(expanded_file_path)) {
     return false;
   }
-  *resolved_file_path = base::MakeAbsoluteFilePath(expanded_file_path);
+
+  auto absolute_file_path = base::MakeAbsoluteFilePath(expanded_file_path);
+  if (!IsSupportedLocalPath(absolute_file_path)) {
+    return false;
+  }
+
+  if (!base::PathExists(absolute_file_path)) {
+    return false;
+  }
+
+  *resolved_file_path = absolute_file_path;
   return true;
 }
 

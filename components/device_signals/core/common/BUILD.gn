@@ -33,6 +33,9 @@ static_library("common") {
   if (is_win) {
     sources += [ "win/platform_utils_win.cc" ]
     libs = [
+      "iphlpapi.lib",
+      "netapi32.lib",
+      "powrprof.lib",
       "propsys.lib",
       "secur32.lib",
     ]

@@ -21,6 +21,11 @@ namespace device_signals {
 
 struct CrowdStrikeSignals;
 
+// Returns true if `file_path` is a non-empty, strictly local file path (i.e.
+// not a UNC/network path and not an NT-object or device namespace path like
+// \??\... or \Device\...).
+bool IsSupportedLocalPath(const base::FilePath& file_path);
+
 // Extracts the common details for resolving a file path on different
 // platforms. Resolves environment variables and relative markers in
 // `file_path`, and returns the path via `resolved_file_path`. For

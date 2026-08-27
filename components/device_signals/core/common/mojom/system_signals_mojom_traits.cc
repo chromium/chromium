@@ -5,6 +5,7 @@
 #include "components/device_signals/core/common/mojom/system_signals_mojom_traits.h"
 
 #include "base/notreached.h"
+#include "components/device_signals/core/common/platform_utils.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 
@@ -87,6 +88,10 @@ bool StructTraits<device_signals::mojom::FileSystemItemRequestDataView,
   output->compute_executable_metadata = data.compute_executable_metadata();
 
   if (!data.ReadFilePath(&output->file_path)) {
+    return false;
+  }
+
+  if (!device_signals::IsSupportedLocalPath(output->file_path)) {
     return false;
   }
 

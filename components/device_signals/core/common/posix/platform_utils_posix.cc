@@ -8,6 +8,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/device_signals/core/common/common_types.h"
 
@@ -45,6 +46,10 @@ base::FilePath CreatePathFromComponents(
 
 bool ResolvePath(const base::FilePath& file_path,
                  base::FilePath* resolved_file_path) {
+  if (!IsSupportedLocalPath(file_path)) {
+    return false;
+  }
+
   auto environment = base::Environment::Create();
   // Expand the first component of the path if it is either a tilde or an
   // environment variable.
@@ -88,12 +93,15 @@ bool ResolvePath(const base::FilePath& file_path,
     }
 
     expanded_file_path = CreatePathFromComponents(path_components);
+    if (!IsSupportedLocalPath(expanded_file_path)) {
+      return false;
+    }
   }
 
   // Resolve any relative path traversals that may exist (e.g. "..");
   base::FilePath local_resolved_file_path =
       base::MakeAbsoluteFilePath(expanded_file_path);
-  if (local_resolved_file_path.empty()) {
+  if (!IsSupportedLocalPath(local_resolved_file_path)) {
     return false;
   }
 
