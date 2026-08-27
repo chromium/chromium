@@ -797,7 +797,7 @@ bool HTMLMetaElement::IsAllowOrigins() const {
     return false;
   }
   constexpr wtf_size_t prefix_length = std::size(kAllowOriginsPrefix) - 1;
-  const StringView allow_origins = StringView(content, prefix_length);
+  const StringView allow_origins(content, prefix_length);
   const network::mojom::blink::CSPSourceListPtr source_list =
       ParseAllowOrigins(allow_origins);
   if (!source_list) {
