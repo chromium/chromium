@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/webauthn_commands.h"
 
+#include <limits>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/session.h"
+#include "chrome/test/chromedriver/util.h"
 
 namespace {
 
@@ -119,16 +121,27 @@ base::DictValue MapParams(
   return Status(kOk);
 }
 
-// Maps the signCount parameter, handling null as -1.
-void MapSignCount(const base::DictValue& params, base::DictValue& target) {
+// Maps the signCount parameter, handling null as -1. Returns an error if
+// signCount is not an unsigned 32-bit integer or null.
+[[nodiscard]] Status MapSignCount(const base::DictValue& params,
+                                  base::DictValue& target) {
   const base::Value* sign_count = params.Find("signCount");
-  if (sign_count) {
-    if (sign_count->is_none()) {
-      target.Set("signCount", -1);
-    } else {
-      target.Set("signCount", sign_count->Clone());
-    }
+  if (!sign_count) {
+    return Status(kOk);
   }
+  if (sign_count->is_none()) {
+    target.Set("signCount", -1);
+    return Status(kOk);
+  }
+  int64_t sign_count_int;
+  if (!GetOptionalSafeInt(params, "signCount", &sign_count_int, nullptr) ||
+      sign_count_int < 0 ||
+      sign_count_int > std::numeric_limits<uint32_t>::max()) {
+    return Status(kInvalidArgument,
+                  "'signCount' must be an unsigned 32-bit integer or null");
+  }
+  SetSafeInt(target, "signCount", sign_count_int);
+  return Status(kOk);
 }
 
 // Converts a list of base64url encoded strings in `params` under `key` to
@@ -306,7 +319,10 @@ Status ExecuteAddCredential(WebView* web_view,
   if (status.IsError())
     return status;
 
-  MapSignCount(params, *credential);
+  status = MapSignCount(params, *credential);
+  if (status.IsError()) {
+    return status;
+  }
   status = ConvertListBase64UrlToBase64(*credential, "cmtgKeys");
   if (status.IsError()) {
     return status;
@@ -334,8 +350,9 @@ Status ExecuteGetCredentials(WebView* web_view,
   for (base::Value& credential : credentials->GetList()) {
     if (!credential.is_dict())
       return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
-    const base::Value* sign_count = credential.GetDict().Find("signCount");
-    if (sign_count && sign_count->is_int() && sign_count->GetInt() == -1) {
+    std::optional<double> sign_count =
+        credential.GetDict().FindDouble("signCount");
+    if (sign_count.has_value() && *sign_count == -1) {
       credential.GetDict().Set("signCount", base::Value());
     }
     status = ConvertBase64ToBase64Url(
@@ -410,7 +427,10 @@ Status ExecuteSetCredentialProperties(WebView* web_view,
     return status;
   }
 
-  MapSignCount(params, mapped_params);
+  status = MapSignCount(params, mapped_params);
+  if (status.IsError()) {
+    return status;
+  }
 
   return web_view->SendCommandAndGetResult("WebAuthn.setCredentialProperties",
                                            mapped_params, value);

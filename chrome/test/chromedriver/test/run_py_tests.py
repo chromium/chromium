@@ -5227,6 +5227,23 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     credentials = self._driver.GetCredentials(authenticatorId)
     self.assertIsNone(credentials[0]['signCount'])
 
+    # Update signCount to 2**32 - 1.
+    self._driver.SetCredentialProperties(
+        authenticatorId = authenticatorId, credentialId = credentialId,
+        signCount = 2**32 - 1)
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertEqual(2**32 - 1, credentials[0]['signCount'])
+
+    # Invalid signCount values should raise InvalidArgument.
+    for invalid_sign_count in [-1, 2**32, "zero", True]:
+      self.assertRaises(
+          chromedriver.InvalidArgument,
+          self._driver.SetCredentialProperties,
+          authenticatorId = authenticatorId,
+          credentialId = credentialId,
+          signCount = invalid_sign_count,
+      )
+
   def testCmtgKeys(self):
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
