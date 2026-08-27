@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
@@ -57,6 +58,9 @@ void DictationMenuObserver::ExecuteCommand(int command_id) {
   if (!rfh) {
     return;
   }
+
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+      proxy_->GetBrowserContext(), kDictation);
 
   DictationKeyedService* service = GetDictationService();
   if (service) {
