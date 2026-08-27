@@ -309,6 +309,7 @@
   E_CPONLY(kColorNewTabPageActiveBackground) \
   E_CPONLY(kColorNewTabPageAddShortcutBackground) \
   E_CPONLY(kColorNewTabPageAddShortcutForeground) \
+  E_CPONLY(kColorNewTabPageAddShortcutBackgroundHovered) \
   E_CPONLY(kColorNewTabPageAttributionForeground) \
   E_CPONLY(kColorNewTabPageBackground) \
   E_CPONLY(kColorNewTabPageBackgroundOverride) \

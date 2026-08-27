@@ -452,6 +452,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageAddShortcutForeground] =
       ui::SelectBasedOnDarkInput(kColorNewTabPageAddShortcutBackground,
                                  SK_ColorWHITE, gfx::kGoogleGrey900);
+  mixer[kColorNewTabPageAddShortcutBackgroundHovered] = {
+      kColorNewTabPageControlBackgroundHovered};
 
   AddSearchboxColors(mixer, key);
 

@@ -172,6 +172,7 @@
 #addShortcut,
 #showMore,
 #showLess {
+  --cr-hover-background-color: transparent;
   background-color: transparent;
   border: none;
   box-shadow: none;

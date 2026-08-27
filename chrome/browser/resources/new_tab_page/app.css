@@ -97,6 +97,9 @@ cr-most-visited {
   --add-shortcut-foreground-color: var(
     --color-new-tab-page-add-shortcut-foreground
   );
+  --tile-hover-color: var(
+    --color-new-tab-page-add-shortcut-background-hovered
+  );
   --cr-menu-shadow: var(--ntp-menu-shadow);
   --most-visited-focus-shadow: var(--ntp-focus-shadow);
   --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);

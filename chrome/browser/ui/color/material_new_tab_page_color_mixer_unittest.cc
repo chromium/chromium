@@ -38,4 +38,12 @@ TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedEnabled) {
             color_provider().GetColor(ui::kColorSysSurface));
 }
 
+TEST_F(MaterialNewTabPageColorMixerTest, AddShortcutHoverColor) {
+  AddMaterialColorMixers();
+
+  EXPECT_EQ(
+      color_provider().GetColor(kColorNewTabPageAddShortcutBackgroundHovered),
+      SkColorSetA(color_provider().GetColor(ui::kColorSysOnSurface), 0x14));
+}
+
 }  // namespace

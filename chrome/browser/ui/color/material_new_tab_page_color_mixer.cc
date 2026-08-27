@@ -46,6 +46,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageAddShortcutBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorNewTabPageAddShortcutForeground] = {
       ui::kColorSysOnTonalContainer};
+  mixer[kColorNewTabPageAddShortcutBackgroundHovered] = {
+      ui::SetAlpha({ui::kColorSysOnSurface}, 0x14)};
   mixer[kColorNewTabPageBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPageBorder] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageButtonBackground] = {ui::kColorSysTonalContainer};
