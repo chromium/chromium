@@ -114,9 +114,7 @@
 }
 
 :host([is-fusebox-enabled]) .dropdownContainer {
-  border-radius: 0 0 var(--cr-searchbox-border-radius)
-      var(--cr-searchbox-border-radius);
-  overflow: hidden;
+  overflow: visible;
 }
 
 :host([is-fusebox-enabled]) .contextualEntrypointContainer {
