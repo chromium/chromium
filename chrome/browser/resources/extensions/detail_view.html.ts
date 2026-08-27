@@ -424,7 +424,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         @click="${this.onViewInStoreClick_}" external>
     </cr-link-row>
     <cr-link-row class="hr" ?hidden="${!this.showOpenReviewPageLink_()}"
-        id="reviewLink" label="$i18n{itemWriteReview}"
+        id="rateLink" label="$i18n{itemRateExtension}"
         @click="${this.onOpenReviewPageClick_}" external>
     </cr-link-row>
     <div class="section hr">

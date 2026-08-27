@@ -54,7 +54,7 @@ export interface ExtensionsDetailViewElement {
     extensionsActivityLogLink: HTMLElement,
     extensionsOptions: CrLinkRowElement,
     parentDisabledPermissionsToolTip: CrTooltipIconElement,
-    reviewLink: CrLinkRowElement,
+    rateLink: CrLinkRowElement,
     safetyCheckWarningContainer: HTMLElement,
     source: HTMLElement,
   };

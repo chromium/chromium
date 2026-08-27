@@ -232,8 +232,8 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
       return ContextMenuAction::kViewWebPermissions;
     case ExtensionContextMenuModel::POLICY_INSTALLED:
       return ContextMenuAction::kPolicyInstalled;
-    case ExtensionContextMenuModel::REVIEW_EXTENSION:
-      return ContextMenuAction::kReviewExtension;
+    case ExtensionContextMenuModel::RATE_EXTENSION:
+      return ContextMenuAction::kRateExtension;
     default:
       break;
   }
@@ -463,9 +463,9 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
       // This option is always enabled since it will only be visible when the
       // extension provides a side panel.
       return true;
-    case REVIEW_EXTENSION:
-      // Review extension is always enabled since it will only be visible if the
-      // eligibility checks for writing a review are met.
+    case RATE_EXTENSION:
+      // Rate extension is always enabled since it will only be visible if the
+      // eligibility checks for rating are met.
       return true;
     case POLICY_INSTALLED:
       // This option is always disabled since user cannot remove a policy
@@ -616,7 +616,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       delegate_->InspectPopup();
       break;
     }
-    case REVIEW_EXTENSION: {
+    case RATE_EXTENSION: {
       util::CWSReviewSource review_source =
           (source_ == ContextMenuSource::kMenuItem)
               ? util::CWSReviewSource::kExtensionsMenu
@@ -878,8 +878,9 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   }
 
   if (ui_util::ShouldShowReviewPrompt(*extension, *profile_)) {
-    AddItemWithStringId(REVIEW_EXTENSION,
-                        IDS_EXTENSIONS_CONTEXT_MENU_WRITE_REVIEW);
+    // Ellipsis is used because further user action is needed after clicking
+    // the item to complete the rating flow on the Chrome Web Store.
+    AddItemWithStringId(RATE_EXTENSION, IDS_EXTENSIONS_CONTEXT_MENU_RATE_IT);
   }
 
   if (has_options_page) {
@@ -954,8 +955,9 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   }
 
   if (ui_util::ShouldShowReviewPrompt(*extension, *profile_)) {
-    AddItemWithStringId(REVIEW_EXTENSION,
-                        IDS_EXTENSIONS_CONTEXT_MENU_WRITE_REVIEW);
+    // Ellipsis is used because further user action is needed after clicking
+    // the item to complete the rating flow on the Chrome Web Store.
+    AddItemWithStringId(RATE_EXTENSION, IDS_EXTENSIONS_CONTEXT_MENU_RATE_IT);
   }
 
   if (OptionsPageInfo::HasOptionsPage(extension))

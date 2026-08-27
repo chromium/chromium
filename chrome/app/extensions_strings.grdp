@@ -274,8 +274,8 @@
   <message name="IDS_EXTENSIONS_ITEM_DETAILS" desc="The text on the button to show more details for a given extension.">
     Details
   </message>
-  <message name="IDS_EXTENSIONS_ITEM_WRITE_REVIEW" desc="The text on the link allowing the user to write a review.">
-    Write a review
+  <message name="IDS_EXTENSIONS_ITEM_RATE_IT" desc="The text on the link allowing the user to rate an extension on the Chrome Web Store.">
+    Rate it
   </message>
   <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button on details page. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
     <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex></ph> details page back button

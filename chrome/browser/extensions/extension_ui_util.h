@@ -60,7 +60,7 @@ bool HasManageableExtensions(content::BrowserContext* browser_context);
 // omits the URL scheme, path, and trivial subdomains (e.g., "www.").
 std::u16string GetFormattedHostForDisplay(content::WebContents& web_contents);
 
-// Returns true if `extension` and `profile` qualify to show "Write a review"
+// Returns true if `extension` and `profile` qualify to show "Rate it"
 // native UI prompts.
 bool ShouldShowReviewPrompt(const Extension& extension, Profile& profile);
 

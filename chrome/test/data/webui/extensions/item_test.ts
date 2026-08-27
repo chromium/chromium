@@ -221,9 +221,12 @@ suite('ExtensionItemTest', function() {
     dataWithStoreUrl.location = chrome.developerPrivate.Location.FROM_STORE;
     item.data = dataWithStoreUrl;
     await microtasksFinished();
+    const reviewLink =
+        item.shadowRoot.querySelector<HTMLElement>('#rate-link')!;
+    assertTrue(!!reviewLink);
+    assertTrue(!!reviewLink.querySelector('cr-icon[icon="cr:open-in-new"]'));
     await mockDelegate.testClickingCalls(
-        item.shadowRoot.querySelector<HTMLElement>('#review-link')!,
-        'openReviewPage', [item.data.id]);
+        reviewLink, 'openReviewPage', [item.data.id]);
 
     // Setup for testing navigation buttons.
     let currentPage = null;
@@ -790,7 +793,7 @@ suite('ExtensionItemTest', function() {
         'Button should have error class when both errors and warnings exist');
   });
 
-  test('WriteReviewButtonVisibility', async () => {
+  test('RateExtensionLinkVisibility', async () => {
     const card = item.shadowRoot.querySelector<HTMLElement>('#card')!;
     card.style.transition = 'none';
 
@@ -802,7 +805,7 @@ suite('ExtensionItemTest', function() {
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
     item.data = createStoreItemData();
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
     assertFalse(card.classList.contains('review-prompting-enabled'));
     assertCardHeight(160);
 
@@ -821,17 +824,17 @@ suite('ExtensionItemTest', function() {
     // Hidden by default when webStoreUrl is empty.
     item.data = createExtensionInfo();
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Visible when webStoreUrl is present and item is from store.
     item.data = createStoreItemData();
     await microtasksFinished();
-    testVisible(item, '#review-link', true);
+    testVisible(item, '#rate-link', true);
 
     // Visible in developer mode as well, expanding to 228px.
     item.inDevMode = true;
     await microtasksFinished();
-    testVisible(item, '#review-link', true);
+    testVisible(item, '#rate-link', true);
     assertCardHeight(228);
     item.inDevMode = false;
 
@@ -840,54 +843,54 @@ suite('ExtensionItemTest', function() {
       location: chrome.developerPrivate.Location.UNPACKED,
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden for third-party extensions.
     item.data = createStoreItemData({
       location: chrome.developerPrivate.Location.THIRD_PARTY,
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden for default pre-installed component extensions.
     item.data = createStoreItemData({
       location: chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT,
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden for unknown installation location.
     item.data = createStoreItemData({
       location: chrome.developerPrivate.Location.UNKNOWN,
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden for policy-controlled extensions.
     item.data = createStoreItemData({
       controlledInfo: {text: 'policy'},
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden when extension must remain installed.
     item.data = createStoreItemData({mustRemainInstalled: true});
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden when extension is corrupted (repair state active).
     const corruptedData = createStoreItemData();
     corruptedData.disableReasons.corruptInstall = true;
     item.data = corruptedData;
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden when extension is terminated (reload button active).
     item.data = createStoreItemData({
       state: chrome.developerPrivate.ExtensionState.TERMINATED,
     });
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Visible when runtime errors exist on the card (description still valid,
     // Errors button in strip).
@@ -895,7 +898,7 @@ suite('ExtensionItemTest', function() {
     errorData.runtimeErrors = [createRuntimeError(errorData.id)];
     item.data = errorData;
     await microtasksFinished();
-    testVisible(item, '#review-link', true);
+    testVisible(item, '#rate-link', true);
 
     // Visible when install warnings exist on the card (description still valid,
     // Warnings button in strip).
@@ -903,27 +906,27 @@ suite('ExtensionItemTest', function() {
     installWarningData.installWarnings = ['Some install warning'];
     item.data = installWarningData;
     await microtasksFinished();
-    testVisible(item, '#review-link', true);
+    testVisible(item, '#rate-link', true);
 
     // Hidden when severe runtime warnings replace description banner.
     const severeWarningData = createStoreItemData();
     severeWarningData.runtimeWarnings = ['Severe runtime warning'];
     item.data = severeWarningData;
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden when MV2 deprecation warning replaces description banner.
     const mv2Data = createStoreItemData();
     mv2Data.disableReasons.unsupportedManifestVersion = true;
     item.data = mv2Data;
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
 
     // Hidden when Safe Browsing allowlist warning replaces description banner.
     const allowlistData = createStoreItemData();
     allowlistData.showSafeBrowsingAllowlistWarning = true;
     item.data = allowlistData;
     await microtasksFinished();
-    testVisible(item, '#review-link', false);
+    testVisible(item, '#rate-link', false);
   });
 });

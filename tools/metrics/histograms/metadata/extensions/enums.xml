@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="kViewWebPermissions"/>
   <int value="14" label="kPolicyInstalled"/>
   <int value="15" label="kToggleSidePanelVisibility"/>
-  <int value="16" label="kReviewExtension"/>
+  <int value="16" label="kRateExtension"/>
 </enum>
 
 <enum name="ExtensionDisableReason">

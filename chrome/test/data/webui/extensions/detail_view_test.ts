@@ -906,14 +906,14 @@ suite('ExtensionDetailViewTest', function() {
         'setItemAllowedUserScripts', [extensionData.id, true]);
   });
 
-  test('WriteReviewButtonVisibility', async () => {
+  test('RateExtensionLinkVisibility', async () => {
     // Hidden when feature flag is disabled.
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
     await updateItemData({
       webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
       location: chrome.developerPrivate.Location.FROM_STORE,
     });
-    assertFalse(testIsVisible('#reviewLink'));
+    assertFalse(testIsVisible('#rateLink'));
 
     // Visible when feature flag is enabled for CWS store extensions.
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
@@ -922,45 +922,43 @@ suite('ExtensionDetailViewTest', function() {
       location: chrome.developerPrivate.Location.FROM_STORE,
       mustRemainInstalled: false,
     });
-    assertTrue(testIsVisible('#reviewLink'));
+    assertTrue(testIsVisible('#rateLink'));
 
     // Positioned directly below #viewInStore in DOM order.
     const viewInStore =
         item.shadowRoot.querySelector<HTMLElement>('#viewInStore')!;
-    const reviewLink =
-        item.shadowRoot.querySelector<HTMLElement>('#reviewLink')!;
-    assertEquals(viewInStore.nextElementSibling, reviewLink);
+    const rateLink = item.shadowRoot.querySelector<HTMLElement>('#rateLink')!;
+    assertEquals(viewInStore.nextElementSibling, rateLink);
 
     // Visible in developer mode as well.
     item.inDevMode = true;
     await microtasksFinished();
-    assertTrue(testIsVisible('#reviewLink'));
+    assertTrue(testIsVisible('#rateLink'));
 
     item.inDevMode = false;
     await microtasksFinished();
-    assertTrue(testIsVisible('#reviewLink'));
+    assertTrue(testIsVisible('#rateLink'));
 
     // Hidden when ineligible (e.g. unpacked).
     await updateItemData({
       location: chrome.developerPrivate.Location.UNPACKED,
     });
-    assertFalse(testIsVisible('#reviewLink'));
+    assertFalse(testIsVisible('#rateLink'));
   });
 
-  test('WriteReviewButtonClick', async () => {
+  test('RateExtensionLinkClick', async () => {
     loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
     await updateItemData({
       webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
       location: chrome.developerPrivate.Location.FROM_STORE,
       mustRemainInstalled: false,
     });
-    assertTrue(testIsVisible('#reviewLink'));
+    assertTrue(testIsVisible('#rateLink'));
 
-    const reviewLink =
-        item.shadowRoot.querySelector<HTMLElement>('#reviewLink')!;
-    assertTrue(!!reviewLink);
+    const rateLink = item.shadowRoot.querySelector<HTMLElement>('#rateLink')!;
+    assertTrue(!!rateLink);
     await mockDelegate.testClickingCalls(
-        reviewLink, 'openReviewPage', [extensionData.id]);
+        rateLink, 'openReviewPage', [extensionData.id]);
   });
 
 });

@@ -131,13 +131,21 @@ cr-tooltip-icon {
   max-height: 60px;
 }
 
-#review-link-container {
+#rate-link-container {
   flex-shrink: 0;
   margin-top: 3px;
 }
 
-#review-link {
+#rate-link {
+  align-items: center;
   color: var(--cr-link-color);
+  display: inline-flex;
+  gap: 4px;
+}
+
+#rate-link cr-icon {
+  height: 16px;
+  width: 16px;
 }
 
 #warnings {

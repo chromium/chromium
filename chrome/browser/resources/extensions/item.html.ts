@@ -141,12 +141,13 @@ export function getHtml(this: ItemElement) {
           </div>
         ` : ''}
       ` : ''}
-      <div id="review-link-container"
+      <div id="rate-link-container"
           ?hidden="${!this.showOpenReviewPageLink_()}">
-        <a id="review-link" is="action-link"
+        <a id="rate-link" is="action-link"
             @click="${this.onOpenReviewPageClick_}"
             aria-describedby="a11yAssociation">
-          $i18n{itemWriteReview}
+          $i18n{itemRateExtension}
+          <cr-icon icon="cr:open-in-new"></cr-icon>
         </a>
       </div>
     </div>

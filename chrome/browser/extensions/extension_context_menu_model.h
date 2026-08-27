@@ -64,7 +64,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     VIEW_WEB_PERMISSIONS,
     POLICY_INSTALLED,
     TOGGLE_SIDE_PANEL_VISIBILITY,
-    REVIEW_EXTENSION,
+    RATE_EXTENSION,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -93,8 +93,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kViewWebPermissions = 13,
     kPolicyInstalled = 14,
     kToggleSidePanelVisibility = 15,
-    kReviewExtension = 16,
-    kMaxValue = kReviewExtension,
+    kRateExtension = 16,
+    kMaxValue = kRateExtension,
     // NOTE: Please update ExtensionContextMenuAction in enums.xml if you modify
     // this enum.
   };

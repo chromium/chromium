@@ -5907,8 +5907,8 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR" desc="The label in an extension's context menu that the user can click to unpin the extension from the toolbar (sentence case).">
             Unpin from toolbar
           </message>
-          <message name="IDS_EXTENSIONS_CONTEXT_MENU_WRITE_REVIEW" desc="The label in an extension's context menu that the user can click to write a review for the extension (sentence case).">
-            Write a review
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_RATE_IT" desc="The label in an extension's context menu that the user can click to rate the extension on the Chrome Web Store (sentence case).">
+            Rate it...
           </message>
           <message name="IDS_EXTENSIONS_OPTIONS_MENU_ITEM" desc="The text for the options menu item in context menus (sentence case).">
             Options
@@ -5984,8 +5984,8 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR" desc="The label in an extension's context menu that the user can click to unpin the extension from the toolbar (sentence case).">
             Unpin from Toolbar
           </message>
-          <message name="IDS_EXTENSIONS_CONTEXT_MENU_WRITE_REVIEW" desc="The label in an extension's context menu that the user can click to write a review for the extension (title case).">
-            Write a Review
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_RATE_IT" desc="The label in an extension's context menu that the user can click to rate the extension on the Chrome Web Store (title case).">
+            Rate It...
           </message>
           <message name="IDS_EXTENSIONS_OPTIONS_MENU_ITEM" desc="The text for the options menu item in context menus (title case).">
             Options

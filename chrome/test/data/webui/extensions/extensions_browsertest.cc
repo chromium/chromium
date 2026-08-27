@@ -258,8 +258,8 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, ShowErrorAsWarningsButtonLabel) {
   RunTestCase("ShowErrorAsWarningsButtonLabel");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, WriteReviewButtonVisibility) {
-  RunTestCase("WriteReviewButtonVisibility");
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, RateExtensionLinkVisibility) {
+  RunTestCase("RateExtensionLinkVisibility");
 }
 
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
@@ -369,12 +369,12 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, UserScripts) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       WriteReviewButtonVisibility) {
-  RunTestCase("WriteReviewButtonVisibility");
+                       RateExtensionLinkVisibility) {
+  RunTestCase("RateExtensionLinkVisibility");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, WriteReviewButtonClick) {
-  RunTestCase("WriteReviewButtonClick");
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, RateExtensionLinkClick) {
+  RunTestCase("RateExtensionLinkClick");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
