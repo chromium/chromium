@@ -19,12 +19,21 @@ TEST(GtkUtilTest, IsValidThemeName) {
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kIconThemeName, "hicolor"));
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kCursorThemeName, "Adwaita"));
   EXPECT_TRUE(IsValidThemeName(ThemeProperty::kKeyThemeName, ""));
+  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kKeyThemeName, nullptr));
+  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kCursorThemeName, ""));
+  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kCursorThemeName, nullptr));
   EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, ""));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kCursorThemeName, ""));
+  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, nullptr));
+  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kIconThemeName, ""));
+  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kIconThemeName, nullptr));
   EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, "../invalid"));
   EXPECT_FALSE(
       IsValidThemeName(ThemeProperty::kThemeName, "/absolute/invalid"));
   EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, "."));
+  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kCursorThemeName, "../invalid"));
+  EXPECT_FALSE(
+      IsValidThemeName(ThemeProperty::kCursorThemeName, "/absolute/invalid"));
+  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kCursorThemeName, "."));
 }
 
 TEST(GtkUtilTest, GetThemeFallback) {
@@ -128,6 +137,30 @@ TEST_F(GtkUtilInterceptorTest, GtkModulesSanitizedAtWriteTime) {
 
   // The interceptor should have triggered and sanitized the modules to ""
   EXPECT_EQ(observer.value, "");
+}
+
+TEST_F(GtkUtilInterceptorTest, CursorThemeNamesAllowsEmpty) {
+  GtkSettings* settings = GetDefaultGtkSettings();
+  ASSERT_TRUE(settings);
+
+  std::string observed_theme_name = "initial";
+  auto callback = base::BindRepeating(
+      [](std::string* out_str, GtkSettings* settings, GParamSpec* pspec) {
+        gchar* name = nullptr;
+        g_object_get(settings, "gtk-cursor-theme-name", &name, nullptr);
+        if (name) {
+          *out_str = name;
+          g_free(name);
+        } else {
+          out_str->clear();
+        }
+      },
+      base::Unretained(&observed_theme_name));
+
+  ScopedGSignal signal(settings, "notify::gtk-cursor-theme-name", callback);
+
+  g_object_set(settings, "gtk-cursor-theme-name", "", nullptr);
+  EXPECT_EQ(observed_theme_name, "");
 }
 
 }  // namespace gtk

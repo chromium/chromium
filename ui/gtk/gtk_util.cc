@@ -840,13 +840,14 @@ double GetOpacityFromContext(GtkStyleContext* context) {
 }
 
 bool IsValidThemeName(ThemeProperty property, const char* theme) {
-  const bool is_key_theme = property == ThemeProperty::kKeyThemeName;
+  const bool is_optional = property == ThemeProperty::kKeyThemeName ||
+                           property == ThemeProperty::kCursorThemeName;
   if (!theme) {
-    return is_key_theme;
+    return is_optional;
   }
   std::string_view theme_str(theme);
   if (theme_str.empty()) {
-    return is_key_theme;
+    return is_optional;
   }
   return ui::IsValidCursorThemeName(theme_str);
 }
