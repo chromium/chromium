@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.Incog
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -161,7 +162,9 @@ public class IncognitoReauthCoordinatorFactory {
                             });
                     return;
                 }
-                mLayoutManager.showLayout(LayoutType.HUB, /* animate= */ false);
+                if (!TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+                    mLayoutManager.showLayout(LayoutType.HUB, /* animate= */ false);
+                }
             };
         } else {
             return () -> mContext.startActivity(mShowRegularOverviewIntent);
