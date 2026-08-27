@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -345,14 +346,41 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape) {
             delegate_.launch_or_prompt_url());
 }
 
+namespace {
+
+bool g_dump_without_crashing_called = false;
+void RecordDumpWithoutCrashing() {
+  g_dump_without_crashing_called = true;
+}
+
+class ScopedDumpWithoutCrashingObserver {
+ public:
+  ScopedDumpWithoutCrashingObserver() {
+    g_dump_without_crashing_called = false;
+    base::debug::SetDumpWithoutCrashingFunction(&RecordDumpWithoutCrashing);
+  }
+  ~ScopedDumpWithoutCrashingObserver() {
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+  }
+  bool called() const { return g_dump_without_crashing_called; }
+};
+
+}  // namespace
+
 TEST_F(ExternalProtocolHandlerTest, TestNoDialogWithoutManager) {
   // WebContents without a dialog manager should not prompt crbug.com/40064553.
+  ScopedDumpWithoutCrashingObserver dump_observer;
+
   GetWebContents()->SetUserData(
       web_modal::WebContentsModalDialogManager::UserDataKey(), nullptr);
   EXPECT_EQ(nullptr, web_modal::WebContentsModalDialogManager::FromWebContents(
                          GetWebContents()));
   DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::UNKNOWN_DEFAULT,
          Action::NONE);
+
+  // Background WebContents (not associated with a browser window) should not
+  // trigger a dump (b/328163932).
+  EXPECT_FALSE(dump_observer.called());
 }
 
 #else  // if !BUILDFLAG(IS_ANDROID)
