@@ -1608,24 +1608,6 @@ ubsan_hardening("return") {
   sanitizer = "return"
 }
 
-# Enable `-fsanitize=unreachable` to crash deterministically if control
-# flow hits an unreachable point.
-ubsan_hardening("unreachable") {
-  sanitizer = "unreachable"
-
-  #
-  # TODO(crbug.com/501143596):
-  # *   `fuchsia-binary-size` tells us that web_engine and
-  #     chrome_fuchsia both grow 32768 bytes (10x that, uncompressed).
-  # *   `headless_shell_wpt_tests` fail on `mac-rel`.
-  # *   `immediate_crash_unittest` presents some failed expectations on
-  #     `chromeos-betty-chrome-gtest`.
-  #
-  # Be greedy about coverage by cutting out the problematic platforms
-  # when `!is_debug`.
-  condition = is_debug || !(is_mac || is_chromeos || is_fuchsia)
-}
-
 config("rustc_revision") {
   if (rustc_revision != "") {
     # Similar to the `clang_revision` config, this is here so that all `.rs`
