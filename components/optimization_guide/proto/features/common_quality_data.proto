@@ -1243,8 +1243,7 @@ message Tab {
   int64 last_active_timestamp_ms = 5 [features = { field_presence: EXPLICIT }];
 
   // Duration in milliseconds the tab spent in the foreground.
-  int64 last_foreground_duration_ms = 6
-      [features = { field_presence: EXPLICIT }];
+  int64 last_foreground_duration_ms = 6 [features = { field_presence: EXPLICIT }];
 }
 
 // The site engagement information for a single site.
