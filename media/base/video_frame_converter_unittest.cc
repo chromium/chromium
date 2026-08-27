@@ -723,7 +723,6 @@ constexpr auto kOutputFormats = std::to_array<VideoPixelFormat>({
     PIXEL_FORMAT_NV24,
     PIXEL_FORMAT_P010LE,
     PIXEL_FORMAT_P210LE,
-    PIXEL_FORMAT_P410LE,
     PIXEL_FORMAT_YUV420P10,
     PIXEL_FORMAT_YUV444P10,
 });
