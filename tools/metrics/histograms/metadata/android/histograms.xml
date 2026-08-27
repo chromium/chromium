@@ -7258,6 +7258,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.AwBrowserContext.CreateAwPrefetchManager.Duration"
+    units="ms" expires_after="2027-03-01">
+  <owner>taiyo@chromium.org</owner>
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to instantiate an `AwPrefetchManager` object on the
+    UI thread during `AwBrowserContext` profile initialization.
+
+    Emitted synchronously during `AwBrowserContext` construction when
+    initializing `AwPrefetchManager`.
+
+    Only emitted for Android WebView.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.AwBrowserContext.Default.Duration.CreateOrLoadFromDisk"
     units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
