@@ -28,8 +28,9 @@ function populateConnectorsSection() {
   const securityEventEnabled = loadTimeData.getBoolean('securityEventEnabled');
   const fileDownloadEnabled =
       loadTimeData.getBoolean('fileDownloadEventEnabled');
-  const connectorsSectionVisible =
-      pageVisitEnabled || securityEventEnabled || fileDownloadEnabled;
+  const textEnterEnabled = loadTimeData.getBoolean('textEnterEventEnabled');
+  const connectorsSectionVisible = pageVisitEnabled || securityEventEnabled ||
+      fileDownloadEnabled || textEnterEnabled;
 
   // Check if there are connectors enabled.
   if (connectorsSectionVisible) {
@@ -46,6 +47,10 @@ function populateConnectorsSection() {
     if (fileDownloadEnabled) {
       getRequiredElement('file-download-event-section')
           .classList.remove('hidden');
+    }
+
+    if (textEnterEnabled) {
+      getRequiredElement('text-enter-event-section').classList.remove('hidden');
     }
   }
 }

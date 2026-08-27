@@ -36,6 +36,8 @@ namespace {
 
 using enterprise_connectors::ConnectorsService;
 
+// TODO(crbug.com/539934808): Add eg test for the iOS management page.
+
 // Returns the management message depending on the levels of the policies that
 // are applied. Returns std::nullopt if there are no policies.
 std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
@@ -119,6 +121,14 @@ bool IsFileDownloadConnectorEnabled(ConnectorsService* connectors_service) {
   return enterprise_connectors::IsDownloadConnectorEnabled(connectors_service);
 }
 
+// Whether the "Text is entered" event subsection under Chrome Enterprise
+// Connectors should be displayed. This subsection is visible if Bulk Data Entry
+// connector is enabled.
+bool IsTextEnterConnectorEnabled(ConnectorsService* connectors_service) {
+  return enterprise_connectors::IsBulkDataEntryConnectorEnabled(
+      connectors_service);
+}
+
 // Returns the message explaining that Chrome Enterprise Connectors are turned
 // on.
 std::u16string GetConnectorsSectionDescription(
@@ -179,6 +189,17 @@ std::u16string GetFileDownloadEventTitle() {
 // subsection.
 std::u16string GetFileDownloadEventDescription() {
   return GetEventDescription(IDS_MANAGEMENT_FILE_DOWNLOADED_VISIBLE_DATA);
+}
+
+// Title for the Chrome Enterprise Connectors Text Enter event subsection.
+std::u16string GetTextEnterEventTitle() {
+  return GetEventTitle(IDS_MANAGEMENT_TEXT_ENTERED_EVENT);
+}
+
+// Description for the Chrome Enterprise Connectors Text Enter event
+// subsection.
+std::u16string GetTextEnterEventDescription() {
+  return GetEventDescription(IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA);
 }
 
 // Creates the HTML source for the chrome://management page.
@@ -270,6 +291,11 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
                      IsFileDownloadConnectorEnabled(connectors_service));
   source->AddString("fileDownloadEventTitle", GetFileDownloadEventTitle());
   source->AddString("fileDownloadEventData", GetFileDownloadEventDescription());
+
+  source->AddBoolean("textEnterEventEnabled",
+                     IsTextEnterConnectorEnabled(connectors_service));
+  source->AddString("textEnterEventTitle", GetTextEnterEventTitle());
+  source->AddString("textEnterEventData", GetTextEnterEventDescription());
 
   source->UseStringsJs();
   source->AddResourcePaths(kManagementResources);
