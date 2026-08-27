@@ -176,4 +176,39 @@ bool IsDarkModeOn() {
          !is_light_theme;
 }
 
+bool MaybeSetArrowCursor(HWND hwnd, WPARAM wparam, LPARAM lparam) {
+  if (LOWORD(lparam) != HTCLIENT) {
+    return false;
+  }
+
+  const HWND message_wnd = reinterpret_cast<HWND>(wparam);
+  if (!message_wnd || !::IsWindow(message_wnd)) {
+    return false;
+  }
+
+  if (message_wnd != hwnd && !::IsChild(hwnd, message_wnd)) {
+    return false;
+  }
+
+  const HCURSOR arrow_cursor = ::LoadCursor(nullptr, IDC_ARROW);
+  if (!arrow_cursor) {
+    return false;
+  }
+
+  const HCURSOR class_cursor =
+      reinterpret_cast<HCURSOR>(::GetClassLongPtr(message_wnd, GCLP_HCURSOR));
+
+  // If the window class defines a custom cursor that is not the standard arrow
+  // (e.g. an EDIT control with IDC_IBEAM or a window with a custom tool
+  // cursor), do not override it. Windows with no class cursor (nullptr) or
+  // with the standard arrow class cursor (such as #32770 dialogs) are
+  // explicitly set to IDC_ARROW to dismiss the IDC_APPSTARTING feedback cursor.
+  if (class_cursor != nullptr && class_cursor != arrow_cursor) {
+    return false;
+  }
+
+  ::SetCursor(arrow_cursor);
+  return true;
+}
+
 }  // namespace updater::ui

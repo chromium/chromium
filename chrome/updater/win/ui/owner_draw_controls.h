@@ -142,6 +142,7 @@ class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
     CR_COMMAND_ID_HANDLER_EX(kButtonClose, OnClose)
     CR_COMMAND_ID_HANDLER_EX(kButtonMaximize, OnMaximize)
     CR_COMMAND_ID_HANDLER_EX(kButtonMinimize, OnMinimize)
+    CR_MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor)
   CR_END_MSG_MAP()
 
  private:
@@ -161,6 +162,7 @@ class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
   LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnDrawItem(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSetCursor(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnClose(UINT notify_code, int id, HWND ctl);
   void OnMaximize(UINT notify_code, int id, HWND ctl);
   void OnMinimize(UINT notify_code, int id, HWND ctl);

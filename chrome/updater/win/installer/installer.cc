@@ -87,11 +87,13 @@ std::string ExtractTag() {
 
 // Shows a splash screen "Initializing...".
 base::ScopedClosureRunner CreateSplashScreen() {
-  HWND splash_hwnd = nullptr;
+  DismissAppStartingCursor();
+
   if (GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
     return base::ScopedClosureRunner(base::DoNothing());
   }
 
+  HWND splash_hwnd = nullptr;
   base::WaitableEvent ui_initialized_event;
   base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_VISIBLE,

@@ -237,6 +237,14 @@ LRESULT OmahaWnd::OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam) {
   return 0;
 }
 
+LRESULT OmahaWnd::OnSetCursor(UINT, WPARAM wparam, LPARAM lparam) {
+  if (MaybeSetArrowCursor(hwnd(), wparam, lparam)) {
+    return TRUE;
+  }
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
 // Called when ESC key is pressed.
 void OmahaWnd::OnCancel(UINT, int id, HWND) {
   CHECK_EQ(id, IDCANCEL);

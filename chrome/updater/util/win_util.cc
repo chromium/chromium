@@ -1658,4 +1658,19 @@ std::optional<base::win::AccessToken> GetLoggedOnUserToken() {
       TOKEN_IMPERSONATE | TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE);
 }
 
+void DismissAppStartingCursor() {
+  if (base::win::IsUser32AndGdi32Available()) {
+    // Informs Windows that the process has completed startup. Calling
+    // `PeekMessage` on the primary thread clears the OS-level startup feedback
+    // (`IDC_APPSTARTING`) without modifying or removing any messages from the
+    // queue.
+    // NOTE: PeekMessage will synchronously dispatch sent messages from other
+    // threads. This is safe during early startup since no windows or other
+    // threads are running, but call locations should remain at the entry
+    // points of the process.
+    MSG msg = {};
+    ::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE);
+  }
+}
+
 }  // namespace updater

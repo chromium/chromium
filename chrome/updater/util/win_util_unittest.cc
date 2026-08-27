@@ -871,4 +871,25 @@ TEST(WinUtil, RegistryKeyHelpersSanitizeInvalidAppIds) {
   EXPECT_THAT(GetAppClientStateMediumKey(L"a\\b"), EndsWith(L"a_b"));
 }
 
+TEST(WinUtil, DismissAppStartingCursor) {
+  if (!base::win::IsUser32AndGdi32Available()) {
+    return;
+  }
+
+  // The first call to DismissAppStartingCursor() invokes PeekMessage, which
+  // implicitly forces Windows to create the thread's message queue, making it
+  // safe to call PostThreadMessage next.
+  DismissAppStartingCursor();
+
+  // Also verify that pre-existing messages in the queue remain untouched.
+  constexpr UINT kTestMsg = WM_USER + 1;
+  EXPECT_TRUE(::PostThreadMessage(::GetCurrentThreadId(), kTestMsg, 42, 0));
+  DismissAppStartingCursor();
+
+  MSG msg = {};
+  EXPECT_TRUE(::PeekMessage(&msg, nullptr, kTestMsg, kTestMsg, PM_REMOVE));
+  EXPECT_EQ(msg.message, kTestMsg);
+  EXPECT_EQ(msg.wParam, static_cast<WPARAM>(42));
+}
+
 }  // namespace updater::test

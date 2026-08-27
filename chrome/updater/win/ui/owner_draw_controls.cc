@@ -503,6 +503,16 @@ LRESULT OwnerDrawTitleBarWindow::OnDrawItem(UINT, WPARAM, LPARAM lparam) {
   return 0;
 }
 
+LRESULT OwnerDrawTitleBarWindow::OnSetCursor(UINT,
+                                             WPARAM wparam,
+                                             LPARAM lparam) {
+  if (MaybeSetArrowCursor(hwnd(), wparam, lparam)) {
+    return TRUE;
+  }
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
 void OwnerDrawTitleBarWindow::OnClose(UINT, int, HWND) {
   ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
 }

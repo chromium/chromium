@@ -496,6 +496,11 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id);
 // Logs the COM client PID when called from a COM server.
 void LogComCaller(base::cstring_view caller_func);
 
+// Informs Windows that this process has completed startup, dismissing the
+// `IDC_APPSTARTING` ("Working in Background") feedback cursor.
+// Must be called on the main/primary thread of the process.
+void DismissAppStartingCursor();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

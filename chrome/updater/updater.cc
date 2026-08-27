@@ -153,6 +153,8 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       << "Failed to disable COM exception handling.";
   base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
+
+  DismissAppStartingCursor();
 #elif BUILDFLAG(IS_MAC)
   base::apple::SetBaseBundleIDOverride(MAC_BUNDLE_IDENTIFIER_STRING);
 #endif

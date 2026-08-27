@@ -619,4 +619,20 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   progress_wnd->DestroyWindow();
 }
 
+TEST_F(ProgressWndTest, SetCursorArrow) {
+  MessageLoop ui_message_loop;
+  ProgressWnd progress_wnd(&ui_message_loop, nullptr);
+  progress_wnd.SetEventSink(this);
+  progress_wnd.Initialize();
+  progress_wnd.Show();
+
+  // Send WM_SETCURSOR with HTCLIENT and verify it returns TRUE.
+  LRESULT result = ::SendMessage(progress_wnd.hwnd(), WM_SETCURSOR,
+                                 reinterpret_cast<WPARAM>(progress_wnd.hwnd()),
+                                 MAKELPARAM(HTCLIENT, WM_MOUSEMOVE));
+  EXPECT_EQ(result, static_cast<LRESULT>(TRUE));
+
+  progress_wnd.DestroyWindow();
+}
+
 }  // namespace updater::ui
