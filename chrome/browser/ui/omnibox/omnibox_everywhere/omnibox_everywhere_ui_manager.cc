@@ -247,6 +247,16 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
           base::BindRepeating(
               &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
               base::Unretained(this)));
+      profile_pref_change_registrar_.Add(
+          ntp_tiles::prefs::kCustomLinksList,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+      profile_pref_change_registrar_.Add(
+          ntp_tiles::prefs::kCustomLinksInitialized,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
 #if !BUILDFLAG(IS_ANDROID)
       profile_pref_change_registrar_.Add(
           ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,

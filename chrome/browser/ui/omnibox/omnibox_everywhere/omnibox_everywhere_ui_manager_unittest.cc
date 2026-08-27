@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
@@ -29,6 +30,7 @@
 #include "components/ntp_tiles/pref_names.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -1524,6 +1526,32 @@ TEST_F(OmniboxEverywhereUIManagerTest,
       omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
       std::to_underlying(
           omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+  EXPECT_FALSE(ui_manager->widget());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CleanUpWidgetOnCustomLinksListPrefChangeWhenHidden) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  // Hide the widget.
+  ui_manager->Close();
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+  EXPECT_TRUE(ui_manager->widget());
+
+  // Updating custom links (e.g. shortcut added, deleted, or reordered) while
+  // hidden should clean up the old widget to prevent stale frame buffer and
+  // tile flicker upon reopen.
+  {
+    ScopedListPrefUpdate update(profile_.GetPrefs(),
+                                ntp_tiles::prefs::kCustomLinksList);
+    update->Append("https://example.com");
+  }
   EXPECT_FALSE(ui_manager->widget());
 
   ui_manager->Shutdown();
