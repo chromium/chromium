@@ -6,6 +6,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -25,13 +27,19 @@ class CameraSearchTaskInfo : public TaskInfo {
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }
-  std::string GetTriggerUserAction() const override { return ""; }
+  std::string GetTriggerUserAction() const override {
+    return "Mobile.LensOverlay.NewResult";
+  }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(
         IDS_IOS_LEVEL_UP_TASK_COMPLETED_CAMERA_SEARCH);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
-    return base::DoNothing();
+    return base::BindRepeating(^(CommandDispatcher* dispatcher) {
+      id<NewTabPageCommands> handler =
+          HandlerForProtocol(dispatcher, NewTabPageCommands);
+      [handler presentLensIconBubble];
+    });
   }
 };
 
