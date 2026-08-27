@@ -1215,9 +1215,8 @@ static_library("ui") {
   }
 
   if (is_android) {
-    sources += [ "screen_capture_notification_ui_stub.cc" ]
-
     deps += [
+      ":screen_capture_notification_ui_stub",
       "//chrome/android:jni_headers",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/autofill/android:jni_headers",
@@ -4196,6 +4195,14 @@ if (enable_webui_certificate_viewer) {
       "//url",
     ]
   }
+}
+
+source_set("screen_capture_notification_ui_stub") {
+  sources = [ "screen_capture_notification_ui_stub.cc" ]
+  deps = [
+    ":screen_capture_notification_ui",
+    "//base",
+  ]
 }
 
 source_set("screen_capture_notification_ui") {
