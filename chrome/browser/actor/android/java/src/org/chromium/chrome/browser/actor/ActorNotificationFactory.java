@@ -108,7 +108,7 @@ public class ActorNotificationFactory {
         if (ActorUtils.isOngoingNotification(isLive)) {
             Bundle extras = new Bundle();
             extras.putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true);
-            String chipText = getStatusChipText(context, state);
+            String chipText = getStatusChipText(context, state, isWarning);
             if (chipText != null) {
                 extras.putCharSequence(EXTRA_SHORT_CRITICAL_TEXT, chipText);
             }
@@ -290,14 +290,19 @@ public class ActorNotificationFactory {
     }
 
     /**
-     * Determines the status chip text based on the task's state.
+     * Determines the status chip text based on the task's state and warning mode.
      *
      * @param context The application context.
      * @param state The {@link ActorTaskState}.
-     * @return The status chip text ("Done", "Stopped", "Review", "Paused"), or null for icon-only
+     * @param isWarning Whether the task is in a warning state.
+     * @return The status chip text ("Review", "Done", "Stopped", "Paused"), or null for icon-only
      *     chip.
      */
-    public static @Nullable String getStatusChipText(Context context, @ActorTaskState int state) {
+    public static @Nullable String getStatusChipText(
+            Context context, @ActorTaskState int state, boolean isWarning) {
+        if (isWarning) {
+            return context.getString(R.string.actor_notification_live_status_review);
+        }
         if (state == ActorTaskState.FINISHED) {
             return context.getString(R.string.actor_notification_live_status_done);
         } else if (ActorUtils.isStoppedState(state)) {
@@ -308,6 +313,18 @@ public class ActorNotificationFactory {
             return context.getString(R.string.actor_notification_live_status_paused);
         }
         return null;
+    }
+
+    /**
+     * Determines the status chip text based on the task's state.
+     *
+     * @param context The application context.
+     * @param state The {@link ActorTaskState}.
+     * @return The status chip text ("Review", "Done", "Stopped", "Paused"), or null for icon-only
+     *     chip.
+     */
+    public static @Nullable String getStatusChipText(Context context, @ActorTaskState int state) {
+        return getStatusChipText(context, state, /* isWarning= */ false);
     }
 
     /**

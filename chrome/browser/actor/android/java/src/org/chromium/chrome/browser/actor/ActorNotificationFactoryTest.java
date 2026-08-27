@@ -428,6 +428,18 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(
                         R.string.actor_notification_body_will_stop_task_long_running, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertTrue(
+                "Warning notification should be ongoing",
+                (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning notification status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
     }
 
     @Test
@@ -449,6 +461,18 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(
                         R.string.actor_notification_body_will_stop_task_no_response, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertTrue(
+                "Warning notification should be ongoing",
+                (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning notification status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
     }
 
     @Test
@@ -600,17 +624,38 @@ public class ActorNotificationFactoryTest {
                 pausedNotif.extras.getCharSequence(
                         ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
 
-        // Warning state (not WAITING_ON_USER): requested promoted ongoing, shortCriticalText = null
-        // (icon only).
+        // Warning state (running task in warning): requested promoted ongoing,
+        // shortCriticalText = "Review".
         NotificationWrapper warningWrapper =
                 ActorNotificationFactory.buildNotification(
                         mTask, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ true);
         assertNotNull(warningWrapper);
         Notification warningNotif = warningWrapper.getNotification();
-        assertNull(
-                (Object)
-                        warningNotif.extras.getCharSequence(
-                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                warningNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning state status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                warningNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Warning state (waiting on user task in warning): requested promoted ongoing,
+        // shortCriticalText = "Review".
+        NotificationWrapper waitingWarningWrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.WAITING_ON_USER,
+                        /* isSilent= */ false,
+                        /* isWarning= */ true);
+        assertNotNull(waitingWarningWrapper);
+        Notification waitingWarningNotif = waitingWarningWrapper.getNotification();
+        assertEquals(
+                "Waiting on user warning status chip should still be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                waitingWarningNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
 
         // Finished task: requested promoted ongoing, shortCriticalText = "Done".
         NotificationWrapper finishedWrapper =

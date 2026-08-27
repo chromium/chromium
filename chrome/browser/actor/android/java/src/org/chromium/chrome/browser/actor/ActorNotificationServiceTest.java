@@ -162,6 +162,15 @@ public class ActorNotificationServiceTest {
                 mContext.getString(
                         R.string.actor_notification_body_will_stop_task_long_running, "Test Task"),
                 notification.extras.getString(Notification.EXTRA_TEXT));
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
     }
 
     @Test
@@ -189,6 +198,15 @@ public class ActorNotificationServiceTest {
                 mContext.getString(
                         R.string.actor_notification_body_will_stop_task_long_running, "Test Task"),
                 notification.extras.getString(Notification.EXTRA_TEXT));
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
     }
 
     @Test
@@ -216,6 +234,115 @@ public class ActorNotificationServiceTest {
                 mContext.getString(
                         R.string.actor_notification_body_will_stop_task_no_response, "Test Task"),
                 notification.extras.getString(Notification.EXTRA_TEXT));
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                notification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+    }
+
+    @Test
+    public void testNeedsUserInputToWarningTransition_StatusChipPersistsReview() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        when(mServiceController.createTrustedBringTabToFrontIntent(any())).thenReturn(new Intent());
+
+        // Post waiting on user notification.
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.WAITING_ON_USER,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification userInputNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(userInputNotif);
+        assertTrue(
+                "Needs user attention notification should be ongoing",
+                (userInputNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Needs user attention notification should request promoted ongoing",
+                userInputNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Needs user attention status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                userInputNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Update to warning mode while in WAITING_ON_USER.
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.WAITING_ON_USER,
+                /* isSilent= */ false,
+                /* isWarning= */ true);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification warningNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ true);
+        assertNotNull(warningNotif);
+        assertEquals(
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                warningNotif.extras.getString(Notification.EXTRA_TITLE));
+        assertTrue(
+                "Warning notification should be ongoing",
+                (warningNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Warning notification should request promoted ongoing",
+                warningNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Warning notification status chip should remain Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                warningNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Post stopped notification on timeout.
+        when(mTask.getState()).thenReturn(ActorTaskState.FAILED);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FAILED, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        Notification stoppedNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(stoppedNotif);
+        assertTrue(
+                "Stopped live notification should be ongoing",
+                (stoppedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Stopped live notification should request promoted ongoing",
+                stoppedNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                "Stopped notification status chip should be Stopped",
+                mContext.getString(R.string.actor_notification_live_status_stopped),
+                stoppedNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        // Advance looper to fire demotion runnable.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification demotedNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demotedNotif);
+        assertFalse(
+                "Demoted stopped notification should not be ongoing",
+                (demotedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
     }
 
     @Test
