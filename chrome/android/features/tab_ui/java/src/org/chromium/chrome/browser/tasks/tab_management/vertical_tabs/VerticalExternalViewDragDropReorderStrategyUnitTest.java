@@ -274,7 +274,7 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
 
     @Test
     @SmallTest
-    public void testSingleTab_OverExpandedGroup_Header_InsertsAsFirstChild() {
+    public void testSingleTab_OverExpandedGroup_Header_TopHalf_SnapsAboveGroupAsStandaloneTab() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
@@ -283,7 +283,7 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
 
-        // Header at pos 0 (top: 0, bottom: 50)
+        // Header at pos 0 (top: 0, bottom: 50, centerY: 25)
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                         .with(
@@ -295,7 +295,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
-        // Child 1 at pos 1 (top: 50, bottom: 100)
         PropertyModel child1Model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                         .with(
@@ -306,7 +305,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                         .build();
         addMainListItem(child1Model, TabProperties.UiType.TAB, 0, 50, 300, 100);
 
-        // Child 2 at pos 2 (top: 100, bottom: 150)
         PropertyModel child2Model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                         .with(
@@ -319,12 +317,77 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
 
         mockFindChildViewUnder(mRecyclerView, mMainListChildren);
 
-        // Hover over header (y = 25)
+        // Hover over top half of header (y = 15 in range 0..50)
         DropTargetResult result =
                 mStrategy.calculateDropTarget(
                         mRecyclerView,
                         /* xPx= */ 150,
-                        /* yPx= */ 25,
+                        /* yPx= */ 15,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(0, result.destTabIndex);
+        assertEquals(TabList.INVALID_TAB_INDEX, result.destGroupTabId);
+        assertFalse(result.isPinned);
+        assertFalse(result.isZeroPinnedState);
+        assertTrue(result.insertBefore);
+        assertTrue(result.isGroupTopOrBottomBoundary);
+        assertEquals(0, result.adapterPosition);
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleTab_OverExpandedGroup_Header_BottomHalf_InsertsAsFirstChild() {
+        Token groupId = new Token(1L, 2L);
+        Tab tab20 = createMockTab(20, /* isPinned= */ false);
+        Tab tab21 = createMockTab(21, /* isPinned= */ false);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.indexOf(tab20)).thenReturn(0);
+        when(mTabModel.indexOf(tab21)).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+
+        // Header at pos 0 (top: 0, bottom: 50, centerY: 25)
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .with(TabProperties.IS_COLLAPSED, false)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
+
+        PropertyModel child1Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(child1Model, TabProperties.UiType.TAB, 0, 50, 300, 100);
+
+        PropertyModel child2Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 21)
+                        .build();
+        addMainListItem(child2Model, TabProperties.UiType.TAB, 0, 100, 300, 150);
+
+        mockFindChildViewUnder(mRecyclerView, mMainListChildren);
+
+        // Hover over bottom half of header (y = 35 in range 0..50)
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 35,
                         /* isGroupDrag= */ false,
                         /* isPinnedDrag= */ false);
 
@@ -397,12 +460,14 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         assertEquals(1, result.destTabIndex);
         assertEquals(20, result.destGroupTabId);
         assertTrue(result.insertBefore);
+        assertFalse(result.isGroupTopOrBottomBoundary);
         assertEquals(2, result.adapterPosition);
     }
 
     @Test
     @SmallTest
-    public void testSingleTab_OverExpandedGroup_ChildTab_BottomHalf_InsertsAfterChild() {
+    public void
+            testSingleTab_OverExpandedGroup_LastChild_UpperBottomHalf_InsertsAfterChildInGroup() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
@@ -444,12 +509,13 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
 
         mockFindChildViewUnder(mRecyclerView, mMainListChildren);
 
-        // Hover over Child 2 at bottom half (y = 140 in range 100..150)
+        // Child 2 is range 100..150 (centerY: 125, 75% height: 137.5).
+        // Hover at y = 130 (upper bottom half) -> inserts after Child 2 inside group.
         DropTargetResult result =
                 mStrategy.calculateDropTarget(
                         mRecyclerView,
                         /* xPx= */ 150,
-                        /* yPx= */ 140,
+                        /* yPx= */ 130,
                         /* isGroupDrag= */ false,
                         /* isPinnedDrag= */ false);
 
@@ -458,6 +524,133 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         assertEquals(2, result.destTabIndex);
         assertEquals(20, result.destGroupTabId);
         assertFalse(result.insertBefore);
+        assertFalse(result.isGroupTopOrBottomBoundary);
+        assertEquals(2, result.adapterPosition);
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testSingleTab_OverExpandedGroup_LastChild_LowerBottomHalf_SnapsBelowGroupAsStandaloneTab() {
+        Token groupId = new Token(1L, 2L);
+        Tab tab20 = createMockTab(20, /* isPinned= */ false);
+        Tab tab21 = createMockTab(21, /* isPinned= */ false);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.indexOf(tab20)).thenReturn(0);
+        when(mTabModel.indexOf(tab21)).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .with(TabProperties.IS_COLLAPSED, false)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
+
+        PropertyModel child1Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(child1Model, TabProperties.UiType.TAB, 0, 50, 300, 100);
+
+        PropertyModel child2Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 21)
+                        .build();
+        addMainListItem(child2Model, TabProperties.UiType.TAB, 0, 100, 300, 150);
+
+        mockFindChildViewUnder(mRecyclerView, mMainListChildren);
+
+        // Child 2 is range 100..150 (centerY: 125, 75% height: 137.5).
+        // Hover at y = 145 (lower bottom half >= 137.5) -> snaps below group as standalone tab.
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 145,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertEquals(TabList.INVALID_TAB_INDEX, result.destGroupTabId);
+        assertFalse(result.insertBefore);
+        assertTrue(result.isGroupTopOrBottomBoundary);
+        assertEquals(2, result.adapterPosition);
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleTab_OverExpandedGroup_BelowLastChild_SnapsBelowGroupAsStandaloneTab() {
+        Token groupId = new Token(1L, 2L);
+        Tab tab20 = createMockTab(20, /* isPinned= */ false);
+        Tab tab21 = createMockTab(21, /* isPinned= */ false);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.indexOf(tab20)).thenReturn(0);
+        when(mTabModel.indexOf(tab21)).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB_GROUP)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .with(TabProperties.IS_COLLAPSED, false)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
+
+        PropertyModel child1Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 20)
+                        .build();
+        addMainListItem(child1Model, TabProperties.UiType.TAB, 0, 50, 300, 100);
+
+        PropertyModel child2Model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_ID, groupId)
+                        .with(TabProperties.TAB_ID, 21)
+                        .build();
+        addMainListItem(child2Model, TabProperties.UiType.TAB, 0, 100, 300, 150);
+
+        mockFindChildViewUnder(mRecyclerView, mMainListChildren);
+
+        // Hover below the entire list (y = 250 > 150)
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 250,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(2, result.destTabIndex);
+        assertEquals(TabList.INVALID_TAB_INDEX, result.destGroupTabId);
+        assertFalse(result.insertBefore);
+        assertTrue(result.isGroupTopOrBottomBoundary);
         assertEquals(2, result.adapterPosition);
     }
 

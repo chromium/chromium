@@ -668,27 +668,32 @@ public class VerticalExternalViewDragDropReorderStrategy {
         }
 
         // Sub-rule 2: Over Expanded Tab Group
-        // 2a. Over Group Header -> insert as 1st child of group
+        // 2a. Over Group Header -> top half: standalone above group; bottom half: 1st child inside
+        // group
         if (isGroupHeader && !isCollapsed) {
             TabGroupRange range =
                     getTabGroupRange(tabModel, groupId, targetTabId, firstNonPinnedIndex);
             int destTabIndex = MathUtils.clamp(range.firstIndex, firstNonPinnedIndex, tabCount);
+            boolean insertBefore = isTopHalf;
+            int destGroupTabId =
+                    insertBefore ? TabList.INVALID_TAB_INDEX : range.representativeTabId;
+            boolean isGroupTopOrBottomBoundary = insertBefore;
 
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    /* destGroupTabId= */ range.representativeTabId,
+                    destGroupTabId,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     vh,
                     adapterPos,
-                    /* insertBefore= */ false,
-                    /* isGroupTopOrBottomBoundary= */ false,
+                    insertBefore,
+                    isGroupTopOrBottomBoundary,
                     anchorBounds);
         }
 
         // 2b. Over Child Tab in Expanded Group -> top half / bottom half sets insertion slot within
-        // group
+        // group, or standalone slot below group if past lower threshold on last child
         if (isChildTab) {
             TabGroupRange range =
                     getTabGroupRange(tabModel, groupId, targetTabId, firstNonPinnedIndex);
@@ -700,19 +705,37 @@ public class VerticalExternalViewDragDropReorderStrategy {
             }
 
             boolean insertBefore = isTopHalf;
-            int destTabIndex = insertBefore ? modelIndex : modelIndex + 1;
-            destTabIndex = MathUtils.clamp(destTabIndex, firstNonPinnedIndex, tabCount);
+            boolean isLastChildInGroup = (modelIndex == range.lastIndex);
+            boolean isBelowGroupThreshold =
+                    isLastChildInGroup
+                            && !insertBefore
+                            && (localY >= child.getTop() + 0.75f * child.getHeight()
+                                    || localY > child.getBottom());
+
+            int destTabIndex;
+            int destGroupTabId;
+            boolean isGroupTopOrBottomBoundary;
+            if (isBelowGroupThreshold) {
+                destTabIndex = MathUtils.clamp(range.lastIndex + 1, firstNonPinnedIndex, tabCount);
+                destGroupTabId = TabList.INVALID_TAB_INDEX;
+                isGroupTopOrBottomBoundary = true;
+            } else {
+                destTabIndex = insertBefore ? modelIndex : modelIndex + 1;
+                destTabIndex = MathUtils.clamp(destTabIndex, firstNonPinnedIndex, tabCount);
+                destGroupTabId = range.representativeTabId;
+                isGroupTopOrBottomBoundary = false;
+            }
 
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    /* destGroupTabId= */ range.representativeTabId,
+                    destGroupTabId,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     vh,
                     adapterPos,
                     insertBefore,
-                    /* isGroupTopOrBottomBoundary= */ false,
+                    isGroupTopOrBottomBoundary,
                     anchorBounds);
         }
 
