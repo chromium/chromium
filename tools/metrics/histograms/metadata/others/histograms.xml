@@ -2959,6 +2959,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockFailureSize"
+    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    Logs the block size category of a failed shared memory block allocation
+    attempt in an ipcz BufferPool. Logged on every failed block allocation
+    attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Ipcz.BufferPoolAllocateBlockResult" enum="BooleanSuccess"
     expires_after="2027-02-01">
   <owner>pasko@chromium.org</owner>
@@ -2967,6 +2978,17 @@ chromium-metrics-reviews@google.com.
     Logs whether an ipcz BufferPool successfully allocated a fixed-size shared
     memory block from its block allocator pools. Logged on every block
     allocation attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize"
+    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    Logs the block size category of a successful shared memory block allocation
+    attempt in an ipcz BufferPool. Logged on every successful block allocation
+    attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
   </summary>
 </histogram>
 

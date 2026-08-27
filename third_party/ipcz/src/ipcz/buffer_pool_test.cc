@@ -319,9 +319,15 @@ TEST_F(BufferPoolTest, AllocateBlockResultHistogram) {
 
   // Check allocation result with an empty pool.
   Fragment failed = pool.AllocateBlock(64);
+  constexpr int kBlockAllocationSize64Bytes = 1;
   EXPECT_TRUE(failed.is_null());
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
-                                     false, 1);
+                                     /*sample=*/false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Mojo.Ipcz.BufferPoolAllocateBlockFailureSize",
+      /*sample=*/kBlockAllocationSize64Bytes, 1);
+  histogram_tester.ExpectTotalCount(
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize", 0);
 
   // Check successful allocation.
   constexpr size_t kBufferSize = 4096;
@@ -334,7 +340,10 @@ TEST_F(BufferPoolTest, AllocateBlockResultHistogram) {
   Fragment fragment = pool.AllocateBlock(64);
   EXPECT_FALSE(fragment.is_null());
   histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
-                                     true, 1);
+                                     /*sample=*/true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize",
+      /*sample=*/kBlockAllocationSize64Bytes, 1);
 }
 
 }  // namespace

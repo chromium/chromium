@@ -225,6 +225,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed after retry limit"/>
 </enum>
 
+<!-- LINT.IfChange(IpczBlockAllocationSize) -->
+
+<enum name="IpczBlockAllocationSize">
+  <int value="0" label="Other"/>
+  <int value="1" label="64 B"/>
+  <int value="2" label="128 B"/>
+  <int value="3" label="256 B"/>
+  <int value="4" label="512 B"/>
+  <int value="5" label="1 KB"/>
+  <int value="6" label="2 KB"/>
+  <int value="7" label="4 KB"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/ipcz/src/ipcz/buffer_pool.cc:IpczBlockAllocationSize)
+-->
+
 <enum name="MissingFileRestoreResult">
   <int value="0" label="No candidate temp file found"/>
   <int value="1" label="Candidate found but restore failed"/>
