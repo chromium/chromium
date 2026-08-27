@@ -11358,16 +11358,30 @@
             ]
         }
     ],
-    "IOSPasskeyM3": [
+    "IOSPasskeyConditionalLoginWithShim": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasskeyConditionalLoginWithShim",
+                    "name": "Disabled",
+                    "disable_features": [
+                        "IOSPasskeyConditionalLoginWithShim"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSPasskeyModalLoginWithShim": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
                         "IOSPasskeyModalLoginWithShim"
                     ]
                 }
