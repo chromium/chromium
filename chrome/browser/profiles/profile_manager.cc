@@ -73,7 +73,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -1575,7 +1574,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   }
 
   if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
-           switches::kDisableLoginScreenApps) &&
+           ash::switches::kDisableLoginScreenApps) &&
        are_extensions_allowed_for_profile) ||
       ash::IsShimlessRmaAppBrowserContext(profile)) {
     extensions_enabled = true;

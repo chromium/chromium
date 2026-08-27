@@ -86,6 +86,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "components/app_restore/full_restore_utils.h"
 #endif
 
@@ -565,11 +566,17 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 #else
     bool was_mac_login_or_resume = false;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    bool has_create_browser_switch =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ash::switches::kCreateBrowserOnStartupForTests);
+#else
+    bool has_create_browser_switch = false;
+#endif
     restore_options = DetermineSynchronousRestoreOptions(
         browser_defaults::kAlwaysCreateTabbedBrowserOnSessionRestore,
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kCreateBrowserOnStartupForTests),
-        was_mac_login_or_resume, restore_tabbed_browser);
+        has_create_browser_switch, was_mac_login_or_resume,
+        restore_tabbed_browser);
   }
 
   BrowserWindowInterface* browser = RestoreOrCreateBrowser(

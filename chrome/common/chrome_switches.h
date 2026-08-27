@@ -63,7 +63,6 @@ extern const char kBypassAccountAlreadyUsedByAnotherProfileCheck[];
 extern const char kCaptureAutoReject[];
 extern const char kCheckForUpdateIntervalSec[];
 extern const char kCipherSuiteBlacklist[];
-extern const char kCreateBrowserOnStartupForTests[];
 extern const char kCredits[];
 extern const char kCustomDevtoolsFrontend[];
 extern const char kDebugPackedApps[];
@@ -88,7 +87,6 @@ extern const char kDisablePrintPreview[];
 extern const char kDisablePromptOnRepost[];
 extern const char kDisableStackProfiler[];
 extern const char kDisableUpdaterScheduler[];
-extern const char kDisableZeroBrowsersOpenForTests[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
 #if BUILDFLAG(IS_MAC)
@@ -119,9 +117,6 @@ extern const char kExtensionContentVerificationEnforce[];
 extern const char kExtensionContentVerificationEnforceStrict[];
 extern const char kExtensionExperimentalActor[];
 extern const char kForceAppMode[];
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kForceDevToolsAvailable[];
-#endif
 extern const char kForceFirstRun[];
 extern const char kRefreshPlatformPolicy[];
 extern const char kForceWhatsNew[];
@@ -238,14 +233,9 @@ extern const char kRequestDesktopSites[];
 extern const char kCastMirroringTargetPlayoutDelay[];
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kCroshCommand[];
-extern const char kDisableLoggingRedirect[];
-extern const char kDisableLoginScreenApps[];
-extern const char kShortMergeSessionTimeoutForTest[];
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
 extern const char kSavePageAsMHTML[];
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 extern const char kHelp[];

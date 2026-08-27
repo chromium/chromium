@@ -148,14 +148,6 @@ const char kCheckForUpdateIntervalSec[] = "check-for-update-interval";
 // Comma-separated list of SSL cipher suites to disable.
 const char kCipherSuiteBlacklist[] = "cipher-suite-blacklist";
 
-// Some platforms like ChromeOS default to empty desktop.
-// Browser tests may need to add this switch so that at least one browser
-// instance is created on startup.
-// TODO(nkostylev): Investigate if this switch could be removed.
-// (http://crbug.com/40933835)
-const char kCreateBrowserOnStartupForTests[] =
-    "create-browser-on-startup-for-tests";
-
 // Prints licensing information (same content as found in about:credits) and
 // quits.
 const char kCredits[] = "credits";
@@ -245,14 +237,6 @@ const char kDisableStackProfiler[] = "disable-stack-profiler";
 
 // Disable startup of the updater process.
 const char kDisableUpdaterScheduler[] = "disable-updater-scheduler";
-
-// Some tests seem to require the application to close when the last
-// browser window is closed. Thus, we need a switch to force this behavior
-// for ChromeOS Aura, disable "zero window mode".
-// TODO(pkotwicz): Investigate if this bug can be removed.
-// (http://crbug.com/40756809)
-const char kDisableZeroBrowsersOpenForTests[] =
-    "disable-zero-browsers-open-for-tests";
 
 // Use a specific disk cache location, rather than one derived from the
 // UserDatadir.
@@ -347,12 +331,6 @@ const char kExtensionExperimentalActor[] = "enable-extension-actor-api";
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Forces developer tools availability, no matter what values the enterprise
-// policies DeveloperToolsDisabled and DeveloperToolsAvailability are set to.
-const char kForceDevToolsAvailable[] = "force-devtools-available";
-#endif
 
 // Displays the First Run experience when the browser is started, regardless of
 // whether or not it's actually the First Run (this overrides kNoFirstRun).
@@ -794,21 +772,7 @@ const char kCastMirroringTargetPlayoutDelay[] =
     "cast-mirroring-target-playout-delay";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Custom crosh command.
-const char kCroshCommand[] = "crosh-command";
-
-// Disables logging redirect for testing.
-const char kDisableLoggingRedirect[] = "disable-logging-redirect";
-
-// Disables apps on the login screen. By default, they are allowed and can be
-// installed through policy.
-const char kDisableLoginScreenApps[] = "disable-login-screen-apps";
-
-// Use a short (1 second) timeout for merge session loader throttle testing.
-const char kShortMergeSessionTimeoutForTest[] =
-    "short-merge-session-timeout-for-test";
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
 // Enables saving webpages as MHTML (Webpage, Single) by default, instead of
 // saving as HTML with a directory of sub-resources. (Webpage, Complete).
 // See http://crbug.com/40179885 for how to remove this switch.

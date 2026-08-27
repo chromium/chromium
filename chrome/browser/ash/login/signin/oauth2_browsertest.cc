@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -1086,7 +1085,7 @@ class MergeSessionTimeoutTest : public MergeSessionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MergeSessionTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);
+    command_line->AppendSwitch(ash::switches::kShortMergeSessionTimeoutForTest);
   }
 
   void RegisterAdditionalRequestHandlers() override {

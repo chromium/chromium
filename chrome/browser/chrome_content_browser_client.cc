@@ -3120,7 +3120,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         autofill::switches::kIgnoreAutocompleteOffForAutofill,
         autofill::switches::kShowAutofillSignatures,
 #if BUILDFLAG(IS_CHROMEOS)
-        switches::kShortMergeSessionTimeoutForTest,  // For tests only.
+        ash::switches::kShortMergeSessionTimeoutForTest,  // For tests only.
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
         extensions::switches::kAllowHTTPBackgroundPage,

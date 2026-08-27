@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -70,6 +69,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
@@ -465,7 +465,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     // TODO (crbug.com/41477104): figure out why this switch speeds up the test,
     // and fix the test setup so this is not required.
 #if BUILDFLAG(IS_CHROMEOS)
-    command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);
+    command_line->AppendSwitch(ash::switches::kShortMergeSessionTimeoutForTest);
 #endif
   }
 

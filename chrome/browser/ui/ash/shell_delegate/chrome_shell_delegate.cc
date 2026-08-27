@@ -414,7 +414,7 @@ bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
   }
 
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableLoggingRedirect);
+      ash::switches::kDisableLoggingRedirect);
 }
 
 base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {

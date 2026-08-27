@@ -98,7 +98,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCampbellKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCreateBrowserOnStartupForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCroshCommand[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeRecoveryServiceBaseUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -142,7 +145,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableGaiaServices[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableHIDDetectionOnOOBEForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisableLoggingRedirect[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableLoginAnimations[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisableLoginScreenApps[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableMachineCertRequest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
@@ -155,6 +161,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisablePowerButtonInTabletMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableRollbackOption[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableVolumeAdjustSound[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisableZeroBrowsersOpenForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableWelcomeRecapForFactoryTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArc[];
@@ -212,6 +220,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFetch[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchReleaseNotes[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceCryptohomeRecoveryForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kForceDevToolsAvailable[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceFirstRunUI[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceHWIDCheckResultForTest[];
@@ -329,6 +339,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSchedulerConfigurationPerformance[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSchedulerConfiguration[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShortMergeSessionTimeoutForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeQuickStartDebugger[];

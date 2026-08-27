@@ -9,7 +9,6 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -27,6 +26,10 @@
 #else
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #endif
 
 namespace extensions {
@@ -64,7 +67,7 @@ class ViewExtensionSourceTest : public ExtensionBrowserTest {
     // are always available, so guarantee that assumption holds. Tests that
     // check if devtools can be disabled should use a test fixture without the
     // kForceDevToolsAvailable switch set.
-    command_line->AppendSwitch(switches::kForceDevToolsAvailable);
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
 #endif
   }
 

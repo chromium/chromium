@@ -169,6 +169,10 @@ using testing::Return;
 #include "base/test/scoped_path_override.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#endif
+
 using extensions::Extension;
 using testing::_;
 using web_app::WebAppProvider;
@@ -269,7 +273,7 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
     command_line->AppendSwitchASCII(switches::kHomePage, url::kAboutBlankURL);
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO(nkostylev): Investigate if we can remove this switch.
-    command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);
+    command_line->AppendSwitch(ash::switches::kCreateBrowserOnStartupForTests);
 #endif
   }
 

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -22,6 +21,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#endif
 
 class InterstitialUITest : public InProcessBrowserTest {
  public:
@@ -36,7 +39,7 @@ class InterstitialUITest : public InProcessBrowserTest {
     // are always available, so guarantee that assumption holds. Tests that
     // check if devtools can be disabled should use a test fixture without the
     // kForceDevToolsAvailable switch set.
-    command_line->AppendSwitch(switches::kForceDevToolsAvailable);
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
 #endif
   }
 

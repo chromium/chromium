@@ -10,12 +10,12 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_switches.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #endif
@@ -54,7 +54,7 @@ void HandleAppExitingForPlatform() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableZeroBrowsersOpenForTests)) {
+          ash::switches::kDisableZeroBrowsersOpenForTests)) {
     // App is exiting, release the keep alive on behalf of Aura Shell.
     g_browser_process->platform_part()->UnregisterKeepAlive();
     // Make sure we have notified the session manager that we are exiting.

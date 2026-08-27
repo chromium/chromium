@@ -318,8 +318,19 @@ const char kChildWallpaperLarge[] = "child-wallpaper-large";
 // non-user-writable JPEG file).
 const char kChildWallpaperSmall[] = "child-wallpaper-small";
 
+// Some platforms like ChromeOS default to empty desktop.
+// Browser tests may need to add this switch so that at least one browser
+// instance is created on startup.
+// TODO(nkostylev): Investigate if this switch could be removed.
+// (http://crbug.com/40933835)
+const char kCreateBrowserOnStartupForTests[] =
+    "create-browser-on-startup-for-tests";
+
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
+
+// Custom crosh command.
+const char kCroshCommand[] = "crosh-command";
 
 // Overrides the base url for the Cryptohome recovery service.
 const char kCryptohomeRecoveryServiceBaseUrl[] =
@@ -439,8 +450,15 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
+// Disables the redirect of console to /var/log/messages in ChromeOS.
+const char kDisableLoggingRedirect[] = "disable-logging-redirect";
+
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
+
+// Disables apps on the login screen. By default, they are allowed and can be
+// installed through policy.
+const char kDisableLoginScreenApps[] = "disable-login-screen-apps";
 
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
@@ -470,6 +488,14 @@ const char kDisableRollbackOption[] = "disable-rollback-option";
 
 // Disables volume adjust sound.
 const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
+
+// Some tests seem to require the application to close when the last
+// browser window is closed. Thus, we need a switch to force this behavior
+// for ChromeOS Aura, disable "zero window mode".
+// TODO(pkotwicz): Investigate if this bug can be removed.
+// (http://crbug.com/40756809)
+const char kDisableZeroBrowsersOpenForTests[] =
+    "disable-zero-browsers-open-for-tests";
 
 // Disables the Welcome Recap feature for factory testing.
 const char kDisableWelcomeRecapForFactoryTest[] =
@@ -627,6 +653,9 @@ const char kForceBirchReleaseNotes[] = "force-birch-release-notes";
 // Forces fetching tokens for Cryptohome Recovery.
 const char kForceCryptohomeRecoveryForTesting[] =
     "force-cryptohome-recovery-for-testing";
+
+// If set, the developer tools are forced to be available.
+const char kForceDevToolsAvailable[] = "force-devtools-available";
 
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
@@ -951,6 +980,12 @@ const char kSchedulerConfigurationPerformance[] = "performance";
 // Specifies what the default scheduler configuration value is if the user does
 // not set one.
 const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
+
+// See
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/ash_merge_session_loader_throttle.cc
+// for details on this switch.
+const char kShortMergeSessionTimeoutForTest[] =
+    "short-merge-session-timeout-for-test";
 
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.

@@ -456,7 +456,7 @@ void InProcessBrowserTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // No need to redirect log for test.
-  command_line->AppendSwitch(switches::kDisableLoggingRedirect);
+  command_line->AppendSwitch(ash::switches::kDisableLoggingRedirect);
 
   // Disable IME extension loading to avoid many browser tests failures.
   ash::input_method::DisableExtensionLoading();
@@ -574,11 +574,12 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
   test_launcher_utils::PrepareBrowserCommandLineForBrowserTests(
       command_line, open_about_blank_on_browser_launch_);
 
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(pkotwicz): Investigate if we can remove this switch.
   if (exit_when_last_browser_closes_) {
-    command_line->AppendSwitch(switches::kDisableZeroBrowsersOpenForTests);
+    command_line->AppendSwitch(ash::switches::kDisableZeroBrowsersOpenForTests);
   }
-#if BUILDFLAG(IS_CHROMEOS)
+
   // Do not automaximize in browser tests.
   command_line->AppendSwitch(switches::kDisableAutoMaximizeForTests);
 #endif

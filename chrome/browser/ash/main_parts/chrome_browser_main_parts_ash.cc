@@ -194,7 +194,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
@@ -1108,7 +1107,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // On Chrome OS, Chrome does not exit when all browser windows are closed.
   // UnregisterKeepAlive is called from chrome::HandleAppExitingForPlatform.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableZeroBrowsersOpenForTests)) {
+          ash::switches::kDisableZeroBrowsersOpenForTests)) {
     g_browser_process->platform_part()->RegisterKeepAlive();
   }
 

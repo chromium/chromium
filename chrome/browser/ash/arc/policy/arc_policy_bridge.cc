@@ -36,7 +36,6 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -434,7 +433,7 @@ void OverrideArcPolicies(base::DictValue& filtered_policies,
   // available for ARC as well. This must be after the initial writing of
   // "debuggingFeaturesDisabled".
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceDevToolsAvailable)) {
+          ash::switches::kForceDevToolsAvailable)) {
     filtered_policies.Set(policy_util::kArcPolicyKeyDebuggingFeaturesDisabled,
                           false);
   }

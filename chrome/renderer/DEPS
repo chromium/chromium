@@ -137,6 +137,7 @@ specific_include_rules = {
     "+content/public/browser/browser_thread.h",
   ],
   "ash_merge_session_loader_throttle\\.cc": [
+    "+ash/constants/ash_switches.h",
     "+components/google/core/common/google_util.h",
   ],
 }
