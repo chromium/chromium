@@ -11,6 +11,8 @@
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace content::webid {
 
@@ -53,7 +55,10 @@ base::expected<void, Result> VerifyEVT(const sdjwt::SdJwt& sd_jwt,
     return base::unexpected(Result::kSdJwtInvalidIssuedAt);
   }
 
-  if (payload.iss != issuer.Serialize()) {
+  url::Origin iss_origin = url::Origin::Create(GURL(payload.iss));
+  if (iss_origin.opaque() || iss_origin.scheme() != url::kHttpsScheme ||
+      iss_origin.Serialize() != payload.iss ||
+      payload.iss != issuer.Serialize()) {
     return base::unexpected(Result::kSdJwtInvalidIssuer);
   }
 
