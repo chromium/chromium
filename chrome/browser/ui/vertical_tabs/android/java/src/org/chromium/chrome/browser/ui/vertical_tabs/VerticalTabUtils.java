@@ -14,7 +14,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
@@ -381,15 +380,21 @@ public class VerticalTabUtils {
             return WindowWidthBoundary.NOT_SHOWABLE;
         }
 
-        // 2. Force Collapsed: Window is below threshold for expanding.
-        if (isWindowNarrow(windowWidthDp)) {
+        // 2. Forced Collapsed: Window width or available width cannot fit the minimum expanded
+        // width (92dp).
+        int minWidthByWebContents =
+                SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP + MIN_EXPANDED_WIDTH_DP;
+        int minWidthByRatio = Math.round(MIN_EXPANDED_WIDTH_DP / EXPANDED_WINDOW_WIDTH_RATIO);
+        int minExpandedWindowWidth = Math.max(minWidthByWebContents, minWidthByRatio);
+        if (availableWidthDp < MIN_EXPANDED_WIDTH_DP || windowWidthDp < minExpandedWindowWidth) {
             return WindowWidthBoundary.FORCED_COLLAPSED;
         }
 
-        // 3. Dynamic Expandable: Auto-resized width is strictly less than full container width.
         int ratioWidthDp = Math.round(windowWidthDp * EXPANDED_WINDOW_WIDTH_RATIO);
         int targetWidthDp =
                 Math.min(SIDE_UI_CONTAINER_WIDTH_DP, Math.min(ratioWidthDp, availableWidthDp));
+
+        // 3. Dynamic Expandable: Auto-resized width is strictly less than full container width.
         if (targetWidthDp < SIDE_UI_CONTAINER_WIDTH_DP) {
             return WindowWidthBoundary.DYNAMIC_EXPANDABLE;
         }
@@ -403,19 +408,5 @@ public class VerticalTabUtils {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
-    }
-
-    /**
-     * Returns whether the window width is too narrow to support expanding the vertical tabs rail.
-     *
-     * @param windowWidthDp Total window width in dp.
-     * @return True if the window width is below the threshold required to expand the rail.
-     */
-    @VisibleForTesting
-    public static boolean isWindowNarrow(int windowWidthDp) {
-        int minWidthByWebContents =
-                SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP + MIN_EXPANDED_WIDTH_DP;
-        int minWidthByRatio = Math.round(MIN_EXPANDED_WIDTH_DP / EXPANDED_WINDOW_WIDTH_RATIO);
-        return windowWidthDp < Math.max(minWidthByWebContents, minWidthByRatio);
     }
 }

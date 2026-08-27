@@ -330,15 +330,6 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
-    public void testIsWindowNarrow() {
-        // Threshold is max(412 + 92, round(92 / 0.33)) = max(504, 279) = 504dp.
-        assertTrue(VerticalTabUtils.isWindowNarrow(503));
-        assertFalse(VerticalTabUtils.isWindowNarrow(504));
-        assertFalse(VerticalTabUtils.isWindowNarrow(600));
-    }
-
-    @Test
-    @SmallTest
     public void testGetWindowWidthBoundary() {
         // < 488dp (412 + 76): NOT_SHOWABLE
         assertEquals(
@@ -375,16 +366,30 @@ public class VerticalTabUtilsUnitTest {
                 VerticalTabUtils.getWindowWidthBoundary(
                         /* windowWidthDp= */ 800, /* availableWidthDp= */ 75));
 
-        // Available width >= 76dp and window is wide
+        // Available width between 76dp and 91dp in wide window -> FORCED_COLLAPSED
         assertEquals(
-                WindowWidthBoundary.FULLY_EXPANDABLE,
+                WindowWidthBoundary.FORCED_COLLAPSED,
                 VerticalTabUtils.getWindowWidthBoundary(
-                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 300));
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 76));
+        assertEquals(
+                WindowWidthBoundary.FORCED_COLLAPSED,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 91));
 
-        // Available width restricts wide window to dynamic expandable
+        // Available width >= 92dp restricts wide window to dynamic expandable
+        assertEquals(
+                WindowWidthBoundary.DYNAMIC_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 92));
         assertEquals(
                 WindowWidthBoundary.DYNAMIC_EXPANDABLE,
                 VerticalTabUtils.getWindowWidthBoundary(
                         /* windowWidthDp= */ 800, /* availableWidthDp= */ 150));
+
+        // Available width >= 240dp and window is wide -> FULLY_EXPANDABLE
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 300));
     }
 }
