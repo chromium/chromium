@@ -185,9 +185,13 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     public void destroy() {
         if (mNativeThinWebViewImpl == 0) return;
         if (mContentView != null) {
+            mContentView.setOnScrollChangeListener(null);
             removeView(mContentView);
             mContentView = null;
         }
+        mWebContentsDelegate = null;
+        setOnScrollChangeListener(null);
+        setOnHierarchyChangeListener(null);
         mCompositorView.destroy();
         ThinWebViewImplJni.get().destroy(mNativeThinWebViewImpl);
         mNativeThinWebViewImpl = 0;
@@ -229,6 +233,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
 
         if (mContentView != null) {
             assert getChildCount() > 1;
+            mContentView.setOnScrollChangeListener(null);
             removeViewAt(1);
         }
 
