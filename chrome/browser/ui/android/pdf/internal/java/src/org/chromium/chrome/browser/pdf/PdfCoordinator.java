@@ -1348,13 +1348,20 @@ public class PdfCoordinator
             return;
         }
         ModalDialogManager modalDialogManager = null;
+        Runnable onConfirmWithMetric =
+                () -> {
+                    PdfUtils.recordDiscardAnnotations();
+                    if (onConfirm != null) {
+                        onConfirm.run();
+                    }
+                };
         if (mActivity instanceof ModalDialogManagerHolder) {
             modalDialogManager = ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
         }
         if (modalDialogManager != null) {
-            showReloadModalDialog(modalDialogManager, onConfirm);
+            showReloadModalDialog(modalDialogManager, onConfirmWithMetric);
         } else {
-            showReloadAlertDialog(onConfirm);
+            showReloadAlertDialog(onConfirmWithMetric);
         }
     }
 
@@ -2067,10 +2074,17 @@ public class PdfCoordinator
             mAlertDialog.dismiss();
             mAlertDialog = null;
         }
+        Runnable onProceedWithMetric =
+                () -> {
+                    PdfUtils.recordDiscardAnnotations();
+                    if (onProceed != null) {
+                        onProceed.run();
+                    }
+                };
         if (modalDialogManager != null) {
-            showLeaveModalDialog(modalDialogManager, onProceed, onCancel);
+            showLeaveModalDialog(modalDialogManager, onProceedWithMetric, onCancel);
         } else {
-            showLeaveAlertDialog(onProceed, onCancel);
+            showLeaveAlertDialog(onProceedWithMetric, onCancel);
         }
     }
 

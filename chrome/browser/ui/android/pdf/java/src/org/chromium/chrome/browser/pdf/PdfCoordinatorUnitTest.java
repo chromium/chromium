@@ -102,6 +102,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
@@ -139,6 +140,7 @@ public class PdfCoordinatorUnitTest {
     private static final int PDF_CONTENT_HEIGHT = 1000;
 
     private UserDataHost mUserDataHost;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -150,12 +152,16 @@ public class PdfCoordinatorUnitTest {
         when(mTab.getId()).thenReturn(TAB_ID);
         mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
+        mUserActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() {
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PostTask.setPrenativeThreadPoolExecutorForTesting(null);
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     private void createPdfCoordinator() {
@@ -1126,12 +1132,10 @@ public class PdfCoordinatorUnitTest {
         assertNotNull("Edit button should exist", editButton);
         assertFalse("Edit button should not be selected initially", editButton.isSelected());
 
-        UserActionTester userActionTester = new UserActionTester();
-
         // Simulate fragment entering edit mode (from native FAB)
         mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
         assertTrue("Edit button should be selected after onEnterEditMode", editButton.isSelected());
-        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
 
         // Simulate fragment exiting edit mode
         mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
@@ -1528,6 +1532,7 @@ public class PdfCoordinatorUnitTest {
             assertTrue(proceedCalled[0]);
             assertFalse(cancelCalled[0]);
             assertNull(fakeModalDialogManager.getShownDialogModel());
+            assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
     }
 
@@ -1588,6 +1593,7 @@ public class PdfCoordinatorUnitTest {
 
             assertTrue(proceedCalled[0]);
             assertFalse(cancelCalled[0]);
+            assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
     }
 
@@ -1647,6 +1653,7 @@ public class PdfCoordinatorUnitTest {
             assertFalse(proceedCalled[0]);
             assertTrue(cancelCalled[0]);
             assertNull(fakeModalDialogManager.getShownDialogModel());
+            assertFalse(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
     }
 
@@ -1831,6 +1838,7 @@ public class PdfCoordinatorUnitTest {
             fakeModalDialogManager.clickPositiveButton();
             assertTrue("Second invocation onProceed should be called", proceed2Called[0]);
             assertFalse(cancel2Called[0]);
+            assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
     }
 
@@ -1866,6 +1874,42 @@ public class PdfCoordinatorUnitTest {
         assertTrue(proceedCalled[0]);
         assertFalse(cancelCalled[0]);
         assertNull(mPdfCoordinator.getAlertDialogForTesting());
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testBeforeUnload_WithUnsavedChanges_AlertDialog_Cancel() {
+        createPdfCoordinator();
+        BeforeUnloadCallback callback = mUserDataHost.getUserData(BeforeUnloadCallback.class);
+        assertNotNull(callback);
+
+        PdfCoordinator.ChromePdfViewerFragment originalFragment =
+                mPdfCoordinator.mChromePdfViewerFragment;
+        PdfCoordinator.ChromePdfViewerFragment spyFragment = spy(originalFragment);
+        mPdfCoordinator.mChromePdfViewerFragment = spyFragment;
+        doReturn(true).when(spyFragment).isAdded();
+        doReturn(true).when(spyFragment).hasUnsavedChanges();
+
+        boolean[] proceedCalled = new boolean[1];
+        boolean[] cancelCalled = new boolean[1];
+        Runnable onProceed = () -> proceedCalled[0] = true;
+        Runnable onCancel = () -> cancelCalled[0] = true;
+
+        boolean intercepted = callback.handleBeforeUnload(onProceed, onCancel);
+        assertTrue(intercepted);
+
+        AlertDialog alertDialog = mPdfCoordinator.getAlertDialogForTesting();
+        assertNotNull(alertDialog);
+        assertTrue(alertDialog.isShowing());
+
+        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(proceedCalled[0]);
+        assertTrue(cancelCalled[0]);
+        assertNull(mPdfCoordinator.getAlertDialogForTesting());
+        assertFalse(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
     }
 
     @Test
@@ -1910,6 +1954,7 @@ public class PdfCoordinatorUnitTest {
         assertTrue("Second invocation onProceed should be called", proceed2Called[0]);
         assertFalse(cancel2Called[0]);
         assertNull(mPdfCoordinator.getAlertDialogForTesting());
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
     }
 
     @Test
@@ -2148,7 +2193,6 @@ public class PdfCoordinatorUnitTest {
         createPdfCoordinator();
         ShadowEditablePdfViewerFragment shadowFragment =
                 Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
-        UserActionTester userActionTester = new UserActionTester();
 
         mPdfCoordinator.enterEditMode();
 
@@ -2156,7 +2200,7 @@ public class PdfCoordinatorUnitTest {
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
 
         mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
-        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
     }
 
     @Test
@@ -2416,6 +2460,7 @@ public class PdfCoordinatorUnitTest {
             // Verify dialog is dismissed and reload did NOT happen
             assertNull(fakeModalDialogManager.getShownDialogModel());
             assertSame(spyFragment, pdfCoordinator.mChromePdfViewerFragment);
+            assertFalse(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
     }
 
@@ -2468,7 +2513,44 @@ public class PdfCoordinatorUnitTest {
             // Verify dialog is dismissed and reload DID happen (fragment changed)
             assertNull(fakeModalDialogManager.getShownDialogModel());
             assertNotSame(spyFragment, pdfCoordinator.mChromePdfViewerFragment);
+            assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
         }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithUnsavedChanges_AlertDialog_Confirm() {
+        createPdfCoordinator();
+        AtomicBoolean confirmed = new AtomicBoolean(false);
+        mPdfCoordinator.showReloadConfirmationDialog(() -> confirmed.set(true));
+
+        AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("Dialog should be shown", latestDialog);
+        assertTrue("Dialog should be showing", latestDialog.isShowing());
+
+        latestDialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(confirmed.get());
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithUnsavedChanges_AlertDialog_Cancel() {
+        createPdfCoordinator();
+        AtomicBoolean confirmed = new AtomicBoolean(false);
+        mPdfCoordinator.showReloadConfirmationDialog(() -> confirmed.set(true));
+
+        AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("Dialog should be shown", latestDialog);
+        assertTrue("Dialog should be showing", latestDialog.isShowing());
+
+        latestDialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(confirmed.get());
+        assertFalse(mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
     }
 
     @Test
@@ -2609,8 +2691,6 @@ public class PdfCoordinatorUnitTest {
     public void testOpenPdfInExternalEditor_OnClick() {
         createPdfCoordinator();
 
-        UserActionTester userActionTester = new UserActionTester();
-
         Intent intent = new Intent(ACTION_ANNOTATE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setDataAndType(mPdfCoordinator.getUri(), "application/pdf");
@@ -2640,7 +2720,7 @@ public class PdfCoordinatorUnitTest {
         fragment.onViewCreated(fragmentView, null);
 
         childView.performClick();
-        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
 
         Intent startedIntent = org.robolectric.Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);

@@ -606,6 +606,10 @@ public class PdfUtils {
                 "Android.Pdf.ToolbarAction", action, PdfToolbarAction.NUM_ENTRIES);
     }
 
+    public static void recordDiscardAnnotations() {
+        RecordUserAction.record("Android.Pdf.DiscardAnnotations");
+    }
+
     public static void recordEditFabAction() {
         RecordUserAction.record("Android.Pdf.EditFab");
     }

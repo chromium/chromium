@@ -5138,6 +5138,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.Pdf.DiscardAnnotations">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User confirmed discarding PDF annotations during page reload or navigation.
+  </description>
+</action>
+
 <action name="Android.Pdf.EditFab">
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>

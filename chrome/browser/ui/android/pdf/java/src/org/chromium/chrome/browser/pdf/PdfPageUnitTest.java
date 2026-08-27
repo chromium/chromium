@@ -19,6 +19,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.json.JSONObject;
@@ -43,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -84,6 +86,7 @@ public class PdfPageUnitTest {
     private PdfInfo mPdfInfo;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
+    private UserActionTester mUserActionTester;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final int TAB_ID = 123;
@@ -117,12 +120,16 @@ public class PdfPageUnitTest {
         doReturn(mUserDataHost).when(mMockTab).getUserDataHost();
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(TAB_ID).when(mMockTab).getId();
+        mUserActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() throws Exception {
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PdfCoordinator.skipLoadPdfForTesting(false);
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     @Test
@@ -721,14 +728,15 @@ public class PdfPageUnitTest {
                 .loadUrl(any(), org.mockito.Mockito.anyBoolean());
 
         // Verify dialog is shown
-        androidx.appcompat.app.AlertDialog latestDialog =
-                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        AlertDialog latestDialog = (AlertDialog) ShadowDialog.getLatestDialog();
         Assert.assertNotNull("Dialog should be shown", latestDialog);
         Assert.assertTrue("Dialog should be showing", latestDialog.isShowing());
 
         // Confirm reload in dialog
         latestDialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
-        org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue(
+                mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
 
         // Now verify loadUrl WAS called
         ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);

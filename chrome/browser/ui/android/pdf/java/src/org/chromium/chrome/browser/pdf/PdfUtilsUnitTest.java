@@ -73,6 +73,7 @@ public class PdfUtilsUnitTest {
     @Mock private PackageManager mPackageManager;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
+    private UserActionTester mUserActionTester;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
@@ -95,12 +96,16 @@ public class PdfUtilsUnitTest {
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
         mPdfPageBlobUrl = PdfUtils.encodePdfPageUrl(PDF_BLOB_URL);
         when(mContext.getContentResolver()).thenReturn(mContentResolver);
+        mUserActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() throws Exception {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
         ChromeFileProvider.setGeneratedUriForTesting(null);
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
     }
 
     @Test
@@ -795,9 +800,15 @@ public class PdfUtilsUnitTest {
     }
 
     @Test
+    public void testRecordDiscardAnnotations() {
+        PdfUtils.recordDiscardAnnotations();
+        Assert.assertTrue(
+                mUserActionTester.getActions().contains("Android.Pdf.DiscardAnnotations"));
+    }
+
+    @Test
     public void testRecordEditFabAction() {
-        UserActionTester userActionTester = new UserActionTester();
         PdfUtils.recordEditFabAction();
-        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
+        assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
     }
 }
