@@ -531,6 +531,13 @@ bool CreateCertBuffersFromPKCS7Bytes(
 
 bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   bssl::ParseCertificateOptions options;
+  // It is sadly common for certificates to have serial numbers over 20 bytes,
+  // especially if the CA counted bytes before the leading zero byte is added
+  // in the INTEGER encoding.
+  //
+  // TODO(crbug.com/533048005): This option also allows non-integers, which is
+  // more problematic and less necessary. Remove this option once BoringSSL
+  // separates the two.
   options.allow_invalid_serial_numbers = true;
   return options;
 }

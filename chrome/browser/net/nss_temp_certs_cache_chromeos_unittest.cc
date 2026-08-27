@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -87,10 +88,9 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
         &signature_algorithm_tlv, &signature_value, &errors));
 
     bssl::ParsedTbsCertificate tbs;
-    bssl::ParseCertificateOptions options;
-    options.allow_invalid_serial_numbers = true;
-    ASSERT_TRUE(
-        bssl::ParseTbsCertificate(tbs_certificate_tlv, options, &tbs, nullptr));
+    ASSERT_TRUE(bssl::ParseTbsCertificate(
+        tbs_certificate_tlv, net::x509_util::DefaultParseCertificateOptions(),
+        &tbs, nullptr));
     *out_subject = tbs.subject_tlv;
   }
 };

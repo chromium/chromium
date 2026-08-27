@@ -297,16 +297,15 @@ X509CertificateModelBase::X509CertificateModelBase(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_data)
     : cert_data_(std::move(cert_data)) {
   CHECK(cert_data_);
-  bssl::ParseCertificateOptions options;
-  options.allow_invalid_serial_numbers = true;
   bssl::CertErrors unused_errors;
   if (!bssl::ParseCertificate(
           bssl::der::Input(
               net::x509_util::CryptoBufferAsSpan(cert_data_.get())),
           &tbs_certificate_tlv_, &signature_algorithm_tlv_, &signature_value_,
           &unused_errors) ||
-      !ParseTbsCertificate(tbs_certificate_tlv_, options, &tbs_,
-                           &unused_errors) ||
+      !ParseTbsCertificate(tbs_certificate_tlv_,
+                           net::x509_util::DefaultParseCertificateOptions(),
+                           &tbs_, &unused_errors) ||
       !bssl::ParseName(tbs_.subject_tlv, &subject_rdns_) ||
       !bssl::ParseName(tbs_.issuer_tlv, &issuer_rdns_)) {
     return;

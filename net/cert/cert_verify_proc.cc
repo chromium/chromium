@@ -608,9 +608,6 @@ void CertVerifyProc::LogNameNormalizationMetrics(
     return;
   }
 
-  bssl::ParseCertificateOptions options;
-  options.allow_invalid_serial_numbers = true;
-
   std::vector<bssl::der::Input> subjects;
   std::vector<bssl::der::Input> issuers;
 
@@ -623,7 +620,8 @@ void CertVerifyProc::LogNameNormalizationMetrics(
                                                  CRYPTO_BUFFER_len(buf.get())),
                                 &tbs_certificate_tlv, &signature_algorithm_tlv,
                                 &signature_value, nullptr /* errors*/) ||
-        !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
+        !ParseTbsCertificate(tbs_certificate_tlv,
+                             x509_util::DefaultParseCertificateOptions(), &tbs,
                              nullptr /*errors*/)) {
       LogNameNormalizationResult(histogram_suffix,
                                  NameNormalizationResult::kError);

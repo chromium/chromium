@@ -169,7 +169,7 @@ NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
     std::shared_ptr<const bssl::ParsedCertificate> cert(
         bssl::ParsedCertificate::Create(
             net::x509_util::CreateCryptoBuffer(der_cert),
-            GetCertParsingOptions(), nullptr));
+            net::x509_util::DefaultParseCertificateOptions(), nullptr));
     if (!cert) {
       return openscreen::Error::Code::kErrCertsParse;
     }

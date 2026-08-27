@@ -290,12 +290,10 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // certs that won't be returned due to parsing failures inside
     // TrustStoreMac. The parsing options set here need to match the ones used
     // in trust_store_mac.cc.
-    bssl::ParseCertificateOptions options;
-    // For https://crt.sh/?q=D3EEFBCBBCF49867838626E23BB59CA01E305DB7:
-    options.allow_invalid_serial_numbers = true;
     std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(x509_util::CreateCryptoBuffer(cert_der),
-                                        options, &errors);
+        bssl::ParsedCertificate::Create(
+            x509_util::CreateCryptoBuffer(cert_der),
+            x509_util::DefaultParseCertificateOptions(), &errors);
     if (!cert) {
       LOG(WARNING) << "bssl::ParseCertificate::Create " << hash_text
                    << " failed:\n"

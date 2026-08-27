@@ -141,8 +141,6 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
 bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
   DCHECK(cert);
 
-  bssl::ParseCertificateOptions options;
-  options.allow_invalid_serial_numbers = true;
   bssl::der::Input tbs_certificate_tlv;
   bssl::der::Input signature_algorithm_tlv;
   bssl::der::BitString signature_value;
@@ -151,7 +149,8 @@ bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
           bssl::der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
           &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
           nullptr /* errors*/) ||
-      !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
+      !ParseTbsCertificate(tbs_certificate_tlv,
+                           x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr /*errors*/)) {
     return false;
   }

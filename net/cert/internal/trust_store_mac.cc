@@ -372,10 +372,10 @@ class TrustDomainCacheFullCerts {
       auto buffer = x509_util::CreateCryptoBuffer(
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
-      bssl::ParseCertificateOptions options;
-      options.allow_invalid_serial_numbers = true;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(std::move(buffer), options, &errors);
+          bssl::ParsedCertificate::Create(
+              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
+              &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
@@ -799,10 +799,10 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       auto buffer = x509_util::CreateCryptoBuffer(
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
-      bssl::ParseCertificateOptions options;
-      options.allow_invalid_serial_numbers = true;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(std::move(buffer), options, &errors);
+          bssl::ParsedCertificate::Create(
+              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
+              &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
@@ -984,10 +984,10 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       auto buffer = x509_util::CreateCryptoBuffer(
           base::apple::CFDataToSpan(der_data.get()));
       bssl::CertErrors errors;
-      bssl::ParseCertificateOptions options;
-      options.allow_invalid_serial_numbers = true;
       std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-          bssl::ParsedCertificate::Create(std::move(buffer), options, &errors);
+          bssl::ParsedCertificate::Create(
+              std::move(buffer), x509_util::DefaultParseCertificateOptions(),
+              &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
