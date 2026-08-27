@@ -169,6 +169,9 @@ CreateInputDataFromAnnotatedPageContent(
 
   input_data->page_url = web_state->GetVisibleURL();
   input_data->page_title = base::UTF16ToUTF8(web_state->GetTitle());
+  if (web_state->GetUniqueIdentifier().valid()) {
+    input_data->tab_session_id = web_state->GetUniqueIdentifier().ToSessionID();
+  }
   return input_data;
 }
 
