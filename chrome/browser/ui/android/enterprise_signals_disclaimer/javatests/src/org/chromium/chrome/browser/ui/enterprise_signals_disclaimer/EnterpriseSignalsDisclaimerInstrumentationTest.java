@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -338,6 +339,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void destroyingControllerHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -352,6 +354,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void clickingAcceptHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -366,6 +369,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void clickingSignOutSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -381,6 +385,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void swipingBottomSheetSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -401,6 +406,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     // TODO(b/527872237): Remove the restriction once modal dialog supports the same logic.
     @Restriction(DeviceFormFactor.PHONE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void clickingOutsideSheetSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -420,6 +426,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     // TODO(b/527872237): Remove the restriction once modal dialog supports the same logic.
     @Restriction(DeviceFormFactor.PHONE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void backPressSignsOutAndHidesDialog() {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
@@ -434,6 +441,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    @DisabledTest(message = "crbug.com/553594054")
     public void focusSearchConfinesFocusToDisclaimer() {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
         final EnterpriseSignalsDisclaimerController controller =
