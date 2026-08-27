@@ -1913,7 +1913,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   EXPECT_EQ(browser_view(), top_container->parent());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewTabRevealFullscreen) {
+// TODO(crbug.com/553436072): Re-enable this test on Mac.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_SplitViewTabRevealFullscreen) {
   // Disable always show toolbar in fullscreen
   chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 
