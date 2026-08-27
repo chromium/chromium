@@ -583,6 +583,34 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testEmptySpaceContextClickListener_OverChildItem_ConsumesWithoutShowingMenu() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+
+        // Position the coordinates over the mock child view.
+        mCoordinator.getLastTouchPointForTesting().set(150, 250);
+        when(recyclerViewSpy.findChildViewUnder(150f, 250f)).thenReturn(mMockChildView);
+
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        // Invoke createEmptySpaceContextClickListener with recyclerViewSpy.
+        View.OnContextClickListener listener =
+                mCoordinator.createEmptySpaceContextClickListenerForTesting(
+                        mActivity, recyclerViewSpy);
+
+        boolean consumed = listener.onContextClick(recyclerViewSpy);
+
+        // Verify the event was consumed (returns true) and no context menus of any kind were
+        // launched because the mouse is over an actual child, so the context click is already
+        // consumed via onInterceptTouchEvent.
+        assertTrue("Context click over a tab child item should be consumed.", consumed);
+        verify(mTabContextMenuCoordinator, never()).showMenu(any(), any());
+        assertNull(
+                "Empty space menu must not be launched when click is over a tab item.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
+    @Test
+    @SmallTest
     public void testVTHeaderContainerLongPress_LaunchesEmptySpaceContextMenu() {
         createCoordinator();
         // vertical_tab_rail_container.

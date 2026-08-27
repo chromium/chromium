@@ -2264,6 +2264,11 @@ public class VerticalTabListCoordinator {
         showTabGroupHeaderContextMenuForGroupId(tabGroupId);
     }
 
+    View.OnContextClickListener createEmptySpaceContextClickListenerForTesting(
+            Activity activity, View targetView) {
+        return createEmptySpaceContextClickListener(activity, targetView);
+    }
+
     GridLayoutManager getPinnedLayoutManagerForTesting() {
         return mPinnedLayoutManager;
     }
