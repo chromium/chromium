@@ -5,6 +5,14 @@
 #ifndef CHROME_BROWSER_PRELOADING_PRELOADING_UTILS_H_
 #define CHROME_BROWSER_PRELOADING_PRELOADING_UTILS_H_
 
+#include <string>
+
+class GURL;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 // This file is used to manage some static functions and constants for
 // preloading. Some typical cases can be:
 // * Indicates whether a preloading-related feature is enabled.
@@ -17,6 +25,11 @@ extern const char kNewTabPageMetricSuffix[];
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType,
 // //tools/metrics/histograms/metadata/page/histograms.xml:PagePreloadingTriggerType,
 // //tools/metrics/histograms/metadata/prefetch/histograms.xml:TriggerTypeAndEagerness)
+
+bool ShouldAllowPrefetchRedirection(
+    content::BrowserContext& browser_context,
+    const GURL& url,
+    const std::string& embedder_histogram_suffix);
 
 }  // namespace preloading_utils
 

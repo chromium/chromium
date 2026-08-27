@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//components/google/core/common",
     "//components/omnibox/browser",
     "//components/search_engines",
   ]
