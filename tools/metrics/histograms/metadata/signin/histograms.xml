@@ -2852,7 +2852,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfAccountSwitches.{TimeRange}"
-    units="switches" expires_after="2026-09-06">
+    units="switches" expires_after="2027-09-06">
   <owner>jlebel@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
