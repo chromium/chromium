@@ -719,6 +719,136 @@ suite('AppStyleUpdater', () => {
         computeStyle('--audio-controls-icon-color'));
   });
 
+  test('toggle colors change with theme', () => {
+    const expectedDefaultInactiveBg = 'rgb(1, 1, 1)';
+    const expectedLightInactiveBg = 'rgb(2, 2, 2)';
+    const expectedDarkInactiveBg = 'rgb(3, 3, 3)';
+    const expectedYellowInactiveBg = 'rgb(4, 4, 4)';
+    const expectedBlueInactiveBg = 'rgb(5, 5, 5)';
+    const expectedHighContrastInactiveBg = 'rgb(6, 6, 6)';
+    const expectedLowContrastLightInactiveBg = 'rgb(7, 7, 7)';
+    const expectedLowContrastDarkInactiveBg = 'rgb(8, 8, 8)';
+
+    const expectedDefaultActiveBg = 'rgb(17, 17, 17)';
+    const expectedLightActiveBg = 'rgb(18, 18, 18)';
+    const expectedDarkActiveBg = 'rgb(19, 19, 19)';
+    const expectedYellowActiveBg = 'rgb(20, 20, 20)';
+    const expectedBlueActiveBg = 'rgb(21, 21, 21)';
+    const expectedHighContrastActiveBg = 'rgb(22, 22, 22)';
+    const expectedLowContrastLightActiveBg = 'rgb(23, 23, 23)';
+    const expectedLowContrastDarkActiveBg = 'rgb(24, 24, 24)';
+
+    updateStyles({
+      '--color-read-anything-audio-player-background':
+          expectedDefaultInactiveBg,
+      '--color-read-anything-audio-player-background-light':
+          expectedLightInactiveBg,
+      '--color-read-anything-audio-player-background-dark':
+          expectedDarkInactiveBg,
+      '--color-read-anything-audio-player-background-yellow':
+          expectedYellowInactiveBg,
+      '--color-read-anything-audio-player-background-blue':
+          expectedBlueInactiveBg,
+      '--color-read-anything-audio-player-background-high-contrast':
+          expectedHighContrastInactiveBg,
+      '--color-read-anything-audio-player-background-low-contrast-light':
+          expectedLowContrastLightInactiveBg,
+      '--color-read-anything-audio-player-background-low-contrast-dark':
+          expectedLowContrastDarkInactiveBg,
+
+      '--color-read-anything-audio-player-icon': expectedDefaultActiveBg,
+      '--color-read-anything-audio-player-icon-light': expectedLightActiveBg,
+      '--color-read-anything-audio-player-icon-dark': expectedDarkActiveBg,
+      '--color-read-anything-audio-player-icon-yellow': expectedYellowActiveBg,
+      '--color-read-anything-audio-player-icon-blue': expectedBlueActiveBg,
+      '--color-read-anything-audio-player-icon-high-contrast':
+          expectedHighContrastActiveBg,
+      '--color-read-anything-audio-player-icon-low-contrast-light':
+          expectedLowContrastLightActiveBg,
+      '--color-read-anything-audio-player-icon-low-contrast-dark':
+          expectedLowContrastDarkActiveBg,
+    });
+
+    // Default theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDefaultInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedDefaultActiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // Light theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLightInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedLightActiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // Dark theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDarkInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedDarkActiveBg, computeStyle('--toggle-active-background-color'));
+
+    // Yellow theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedYellowInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedYellowActiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // Blue theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedBlueActiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedBlueInactiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // High contrast theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedHighContrastInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedHighContrastActiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // LowContrast light theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastLightInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedLowContrastLightActiveBg,
+        computeStyle('--toggle-active-background-color'));
+
+    // LowContrast dark theme
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastDarkInactiveBg,
+        computeStyle('--toggle-inactive-background-color'));
+    assertEquals(
+        expectedLowContrastDarkActiveBg,
+        computeStyle('--toggle-active-background-color'));
+  });
+
   test('toolbar icon colors change with theme', () => {
     const expectedDefaultToolbarIcon = 'rgb(1, 1, 1)';
     const expectedLightToolbarIcon = 'rgb(2, 2, 2)';

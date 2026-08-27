@@ -258,6 +258,12 @@ export class AppStyleUpdater {
         '--audio-controls-icon-color',
         this.getAudioControlsIconColor_(colorSuffix));
     this.setStyle_(
+        '--toggle-inactive-background-color',
+        this.getToggleInactiveBackgroundColor_(colorSuffix));
+    this.setStyle_(
+        '--toggle-active-background-color',
+        this.getToggleActiveBackgroundColor_(colorSuffix));
+    this.setStyle_(
         '--color-read-anything-full-page-scrollbar',
         this.getFullPageScrollbarColor_(colorSuffix));
 
@@ -398,5 +404,23 @@ export class AppStyleUpdater {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
         `${FULL_PAGE_SCROLLBAR})` :
         `${FULL_PAGE_SCROLLBAR}${colorSuffix})`;
+  }
+
+  private getToggleInactiveBackgroundColor_(colorSuffix: ColorSuffix): string {
+    if (colorSuffix === ColorSuffix.BLUE) {
+      return `${AUDIO_PLAYER_ICON}${colorSuffix})`;
+    }
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        `${AUDIO_PLAYER_BACKGROUND})` :
+        `${AUDIO_PLAYER_BACKGROUND}${colorSuffix})`;
+  }
+
+  private getToggleActiveBackgroundColor_(colorSuffix: ColorSuffix): string {
+    if (colorSuffix === ColorSuffix.BLUE) {
+      return `${AUDIO_PLAYER_BACKGROUND}${colorSuffix})`;
+    }
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        `${AUDIO_PLAYER_ICON})` :
+        `${AUDIO_PLAYER_ICON}${colorSuffix})`;
   }
 }

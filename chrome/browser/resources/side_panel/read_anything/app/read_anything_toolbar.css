@@ -225,19 +225,21 @@
 
 #ai-playback-toggle {
   --cr-icon-button-size: 32px;
-  background-color: var(--color-read-anything-ai-playback-background);
-  --cr-icon-button-fill-color: var(--color-read-anything-ai-playback-icon);
+  background-color: var(--toggle-inactive-background-color);
+  --cr-icon-button-fill-color: var(--toolbar-icon-color);
   border-radius: 50%;
-  --cr-icon-button-hover-background-color: transparent;
 }
 
-#ai-playback-toggle:hover {
-  background-color: var(--color-read-anything-ai-playback-hover-background);
+#ai-playback-toggle:hover:not(.active) {
+  background-color: color-mix(
+      in srgb,
+      var(--toggle-active-background-color) 8%,
+      var(--toggle-inactive-background-color));
 }
 
 #ai-playback-toggle.active {
-  background-color: var(--color-read-anything-ai-playback-active-background);
-  --cr-icon-button-fill-color: var(--color-read-anything-ai-playback-active-icon);
+  background-color: var(--toggle-active-background-color);
+  --cr-icon-button-fill-color: var(--background-color);
   border-radius: 12px;
 }
 
