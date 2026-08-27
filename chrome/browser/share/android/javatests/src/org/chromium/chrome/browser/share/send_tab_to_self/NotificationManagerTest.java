@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -460,5 +461,77 @@ public class NotificationManagerTest {
         timeoutIntent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
         NotificationManager.handleIntent(timeoutIntent);
         verify(mMetricsMock).recordNotificationStatus(NotificationStatus.TIMED_OUT);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowNotification_OpensInTab_ContextTextContainsHost() {
+        boolean shown =
+                NotificationManager.showNotification(
+                        GUID,
+                        URL,
+                        "title",
+                        "My Phone",
+                        100000000L,
+                        BroadcastReceiver.class,
+                        null,
+                        null);
+        Assert.assertTrue(shown);
+
+        ArgumentCaptor<NotificationWrapper> captor =
+                ArgumentCaptor.forClass(NotificationWrapper.class);
+        verify(mNotificationManagerProxy).notify(captor.capture());
+
+        Notification notification = captor.getValue().getNotification();
+        Assert.assertEquals(
+                "www.example.com - Sent from My Phone",
+                notification.extras.getString(Notification.EXTRA_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
+    public void testShowNotification_OpensInNativeApp_ContextTextContainsAppName() {
+        String url = "https://www.example.com/app/path";
+        ShadowPackageManager shadowPackageManager =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme("https");
+        filter.addDataAuthority("www.example.com", null);
+        filter.addDataPath("/app", android.os.PatternMatcher.PATTERN_PREFIX);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.app";
+        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
+        resolveInfo.nonLocalizedLabel = "Example App";
+        resolveInfo.filter = filter;
+
+        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
+
+        boolean shown =
+                NotificationManager.showNotification(
+                        GUID,
+                        url,
+                        "title",
+                        "My Phone",
+                        100000000L,
+                        BroadcastReceiver.class,
+                        null,
+                        null);
+        Assert.assertTrue(shown);
+
+        ArgumentCaptor<NotificationWrapper> captor =
+                ArgumentCaptor.forClass(NotificationWrapper.class);
+        verify(mNotificationManagerProxy).notify(captor.capture());
+
+        Notification notification = captor.getValue().getNotification();
+        Assert.assertEquals(
+                "Open in Example App - Sent from My Phone",
+                notification.extras.getString(Notification.EXTRA_TEXT));
     }
 }

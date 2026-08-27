@@ -308,13 +308,24 @@ public class NotificationManager {
                                 .setAction(NOTIFICATION_ACTION_DISMISS)
                                 .putExtra(NOTIFICATION_GUID_EXTRA, guid),
                         0);
-        // IDS_SEND_TAB_TO_SELF_NOTIFICATION_CONTEXT_TEXT
+
         Resources res = context.getResources();
-        String contextText =
-                res.getString(
-                        R.string.send_tab_to_self_notification_context_text,
-                        uri.getHost(),
-                        deviceName);
+        ResolveInfo resolveInfo = getMatchingNativeAppResolveInfo(uri);
+        String contextText;
+        if (resolveInfo != null) {
+            String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
+            contextText =
+                    res.getString(
+                            R.string.send_tab_to_self_notification_context_text_with_app,
+                            appName,
+                            deviceName);
+        } else {
+            contextText =
+                    res.getString(
+                            R.string.send_tab_to_self_notification_context_text,
+                            uri.getHost(),
+                            deviceName);
+        }
         // Build the notification itself.
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -349,7 +360,7 @@ public class NotificationManager {
                     (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent timeoutIntent =
                     new Intent(context, broadcastReceiver)
-                            .setData(Uri.parse(url))
+                            .setData(uri)
                             .setAction(NOTIFICATION_ACTION_TIMEOUT)
                             .putExtra(NOTIFICATION_GUID_EXTRA, guid);
             alarmManager.set(

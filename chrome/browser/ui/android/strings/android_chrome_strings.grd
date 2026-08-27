@@ -6412,6 +6412,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SEND_TAB_TO_SELF_NOTIFICATION_CONTEXT_TEXT" desc="Text displayed as the second line of a notification indicating the domain and the device the tab is shared from.">
         <ph name="DOMAIN">%1$s<ex>www.google.com</ex></ph> - Sent from <ph name="DEVICE_NAME">%2$s<ex>Tanya's Pixel 2XL</ex></ph>
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_NOTIFICATION_CONTEXT_TEXT_WITH_APP" desc="Text displayed as the second line of a notification indicating the native app that will be opened and the device the tab is shared from.">
+        Open in <ph name="NATIVE_APP_NAME">%1$s<ex>Maps</ex></ph> - Sent from <ph name="DEVICE_NAME">%2$s<ex>Tanya's Pixel 2XL</ex></ph>
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a device to share the tab with.">
         Choose a device.
       </message>
