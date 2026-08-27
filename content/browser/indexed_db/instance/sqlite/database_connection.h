@@ -65,17 +65,11 @@ class CONTENT_EXPORT DatabaseConnection {
   // Opens a connection to the specified database. When `name` is present, it
   // will create a new DB if one does not exist. When `name` is null and a DB
   // does not exist or is not already initialized, returns an error. When `path`
-  // is empty, the database will be opened in-memory. If `erase_if_zygotic` is
-  // true, then the database will be wiped from disk if opening it reveals it to
-  // be in a zygotic state, which could be the result of a previous problem; no
-  // `DatabaseConnection` object will be returned. This is not true when opening
-  // a database connection for normal use because in that case it will simply be
-  // reused.
+  // is empty, the database will be opened in-memory.
   static StatusOr<std::unique_ptr<DatabaseConnection>> Open(
       std::optional<std::u16string_view> name,
       base::FilePath path,
-      BackingStoreImpl& backing_store,
-      bool erase_if_zygotic = false);
+      BackingStoreImpl& backing_store);
 
   // Called by the `BackingStoreDatabaseImpl` to release its reference. This may
   // allow `this` to close ("self-destruct") if there are no active blobs. Note
@@ -435,7 +429,9 @@ class CONTENT_EXPORT DatabaseConnection {
     // a file that looks like a valid database.
     kMissingMetaTable = 19,
 
-    kMaxValue = kMissingMetaTable,
+    kDatabaseIdbVersionInvalid = 20,
+
+    kMaxValue = kDatabaseIdbVersionInvalid,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteSpecificEvent)
 

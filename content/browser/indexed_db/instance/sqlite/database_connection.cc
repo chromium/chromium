@@ -998,8 +998,7 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
 StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     std::optional<std::u16string_view> name,
     base::FilePath path,
-    BackingStoreImpl& backing_store,
-    bool erase_if_zygotic) {
+    BackingStoreImpl& backing_store) {
   auto connection =
       base::WrapUnique(new DatabaseConnection(path, backing_store));
   Status s = connection->Init(name);
@@ -1025,11 +1024,6 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
       connection->data_loss_info_ = std::move(loss);
       s.Log("IndexedDB.SQLite.OpenRetryResult");
     }
-  }
-  if (s.ok() && erase_if_zygotic && connection->IsZygotic()) {
-    s = Status::Corruption(
-        "Database was zygotic on open, indicating prior unclean shutdown");
-    connection->marked_for_permanent_deletion_ = true;
   }
   if (!s.ok()) {
     std::move(*connection).GetCleanupTask().Run(/*force_closing=*/false);
@@ -1179,7 +1173,11 @@ base::OnceCallback<void(bool)> DatabaseConnection::GetCleanupTask() && {
   if (!in_memory()) {
     // When the database never finished initializing, it will be zygotic. This
     // could happen if version change transaction was aborted/rolled back. In
-    // this case the newly created database should be deleted.
+    // this case the newly created database should be deleted. On the other
+    // hand, if `Init` fails to read the metadata due to an error, `IsZygotic()`
+    // will be true, but we don't want to immediately delete the database,
+    // instead attempting recovery or just re-opening if the error was
+    // transient.
     should_delete_db =
         marked_for_permanent_deletion_ || (IsZygotic() && !had_sql_error);
 
@@ -1352,6 +1350,13 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   if (name && (metadata_.name != *name)) {
     return Fatal(Status::Corruption("Database name mismatch"),
                  SpecificEvent::kDatabaseNameMismatch);
+  }
+
+  if ((!is_new_db &&
+       metadata_.version == blink::IndexedDBDatabaseMetadata::NO_VERSION) ||
+      metadata_.version < blink::IndexedDBDatabaseMetadata::NO_VERSION) {
+    return Fatal(Status::Corruption("Database IDB version is invalid"),
+                 SpecificEvent::kDatabaseIdbVersionInvalid);
   }
 
   // There should be no active blobs in this database at this point, so we can

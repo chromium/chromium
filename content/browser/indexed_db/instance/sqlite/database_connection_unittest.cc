@@ -602,6 +602,10 @@ TEST_F(DatabaseConnectionOpenCorruptionTest, NameMismatch) {
   ExpectRecreated(CorruptStoredName, SpecificEvent::kDatabaseNameMismatch);
 }
 
+TEST_F(DatabaseConnectionOpenCorruptionTest, IdbDatabaseVersionValidity) {
+  ExpectRecreated(CorruptToZygotic, SpecificEvent::kDatabaseIdbVersionInvalid);
+}
+
 TEST_F(DatabaseConnectionOpenCorruptionTest, BadDataFormatVersion) {
   ExpectRecreated(CorruptBadDataFormatVersion,
                   SpecificEvent::kV8FormatTooNewOrMissing);
@@ -661,19 +665,6 @@ TEST_F(DatabaseConnectionOpenCorruptionTest, RecoverableHeader) {
                                SpecificEvent::kDatabaseHadSqlError, 1);
   histograms.ExpectUniqueSample(kOpenRetryResultHistogram,
                                 0 /*Status::Type::kOk*/, 1);
-}
-
-TEST_F(DatabaseConnectionOpenCorruptionTest, ZygoticDatabase) {
-  // The database is used as-is since this is "content" corruption.
-  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", CorruptToZygotic));
-  base::HistogramTester histograms;
-  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
-  EXPECT_EQ(db->GetDataLossInfo().status, blink::mojom::IDBDataLoss::None);
-  EXPECT_TRUE(db->GetMetadata().object_stores.contains(kObjectStoreId));
-  DropDbAndDestructDatabaseConnection(std::move(db));
-  histograms.ExpectUniqueSample(kSpecificEventHistogram,
-                                SpecificEvent::kDatabaseOpenAttempt, 1);
-  histograms.ExpectTotalCount(kOpenRetryResultHistogram, 0);
 }
 
 TEST_F(DatabaseConnectionOpenCorruptionTest, EnumerateAll) {

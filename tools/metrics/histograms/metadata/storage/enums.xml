@@ -340,6 +340,7 @@ chromium-metrics-reviews@google.com.
       label="Failed to decompress a value when reading from the DB"/>
   <int value="18" label="Failed to delete a legacy blob file"/>
   <int value="19" label="Meta table was missing in an existing DB"/>
+  <int value="20" label="IDB database version was invalid in an existing DB"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->

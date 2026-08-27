@@ -205,8 +205,7 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
         return;
       }
       std::ignore =
-          LOG_RESULT(DatabaseConnection::Open(/*name=*/{}, path, *this,
-                                              /*erase_if_zygotic=*/true),
+          LOG_RESULT(DatabaseConnection::Open(/*name=*/{}, path, *this),
                      "IndexedDB.SQLite.OpenToReadMetadataResult",
                      in_memory() ? ".InMemory" : ".OnDisk")
               .transform([&](std::unique_ptr<DatabaseConnection> connection) {
