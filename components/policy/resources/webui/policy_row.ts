@@ -12,37 +12,23 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Conflict} from './policy_conflict.js';
+import type {Conflict, Policy} from './policy.mojom-webui.js';
 import {copyValue, stringifyPolicyValue} from './policy_conflict.js';
 import {getCss} from './policy_row.css.js';
 import {getHtml} from './policy_row.html.js';
+
+// Policy type definition in policy.mojom should only contain fields set by C++.
+// This interface definition is for additional fields set by the frontend.
+export interface PolicyUiModel extends Policy {
+  link?: string;
+  isExtension?: boolean;
+  status?: string;
+}
 
 export interface ConflictItem {
   conflict: Conflict;
   label: string;
   className: string;
-}
-
-export interface Policy {
-  ignored?: boolean;
-  name: string;
-  level: string;
-  link?: string;
-  scope: string;
-  source: string;
-  error: string;
-  warning: string;
-  info: string;
-  value: unknown;
-  restartRequired?: boolean;
-  deprecated?: boolean;
-  future?: boolean;
-  allSourcesMerged?: boolean;
-  conflicts?: Conflict[];
-  superseded?: Conflict[];
-  forSigninScreen: boolean;
-  isExtension: boolean;
-  status: string;
 }
 
 export class PolicyRowElement extends CrLitElement {
@@ -68,7 +54,7 @@ export class PolicyRowElement extends CrLitElement {
     };
   }
 
-  accessor policy: Policy|null = null;
+  accessor policy: PolicyUiModel|null = null;
   accessor expanded: boolean = false;
 
   protected get unset(): boolean {
@@ -99,8 +85,6 @@ export class PolicyRowElement extends CrLitElement {
       }
     }
   }
-
-
 
   protected getShowMoreLessLabel(): string {
     return loadTimeData.getString(this.expanded ? 'showLess' : 'showMore');

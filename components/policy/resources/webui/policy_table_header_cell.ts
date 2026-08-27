@@ -7,7 +7,7 @@ import '/strings.m.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Policy} from './policy_row.js';
+import type {PolicyUiModel} from './policy_row.js';
 import {getCss} from './policy_table_header_cell.css.js';
 import {getHtml} from './policy_table_header_cell.html.js';
 
@@ -34,9 +34,9 @@ export class PolicyTableHeaderCellElement extends CrLitElement {
     };
   }
 
-  accessor field: keyof Policy = 'name';
+  accessor field: keyof PolicyUiModel = 'name';
   accessor headerTitle: string = '';
-  accessor sortedColumn: keyof Policy = 'name';
+  accessor sortedColumn: keyof PolicyUiModel = 'name';
   accessor sortAscending: boolean = true;
   accessor noSort: boolean = false;
 

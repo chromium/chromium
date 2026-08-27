@@ -28,31 +28,13 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {GetPoliciesReason} from './policy.mojom-webui.js';
-import type {Status} from './policy.mojom-webui.js';
+import type {PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
 import {getCss} from './policy_app.css.js';
 import {getHtml} from './policy_app.html.js';
-import type {Policy} from './policy_row.js';
 import type {PolicyTableModel} from './policy_table.js';
-
-
 
 export interface PolicyNamesResponse {
   [id: string]: {name: string, policyNames: NonNullable<string[]>};
-}
-
-export interface PolicyValues {
-  [id: string]: {
-    name: string,
-    policies: {[name: string]: Policy},
-    precedenceOrder?: string[],
-    isExtension?: boolean,
-    forSigninScreen?: boolean,
-  };
-}
-
-export interface PolicyValuesResponse {
-  policyIds: string[];
-  policyValues: PolicyValues;
 }
 
 export class PolicyAppElement extends CrLitElement {
@@ -145,8 +127,8 @@ export class PolicyAppElement extends CrLitElement {
         (status: Record<string, Status>) => this.status_ = status);
     addWebUiListener(
         'policies-updated',
-        (names: PolicyNamesResponse, values: PolicyValuesResponse) =>
-            this.onPoliciesReceived_(names, values));
+        (names: PolicyNamesResponse, groups: PolicyGroupsResponse) =>
+            this.onPoliciesReceived_(names, groups));
   }
 
   override disconnectedCallback() {
@@ -171,17 +153,17 @@ export class PolicyAppElement extends CrLitElement {
 
   private onPoliciesReceived_(
       policyNames: PolicyNamesResponse,
-      policyValuesResponse: PolicyValuesResponse) {
-    const policyValues: PolicyValues = policyValuesResponse.policyValues;
-    const policyIds: string[] = policyValuesResponse.policyIds;
+      policyGroupsResponse: PolicyGroupsResponse) {
+    const policyGroups = policyGroupsResponse.policyGroups;
+    const policyIds: string[] = policyGroupsResponse.policyIdsPresentationOrder;
 
     this.policyGroups_ = policyIds.map((id: string) => {
       const knownPolicyNames =
           policyNames[id] ? policyNames[id].policyNames : [];
-      const value = policyValues[id]!;
+      const group = policyGroups[id]!;
       const knownPolicyNamesSet = new Set(knownPolicyNames);
       const receivedPolicyNames =
-          value.policies ? Object.keys(value.policies) : [];
+          group.policies ? Object.keys(group.policies) : [];
       const allPolicyNames =
           Array.from(new Set([...knownPolicyNames, ...receivedPolicyNames]));
       const policies = allPolicyNames.map(
@@ -195,17 +177,18 @@ export class PolicyAppElement extends CrLitElement {
                         knownPolicyNamesSet.has(name) ?
                     `https://chromeenterprise.google/policies/?policy=${name}` :
                     undefined,
-                isExtension: value.isExtension || false,
+                isExtension: group.isExtension || false,
               },
-              value?.policies[name]));
+              group?.policies[name]));
 
       return {
-        name: value.forSigninScreen ?
-            `${value.name} [${loadTimeData.getString('signinProfile')}]` :
-            value.name,
+        name: group.forSigninScreen ?
+            `${group.name} [${loadTimeData.getString('signinProfile')}]` :
+            group.name,
         id: id,
+        isExtension: group.isExtension,
         policies,
-        ...(value.precedenceOrder && {precedenceOrder: value.precedenceOrder}),
+        ...(group.precedenceOrder && {precedenceOrder: group.precedenceOrder}),
       };
     });
 
@@ -215,7 +198,7 @@ export class PolicyAppElement extends CrLitElement {
           'CloudReportingEnabled',
           'CloudProfileReportingEnabled',
           'UserSecuritySignalsReporting',
-        ].map(p => !!policyValues['chrome']?.policies[p]?.value)
+        ].map(p => !!policyGroups['chrome']?.policies[p]?.value)
             .reduce((accumulator, current) => accumulator ||= current, false);
     // </if>
     this.reloadPoliciesDone_();

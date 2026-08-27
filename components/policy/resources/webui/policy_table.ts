@@ -10,7 +10,7 @@ import './policy_table_header_cell.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Policy} from './policy_row.js';
+import type {PolicyUiModel} from './policy_row.js';
 import {getCss} from './policy_table.css.js';
 import {getHtml} from './policy_table.html.js';
 
@@ -18,7 +18,7 @@ export interface PolicyTableModel {
   id?: string;
   isExtension?: boolean;
   name: string;
-  policies: NonNullable<Array<NonNullable<Policy>>>;
+  policies: NonNullable<Array<NonNullable<PolicyUiModel>>>;
   precedenceOrder?: string[];
 }
 
@@ -50,8 +50,8 @@ export class PolicyTableElement extends CrLitElement {
   accessor filterPattern: string = '';
   accessor showUnset: boolean = false;
   accessor sortAscending: boolean = true;
-  accessor mostRecentSortedColumn: keyof Policy = 'name';
-  accessor sortedPolicies: Policy[] = [];
+  accessor mostRecentSortedColumn: keyof PolicyUiModel = 'name';
+  accessor sortedPolicies: PolicyUiModel[] = [];
   updateDataModel(dataModel: PolicyTableModel) {
     this.dataModel = dataModel;
   }
@@ -69,17 +69,17 @@ export class PolicyTableElement extends CrLitElement {
     }
   }
 
-  protected sortColumn(ascending: boolean, field: keyof Policy) {
+  protected sortColumn(ascending: boolean, field: keyof PolicyUiModel) {
     this.sortAscending = ascending;
     this.mostRecentSortedColumn = field;
   }
 
   protected onSortChanged(
-      e: CustomEvent<{field: keyof Policy, ascending: boolean}>) {
+      e: CustomEvent<{field: keyof PolicyUiModel, ascending: boolean}>) {
     this.sortColumn(e.detail.ascending, e.detail.field);
   }
 
-  protected getSortedPolicies(): Policy[] {
+  protected getSortedPolicies(): PolicyUiModel[] {
     if (!this.dataModel || !this.dataModel.policies) {
       return [];
     }
@@ -106,7 +106,7 @@ export class PolicyTableElement extends CrLitElement {
     return sorted;
   }
 
-  protected isPolicyHidden(policy: Policy): boolean {
+  protected isPolicyHidden(policy: PolicyUiModel): boolean {
     const matchesSearch =
         policy.name.toLowerCase().includes(this.filterPattern);
     const isSet = policy.value !== undefined;
