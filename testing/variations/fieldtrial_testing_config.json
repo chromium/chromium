@@ -10453,6 +10453,26 @@
             ]
         }
     ],
+    "HeapProfilerChurnReporting": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HeapProfilerChurnReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeapProfilerIncludeResidency": [
         {
             "platforms": [
