@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -590,5 +592,72 @@ public class NestedTabReorderUtilsUnitTest {
         assertFalse(
                 NestedTabReorderUtils.reorderTabById(
                         null, pinnedModelList, mModelList, TAB_ID_1, /* toPrevious= */ false));
+    }
+
+    @Test
+    @SmallTest
+    public void testUngroupTab() {
+        NestedTabReorderUtils.ungroupTab(mTabModel, mTab1, /* trailing= */ true);
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ true, false);
+
+        NestedTabReorderUtils.ungroupTab(mTabModel, mTab2, /* trailing= */ false);
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ false, false);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabGroupId() {
+        assertNull(NestedTabReorderUtils.getTabGroupId(null));
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+        assertEquals(GROUP_ID, NestedTabReorderUtils.getTabGroupId(headerModel));
+
+        PropertyModel childModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+        assertEquals(GROUP_ID, NestedTabReorderUtils.getTabGroupId(childModel));
+
+        PropertyModel standaloneModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+        assertNull(NestedTabReorderUtils.getTabGroupId(standaloneModel));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsSolitaryChild() {
+        assertFalse(NestedTabReorderUtils.isSolitaryChild(null, null));
+        assertFalse(NestedTabReorderUtils.isSolitaryChild(mTabModel, null));
+
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .build();
+        assertFalse(NestedTabReorderUtils.isSolitaryChild(mTabModel, headerModel));
+
+        PropertyModel childModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .build();
+
+        // 2 tabs in group -> not solitary
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
+        assertFalse(NestedTabReorderUtils.isSolitaryChild(mTabModel, childModel));
+
+        // 1 tab in group -> solitary child
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1));
+        assertTrue(NestedTabReorderUtils.isSolitaryChild(mTabModel, childModel));
+
+        // Standalone tab (no group ID) -> not solitary child in a group
+        PropertyModel standaloneModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .build();
+        assertFalse(NestedTabReorderUtils.isSolitaryChild(mTabModel, standaloneModel));
     }
 }

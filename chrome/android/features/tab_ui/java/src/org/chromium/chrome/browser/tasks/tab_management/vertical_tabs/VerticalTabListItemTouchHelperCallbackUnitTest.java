@@ -367,6 +367,33 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab1, mTab2));
+
+        when(mTabModel.indexOf(mTab2)).thenReturn(5);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+
+        assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
+
+        verify(mTabModel).moveTab(1, 5);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMove_SolitaryChildTab() {
+        // Solitary child tab (group of 1) should move as a group via moveRelatedTabs.
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        Token groupId = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId);
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+
+        when(mTab1.getIsPinned()).thenReturn(false);
+        when(mTab2.getIsPinned()).thenReturn(false);
+
+        when(mTab1.getTabGroupId()).thenReturn(groupId);
+
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
         when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
         when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
 
@@ -375,7 +402,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
-        verify(mTabModel).moveTab(1, 5);
+        verify(mTabModel).moveRelatedTabs(1, 5);
     }
 
     @Test

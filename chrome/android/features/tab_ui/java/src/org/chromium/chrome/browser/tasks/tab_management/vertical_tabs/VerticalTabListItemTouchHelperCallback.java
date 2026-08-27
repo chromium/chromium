@@ -1378,7 +1378,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                     }
                 }
 
-                ungroupTab(tabModel, currentTab, true);
+                NestedTabReorderUtils.ungroupTab(tabModel, currentTab, true);
 
                 // If ungrouping pushes the new standalone tab off-screen at the bottom,
                 // instruct RecyclerView to scroll to it, keeping it pinned under the user's finger.
@@ -1415,7 +1415,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                     }
                 }
 
-                ungroupTab(tabModel, currentTab, false);
+                NestedTabReorderUtils.ungroupTab(tabModel, currentTab, false);
 
                 // If ungrouping prepends the new tab natively off-screen at the top,
                 // manually scroll to the new tab. This forces the group header to visually shift
@@ -1433,10 +1433,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         return false;
     }
 
-    private void ungroupTab(TabModel tabModel, Tab tab, boolean trailing) {
-        tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, false);
-    }
-
     /**
      * Determines whether the view holder represents a tab that is the only child of its group.
      *
@@ -1445,25 +1441,16 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      * child).
      */
     private boolean isSolitaryChild(RecyclerView.ViewHolder viewHolder) {
-        if (viewHolder.getItemViewType() == TabProperties.UiType.TAB) {
-            Token groupId = getTabGroupId(viewHolder);
-            if (groupId != null) {
-                int tabId = getTabId(viewHolder);
-                List<Tab> relatedTabs = getRelatedTabsForId(tabId);
-                return relatedTabs != null && relatedTabs.size() == 1;
-            }
+        if (viewHolder instanceof ViewHolder simpleViewHolder) {
+            return NestedTabReorderUtils.isSolitaryChild(
+                    mCurrentTabModelSupplier.get(), simpleViewHolder.model);
         }
         return false;
     }
 
     private @Nullable Token getTabGroupId(RecyclerView.ViewHolder viewHolder) {
         if (viewHolder instanceof ViewHolder simpleViewHolder) {
-            PropertyModel model = simpleViewHolder.model;
-            if (model != null) {
-                Token headerId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-                if (headerId != null) return headerId;
-                return model.get(TabProperties.TAB_GROUP_ID);
-            }
+            return NestedTabReorderUtils.getTabGroupId(simpleViewHolder.model);
         }
         return null;
     }

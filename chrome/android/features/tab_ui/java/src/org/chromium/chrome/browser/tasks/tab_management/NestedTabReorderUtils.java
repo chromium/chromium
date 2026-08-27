@@ -223,7 +223,7 @@ public class NestedTabReorderUtils {
         boolean isGroupHeader = isTabGroupHeader(fromItem);
         Token currentGroupId = getTabGroupId(fromModel);
         boolean isStandaloneTab = !isGroupHeader && currentGroupId == null;
-        boolean isSolitaryChild = !isGroupHeader && isSolitaryChild(tabModel, fromItem);
+        boolean isSolitaryChild = !isGroupHeader && isSolitaryChild(tabModel, fromModel);
         boolean isGroup = isGroupHeader || isSolitaryChild;
 
         Token destGroupId = getTabGroupId(toModel);
@@ -296,7 +296,7 @@ public class NestedTabReorderUtils {
         if (currentTabId == Tab.INVALID_TAB_ID) return false;
 
         boolean isGroupHeader = isTabGroupHeader(item);
-        boolean isSolitaryChild = isSolitaryChild(tabModel, item);
+        boolean isSolitaryChild = isSolitaryChild(tabModel, item.model);
         boolean isGroup = isGroupHeader || isSolitaryChild;
 
         if (isGroup) {
@@ -367,6 +367,39 @@ public class NestedTabReorderUtils {
         return false;
     }
 
+    /** Returns the {@link Token} tab group ID from the given {@link PropertyModel}, if any. */
+    public static @Nullable Token getTabGroupId(@Nullable PropertyModel model) {
+        if (model == null) return null;
+        Token headerId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
+        if (headerId != null) return headerId;
+        return model.get(TabProperties.TAB_GROUP_ID);
+    }
+
+    /** Ungroups the given tab in the tab model. */
+    public static void ungroupTab(TabModel tabModel, Tab tab, boolean trailing) {
+        tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, false);
+    }
+
+    /**
+     * Determines whether the given item model represents a child tab that is the only tab in its
+     * group.
+     */
+    public static boolean isSolitaryChild(
+            @Nullable TabModel tabModel, @Nullable PropertyModel model) {
+        if (tabModel == null || model == null || TabProperties.isTabGroupHeader(model)) {
+            return false;
+        }
+        Token groupId = getTabGroupId(model);
+        if (groupId != null) {
+            int tabId = getTabId(model);
+            if (tabId != Tab.INVALID_TAB_ID) {
+                List<Tab> relatedTabs = tabModel.getRelatedTabList(tabId);
+                return relatedTabs != null && relatedTabs.size() == 1;
+            }
+        }
+        return false;
+    }
+
     // =============================================================================================
     // Private Helpers
     // =============================================================================================
@@ -421,38 +454,6 @@ public class NestedTabReorderUtils {
                     && item.model.get(TabProperties.TAB_GROUP_ID) != null;
         }
         return false;
-    }
-
-    /**
-     * Determines whether the item represents a tab that is the only child of its group.
-     *
-     * <p>When a group contains only one child, dragging that child behaves identically to dragging
-     * the tab group header itself (i.e. it moves the entire group rather than ungrouping the
-     * child).
-     */
-    private static boolean isSolitaryChild(TabModel tabModel, ListItem item) {
-        if (isChildTab(item) && item.model != null) {
-            Token groupId = getTabGroupId(item.model);
-            if (groupId != null) {
-                int tabId = getRepresentativeTabId(tabModel, item);
-                if (tabId != Tab.INVALID_TAB_ID) {
-                    List<Tab> relatedTabs = tabModel.getRelatedTabList(tabId);
-                    return relatedTabs != null && relatedTabs.size() == 1;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static void ungroupTab(TabModel tabModel, Tab tab, boolean trailing) {
-        tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, false);
-    }
-
-    /** Returns the {@link Token} tab group ID from the given {@link PropertyModel}, if any. */
-    private static @Nullable Token getTabGroupId(PropertyModel model) {
-        Token headerId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-        if (headerId != null) return headerId;
-        return model.get(TabProperties.TAB_GROUP_ID);
     }
 
     /** Returns the tab ID from the given {@link PropertyModel}, or {@link Tab#INVALID_TAB_ID}. */
