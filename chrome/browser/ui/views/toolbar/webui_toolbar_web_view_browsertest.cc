@@ -5592,17 +5592,21 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
         .ExtractBool();
   }));
 
-  // Once the chip finishes its expand animation, it will automatically trigger
-  // the bubble to open. We do not need to manually click the chip.
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "PermissionPromptBubbleBaseView");
-
-  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(bubble_widget);
-  EXPECT_TRUE(bubble_widget->IsVisible());
-
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
+
+  // Once the chip finishes its expand animation, it will automatically trigger
+  // the bubble to open. We do not need to manually click the chip.
+  views::Widget* bubble_widget = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* chip_controller = location_bar->GetChipController();
+    if (!chip_controller) {
+      return false;
+    }
+    bubble_widget = chip_controller->GetBubbleWidget();
+    return bubble_widget && bubble_widget->IsVisible();
+  }));
+
   ASSERT_TRUE(location_bar->GetPermissionDashboardController());
   location_bar->GetPermissionDashboardController()
       ->SetSuppressionThresholdForTesting(base::Seconds(1));
