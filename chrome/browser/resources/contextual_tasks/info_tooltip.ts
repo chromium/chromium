@@ -13,8 +13,15 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './info_tooltip.css.js';
 import {getHtml} from './info_tooltip.html.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+
+/**
+ * Caret border width is 8px, producing a 16px wide triangle.
+ * Subtracting half the caret width (8px) aligns its apex to the target center.
+ */
+const CARET_HALF_WIDTH_PX = 8;
 
 export class ContextualTasksInfoTooltipElement extends CrLitElement {
   static get is() {
@@ -68,7 +75,9 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
   accessor linkText: string = '';
 
   private tooltipResizeObserver_: ResizeObserver|null = null;
-
+  private tooltipMutationObserver_: MutationObserver|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
+  private updateScheduled_: boolean = false;
 
   private get tooltip_(): CrTooltipElement {
     return this.shadowRoot.querySelector('cr-tooltip')!;
@@ -82,7 +91,7 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('target')) {
+    if (changedProperties.has('target') || changedProperties.has('container')) {
       if (this.target) {
         this.tooltip_.target = this.target;
         this.show();
@@ -107,6 +116,21 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
     }
   }
 
+  /**
+   * Batches position updates into a single animation frame to avoid
+   * layout thrashing during typing or fast animations.
+   */
+  scheduleUpdatePosition() {
+    if (this.updateScheduled_) {
+      return;
+    }
+    this.updateScheduled_ = true;
+    requestAnimationFrame(() => {
+      this.updateScheduled_ = false;
+      this.updatePosition();
+    });
+  }
+
   async updatePosition() {
     if (!this.tooltip_ || !this.target) {
       return;
@@ -118,39 +142,65 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
     const parentRect = this.tooltip_.offsetParent?.getBoundingClientRect();
     const tooltipRect = this.tooltip_.getBoundingClientRect();
 
-    if (this.horizontalAlign === 'left') {
-      const availableWidth =
-          window.innerWidth - targetRect.left - this.sideMargin;
-      this.tooltip_.style.setProperty(
-          '--info-tooltip-width', `${availableWidth}px`);
-      if (parentRect) {
-        const left = targetRect.left - parentRect.left;
-        const top = (targetRect.top - parentRect.top) - tooltipRect.height;
-        this.tooltip_.style.left = `${left}px`;
-        this.tooltip_.style.top = `${top}px`;
-        this.tooltip_.style.right = 'auto';
-        this.tooltip_.style.bottom = 'auto';
-      }
-    } else {  // 'right'
-      const availableWidth = targetRect.right - this.sideMargin;
-      this.tooltip_.style.setProperty(
-          '--info-tooltip-width', `${availableWidth}px`);
-      if (parentRect) {
-        const right = parentRect.right - targetRect.right;
-        const top = (targetRect.top - parentRect.top) - tooltipRect.height;
-        this.tooltip_.style.right = `${right}px`;
-        this.tooltip_.style.top = `${top}px`;
-        this.tooltip_.style.left = 'auto';
-        this.tooltip_.style.bottom = 'auto';
-      }
+    if (!parentRect) {
+      return;
     }
+
+    this.updateVerticalPosition_(targetRect, parentRect, tooltipRect);
+
+    if (this.horizontalAlign === 'left') {
+      this.updateLeftAlignedPosition_(targetRect, parentRect);
+    } else {
+      this.updateRightAlignedPosition_(targetRect, parentRect);
+    }
+  }
+
+  private updateVerticalPosition_(
+      targetRect: DOMRect, parentRect: DOMRect, tooltipRect: DOMRect) {
+    const top = (targetRect.top - parentRect.top) - tooltipRect.height;
+    this.tooltip_.style.top = `${top}px`;
+    this.tooltip_.style.bottom = 'auto';
+  }
+
+  private updateLeftAlignedPosition_(
+      targetRect: DOMRect, parentRect: DOMRect) {
+    const availableWidth =
+        window.innerWidth - targetRect.left - this.sideMargin;
+    this.tooltip_.style.setProperty(
+        '--info-tooltip-width', `${availableWidth}px`);
+    this.tooltip_.style.left = `${targetRect.left - parentRect.left}px`;
+    this.tooltip_.style.right = 'auto';
+  }
+
+  private updateRightAlignedPosition_(
+      targetRect: DOMRect, parentRect: DOMRect) {
+    const availableWidth = targetRect.right - this.sideMargin;
+    this.tooltip_.style.setProperty(
+        '--info-tooltip-width', `${availableWidth}px`);
+    this.tooltip_.style.right = `${parentRect.right - targetRect.right}px`;
+    this.tooltip_.style.left = 'auto';
+
+    this.updateCaretCenterOffset_(targetRect.width);
+  }
+
+  private updateCaretCenterOffset_(targetWidth: number) {
+    const caretInlineEnd =
+        Math.max(0, (targetWidth / 2) - CARET_HALF_WIDTH_PX);
+    this.tooltip_.style.setProperty(
+        '--info-tooltip-caret-inline-end', `${caretInlineEnd}px`);
+  }
+
+  private getTargetShadowHost_(): Element|null {
+    const root = this.target?.getRootNode();
+    return (root instanceof ShadowRoot) ? root.host : null;
   }
 
   private startObserving_() {
     this.stopObserving_();
 
+    // 1. Observe size/viewport changes.
     this.tooltipResizeObserver_ = new ResizeObserver(() => {
-      this.updatePosition();
+      this.scheduleUpdatePosition();
     });
     if (this.target) {
       this.tooltipResizeObserver_.observe(this.target);
@@ -159,7 +209,32 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
       this.tooltipResizeObserver_.observe(this.container);
     }
 
+    // 2. Observe layout/state attribute changes on the host elements.
+    this.tooltipMutationObserver_ = new MutationObserver(() => {
+      this.scheduleUpdatePosition();
+    });
+    const mutationOptions: MutationObserverInit = {
+      attributes: true,
+      attributeFilter: ['style', 'class', 'submit-enabled', 'is-side-panel'],
+    };
 
+    const targetHost = this.getTargetShadowHost_();
+    if (targetHost) {
+      this.tooltipMutationObserver_.observe(targetHost, mutationOptions);
+    }
+    if (this.container) {
+      this.tooltipMutationObserver_.observe(this.container, mutationOptions);
+    }
+    if (this.target) {
+      this.tooltipMutationObserver_.observe(this.target, mutationOptions);
+    }
+
+    // 3. Lock in exact resting coordinates once the target button's CSS motion finishes.
+    if (this.target) {
+      this.eventTracker_.add(this.target, 'transitionend', () => {
+        this.scheduleUpdatePosition();
+      });
+    }
   }
 
   private stopObserving_() {
@@ -167,7 +242,12 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
       this.tooltipResizeObserver_.disconnect();
       this.tooltipResizeObserver_ = null;
     }
-
+    if (this.tooltipMutationObserver_) {
+      this.tooltipMutationObserver_.disconnect();
+      this.tooltipMutationObserver_ = null;
+    }
+    this.eventTracker_.removeAll();
+    this.updateScheduled_ = false;
   }
 
   protected onLinkClick_(e: Event) {

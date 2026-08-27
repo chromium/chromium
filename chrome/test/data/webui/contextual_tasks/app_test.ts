@@ -1461,6 +1461,7 @@ suite('ContextualTasksAppTest', function() {
 
       assertTrue(appElement.lensSearchTooltipTarget_ !== null);
       assertEquals(null, appElement.askGTooltipTarget_);
+      assertTrue(appElement.$.composebox.isLensSearchTooltipShowing);
     });
 
     test(
