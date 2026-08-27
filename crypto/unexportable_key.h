@@ -205,8 +205,10 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // to |GenerateSigningKeySlowly|.
   //
   // Note: on Windows, calling this function may trigger a synchronous load of
-  // `ncrypt.dll`. Therefore, to avoid blocking the UI thread (and potentially
-  // causing hangs), this function should be called on a background thread.
+  // `ncrypt.dll`. This loading happens only once per process lifetime.
+  // Therefore, it is acceptable to call this function on the UI thread after it
+  // has been invoked at least once (e.g., during initialization on a background
+  // thread) to avoid blocking the UI thread and causing potential hangs.
   virtual std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) = 0;
