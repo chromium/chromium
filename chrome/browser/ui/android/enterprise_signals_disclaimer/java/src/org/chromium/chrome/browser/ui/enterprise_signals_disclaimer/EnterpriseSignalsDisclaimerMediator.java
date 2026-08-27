@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -37,12 +40,19 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     private final ProfileDataCache mProfileDataCache;
     private final AccountInfo mPrimaryAccount;
     private final EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
+    private final SigninManager mSigninManager;
+    private @Nullable Runnable mHideDialogCallback;
+    private boolean mIsDecisionHandled;
 
     EnterpriseSignalsDisclaimerMediator(
             Context context,
             IdentityManager identityManager,
-            EnterpriseSignalsDisclaimerCoordinator.Delegate delegate) {
+            EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
+            SigninManager signinManager,
+            Runnable hideDialogCallback) {
         mDelegate = delegate;
+        mSigninManager = signinManager;
+        mHideDialogCallback = hideDialogCallback;
         mPrimaryAccount = Objects.requireNonNull(identityManager.getPrimaryAccountInfo());
 
         // Puts the badge in the bottom right corner of the profile picture.
@@ -101,10 +111,10 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                                         R.string.enterprise_signals_disclaimer_cancel_button_text))
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED,
-                                v -> onAccept())
+                                v -> onAcceptButtonClicked())
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED,
-                                v -> onCancel())
+                                v -> onCancelButtonClicked())
                         .build();
 
         mProfileDataCache.addObserver(this);
@@ -120,13 +130,39 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     }
 
     /** Dismisses the dialog and marks the device signals collection consent as granted. */
-    void onAccept() {}
+    private void onAcceptButtonClicked() {
+        if (mIsDecisionHandled) return;
+        mIsDecisionHandled = true;
+        // TODO(b/527872237): Mark the disclaimer as acknowledged.
+        if (mHideDialogCallback != null) {
+            mHideDialogCallback.run();
+            mHideDialogCallback = null;
+        }
+    }
 
-    /**
-     * Signs the user out. This is also triggered when the dialog is dismissed by a back press,
-     * sliding down or tapping outside of the dialog area.
-     */
-    void onCancel() {}
+    /** Called when the user explicitly clicks the Cancel button in the UI. */
+    private void onCancelButtonClicked() {
+        if (mIsDecisionHandled) return;
+        signOutUser();
+        if (mHideDialogCallback != null) {
+            mHideDialogCallback.run();
+            mHideDialogCallback = null;
+        }
+    }
+
+    /** Performs sign-out when the user declined/dismissed the disclaimer. */
+    void signOutUser() {
+        if (mIsDecisionHandled) return;
+        mIsDecisionHandled = true;
+
+        mSigninManager.runAfterOperationInProgress(
+                () -> {
+                    if (mSigninManager.isSignOutAllowed()) {
+                        mSigninManager.signOut(
+                                SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER);
+                    }
+                });
+    }
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override

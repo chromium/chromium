@@ -57,6 +57,11 @@ class ModalDialogDisclaimerHost
         mIsActive = false;
     }
 
+    @Override
+    public void destroy() {
+        hide();
+    }
+
     // ModalDialogProperties.Controller implementation.
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {

@@ -25,4 +25,7 @@ interface EnterpriseSignalsDisclaimerHost {
 
     /** Hides and dismisses the disclaimer UI. */
     void hide();
+
+    /** Stops observation and hides the dialog. */
+    void destroy();
 }

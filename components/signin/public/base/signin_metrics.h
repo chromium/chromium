@@ -156,8 +156,12 @@ enum class ProfileSignout {
   // User tapped 'Undo' in a snackbar that is shown right after sign-in through
   // Autofill and Passwords Sign-in promo. Android only.
   kUserTappedUndoRightAfterSignInFromAutofillAndPasswords = 46,
+  // User tapped 'Sign out' on the enterprise signals disclaimer or dismissed it
+  // by sliding down, using back press or by tapping outside of the dialog.
+  // Android only.
+  kUserDeclinedEnterpriseSignalsDisclaimer = 47,
   // Keep this as the last enum.
-  kMaxValue = kUserTappedUndoRightAfterSignInFromAutofillAndPasswords,
+  kMaxValue = kUserDeclinedEnterpriseSignalsDisclaimer,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

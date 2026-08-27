@@ -34,6 +34,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
     private final EnterpriseSignalsDisclaimerMediator mMediator;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
+    private boolean mIsDestroyed;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -53,22 +54,28 @@ public class EnterpriseSignalsDisclaimerCoordinator {
             ModalDialogManager modalDialogManager,
             SigninManager signinManager,
             Delegate delegate) {
+        mIsDestroyed = false;
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
-        mMediator = new EnterpriseSignalsDisclaimerMediator(context, identityManager, delegate);
 
         EnterpriseSignalsDisclaimerView view;
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             view = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
+            // TODO(b/527872237): Implement signout on dismissal for the modal dialog.
             mDisclaimerHost = new ModalDialogDisclaimerHost(modalDialogManager, view);
         } else {
             var sheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
             view = sheetContent;
-            mDisclaimerHost = new BottomSheetDisclaimerHost(bottomSheetController, sheetContent);
+            mDisclaimerHost =
+                    new BottomSheetDisclaimerHost(
+                            bottomSheetController, sheetContent, this::onDialogDismissed);
         }
 
+        mMediator =
+                new EnterpriseSignalsDisclaimerMediator(
+                        context, identityManager, delegate, signinManager, mDisclaimerHost::hide);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), view, EnterpriseSignalsDisclaimerViewBinder::bind);
@@ -79,6 +86,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
      * put in a queue and shown whenever possible.
      */
     public void show() {
+        assert !mIsDestroyed;
         mDisclaimerHost.show();
     }
 
@@ -86,13 +94,29 @@ public class EnterpriseSignalsDisclaimerCoordinator {
      * @return true if dialog is being shown or is in queue, false otherwise.
      */
     public boolean isActive() {
-        return mDisclaimerHost.isActive();
+        return !mIsDestroyed && mDisclaimerHost.isActive();
     }
 
     /** Destroys the coordinator, hiding the sheet and cleaning up resources. */
     public void destroy() {
-        mDisclaimerHost.hide();
+        if (mIsDestroyed) {
+            return;
+        }
+        mIsDestroyed = true;
+        mDisclaimerHost.destroy();
         mModelChangeProcessor.destroy();
         mMediator.destroy();
+    }
+
+    private void onDialogDismissed(boolean reasonWasUserAction) {
+        if (mIsDestroyed) {
+            return;
+        }
+        if (reasonWasUserAction) {
+            // The user should not be signed out if the dialog is being dismissed by an external
+            // force - for instance, the Controller being destroyed.
+            mMediator.signOutUser();
+        }
+        destroy();
     }
 }

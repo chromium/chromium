@@ -31,7 +31,7 @@ class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDiscla
         super(context, /* isDialog= */ false);
     }
 
-    public void setOnDestroyedCallback(Runnable callback) {
+    public void setOnDestroyedCallback(@Nullable Runnable callback) {
         mOnDestroyedCallback = callback;
     }
 

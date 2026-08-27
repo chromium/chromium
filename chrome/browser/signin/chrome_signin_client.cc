@@ -156,6 +156,8 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion,
     // Allowed as the user declined the enterprise management disclaimer.
     signin_metrics::ProfileSignout::kUserDeclinedEnterpriseManagementDisclaimer,
+    // Allowed as the user declined the enterprise signals disclaimer.
+    signin_metrics::ProfileSignout::kUserDeclinedEnterpriseSignalsDisclaimer,
 };
 
 // Returns the HaTS survey trigger corresponding to the given AccessPoint, or
