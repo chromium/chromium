@@ -100,8 +100,12 @@ const int64_t kMaxSupportedSignerSetCompatibilityVersion = 1;
 // Ignore any MtcMetadata component update data that is older than this amount.
 // The MTC Metadata has a short useful lifetime, and since it impacts Trust
 // Anchor ID data that is sent over the wire, using a stale update would just
-// result in sending useless data for TAIs that don't work anymore.
-constexpr base::TimeDelta kMaxMtcMetadataAge = base::Days(7);
+// result in sending TAIs with landmarks that aren't usable anymore (although
+// they still indicate support for the corresponding standalone ID, at that
+// point it's better to switch to only sending the standalone ID instead.)
+//
+// CQRP draft policy allows up to 47 days as the max cert lifetime.
+constexpr base::TimeDelta kMaxMtcMetadataAge = base::Days(47);
 
 const base::FilePath::CharType kCTConfigProtoFileName[] =
     FILE_PATH_LITERAL("ct_config.pb");

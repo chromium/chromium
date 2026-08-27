@@ -1737,7 +1737,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcMetadata old_mtc_metadata_proto =
         base_mtc_metadata_proto;
     old_mtc_metadata_proto.set_update_time_seconds(
-        SecondsSinceEpoch(base::Time::Now() - base::Days(14)));
+        SecondsSinceEpoch(base::Time::Now() - base::Days(49)));
     InstallMtcMetadataUpdate(old_mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -1791,7 +1791,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcMetadata old_mtc_metadata_proto =
         base_mtc_metadata_proto;
     old_mtc_metadata_proto.set_update_time_seconds(
-        SecondsSinceEpoch(base::Time::Now() - base::Days(13)));
+        SecondsSinceEpoch(base::Time::Now() - base::Days(48)));
     // The base_mtc_metadata_proto has log_number 2. Set it to 1 in this update
     // so the test can distinguish whether this proto was used or the previous
     // update is still being used.
