@@ -31,7 +31,7 @@ constructor(
   private var mTitleText by mutableStateOf("")
   private var mSummaryText by mutableStateOf("")
   private var mChecked by mutableStateOf(false)
-  private var mEnabled by mutableStateOf(true)
+  private var mEnabled by mutableStateOf(isEnabled)
   private var mListener: CompoundButton.OnCheckedChangeListener? = null
   private val mSwitch by lazy { Switch(context) }
 
@@ -43,9 +43,8 @@ constructor(
         summary = mSummaryText,
         checked = mChecked,
         onCheckedChange = { newChecked ->
-          if (mEnabled && mChecked != newChecked) {
-            mChecked = newChecked
-            mListener?.onCheckedChanged(mSwitch, mChecked)
+          if (mEnabled) {
+            setChecked(newChecked)
           }
         },
         enabled = mEnabled,
@@ -78,8 +77,6 @@ constructor(
     super.setEnabled(enabled)
     mEnabled = enabled
   }
-
-  override fun isEnabled(): Boolean = mEnabled
 
   fun setOnCheckedChangeListener(listener: CompoundButton.OnCheckedChangeListener?) {
     mListener = listener
