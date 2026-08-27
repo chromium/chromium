@@ -42,7 +42,6 @@ source_set("configs") {
   if (!is_android) {
     public_deps = [
       "//chrome/browser/ui/tabs/tab_group_home",
-      "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/drive_picker_host",
     ]
   }
@@ -58,7 +57,6 @@ source_set("configs") {
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
-    "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/accessibility",
@@ -77,7 +75,6 @@ source_set("configs") {
     "//chrome/browser/ui/webui/download_internals",
     "//chrome/browser/ui/webui/engagement",
     "//chrome/browser/ui/webui/family_link_user_internals",
-    "//chrome/browser/ui/webui/flags",
     "//chrome/browser/ui/webui/history_clusters",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/webui/interstitials",
@@ -100,14 +97,9 @@ source_set("configs") {
     "//chrome/browser/ui/webui/translate_internals",
     "//chrome/browser/ui/webui/usb_internals",
     "//chrome/browser/ui/webui/version",
-    "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/notebooks/internals/webui",
-    "//components/security_interstitials/content:security_interstitial_page",
     "//components/webui/user_actions",
-    "//content/public/browser",
-    "//extensions/buildflags",
-    "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/webui:buildflags",
@@ -119,22 +111,15 @@ source_set("configs") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay_web_view",
-      "//chrome/browser/contextual_cueing/internals",
-      "//chrome/browser/glic/selection",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/color_pipeline_internals",
-      "//chrome/browser/ui/webui/data_sharing",
-      "//chrome/browser/ui/webui/feedback",
       "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/inspect",
       "//chrome/browser/ui/webui/iwa_dev",
-      "//chrome/browser/ui/webui/multistep_filter_internals",
-      "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
       "//chrome/browser/ui/webui/omnibox_everywhere",
@@ -179,9 +164,6 @@ source_set("configs") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
-      "//chrome/browser/ui/lens",
-      "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/webui/ai_overlay_dialog",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/skills",
@@ -190,7 +172,6 @@ source_set("configs") {
     if (!is_chromeos) {
       deps += [
         "//chrome/browser/ui/webui/app_settings",
-        "//chrome/browser/ui/webui/signin:profile",
         "//chrome/browser/ui/webui/whats_new",
       ]
     }
@@ -205,10 +186,7 @@ source_set("configs") {
   }
 
   if (enterprise_watermark) {
-    deps += [
-      "//chrome/browser/enterprise/watermark:watermark_lib",
-      "//chrome/browser/ui/webui/watermark",
-    ]
+    deps += [ "//chrome/browser/ui/webui/watermark" ]
   }
 
   if (enable_dice_support) {
@@ -575,8 +553,6 @@ source_set("chrome_web_ui_controller_factory") {
   public = [ "chrome_web_ui_controller_factory.h" ]
   public_deps = [
     "//base",
-    "//components/favicon_base",
-    "//content/public/browser",
     "//ui/base",
   ]
   deps = [
@@ -584,7 +560,6 @@ source_set("chrome_web_ui_controller_factory") {
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/components",
@@ -599,11 +574,9 @@ source_set("chrome_web_ui_controller_factory") {
     "//components/feed:feature_list",
     "//components/history/core/browser",
     "//components/password_manager/content/common",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/privacy_sandbox:features",
     "//content/public/common",
-    "//extensions/buildflags",
     "//ui/accessibility",
     "//ui/base:features",
     "//ui/gfx",
@@ -625,7 +598,6 @@ source_set("chrome_web_ui_controller_factory") {
       "//chrome/browser/ui/webui/iwa_dev",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
       "//chrome/browser/ui/webui/settings",
-      "//chrome/browser/web_applications",
       "//ui/web_dialogs",
     ]
   }
@@ -657,12 +629,7 @@ source_set("chrome_web_ui_controller_factory") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/ui/webui/extensions",
-      "//extensions/common:common_constants",
     ]
-  }
-
-  if (enable_webui_ntp) {
-    deps += [ "//chrome/browser/ui/webui/new_tab_page" ]
   }
 
   if (!is_android || is_desktop_android) {
