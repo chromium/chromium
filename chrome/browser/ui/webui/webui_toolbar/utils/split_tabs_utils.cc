@@ -4,20 +4,14 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 
-#include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace webui_toolbar {
