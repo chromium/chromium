@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,8 +43,6 @@ public final class SideUiCoordinatorFactory {
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
      * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
      *     container.
-     * @param tabStripBottomPxSupplier The supplier for the Side UI's top margin added for tab
-     *     strip.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
      */
@@ -62,7 +58,6 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
             @Nullable ViewStub webContentHairlineContainerStub,
-            @Nullable NonNullObservableSupplier<Integer> tabStripBottomPxSupplier,
             IncognitoStateProvider incognitoStateProvider) {
         if (!AndroidSidePanelEnabledFn.isEnabled()
                 && !VerticalTabUtils.isVerticalTabsEligible(parentActivity)) {
@@ -74,9 +69,6 @@ public final class SideUiCoordinatorFactory {
         assert rightAnchorContainerStub != null;
         assert webContentHairlineContainerStub != null;
 
-        if (tabStripBottomPxSupplier == null) {
-            tabStripBottomPxSupplier = ObservableSuppliers.createNonNull(0);
-        }
         return new SideUiCoordinatorImpl(
                 parentActivity,
                 lifecycleDispatcher,
@@ -88,7 +80,6 @@ public final class SideUiCoordinatorFactory {
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
                 webContentHairlineContainerStub,
-                tabStripBottomPxSupplier,
                 incognitoStateProvider);
     }
 }

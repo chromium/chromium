@@ -2284,14 +2284,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         ViewStub webContentHairlineContainerStub =
                 mActivity.findViewById(R.id.side_ui_web_content_hairline_container_stub);
 
-        NonNullObservableSupplier<Integer> stripBottomPxSupplier = null;
-        assumeNonNull(mLayoutManager);
-        StripLayoutHelperManager stripLayoutHelperManager =
-                mLayoutManager.getStripLayoutHelperManager();
-        if (stripLayoutHelperManager != null) {
-            stripBottomPxSupplier = stripLayoutHelperManager.getStripBottomPxSupplier();
-        }
-
         if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
             mTabSearchOverlayCoordinator =
                     new TabSearchOverlayCoordinator(
@@ -2323,7 +2315,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
                         webContentHairlineContainerStub,
-                        stripBottomPxSupplier,
                         mIncognitoStateProvider);
         if (mSideUiCoordinator == null) {
             return;

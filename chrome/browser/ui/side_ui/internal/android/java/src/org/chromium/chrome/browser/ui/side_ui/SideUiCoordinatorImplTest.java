@@ -46,14 +46,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -79,6 +78,8 @@ public class SideUiCoordinatorImplTest {
     /** Window size in this test; it must match {@code @Config}. */
     private static final Size WINDOW_SIZE_PX = new Size(1920, 1080);
 
+    private static final int HEIGHT_TO_TABSTRIP_BOTTOM = 100;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -94,8 +95,6 @@ public class SideUiCoordinatorImplTest {
 
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
-    private final SettableNonNullObservableSupplier<Integer> mTabStripBottomPxSupplier =
-            ObservableSuppliers.createNonNull(0);
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
@@ -142,6 +141,10 @@ public class SideUiCoordinatorImplTest {
         webContentHairlineContainer.setLayoutParams(new MarginLayoutParams(0, 0));
         doReturn(webContentHairlineContainer).when(mWebContentHairlineContainerStub).inflate();
 
+        doReturn(HEIGHT_TO_TABSTRIP_BOTTOM)
+                .when(mTopControlsStacker)
+                .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
+
         // Initialize the SideUiCoordinator under test.
         mCoordinator =
                 new SideUiCoordinatorImpl(
@@ -155,7 +158,6 @@ public class SideUiCoordinatorImplTest {
                         mLeftAnchorContainerStub,
                         mRightAnchorContainerStub,
                         mWebContentHairlineContainerStub,
-                        mTabStripBottomPxSupplier,
                         mIncognitoStateProvider);
 
         // Initialize the SideUiContainer View.
@@ -175,7 +177,6 @@ public class SideUiCoordinatorImplTest {
 
         verify(mActivityLifecycleDispatcher).register(mCoordinator);
         verify(mFullscreenManager).addObserver(mCoordinator);
-        assertEquals(1, mTabStripBottomPxSupplier.getObserverCount());
     }
 
     @Test
@@ -187,7 +188,6 @@ public class SideUiCoordinatorImplTest {
         verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
         verify(mFullscreenManager).removeObserver(mCoordinator);
         verify(mLayoutStateProvider).removeObserver(any());
-        assertEquals(0, mTabStripBottomPxSupplier.getObserverCount());
     }
 
     @Test
@@ -590,7 +590,7 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testOnTabStripBottomPxChanged() {
+    public void testOnTopControlsHeightChanged_updatesToolbarTopMargin() {
         // Set initial params, since these Views aren't actually attached.
         mLeftAnchorContainer.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
         mRightAnchorContainer.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
@@ -598,11 +598,15 @@ public class SideUiCoordinatorImplTest {
         var sideUiContainer =
                 new TestSideUiContainer(
                         mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.TOOLBAR;
         mCoordinator.registerSideUiContainer(sideUiContainer);
 
         // Notify of a top margin change.
         @Px int topMarginPx = 30;
-        mTabStripBottomPxSupplier.set(topMarginPx);
+        doReturn(topMarginPx)
+                .when(mTopControlsStacker)
+                .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
+        mCoordinator.onTopControlsHeightChanged(topMarginPx, 0);
 
         // Verify the topMargin is set appropriately.
         MarginLayoutParams leftLayoutParams =
@@ -909,7 +913,7 @@ public class SideUiCoordinatorImplTest {
 
         MarginLayoutParams rightLayoutParams =
                 (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
-        assertEquals(0, rightLayoutParams.topMargin);
+        assertEquals(HEIGHT_TO_TABSTRIP_BOTTOM, rightLayoutParams.topMargin);
 
         sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
         mCoordinator.updateUi(
@@ -931,7 +935,9 @@ public class SideUiCoordinatorImplTest {
                 .when(mTopControlsStacker)
                 .getVisibleTopControlsTotalHeight();
 
-        mTabStripBottomPxSupplier.set(50);
+        doReturn(50)
+                .when(mTopControlsStacker)
+                .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
 
         var sideUiContainer =
                 new TestSideUiContainer(
@@ -956,7 +962,7 @@ public class SideUiCoordinatorImplTest {
         sideUiContainer.mMinWidthDp = 400;
         sideUiContainer.mMaxWidthDp = 400;
         sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
-        mTabStripBottomPxSupplier.set(100);
+        doReturn(100).when(mTopControlsStacker).getVisibleTopControlsTotalHeight();
         mCoordinator.updateUi(
                 new UiUpdateRequest(
                         sideUiContainer.getSideUiId(), /* suppressAnimations= */ false));
