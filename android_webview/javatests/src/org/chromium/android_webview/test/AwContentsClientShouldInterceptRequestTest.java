@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
-import android.os.Build;
 import android.util.Pair;
 import android.webkit.JavascriptInterface;
 
@@ -37,10 +36,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import android.os.Build;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -165,12 +165,13 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(1, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(aboutPageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
 
-        AwTestContainerView newView = mActivityTestRule.reparentAwContents(mTestContainerView);
+        mTestContainerView = mActivityTestRule.reparentAwContents(mTestContainerView);
+        mAwContents = mTestContainerView.getAwContents();
 
         final String syncUrl =
                 addPageToTestServer(mWebServer, "/sync.html", "<html><body>hello</body></html>");
         callCount = mShouldInterceptRequestHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(newView.getAwContents(), syncUrl);
+        mActivityTestRule.loadUrlAsync(mAwContents, syncUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(syncUrl, mShouldInterceptRequestHelper.getUrls().get(1));
