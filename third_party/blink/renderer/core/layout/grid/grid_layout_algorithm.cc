@@ -2564,7 +2564,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto& container_style = Style();
   const auto& placement_data = node.CachedPlacementData();
   const bool is_absolute_container = node.IsAbsoluteContainer();
-  const bool is_fixed_container = node.IsAbsoluteContainer();
+  const bool is_fixed_container = node.IsFixedContainer();
 
   const LayoutUnit previous_consumed_block_size =
       GetBreakToken() ? GetBreakToken()->ConsumedBlockSize() : LayoutUnit();
