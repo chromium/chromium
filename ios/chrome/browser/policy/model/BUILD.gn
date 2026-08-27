@@ -70,6 +70,7 @@ source_set("model") {
     "//base",
     "//components/account_id",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser/at_memory/policy",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/collaboration/public:prefs",

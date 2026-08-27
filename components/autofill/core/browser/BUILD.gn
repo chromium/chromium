@@ -2453,7 +2453,7 @@ source_set("unit_tests") {
     deps += [ "//components/variations/service" ]
   }
 
-  if (!is_ios && !is_fuchsia) {
+  if (!is_fuchsia) {
     deps += [ "//components/autofill/core/browser/at_memory/policy:unit_tests" ]
   }
 
