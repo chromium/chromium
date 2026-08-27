@@ -92,6 +92,12 @@ public interface SideUiContainer {
     void setWidth(@Px int width);
 
     /**
+     * Returns whether browser top controls should remain locked (i.e. prevented from scrolling off)
+     * while this container is showing.
+     */
+    boolean shouldLockTopControls();
+
+    /**
      * Called after {@link SideUiCoordinator} completes a UI update <i>and</i> that update changed
      * this {@link SideUiContainer}.
      *

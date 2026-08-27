@@ -457,6 +457,11 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public boolean shouldLockTopControls() {
+        return true;
+    }
+
+    @Override
     public void onUiUpdateCompleted(
             @Px int oldWidth,
             @Px int newWidth,

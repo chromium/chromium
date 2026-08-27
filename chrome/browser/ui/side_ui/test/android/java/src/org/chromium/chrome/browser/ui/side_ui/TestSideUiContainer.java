@@ -36,6 +36,13 @@ public final class TestSideUiContainer implements SideUiContainer {
      */
     public boolean mHasContentToShow = true;
 
+    /**
+     * Whether browser top controls should remain locked when this container is showing.
+     *
+     * <p>This will be returned by {@link #shouldLockTopControls()}.
+     */
+    public boolean mShouldLockTopControls = true;
+
     /** The last {@code availableWidth} received by {@link #determineShowableSize}. */
     public @Nullable @Px Integer mLastAvailableWidth;
 
@@ -137,6 +144,11 @@ public final class TestSideUiContainer implements SideUiContainer {
         LayoutParams layoutParams = mSideUiContainerView.getLayoutParams();
         layoutParams.width = width;
         mSideUiContainerView.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public boolean shouldLockTopControls() {
+        return mShouldLockTopControls;
     }
 
     @Override
