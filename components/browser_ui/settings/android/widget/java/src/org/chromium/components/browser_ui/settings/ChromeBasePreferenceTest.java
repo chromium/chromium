@@ -291,5 +291,8 @@ public class ChromeBasePreferenceTest {
 
         ChromeBasePreferenceCategory category = new ChromeBasePreferenceCategory(mActivity);
         Assert.assertFalse(category.isIconSpaceReserved());
+
+        ChromeBaseListPreference listPreference = new ChromeBaseListPreference(mActivity);
+        Assert.assertFalse(listPreference.isIconSpaceReserved());
     }
 }

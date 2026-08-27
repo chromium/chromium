@@ -26,6 +26,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseListPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceCategory.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeButtonPreference.java",

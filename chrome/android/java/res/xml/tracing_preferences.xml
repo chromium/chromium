@@ -16,7 +16,7 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings"
         android:key="non_default_categories"
         android:title="Disabled-by-default categories"/>
-    <ListPreference
+    <org.chromium.components.browser_ui.settings.ChromeBaseListPreference
         android:key="mode"
         android:title="Tracing mode"
         android:persistent="false"/>
