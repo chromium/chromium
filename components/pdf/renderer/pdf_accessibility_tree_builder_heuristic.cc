@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -36,14 +35,6 @@
 namespace pdf {
 
 namespace {
-
-// Histogram range parameters for recording heading-to-body font size ratios
-// (ratio * 100).
-constexpr int kHeadingToBodySizeRatioMin = 100;
-constexpr int kHeadingToBodySizeRatioMax = 500;
-// 42 buckets from 100 to 500 gives a step size of 10 units
-// ((500 - 100) / (42 - 2) = 10), resulting in 10-unit wide linear buckets:
-constexpr size_t kHeadingToBodySizeRatioBucketCount = 42;
 
 // Don't try to apply font size thresholds to automatically identify headings
 // if the median font size is not at least this many points.
@@ -405,15 +396,6 @@ int GetHeadingLevelFromSize(
   return best_level;
 }
 
-void RecordHeadingToBodySizeRatioHistogram(std::string_view name, int sample) {
-  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-      name, kHeadingToBodySizeRatioMin, kHeadingToBodySizeRatioMax,
-      kHeadingToBodySizeRatioBucketCount,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(sample);
-}
-
 // Returns a span of AccessibilityCharInfo corresponding to the text run at
 // `text_run_index`.
 base::span<const chrome_pdf::AccessibilityCharInfo> GetTextRunChars(
@@ -613,20 +595,9 @@ PdfAccessibilityTreeBuilderHeuristic::~PdfAccessibilityTreeBuilderHeuristic() =
 
 void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   base::ElapsedTimer timer;
-  std::optional<float> min_heading_ratio;
-  std::optional<float> max_heading_ratio;
-  absl::Cleanup run_on_exit = [&timer, &min_heading_ratio, &max_heading_ratio] {
+  absl::Cleanup run_on_exit = [&timer] {
     base::UmaHistogramTimes("Accessibility.PDF.Heuristic.BuildPageTreeTime",
                             timer.Elapsed());
-    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-        min_heading_ratio && max_heading_ratio) {
-      RecordHeadingToBodySizeRatioHistogram(
-          "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMax",
-          static_cast<int>(std::round(*max_heading_ratio * 100.0f)));
-      RecordHeadingToBodySizeRatioHistogram(
-          "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMin",
-          static_cast<int>(std::round(*min_heading_ratio * 100.0f)));
-    }
   };
 
   const HeuristicPageProperties page_properties =
@@ -687,21 +658,6 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           text_run, next_run, GetTextRunChars(page_layout, text_run_index),
           page_properties, &current_heading_classifier);
       builder_->page_node()->child_ids.push_back(block_node->id);
-
-      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-          current_heading_classifier != HeadingClassifier::kNone) {
-        base::UmaHistogramEnumeration(
-            "Accessibility.PdfHeuristics.HeadingClassifier",
-            current_heading_classifier);
-        if (page_properties.median_font_size > 0) {
-          float ratio =
-              text_run.style.font_size / page_properties.median_font_size;
-          min_heading_ratio =
-              std::min(min_heading_ratio.value_or(ratio), ratio);
-          max_heading_ratio =
-              std::max(max_heading_ratio.value_or(ratio), ratio);
-        }
-      }
     }
 
     // If the `text_run_index` is less than or equal to the link's
