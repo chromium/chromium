@@ -171,6 +171,8 @@
     config.identity = identity;
     config.flowID = omnibox::kComposeboxDriveConsentFlowId.Get();
     config.productID = omnibox::kComposeboxDriveConsentProductId.Get();
+    config.productSurface =
+        omnibox::kComposeboxDriveConsentProductSurface.Get();
 
     self.privacyPrimitiveService =
         ios::provider::CreatePrivacyPrimitiveService(config);

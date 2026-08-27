@@ -192,6 +192,7 @@ extern const base::FeatureParam<bool> kComposeboxDriveIdentityFallback;
 BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer);
 extern const base::FeatureParam<int> kComposeboxDriveConsentFlowId;
 extern const base::FeatureParam<int> kComposeboxDriveConsentProductId;
+extern const base::FeatureParam<int> kComposeboxDriveConsentProductSurface;
 extern const base::FeatureParam<std::string>
     kComposeboxDriveConsentEntrypointId;
 

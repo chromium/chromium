@@ -418,6 +418,8 @@ const base::FeatureParam<int> kComposeboxDriveConsentFlowId{
 
 const base::FeatureParam<int> kComposeboxDriveConsentProductId{
     &kComposeboxDriveContextMenuOptionDisclaimer, "product_id", 89978449};
+const base::FeatureParam<int> kComposeboxDriveConsentProductSurface{
+    &kComposeboxDriveContextMenuOptionDisclaimer, "product_surface", 29};
 const base::FeatureParam<std::string> kComposeboxDriveConsentEntrypointId{
     &kComposeboxDriveContextMenuOptionDisclaimer, "entrypoint_id", "aim-drive"};
 
