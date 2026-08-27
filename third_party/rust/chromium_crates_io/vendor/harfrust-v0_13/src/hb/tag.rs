@@ -311,6 +311,15 @@ mod tests {
     #![allow(non_snake_case)]
 
     use super::*;
+
+    #[test]
+    fn language_matches() {
+        assert!(lang_matches(b"pl", b"pl"));
+        assert!(lang_matches(b"pl-pl", b"pl"));
+        assert!(!lang_matches(b"pl", b"pl-pl"));
+        assert!(!lang_matches(b"plx", b"pl"));
+        assert!(!lang_matches(b"en", b"pl"));
+    }
     use alloc::vec::Vec;
 
     fn new_tag_to_script(tag: hb_tag_t) -> Option<Script> {

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.85"
 name = "harfrust"
-version = "0.13.2"
+version = "0.13.3"
 build = false
 exclude = [
     "benches/",
@@ -74,8 +74,16 @@ optional = true
 version = "=2.2.0"
 optional = true
 
+[dependencies.once_cell]
+version = "1.21.4"
+features = [
+    "alloc",
+    "race",
+]
+default-features = false
+
 [dependencies.read-fonts]
-version = "0.43.2"
+version = "0.43.3"
 features = ["experimental_font_api"]
 default-features = false
 

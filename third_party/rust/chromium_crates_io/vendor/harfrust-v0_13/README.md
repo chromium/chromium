@@ -29,7 +29,6 @@ production and consumption to Rust.
 - No font size property. Shaping is always using UnitsPerEm. You should scale the result manually.
 - Most of the font loading and parsing is done using [`read-fonts`](https://docs.rs/read-fonts).
 - HarfRust doesn't provide any integration with external libraries, so no FreeType, CoreText, or Uniscribe/DirectWrite font-loading integration, and no ICU, or GLib Unicode-functions integration, as well as no `graphite2` library support.
-- `mort` table is not supported, since it's deprecated by Apple.
 - No `graphite` font support.
 
 ## Conformance
@@ -38,7 +37,6 @@ The following conformance issues need to be fixed:
 
 - HarfRust for the most part passes the HarfBuzz test and fuzzing suites, but there are some known issues. See [HARFBUZZ.md](./HARFBUZZ.md) for details.
 - Malformed fonts will cause an error. HarfBuzz uses fallback/dummy shaper in this case.
-- No Arabic fallback shaper. This requires the ability to build lookups on the fly. In HarfBuzz (C++) this requires serialization code that is associated with subsetting.
 - Experimental HarfBuzz features like most of the boring-expansion-spec are not supported yet.
 
 ## Performance

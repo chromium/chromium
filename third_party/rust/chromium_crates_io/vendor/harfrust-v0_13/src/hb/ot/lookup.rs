@@ -233,6 +233,14 @@ impl LookupInfo {
         Some(info)
     }
 
+    pub(crate) fn new_subst(table_data: &[u8]) -> Option<Self> {
+        Self::new(&LookupData {
+            offset: 0,
+            is_subst: true,
+            table_data: FontData::new(table_data),
+        })
+    }
+
     pub fn props(&self) -> u32 {
         self.props
     }

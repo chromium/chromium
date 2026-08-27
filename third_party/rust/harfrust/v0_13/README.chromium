@@ -1,7 +1,7 @@
 Name: harfrust
 URL: https://crates.io/crates/harfrust
-Version: 0.13.2
-Revision: 7059e706741e38cd38873fe5d7b43a4c05ca8c67
+Version: 0.13.3
+Revision: fbff7e563b4e512686c9e627d91a147ba4ee2402
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/LICENSE

@@ -13,6 +13,7 @@ exclude = ["benches/", "tests/"]
 
 [dependencies]
 read-fonts.workspace = true
+once_cell.workspace = true
 bitflags = "2.9"
 bytemuck = { version = "1.22", features = ["extern_crate_alloc"] }
 core_maths = { version = "0.1", optional = true }

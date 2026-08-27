@@ -508,7 +508,7 @@ pub fn substitute(
 ) {
     let mut aat_map = map::AatMap::default();
     if !features.is_empty() {
-        let mut builder = map::AatMapBuilder::default();
+        let mut builder = map::AatMapBuilder::new(plan.language.as_ref());
         for feature in features {
             builder.add_feature(face, feature);
         }

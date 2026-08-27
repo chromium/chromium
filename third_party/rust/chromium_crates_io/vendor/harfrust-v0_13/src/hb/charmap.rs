@@ -1,4 +1,4 @@
-use crate::hb::tables::{SelectedCmapSubtable, TableRanges};
+use crate::hb::tables::{legacy_symbol_font_page, SelectedCmapSubtable, TableRanges};
 
 use super::cache::hb_cache_t;
 use read_fonts::{
@@ -51,6 +51,7 @@ impl<'a> Charmap<'a> {
                         index,
                         is_mac_roman: record.is_mac_roman(),
                         is_symbol: record.is_symbol(),
+                        symbol_font_page: legacy_symbol_font_page(font.os2().ok().as_ref()),
                     },
                     subtable,
                 ))
@@ -74,35 +75,17 @@ impl<'a> Charmap<'a> {
         if subtable.0.is_mac_roman && c > 0x7F {
             c = unicode_to_macroman(c);
         }
-        let result = match &subtable.1 {
-            CmapSubtable::Format0(table) => table.map_codepoint(c),
-            CmapSubtable::Format6(table) => table.map_codepoint(c),
-            CmapSubtable::Format10(table) => {
-                if let Some(index) = c.checked_sub(table.start_char_code()) {
-                    if index < table.num_chars() {
-                        table
-                            .glyph_id_array()
-                            .get(index as usize)
-                            .map(|gid| GlyphId::from(gid.get()))
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
+        let result = subtable.1.map_codepoint(c);
+        if result.is_none() && subtable.0.is_symbol {
+            let mapped = match subtable.0.symbol_font_page {
+                0xB200 => arabic_pua_map(c, true),
+                0xB300 => arabic_pua_map(c, false),
+                0 if c <= 0x00FF => 0xF000 + c,
+                _ => 0,
+            };
+            if mapped != 0 {
+                return subtable.1.map_codepoint(mapped);
             }
-            CmapSubtable::Format4(table) => table.map_codepoint(c),
-            CmapSubtable::Format12(table) => table.map_codepoint(c),
-            CmapSubtable::Format13(table) => table.map_codepoint(c),
-            _ => None,
-        };
-        if result.is_none() && subtable.0.is_symbol && c <= 0x00FF {
-            // For symbol-encoded OpenType fonts, we duplicate the
-            // U+F000..F0FF range at U+0000..U+00FF.  That's what
-            // Windows seems to do, and that's hinted about at:
-            // https://docs.microsoft.com/en-us/typography/opentype/spec/recom
-            // under "Non-Standard (Symbol) Fonts".
-            return self.map(0xF000 + c);
         }
         result
     }
@@ -114,6 +97,18 @@ impl<'a> Charmap<'a> {
             MapVariant::Variant(gid) => Some(gid),
         }
     }
+}
+
+fn arabic_pua_map(c: u32, simplified: bool) -> u32 {
+    let Ok(c) = usize::try_from(c) else {
+        return 0;
+    };
+    let mapped = if simplified {
+        super::ot_shaper_arabic_pua::_hb_arabic_pua_simp_map(c)
+    } else {
+        super::ot_shaper_arabic_pua::_hb_arabic_pua_trad_map(c)
+    };
+    u32::from(mapped)
 }
 
 #[rustfmt::skip]
@@ -142,4 +137,40 @@ fn unicode_to_macroman(c: u32) -> u32 {
         return 0;
     };
     (0x80 + index) as u32
+}
+
+#[cfg(all(test, feature = "std"))]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn maps_legacy_arabic_symbol_fonts() {
+        let simplified = FontRef::new(include_bytes!(
+            "../../tests/fonts/in-house/SimpArabicTest.ttf"
+        ))
+        .unwrap();
+        let simplified_ranges = TableRanges::new(&simplified);
+        assert_eq!(
+            simplified_ranges.cmap_subtable.unwrap().symbol_font_page,
+            0xB200
+        );
+        assert_eq!(
+            Charmap::new(&simplified, &simplified_ranges).map(0x0627),
+            Some(GlyphId::new(45))
+        );
+
+        let traditional = FontRef::new(include_bytes!(
+            "../../tests/fonts/in-house/TradArabicTest.ttf"
+        ))
+        .unwrap();
+        let traditional_ranges = TableRanges::new(&traditional);
+        assert_eq!(
+            traditional_ranges.cmap_subtable.unwrap().symbol_font_page,
+            0xB300
+        );
+        assert_eq!(
+            Charmap::new(&traditional, &traditional_ranges).map(0x0627),
+            Some(GlyphId::new(65))
+        );
+    }
 }

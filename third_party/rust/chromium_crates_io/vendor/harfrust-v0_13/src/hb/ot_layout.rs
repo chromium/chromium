@@ -210,10 +210,19 @@ fn apply_string<T: LayoutTable>(ctx: &mut OT::hb_ot_apply_context_t, lookup: &Lo
 }
 
 fn apply_forward(ctx: &mut OT::hb_ot_apply_context_t, lookup: &LookupInfo) -> bool {
-    let mut ret = false;
     let Some(table_data) = ctx.face.ot_tables.table_data(ctx.table_index) else {
         return false;
     };
+
+    apply_forward_with_data(ctx, lookup, table_data)
+}
+
+fn apply_forward_with_data(
+    ctx: &mut OT::hb_ot_apply_context_t,
+    lookup: &LookupInfo,
+    table_data: &[u8],
+) -> bool {
+    let mut ret = false;
 
     let use_hot_subtable_cache = lookup.cache_enter(ctx);
 
@@ -262,6 +271,25 @@ fn apply_forward(ctx: &mut OT::hb_ot_apply_context_t, lookup: &LookupInfo) -> bo
     }
 
     ret
+}
+
+pub(crate) fn apply_synthesized_subst_lookup(
+    ctx: &mut OT::hb_ot_apply_context_t,
+    lookup: &LookupInfo,
+    table_data: &[u8],
+) {
+    if ctx.buffer.is_empty() || ctx.lookup_mask() == 0 {
+        return;
+    }
+
+    debug_assert!(lookup.is_subst);
+    debug_assert!(!lookup.is_reverse());
+    ctx.lookup_props = lookup.props();
+    ctx.update_matchers();
+    ctx.buffer.clear_output();
+    ctx.buffer.idx = 0;
+    apply_forward_with_data(ctx, lookup, table_data);
+    ctx.buffer.sync();
 }
 
 fn apply_backward(ctx: &mut OT::hb_ot_apply_context_t, lookup: &LookupInfo) -> bool {

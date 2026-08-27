@@ -61,6 +61,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shape_plan.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_arabic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_arabic_fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_arabic_pua.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_arabic_table.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_hangul.rs",
     "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb/ot_shaper_hebrew.rs",
@@ -94,7 +96,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "harfrust"
   cargo_pkg_description = "A complete HarfBuzz shaping algorithm port to Rust."
   cargo_pkg_repository = "https://github.com/harfbuzz/harfrust"
-  cargo_pkg_version = "0.13.2"
+  cargo_pkg_version = "0.13.3"
 
   allow_unsafe = false
 
@@ -103,6 +105,7 @@ cargo_crate("lib") {
     "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/icu_normalizer/v2:lib",
     "//third_party/rust/icu_properties/v2:lib",
+    "//third_party/rust/once_cell/v1:lib",
     "//third_party/rust/read_fonts/v0_43:lib",
     "//third_party/rust/smallvec/v1:lib",
   ]

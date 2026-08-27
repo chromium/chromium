@@ -32,6 +32,7 @@ pub struct feature_map_t {
     mask: hb_mask_t,
     // mask for value=1, for quick access
     one_mask: hb_mask_t,
+    needs_fallback: bool,
     auto_zwnj: bool,
     auto_zwj: bool,
     random: bool,
@@ -105,6 +106,13 @@ impl hb_ot_map_t {
         self.features
             .binary_search_by_key(&feature_tag, |f| f.tag)
             .map_or(0, |idx| self.features[idx].one_mask)
+    }
+
+    #[inline]
+    pub fn needs_fallback(&self, feature_tag: hb_tag_t) -> bool {
+        self.features
+            .binary_search_by_key(&feature_tag, |f| f.tag)
+            .is_ok_and(|idx| self.features[idx].needs_fallback)
     }
 
     #[inline]
@@ -425,6 +433,7 @@ impl<'a> hb_ot_map_builder_t<'a> {
                 shift,
                 mask,
                 one_mask: (1 << shift) & mask,
+                needs_fallback: !found,
                 auto_zwnj: info.flags & F_MANUAL_ZWNJ == 0,
                 auto_zwj: info.flags & F_MANUAL_ZWJ == 0,
                 random: info.flags & F_RANDOM != 0,

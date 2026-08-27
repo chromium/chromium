@@ -36,7 +36,7 @@ impl<'a> hb_ot_shape_planner_t<'a> {
         language: Option<&Language>,
     ) -> Self {
         let ot_map = hb_ot_map_builder_t::new(face, script, language);
-        let aat_map = AatMapBuilder::default();
+        let aat_map = AatMapBuilder::new(language);
 
         let mut shaper = match script {
             Some(script) => hb_ot_shape_complex_categorize(
@@ -51,7 +51,7 @@ impl<'a> hb_ot_shape_planner_t<'a> {
         let script_fallback_position = shaper.fallback_position;
 
         // https://github.com/harfbuzz/harfbuzz/issues/2124
-        let apply_morx = face.aat_tables.morx.is_some()
+        let apply_morx = (face.aat_tables.morx.is_some() || face.aat_tables.mort.is_some())
             && (direction.is_horizontal() || face.ot_tables.gsub.is_none());
 
         // https://github.com/harfbuzz/harfbuzz/issues/1528

@@ -713,13 +713,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "harfrust"
-version = "0.13.2"
+version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags",
  "bytemuck",
  "icu_normalizer",
  "icu_properties",
+ "once_cell",
  "read-fonts",
  "smallvec",
 ]

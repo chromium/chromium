@@ -358,7 +358,7 @@ impl SafeToBreakAccel {
         }
 
         SafeToBreakSubtable::new(
-            n_classes,
+            wouldbe_len,
             wouldbe_start,
             self.wouldbe.len(),
             eot_tail_start,
@@ -369,11 +369,11 @@ impl SafeToBreakAccel {
     /// The legacy (`kern` Format1) counterpart of [`Self::build_extended`]:
     /// one-byte state cells and u8 classes.
     #[inline(never)]
-    pub(crate) fn build_legacy(
+    pub(crate) fn build_legacy<T: bytemuck::AnyBitPattern + FixedSize>(
         &mut self,
-        machine: &StateTable,
-        is_actionable: &dyn Fn(&StateEntry) -> bool,
-        can_advance: &dyn Fn(&StateEntry) -> bool,
+        machine: &StateTable<T>,
+        is_actionable: &dyn Fn(&StateEntry<T>) -> bool,
+        can_advance: &dyn Fn(&StateEntry<T>) -> bool,
     ) -> SafeToBreakSubtable {
         let n_classes = machine.header.state_size() as usize;
         let wouldbe_start = self.wouldbe.len();
@@ -412,7 +412,7 @@ impl SafeToBreakAccel {
         }
 
         SafeToBreakSubtable::new(
-            n_classes,
+            wouldbe_len,
             wouldbe_start,
             self.wouldbe.len(),
             eot_tail_start,
@@ -423,15 +423,12 @@ impl SafeToBreakAccel {
 
 impl SafeToBreakSubtable {
     fn new(
-        n_classes: usize,
+        wouldbe_len: usize,
         wouldbe_start: usize,
         wouldbe_end: usize,
         eot_tail_start: usize,
         eot_tail_end: usize,
     ) -> Self {
-        let wouldbe_len = n_classes
-            .max(class::OUT_OF_BOUNDS as usize + 1)
-            .min(1 << 16);
         debug_assert_eq!(wouldbe_end - wouldbe_start, wouldbe_len);
         Self {
             wouldbe_start: wouldbe_start as u32,

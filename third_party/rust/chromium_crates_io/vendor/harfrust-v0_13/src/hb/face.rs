@@ -705,11 +705,13 @@ mod tests {
         assert!(ot_tables.gpos.is_some());
         assert!(ot_tables.gdef.table.is_some());
         assert!(aat_tables.morx.is_none());
+        assert!(aat_tables.mort.is_none());
         assert!(aat_tables.ankr.is_none());
         assert!(aat_tables.kern.is_none());
         assert!(aat_tables.kerx.is_none());
         assert!(aat_tables.trak.is_none());
         assert!(aat_tables.feat.is_none());
+        assert!(aat_tables.ltag.is_none());
         assert_eq!(provider.loads.get(), 3);
     }
 

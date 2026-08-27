@@ -156,7 +156,7 @@ impl TrackEntryExt for TrackTableEntry {
                 let v1 = values.get(i).map(|v| v.get() as f32).unwrap_or_default();
 
                 if (s1 - s0).abs() < f32::EPSILON {
-                    return (v0 + v1) * 0.5;
+                    return f32::midpoint(v0, v1);
                 }
 
                 let t = (ptem - s0) / (s1 - s0);

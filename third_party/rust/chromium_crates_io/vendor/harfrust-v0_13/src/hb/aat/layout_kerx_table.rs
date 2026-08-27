@@ -23,6 +23,7 @@ use read_fonts::{
         },
     },
     types::{BigEndian, FixedSize, GlyphId},
+    FontData,
 };
 
 pub(crate) fn apply(c: &mut AatApplyContext) -> Option<()> {
@@ -46,11 +47,6 @@ pub(crate) fn apply(c: &mut AatApplyContext) -> Option<()> {
             break;
         };
         subtable_idx += 1;
-
-        // We don't handle variations
-        if subtable.is_variable() {
-            continue;
-        }
 
         if c.buffer.direction.is_horizontal() != subtable.is_horizontal() {
             continue;
@@ -150,12 +146,29 @@ pub(crate) fn apply(c: &mut AatApplyContext) -> Option<()> {
 
 pub trait SimpleKerning {
     fn simple_kerning(&self, left: GlyphId, right: GlyphId) -> Option<i32>;
+    fn resolve_tuple_kerning(&self, value: i32, _tuple_count: u32) -> Option<i32> {
+        Some(value)
+    }
     fn collect_glyphs(&self, _first_set: &mut U32Set, _second_set: &mut U32Set, _num_glyphs: u32);
+}
+
+// HarfBuzz supports kerx tuple kerning "without the variation part": values
+// are offsets to an array of tupleCount FWORDs, of which it applies the first.
+fn resolve_tuple_kerning(value: i32, tuple_count: u32, data: FontData<'_>) -> Option<i32> {
+    if tuple_count == 0 {
+        return Some(value);
+    }
+
+    let offset = usize::try_from(value).ok()?;
+    data.read_at::<i16>(offset).ok().map(i32::from)
 }
 
 impl SimpleKerning for Subtable0<'_> {
     fn simple_kerning(&self, left: GlyphId, right: GlyphId) -> Option<i32> {
         self.kerning(left, right)
+    }
+    fn resolve_tuple_kerning(&self, value: i32, tuple_count: u32) -> Option<i32> {
+        resolve_tuple_kerning(value, tuple_count, self.offset_data())
     }
     fn collect_glyphs(&self, first_set: &mut U32Set, second_set: &mut U32Set, _num_glyphs: u32) {
         for &pair in self.pairs() {
@@ -168,6 +181,9 @@ impl SimpleKerning for Subtable0<'_> {
 impl SimpleKerning for Subtable2<'_> {
     fn simple_kerning(&self, left: GlyphId, right: GlyphId) -> Option<i32> {
         self.kerning(left, right)
+    }
+    fn resolve_tuple_kerning(&self, value: i32, tuple_count: u32) -> Option<i32> {
+        resolve_tuple_kerning(value, tuple_count, self.data)
     }
     fn collect_glyphs(&self, first_set: &mut U32Set, second_set: &mut U32Set, num_glyphs: u32) {
         let left_classes = &self.left_offset_table;
@@ -235,7 +251,9 @@ fn apply_simple_kerning<T: SimpleKerning>(c: &mut AatApplyContext, subtable: &Su
         let kern = if !first_set.contains(a.to_u32()) || !second_set.contains(b.to_u32()) {
             0
         } else {
-            kind.simple_kerning(a, b).unwrap_or(0)
+            kind.simple_kerning(a, b)
+                .and_then(|value| kind.resolve_tuple_kerning(value, subtable.tuple_count()))
+                .unwrap_or(0)
         };
         let kern = if use_x_scale {
             scale.scale_x(kern)
@@ -779,5 +797,30 @@ impl KerxSubtableCache {
             second_set,
             class_cache: Box::new(ClassCache::new()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use read_fonts::FontRead;
+
+    #[test]
+    fn format0_resolves_first_tuple_kerning_value() {
+        #[rustfmt::skip]
+        let data = [
+            0, 0, 0, 1, // nPairs
+            0, 0, 0, 0, // searchRange
+            0, 0, 0, 0, // entrySelector
+            0, 0, 0, 0, // rangeShift
+            0, 1, 0, 2, 0, 22, // pair: glyphs 1, 2; value is tuple offset 22
+            0xFF, 0x9C, 0x01, 0x2C, // tuple values: -100, 300
+        ];
+        let subtable = Subtable0::read(FontData::new(&data)).unwrap();
+        let value = subtable.simple_kerning(1u32.into(), 2u32.into()).unwrap();
+
+        assert_eq!(value, 22);
+        assert_eq!(subtable.resolve_tuple_kerning(value, 2), Some(-100));
+        assert_eq!(subtable.resolve_tuple_kerning(value, 3), Some(-100));
     }
 }

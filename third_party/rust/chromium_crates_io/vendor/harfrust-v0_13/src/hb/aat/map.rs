@@ -5,7 +5,7 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 
 use super::layout::*;
-use crate::hb::{hb_font_t, hb_mask_t, hb_tag_t};
+use crate::hb::{hb_font_t, hb_mask_t, hb_tag_t, Language};
 
 /// HB: hb_aat_map_t
 ///
@@ -31,6 +31,7 @@ pub struct RangeFlags {
 /// See <https://github.com/harfbuzz/harfbuzz/blob/2c22a65f0cb99544c36580b9703a43b5dc97a9e1/src/hb-aat-map.hh#L49>
 #[doc(alias = "hb_aat_map_builder_t")]
 pub struct AatMapBuilder {
+    pub language: Option<Language>,
     pub current_features: Vec<FeatureInfo>,
     pub features: Vec<FeatureRange>,
     pub range_first: usize,
@@ -40,6 +41,7 @@ pub struct AatMapBuilder {
 impl Default for AatMapBuilder {
     fn default() -> Self {
         Self {
+            language: None,
             range_first: HB_FEATURE_GLOBAL_START as usize,
             range_last: HB_FEATURE_GLOBAL_END as usize,
             current_features: Vec::default(),
@@ -49,6 +51,13 @@ impl Default for AatMapBuilder {
 }
 
 impl AatMapBuilder {
+    pub fn new(language: Option<&Language>) -> Self {
+        Self {
+            language: language.cloned(),
+            ..Self::default()
+        }
+    }
+
     pub fn add_feature(&mut self, face: &hb_font_t, feature: &Feature) -> Option<()> {
         let feat = face.aat_tables.feat.as_ref()?;
 
