@@ -13327,6 +13327,7 @@ from previous Chrome versions.
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
   <int value="-433775463" label="EnforceManagementDisclaimer:enabled"/>
   <int value="-433732913" label="GlicGeminiEnterpriseSettingsEnabled:disabled"/>
+  <int value="-432417360" label="AutofillAddChromeUserContextFields:disabled"/>
   <int value="-431656941" label="LongScreenshotsLenientMemoryCheck:enabled"/>
   <int value="-431617217" label="ArcGhostWindowNewStyle:disabled"/>
   <int value="-431553693" label="ChangePasswordAffiliationInfo:disabled"/>
@@ -16672,6 +16673,7 @@ from previous Chrome versions.
   <int value="623512796" label="EnableWifiQos:enabled"/>
   <int value="623671543" label="AuxiliarySearchDonation:disabled"/>
   <int value="623772100" label="EnableIncognitoWindowCounter:disabled"/>
+  <int value="624151936" label="AutofillAddChromeUserContextFields:enabled"/>
   <int value="624317932" label="print-pdf-as-image"/>
   <int value="624368375" label="OmniboxEntitySuggestions:enabled"/>
   <int value="624540698" label="VCSegmentationModel:enabled"/>
