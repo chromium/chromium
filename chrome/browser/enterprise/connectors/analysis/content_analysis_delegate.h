@@ -395,6 +395,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Parent URL chain of the frame from which the action was triggered.
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain_;
 
+  // Referrer chain of the frame from which the action was triggered.
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry> referrer_chain_;
+
   // The title corresponding to the WebContents triggering the scan.
   std::string title_;
 
@@ -448,6 +451,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // for every file/text. This is read to ensure `this` isn't deleted too early.
   bool data_uploaded_ = false;
 
+  // This should only be used for showing dialogs/toasts, not for accessing
+  // state about the page.
   base::WeakPtr<content::WebContents> web_contents_;
 
   // Responsible for opening and scanning multiple files on parallel threads.

@@ -27,12 +27,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,8 +49,11 @@
 #include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -55,7 +61,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
@@ -627,7 +635,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   // The actual failure response is given for each path.
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
-  // DLP response to ovewrite in the callback if present.
+  // DLP response to overwrite in the callback if present.
   std::optional<ContentAnalysisResponse> dlp_response_;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -1932,17 +1940,86 @@ TEST_F(ContentAnalysisDelegateUpdateFinalResultTest, Precedence) {
   EXPECT_EQ(FinalContentAnalysisResult::FAILURE, delegate->final_result_);
 }
 
+using ContentAnalysisDelegateReferrerChainTest = BaseTest;
+
+TEST_F(ContentAnalysisDelegateReferrerChainTest, UnaffectedByNavigations) {
+  sessions::SessionTabHelper::CreateForWebContents(
+      contents(),
+      base::BindRepeating(
+          [](content::WebContents*) -> sessions::SessionTabHelperDelegate* {
+            return nullptr;
+          }));
+  safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      contents(), HostContentSettingsMapFactory::GetForProfile(profile()),
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile()),
+      profile()->GetPrefs(), /*has_safe_browsing_service=*/true);
+
+  // Navigate to the referring page.
+  content::WebContentsTester::For(contents())
+      ->NavigateAndCommit(GURL("https://referrer.example.com/"));
+
+  // Navigate to the test URL (simulating a link click).
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL(kTestUrl), contents()->GetPrimaryMainFrame());
+  simulator->SetHasUserGesture(true);
+  simulator->Commit();
+
+  ContentAnalysisDelegate::Data data;
+  data.url = GURL(kTestUrl);
+
+  auto delegate = std::make_unique<MinimalTestContentAnalysisDelegate>(
+      contents(), std::move(data));
+
+  auto initial_referrer_chain = delegate->referrer_chain();
+  ASSERT_GT(initial_referrer_chain.size(), 0);
+  EXPECT_EQ(initial_referrer_chain[0].url(), kTestUrl);
+  EXPECT_EQ(initial_referrer_chain[0].referrer_url(),
+            "https://referrer.example.com/");
+
+  // Navigate to a new URL, effectively creating a new referrer chain for the
+  // WebContents.
+  const GURL new_url("https://example.com/");
+  auto simulator2 = content::NavigationSimulator::CreateRendererInitiated(
+      new_url, contents()->GetPrimaryMainFrame());
+  simulator2->SetHasUserGesture(true);
+  simulator2->Commit();
+
+  auto after_navigation_referrer_chain = delegate->referrer_chain();
+
+  EXPECT_EQ(initial_referrer_chain.size(),
+            after_navigation_referrer_chain.size());
+  for (int i = 0; i < initial_referrer_chain.size(); ++i) {
+    EXPECT_EQ(initial_referrer_chain[i].url(),
+              after_navigation_referrer_chain[i].url());
+    EXPECT_EQ(initial_referrer_chain[i].referrer_url(),
+              after_navigation_referrer_chain[i].referrer_url());
+  }
+
+  // Verify that the underlying SafeBrowsing observer recorded the new chain
+  // correctly.
+  safe_browsing::ReferrerChain current_referrer_chain;
+  safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+      GetForBrowserContext(profile())
+          ->IdentifyReferrerChainByEventURL(
+              new_url, sessions::SessionTabHelper::IdForTab(contents()),
+              2 /* user_gesture_limit */, &current_referrer_chain);
+
+  ASSERT_GT(current_referrer_chain.size(), 0);
+  EXPECT_EQ(current_referrer_chain[0].url(), "https://example.com/");
+  EXPECT_EQ(current_referrer_chain[0].referrer_url(), kTestUrl);
+}
+
 using ContentAnalysisDelegateFrameUrlChainTest = BaseTest;
 
 TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
        DefaultToFocusedFrameWhenInitiatingFrameOmitted) {
-  content::WebContentsTester::For(contents())->NavigateAndCommit(
-      GURL(kTestUrl));
+  content::WebContentsTester::For(contents())
+      ->NavigateAndCommit(GURL(kTestUrl));
 
   const GURL child_frame_url("https://subframe.example.com/");
   content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(
-          contents()->GetPrimaryMainFrame());
+      content::RenderFrameHostTester::For(contents()->GetPrimaryMainFrame());
 
   content::RenderFrameHost* child_frame =
       rfh_tester->AppendChild("child_frame");
@@ -1968,13 +2045,12 @@ TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
 
 TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
        UsesInitiatingFrameWhenMainFrameFocused) {
-  content::WebContentsTester::For(contents())->NavigateAndCommit(
-      GURL(kTestUrl));
+  content::WebContentsTester::For(contents())
+      ->NavigateAndCommit(GURL(kTestUrl));
 
   const GURL child_frame_url("https://subframe.example.com/");
   content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(
-          contents()->GetPrimaryMainFrame());
+      content::RenderFrameHostTester::For(contents()->GetPrimaryMainFrame());
 
   content::RenderFrameHost* child_frame =
       rfh_tester->AppendChild("child_frame");
@@ -2001,15 +2077,14 @@ TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
 
 TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
        UsesInitiatingFrameWhenSiblingFrameFocused) {
-  content::WebContentsTester::For(contents())->NavigateAndCommit(
-      GURL(kTestUrl));
+  content::WebContentsTester::For(contents())
+      ->NavigateAndCommit(GURL(kTestUrl));
 
   const GURL untrusted_frame_url("https://untrusted.example.com/");
   const GURL trusted_sibling_frame_url("https://trusted-sibling.example.com/");
 
   content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(
-          contents()->GetPrimaryMainFrame());
+      content::RenderFrameHostTester::For(contents()->GetPrimaryMainFrame());
 
   content::RenderFrameHost* untrusted_frame =
       rfh_tester->AppendChild("untrusted_frame");
@@ -2022,7 +2097,8 @@ TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
       content::NavigationSimulator::NavigateAndCommitFromDocument(
           trusted_sibling_frame_url, trusted_sibling_frame);
 
-  // Focus the trusted sibling frame, simulating focus shift to a trusted sibling.
+  // Focus the trusted sibling frame, simulating focus shift to a trusted
+  // sibling.
   content::FocusWebContentsOnFrame(contents(), trusted_sibling_frame);
 
   ContentAnalysisDelegate::Data data;
@@ -2035,7 +2111,8 @@ TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
       delegate->frame_url_chain();
 
-  // The chain must contain the untrusted initiating frame, NOT the focused sibling.
+  // The chain must contain the untrusted initiating frame, NOT the focused
+  // sibling.
   ASSERT_EQ(1, frame_urls.size());
   EXPECT_EQ(untrusted_frame_url.spec(), frame_urls[0]);
 }

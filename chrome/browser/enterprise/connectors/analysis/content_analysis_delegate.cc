@@ -557,6 +557,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   url_ = web_contents->GetLastCommittedURL();
   frame_url_chain_ =
       CollectFrameUrls(web_contents, access_point_, data_.initiating_frame_id);
+  referrer_chain_ = GetReferrerChain(url_, *web_contents);
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();
@@ -1210,10 +1211,7 @@ ContentAnalysisRequest::Reason ContentAnalysisDelegate::reason() const {
 
 google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
 ContentAnalysisDelegate::referrer_chain() const {
-  if (!web_contents_) {
-    return {};
-  }
-  return GetReferrerChain(url_, *web_contents_);
+  return referrer_chain_;
 }
 
 google::protobuf::RepeatedPtrField<std::string>
