@@ -1349,7 +1349,12 @@ tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
 }
 
 void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  GetAutofillMessageController()->Show(
+      AutofillMessageModel::CreateForEmailVerified(
+          issuer,
+          base::BindOnce(&ShowAutofillProfileSettings, web_contents())));
+#else
   // The toast is only supported on desktop for now, since Android uses
   // snackbars instead.
   if (ToastController* toast_controller = GetToastController()) {

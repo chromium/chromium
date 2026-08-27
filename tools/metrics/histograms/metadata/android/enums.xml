@@ -1595,6 +1595,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="ImmersivePlaybackConfirmation"/>
   <int value="78" label="IntranetRedirect"/>
   <int value="79" label="PasswordSavedConfirmation"/>
+  <int value="80" label="EmailVerified"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

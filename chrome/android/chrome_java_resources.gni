@@ -333,6 +333,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_incognito_reauth_promo_icon.xml",
   "java/res/drawable/ic_library_add_24dp.xml",
   "java/res/drawable/ic_manage_search_16dp.xml",
+  "java/res/drawable/ic_mark_email_read_24dp.xml",
   "java/res/drawable/ic_minimize.xml",
   "java/res/drawable/ic_mobile_friendly_24dp.xml",
   "java/res/drawable/ic_more_tools_24dp.xml",

@@ -80,6 +80,10 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ADDRESS,
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS,
                     R.drawable.ic_cloud_upload_24dp)
 
+// Icon displayed in the email verification message on Android.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_EMAIL_VERIFIED,
+                    R.drawable.ic_mark_email_read_24dp)
+
 // We use PNG files for the following images.
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)

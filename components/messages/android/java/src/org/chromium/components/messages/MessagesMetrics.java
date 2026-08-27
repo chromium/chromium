@@ -236,6 +236,8 @@ public class MessagesMetrics {
                 return "IntranetRedirect";
             case MessageIdentifier.PASSWORD_SAVED_CONFIRMATION:
                 return "PasswordSavedConfirmation";
+            case MessageIdentifier.EMAIL_VERIFIED:
+                return "EmailVerified";
             default:
                 return "Unknown";
         }
