@@ -8803,6 +8803,11 @@ inline constexpr char kAiOverlayDialogName[] = "AI Overlay Dialog";
 inline constexpr char kAiOverlayDialogDescription[] =
     "Enables the AI overlay dialog.";
 
+inline constexpr char kAiOverlayDisableNavigationContextName[] =
+    "AI Overlay Disable Navigation Context";
+inline constexpr char kAiOverlayDisableNavigationContextDescription[] =
+    "Disables sharing navigation history.";
+
 inline constexpr char kGlicName[] = "Glic";
 inline constexpr char kGlicDescription[] = "Enables glic";
 

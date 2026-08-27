@@ -12929,6 +12929,7 @@ from previous Chrome versions.
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
   <int value="-556166412"
       label="OmniboxDocumentProviderNoSyncRequirement:enabled"/>
+  <int value="-556136193" label="AiOverlayDisableNavigationContext:enabled"/>
   <int value="-556021689" label="ArcEnableVirtioBlkForData:disabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-554140610" label="NtpRealboxCr23All:disabled"/>
@@ -17266,6 +17267,7 @@ from previous Chrome versions.
       label="AutofillReintroduceHybridPasskeyDropdownItem:enabled"/>
   <int value="785159660" label="NotificationsIgnoreRequireInteraction:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
+  <int value="785757258" label="AiOverlayDisableNavigationContext:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"
       label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>

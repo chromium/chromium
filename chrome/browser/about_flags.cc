@@ -10935,6 +10935,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
      flag_descriptions::kAiOverlayDialogDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAiOverlayDialog)},
+    {"ai-overlay-disable-navigation-context",
+     flag_descriptions::kAiOverlayDisableNavigationContextName,
+     flag_descriptions::kAiOverlayDisableNavigationContextDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAiOverlayDisableNavigationContext)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
