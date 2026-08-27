@@ -22,12 +22,7 @@ namespace tabs {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kTabSearchPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kOrganizerPanelPinnedToTabstrip, true);
-  registry->RegisterBooleanPref(
-      prefs::kEverythingMenuPinnedToTabstrip,
-      !base::FeatureList::IsEnabled(
-          tabs::kMigrateEverythingMenuPinnedToTabstrip));
-  registry->RegisterBooleanPref(
-      prefs::kEverythingMenuPinnedToTabstripMigrationComplete, false);
+  registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kTabScrollButtonsPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
   registry->RegisterBooleanPref(
@@ -49,28 +44,6 @@ void MigrateHoverCardMemoryPref(PrefService* local_prefs) {
   local_prefs->SetBoolean(prefs::kHoverCardMemoryUsageEnabled, false);
   local_prefs->SetBoolean(prefs::kHoverCardMemoryUsageDisableMigrationComplete,
                           true);
-}
-
-void MigrateEverythingMenuPinnedToTabstripPref(PrefService* profile_prefs) {
-  // If the migration hasn't started yet or is complete, return early.
-  if (!base::FeatureList::IsEnabled(
-          tabs::kMigrateEverythingMenuPinnedToTabstrip) ||
-      profile_prefs->GetBoolean(
-          prefs::kEverythingMenuPinnedToTabstripMigrationComplete)) {
-    return;
-  }
-
-  // If a user has previously enabled vertical tabs and hasn't changed the value
-  // of `prefs::kEverythingMenuPinnedToTabstrip` then set the value to be true.
-  // This is needed because the default value of the pref is changing to false
-  // for users who haven't seen the pinned button yet.
-  if (!profile_prefs->HasPrefPath(prefs::kEverythingMenuPinnedToTabstrip) &&
-      profile_prefs->GetBoolean(prefs::kVerticalTabsEnabledFirstTime)) {
-    profile_prefs->SetBoolean(prefs::kEverythingMenuPinnedToTabstrip, true);
-  }
-
-  profile_prefs->SetBoolean(
-      prefs::kEverythingMenuPinnedToTabstripMigrationComplete, true);
 }
 
 TabSearchPosition GetTabSearchPosition(

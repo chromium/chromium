@@ -1004,6 +1004,12 @@ constexpr char kTrackingProtection3pcdEnabled[] =
 constexpr char kBlockAll3pcToggleEnabled[] =
     "tracking_protection.block_all_3pc_toggle_enabled";
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 08/2026.
+constexpr char kEverythingMenuPinnedToTabstripMigrationComplete[] =
+    "everything_menu.pinned_to_tabstrip_migration_complete";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 07/2026.
 inline constexpr char kPluginVmAllowed[] = "plugin_vm.allowed";
@@ -1424,6 +1430,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2026.
   registry->RegisterStringPref(kUkmLoggingUserSecret, std::string());
   registry->RegisterTimePref(kUkmLoggingUserSecretCreationTime, base::Time());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2026.
+  registry->RegisterBooleanPref(
+      kEverythingMenuPinnedToTabstripMigrationComplete, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2701,11 +2713,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kMV2DeprecationDisabledAcknowledgedGlobally);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 07/2026.
-  tabs::MigrateEverythingMenuPinnedToTabstripPref(profile_prefs);
-#endif
-
   // Added 07/2026.
   profile_prefs->ClearPref(kObsoleteManagementProfileLastLogTime);
 
@@ -2771,6 +2778,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2026.
   profile_prefs->ClearPref(kUkmLoggingUserSecret);
   profile_prefs->ClearPref(kUkmLoggingUserSecretCreationTime);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 08/2026.
+  profile_prefs->ClearPref(kEverythingMenuPinnedToTabstripMigrationComplete);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
