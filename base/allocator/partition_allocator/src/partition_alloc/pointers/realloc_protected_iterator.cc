@@ -21,7 +21,8 @@
 
 namespace base::internal {
 
-WrappedBackingSlot WrapBackingSlot([[maybe_unused]] const void* p) {
+partition_alloc::SlotAddressAndSize WrapBackingSlot(
+    [[maybe_unused]] const void* p) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (!p) {
     return {};
@@ -30,27 +31,25 @@ WrappedBackingSlot WrapBackingSlot([[maybe_unused]] const void* p) {
   if (!partition_alloc::IsManagedByPartitionAllocBRPPool(addr)) {
     return {};
   }
-  auto [slot_start, slot_size] =
-      partition_alloc::SlotAddressAndSize::FromBRPPool(addr);
+  auto slot_and_size = partition_alloc::SlotAddressAndSize::FromBRPPool(addr);
   partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-      partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
+      slot_and_size.slot_start, slot_and_size.size)
       ->AcquireFromUnprotectedPtr();
-  return {slot_start.value(), slot_size};
+  return slot_and_size;
 #else
   return {};
 #endif
 }
 
-void UnwrapBackingSlot([[maybe_unused]] WrappedBackingSlot slot) {
+void UnwrapBackingSlot(
+    [[maybe_unused]] partition_alloc::SlotAddressAndSize slot) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (!slot) {
+  if (!slot.slot_start) {
     return;
   }
-  auto untagged =
-      partition_alloc::internal::UntaggedSlotStart::Unchecked(slot.slot_start);
   auto* metadata =
       partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-          untagged, slot.slot_size);
+          slot.slot_start, slot.size);
 
   // Security check: if the backing was freed while the wrapper held its ref,
   // the slot's "allocated" bit in InSlotMetadata is clear. That means the
@@ -61,8 +60,8 @@ void UnwrapBackingSlot([[maybe_unused]] WrappedBackingSlot slot) {
   PA_BASE_CHECK(metadata->IsAlive());
 
   if (metadata->ReleaseFromUnprotectedPtr()) {
-    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(untagged,
-                                                           slot.slot_size);
+    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot.slot_start,
+                                                           slot.size);
   }
 #endif
 }
