@@ -1161,7 +1161,7 @@ bool ShouldHonorPolicies() {
 
   if (management_check_required) {
     return policy::ManagementServiceFactory::GetForPlatform()
-               ->GetManagementAuthorityTrustworthiness() >=
+               ->GetManagementAuthorityTrustworthinessForPolicyLoading() >=
            policy::ManagementAuthorityTrustworthiness::TRUSTED;
   }
   return true;
