@@ -63,6 +63,7 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/ProfileStore.java",
     "java/src/com/android/webview/chromium/ProfileWebViewPrefetchCallback.java",
     "java/src/com/android/webview/chromium/SafeBrowsingResponseAdapter.java",
+    "java/src/com/android/webview/chromium/SelectionActionMenuClientAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerClientAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerControllerAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerSettingsAdapter.java",

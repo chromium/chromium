@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.webkit.CookieManager;
+import android.webkit.SelectionActionMenuClient;
 import android.webkit.WebIconDatabase;
 import android.webkit.WebSettings;
 import android.webkit.WebViewDatabase;
@@ -171,10 +172,16 @@ public class WebViewChromiumAwInit {
 
                 @Override
                 public @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient() {
-                    AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-                    return delegate != null
-                            ? delegate.getSelectionActionMenuClient(mFactory.getWebViewDelegate())
-                            : null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                        SelectionActionMenuClient client =
+                                mFactory.getWebViewDelegate()
+                                        .getSelectionActionMenuClient(
+                                                ContextUtils.getApplicationContext());
+                        if (client != null) {
+                            return new SelectionActionMenuClientAdapter(client);
+                        }
+                    }
+                    return null;
                 }
 
                 @Override
