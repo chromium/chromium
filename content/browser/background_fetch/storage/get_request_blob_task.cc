@@ -70,8 +70,8 @@ void GetRequestBlobTask::DidMatchRequest(
   }
 
   auto& keys = result.value();
-  DCHECK_EQ(keys.size(), 1u);
-  DCHECK(keys[0]->blob);
+  CHECK_EQ(keys.size(), 1u, base::NotFatalUntil::M158);
+  CHECK(keys[0]->blob, base::NotFatalUntil::M158);
 
   blob_ = std::move(keys[0]->blob);
   FinishWithError(blink::mojom::BackgroundFetchError::NONE);

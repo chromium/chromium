@@ -26,8 +26,8 @@ const char kAnyOriginValue[] = "*";
 bool ParseOriginListHeader(const std::string& value,
                            bool* any_origin,
                            std::set<url::Origin>* origins) {
-  DCHECK(any_origin);
-  DCHECK(origins);
+  CHECK(any_origin, base::NotFatalUntil::M158);
+  CHECK(origins, base::NotFatalUntil::M158);
 
   if (value == kAnyOriginValue) {
     *any_origin = true;
@@ -55,7 +55,7 @@ bool ParseOriginListHeader(const std::string& value,
 BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
     const url::Origin& source_origin,
     const BackgroundFetchRequestInfo& request) {
-  DCHECK(!request.GetURLChain().empty());
+  CHECK(!request.GetURLChain().empty(), base::NotFatalUntil::M158);
 
   const GURL& final_url = request.GetURLChain().back();
   const auto& response_header_map = request.GetResponseHeaders();

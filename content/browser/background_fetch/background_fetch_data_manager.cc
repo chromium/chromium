@@ -47,13 +47,13 @@ BackgroundFetchDataManager::BackgroundFetchDataManager(
       storage_partition_(std::move(storage_partition)),
       quota_manager_proxy_(std::move(quota_manager_proxy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(storage_partition_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK(storage_partition_, base::NotFatalUntil::M158);
 
   // Store the blob storage context for the given |browser_context|.
   blob_storage_context_ = base::WrapRefCounted(
       ChromeBlobStorageContext::GetFor(storage_partition_->browser_context()));
-  DCHECK(blob_storage_context_);
+  CHECK(blob_storage_context_, base::NotFatalUntil::M158);
 }
 
 void BackgroundFetchDataManager::Initialize() {
@@ -112,7 +112,7 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
       remote.BindNewPipeAndPassReceiver());
 
   auto result = cache_storage_remote_map_.emplace(unique_id, std::move(remote));
-  DCHECK(result.second);
+  CHECK(result.second, base::NotFatalUntil::M158);
   return result.first->second;
 }
 
@@ -308,8 +308,8 @@ void BackgroundFetchDataManager::OnTaskFinished(
     background_fetch::DatabaseTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!database_tasks_.empty());
-  DCHECK_EQ(database_tasks_.front().get(), task);
+  CHECK(!database_tasks_.empty(), base::NotFatalUntil::M158);
+  CHECK_EQ(database_tasks_.front().get(), task, base::NotFatalUntil::M158);
 
   database_tasks_.pop();
   if (!database_tasks_.empty())

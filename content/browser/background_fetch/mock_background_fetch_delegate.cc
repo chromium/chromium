@@ -38,7 +38,7 @@ MockBackgroundFetchDelegate::TestResponseBuilder&
 MockBackgroundFetchDelegate::TestResponseBuilder::AddResponseHeader(
     const std::string& name,
     const std::string& value) {
-  DCHECK(response_);
+  CHECK(response_, base::NotFatalUntil::M158);
   response_->headers->AddHeader(name, value);
   return *this;
 }
@@ -46,7 +46,7 @@ MockBackgroundFetchDelegate::TestResponseBuilder::AddResponseHeader(
 MockBackgroundFetchDelegate::TestResponseBuilder&
 MockBackgroundFetchDelegate::TestResponseBuilder::SetResponseData(
     std::string data) {
-  DCHECK(response_);
+  CHECK(response_, base::NotFatalUntil::M158);
   response_->data.swap(data);
   return *this;
 }
@@ -85,7 +85,7 @@ void MockBackgroundFetchDelegate::DownloadUrl(
     const net::HttpRequestHeaders& headers,
     bool has_request_body,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK(!seen_guids_.count(guid));
+  CHECK(!seen_guids_.count(guid), base::NotFatalUntil::M158);
 
   download_guid_to_job_id_map_[guid] = job_unique_id;
   url_loader_factories_[job_unique_id] = std::move(url_loader_factory);
@@ -198,7 +198,7 @@ void MockBackgroundFetchDelegate::UpdateUI(
 void MockBackgroundFetchDelegate::RegisterResponse(
     const GURL& url,
     std::unique_ptr<TestResponse> response) {
-  DCHECK_EQ(0u, url_responses_.count(url));
+  CHECK_EQ(0u, url_responses_.count(url), base::NotFatalUntil::M158);
   url_responses_[url] = std::move(response);
 }
 

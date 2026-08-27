@@ -47,7 +47,7 @@ void GetRegistrationTask::FinishWithError(
   BackgroundFetchRegistrationId registration_id;
 
   if (error == blink::mojom::BackgroundFetchError::NONE) {
-    DCHECK(metadata_proto_);
+    CHECK(metadata_proto_, base::NotFatalUntil::M158);
 
     bool converted = ToBackgroundFetchRegistration(*metadata_proto_,
                                                    registration_data.get());

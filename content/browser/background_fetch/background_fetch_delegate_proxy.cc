@@ -31,7 +31,7 @@ namespace content {
 BackgroundFetchDelegateProxy::BackgroundFetchDelegateProxy(
     base::WeakPtr<StoragePartitionImpl> storage_partition)
     : storage_partition_(std::move(storage_partition)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -97,7 +97,7 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
         CreatePermissionDescriptorForPermissionType(
             blink::PermissionType::BACKGROUND_FETCH);
     if (rfh) {
-      DCHECK(origin == rfh->GetLastCommittedOrigin());
+      CHECK(origin == rfh->GetLastCommittedOrigin(), base::NotFatalUntil::M158);
       permission_status =
           controller->GetPermissionStatusForCurrentDocument(descriptor, rfh);
     } else if (rph) {
@@ -125,7 +125,8 @@ void BackgroundFetchDelegateProxy::CreateDownloadJob(
     std::unique_ptr<BackgroundFetchDescription> fetch_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!controller_map_.count(fetch_description->job_unique_id));
+  CHECK(!controller_map_.count(fetch_description->job_unique_id),
+        base::NotFatalUntil::M158);
   controller_map_[fetch_description->job_unique_id] = std::move(controller);
 
   auto* delegate = GetDelegate();
@@ -141,9 +142,9 @@ void BackgroundFetchDelegateProxy::StartRequest(
     const scoped_refptr<BackgroundFetchRequestInfo>& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(controller_map_.count(job_unique_id));
-  DCHECK(request);
-  DCHECK(!request->download_guid().empty());
+  CHECK(controller_map_.count(job_unique_id), base::NotFatalUntil::M158);
+  CHECK(request, base::NotFatalUntil::M158);
+  CHECK(!request->download_guid().empty(), base::NotFatalUntil::M158);
 
   auto* delegate = GetDelegate();
   if (!delegate)
@@ -213,7 +214,8 @@ void BackgroundFetchDelegateProxy::UpdateUI(
         update_ui_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!update_ui_callback_map_.count(job_unique_id));
+  CHECK(!update_ui_callback_map_.count(job_unique_id),
+        base::NotFatalUntil::M158);
   update_ui_callback_map_.emplace(job_unique_id, std::move(update_ui_callback));
 
   if (auto* delegate = GetDelegate())
@@ -241,11 +243,11 @@ void BackgroundFetchDelegateProxy::OnJobCancelled(
     const std::string& download_guid,
     blink::mojom::BackgroundFetchFailureReason reason_to_abort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(
-      reason_to_abort ==
-          blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI ||
-      reason_to_abort ==
-          blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
+  CHECK(reason_to_abort ==
+                blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI ||
+            reason_to_abort == blink::mojom::BackgroundFetchFailureReason::
+                                   DOWNLOAD_TOTAL_EXCEEDED,
+        base::NotFatalUntil::M158);
 
   auto it = controller_map_.find(job_unique_id);
   if (it == controller_map_.end())
@@ -284,7 +286,7 @@ void BackgroundFetchDelegateProxy::OnDownloadStarted(
 void BackgroundFetchDelegateProxy::OnUIActivated(
     const std::string& job_unique_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(click_event_dispatcher_callback_);
+  CHECK(click_event_dispatcher_callback_, base::NotFatalUntil::M158);
   click_event_dispatcher_callback_.Run(job_unique_id);
 }
 
@@ -295,7 +297,7 @@ void BackgroundFetchDelegateProxy::OnUIUpdated(
   if (it == update_ui_callback_map_.end())
     return;
 
-  DCHECK(it->second);
+  CHECK(it->second, base::NotFatalUntil::M158);
   std::move(it->second).Run(blink::mojom::BackgroundFetchError::NONE);
   update_ui_callback_map_.erase(it);
 }
@@ -373,7 +375,7 @@ PermissionController* BackgroundFetchDelegateProxy::GetPermissionController() {
 void BackgroundFetchDelegateProxy::DidGetPermissionFromDownloadRequestLimiter(
     GetPermissionForOriginCallback callback,
     bool has_permission) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M158);
   std::move(callback).Run(has_permission
                               ? content::BackgroundFetchPermission::ALLOWED
                               : content::BackgroundFetchPermission::BLOCKED);

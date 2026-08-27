@@ -51,20 +51,20 @@ BackgroundFetchEventDispatcher::BackgroundFetchEventDispatcher(
     : background_fetch_context_(background_fetch_context),
       service_worker_context_(std::move(service_worker_context)),
       devtools_context_(&devtools_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(background_fetch_context_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK(background_fetch_context_, base::NotFatalUntil::M158);
 }
 
 BackgroundFetchEventDispatcher::~BackgroundFetchEventDispatcher() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 }
 
 void BackgroundFetchEventDispatcher::DispatchBackgroundFetchCompletionEvent(
     const BackgroundFetchRegistrationId& registration_id,
     blink::mojom::BackgroundFetchRegistrationDataPtr registration_data,
     base::OnceClosure finished_closure) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(registration_data);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK(registration_data, base::NotFatalUntil::M158);
 
   auto registration = blink::mojom::BackgroundFetchRegistration::New(
       std::move(registration_data),

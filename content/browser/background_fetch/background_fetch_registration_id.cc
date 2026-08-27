@@ -24,9 +24,9 @@ BackgroundFetchRegistrationId::BackgroundFetchRegistrationId(
       storage_key_(storage_key),
       developer_id_(developer_id),
       unique_id_(unique_id) {
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
-            service_worker_registration_id);
-  DCHECK(!unique_id_.empty());
+  CHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
+           service_worker_registration_id, base::NotFatalUntil::M158);
+  CHECK(!unique_id_.empty(), base::NotFatalUntil::M158);
 }
 
 BackgroundFetchRegistrationId::BackgroundFetchRegistrationId(

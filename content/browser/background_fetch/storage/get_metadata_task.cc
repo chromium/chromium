@@ -43,7 +43,7 @@ void GetMetadataTask::DidGetUniqueId(const std::vector<std::string>& data,
       FinishWithError(blink::mojom::BackgroundFetchError::INVALID_ID);
       return;
     case DatabaseStatus::kOk:
-      DCHECK_EQ(1u, data.size());
+      CHECK_EQ(1u, data.size(), base::NotFatalUntil::M158);
       service_worker_context()->GetRegistrationUserData(
           service_worker_registration_id_, {RegistrationKey(data[0])},
           base::BindOnce(&GetMetadataTask::DidGetMetadata,
@@ -64,7 +64,7 @@ void GetMetadataTask::DidGetMetadata(const std::vector<std::string>& data,
       FinishWithError(blink::mojom::BackgroundFetchError::STORAGE_ERROR);
       return;
     case DatabaseStatus::kOk:
-      DCHECK_EQ(1u, data.size());
+      CHECK_EQ(1u, data.size(), base::NotFatalUntil::M158);
       ProcessMetadata(data[0]);
       return;
     case DatabaseStatus::kFailed:

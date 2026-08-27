@@ -107,7 +107,7 @@ BackgroundFetchJobController::BackgroundFetchJobController(
       upload_total_(upload_total),
       progress_callback_(std::move(progress_callback)),
       finished_callback_(std::move(finished_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 }
 
 void BackgroundFetchJobController::InitializeRequestStatus(
@@ -117,11 +117,11 @@ void BackgroundFetchJobController::InitializeRequestStatus(
         active_fetch_requests,
     bool start_paused,
     std::optional<net::IsolationInfo> isolation_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   // Don't allow double initialization.
-  DCHECK_GT(total_downloads, 0);
-  DCHECK_EQ(total_downloads_, 0);
+  CHECK_GT(total_downloads, 0, base::NotFatalUntil::M158);
+  CHECK_EQ(total_downloads_, 0, base::NotFatalUntil::M158);
 
   completed_downloads_ = completed_downloads;
   total_downloads_ = total_downloads;
@@ -148,7 +148,7 @@ void BackgroundFetchJobController::InitializeRequestStatus(
 }
 
 BackgroundFetchJobController::~BackgroundFetchJobController() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 }
 
 bool BackgroundFetchJobController::HasMoreRequests() {
@@ -158,10 +158,10 @@ bool BackgroundFetchJobController::HasMoreRequests() {
 void BackgroundFetchJobController::StartRequest(
     scoped_refptr<BackgroundFetchRequestInfo> request,
     RequestFinishedCallback request_finished_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_LT(completed_downloads_, total_downloads_);
-  DCHECK(request_finished_callback);
-  DCHECK(request);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  CHECK_LT(completed_downloads_, total_downloads_, base::NotFatalUntil::M158);
+  CHECK(request_finished_callback, base::NotFatalUntil::M158);
+  CHECK(request, base::NotFatalUntil::M158);
 
   active_request_finished_callbacks_.emplace(
       request->download_guid(), std::move(request_finished_callback));
@@ -185,11 +185,11 @@ void BackgroundFetchJobController::StartRequest(
 void BackgroundFetchJobController::DidStartRequest(
     const std::string& guid,
     std::unique_ptr<BackgroundFetchResponse> response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  DCHECK(active_request_map_.count(guid));
+  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
   const auto& request = active_request_map_[guid];
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M158);
 
   request->PopulateWithResponse(std::move(response));
 
@@ -204,11 +204,11 @@ void BackgroundFetchJobController::DidStartRequest(
 void BackgroundFetchJobController::DidUpdateRequest(const std::string& guid,
                                                     uint64_t bytes_uploaded,
                                                     uint64_t bytes_downloaded) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  DCHECK(active_request_map_.count(guid));
+  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
   const auto& request = active_request_map_[guid];
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M158);
   InProgressRequestBytes& in_progress_bytes = active_bytes_map_[guid];
 
   // Don't send download updates so the size is not leaked.
@@ -233,11 +233,11 @@ void BackgroundFetchJobController::DidUpdateRequest(const std::string& guid,
 void BackgroundFetchJobController::DidCompleteRequest(
     const std::string& guid,
     std::unique_ptr<BackgroundFetchResult> result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
-  DCHECK(active_request_map_.count(guid));
+  CHECK(active_request_map_.count(guid), base::NotFatalUntil::M158);
   const auto& request = active_request_map_[guid];
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M158);
 
   request->SetResult(std::move(result));
 
@@ -305,8 +305,9 @@ void BackgroundFetchJobController::Abort(
 void BackgroundFetchJobController::Finish(
     BackgroundFetchFailureReason reason_to_abort,
     ErrorCallback callback) {
-  DCHECK(reason_to_abort != BackgroundFetchFailureReason::NONE ||
-         !HasMoreRequests());
+  CHECK(reason_to_abort != BackgroundFetchFailureReason::NONE ||
+            !HasMoreRequests(),
+        base::NotFatalUntil::M158);
 
   // Race conditions make it possible for a controller to finish twice. This
   // should be removed when the scheduler starts owning the controllers.
@@ -322,7 +323,7 @@ void BackgroundFetchJobController::Finish(
 void BackgroundFetchJobController::PopNextRequest(
     RequestStartedCallback request_started_callback,
     RequestFinishedCallback request_finished_callback) {
-  DCHECK(HasMoreRequests());
+  CHECK(HasMoreRequests(), base::NotFatalUntil::M158);
 
   ++pending_downloads_;
   data_manager_->PopNextRequest(
@@ -421,7 +422,7 @@ void BackgroundFetchJobController::InitializeUrlLoaderFactory(
   }
 
   bool bypass_redirect_checks = false;
-  DCHECK(!url_loader_factory_);
+  CHECK(!url_loader_factory_, base::NotFatalUntil::M158);
   url_loader_factory_ = url_loader_factory::Create(
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
       url_loader_factory::TerminalParams::ForNetworkContext(

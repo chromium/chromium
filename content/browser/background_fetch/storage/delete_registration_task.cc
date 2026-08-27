@@ -30,7 +30,7 @@ void DCheckRegistrationNotActive(const std::string& unique_id,
                                  blink::ServiceWorkerStatusCode status) {
   switch (ToDatabaseStatus(status)) {
     case DatabaseStatus::kOk:
-      DCHECK_EQ(1u, data.size());
+      CHECK_EQ(1u, data.size(), base::NotFatalUntil::M158);
       DCHECK_NE(unique_id, data[0])
           << "Must call MarkRegistrationForDeletion before DeleteRegistration";
       return;
@@ -88,7 +88,7 @@ void DeleteRegistrationTask::DidGetRegistration(
     blink::ServiceWorkerStatusCode status) {
 #if DCHECK_IS_ON()
   if (ToDatabaseStatus(status) == DatabaseStatus::kOk) {
-    DCHECK_EQ(1u, data.size());
+    CHECK_EQ(1u, data.size(), base::NotFatalUntil::M158);
     proto::BackgroundFetchMetadata metadata_proto;
     if (metadata_proto.ParseFromString(data[0]) &&
         metadata_proto.registration().has_developer_id()) {
