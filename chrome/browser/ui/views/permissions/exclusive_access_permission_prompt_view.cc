@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExclusiveAccessPermissionPromptView,
                                       kMainViewId);

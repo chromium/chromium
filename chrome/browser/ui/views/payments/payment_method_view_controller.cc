@@ -23,6 +23,8 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace payments {

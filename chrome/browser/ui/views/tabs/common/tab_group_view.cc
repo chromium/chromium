@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"

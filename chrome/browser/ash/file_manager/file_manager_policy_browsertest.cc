@@ -52,6 +52,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textarea/textarea.h"
 
 using file_manager::test::TestCase;

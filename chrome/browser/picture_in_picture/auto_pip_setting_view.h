@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 // Creates and manages the content setting |BubbleDialogDelegate| for
 // autopip.  This view contains the setting optioms and text displayed to the

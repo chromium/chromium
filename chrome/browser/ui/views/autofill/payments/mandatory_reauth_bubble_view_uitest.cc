@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 

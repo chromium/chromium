@@ -27,6 +27,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"

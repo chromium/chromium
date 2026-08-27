@@ -27,6 +27,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"

@@ -30,6 +30,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 
 using content::RenderFrameHost;

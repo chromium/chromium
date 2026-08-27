@@ -40,6 +40,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/controls/menu/menu_runner.h"

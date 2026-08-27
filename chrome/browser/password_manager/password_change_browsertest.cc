@@ -74,6 +74,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "url/origin.h"
 

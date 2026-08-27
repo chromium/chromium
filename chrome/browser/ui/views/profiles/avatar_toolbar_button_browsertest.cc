@@ -115,6 +115,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"

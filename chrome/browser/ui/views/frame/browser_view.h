@@ -115,6 +115,7 @@ enum class Channel;
 }
 
 namespace views {
+class LabelButton;
 class WebView;
 }  // namespace views
 

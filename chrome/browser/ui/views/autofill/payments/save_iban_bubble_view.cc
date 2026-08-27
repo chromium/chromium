@@ -19,6 +19,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"

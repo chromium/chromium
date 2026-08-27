@@ -69,6 +69,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"

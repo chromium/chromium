@@ -45,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"

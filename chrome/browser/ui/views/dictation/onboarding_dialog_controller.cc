@@ -34,6 +34,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"

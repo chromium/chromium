@@ -19,6 +19,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/dialog_delegate.h"
 

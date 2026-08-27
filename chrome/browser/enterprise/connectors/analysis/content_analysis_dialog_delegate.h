@@ -18,6 +18,7 @@
 namespace views {
 class BoundsAnimator;
 class BoxLayoutView;
+class Label;
 class Link;
 class StyledLabel;
 class TableLayoutView;

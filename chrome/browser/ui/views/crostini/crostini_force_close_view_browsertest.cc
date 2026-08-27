@@ -16,6 +16,7 @@
 #include "components/exo/wm_helper.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 namespace crostini {
 namespace {

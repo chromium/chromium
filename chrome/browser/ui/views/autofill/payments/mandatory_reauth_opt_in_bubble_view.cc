@@ -11,6 +11,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 

@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 
 #if PAIR_BLUETOOTH_ON_DEMAND()

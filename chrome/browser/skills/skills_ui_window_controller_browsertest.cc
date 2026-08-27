@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 

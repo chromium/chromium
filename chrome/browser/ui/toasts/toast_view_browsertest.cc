@@ -19,6 +19,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace {

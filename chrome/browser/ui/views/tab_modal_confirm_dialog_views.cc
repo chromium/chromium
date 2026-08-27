@@ -18,6 +18,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 

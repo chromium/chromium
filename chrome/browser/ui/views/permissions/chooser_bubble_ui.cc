@@ -27,6 +27,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"

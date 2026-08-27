@@ -45,6 +45,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"

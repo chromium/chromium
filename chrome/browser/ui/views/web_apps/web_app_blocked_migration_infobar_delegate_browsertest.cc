@@ -35,6 +35,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 

@@ -64,6 +64,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textarea/textarea.h"

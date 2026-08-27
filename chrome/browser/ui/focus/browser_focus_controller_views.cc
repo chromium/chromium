@@ -23,6 +23,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"

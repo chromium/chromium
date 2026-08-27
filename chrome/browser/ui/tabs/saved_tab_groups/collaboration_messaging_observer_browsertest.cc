@@ -38,6 +38,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"

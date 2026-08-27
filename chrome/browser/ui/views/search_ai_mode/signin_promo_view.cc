@@ -23,6 +23,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {

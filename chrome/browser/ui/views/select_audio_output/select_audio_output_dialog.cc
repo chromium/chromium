@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
 SelectAudioOutputDialog::SelectAudioOutputDialog(

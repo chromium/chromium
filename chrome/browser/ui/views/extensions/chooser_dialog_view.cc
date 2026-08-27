@@ -17,6 +17,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 ChooserDialogView::ChooserDialogView(
     std::unique_ptr<permissions::ChooserController> chooser_controller) {

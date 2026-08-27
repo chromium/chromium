@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {

@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"

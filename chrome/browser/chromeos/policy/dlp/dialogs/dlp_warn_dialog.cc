@@ -19,6 +19,9 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace policy {

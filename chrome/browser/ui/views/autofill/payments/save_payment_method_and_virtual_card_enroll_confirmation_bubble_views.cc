@@ -15,6 +15,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace autofill {

@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 
 using base::UserMetricsAction;

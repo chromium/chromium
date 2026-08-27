@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 

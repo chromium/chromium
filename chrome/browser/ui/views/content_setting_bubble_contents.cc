@@ -43,6 +43,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"

@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
