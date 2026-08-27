@@ -60,7 +60,7 @@ class WebAppHeaderLayoutMediator
 
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
-    private final int mHeaderButtonHeight;
+    private final int mHeaderButtonSize;
     private @Nullable AppHeaderState mCurrentHeaderState;
     private final SettableMonotonicObservableSupplier<Integer> mAppHeaderUnoccludedWidthSupplier =
             ObservableSuppliers.createMonotonic();
@@ -101,7 +101,7 @@ class WebAppHeaderLayoutMediator
             Supplier<List<Rect>> headerControlPositionSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources,
-            int headerButtonHeight,
+            int headerButtonSize,
             int displayMode,
             Callback<Boolean> setHeaderAsOverlayCallback,
             @Nullable String clientPackageName) {
@@ -111,7 +111,7 @@ class WebAppHeaderLayoutMediator
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
         mHeaderControlPositionSupplier = headerControlPositionSupplier;
-        mHeaderButtonHeight = headerButtonHeight;
+        mHeaderButtonSize = headerButtonSize;
         mDisplayMode = displayMode;
         mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
         mHeaderAsOverlay = mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY;
@@ -256,7 +256,7 @@ class WebAppHeaderLayoutMediator
         }
 
         final int headerHeight =
-                Math.min(mCurrentHeaderState.getCaptionControlsHeight(), mHeaderButtonHeight);
+                Math.min(mCurrentHeaderState.getCaptionControlsHeight(), mHeaderButtonSize);
 
         Rect cutoutRect =
                 new Rect(
@@ -322,8 +322,8 @@ class WebAppHeaderLayoutMediator
         int controlsTopOffset = mCurrentHeaderState.getCaptionControlsTopOffset();
         int captionControlsHeight = mCurrentHeaderState.getCaptionControlsHeight();
 
-        if (captionControlsHeight < mHeaderButtonHeight) {
-            mButtonBottomInset = mHeaderButtonHeight - captionControlsHeight;
+        if (captionControlsHeight < mHeaderButtonSize) {
+            mButtonBottomInset = mHeaderButtonSize - captionControlsHeight;
         } else {
             mButtonBottomInset = 0;
         }

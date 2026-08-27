@@ -182,6 +182,11 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal</item>
         <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical</item>
 
+        <!-- Web App Header button dimensions. -->
+        <item name="webAppHeaderButtonSize">
+            @dimen/header_button_size
+        </item>
+
         <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
         <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height</item>
@@ -384,6 +389,11 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton.DesktopDensity</item>
         <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton.DesktopDensity</item>
+
+        <!-- Web App Header button dimensions. -->
+        <item name="webAppHeaderButtonSize">
+            @dimen/header_button_size_desktop
+        </item>
 
         <!-- Search box attributes -->
         <item name="searchBoxActionButtonMargin">@dimen/ntp_search_box_action_button_margin</item>

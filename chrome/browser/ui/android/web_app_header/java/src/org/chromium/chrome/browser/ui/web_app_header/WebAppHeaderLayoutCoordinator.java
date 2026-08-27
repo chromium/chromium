@@ -69,11 +69,10 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.url.GURL;
@@ -103,8 +102,8 @@ public class WebAppHeaderLayoutCoordinator
     private static final int ANIMATION_PAUSE_DELAY_MS = 2500;
     private static final int ANIMATION_DURATION_MS = 800;
 
-    private int mHeaderControlButtonWidthDp;
-    private int mHeaderButtonPaddingDp;
+    private int mHeaderControlButtonWidthPx;
+    private int mHeaderButtonPaddingPx;
 
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable WebAppHeaderLayout mView;
@@ -268,15 +267,19 @@ public class WebAppHeaderLayoutCoordinator
         if (mView != null) return;
 
         mView = (WebAppHeaderLayout) mViewStub.inflate();
-        mHeaderControlButtonWidthDp =
-                mView.getResources().getDimensionPixelSize(R.dimen.header_button_width);
-        mHeaderButtonPaddingDp =
+        int headerButtonSize =
+                AttrUtils.getDimensionPixelSize(mView.getContext(), R.attr.webAppHeaderButtonSize);
+        if (headerButtonSize == -1) {
+            headerButtonSize =
+                    mView.getResources().getDimensionPixelSize(R.dimen.header_button_size);
+        }
+
+        mHeaderControlButtonWidthPx = headerButtonSize;
+        mHeaderButtonPaddingPx =
                 mView.getResources().getDimensionPixelSize(R.dimen.header_button_padding);
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
-        final int headerButtonHeight =
-                mView.getResources().getDimensionPixelSize(R.dimen.header_button_height);
 
         mMediator =
                 new WebAppHeaderLayoutMediator(
@@ -288,7 +291,7 @@ public class WebAppHeaderLayoutCoordinator
                         this::collectControlPositions,
                         mThemeColorProvider,
                         headerMinHeight,
-                        headerButtonHeight,
+                        headerButtonSize,
                         mDisplayMode,
                         mSetHeaderAsOverlayCallback,
                         mClientPackageName);
@@ -639,36 +642,32 @@ public class WebAppHeaderLayoutCoordinator
     int calculateUIControlsMinWidth() {
         if (mView == null) return 0;
 
-        int totalWidthDp = 0;
+        int totalWidthPx = 0;
         if (mReloadButtonCoordinator != null) {
-            totalWidthDp += mHeaderControlButtonWidthDp;
+            totalWidthPx += mHeaderControlButtonWidthPx;
         }
 
         if (mBackButtonCoordinator != null) {
-            totalWidthDp += mHeaderControlButtonWidthDp;
+            totalWidthPx += mHeaderControlButtonWidthPx;
         }
 
         if (mMenuButtonCoordinator != null) {
-            totalWidthDp += mHeaderControlButtonWidthDp;
+            totalWidthPx += mHeaderControlButtonWidthPx;
         }
 
         // Add button padding.
-        totalWidthDp += mHeaderButtonPaddingDp;
-
-        if (mAppOriginView != null) {
-            totalWidthDp += mAppOriginView.getWidth();
-        }
+        totalWidthPx += mHeaderButtonPaddingPx;
 
         if (mToggleButtonView != null) {
             // If mToggleButtonView is non-null, we're in WINDOW_CONTROLS_OVERLAY mode. In addition
             // to allowing space for the toggle button, allow a minimal space for the web content
             // in the header.
-            totalWidthDp += (mHeaderControlButtonWidthDp * 3);
+            totalWidthPx += (mHeaderControlButtonWidthPx * 3);
         }
 
-        int totalWidthPx =
-                DisplayUtil.dpToPx(
-                        DisplayAndroid.getNonMultiDisplay(mView.getContext()), totalWidthDp);
+        if (mAppOriginView != null) {
+            totalWidthPx += mAppOriginView.getWidth();
+        }
 
         return totalWidthPx;
     }
@@ -678,7 +677,9 @@ public class WebAppHeaderLayoutCoordinator
      */
     @VisibleForTesting
     int getHeaderControlButtonWidthDp() {
-        return mHeaderControlButtonWidthDp;
+        if (mView == null) return 0;
+        float density = mView.getResources().getDisplayMetrics().density;
+        return Math.round(mHeaderControlButtonWidthPx / density);
     }
 
     /**
@@ -686,7 +687,9 @@ public class WebAppHeaderLayoutCoordinator
      */
     @VisibleForTesting
     int getHeaderButtonPaddingDp() {
-        return mHeaderButtonPaddingDp;
+        if (mView == null) return 0;
+        float density = mView.getResources().getDisplayMetrics().density;
+        return Math.round(mHeaderButtonPaddingPx / density);
     }
 
     @VisibleForTesting

@@ -8,8 +8,8 @@ found in the LICENSE file.
 <resources>
     <style name="HeaderButton">
         <item name="android:background">@drawable/default_icon_background</item>
-        <item name="android:layout_width">@dimen/header_button_width</item>
-        <item name="android:layout_height">@dimen/header_button_height</item>
+        <item name="android:layout_width">?attr/webAppHeaderButtonSize</item>
+        <item name="android:layout_height">?attr/webAppHeaderButtonSize</item>
         <item name="android:scaleType">center</item>
     </style>
 </resources>
