@@ -140,3 +140,11 @@ TEST_F(TabStripFlatEdgeButtonTest, WidgetAttachmentUpdatesInkDrop) {
   EXPECT_EQ(button->GetButtonCornerRadiiForTesting(),
             gfx::RoundedCornersF(10.0f, 10.0f, 10.0f, 10.0f));
 }
+
+TEST_F(TabStripFlatEdgeButtonTest, PaintTransparentForGlassDefaultAndSetter) {
+  EXPECT_FALSE(button_->paint_transparent_for_glass_for_testing());
+  button_->SetPaintTransparentForGlass(true);
+  EXPECT_TRUE(button_->paint_transparent_for_glass_for_testing());
+  button_->SetPaintTransparentForGlass(false);
+  EXPECT_FALSE(button_->paint_transparent_for_glass_for_testing());
+}

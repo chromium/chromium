@@ -91,18 +91,10 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorNewTabButtonCRForegroundFrameInactive] = {
       ui::kColorSysOnSurfaceSubtle};
-
-  if (key.frame_style == ui::ColorProviderKey::FrameStyle::kGlass) {
-    mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
-    mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
-    mixer[kColorNewTabButtonCRBackgroundFrameActive] = {SK_ColorTRANSPARENT};
-    mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
-  } else {
-    mixer[kColorNewTabButtonCRBackgroundFrameActive] = {
-        ui::kColorSysHeaderContainer};
-    mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {
-        ui::kColorSysHeaderContainerInactive};
-  }
+  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {
+      ui::kColorSysHeaderContainer};
+  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {
+      ui::kColorSysHeaderContainerInactive};
 
   mixer[kColorTabSearchButtonCRForegroundFrameActive] = {
       ui::kColorSysOnSurfacePrimary};

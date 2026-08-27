@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
@@ -50,4 +51,12 @@ void NewTabButton::ShowContextMenuForViewImpl(
         source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
         views::MenuAnchorPosition::kTopLeft, source_type);
   }
+}
+
+void NewTabButton::UpdateBackground() {
+  if (features::IsGlassFrameEnabled()) {
+    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    return;
+  }
+  TabStripControlButton::UpdateBackground();
 }

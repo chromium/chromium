@@ -40,16 +40,6 @@ TEST(MaterialTabStripColorMixerTest, GlassFrameStyleOverridesColors) {
   EXPECT_EQ(
       SkColorGetA(provider.GetColor(kColorTabBackgroundSelectedFrameInactive)),
       kExpectedAlpha);
-
-  // In glass frame, new tab button backgrounds are transparent.
-  EXPECT_EQ(provider.GetColor(kColorNewTabButtonBackgroundFrameActive),
-            SK_ColorTRANSPARENT);
-  EXPECT_EQ(provider.GetColor(kColorNewTabButtonBackgroundFrameInactive),
-            SK_ColorTRANSPARENT);
-  EXPECT_EQ(provider.GetColor(kColorNewTabButtonCRBackgroundFrameActive),
-            SK_ColorTRANSPARENT);
-  EXPECT_EQ(provider.GetColor(kColorNewTabButtonCRBackgroundFrameInactive),
-            SK_ColorTRANSPARENT);
 }
 
 }  // namespace
