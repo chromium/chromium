@@ -3673,12 +3673,28 @@
           'x64_ai_wpt_shards',
         ],
       },
+      'chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+          'x64_ai_wpt_shards',
+          'linux_gpu_high_tier_gemma4_ai_wpt_dimensions',
+        ],
+      },
       'chrome_ai_wpt_tests_manifest_gpu_high_tier_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'non-gce',
           'x64_ai_wpt_shards',
           'linux_gpu_high_tier_ai_wpt_dimensions',
+        ],
+      },
+      'chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+          'x64_ai_wpt_shards',
+          'linux_gpu_high_tier_gemma4_ai_wpt_dimensions',
         ],
       },
       'chrome_ai_wpt_tests_manifest_gpu_low_tier_suite': {
