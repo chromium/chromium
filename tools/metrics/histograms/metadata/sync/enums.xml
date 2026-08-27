@@ -1979,6 +1979,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Passkey Unlock Profile Menu"/>
   <int value="9" label="Passkey Authenticator Window"/>
   <int value="10" label="Password Save Prompt"/>
+  <int value="11" label="GPM Settings Passkey Promo Card"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_client.h:TrustedVaultUserActionTrigger) -->

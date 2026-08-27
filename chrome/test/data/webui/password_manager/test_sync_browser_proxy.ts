@@ -25,6 +25,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'getAccountInfo',
       'getLocalPasswordCount',
       'openBatchUpload',
+      'startPasskeyUnlockFlow',
     ]);
 
     this.trustedVaultState = TrustedVaultBannerState.NOT_SHOWN;
@@ -59,5 +60,9 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   openBatchUpload(entryPoint: BatchUploadPasswordsEntryPoint): void {
     this.methodCalled('openBatchUpload', entryPoint);
+  }
+
+  startPasskeyUnlockFlow(): void {
+    this.methodCalled('startPasskeyUnlockFlow');
   }
 }

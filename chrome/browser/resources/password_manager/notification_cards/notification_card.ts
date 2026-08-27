@@ -32,6 +32,7 @@ export enum NotificationCardId {
   RELAUNCH_CHROME = 'relaunch_chrome_promo',
   MOVE_PASSWORDS = 'move_passwords_promo',
   SCREENLOCK_REAUTH = 'screenlock_reauth_promo',  // Obsolete
+  PASSKEY_UNLOCK = 'passkey_unlock_promo',
 }
 
 /**
@@ -49,8 +50,9 @@ enum NotificationCardMetricId {
   RELAUNCH_CHROME = 4,
   MOVE_PASSWORDS = 5,
   // SCREENLOCK_REAUTH = 6, Obsolete
+  PASSKEY_UNLOCK = 7,
   // Must be last.
-  COUNT = 7,
+  COUNT = 8,
 }
 // LINT.ThenChange(//chrome/browser/ui/webui/password_manager/notification_card.h:NotificationCardType)
 
@@ -132,6 +134,10 @@ export class NotificationCardElement extends NotificationCardElementBase {
         SyncBrowserProxyImpl.getInstance().openBatchUpload(
             BatchUploadPasswordsEntryPoint.PROMO_CARD);
         recordNotificationCardAction(NotificationCardMetricId.MOVE_PASSWORDS);
+        break;
+      case NotificationCardId.PASSKEY_UNLOCK:
+        SyncBrowserProxyImpl.getInstance().startPasskeyUnlockFlow();
+        recordNotificationCardAction(NotificationCardMetricId.PASSKEY_UNLOCK);
         break;
       default:
         assertNotReached();

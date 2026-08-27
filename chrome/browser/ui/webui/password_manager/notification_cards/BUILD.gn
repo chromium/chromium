@@ -30,16 +30,19 @@ source_set("notification_cards") {
   if (is_chrome_branded) {
     sources += [
       "access_on_any_device_promo.cc",
+      "passkey_unlock_promo.cc",
       "password_checkup_promo.cc",
       "password_manager_shortcut_promo.cc",
       "web_password_manager_promo.cc",
     ]
     public += [
       "access_on_any_device_promo.h",
+      "passkey_unlock_promo.h",
       "password_checkup_promo.h",
       "password_manager_shortcut_promo.h",
       "web_password_manager_promo.h",
     ]
+    deps += [ "//chrome/browser/webauthn" ]
   }
 
   if ((enable_dice_support || is_chromeos) && is_chrome_branded) {
@@ -66,6 +69,14 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chrome_branded) {
+    sources += [ "passkey_unlock_promo_unittest.cc" ]
+    deps += [
+      "//chrome/browser/webauthn",
+      "//components/password_manager/core/browser/features:password_features",
+    ]
+  }
 
   if ((enable_dice_support || is_chromeos) && is_chrome_branded) {
     sources += [ "move_passwords_promo_unittest.cc" ]

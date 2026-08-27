@@ -97,6 +97,7 @@ BASE_FEATURE(kDisablePasswordChangeFromNewPasswordFields,
 BASE_FEATURE(kEnablePasswordManagerMojoApi, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnablePasswordManagerMojoApiPhase2,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPasskeyUnlockPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kFallbackNoPreviewForCrossDomainCredentials,

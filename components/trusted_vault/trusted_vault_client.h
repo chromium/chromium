@@ -51,7 +51,9 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasskeyBootstrappingFlow = 9,
   // From the password save prompt (used on iOS and Desktop).
   kPasswordSavePrompt = 10,
-  kMaxValue = kPasswordSavePrompt
+  // From the passkey unlock promo card in Password Manager (Desktop).
+  kGpmSettingsPasskeyPromoCard = 11,
+  kMaxValue = kGpmSettingsPasskeyPromoCard
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 

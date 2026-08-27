@@ -13,7 +13,7 @@ namespace password_manager {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Needs to stay in sync with the
-// PasswordManagerNotificationCard enum in enums.xml.
+// PasswordManagerPromoCard enum in enums.xml.
 // LINT.IfChange(NotificationCardType)
 enum class NotificationCardType {
   // Password Checkup promo bubble.
@@ -29,7 +29,9 @@ enum class NotificationCardType {
   // Move passwords stored only on this device to the account.
   kMovePasswords = 5,
   // kScreenlockReauth = 6, Obsolete
-  kMaxValue = kMovePasswords,
+  // Passkey unlock promo.
+  kPasskeyUnlock = 7,
+  kMaxValue = kPasskeyUnlock,
 };
 // LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardMetricId)
 

@@ -107,6 +107,9 @@ BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApiPhase2);
 
 // Enables the Desktop Trusted Vault unlock UI flow.
 BASE_DECLARE_FEATURE(kTrustedVaultDesktopUnlock);
+
+// Enables the Desktop Passkey unlock promo card UI flow.
+BASE_DECLARE_FEATURE(kPasskeyUnlockPromo);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Cross domain credential data is not previewed by the manual fallback

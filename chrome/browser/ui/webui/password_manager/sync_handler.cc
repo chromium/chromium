@@ -11,20 +11,22 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 namespace password_manager {
@@ -74,6 +76,10 @@ void SyncHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "GetLocalPasswordCount",
       base::BindRepeating(&SyncHandler::HandleGetLocalPasswordCount,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "StartPasskeyUnlockFlow",
+      base::BindRepeating(&SyncHandler::HandleStartPasskeyUnlockFlow,
                           base::Unretained(this)));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
@@ -274,6 +280,17 @@ syncer::SyncService* SyncHandler::GetSyncService() const {
   return SyncServiceFactory::IsSyncAllowed(profile_)
              ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;
+}
+
+void SyncHandler::HandleStartPasskeyUnlockFlow(
+    const base::ListValue& args) {
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
+  if (browser) {
+    webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+        browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                     kGpmSettingsPasskeyPromoCard);
+  }
 }
 
 }  // namespace password_manager

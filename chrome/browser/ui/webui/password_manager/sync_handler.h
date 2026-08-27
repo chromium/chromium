@@ -66,6 +66,9 @@ class SyncHandler : public content::WebUIMessageHandler,
   void HandleOpenBatchUploadDialog(const base::ListValue& args);
 #endif
 
+  // Triggers the passkey unlock flow.
+  void HandleStartPasskeyUnlockFlow(const base::ListValue& args);
+
   // Handles getitng the local password count from the `syncer::SyncService`
   // API.
   void HandleGetLocalPasswordCount(const base::ListValue& args);
