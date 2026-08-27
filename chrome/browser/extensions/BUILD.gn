@@ -2506,6 +2506,7 @@ source_set("browser_tests") {
     "//chrome/browser:platform_util_internal",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",
     "//chrome/browser/devtools:test_support",

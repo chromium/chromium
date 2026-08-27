@@ -15,6 +15,10 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -120,5 +124,40 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Tab is not active.
   EXPECT_NE(tab_list->GetActiveTab(), tab_list->GetTab(1));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that on Android, `TabHelpers` (e.g.
+// `RequestDesktopSiteWebContentsObserverAndroid`) are attached synchronously to
+// the `WebContents` inside `CreateTab()`.
+IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
+                       TabHelpersAttachedSynchronouslyOnAndroid) {
+  TabListInterface* tab_list = GetTabListInterface();
+  TabAddedWaiter waiter(tab_list);
+
+  // Create a WebContents that does not have TabHelpers attached.
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(GetProfile()));
+  content::WebContents* raw_contents = contents.get();
+
+  // Verify that tab helpers are not yet attached.
+  ASSERT_EQ(RequestDesktopSiteWebContentsObserverAndroid::FromWebContents(
+                raw_contents),
+            nullptr);
+
+  // Invoke CreateTab.
+  ChromeExtensionHostDelegate delegate;
+  delegate.CreateTab(std::move(contents), GURL("chrome://version"),
+                     ExtensionId(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                     blink::mojom::WindowFeatures(), /*user_gesture=*/true);
+
+  // TabHelpers should be attached synchronously before CreateTab returns.
+  EXPECT_NE(RequestDesktopSiteWebContentsObserverAndroid::FromWebContents(
+                raw_contents),
+            nullptr);
+
+  // Wait for the asynchronous tab creation to finish.
+  waiter.Wait();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
