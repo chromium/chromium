@@ -277,6 +277,10 @@ public class AutocompleteEditText extends EditTextWithLeading
     public void setText(CharSequence text, BufferType type) {
         if (DEBUG) Log.i(TAG, "setText -- text: %s", text);
         mDisableTextScrollingFromAutocomplete = false;
+        if (TextUtils.equals(getText(), text)) {
+            if (mModel != null) mModel.onSetText(text);
+            return;
+        }
 
         super.setText(text, type);
         if (mModel != null) mModel.onSetText(text);

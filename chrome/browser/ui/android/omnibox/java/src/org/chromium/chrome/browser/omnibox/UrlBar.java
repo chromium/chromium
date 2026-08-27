@@ -436,9 +436,6 @@ public class UrlBar extends AutocompleteEditText {
 
         // Ensure the URL bar is ready to generate autocomplete suggestions on user input.
         if (focused) setIgnoreTextChangesForAutocomplete(false);
-        if (mFocusChangeCallback != null) {
-            mFocusChangeCallback.onResult(new UrlBarFocusChangeInfo(focused, direction));
-        }
 
         updateCursorVisibility();
 
@@ -456,6 +453,10 @@ public class UrlBar extends AutocompleteEditText {
             // limits.
             setEllipsize(focused ? null : TextUtils.TruncateAt.END);
             if (focused) clearBoundsEllipsisSpans(getText());
+        }
+
+        if (mFocusChangeCallback != null) {
+            mFocusChangeCallback.onResult(new UrlBarFocusChangeInfo(focused, direction));
         }
     }
 
