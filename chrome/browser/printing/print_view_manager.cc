@@ -581,6 +581,8 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
   mojom::RequestPrintPreviewParams params;
+  // Note that this PrintPreview() call will not exit fullscreen, since the code
+  // above just did that. So no need to check if `this` got destroyed.
   dialog_controller->PrintPreview(web_contents(), params,
                                   print_preview_rfh_->GetProcess()->IsPdf());
 
@@ -632,8 +634,14 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
+  // Note that this PrintPreview() call may exit fullscreen, so `this` may get
+  // destroyed.
+  auto weak_this = weak_factory_.GetWeakPtr();
   dialog_controller->PrintPreview(web_contents(), *params,
                                   render_frame_host->GetProcess()->IsPdf());
+  if (!weak_this) {
+    return;
+  }
 
   PrintPreviewAllowedForTesting();
 }
