@@ -173,7 +173,6 @@ static_library("login") {
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/metrics",
     "//chrome/browser/net",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",

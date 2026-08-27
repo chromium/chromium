@@ -39,8 +39,6 @@
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -65,6 +63,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "ui/message_center/message_center.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -597,25 +596,9 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
     user_certificate_provider_extension()->TriggerSetCertificates();
   }
 
-  bool ProfileHasNotification(Profile* profile,
-                              const std::string& notification_id) {
-    NotificationDisplayService* notification_display_service =
-        NotificationDisplayServiceFactory::GetForProfile(profile);
-    if (!notification_display_service) {
-      ADD_FAILURE() << "NotificationDisplayService could not be found.";
-      return false;
-    }
-    base::RunLoop run_loop;
-    bool has_notification = false;
-    notification_display_service->GetDisplayed(
-        base::BindLambdaForTesting([&](std::set<std::string> notification_ids,
-                                       bool /* supports_synchronization */) {
-          has_notification = notification_ids.count(notification_id) >= 1;
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    return has_notification;
+  bool HasNotification(const std::string& notification_id) {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+               notification_id) != nullptr;
   }
 
   bool GetNotificationDisplayedKnownUserFlag() const {
@@ -655,8 +638,8 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Lock) {
                                /*available_in_session=*/false);
   chrome_session_observer.WaitForSessionLocked();
 
-  EXPECT_TRUE(ProfileHasNotification(
-      profile(), "security_token_session_controller_notification"));
+  EXPECT_TRUE(
+      HasNotification("security_token_session_controller_notification"));
   EXPECT_TRUE(GetNotificationDisplayedKnownUserFlag());
 }
 
@@ -688,8 +671,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, PRE_Logout) {
 IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Logout) {
   // Check login screen notification is displayed.
   EXPECT_TRUE(
-      ProfileHasNotification(GetOriginalSigninProfile(),
-                             "security_token_session_controller_notification"));
+      HasNotification("security_token_session_controller_notification"));
 }
 
 // Test that entering a session with a missing certificate logs user out only
