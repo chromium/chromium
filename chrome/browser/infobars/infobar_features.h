@@ -29,6 +29,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedObsoleteSystem);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPinInfoBar);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedLocalTestPolicies);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedThemeInstalled);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedExtensionDevTools);
 
 // Returns true if the centralization framework is enabled and the specified
 // infobar is configured to be migrated.

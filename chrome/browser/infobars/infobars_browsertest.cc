@@ -171,7 +171,8 @@ class InfoBarUiTest : public TestInfoBar,
            {"MigratedPageInfo", "true"},
            {"MigratedGoogleApiKeys", "true"},
            {"MigratedObsoleteSystem", "true"},
-           {"MigratedThemeInstalled", "true"}});
+           {"MigratedThemeInstalled", "true"},
+           {"MigratedExtensionDevTools", "true"}});
     } else {
       feature_list_.InitAndDisableFeature(
           infobars::kCentralizedInfoBarFramework);
@@ -249,9 +250,19 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE:
-      extension_dev_tools_subscription_ =
-          extensions::ExtensionDevToolsInfoBarDelegate::Create(
-              "id", "Extension", base::DoNothing());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE)) {
+        if (auto* browser_infobar_manager =
+                infobars::BrowserInfoBarManager::From(g_browser_process)) {
+          browser_infobar_manager->ShowGlobally(
+              infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE);
+        }
+      } else {
+        extension_dev_tools_subscription_ =
+            extensions::ExtensionDevToolsInfoBarDelegate::Create(
+                "id", "Extension", base::DoNothing());
+      }
       break;
 
     case IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE: {

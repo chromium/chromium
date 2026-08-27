@@ -389,6 +389,20 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
     case InfoBarType::kExtensionDevTools: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        return browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE);
+      }
+
+      if (!profile) {
+        return false;
+      }
+
       extensions::ExtensionRegistry* registry =
           extensions::ExtensionRegistry::Get(profile);
       const extensions::ExtensionSet& extensions =

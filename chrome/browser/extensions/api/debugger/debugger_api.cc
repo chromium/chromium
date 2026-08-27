@@ -24,6 +24,7 @@
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -64,7 +65,14 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_message_delegate.h"
 #else
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -630,15 +638,29 @@ void ExtensionDevToolsClientHost::CreateWarningMessage() {
 #else
 // Win/Mac/Linux/Chrome OS use the infobar API for the warning message.
 void ExtensionDevToolsClientHost::CreateWarningInfobar() {
-  warning_infobar_subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
-      extension_id(), extension_->name(),
-      base::BindOnce(&ExtensionDevToolsClientHost::WarningUiDestroyed,
-                     base::Unretained(this)));
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE)) {
+    ExtensionDevToolsInfoBarController::GetInstance()->OnClientHostAttached(
+        this, extension_->name());
+  } else {
+    warning_infobar_subscription_ = ExtensionDevToolsInfoBarDelegate::Create(
+        extension_id(), extension_->name(),
+        base::BindOnce(&ExtensionDevToolsClientHost::WarningUiDestroyed,
+                       base::Unretained(this)));
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
   GetAttachedClientHosts().erase(this);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE)) {
+    ExtensionDevToolsInfoBarController::GetInstance()->OnClientHostDetached(
+        this);
+  }
+#endif
 
   // Decrement the associated worker keepalive, if any.
   if (service_worker_keepalive_) {
@@ -823,6 +845,76 @@ ExtensionDevToolsClientHost::GetNavigationInitiatorOrigin() {
   // effect.
   return extension_->origin();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// static
+ExtensionDevToolsInfoBarController*
+ExtensionDevToolsInfoBarController::GetInstance() {
+  static base::NoDestructor<ExtensionDevToolsInfoBarController> instance;
+  return instance.get();
+}
+
+ExtensionDevToolsInfoBarController::ExtensionDevToolsInfoBarController()
+    : last_extension_name_(u"Extension") {}
+ExtensionDevToolsInfoBarController::~ExtensionDevToolsInfoBarController() =
+    default;
+
+// static
+std::vector<MessageSubstitution>
+ExtensionDevToolsInfoBarController::GetMessageSubstitutions() {
+  const size_t kMaxExtensionNameLength = 1000;
+  return {MessageSubstitution(
+      GetInstance()->last_extension_name_.substr(0, kMaxExtensionNameLength),
+      /*is_link=*/false, /*accessible_name=*/std::nullopt)};
+}
+
+// static
+void ExtensionDevToolsInfoBarController::OnInfoBarAction() {
+  GetInstance()->OnInfoBarActionInternal();
+}
+
+void ExtensionDevToolsInfoBarController::OnInfoBarActionInternal() {
+  autoclose_timer_.Stop();
+  auto hosts = std::move(active_hosts_);
+  active_hosts_.clear();
+  for (ExtensionDevToolsClientHost* host : hosts) {
+    host->WarningUiDestroyed();
+  }
+}
+
+void ExtensionDevToolsInfoBarController::OnClientHostAttached(
+    ExtensionDevToolsClientHost* host,
+    const std::string& extension_name) {
+  active_hosts_.insert(host);
+  last_extension_name_ = base::UTF8ToUTF16(extension_name);
+  autoclose_timer_.Stop();
+
+  auto* browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(g_browser_process);
+  if (browser_infobar_manager) {
+    browser_infobar_manager->ShowGlobally(
+        infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE);
+  }
+}
+
+void ExtensionDevToolsInfoBarController::OnClientHostDetached(
+    ExtensionDevToolsClientHost* host) {
+  size_t count = active_hosts_.erase(host);
+  if (count > 0 && active_hosts_.empty()) {
+    autoclose_timer_.Start(
+        FROM_HERE, ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay,
+        base::BindOnce([]() {
+          auto* browser_infobar_manager =
+              infobars::BrowserInfoBarManager::From(g_browser_process);
+          if (browser_infobar_manager) {
+            browser_infobar_manager->Hide(
+                infobars::InfoBarDelegate::
+                    EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE);
+          }
+        }));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // DebuggerFunction -----------------------------------------------------------
 

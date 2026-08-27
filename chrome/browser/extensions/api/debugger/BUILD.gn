@@ -41,9 +41,9 @@ source_set("debugger") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
+    "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//components/pdf/common:util",
@@ -55,6 +55,7 @@ source_set("debugger") {
     "//pdf:features",
     "//ui/base",
     "//ui/gfx",
+    "//ui/strings:ui_strings",
     "//url",
   ]
 }
