@@ -8,12 +8,14 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_config.h"
@@ -633,8 +635,8 @@ TEST_F(GpuPersistentCacheTest, MetadataFirstEntriesLoadedToMemory) {
   }
 }
 
-// Verifies that PurgeMemory purges the in-memory cache.
-TEST_F(GpuPersistentCacheTest, PurgeMemory) {
+// Verifies that OnReleaseMemory purges the in-memory cache.
+TEST_F(GpuPersistentCacheTest, OnReleaseMemory) {
   const std::string key = "my_key";
   const std::string value = "my_value";
 
@@ -642,15 +644,15 @@ TEST_F(GpuPersistentCacheTest, PurgeMemory) {
   EXPECT_NE(nullptr, memory_cache_->Find(key));
   EXPECT_EQ(value.size(), cache_->FindKey(key));
 
-  cache_->PurgeMemory(base::kCriticalMemoryPressureThreshold);
+  cache_->OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
 
   EXPECT_EQ(nullptr, memory_cache_->Find(key));
   EXPECT_EQ(0u, cache_->FindKey(key));
 }
 
-// Verifies that GpuPersistentCacheCollection::PurgeMemory purges all managed
-// caches.
-TEST_F(GpuPersistentCacheTest, CollectionPurgeMemory) {
+// Verifies that GpuPersistentCacheCollection::OnReleaseMemory purges all
+// managed caches.
+TEST_F(GpuPersistentCacheTest, CollectionOnReleaseMemory) {
   GpuPersistentCacheCollection collection(
       1024, GpuPersistentCache::MetadataOpts(),
       GpuPersistentCache::AsyncDiskWriteOpts());
@@ -671,10 +673,141 @@ TEST_F(GpuPersistentCacheTest, CollectionPurgeMemory) {
   EXPECT_EQ(value_graphite.size(), cache_graphite->FindKey(key_graphite));
   EXPECT_EQ(value_gr_shader.size(), cache_gr_shader->FindKey(key_gr_shader));
 
-  collection.PurgeMemory(base::kCriticalMemoryPressureThreshold);
+  collection.OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
 
   EXPECT_EQ(0u, cache_graphite->FindKey(key_graphite));
   EXPECT_EQ(0u, cache_gr_shader->FindKey(key_gr_shader));
+}
+
+TEST_F(GpuPersistentCacheTest, OnUpdateMemoryLimitStateful) {
+  base::test::ScopedFeatureList feature_list{base::kStatefulMemoryPressure};
+  static constexpr std::string_view kKey1 = "key1";
+  static constexpr std::string_view kData1 = "data1";
+  static constexpr std::string_view kKey2 = "key2";
+  static constexpr std::string_view kData2 = "data2";
+  static constexpr size_t kSingleEntrySize = kKey1.size() + kData1.size();
+  // Under moderate pressure (50%), capacity scales to 25% of kCacheSize.
+  // Set kCacheSize = 4 * kSingleEntrySize so that exactly 1 entry fits under
+  // moderate pressure.
+  static constexpr size_t kCacheSize = 4u * kSingleEntrySize;
+
+  scoped_refptr<MemoryCache> memory_cache =
+      base::MakeRefCounted<MemoryCache>(kCacheSize);
+  auto cache = base::MakeRefCounted<GpuPersistentCache>("Test", memory_cache);
+
+  cache->StoreData(kKey1, base::as_byte_span(kData1));
+  cache->StoreData(kKey2, base::as_byte_span(kData2));
+  EXPECT_EQ(kData1.size(), cache->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache->FindKey(kKey2));
+
+  // Non-destructive update: OnUpdateMemoryLimit must not evict any entries.
+  cache->OnUpdateMemoryLimit(base::kModerateMemoryPressureThreshold);
+  EXPECT_EQ(kData1.size(), cache->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache->FindKey(kKey2));
+
+  // Explicit release: OnReleaseMemory evicts down to the moderate threshold.
+  cache->OnReleaseMemory(base::kModerateMemoryPressureThreshold);
+  // Least recently used entry (kKey1) is evicted.
+  EXPECT_EQ(0u, cache->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache->FindKey(kKey2));
+
+  // Under critical pressure, all entries are evicted and the limit becomes 0.
+  cache->OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
+  EXPECT_EQ(0u, cache->FindKey(kKey1));
+  EXPECT_EQ(0u, cache->FindKey(kKey2));
+
+  // Attempting to store while critical limit (0) is active fails.
+  cache->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(0u, cache->FindKey(kKey1));
+
+  // Restoring memory limit allows storing new entries again.
+  cache->OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  cache->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(kData1.size(), cache->FindKey(kKey1));
+}
+
+TEST_F(GpuPersistentCacheTest, CollectionOnUpdateMemoryLimitStateful) {
+  base::test::ScopedFeatureList feature_list{base::kStatefulMemoryPressure};
+  static constexpr std::string_view kKey1 = "key1";
+  static constexpr std::string_view kData1 = "data1";
+  static constexpr std::string_view kKey2 = "key2";
+  static constexpr std::string_view kData2 = "data2";
+  static constexpr size_t kSingleEntrySize = kKey1.size() + kData1.size();
+  static constexpr size_t kCacheSize = 4u * kSingleEntrySize;
+
+  GpuPersistentCacheCollection collection(
+      kCacheSize, GpuPersistentCache::MetadataOpts(),
+      GpuPersistentCache::AsyncDiskWriteOpts());
+  auto cache_graphite = collection.GetCache(
+      gpu::GpuDiskCacheHandle(kGraphiteDawnGpuDiskCacheHandle));
+  auto cache_gr_shader =
+      collection.GetCache(gpu::GpuDiskCacheHandle(kGrShaderGpuDiskCacheHandle));
+
+  cache_graphite->StoreData(kKey1, base::as_byte_span(kData1));
+  cache_graphite->StoreData(kKey2, base::as_byte_span(kData2));
+  cache_gr_shader->StoreData(kKey1, base::as_byte_span(kData1));
+  cache_gr_shader->StoreData(kKey2, base::as_byte_span(kData2));
+
+  EXPECT_EQ(kData1.size(), cache_graphite->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_graphite->FindKey(kKey2));
+  EXPECT_EQ(kData1.size(), cache_gr_shader->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_gr_shader->FindKey(kKey2));
+
+  // Non-destructive update: OnUpdateMemoryLimit must not evict any entries.
+  collection.OnUpdateMemoryLimit(base::kModerateMemoryPressureThreshold);
+  EXPECT_EQ(kData1.size(), cache_graphite->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_graphite->FindKey(kKey2));
+  EXPECT_EQ(kData1.size(), cache_gr_shader->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_gr_shader->FindKey(kKey2));
+
+  // Explicit release: OnReleaseMemory evicts down to moderate threshold across
+  // all caches.
+  collection.OnReleaseMemory(base::kModerateMemoryPressureThreshold);
+  EXPECT_EQ(0u, cache_graphite->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_graphite->FindKey(kKey2));
+  EXPECT_EQ(0u, cache_gr_shader->FindKey(kKey1));
+  EXPECT_EQ(kData2.size(), cache_gr_shader->FindKey(kKey2));
+
+  // Under critical pressure, all entries are evicted.
+  collection.OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
+  EXPECT_EQ(0u, cache_graphite->FindKey(kKey1));
+  EXPECT_EQ(0u, cache_graphite->FindKey(kKey2));
+  EXPECT_EQ(0u, cache_gr_shader->FindKey(kKey1));
+  EXPECT_EQ(0u, cache_gr_shader->FindKey(kKey2));
+
+  // Restoring memory limit allows storing new entries again.
+  collection.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  cache_graphite->StoreData(kKey1, base::as_byte_span(kData1));
+  cache_gr_shader->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(kData1.size(), cache_graphite->FindKey(kKey1));
+  EXPECT_EQ(kData1.size(), cache_gr_shader->FindKey(kKey1));
+}
+
+TEST_F(GpuPersistentCacheTest, CollectionNewCreatedCacheRespectsMemoryLimit) {
+  base::test::ScopedFeatureList feature_list{base::kStatefulMemoryPressure};
+  static constexpr std::string_view kKey1 = "key1";
+  static constexpr std::string_view kData1 = "data1";
+  static constexpr size_t kSingleEntrySize = kKey1.size() + kData1.size();
+  static constexpr size_t kCacheSize = 4u * kSingleEntrySize;
+
+  GpuPersistentCacheCollection collection(
+      kCacheSize, GpuPersistentCache::MetadataOpts(),
+      GpuPersistentCache::AsyncDiskWriteOpts());
+
+  // Set memory limit to critical before creating any caches in the collection.
+  collection.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+
+  auto cache = collection.GetCache(
+      gpu::GpuDiskCacheHandle(kGraphiteDawnGpuDiskCacheHandle));
+
+  // Newly created cache should have size limit of 0 under critical pressure.
+  cache->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(0u, cache->FindKey(kKey1));
+
+  // Restoring memory limit allows storing new entries again.
+  collection.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  cache->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(kData1.size(), cache->FindKey(kKey1));
 }
 
 // Test fixture which is friends with the CacheMetadata internal class in

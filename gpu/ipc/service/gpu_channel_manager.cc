@@ -856,6 +856,10 @@ void GpuChannelManager::OnUpdateMemoryLimit() {
     dawn_caching_interface_factory()->OnUpdateMemoryLimit(memory_limit());
   }
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+
+  if (persistent_caches_) {
+    persistent_caches_->OnUpdateMemoryLimit(memory_limit());
+  }
 }
 
 void GpuChannelManager::OnReleaseMemory() {
@@ -874,7 +878,7 @@ void GpuChannelManager::OnReleaseMemory() {
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
   if (persistent_caches_) {
-    persistent_caches_->PurgeMemory(memory_limit());
+    persistent_caches_->OnReleaseMemory(memory_limit());
   }
 
 #if BUILDFLAG(IS_WIN)
