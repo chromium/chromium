@@ -507,7 +507,10 @@ Browser* SyncTest::GetBrowser(int profile_index, int window_index) const {
          "windows?)";
 
   Browser* browser = browsers[window_index];
-  CHECK(browser);
+  CHECK(browser) << "GetBrowser(): Browser for profile " << profile_index
+                 << " and window " << window_index
+                 << " was not created. Call AddBrowser() explicitly if this "
+                    "test requires a browser window.";
 
   return browser;
 }
@@ -526,6 +529,7 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   // initialize or produce frames (e.g., on Wayland headless bots), which
   // can cause tests relying on hit test data or visual state to time out.
   browser->GetWindow()->Show();
+
   return browser;
 }
 
@@ -663,19 +667,26 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(clients_[index].browsers.empty());
-  Browser* browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
-  clients_[index].browsers.push_back(browser);
+  // Only the primary client (index 0) gets a browser window by default during
+  // profile initialization. Secondary clients only create browser windows if
+  // explicitly requested via AddBrowser().
+  // This is needed for performance reasons, mostly to reduce flakiness due to
+  // test timeouts during initialization and teardown.
+  if (index == 0) {
+    Browser* browser =
+        CreateBrowserWindow(
+            BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
+            ->GetBrowserForMigrationOnly();
+    clients_[index].browsers.push_back(browser);
 
-  chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
-  // Show the browser window. Otherwise, the rendering pipeline might not
-  // initialize or produce frames (e.g., on Wayland headless bots), which
-  // can cause tests relying on hit test data or visual state to time out.
-  browser->GetWindow()->Show();
+    // Show the browser window. Otherwise, the rendering pipeline might not
+    // initialize or produce frames (e.g., on Wayland headless bots), which
+    // can cause tests relying on hit test data or visual state to time out.
+    browser->GetWindow()->Show();
+  }
 #endif
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {

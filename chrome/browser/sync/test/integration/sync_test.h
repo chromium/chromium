@@ -338,10 +338,7 @@ class SyncTest : public PlatformBrowserTest,
       content::BrowserContext* context);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Called when the |browser| was removed externally. This just marks the
-  // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
-  // and |profiles_| in sync. It is used when the |browser| is removed within a
-  // test (e.g. when the last tab is closed for the |browser|).
+  // Called when a |browser| was removed (e.g. when the last tab is closed).
   void OnBrowserRemoved(Browser* browser);
 #endif
 

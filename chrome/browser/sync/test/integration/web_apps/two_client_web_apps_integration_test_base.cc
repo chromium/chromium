@@ -222,6 +222,7 @@ bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
   if (!WebAppsSyncTestBase::SetupClients()) {
     return false;
   }
+  AddBrowser(1);
   for (Profile* profile : GetAllProfiles()) {
     if (!web_app::AreWebAppsEnabled(profile) ||
         !web_app::WebAppProvider::GetForWebApps(profile)) {
@@ -232,9 +233,10 @@ bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
     web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
     loop.Run();
 
-    // The base SyncTest class creates a Browser window for each profile, but
-    // does not create any tabs in that window. Our tests require all Browser
-    // windows to always have at least one tab, so create these tabs as needed.
+    // The base SyncTest class creates a Browser window for profile 0, and
+    // AddBrowser(1) creates a Browser window for profile 1. Our tests require
+    // all Browser windows to always have at least one tab, so create these tabs
+    // as needed.
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     CHECK(browser);

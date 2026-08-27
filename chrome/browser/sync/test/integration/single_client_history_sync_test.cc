@@ -182,26 +182,6 @@ class SingleClientHistorySyncTest
         }));
   }
 
-  bool SetupClients() override {
-    if (!SyncTest::SetupClients()) {
-      return false;
-    }
-
-#if !BUILDFLAG(IS_ANDROID)
-    // On non-Android platforms, SyncTest doesn't create any tabs in the
-    // profiles/browsers it creates. Create an "empty" tab here, so that
-    // NavigateToURL() will have a non-null WebContents to navigate in.
-    for (int i = 0; i < num_clients(); ++i) {
-      if (!AddTabAtIndexToBrowser(GetBrowser(0), 0, GURL("about:blank"),
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL)) {
-        return false;
-      }
-    }
-#endif
-
-    return true;
-  }
-
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }

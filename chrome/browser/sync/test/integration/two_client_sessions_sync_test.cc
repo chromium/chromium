@@ -61,6 +61,16 @@ class TwoClientSessionsSyncTest
     return ForeignSessionsMatchChecker(non_local_index, local_index).Wait();
   }
 
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+#if !BUILDFLAG(IS_ANDROID)
+    AddBrowser(1);
+#endif
+    return true;
+  }
+
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
