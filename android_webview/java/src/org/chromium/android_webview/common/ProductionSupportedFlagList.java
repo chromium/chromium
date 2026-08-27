@@ -227,6 +227,9 @@ public final class ProductionSupportedFlagList {
                 "Accelerate all canvases in webview."),
         Flag.baseFeature("RustyJpegFeature", "Enables Rust-based JPEG image decoding."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_BOOST_RENDERER_PRIORITY_ON_NAVIGATION,
+                "Enables boosting the renderer main thread priority during navigation."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,
                 "Enables autoupgrades for audio/video/image mixed content when mixed content "
                         + "mode is set to MIXED_CONTENT_COMPATIBILITY_MODE"),

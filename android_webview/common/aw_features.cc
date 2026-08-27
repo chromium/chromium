@@ -52,6 +52,10 @@ BASE_FEATURE(kWebViewBackgroundClassPreloading,
 // `kWebViewEarlyTracingInit` will take precedent.
 BASE_FEATURE(kWebViewBackgroundTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables boosting the renderer main thread priority during navigation.
+BASE_FEATURE(kWebViewBoostRendererPriorityOnNavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables parsing a custom header passed by the WebView embedder during a
 // prefetch request that allows bypassing the HTTP cache for that request.
 // This is a kill switch, so it is enabled by default.

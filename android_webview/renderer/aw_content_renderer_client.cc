@@ -20,7 +20,6 @@
 #include "android_webview/renderer/aw_url_loader_throttle_provider.h"
 #include "android_webview/renderer/browser_exposed_renderer_interfaces.h"
 #include "base/android/library_loader/library_prefetcher.h"
-#include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
@@ -192,12 +191,7 @@ void AwContentRendererClient::RenderFrameCreated(
 
   // Owned by |render_frame|.
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
-  // Currently, AwRenderFrameObserver is only used for orderfile
-  // instrumentation. So we avoid creating the observer unless orderfile
-  // instrumentation is enabled.
-#if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
   new AwRenderFrameObserver(render_frame);
-#endif
 }
 
 std::unique_ptr<blink::WebPrescientNetworking>
