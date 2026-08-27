@@ -88,7 +88,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private static final GURL CHROME_DISTILLER_ORIGINAL_URL =
             new GURL("https://www.originalurl.com/test/path");
 
-    public static final String ESCAPED_PATH_URL_STRING = "https://pl.wikipedia.org/wiki/Gżegżółka";
     public static final GURL ESCAPED_PATH_URL =
             new GURL("https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
 

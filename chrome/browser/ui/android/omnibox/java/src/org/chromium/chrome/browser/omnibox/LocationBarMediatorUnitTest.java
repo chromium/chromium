@@ -275,7 +275,6 @@ public class LocationBarMediatorUnitTest {
     @Mock private AutocompleteMatch mAutocompleteMatch;
     @Mock private Tracker mTracker;
 
-    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mOnInteractionCompletedCallbackCaptor;
