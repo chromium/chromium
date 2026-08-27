@@ -206,9 +206,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element*,
       PseudoId);
 
-  static Element* FindContainerForElement(Element*,
-                                          const ContainerSelector&,
-                                          const TreeScope* selector_tree_scope);
+  static Element* FindContainerForElement(Element*, const ContainerSelector&);
 
   Font* ComputeFont(Element&, const ComputedStyle&, const CSSPropertyValueSet&);
 

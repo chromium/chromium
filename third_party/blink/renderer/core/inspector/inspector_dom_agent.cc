@@ -2000,14 +2000,11 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   element->GetDocument().UpdateStyleAndLayoutTreeForElement(
       element, DocumentUpdateReason::kInspector);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
-  // Container rule origin no longer known at this point, match name from all
-  // scopes.
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
                         physical, logical, queries_scroll_state.value_or(false),
-                        queries_anchored.value_or(false)),
-      nullptr /* selector_tree_scope */);
+                        queries_anchored.value_or(false)));
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return protocol::Response::Success();
@@ -2310,11 +2307,8 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
     while (parent_rule) {
       auto* container_rule = DynamicTo<CSSContainerRule>(parent_rule);
       if (container_rule) {
-        // Container rule origin no longer known at this point, match name from
-        // all scopes.
         if (container == style_resolver.FindContainerForElement(
-                             element, container_rule->SelectorForInspector(),
-                             nullptr /* selector_tree_scope */)) {
+                             element, container_rule->SelectorForInspector())) {
           return true;
         }
       }

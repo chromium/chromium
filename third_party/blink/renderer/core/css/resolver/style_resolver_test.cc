@@ -4726,23 +4726,19 @@ TEST_F(StyleResolverTest, FindContainerForElement_LayoutSiblings) {
   Element* button =
       scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
 
-  EXPECT_EQ(StyleResolver::FindContainerForElement(group, size_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(StyleResolver::FindContainerForElement(group, size_selector),
             outer);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(group, scroll_state_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(
+      StyleResolver::FindContainerForElement(group, scroll_state_selector),
+      scroller);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(group, anchored_selector),
             scroller);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(group, anchored_selector,
-                                                   &GetDocument()),
-            scroller);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(button, size_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(StyleResolver::FindContainerForElement(button, size_selector),
             outer);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(
-                button, scroll_state_selector, &GetDocument()),
-            scroller);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(button, anchored_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(
+      StyleResolver::FindContainerForElement(button, scroll_state_selector),
+      scroller);
+  EXPECT_EQ(StyleResolver::FindContainerForElement(button, anchored_selector),
             scroller);
 }
 
@@ -4766,11 +4762,9 @@ TEST_F(StyleResolverTest, FindContainerForElement_SkeletonPseudo) {
   PseudoElement& skeleton =
       GetDocument().documentElement()->EnsureSkeletonPseudo();
 
-  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, size_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, size_selector),
             nullptr);
-  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, named_selector,
-                                                   &GetDocument()),
+  EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, named_selector),
             nullptr);
 }
 

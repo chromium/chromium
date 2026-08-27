@@ -824,25 +824,21 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
   Element* inner = inner_size->firstElementChild();
 
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner, ParseContainer("style(--foo: bar)")->Selector(),
-                &GetDocument()),
+                inner, ParseContainer("style(--foo: bar)")->Selector()),
             inner);
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(
           inner,
-          ParseContainer("(width > 100px) and style(--foo: bar)")->Selector(),
-          &GetDocument()),
+          ParseContainer("(width > 100px) and style(--foo: bar)")->Selector()),
       inner_size);
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner, ParseContainer("outer style(--foo: bar)")->Selector(),
-                &GetDocument()),
+                inner, ParseContainer("outer style(--foo: bar)")->Selector()),
             outer);
-  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner,
-                ParseContainer("outer (width > 100px) and style(--foo: bar)")
-                    ->Selector(),
-                &GetDocument()),
-            outer_size);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner, ParseContainer("outer (width > 100px) and style(--foo: bar)")
+                     ->Selector()),
+      outer_size);
 }
 
 TEST_F(ContainerQueryEvaluatorTest, FindNamedContainer) {
@@ -863,10 +859,10 @@ TEST_F(ContainerQueryEvaluatorTest, FindNamedContainer) {
   Element* target = inner->firstElementChild()->firstElementChild();
 
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                target, ParseContainer("inner")->Selector(), &GetDocument()),
+                target, ParseContainer("inner")->Selector()),
             inner);
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                target, ParseContainer("outer")->Selector(), &GetDocument()),
+                target, ParseContainer("outer")->Selector()),
             outer);
 }
 
@@ -896,22 +892,19 @@ TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
                 inner,
                 ParseContainer("scroll-state(stuck: top) and style(--foo: bar)")
-                    ->Selector(),
-                &GetDocument()),
+                    ->Selector()),
             inner_sticky);
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(
           inner,
           ParseContainer("outer scroll-state(stuck: top) and style(--foo: bar)")
-              ->Selector(),
-          &GetDocument()),
+              ->Selector()),
       outer_sticky);
-  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner,
-                ParseContainer("scroll-state(stuck: top) and (width > 0px)")
-                    ->Selector(),
-                &GetDocument()),
-            sticky_size);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner, ParseContainer("scroll-state(stuck: top) and (width > 0px)")
+                     ->Selector()),
+      sticky_size);
 }
 
 TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
@@ -941,26 +934,23 @@ TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
       ContainerQueryEvaluator::FindContainer(
           inner,
           ParseContainer("scroll-state(snapped: inline) and style(--foo: bar)")
-              ->Selector(),
-          &GetDocument()),
+              ->Selector()),
       inner_snap);
-  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner,
-                ParseContainer(
-                    "outer scroll-state(snapped: block) and style(--foo: bar)")
-                    ->Selector(),
-                &GetDocument()),
-            outer_snap);
-  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
-                inner,
-                ParseContainer("scroll-state((snapped: none) and (stuck: "
-                               "bottom)) and (width > 0px)")
-                    ->Selector(),
-                &GetDocument()),
-            sticky_snap);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner, ParseContainer(
+                     "outer scroll-state(snapped: block) and style(--foo: bar)")
+                     ->Selector()),
+      outer_snap);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner, ParseContainer("scroll-state((snapped: none) and (stuck: "
+                                "bottom)) and (width > 0px)")
+                     ->Selector()),
+      sticky_snap);
 }
 
-TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
+TEST_F(ContainerQueryEvaluatorTest, ContainerSelectorCaching) {
   GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id="host" style="container-name: n1">
       <template shadowrootmode=open>
@@ -1002,9 +992,9 @@ TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
 
   ContainerQueryEvaluator::EvalAndAdd(host, context, *query1, cache, result);
-  EXPECT_EQ(cache.size(), 2u);
+  EXPECT_EQ(cache.size(), 1u);
   ContainerQueryEvaluator::EvalAndAdd(host, context, *query2, cache, result);
-  EXPECT_EQ(cache.size(), 2u);
+  EXPECT_EQ(cache.size(), 1u);
 }
 
 TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {

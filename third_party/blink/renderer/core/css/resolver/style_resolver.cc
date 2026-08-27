@@ -2476,8 +2476,7 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
 
 Element* StyleResolver::FindContainerForElement(
     Element* element,
-    const ContainerSelector& container_selector,
-    const TreeScope* selector_tree_scope) {
+    const ContainerSelector& container_selector) {
   CHECK(element);
   Element* start_candidate = FlatTreeTraversal::ParentElement(*element);
   if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
@@ -2487,8 +2486,8 @@ Element* StyleResolver::FindContainerForElement(
       start_candidate = FlatTreeTraversal::ParentElement(*start_candidate);
     }
   }
-  return ContainerQueryEvaluator::FindContainer(
-      start_candidate, container_selector, selector_tree_scope);
+  return ContainerQueryEvaluator::FindContainer(start_candidate,
+                                                container_selector);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

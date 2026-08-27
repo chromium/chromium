@@ -41,8 +41,7 @@ PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
 }
 
 bool NameMatches(const ComputedStyle& style,
-                 const ContainerSelector& container_selector,
-                 const TreeScope* selector_tree_scope) {
+                 const ContainerSelector& container_selector) {
   const AtomicString& name = container_selector.Name();
   if (name.IsNull()) {
     return true;
@@ -67,27 +66,21 @@ bool TypeMatches(const ComputedStyle& style,
 }
 
 bool Matches(const ComputedStyle& style,
-             const ContainerSelector& container_selector,
-             const TreeScope* selector_tree_scope) {
+             const ContainerSelector& container_selector) {
   return TypeMatches(style, container_selector) &&
-         NameMatches(style, container_selector, selector_tree_scope);
+         NameMatches(style, container_selector);
 }
 
 Element* CachedContainer(Element* starting_element,
                          const ContainerSelector& container_selector,
-                         const TreeScope* selector_tree_scope,
                          ContainerSelectorCache& container_selector_cache) {
-  auto it =
-      container_selector_cache.Find<ScopedContainerSelectorHashTranslator>(
-          ScopedContainerSelector(container_selector, selector_tree_scope));
+  auto it = container_selector_cache.find(container_selector);
   if (it != container_selector_cache.end()) {
     return it->value.Get();
   }
   Element* container = ContainerQueryEvaluator::FindContainer(
-      starting_element, container_selector, selector_tree_scope);
-  container_selector_cache.insert(MakeGarbageCollected<ScopedContainerSelector>(
-                                      container_selector, selector_tree_scope),
-                                  container);
+      starting_element, container_selector);
+  container_selector_cache.insert(container_selector, container);
   return container;
 }
 
@@ -135,14 +128,13 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
 // static
 Element* ContainerQueryEvaluator::FindContainer(
     Element* starting_element,
-    const ContainerSelector& container_selector,
-    const TreeScope* selector_tree_scope) {
+    const ContainerSelector& container_selector) {
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = starting_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->StyleType() == kPseudoIdNone) {
-        if (Matches(*style, container_selector, selector_tree_scope)) {
+        if (Matches(*style, container_selector)) {
           return element;
         }
       }
@@ -186,7 +178,6 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   }
   SetDependencyFlags(query, match_result);
   if (Element* container = CachedContainer(starting_element, selector,
-                                           match_result.CurrentTreeScope(),
                                            container_selector_cache)) {
     if (!query.Query()) {
       // Querying name only, which is already matched in FindContainer.

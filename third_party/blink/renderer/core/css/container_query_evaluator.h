@@ -37,8 +37,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Look for a container query container in the flat tree inclusive ancestor
   // chain of 'starting_element'.
   static Element* FindContainer(Element* starting_element,
-                                const ContainerSelector&,
-                                const TreeScope* selector_tree_scope);
+                                const ContainerSelector&);
   // The starting element is an element in the (exclusive) ancestor chain
   // of `element where we should begin our search for a suitable container.
   static Element* DetermineStartingElement(Element& element,

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
-#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
@@ -150,10 +149,6 @@ unsigned ContainerSelector::Type(WritingMode writing_mode) const {
     type |= kContainerTypeAnchored;
   }
   return type;
-}
-
-void ScopedContainerSelector::Trace(Visitor* visitor) const {
-  visitor->Trace(tree_scope_);
 }
 
 }  // namespace blink

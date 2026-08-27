@@ -226,13 +226,9 @@ const CSSSyntaxDefinition* FindOrNull(
   return it->value;
 }
 
-// The `container_tree_scope` is the tree scope holding the @container
-// rule being evaluated. For @container rules within @function, this is
-// the same tree scope as the enclosing @function is defined in.
 bool EvaluateContainerQueries(Element& element,
                               PseudoId pseudo_id,
                               const ContainerQuerySet& queries,
-                              const TreeScope* container_tree_scope,
                               Element* nearest_size_container,
                               MatchResult& match_result) {
   for (const ContainerQuery* query : queries.Queries()) {
@@ -249,8 +245,8 @@ bool EvaluateContainerQueries(Element& element,
     Element* starting_element =
         ContainerQueryEvaluator::DetermineStartingElement(
             element, pseudo_id, selector, nearest_size_container);
-    Element* container = ContainerQueryEvaluator::FindContainer(
-        starting_element, selector, container_tree_scope);
+    Element* container =
+        ContainerQueryEvaluator::FindContainer(starting_element, selector);
     if (!container) {
       continue;
     }
@@ -1294,7 +1290,7 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
       for (const MixinParameterBindings::CQDependentValue& candidate :
            base::Reversed(candidates)) {
         if (EvaluateContainerQueries(state_.GetElement(), state_.GetPseudoId(),
-                                     *candidate.container_queries, tree_scope,
+                                     *candidate.container_queries,
                                      state_.NearestSizeContainer(),
                                      match_result_)) {
           locals_after_cq.Set(name, candidate.data);
@@ -2330,10 +2326,10 @@ void StyleCascade::FlattenFunctionBody(
     } else if (auto* container_rule =
                    DynamicTo<StyleRuleContainer>(child.Get())) {
       state_.StyleBuilder().SetHasContainerRelativeValue();
-      if (EvaluateContainerQueries(
-              state_.GetElement(), state_.GetPseudoId(),
-              container_rule->GetContainerQuerySet(), function_tree_scope,
-              state_.NearestSizeContainer(), match_result_)) {
+      if (EvaluateContainerQueries(state_.GetElement(), state_.GetPseudoId(),
+                                   container_rule->GetContainerQuerySet(),
+                                   state_.NearestSizeContainer(),
+                                   match_result_)) {
         FlattenFunctionBody(*container_rule, function_tree_scope, result,
                             locals);
       }
