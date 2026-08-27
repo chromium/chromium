@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ImageView
+      android:id="@+id/email_verification_drag_handler"
+      android:importantForAccessibility="no"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop=
+          "@dimen/autofill_bottom_sheet_drag_handlebar_spacing_top"
+      android:src="@drawable/drag_handlebar"
+      app:tint="@macro/drag_handle_color" />
+
+  <ScrollView
+      android:id="@+id/email_verification_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/autofill_bottom_sheet_padding_horizontal"
+        android:paddingEnd="@dimen/autofill_bottom_sheet_padding_horizontal"
+        android:layout_marginTop=
+            "@dimen/autofill_bottom_sheet_spacing_extra_small">
+
+      <ImageView
+          android:id="@+id/email_verification_icon"
+          android:importantForAccessibility="no"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/autofill_bottom_sheet_logo_height"
+          android:layout_marginTop=
+              "@dimen/autofill_bottom_sheet_spacing_medium"
+          android:src="@drawable/ic_email_googblue_36dp" />
+
+      <TextView
+          android:id="@+id/email_verification_title_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop=
+              "@dimen/autofill_bottom_sheet_title_top_margin"
+          android:textAppearance="@style/TextAppearance.Headline.Primary"
+          android:textAlignment="center" />
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/email_verification_description_text"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:layout_marginTop=
+              "@dimen/autofill_bottom_sheet_spacing_extra_small"
+          app:leading="@dimen/text_size_medium_leading"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:textAlignment="center" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/email_verification_confirm_button"
+          style="@style/FilledButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAlignment="center"
+          android:layout_marginTop=
+              "@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:minWidth="@dimen/min_touch_target_size" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/email_verification_cancel_button"
+          style="@style/TextButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAlignment="center"
+          android:layout_marginTop=
+              "@dimen/autofill_bottom_sheet_spacing_extra_small"
+          android:layout_marginBottom=
+              "@dimen/autofill_bottom_sheet_spacing_extra_small"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:minWidth="@dimen/min_touch_target_size" />
+    </LinearLayout>
+  </ScrollView>
+</LinearLayout>

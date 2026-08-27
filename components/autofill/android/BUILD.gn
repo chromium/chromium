@@ -233,6 +233,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/data_model/payments/iban.h",
     "../core/browser/field_types.h",
     "../core/browser/filling/filling_product.h",
+    "../core/browser/foundations/autofill_client.h",
     "../core/browser/metrics/autofill_metrics.h",
     "../core/browser/metrics/payments/iban_metrics.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",

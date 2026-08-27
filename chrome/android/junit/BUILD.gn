@@ -516,6 +516,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
       "src/org/chromium/chrome/browser/autofill/CardUnmaskBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/GoogleWalletLauncherTest.java",
+      "src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetCoordinatorTest.java",
+      "src/org/chromium/chrome/browser/autofill/email_verification/EmailVerificationBottomSheetMediatorTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetContentTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetCoordinatorTest.java",

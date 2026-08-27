@@ -256,6 +256,7 @@ class AutofillClient {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   // LINT.IfChange(EvpPermissionUiStatus)
   enum class EmailVerificationPermissionUiStatus {
     kAllowed = 0,
