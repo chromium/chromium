@@ -41,20 +41,10 @@ EventLoop::PauseMicrotasksHandle::~PauseMicrotasksHandle() {
 
 EventLoop::EventLoop(Delegate* delegate,
                      v8::Isolate* isolate,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-                     v8::MicrotaskQueue* microtask_queue
-#else
-                     std::unique_ptr<v8::MicrotaskQueue> microtask_queue
-#endif
-                     )
+                     v8::MicrotaskQueue* microtask_queue)
     : delegate_(delegate),
       isolate_(isolate),
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-      microtask_queue_(microtask_queue)
-#else
-      microtask_queue_(std::move(microtask_queue))
-#endif
-{
+      microtask_queue_(microtask_queue) {
   DCHECK(isolate_);
   DCHECK(delegate);
   DCHECK(microtask_queue_);

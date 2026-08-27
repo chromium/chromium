@@ -98,13 +98,7 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
 
   // Returns the MicrotaskQueue instance to be associated to v8::Context. Pass
   // it to v8::Context::New().
-  v8::MicrotaskQueue* microtask_queue() const {
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-    return microtask_queue_;
-#else
-    return microtask_queue_.get();
-#endif
-  }
+  v8::MicrotaskQueue* microtask_queue() const { return microtask_queue_; }
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
@@ -135,12 +129,7 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
 
   EventLoop(Delegate* delegate,
             v8::Isolate* isolate,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-            v8::MicrotaskQueue* microtask_queue
-#else
-            std::unique_ptr<v8::MicrotaskQueue> microtask_queue
-#endif
-  );
+            v8::MicrotaskQueue* microtask_queue);
   ~EventLoop();
 
   static void RunPendingMicrotask(v8::Local<v8::Data> data);
@@ -152,14 +141,7 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   bool loop_enabled_ = true;
   Deque<base::OnceClosure> pending_microtasks_;
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
-  // TODO(https://crbug.com/515252150): remove #ifdef once the old
-  // v8::MicrotaskQueue::New() returning std::unique_ptr<> gets through
-  // the V8 API deprecation process.
-#ifdef V8_CPPGC_MICROTASK_QUEUE
   Persistent<v8::MicrotaskQueue> microtask_queue_;
-#else
-  std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
-#endif
   HashSet<FrameOrWorkerScheduler*> schedulers_;
   v8::Global<v8::CppHeapExternal> microtask_data_;
 

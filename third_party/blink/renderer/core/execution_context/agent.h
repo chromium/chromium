@@ -48,12 +48,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
         AgentType agent_type,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-        v8::MicrotaskQueue* microtask_queue = nullptr
-#else
-        std::unique_ptr<v8::MicrotaskQueue> microtask_queue = nullptr
-#endif
-  );
+        v8::MicrotaskQueue* microtask_queue = nullptr);
   virtual ~Agent();
 
   const scoped_refptr<scheduler::EventLoop>& event_loop() const {
@@ -104,11 +99,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
  protected:
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
         v8::MicrotaskQueue* microtask_queue,
-#else
-        std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
-#endif
         const AgentClusterKey& agent_cluster_key,
         AgentType agent_type);
 

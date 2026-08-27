@@ -24,48 +24,25 @@ bool is_web_security_disabled_set = false;
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
              AgentType agent_type,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-             v8::MicrotaskQueue* microtask_queue
-#else
-             std::unique_ptr<v8::MicrotaskQueue> microtask_queue
-#endif
-             )
+             v8::MicrotaskQueue* microtask_queue)
     : Agent(isolate,
             cluster_id,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-            microtask_queue
-#else
-            std::move(microtask_queue)
-#endif
-            ,
+            microtask_queue,
             AgentClusterKey::CreateSiteKeyed(NullUrl()),
-            agent_type) {
-}
+            agent_type) {}
 
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
              v8::MicrotaskQueue* microtask_queue,
-#else
-             std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
-#endif
              const AgentClusterKey& agent_cluster_key,
              AgentType agent_type)
     : isolate_(isolate),
       rejected_promises_(RejectedPromises::Create()),
-      event_loop_(base::AdoptRef(new scheduler::EventLoop(this,
-                                                          isolate,
-#ifdef V8_CPPGC_MICROTASK_QUEUE
-                                                          microtask_queue
-#else
-                                                          std::move(
-                                                              microtask_queue)
-#endif
-                                                          ))),
+      event_loop_(base::AdoptRef(
+          new scheduler::EventLoop(this, isolate, microtask_queue))),
       cluster_id_(cluster_id),
       agent_cluster_key_(agent_cluster_key),
-      agent_type_(agent_type) {
-}
+      agent_type_(agent_type) {}
 
 Agent::~Agent() = default;
 
