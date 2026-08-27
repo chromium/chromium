@@ -202,8 +202,10 @@ void DaemonProcess::LaunchPeerSession(
     mojo::PendingReceiver<mojom::PeerSession> peer_session_receiver) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  // TODO(crbug.com/502281489): Investigate process auto-relaunch suppression
-  // and session reconnection semantics when a Peer Connection process stops.
+  // A dedicated Peer Connection process is launched for each client session.
+  // Because the WebRTC connection state is transient and stateful, if the
+  // process terminates or crashes, it is not auto-relaunched and the client
+  // must reconnect to establish a new session.
   PeerConnectionProcessHandler* handler = LaunchPeerConnectionProcess();
   if (handler) {
     handler->BindPeerSession(std::move(peer_session_receiver));
