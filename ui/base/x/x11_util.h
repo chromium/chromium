@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/base/x/x11_cursor.h"
-#include "ui/gfx/icc_profile.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"

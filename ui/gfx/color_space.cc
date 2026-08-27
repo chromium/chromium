@@ -162,6 +162,9 @@ ColorSpace::ColorSpace(const SkColorSpacePrimaries& primaries,
   SetCustomTransferFunction(fn, /*is_hdr=*/false);
 }
 
+ColorSpace::ColorSpace(const SkColorSpace* sk_color_space, bool is_hdr)
+    : ColorSpace(sk_color_space ? ColorSpace(*sk_color_space, is_hdr) : ColorSpace()) {}
+
 ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
     : ColorSpace(PrimaryID::INVALID,
                  TransferID::INVALID,

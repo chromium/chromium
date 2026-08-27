@@ -23,6 +23,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "skia/ext/color_profile.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/util/display_util.h"
@@ -103,19 +104,21 @@ x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
   return future;
 }
 
-gfx::ICCProfile GetIccProfileSync(x11::Future<x11::GetPropertyReply> future) {
+sk_sp<skia::ColorProfile> GetIccProfileSync(
+    x11::Future<x11::GetPropertyReply> future) {
   auto response = future.Sync();
   if (!response || !response->value_len || response->bytes_after > 0) {
-    return gfx::ICCProfile();
+    return nullptr;
   }
 
   base::CheckedNumeric<size_t> size = response->value_len;
   size *= (response->format / 8u);
   if (!size.IsValid()) {
-    return gfx::ICCProfile();
+    return nullptr;
   }
 
-  return gfx::ICCProfile::FromData(response->value->bytes(), size.ValueOrDie());
+  return skia::ColorProfile::Make(
+      UNSAFE_BUFFERS(base::span(response->value->bytes(), size.ValueOrDie())));
 }
 
 x11::Future<x11::RandR::GetOutputPropertyReply> GetEdidFuture(
@@ -395,7 +398,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     crtcs.emplace(resources->crtcs[i], crtc_futures[i].Sync());
   }
 
-  std::vector<gfx::ICCProfile> iccs;
+  std::vector<sk_sp<skia::ColorProfile>> iccs;
   iccs.reserve(n_iccs);
   for (auto& future : icc_futures) {
     iccs.push_back(GetIccProfileSync(std::move(future)));
@@ -491,8 +494,11 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     if (!display::HasForceDisplayColorProfile()) {
       const size_t monitor =
           monitor_iter == output_to_monitor.end() ? 0 : monitor_iter->second;
-      const auto& icc_profile = iccs[monitor < iccs.size() ? monitor : 0];
-      gfx::ColorSpace color_space = icc_profile.GetPrimariesOnlyColorSpace();
+      gfx::ColorSpace color_space;
+      if (const auto& icc_profile = iccs[monitor < iccs.size() ? monitor : 0]) {
+        color_space = gfx::ColorSpace(
+            icc_profile->GetSkColorSpace()->makeSRGBGamma().get());
+      }
 
       // Most folks do not have an ICC profile set up, but we still want to
       // detect if a display has a wide color gamut so that HDR videos can be

@@ -34,7 +34,7 @@
 #include "ui/display/mac/screen_mac_headless.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/icc_profile.h"
+#include "skia/ext/color_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
@@ -133,21 +133,23 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   }
 
   // Compute DisplayColorSpaces.
-  gfx::ICCProfile icc_profile;
+  gfx::ColorSpace display_color_space;
   {
     CGColorSpaceRef cg_color_space = screen.colorSpace.CGColorSpace;
     if (cg_color_space) {
       base::apple::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
           CGColorSpaceCopyICCData(cg_color_space));
       if (cf_icc_profile) {
-        icc_profile =
-            gfx::ICCProfile::FromData(CFDataGetBytePtr(cf_icc_profile.get()),
-                                      CFDataGetLength(cf_icc_profile.get()));
+        if (auto color_profile = skia::ColorProfile::Make(
+                base::apple::CFDataToSpan(cf_icc_profile.get()))) {
+          display_color_space =
+              gfx::ColorSpace(color_profile->GetSkColorSpace().get());
+        }
       }
     }
   }
   gfx::DisplayColorSpaces display_color_spaces(
-      icc_profile.GetColorSpace(), viz::SinglePlaneFormat::kBGRA_8888);
+      display_color_space, viz::SinglePlaneFormat::kBGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
