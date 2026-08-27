@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/google",
   "+chrome/browser/metrics",
   "+chrome/browser/net",
-  "+chrome/browser/notifications",
   "+chrome/browser/password_manager",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
