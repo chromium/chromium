@@ -43,11 +43,20 @@ class UserPerformanceTuningManager {
     virtual ~MemorySaverModeDelegate() = default;
   };
 
+  class TabFreezingDelegate {
+   public:
+    virtual void SetFreezingEnabledByUser(bool enabled) = 0;
+    virtual ~TabFreezingDelegate() = default;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Raised when the memory saver mode setting is changed. Get the new
     // state using `UserPerformanceTuningManager::IsMemorySaverModeActive()`
     virtual void OnMemorySaverModeChanged() {}
+
+    // Raised when the tab freezing setting is changed.
+    virtual void OnTabFreezingModeChanged() {}
 
     // Raised when the total memory footprint reaches X%.
     // Can be used by the UI to show a promo
@@ -119,6 +128,20 @@ class UserPerformanceTuningManager {
   // Enables memory saver mode and sets the relevant prefs accordingly.
   void SetMemorySaverModeEnabled(bool enabled);
 
+  // Returns true if Tab Freezing is currently enabled.
+  bool IsTabFreezingActive() const;
+
+  // Returns true if the pref underlying Tab Freezing is managed by an
+  // enterprise policy.
+  bool IsTabFreezingManaged() const;
+
+  // Returns true if the pref underlying Tab Freezing is still in the default
+  // state.
+  bool IsTabFreezingDefault() const;
+
+  // Enables or disables tab freezing and sets the relevant pref accordingly.
+  void SetTabFreezingEnabled(bool enabled);
+
   // Discards the given WebContents with the same mechanism as one that is
   // discarded through a natural timeout
   void DiscardPageForTesting(content::WebContents* web_contents);
@@ -127,6 +150,7 @@ class UserPerformanceTuningManager {
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class ::PerformanceManagerMetricsProviderTest;
   friend class UserPerformanceTuningManagerTest;
+  friend class UserPerformanceTuningManagerTabFreezingTest;
   friend class TestUserPerformanceTuningManagerEnvironment;
 
   // An implementation of UserPerformanceTuningNotifier::Receiver that
@@ -145,7 +169,8 @@ class UserPerformanceTuningManager {
       PrefService* local_state,
       std::unique_ptr<UserPerformanceTuningNotifier> notifier = nullptr,
       std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate =
-          nullptr);
+          nullptr,
+      std::unique_ptr<TabFreezingDelegate> tab_freezing_delegate = nullptr);
 
   void Start();
 
@@ -153,11 +178,15 @@ class UserPerformanceTuningManager {
   void OnMemorySaverModePrefChanged();
   void OnMemorySaverAggressivenessPrefChanged();
 
+  void UpdateTabFreezingState();
+  void OnTabFreezingPrefChanged();
+
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();
   void NotifyMemoryMetricsRefreshed();
 
   std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate_;
+  std::unique_ptr<TabFreezingDelegate> tab_freezing_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;

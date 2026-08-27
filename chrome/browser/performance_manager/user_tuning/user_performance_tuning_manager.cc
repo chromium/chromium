@@ -22,6 +22,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/metrics/page_resource_monitor.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -37,6 +38,7 @@
 #endif
 
 using performance_manager::user_tuning::prefs::kMemorySaverModeState;
+using performance_manager::user_tuning::prefs::kTabFreezingEnabled;
 using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace performance_manager::user_tuning {
@@ -73,6 +75,17 @@ class MemorySaverModeDelegateImpl
   }
 
   ~MemorySaverModeDelegateImpl() override = default;
+};
+
+class TabFreezingDelegateImpl
+    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+          TabFreezingDelegate {
+ public:
+  void SetFreezingEnabledByUser(bool enabled) override {
+    performance_manager::freezing::SetFreezingEnabledByUser(enabled);
+  }
+
+  ~TabFreezingDelegateImpl() override = default;
 };
 
 }  // namespace
@@ -151,6 +164,26 @@ void UserPerformanceTuningManager::SetMemorySaverModeEnabled(bool enabled) {
                                              static_cast<int>(state));
 }
 
+bool UserPerformanceTuningManager::IsTabFreezingActive() const {
+  return pref_change_registrar_.prefs()->GetBoolean(kTabFreezingEnabled);
+}
+
+bool UserPerformanceTuningManager::IsTabFreezingManaged() const {
+  const PrefService::Preference* pref =
+      pref_change_registrar_.prefs()->FindPreference(kTabFreezingEnabled);
+  return pref && pref->IsManaged();
+}
+
+bool UserPerformanceTuningManager::IsTabFreezingDefault() const {
+  const PrefService::Preference* pref =
+      pref_change_registrar_.prefs()->FindPreference(kTabFreezingEnabled);
+  return pref && pref->IsDefaultValue();
+}
+
+void UserPerformanceTuningManager::SetTabFreezingEnabled(bool enabled) {
+  pref_change_registrar_.prefs()->SetBoolean(kTabFreezingEnabled, enabled);
+}
+
 UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
     ~UserPerformanceTuningReceiverImpl() = default;
 
@@ -179,11 +212,15 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
-    std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate)
+    std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate,
+    std::unique_ptr<TabFreezingDelegate> tab_freezing_delegate)
     : memory_saver_mode_delegate_(
           memory_saver_mode_delegate
               ? std::move(memory_saver_mode_delegate)
-              : std::make_unique<MemorySaverModeDelegateImpl>()) {
+              : std::make_unique<MemorySaverModeDelegateImpl>()),
+      tab_freezing_delegate_(
+          tab_freezing_delegate ? std::move(tab_freezing_delegate)
+                                : std::make_unique<TabFreezingDelegateImpl>()) {
   DCHECK(!g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = this;
 
@@ -213,6 +250,14 @@ void UserPerformanceTuningManager::Start() {
           base::Unretained(this)));
   // Make sure the initial state of the pref is passed on to the policy.
   OnMemorySaverAggressivenessPrefChanged();
+
+  pref_change_registrar_.Add(
+      kTabFreezingEnabled,
+      base::BindRepeating(
+          &UserPerformanceTuningManager::OnTabFreezingPrefChanged,
+          base::Unretained(this)));
+  // Make sure the initial state of the pref is passed on to the policy.
+  UpdateTabFreezingState();
 }
 
 void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
@@ -238,6 +283,19 @@ void UserPerformanceTuningManager::OnMemorySaverAggressivenessPrefChanged() {
   prefs::MemorySaverModeAggressiveness mode =
       prefs::GetCurrentMemorySaverMode(pref_change_registrar_.prefs());
   memory_saver_mode_delegate_->SetMode(mode);
+}
+
+void UserPerformanceTuningManager::UpdateTabFreezingState() {
+  bool enabled =
+      pref_change_registrar_.prefs()->GetBoolean(kTabFreezingEnabled);
+  tab_freezing_delegate_->SetFreezingEnabledByUser(enabled);
+}
+
+void UserPerformanceTuningManager::OnTabFreezingPrefChanged() {
+  UpdateTabFreezingState();
+  for (auto& obs : observers_) {
+    obs.OnTabFreezingModeChanged();
+  }
 }
 
 void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {

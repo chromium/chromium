@@ -95,6 +95,9 @@ class FreezingPolicy : public PageNodeObserver,
   // Invoked freezing on battery saver is enabled or disabled.
   void ToggleFreezingOnBatterySaverMode(bool is_enabled);
 
+  // Invoked when tab freezing is enabled or disabled by user settings.
+  void SetFreezingEnabledByUser(bool enabled);
+
   // Add or remove a freezing vote for `page_node`. A browsing instance is
   // frozen if all its pages have a freezing vote and none have a
   // `CannotFreezeReason`.
@@ -326,6 +329,9 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Whether Battery Saver is currently active.
   bool is_battery_saver_active_ = false;
+
+  // Whether Tab Freezing is enabled by the user in settings.
+  bool is_freezing_enabled_by_user_ = true;
 
   // Measures cumulative CPU usage per group of frames/workers that belong to
   // the same [browsing instance, origin]. Engaged when the

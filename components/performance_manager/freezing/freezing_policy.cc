@@ -290,6 +290,16 @@ void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   UpdateAllPagesFrozenState(base::LiveTicks::Now());
 }
 
+void FreezingPolicy::SetFreezingEnabledByUser(bool enabled) {
+  if (is_freezing_enabled_by_user_ == enabled) {
+    return;
+  }
+  is_freezing_enabled_by_user_ = enabled;
+  const base::LiveTicks now = base::LiveTicks::Now();
+  UpdateAllPeriodicUnfreezeTimers(now);
+  UpdateAllPagesFrozenState(now);
+}
+
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
   int prev_num_freeze_votes = GetFreezingState(page_node).num_freeze_votes++;
   // A browsing instance may be frozen if there is at least one freeze vote.
@@ -472,12 +482,14 @@ void FreezingPolicy::UpdateFrozenState(
              can_freeze_per_type_tracker.CanFreeze(
                  FreezingType::kBatterySaver)) {
     should_be_frozen = true;
-  } else if (can_freeze_per_type_tracker.CanFreeze(
+  } else if (is_freezing_enabled_by_user_ &&
+             can_freeze_per_type_tracker.CanFreeze(
                  FreezingType::kInfiniteTabs) &&
              !is_in_periodic_unfreeze &&
              base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing)) {
     should_be_frozen = true;
-  } else if (can_freeze_per_type_tracker.CanFreeze(
+  } else if (is_freezing_enabled_by_user_ &&
+             can_freeze_per_type_tracker.CanFreeze(
                  FreezingType::kInfiniteTabs) &&
              !is_in_periodic_unfreeze && is_under_memory_pressure_ &&
              base::FeatureList::IsEnabled(
@@ -1254,10 +1266,11 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
 }
 
 bool FreezingPolicy::IsPeriodicUnfreezingActive() const {
-  return base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
-         (base::FeatureList::IsEnabled(
-              features::kInfiniteTabsFreezingOnMemoryPressure) &&
-          is_under_memory_pressure_);
+  return is_freezing_enabled_by_user_ &&
+         (base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
+          (base::FeatureList::IsEnabled(
+               features::kInfiniteTabsFreezingOnMemoryPressure) &&
+           is_under_memory_pressure_));
 }
 
 void FreezingPolicy::UpdatePeriodicUnfreezeTimer(const PageNode* page_node,
@@ -1283,6 +1296,9 @@ void FreezingPolicy::UpdateAllPeriodicUnfreezeTimers(base::LiveTicks now) {
 
 void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
                                                 base::LiveTicks now) {
+  if (!IsPeriodicUnfreezingActive()) {
+    return;
+  }
   auto& state = GetFreezingState(page_node);
   CHECK(!state.periodic_unfreeze_timer.IsRunning(), base::NotFatalUntil::M141);
   state.periodic_unfreeze_timer.Start(

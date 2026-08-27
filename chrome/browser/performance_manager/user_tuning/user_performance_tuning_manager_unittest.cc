@@ -82,10 +82,24 @@ class UserPerformanceTuningManagerTest
   std::unique_ptr<UserPerformanceTuningManager> manager_;
 };
 
+class FakeTabFreezingDelegate
+    : public UserPerformanceTuningManager::TabFreezingDelegate {
+ public:
+  void SetFreezingEnabledByUser(bool enabled) override {
+    last_state_ = enabled;
+  }
+
+  std::optional<bool> GetLastState() const { return last_state_; }
+
+ private:
+  std::optional<bool> last_state_;
+};
+
 class MockUserPerformanceTuningManagerObserver
     : public UserPerformanceTuningManager::Observer {
  public:
   MOCK_METHOD(void, OnMemorySaverModeChanged, (), (override));
+  MOCK_METHOD(void, OnTabFreezingModeChanged, (), (override));
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -126,6 +140,70 @@ TEST_P(UserPerformanceTuningManagerTest, MemorySaverChangeObserver) {
   // The observer should be called on a subsequent pref change.
   EXPECT_CALL(*mock_observer, OnMemorySaverModeChanged).Times(1);
   manager()->SetMemorySaverModeEnabled(false);
+}
+
+class UserPerformanceTuningManagerTabFreezingTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+
+    auto fake_memory_saver_mode_delegate =
+        std::make_unique<FakeMemorySaverModeDelegate>();
+    auto fake_tab_freezing_delegate =
+        std::make_unique<FakeTabFreezingDelegate>();
+
+    tab_freezing_delegate_ = fake_tab_freezing_delegate.get();
+
+    manager_.reset(new UserPerformanceTuningManager(
+        &local_state_, nullptr, std::move(fake_memory_saver_mode_delegate),
+        std::move(fake_tab_freezing_delegate)));
+  }
+
+  void TearDown() override {
+    tab_freezing_delegate_ = nullptr;
+    manager_.reset();
+  }
+
+  void StartManager() { manager()->Start(); }
+
+  UserPerformanceTuningManager* manager() {
+    return UserPerformanceTuningManager::GetInstance();
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  TestingPrefServiceSimple local_state_;
+
+  raw_ptr<FakeTabFreezingDelegate> tab_freezing_delegate_ = nullptr;
+
+  std::unique_ptr<UserPerformanceTuningManager> manager_;
+};
+
+TEST_F(UserPerformanceTuningManagerTabFreezingTest,
+       InitialStatePassedToDelegate) {
+  StartManager();
+  EXPECT_THAT(tab_freezing_delegate_->GetLastState(), Optional(true));
+}
+
+TEST_F(UserPerformanceTuningManagerTabFreezingTest,
+       PrefChangedNotifiesDelegateAndObserver) {
+  auto observer = std::make_unique<MockUserPerformanceTuningManagerObserver>();
+  manager()->AddObserver(observer.get());
+  StartManager();
+
+  EXPECT_CALL(*observer, OnTabFreezingModeChanged).Times(1);
+  manager()->SetTabFreezingEnabled(false);
+  EXPECT_THAT(tab_freezing_delegate_->GetLastState(), Optional(false));
+  EXPECT_FALSE(manager()->IsTabFreezingActive());
+
+  EXPECT_CALL(*observer, OnTabFreezingModeChanged).Times(1);
+  manager()->SetTabFreezingEnabled(true);
+  EXPECT_THAT(tab_freezing_delegate_->GetLastState(), Optional(true));
+  EXPECT_TRUE(manager()->IsTabFreezingActive());
+
+  manager()->RemoveObserver(observer.get());
 }
 
 }  // namespace performance_manager::user_tuning

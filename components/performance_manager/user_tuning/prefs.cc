@@ -41,6 +41,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
   registry->RegisterTimePref(kLastBatteryUseTimestamp, base::Time());
   registry->RegisterBooleanPref(kDiscardRingTreatmentEnabled, true);
+  registry->RegisterBooleanPref(kTabFreezingEnabled, true);
   registry->RegisterBooleanPref(kPerformanceInterventionNotificationEnabled,
                                 true);
   registry->RegisterTimePref(kPerformanceInterventionNotificationLastShown,

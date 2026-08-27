@@ -208,7 +208,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "freezing_audio_protection_time",
                    base::Minutes(5));
 
-BASE_FEATURE(kFreezingFollowsDiscardOptOut, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFreezingFollowsDiscardOptOut, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRecordFreezingEligibilityUKM, base::FEATURE_ENABLED_BY_DEFAULT);
 

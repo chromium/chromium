@@ -108,6 +108,9 @@ struct CanFreezeDetails {
 // frozen and why.
 CanFreezeDetails GetCanFreezeDetailsForPageNode(const PageNode* page_node);
 
+// Sets whether background tab freezing is enabled by user settings.
+void SetFreezingEnabledByUser(bool enabled);
+
 }  // namespace performance_manager::freezing
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_

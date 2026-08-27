@@ -94,6 +94,10 @@ inline constexpr char kForceForegroundPriorityForUrls[] =
 inline constexpr char kDiscardRingTreatmentEnabled[] =
     "performance_tuning.discard_ring_treatment.enabled";
 
+// The pref storing whether automatic tab freezing is enabled.
+inline constexpr char kTabFreezingEnabled[] =
+    "performance_tuning.tab_freezing.enabled";
+
 // The pref storing whether performance intervention notifications should be
 // shown.
 inline constexpr char kPerformanceInterventionNotificationEnabled[] =

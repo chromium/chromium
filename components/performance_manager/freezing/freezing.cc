@@ -43,6 +43,18 @@ CanFreezeDetails GetCanFreezeDetailsForPageNode(const PageNode* page_node) {
   return freezing_policy->GetCanFreezeDetails(page_node);
 }
 
+void SetFreezingEnabledByUser(bool enabled) {
+  if (!PerformanceManager::IsAvailable()) {
+    return;
+  }
+  auto* freezing_policy =
+      PerformanceManager::GetGraph()->GetRegisteredObjectAs<FreezingPolicy>();
+  if (!freezing_policy) {
+    return;
+  }
+  freezing_policy->SetFreezingEnabledByUser(enabled);
+}
+
 Discarder::Discarder() = default;
 Discarder::~Discarder() = default;
 

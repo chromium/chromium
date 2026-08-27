@@ -2681,4 +2681,43 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTabWebUI) {
                             ElementsAre(CannotFreezeReason::kWebUI));
 }
 
+// Verify that disabling tab freezing by user unfreezes tabs frozen for
+// infinite tabs freezing, and re-enabling re-freezes them.
+TEST_F(FreezingPolicyInfiniteTabsTest, SetFreezingEnabledByUser) {
+  // Create a new page which pushes pages_[0] out of the protected list,
+  // freezing it.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page5, frame5] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // User disables tab freezing. pages_[0] should be unfrozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->SetFreezingEnabledByUser(false);
+  VerifyFreezerExpectations();
+
+  // User re-enables tab freezing. pages_[0] should be frozen again.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->SetFreezingEnabledByUser(true);
+  VerifyFreezerExpectations();
+}
+
+// Verify that freeze votes (kVoting) continue to freeze pages even when user
+// tab freezing is disabled.
+TEST_F(FreezingPolicyInfiniteTabsTest,
+       SetFreezingEnabledByUser_FreezeVotePreserved) {
+  policy()->SetFreezingEnabledByUser(false);
+
+  // Adding a freeze vote on a protected tab should still freeze it.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[1].get()));
+  policy()->AddFreezeVote(pages_[1].get());
+  VerifyFreezerExpectations();
+
+  // Removing the freeze vote unfreezes it.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[1].get()));
+  policy()->RemoveFreezeVote(pages_[1].get());
+  VerifyFreezerExpectations();
+}
+
 }  // namespace performance_manager
