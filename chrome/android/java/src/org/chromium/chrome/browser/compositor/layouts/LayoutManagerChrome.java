@@ -236,8 +236,14 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     public void showLayout(int layoutType, boolean animate) {
         if (mDestroyChecker.isDestroyed()) return;
 
-        if (layoutType == LayoutType.HUB && mHubLayout == null) {
-            initHubLayout();
+        if (layoutType == LayoutType.HUB) {
+            if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+                throw new IllegalStateException(
+                        "Hub should not be shown when Grid Tab Switcher is disabled.");
+            }
+            if (mHubLayout == null) {
+                initHubLayout();
+            }
         }
         super.showLayout(layoutType, animate);
     }

@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
@@ -314,6 +315,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void show(long time, boolean animate) {
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            throw new IllegalStateException(
+                    "HubLayout should not be shown when Grid Tab Switcher is disabled.");
+        }
         final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
         if (isStartingToShow()) return;
         if (isXrFullSpaceMode && animate && !ChromeFeatureList.sShowTabListAnimations.isEnabled()) {
