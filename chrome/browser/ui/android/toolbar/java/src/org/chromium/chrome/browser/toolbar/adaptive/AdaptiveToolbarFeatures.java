@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -174,8 +175,11 @@ public class AdaptiveToolbarFeatures {
      * Returns whether Glic is enabled for the given profile in the context of the adaptive toolbar.
      */
     public static boolean isGlicEnabledForAdaptiveToolbar(Context context, Profile profile) {
+        boolean isTablet =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                        && !DeviceInfo.isFoldable();
         return GlicEnabling.isEnabledForProfile(profile)
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !isTablet
                 && !BottomBarConfigUtils.isBottomBarEnabled(context);
     }
 
