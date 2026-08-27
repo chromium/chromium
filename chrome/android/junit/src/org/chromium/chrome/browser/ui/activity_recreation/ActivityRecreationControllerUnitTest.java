@@ -38,11 +38,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -280,6 +283,22 @@ public class ActivityRecreationControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testRestoreUiState_tabSwitcherVisible_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        initializeSavedInstanceState(
+                /* urlBarFocused= */ false,
+                null,
+                /* keyboardVisible= */ false,
+                /* tabSwitcherVisible= */ true,
+                /* isPointerLock= */ false,
+                /* isKeyboardLock= */ false);
+        mActivityRecreationController.restoreUiState(mSavedInstanceState);
+        verify(mLayoutManager, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+        DeviceInfo.resetIsDesktopForTesting();
+    }
+
+    @Test
     public void testRestoreUiState_urlBarNotFocused() {
         initializeSavedInstanceState(
                 /* urlBarFocused= */ false,
@@ -386,6 +405,18 @@ public class ActivityRecreationControllerUnitTest {
 
         mActivityRecreationController.restorePersistentState(persistableBundle);
         verify(mLayoutManager).showLayout(LayoutType.HUB, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testRestorePersistentState_tabSwitcherShown_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putBoolean(IS_TAB_SWITCHER_SHOWN, true);
+
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+        verify(mLayoutManager, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     @Test
