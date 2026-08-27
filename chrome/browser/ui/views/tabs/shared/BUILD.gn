@@ -90,27 +90,14 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
-    "//chrome/browser/ui:browser_init_state",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window/test:test_support",
-    "//chrome/browser/ui/fullscreen",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs:test_support",
-    "//chrome/browser/ui/window_feature_controller",
     "//chrome/test:test_support",
     "//chrome/test/views",
-    "//content/test:test_support",
     "//testing/gtest",
+    "//ui/actions",
     "//ui/events:test_support",
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ash/boca/on_task",
-      "//chrome/browser/ash/login/users:test_support",
-      "//components/account_id",
-      "//components/user_manager",
-    ]
-  }
 }
