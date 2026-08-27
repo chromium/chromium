@@ -90,6 +90,7 @@ source_set("unit_tests") {
   deps = [
     ":context_hub",
     "//base/test:test_support",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/tab_list",
@@ -101,6 +102,7 @@ source_set("unit_tests") {
     "//components/personal_context/core:test_support",
     "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

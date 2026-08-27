@@ -421,7 +421,8 @@ TEST(ContextHubMojomTraitsTest, GroupTypeSerialization) {
        {context_hub::ThirdPartyData::GroupType::kNoMatch,
         context_hub::ThirdPartyData::GroupType::kNudgeToClose,
         context_hub::ThirdPartyData::GroupType::kReadingList,
-        context_hub::ThirdPartyData::GroupType::kUnfinishedAction}) {
+        context_hub::ThirdPartyData::GroupType::kUnfinishedAction,
+        context_hub::ThirdPartyData::GroupType::kShoppingCart}) {
     context_hub::ThirdPartyData::GroupType output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<

@@ -62,6 +62,8 @@ EnumTraits<browser::context_hub::mojom::AutoTodoGroup,
       return browser::context_hub::mojom::AutoTodoGroup::kReadingList;
     case context_hub::ThirdPartyData::GroupType::kUnfinishedAction:
       return browser::context_hub::mojom::AutoTodoGroup::kUnfinishedAction;
+    case context_hub::ThirdPartyData::GroupType::kShoppingCart:
+      return browser::context_hub::mojom::AutoTodoGroup::kShoppingCart;
   }
   NOTREACHED();
 }
@@ -80,6 +82,8 @@ EnumTraits<browser::context_hub::mojom::AutoTodoGroup,
       return context_hub::ThirdPartyData::GroupType::kReadingList;
     case browser::context_hub::mojom::AutoTodoGroup::kUnfinishedAction:
       return context_hub::ThirdPartyData::GroupType::kUnfinishedAction;
+    case browser::context_hub::mojom::AutoTodoGroup::kShoppingCart:
+      return context_hub::ThirdPartyData::GroupType::kShoppingCart;
   }
   NOTREACHED();
 }

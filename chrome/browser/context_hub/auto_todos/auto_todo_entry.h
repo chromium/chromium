@@ -39,7 +39,8 @@ struct ThirdPartyData {
     kNudgeToClose,
     kReadingList,
     kUnfinishedAction,
-    kMaxValue = kUnfinishedAction,
+    kShoppingCart,
+    kMaxValue = kShoppingCart,
   };
 
   // Associated tab Session ID.

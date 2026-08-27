@@ -29,6 +29,7 @@ enum AutoTodoGroup {
   kNudgeToClose,
   kReadingList,
   kUnfinishedAction,
+  kShoppingCart,
 };
 
 struct GmailReference {
