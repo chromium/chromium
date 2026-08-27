@@ -74,10 +74,11 @@ class CORE_EXPORT GridPlacement {
 
    private:
     GridPosition start_, end_;
-    raw_ptr<PlacedGridItem, UnprotectedInRelease | DanglingUntriaged> next_{
-        nullptr};
-    raw_ptr<PlacedGridItem, UnprotectedInRelease | DanglingUntriaged> prev_{
-        nullptr};
+    // RAW_PTR_EXCLUSION: Rewriting causes a crash, because a base class ctor
+    // accesses child class ptr fields before they're initialized (see
+    // crbug.com/349213429).
+    RAW_PTR_EXCLUSION PlacedGridItem* next_{nullptr};
+    RAW_PTR_EXCLUSION PlacedGridItem* prev_{nullptr};
   };
 
   class AutoPlacementCursor {
