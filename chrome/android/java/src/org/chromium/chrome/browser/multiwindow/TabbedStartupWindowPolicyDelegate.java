@@ -22,8 +22,14 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncStateChangedListener;
+import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +42,14 @@ import java.util.Set;
  */
 @JNINamespace("chrome::android")
 @NullMarked
-public class TabbedStartupWindowPolicyDelegate {
+public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListener {
     /* package */ static final int PREF_UNSET = -1;
 
     private static @Nullable TabbedStartupWindowPolicyDelegate sInstance;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable PrefService mPrefService;
+    private @Nullable SyncService mSyncService;
 
     /**
      * Tracks whether the startup window policy has been claimed for the current browser process.
@@ -67,24 +74,36 @@ public class TabbedStartupWindowPolicyDelegate {
         return sInstance;
     }
 
+    // SyncService.SyncStateChangedListener implementation.
+    @Override
+    public void syncStateChanged() {
+        updateCachedRestoreOnStartupPref();
+        updateCachedRestoreOnStartupUrlsPref();
+    }
+
     /**
      * Initializes the delegate with native preferences once native is ready. This method is
      * idempotent and can be safely called multiple times across activity lifecycles.
      *
-     * @param prefService The {@link PrefService} to observe.
+     * @param profile The {@link Profile} associated with the browser session.
      */
-    public void initializeWithNative(PrefService prefService) {
+    public void initializeWithNative(Profile profile) {
         if (!MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()) return;
         // Early return if already initialized to ensure idempotency across multiple activities.
         if (mPrefChangeRegistrar != null) return;
+        PrefService prefService = UserPrefs.get(profile);
         mPrefService = prefService;
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
         mPrefChangeRegistrar.addObserver(
-                Pref.RESTORE_ON_STARTUP, this::onRestoreOnStartupPrefChanged);
+                Pref.RESTORE_ON_STARTUP, this::updateCachedRestoreOnStartupPref);
         mPrefChangeRegistrar.addObserver(
-                Pref.URLS_TO_RESTORE_ON_STARTUP, this::onRestoreOnStartupUrlsPrefChanged);
-        onRestoreOnStartupPrefChanged();
-        onRestoreOnStartupUrlsPrefChanged();
+                Pref.URLS_TO_RESTORE_ON_STARTUP, this::updateCachedRestoreOnStartupUrlsPref);
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+        if (mSyncService != null) {
+            mSyncService.addSyncStateChangedListener(this);
+        }
+        updateCachedRestoreOnStartupPref();
+        updateCachedRestoreOnStartupUrlsPref();
     }
 
     /**
@@ -273,22 +292,42 @@ public class TabbedStartupWindowPolicyDelegate {
         }
     }
 
-    private void onRestoreOnStartupPrefChanged() {
+    private void updateCachedRestoreOnStartupPref() {
+        if (!isHistorySyncActive()) {
+            ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(PREF_UNSET);
+            return;
+        }
         int type = assertNonNull(mPrefService).getInteger(Pref.RESTORE_ON_STARTUP);
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(type);
     }
 
-    private void onRestoreOnStartupUrlsPrefChanged() {
+    private void updateCachedRestoreOnStartupUrlsPref() {
+        if (!isHistorySyncActive()) {
+            ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(Collections.emptyList());
+            return;
+        }
         assertNonNull(mPrefService);
         List<String> urls =
                 TabbedStartupWindowPolicyDelegateJni.get().getSessionStartupUrls(mPrefService);
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
     }
 
+    private boolean isHistorySyncActive() {
+        if (mSyncService == null) return false;
+        // If the user is signed out (account info is null), History sync is inactive and
+        // account-level synced preferences must not be used.
+        if (mSyncService.getAccountInfo() == null) return false;
+        return mSyncService.getSelectedTypes().contains(UserSelectableType.HISTORY);
+    }
+
     /* package */ void resetForTesting() {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
+        }
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(this);
+            mSyncService = null;
         }
         mPrefService = null;
         mStartupPolicyClaimed = false;

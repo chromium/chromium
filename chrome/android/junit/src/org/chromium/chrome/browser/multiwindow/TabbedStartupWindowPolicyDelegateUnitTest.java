@@ -38,13 +38,20 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link TabbedStartupWindowPolicyDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,7 +66,9 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
     @Mock private ActivityManager mActivityManager;
     @Mock private ChromeTabbedActivity mTabbedActivity;
+    @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
+    @Mock private SyncService mSyncService;
     @Mock private PrefChangeRegistrar.Natives mMockPrefChangeRegistrarNatives;
     @Mock private TabbedStartupWindowPolicyDelegate.Natives mMockDelegateNatives;
 
@@ -72,6 +81,10 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mMockDelegateNatives.getSessionStartupUrls(any())).thenReturn(List.of());
         PrefChangeRegistrarJni.setInstanceForTesting(mMockPrefChangeRegistrarNatives);
         when(mMockPrefChangeRegistrarNatives.init(any(), any())).thenReturn(117L);
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.HISTORY));
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         ChromeMultiInstancePersistentStore.ensureInitialized();
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         DeviceInfo.setIsDesktopForTesting(true);
@@ -87,6 +100,8 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.resetForTesting();
         ChromeMultiInstancePersistentStore.resetForTesting();
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
+        UserPrefs.setPrefServiceForTesting(null);
+        SyncServiceFactory.setInstanceForTesting(null);
     }
 
     @Test
@@ -387,7 +402,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testPreferenceChange_syncsToCache() {
+    public void testPreferenceChange_historySyncActive_syncsToCache() {
         // Setup mock native preferences.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
                 .thenReturn(SessionStartupPref.NEW_TAB);
@@ -395,7 +410,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(List.of("https://www.google.com"));
 
         // Act.
-        mDelegate.initializeWithNative(mPrefService);
+        mDelegate.initializeWithNative(mProfile);
 
         // Verify.
         assertEquals(
@@ -414,10 +429,139 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService)).thenReturn(List.of());
 
         // Act.
-        mDelegate.initializeWithNative(mPrefService);
+        mDelegate.initializeWithNative(mProfile);
 
         // Verify.
         assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testPreferenceChange_historySyncDisabled_storesPrefUnset() {
+        // Setup mock native preferences with History sync disabled.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
+
+        // Act.
+        mDelegate.initializeWithNative(mProfile);
+
+        // Verify that persistent store returns UNSET and empty URLs.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testPreferenceChange_signedOut_storesPrefUnset() {
+        // Setup mock native preferences when user is signed out.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        when(mSyncService.getAccountInfo()).thenReturn(null);
+
+        // Act.
+        mDelegate.initializeWithNative(mProfile);
+
+        // Verify that persistent store returns UNSET and empty URLs.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testPreferenceChange_syncServiceNull_storesPrefUnset() {
+        // Setup mock native preferences when SyncService is null.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        SyncServiceFactory.setInstanceForTesting(null);
+
+        // Act.
+        mDelegate.initializeWithNative(mProfile);
+
+        // Verify that persistent store returns UNSET and empty URLs.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testSyncStateChanged_historySyncToggledOff_clearsCache() {
+        // Setup initially active History sync with cached preferences.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        mDelegate.initializeWithNative(mProfile);
+        assertEquals(
+                SessionStartupPref.NEW_TAB,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+
+        // Act: Toggle History sync off.
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
+        mDelegate.syncStateChanged();
+
+        // Verify that persistent store is reset to UNSET and empty URLs.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testSyncStateChanged_signedOut_clearsCache() {
+        // Setup initially active History sync with cached preferences.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        mDelegate.initializeWithNative(mProfile);
+        assertEquals(
+                SessionStartupPref.NEW_TAB,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+
+        // Act: Sign out.
+        when(mSyncService.getAccountInfo()).thenReturn(null);
+        mDelegate.syncStateChanged();
+
+        // Verify that persistent store is reset to UNSET and empty URLs.
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
+    }
+
+    @Test
+    public void testSyncStateChanged_historySyncToggledOn_syncsToCache() {
+        // Setup initially inactive History sync.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+        when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
+                .thenReturn(List.of("https://www.google.com"));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
+        mDelegate.initializeWithNative(mProfile);
+        assertEquals(
+                TabbedStartupWindowPolicyDelegate.PREF_UNSET,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+
+        // Act: Toggle History sync on.
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.HISTORY));
+        mDelegate.syncStateChanged();
+
+        // Verify that persistent store now caches synced preferences.
+        assertEquals(
+                SessionStartupPref.NEW_TAB,
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
+        assertEquals(
+                List.of("https://www.google.com"),
+                ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
     }
 
     @Test
@@ -428,7 +572,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(SessionStartupPref.NEW_TAB);
 
         // Act.
-        mDelegate.initializeWithNative(mPrefService);
+        mDelegate.initializeWithNative(mProfile);
 
         // Verify that persistent store returns default values.
         assertEquals(
@@ -439,6 +583,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Verify that we never register preference observer.
         verify(mMockPrefChangeRegistrarNatives, never()).init(any(), any());
         verify(mMockDelegateNatives, never()).getSessionStartupUrls(any());
+        verify(mSyncService, never()).addSyncStateChangedListener(any());
     }
 
     @Test

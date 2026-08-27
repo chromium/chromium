@@ -1656,8 +1656,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             super.finishNativeInitialization();
 
-            TabbedStartupWindowPolicyDelegate.getInstance()
-                    .initializeWithNative(UserPrefs.get(profile));
+            TabbedStartupWindowPolicyDelegate.getInstance().initializeWithNative(profile);
 
             if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
                 recordFirstAppLaunchTimestampIfNeeded();
