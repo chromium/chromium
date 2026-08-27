@@ -96,10 +96,9 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
             fullString.setSpan(
                     new ChromeClickableSpan(
                             mContext,
-                            (v) -> {
-                                PermissionBlockedDialogJni.get()
-                                        .onLearnMoreClicked(mNativeDialogController);
-                            }),
+                            _ ->
+                                    PermissionBlockedDialogJni.get()
+                                            .onLearnMoreClicked(mNativeDialogController)),
                     start,
                     fullString.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -215,7 +214,8 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                         ChromePageInfoHighlight.highlightPermission(contentSettingsType),
                         tabCreator,
                         /* packageName= */ null),
-                ChromePageInfoHighlight.openPermissionSubpage(contentSettingsType),
+                /* pageInfoHighlight= */ ChromePageInfoHighlight.openPermissionSubpage(
+                        contentSettingsType),
                 dialogPosition);
     }
 

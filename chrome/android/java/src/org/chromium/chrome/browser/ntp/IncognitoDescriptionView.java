@@ -47,7 +47,6 @@ public class IncognitoDescriptionView extends LinearLayout {
     private LinearLayout mBulletpointsContainer;
     private TextViewWithClickableSpans mLearnMore;
     private TextView[] mParagraphs;
-    private @Nullable ViewGroup mCookieControlsCard;
 
     private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 28;
     private static final int BULLETPOINTS_HORIZONTAL_WIDTH_DP = 262;
@@ -117,10 +116,9 @@ public class IncognitoDescriptionView extends LinearLayout {
                 context.getString(
                         R.string.incognito_ntp_block_third_party_cookies_description_android);
         Callback<View> spanOnClickCallback =
-                _ -> {
-                    new ChromeAsyncTabLauncher(/* incognito= */ true)
-                            .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
-                };
+                _ ->
+                        new ChromeAsyncTabLauncher(/* incognito= */ true)
+                                .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
         ChromeClickableSpan span =
                 new ChromeClickableSpan(view.getSpanColor(), spanOnClickCallback);
         view.setText(
@@ -181,18 +179,15 @@ public class IncognitoDescriptionView extends LinearLayout {
         // them.
         text = text.replaceAll(" *</?ul>\\n?", "");
 
-        SpannableString spannedText =
-                SpanApplier.applySpans(
-                        text,
-                        new SpanInfo(
-                                "<em>",
-                                "</em>",
-                                new ForegroundColorSpan(
-                                        context.getColor(R.color.incognito_emphasis))),
-                        new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(context)),
-                        new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(context)),
-                        new SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(context)));
-        return spannedText;
+        return SpanApplier.applySpans(
+                text,
+                new SpanInfo(
+                        "<em>",
+                        "</em>",
+                        new ForegroundColorSpan(context.getColor(R.color.incognito_emphasis))),
+                new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(context)),
+                new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(context)),
+                new SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(context)));
     }
 
     /** Adjusts the paddings, margins, and the orientation of bulletpoints. */
@@ -374,8 +369,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                 getContext().getString(R.string.new_tab_otr_subtitle_with_reading_list);
 
         final ChromeClickableSpan learnMoreSpan =
-                new ChromeClickableSpan(
-                        mLearnMore.getSpanColor(), (view) -> mLearnMore.callOnClick());
+                new ChromeClickableSpan(mLearnMore.getSpanColor(), (_) -> mLearnMore.callOnClick());
 
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
@@ -411,15 +405,15 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     /** Adjust the Cookie Controls Card. */
     private void adjustCookieControlsCard() {
-        mCookieControlsCard = findViewById(R.id.tracking_protection_card);
+        @Nullable ViewGroup cookieControlsCard = findViewById(R.id.tracking_protection_card);
         // Still null - not inflated yet.
-        if (mCookieControlsCard == null) return;
+        if (cookieControlsCard == null) return;
         if (mWidthDp <= WIDE_LAYOUT_THRESHOLD_DP) {
             // Portrait
-            mCookieControlsCard.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+            cookieControlsCard.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
         } else {
             // Landscape
-            mCookieControlsCard.getLayoutParams().width = dpToPx(getContext(), CONTENT_WIDTH_DP);
+            cookieControlsCard.getLayoutParams().width = dpToPx(getContext(), CONTENT_WIDTH_DP);
         }
     }
 }

@@ -48,7 +48,7 @@ public class PdfFragmentViewTrackerImpl implements PdfFragmentViewTracker {
         // CustomTab comes with a null selector/activity since it doesn't need to observe tabs.
         if (tabModelSelector == null || activity == null) {
             mTabModelSelectorTabObserver = null;
-            mPdfFragmentSupplier = () -> List.of();
+            mPdfFragmentSupplier = List::of;
             return;
         }
 

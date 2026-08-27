@@ -39,7 +39,6 @@ public class RecentTabsCoordinator
     private final ViewGroup mView;
     private final View mRecentTabsRoot;
     private final ExpandableListView mListView;
-    private final ContextMenuManager mContextMenuManager;
     private final RecentTabsRowAdapter mAdapter;
     private final RecentTabsManager mRecentTabsManager;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
@@ -78,7 +77,7 @@ public class RecentTabsCoordinator
         mRecentTabsManager.setUpdatedCallback(this::onUpdated);
         LayoutInflater inflater = LayoutInflater.from(activity);
 
-        mContextMenuManager =
+        ContextMenuManager contextMenuManager =
                 new ContextMenuManager(
                         navigationDelegate, this, mActivity::closeContextMenu, "RecentTabs");
 
@@ -92,7 +91,7 @@ public class RecentTabsCoordinator
         }
         mRecentTabsRoot = mView.findViewById(R.id.recent_tabs_root);
         mListView = mView.findViewById(R.id.odp_listview);
-        mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager, mContextMenuManager);
+        mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager, contextMenuManager);
         mListView.setAdapter(mAdapter);
         mListView.setItemsCanFocus(true);
         mListView.setOnChildClickListener(this::onChildClick);
@@ -106,13 +105,12 @@ public class RecentTabsCoordinator
                         mListView, edgeToEdgeSupplier);
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mTabStripHeightChangeCallback =
-                height -> {
-                    mView.setPadding(
-                            mView.getPaddingLeft(),
-                            height,
-                            mView.getPaddingRight(),
-                            mView.getPaddingBottom());
-                };
+                (Integer height) ->
+                        mView.setPadding(
+                                mView.getPaddingLeft(),
+                                height,
+                                mView.getPaddingRight(),
+                                mView.getPaddingBottom());
         mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
     }
 

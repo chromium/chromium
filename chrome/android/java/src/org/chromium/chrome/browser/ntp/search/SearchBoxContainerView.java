@@ -72,10 +72,7 @@ public class SearchBoxContainerView extends LinearLayout {
         // TODO(crbug.com/544731730): Remove this once ChipView#updateLayoutDirection is cleaned up
         // and its render tests are updated to set layout direction on their test containers.
         mAiChip.setLayoutDirection(LAYOUT_DIRECTION_INHERIT);
-        mPlusButton.addOnLayoutChangeListener(
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    updateTouchDelegate();
-                });
+        mPlusButton.addOnLayoutChangeListener((_, _, _, _, _, _, _, _, _) -> updateTouchDelegate());
         mIsNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
 
         Resources res = getResources();
@@ -93,7 +90,7 @@ public class SearchBoxContainerView extends LinearLayout {
         LayerDrawable foreground = (LayerDrawable) mAiChip.getForeground();
         foreground.setDrawableByLayerId(R.id.glif_border_layer, mGlifStrokeDrawable);
         mAiChip.setOnHoverListener(
-                (v, event) -> {
+                (_, event) -> {
                     if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) {
                         mGlifStrokeDrawable.start();
                     }

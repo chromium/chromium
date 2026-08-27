@@ -130,7 +130,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final NewTabPageManager mManager;
     private final Activity mActivity;
     private final NewTabPageLayout mNewTabPageLayout;
-    private final NewTabPageLayout.Delegate mLayoutDelegate;
     private final PropertyModel mModel;
     private final Tab mTab;
     private final TabModelSelector mTabModelSelector;
@@ -146,10 +145,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final SnackbarManager mSnackbarManager;
     private final boolean mIsLff;
     private final Supplier<Integer> mTabStripHeightSupplier;
-    private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final SideUiObserver mSideUiObserver;
     private final SearchEngineService mSearchEngineService;
     private final BackPressManager mBackPressManager;
+
     /**
      * The predefined baseline vertical scroll distance before the fake search box reaches the top
      * toolbar at which the transition animation into the omnibox begins.
@@ -161,6 +160,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * #mCurrentNtpFakeSearchBoxTransitionStartOffset}.
      */
     private final int mNtpSearchBoxTransitionStartOffset;
+
     private final int mNtpSearchBoxTopMarginWithoutLogo;
     private final boolean mEnableLogs;
     private final int mSearchBoxMaxWidth;
@@ -301,7 +301,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mSnackbarManager = snackbarManager;
         mIsLff = isLff;
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mSearchEngineService = SearchEngineService.getForProfile(mProfile);
 
         Resources resources = mActivity.getResources();
@@ -316,7 +315,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mModel = new PropertyModel(NewTabPageLayoutProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 mModel, mNewTabPageLayout, NewTabPageLayoutViewBinder::bind);
-        mLayoutDelegate =
+        NewTabPageLayout.Delegate layoutDelegate =
                 new NewTabPageLayout.Delegate() {
                     @Override
                     public void onMeasure(int width) {
@@ -333,7 +332,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         NewTabPageCoordinator.this.updateActionButtonVisibility();
                     }
                 };
-        mModel.set(NewTabPageLayoutProperties.DELEGATE, mLayoutDelegate);
+        mModel.set(NewTabPageLayoutProperties.DELEGATE, layoutDelegate);
         sCount++;
 
         // TODO(crbug.com/517393491): Refactor to a reusable component to apply to other UiConfigs.
@@ -343,7 +342,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         mUiConfig.setHorizontalInset(getSideUiWidthDp(sideUiSpecs));
                     }
                 };
-        mSideUiStateProviderSupplier.onAvailable(
+        sideUiStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(
                         provider -> {
                             mSideUiStateProvider = provider;
@@ -504,23 +503,20 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // @TODO(crbug.com/41492572): Add test case for search box OnDragListener.
         mNtpSearchBox.setSearchBoxDragListener(
-                new View.OnDragListener() {
-                    @Override
-                    public boolean onDrag(View view, DragEvent dragEvent) {
-                        // Disable search box EditText when browser content is dropped, its
-                        // re-enabled in {@link ChromeTabbedOnDragListener}, since a disabled view
-                        // will stop receiving further drag events. Given the child-first drag event
-                        // dispatch, disabling the TextView at ACTION_DRAG_STARTED is necessary to
-                        // prevent it from registering as a drop target and consuming the
-                        // ACTION_DROP event, thereby ensuring {@link ChromeTabbedOnDragListener}
-                        // receives it.
-                        if (MimeTypeUtils.clipDescriptionHasBrowserContent(
-                                        dragEvent.getClipDescription())
-                                && dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-                            enableSearchBoxEditText(false);
-                        }
-                        return false;
+                (View _, DragEvent dragEvent) -> {
+                    // Disable search box EditText when browser content is dropped, its
+                    // re-enabled in {@link ChromeTabbedOnDragListener}, since a disabled view
+                    // will stop receiving further drag events. Given the child-first drag event
+                    // dispatch, disabling the TextView at ACTION_DRAG_STARTED is necessary to
+                    // prevent it from registering as a drop target and consuming the
+                    // ACTION_DROP event, thereby ensuring {@link ChromeTabbedOnDragListener}
+                    // receives it.
+                    if (MimeTypeUtils.clipDescriptionHasBrowserContent(
+                                    dragEvent.getClipDescription())
+                            && dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                        enableSearchBoxEditText(false);
                     }
+                    return false;
                 });
 
         mNtpSearchBox.setSearchBoxTextWatcher(

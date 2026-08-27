@@ -1081,7 +1081,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             mGroups.add(group);
         } else {
-            if (mGroups.size() == 0) {
+            if (mGroups.isEmpty()) {
                 mGroups.add(mInvisibleSeparatorGroup);
             }
             mGroups.add(group);

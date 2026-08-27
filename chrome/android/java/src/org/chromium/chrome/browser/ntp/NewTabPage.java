@@ -1427,9 +1427,7 @@ public class NewTabPage
             Tab tab = mTabRef.get();
             if (provider == null || context == null || tab == null) return;
             if (tab.isLoading()) return;
-            if (!(provider instanceof BrowserControlsVisibilityManager)) return;
-
-            BrowserControlsVisibilityManager manager = (BrowserControlsVisibilityManager) provider;
+            if (!(provider instanceof BrowserControlsVisibilityManager manager)) return;
 
             // If browser controls are locked persistently in the SHOWN state (e.g., during layout
             // transitions or background tab creation animations), ignore scroll events to prevent

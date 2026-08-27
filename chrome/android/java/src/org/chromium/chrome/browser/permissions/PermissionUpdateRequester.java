@@ -127,10 +127,10 @@ class PermissionUpdateRequester implements PermissionCallback {
         ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
 
         boolean canRequestAllPermissions = true;
-        for (int i = 0; i < mAndroidPermisisons.length; i++) {
+        for (String permission : mAndroidPermisisons) {
             canRequestAllPermissions &=
-                    (windowAndroid.hasPermission(mAndroidPermisisons[i])
-                            || windowAndroid.canRequestPermission(mAndroidPermisisons[i]));
+                    (windowAndroid.hasPermission(permission)
+                            || windowAndroid.canRequestPermission(permission));
         }
 
         if (canRequestAllPermissions) {
@@ -159,11 +159,11 @@ class PermissionUpdateRequester implements PermissionCallback {
         if (windowAndroid == null) {
             hasAllPermissions = false;
         } else {
-            for (int i = 0; i < mAndroidPermisisons.length; i++) {
-                if (!mRequiredAndroidPermissions.contains(mAndroidPermisisons[i])) {
+            for (String permission : mAndroidPermisisons) {
+                if (!mRequiredAndroidPermissions.contains(permission)) {
                     continue;
                 }
-                hasAllPermissions &= windowAndroid.hasPermission(mAndroidPermisisons[i]);
+                hasAllPermissions &= windowAndroid.hasPermission(permission);
             }
         }
         if (mNativePtr != 0) {
