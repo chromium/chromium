@@ -21,9 +21,12 @@ BASE_DECLARE_FEATURE(kSessionRestoreShowThrobberOnVisible);
 
 // Allows split tabs to be arranged top/bottom.
 BASE_DECLARE_FEATURE(kSplitViewHorizontal);
-// When enabled, creating a new split tab through the context menu will open a
-// submenu to select the split's orientation.
+// When enabled, creating a new split tab through the tab and link context menus
+// will open a submenu to select the split's orientation.
 BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectAccess);
+// When enabled, creating a new split tab through the tab context menu will open
+// a submenu to select the split's orientation.
+BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectTabAccess);
 
 // Enables CJK word boundary detection in Tab Search.
 BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
@@ -79,6 +82,8 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 BASE_DECLARE_FEATURE(kTabStripUnification);
 
 bool IsSplitViewHorizontalIndirectAccessEnabled();
+
+bool IsSplitViewHorizontalDirectAccessEnabledForTab();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 

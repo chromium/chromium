@@ -349,7 +349,7 @@ void TabMenuModel::Build(int index) {
       SetEnabledAt(swap_with_split_index, num_tabs == 1);
       SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
     } else {
-      if (tabs::kSplitViewHorizontalDirectAccess.Get()) {
+      if (tabs::IsSplitViewHorizontalDirectAccessEnabledForTab()) {
         split_layout_submenu_ =
             std::make_unique<SplitViewLayoutMenuModel>(base::BindOnce(
                 [](TabStripModel* tab_strip_model, tabs::TabHandle tab_handle,

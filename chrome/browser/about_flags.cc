@@ -4841,9 +4841,13 @@ const FeatureEntry::FeatureParam kSplitViewHorizontalDirectAccess[] = {
     {"split_view_horizontal_direct_access", "true"}};
 const FeatureEntry::FeatureParam kSplitViewHorizontalIndirectAccess[] = {
     {"split_view_horizontal_direct_access", "false"}};
+const FeatureEntry::FeatureParam kSplitViewHorizontalDirectTabAccess[] = {
+    {"split_view_horizontal_direct_tab_access", "true"}};
 const FeatureEntry::FeatureVariation kSplitViewHorizontalVariations[] = {
     {"Direct Access", kSplitViewHorizontalDirectAccess, nullptr},
-    {"Indirect Access", kSplitViewHorizontalIndirectAccess, nullptr}};
+    {"Indirect Access", kSplitViewHorizontalIndirectAccess, nullptr},
+    {"Direct Access for Tab Context Menu", kSplitViewHorizontalDirectTabAccess,
+     nullptr}};
 #endif
 
 const FeatureEntry::FeatureParam kToolbarGlowUpNoReload[] = {

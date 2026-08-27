@@ -21,6 +21,11 @@ BASE_FEATURE_PARAM(bool,
                    &kSplitViewHorizontal,
                    "split_view_horizontal_direct_access",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kSplitViewHorizontalDirectTabAccess,
+                   &kSplitViewHorizontal,
+                   "split_view_horizontal_direct_tab_access",
+                   false);
 
 BASE_FEATURE(kTabSearchCjkWordBoundary, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -89,6 +94,12 @@ BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsSplitViewHorizontalIndirectAccessEnabled() {
   return base::FeatureList::IsEnabled(kSplitViewHorizontal) &&
          !kSplitViewHorizontalDirectAccess.Get();
+}
+
+bool IsSplitViewHorizontalDirectAccessEnabledForTab() {
+  return base::FeatureList::IsEnabled(kSplitViewHorizontal) &&
+         (kSplitViewHorizontalDirectAccess.Get() ||
+          kSplitViewHorizontalDirectTabAccess.Get());
 }
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
