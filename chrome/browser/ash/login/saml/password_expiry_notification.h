@@ -9,7 +9,9 @@
 
 #include "base/time/time.h"
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -18,14 +20,15 @@ class PasswordExpiryNotification {
  public:
   // Shows a password expiry notification. The password has expired if
   // `time_until_expiry` is zero or negative.
-  static void Show(Profile* profile, base::TimeDelta time_until_expiry);
+  static void Show(const user_manager::User& user,
+                   base::TimeDelta time_until_expiry);
 
   // Returns localized title text appropriate for `time_until_expiry`, eg:
   // "Password expires in 7 days".
   static std::u16string GetTitleText(base::TimeDelta time_until_expiry);
 
   // Hides the password expiry notification if it is currently shown.
-  static void Dismiss(Profile* profile);
+  static void Dismiss(const user_manager::User& user);
 };
 
 }  // namespace ash

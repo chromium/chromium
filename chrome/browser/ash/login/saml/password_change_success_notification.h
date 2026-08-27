@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_CHANGE_SUCCESS_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_CHANGE_SUCCESS_NOTIFICATION_H_
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -13,7 +15,7 @@ namespace ash {
 class PasswordChangeSuccessNotification {
  public:
   // Shows a password change success notification.
-  static void Show(Profile* profile);
+  static void Show(const user_manager::User& user);
 };
 
 }  // namespace ash

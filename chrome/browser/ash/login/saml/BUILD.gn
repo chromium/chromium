@@ -56,7 +56,6 @@ static_library("saml") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/notifications",
     "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/install_attributes",
@@ -71,7 +70,7 @@ static_library("saml") {
     "//net/traffic_annotation",
     "//services/network/public/mojom:url_loader_base",
     "//ui/base",
-    "//ui/message_center/public/cpp",
+    "//ui/message_center",
   ]
 }
 
@@ -271,5 +270,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//net",
     "//testing/gtest",
+    "//ui/message_center",
   ]
 }

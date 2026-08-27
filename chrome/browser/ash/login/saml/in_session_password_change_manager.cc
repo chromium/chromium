@@ -317,7 +317,7 @@ void InSessionPasswordChangeManager::ShowStandardExpiryNotification(
     base::TimeDelta time_until_expiry) {
   // Show a notification, and reshow it each time the screen is unlocked.
   renotify_on_unlock_ = true;
-  PasswordExpiryNotification::Show(primary_profile_, time_until_expiry);
+  PasswordExpiryNotification::Show(*primary_user_, time_until_expiry);
   UrgentPasswordExpiryNotificationDialog::Dismiss();
 }
 
@@ -325,12 +325,12 @@ void InSessionPasswordChangeManager::ShowUrgentExpiryNotification() {
   // Show a notification, and reshow it each time the screen is unlocked.
   renotify_on_unlock_ = true;
   UrgentPasswordExpiryNotificationDialog::Show();
-  PasswordExpiryNotification::Dismiss(primary_profile_);
+  PasswordExpiryNotification::Dismiss(*primary_user_);
 }
 
 void InSessionPasswordChangeManager::DismissExpiryNotification() {
   UrgentPasswordExpiryNotificationDialog::Dismiss();
-  PasswordExpiryNotification::Dismiss(primary_profile_);
+  PasswordExpiryNotification::Dismiss(*primary_user_);
 }
 
 void InSessionPasswordChangeManager::OnExpiryNotificationDismissedByUser() {
@@ -446,7 +446,7 @@ void InSessionPasswordChangeManager::OnPasswordUpdateSuccess(
   DismissExpiryNotification();
   PasswordChangeDialog::Dismiss();
   ConfirmPasswordChangeDialog::Dismiss();
-  PasswordChangeSuccessNotification::Show(primary_profile_);
+  PasswordChangeSuccessNotification::Show(*primary_user_);
 
   // We request a new sync token. It will be updated locally and signal the fact
   // of password change to other devices owned by the user.
