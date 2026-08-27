@@ -416,8 +416,8 @@ class StyleBuilderConverter {
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);
 
-  static ScopedCSSNameList* ConvertContainerName(StyleResolverState&,
-                                                 const CSSValue&);
+  static Vector<AtomicString> ConvertContainerName(StyleResolverState&,
+                                                   const CSSValue&);
 
   static StyleIntrinsicLength ConvertIntrinsicDimension(
       const StyleResolverState&,

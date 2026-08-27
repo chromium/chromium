@@ -46,16 +46,7 @@ bool NameMatches(const ComputedStyle& style,
   if (name.IsNull()) {
     return true;
   }
-  if (const ScopedCSSNameList* container_name = style.ContainerName()) {
-    const HeapVector<Member<const ScopedCSSName>>& names =
-        container_name->GetNames();
-    for (const auto& scoped_name : names) {
-      if (scoped_name->GetName() == name) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return style.ContainerName().Contains(name);
 }
 
 bool TypeMatches(const ComputedStyle& style,

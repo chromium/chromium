@@ -1966,15 +1966,9 @@ TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
+  builder1.SetContainerName(Vector<AtomicString>({AtomicString("test")}));
   builder1.SetContainerType(kContainerTypeSize);
-  builder2.SetContainerName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
+  builder2.SetContainerName(Vector<AtomicString>({AtomicString("test")}));
   builder2.SetContainerType(kContainerTypeSize);
 
   const ComputedStyle* style1 = builder1.TakeStyle();

@@ -2945,15 +2945,14 @@ const CSSValue* ContainerName::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.ContainerName()) {
+  if (style.ContainerName().empty()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  for (const Member<const ScopedCSSName>& name :
-       style.ContainerName()->GetNames()) {
-    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
+  for (const AtomicString& name : style.ContainerName()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name));
   }
   return list;
 }

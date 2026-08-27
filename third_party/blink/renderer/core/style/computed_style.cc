@@ -258,8 +258,7 @@ bool ComputedStyle::DiffAffectsContainerQueries(
   if (!old_style || !new_style) {
     return false;
   }
-  if (!base::ValuesEquivalent(old_style->ContainerName(),
-                              new_style->ContainerName()) ||
+  if (old_style->ContainerName() != new_style->ContainerName() ||
       old_style->ContainerType() != new_style->ContainerType()) {
     return true;
   }

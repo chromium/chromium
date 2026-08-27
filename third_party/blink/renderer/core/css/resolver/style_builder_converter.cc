@@ -3820,20 +3820,14 @@ ScrollbarGutter StyleBuilderConverter::ConvertScrollbarGutter(
   return flags;
 }
 
-ScopedCSSNameList* StyleBuilderConverter::ConvertContainerName(
+Vector<AtomicString> StyleBuilderConverter::ConvertContainerName(
     StyleResolverState& state,
     const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  if (IsA<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
-    return nullptr;
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return Vector<AtomicString>();
   }
-  DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertNoneOrCustomIdent(state, *item));
-  }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+  return ConvertNoneOrCustomIdentListUnscoped(state, value);
 }
 
 StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
