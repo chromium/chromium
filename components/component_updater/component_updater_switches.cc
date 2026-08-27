@@ -25,4 +25,7 @@ constexpr char kCampaignsTestTag[] = "campaigns-test-tag";
 // matches dev1.
 constexpr char kDemoModeTestTag[] = "demo-app-test-tag";
 
+// Allows uninstalling components from the chrome://components page.
+constexpr char kEnableComponentUninstall[] = "enable-component-uninstall";
+
 }  // namespace switches

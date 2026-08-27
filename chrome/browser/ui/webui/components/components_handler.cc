@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "components/update_client/crx_update_item.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,6 +34,11 @@ void ComponentsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "checkUpdate", base::BindRepeating(&ComponentsHandler::HandleCheckUpdate,
                                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "uninstallComponent",
+      base::BindRepeating(&ComponentsHandler::HandleUninstallComponent,
+                          base::Unretained(this)));
 }
 
 void ComponentsHandler::OnJavascriptAllowed() {
@@ -68,6 +75,17 @@ void ComponentsHandler::HandleCheckUpdate(const base::ListValue& args) {
   const std::string& component_id = args[0].GetString();
 
   OnDemandUpdate(component_id);
+}
+
+void ComponentsHandler::HandleUninstallComponent(const base::ListValue& args) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableComponentUninstall)) {
+    return;
+  }
+  if (args.empty() || !args[0].is_string()) {
+    return;
+  }
+  component_updater_->UnregisterComponent(args[0].GetString());
 }
 
 void ComponentsHandler::OnEvent(const update_client::CrxUpdateItem& item) {

@@ -22,6 +22,7 @@ interface Component {
 
 export interface ComponentsData {
   components: Component[];
+  showUninstallButton?: boolean;
 }
 
 /**
@@ -73,6 +74,8 @@ function returnComponentsData(componentsData: ComponentsData) {
   // Initialize |currentComponentsData|, which can also be updated in
   // onComponentEvent() later.
   currentComponentsData = componentsData.components;
+  componentsData.showUninstallButton =
+      loadTimeData.getBoolean('showUninstallButton');
 
   renderTemplate(componentsData);
 
@@ -82,6 +85,15 @@ function returnComponentsData(componentsData: ComponentsData) {
   for (const link of links) {
     link.onclick = function(e) {
       handleCheckUpdate(link);
+      e.preventDefault();
+    };
+  }
+
+  const uninstallButtons =
+      document.body.querySelectorAll<HTMLButtonElement>('.button-uninstall');
+  for (const btn of uninstallButtons) {
+    btn.onclick = function(e) {
+      handleUninstall(btn);
       e.preventDefault();
     };
   }
@@ -152,6 +164,17 @@ function handleCheckUpdate(node: HTMLElement) {
 
   // Tell the C++ ComponentssDOMHandler to check for update.
   chrome.send('checkUpdate', [node.id]);
+}
+
+/**
+ * Handles an 'uninstall' button getting clicked.
+ * @param node The HTML element representing the component being uninstalled.
+ */
+function handleUninstall(node: HTMLElement) {
+  node.setAttribute('disabled', 'true');
+
+  // Tell the C++ ComponentsDOMHandler to uninstall the component.
+  chrome.send('uninstallComponent', [node.id]);
 }
 
 // Get data and have it displayed upon loading.

@@ -51,6 +51,10 @@ export function getHtml(data: ComponentsData) {
             <button class="button-check-update" guest-disabled id="${item.id}">
               $i18n{checkUpdate}
             </button>
+            <button class="button-uninstall" guest-disabled id="${item.id}"
+                ?hidden="${!data.showUninstallButton}">
+              $i18n{uninstall}
+            </button>
           </div>
         </div>
       `)}

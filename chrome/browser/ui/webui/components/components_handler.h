@@ -36,6 +36,9 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   // Callback for the "checkUpdate" message.
   void HandleCheckUpdate(const base::ListValue& args);
 
+  // Callback for the "uninstallComponent" message.
+  void HandleUninstallComponent(const base::ListValue& args);
+
   // ServiceObserver implementation.
   void OnEvent(const update_client::CrxUpdateItem& item) override;
 
