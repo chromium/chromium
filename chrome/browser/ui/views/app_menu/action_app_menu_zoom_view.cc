@@ -8,9 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/number_formatting.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/zoom/zoom_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -18,6 +21,7 @@
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 
 namespace {
@@ -38,6 +42,19 @@ ActionAppMenuZoomView::ActionAppMenuZoomView(
 
   BuildZoomChildControls(zoom_row_action_item, action_view_controller,
                          command_to_action_map);
+
+  if (browser_window_interface_) {
+    tabs::TabInterface* active_tab =
+        browser_window_interface_->GetActiveTabInterface();
+    content::WebContents* contents =
+        active_tab ? active_tab->GetContents() : nullptr;
+    if (contents) {
+      if (auto* zoom_controller =
+              zoom::ZoomController::FromWebContents(contents)) {
+        zoom_observation_.Observe(zoom_controller);
+      }
+    }
+  }
 }
 
 ActionAppMenuZoomView::~ActionAppMenuZoomView() = default;
@@ -48,11 +65,12 @@ void ActionAppMenuZoomView::BuildZoomChildControls(
     base::flat_map<int, raw_ptr<actions::ActionItem>>& command_to_action_map) {
   for (auto& zoom_child_holder :
        zoom_row_action_item->GetChildren().children()) {
-    actions::ActionItem* const zoom_child = zoom_child_holder->GetActionItem();
-    const actions::ActionId zoom_action_id = zoom_child->GetActionId().value();
+    actions::ActionItem* zoom_child = zoom_child_holder->GetActionItem();
+    actions::ActionId zoom_action_id = zoom_child->GetActionId().value();
 
     views::ImageButton* const zoom_child_button =
         AddChildView(CreateZoomButton(zoom_child));
+
     action_view_controller->CreateActionViewRelationship(
         zoom_child_button, zoom_child->GetAsWeakPtr());
     command_to_action_map[zoom_child->GetActionId().value()] = zoom_child;
@@ -63,8 +81,38 @@ void ActionAppMenuZoomView::BuildZoomChildControls(
       separator->SetColorId(ui::kColorMenuSeparator);
       separator->SetPreferredLength(kSeparatorPreferredLength);
       AddChildView(std::move(separator));
+    } else if (zoom_action_id == kActionZoomMinus) {
+      zoom_label_ = AddChildView(std::make_unique<views::Label>(
+          base::FormatPercent(GetCurrentZoomPercent())));
     }
   }
+}
+
+void ActionAppMenuZoomView::OnZoomChanged(
+    const zoom::ZoomController::ZoomChangedEventData& data) {
+  if (zoom_label_) {
+    zoom_label_->SetText(base::FormatPercent(GetCurrentZoomPercent()));
+  }
+}
+
+void ActionAppMenuZoomView::OnZoomControllerDestroyed(
+    zoom::ZoomController* zoom_controller) {
+  zoom_observation_.Reset();
+}
+
+int ActionAppMenuZoomView::GetCurrentZoomPercent() const {
+  if (!browser_window_interface_) {
+    return 100;
+  }
+  tabs::TabInterface* const active_tab =
+      browser_window_interface_->GetActiveTabInterface();
+  content::WebContents* const contents =
+      active_tab ? active_tab->GetContents() : nullptr;
+  if (!contents) {
+    return 100;
+  }
+  const auto* zoom_controller = zoom::ZoomController::FromWebContents(contents);
+  return zoom_controller->GetZoomPercent();
 }
 
 std::unique_ptr<views::ImageButton> ActionAppMenuZoomView::CreateZoomButton(

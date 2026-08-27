@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include <memory>
-#include <utility>
 
+#include "base/functional/callback_helpers.h"
+#include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -21,6 +23,10 @@
 #include "chrome/browser/ui/views/app_menu/block_menu_entry_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/zoom/zoom_controller.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -419,4 +425,47 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  zoom::ZoomController::CreateForWebContents(web_contents.get());
+  auto* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents.get());
+  ASSERT_TRUE(zoom_controller);
+
+  EXPECT_CALL(mock_window_interface_, GetActiveTabInterface())
+      .WillRepeatedly(testing::Return(&mock_tab));
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* const root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
+  auto* zoom_view =
+      views::AsViewClass<ActionAppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  views::Label* const zoom_label = zoom_view->zoom_label_for_testing();
+  ASSERT_NE(zoom_label, nullptr);
+  EXPECT_TRUE(zoom_label->GetVisible());
+  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(100));
+
+  // Change zoom level and verify that the label updates to print the new zoom
+  // percent.
+  zoom_controller->SetZoomLevel(2.0);
+  EXPECT_EQ(zoom_label->GetText(),
+            base::FormatPercent(zoom_controller->GetZoomPercent()));
+
+  menu.CloseMenu();
+}
 }  // namespace
