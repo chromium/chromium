@@ -3731,7 +3731,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         };
     }
 
-    private VerticalTabsActionDelegate createVerticalTabsActionDelegate() {
+    @VisibleForTesting
+    VerticalTabsActionDelegate createVerticalTabsActionDelegate() {
         return new VerticalTabsActionDelegate() {
             @Override
             public void openTabSearch() {
@@ -3743,6 +3744,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             @Override
             public void openHubSearch() {
+                if (TabSwitcherUtils.isGridTabSwitcherDisabled()) return;
                 onMenuOrKeyboardAction(R.id.tab_search, /* fromMenu= */ false);
             }
         };
