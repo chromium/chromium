@@ -33,6 +33,9 @@ NSString* const kLottieAnimationFREPlanningSlideRTLName =
 NSString* const kLottieAnimationFREPlanningSlideDarkRTLName =
     @"FRE_Planning_Slide_Dark_RTL";
 
+NSString* const kGeminiFRECarouselScrollViewAccessibilityIdentifier =
+    @"GeminiFRECarouselScrollViewAccessibilityIdentifier";
+
 const char kLastInteractionTimestampDictKey[] = "last_interaction_timestamp";
 const char kURLOnLastInteractionDictKey[] = "url_on_last_interaction";
 

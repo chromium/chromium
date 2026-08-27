@@ -35,7 +35,7 @@ UIPageControl* GetPageControl(GeminiFirstRunCarouselView* carousel) {
 
 }  // namespace
 
-@interface GeminiFirstRunCarouselView (Testing)
+@interface GeminiFirstRunCarouselView (Testing) <UIScrollViewDelegate>
 - (CGFloat)contentOffsetXForPage:(NSInteger)page;
 - (NSInteger)pageIndexForContentOffset:(CGFloat)offsetX;
 - (BOOL)isRTL;
@@ -69,7 +69,8 @@ class GeminiFirstRunCarouselViewTest : public PlatformTest {
         animationAccessibilityLabel:@"Plan artwork"];
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   GeminiFirstRunCarouselSlide* slide1_;
   GeminiFirstRunCarouselSlide* slide2_;
   GeminiFirstRunCarouselSlide* slide3_;
@@ -150,4 +151,51 @@ TEST_F(GeminiFirstRunCarouselViewTest, PageIndexForContentOffset) {
   EXPECT_EQ(2, [carousel pageIndexForContentOffset:0 * pageWidth]);
   EXPECT_EQ(1, [carousel pageIndexForContentOffset:1 * pageWidth]);
   EXPECT_EQ(0, [carousel pageIndexForContentOffset:2 * pageWidth]);
+}
+
+// Tests that auto-scroll timer advances through slides and loops back to 0.
+TEST_F(GeminiFirstRunCarouselViewTest, AutoScrollTimerAdvancesAndLoops) {
+  GeminiFirstRunCarouselView* carousel = [[GeminiFirstRunCarouselView alloc]
+      initWithSlides:@[ slide1_, slide2_, slide3_ ]];
+  carousel.frame = CGRectMake(0, 0, 375, 266);
+  [carousel layoutIfNeeded];
+
+  UIPageControl* pageControl = GetPageControl(carousel);
+  ASSERT_NE(pageControl, nil);
+  EXPECT_EQ(0, pageControl.currentPage);
+
+  [carousel startAutoScrolling];
+
+  // Advance by 3 seconds -> should advance to slide 1.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(1, pageControl.currentPage);
+
+  // Advance by 3 seconds -> should advance to slide 2.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(2, pageControl.currentPage);
+
+  // Advance by 3 seconds -> should loop back to slide 0.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(0, pageControl.currentPage);
+
+  [carousel stopAutoScrolling];
+}
+
+// Tests that user interaction (dragging) stops the auto-scroll timer.
+TEST_F(GeminiFirstRunCarouselViewTest, UserInteractionStopsAutoScroll) {
+  GeminiFirstRunCarouselView* carousel = [[GeminiFirstRunCarouselView alloc]
+      initWithSlides:@[ slide1_, slide2_, slide3_ ]];
+  carousel.frame = CGRectMake(0, 0, 375, 266);
+  [carousel layoutIfNeeded];
+
+  UIPageControl* pageControl = GetPageControl(carousel);
+  ASSERT_NE(pageControl, nil);
+  [carousel startAutoScrolling];
+
+  // Simulate user touch/drag gesture beginning.
+  [carousel scrollViewWillBeginDragging:GetScrollView(carousel)];
+
+  // Fast-forward 10 seconds in mock time, slide should remain at 0.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(0, pageControl.currentPage);
 }

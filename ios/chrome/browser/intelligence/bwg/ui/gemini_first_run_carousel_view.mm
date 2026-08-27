@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_carousel_slide_view.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -323,6 +324,8 @@ const base::TimeDelta kAutoScrollInterval = base::Seconds(3);
   _scrollView.showsVerticalScrollIndicator = NO;
   _scrollView.clipsToBounds = NO;
   _scrollView.delegate = self;
+  _scrollView.accessibilityIdentifier =
+      kGeminiFRECarouselScrollViewAccessibilityIdentifier;
   [self addSubview:_scrollView];
 
   // Horizontal stack view inside the scroll view that holds all slide views

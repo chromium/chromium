@@ -275,6 +275,9 @@ extern NSString* const kLottieAnimationFREPlanningSlideDarkName;
 extern NSString* const kLottieAnimationFREPlanningSlideRTLName;
 extern NSString* const kLottieAnimationFREPlanningSlideDarkRTLName;
 
+// Accessibility identifier for the Gemini Visual Rich FRE carousel scroll view.
+extern NSString* const kGeminiFRECarouselScrollViewAccessibilityIdentifier;
+
 // Session map dictionary key for the last interaction timestamp.
 extern const char kLastInteractionTimestampDictKey[];
 // Session map dictionary key for the visible URL during the last BWG
