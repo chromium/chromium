@@ -874,9 +874,9 @@ void RenderFrameHostManager::InitChild(
               url::Origin(), frame_name, frame_unique_name,
               network::ParsedPermissionsPolicy(),
               network::mojom::WebSandboxFlags::kNone, frame_policy,
-              // should enforce strict mixed content checking
+              // Inherited after RenderFrameHost creation.
               blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-              // hashes of hosts for insecure request upgrades
+              // Inherited after RenderFrameHost creation.
               std::vector<uint32_t>(),
               false /* has_potentially_trustworthy_unique_origin */,
               false /* is_secure_context_root */,

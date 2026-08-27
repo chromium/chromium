@@ -3714,6 +3714,41 @@ TEST_P(RenderFrameHostManagerTest, NavigateCrossSiteBetweenWebUIs) {
   EXPECT_FALSE(GetPendingFrameHost(manager));
 }
 
+TEST_P(RenderFrameHostManagerTest,
+       InitialEmptyDocumentInheritsInsecureRequestState) {
+  const GURL kUrl("http://www.google.test");
+  const std::vector<uint32_t> kInsecureNavigationsSet = {123, 456};
+
+  contents()->NavigateAndCommit(kUrl);
+  main_test_rfh()->browsing_context_state()->SetInsecureRequestPolicy(
+      blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
+  main_test_rfh()->browsing_context_state()->SetInsecureNavigationsSet(
+      kInsecureNavigationsSet);
+
+  main_test_rfh()->OnCreateChildFrame(
+      main_test_rfh()->GetProcess()->GetNextRoutingID(),
+      TestRenderFrameHost::CreateStubFrameRemote(),
+      TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
+      TestRenderFrameHost::CreateStubPolicyContainerBindParams(),
+      TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
+      blink::mojom::TreeScopeType::kDocument, "frame", "uniqueName", false,
+      blink::LocalFrameToken(), base::UnguessableToken::Create(),
+      blink::DocumentToken(), blink::FramePolicy(),
+      blink::mojom::FrameOwnerProperties(),
+      blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
+
+  const blink::mojom::FrameReplicationState& child_replication_state =
+      contents()
+          ->GetPrimaryFrameTree()
+          .root()
+          ->child_at(0)
+          ->current_replication_state();
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
+            child_replication_state.insecure_request_policy);
+  EXPECT_EQ(kInsecureNavigationsSet,
+            child_replication_state.insecure_navigations_set);
+}
+
 // This class intercepts RenderFrameProxyHost creations, and overrides their
 // respective blink::mojom::RemoteFrame instances.
 class InsecureRequestPolicyProxyObserver

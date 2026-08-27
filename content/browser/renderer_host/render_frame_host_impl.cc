@@ -5907,6 +5907,15 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   }
 
   if (creator_frame) {
+    // The initial empty document inherits insecure request state from its
+    // parent or opener.
+    const blink::mojom::FrameReplicationState& creator_replication_state =
+        creator_frame->browsing_context_state()->current_replication_state();
+    browsing_context_state_->SetInsecureRequestPolicy(
+        creator_replication_state.insecure_request_policy);
+    browsing_context_state_->SetInsecureNavigationsSet(
+        creator_replication_state.insecure_navigations_set);
+
     // If we're given a parent/opener frame, copy the
     // RuntimeFeatureStateReadContext.
     RuntimeFeatureStateDocumentData* rfs_document_data_from_creator =
