@@ -280,6 +280,12 @@
   return nullptr;
 }
 
+- (void)loadIfNecessary {
+  if (_webState && _webState->GetNavigationManager()) {
+    _webState->GetNavigationManager()->LoadIfNecessary();
+  }
+}
+
 #pragma mark - Private helpers
 
 // Loads the URL defined in the cobrowse context.

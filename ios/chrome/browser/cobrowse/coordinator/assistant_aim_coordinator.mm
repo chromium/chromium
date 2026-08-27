@@ -270,6 +270,10 @@ class AssistantAIMUIStateProvider
   }
 }
 
+- (void)loadIfNecessary {
+  [_mediator loadIfNecessary];
+}
+
 #pragma mark - CobrowseBrowserAgent::UIStateProvider
 
 - (BOOL)isTabGridVisible {

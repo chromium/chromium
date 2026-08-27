@@ -23,6 +23,10 @@
 // minimized form.
 - (void)setVisible:(BOOL)visible inMinimizedState:(BOOL)minimized;
 
+// Triggers a reload of the assistant web state if its web process has
+// terminated.
+- (void)loadIfNecessary;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_COORDINATOR_ASSISTANT_AIM_COORDINATOR_H_

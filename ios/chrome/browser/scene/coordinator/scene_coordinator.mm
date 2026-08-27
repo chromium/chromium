@@ -760,6 +760,10 @@ inline LayoutStateScenePassKey PassKey() {
   }
   if (_assistantAIMCoordinator) {
     [self revealAssistantInMinimizedState:minimized];
+    // If the app was backgrounded, the OS might have killed the WebProcess.
+    // Calling loadIfNecessary ensures the WebState restarts the process and
+    // reloads the page if it died, while being a no-op if it is still alive.
+    [_assistantAIMCoordinator loadIfNecessary];
     return;
   }
   _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
