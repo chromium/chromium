@@ -10,6 +10,8 @@ source_set("site_token_provider") {
     "site_token_provider_service_factory.h",
     "site_token_url_loader_factory.cc",
     "site_token_url_loader_factory.h",
+    "site_token_url_loader_header_client.cc",
+    "site_token_url_loader_header_client.h",
   ]
 
   public_deps = [
@@ -39,6 +41,7 @@ source_set("unit_tests") {
     "site_token_header_client_unittest.cc",
     "site_token_provider_service_factory_unittest.cc",
     "site_token_url_loader_factory_unittest.cc",
+    "site_token_url_loader_header_client_unittest.cc",
   ]
   deps = [
     ":site_token_provider",
