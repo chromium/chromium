@@ -6396,6 +6396,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.FieldDetectionToTickleLatency"
+    units="ms" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between detecting an OTP field on a web page and
+    receiving a push notification (tickle) from the backend. Recorded when a
+    tickle arrives after an OTP field was detected.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.PhishGuard.CheckPerformed"
     enum="Boolean" expires_after="2026-10-31">
   <owner>luchenpeng@google.com</owner>

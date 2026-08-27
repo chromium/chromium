@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_METRICS_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_METRICS_TRACKER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -18,6 +20,15 @@ namespace autofill {
 // fields have not been detected yet.
 class OtpMetricsTracker {
  public:
+  static constexpr char kFieldDetectionToTickleLatencyHistogram[] =
+      "Autofill.OneTimeTokens.FieldDetectionToTickleLatency";
+
+  // Maximum duration between OTP field detection and tickle arrival for them to
+  // be considered correlated. If more than this time has passed, the tickle is
+  // likely unrelated to the previously detected field, so the latency metric is
+  // not recorded.
+  static constexpr base::TimeDelta kFieldDetectionTimeout = base::Minutes(5);
+
   explicit OtpMetricsTracker(
       one_time_tokens::OneTimeTokenService* one_time_token_service);
   OtpMetricsTracker(const OtpMetricsTracker&) = delete;
@@ -39,6 +50,10 @@ class OtpMetricsTracker {
 
   raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_;
   one_time_tokens::ExpiringSubscription tickle_subscription_;
+
+  // Timestamp of the most recently detected OTP field. `std::nullopt` before
+  // any OTP field is detected or once a session has completed/timed out.
+  std::optional<base::TimeTicks> field_detection_time_;
 
   base::WeakPtrFactory<OtpMetricsTracker> weak_ptr_factory_{this};
 };

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -138,6 +139,10 @@ void OtpManagerImpl::OnFieldTypesDetermined(
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens << "OTP field detected in web form."
       << Br{} << "Form ID: " << form_id;
+
+  if (OtpMetricsTracker* tracker = owner_->client().GetOtpMetricsTracker()) {
+    tracker->OnOtpFieldDetected();
+  }
 
   GetRecentOtpsAndRenewSubscription();
 }
