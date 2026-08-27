@@ -505,12 +505,48 @@ Refer to the
 
 ## Under the Hood
 
-For `@CalledByNative`, we directly call the `<jni.h>` methods, which are
-basically just reflection APIs, and then add a proguard rule to ensure the
-annotated method/field is kept in Java. The registration step does nothing for
-this direction of JNI, since we do not do any sort of proxying. However, using
-the registration step for `@CalledByNatives` has been discussed before:
-[go/proxy-called-by-natives-proposal](http://go/proxy-called-by-natives-proposal).
+### Native -> Java (@CalledByNative)
+
+For `@CalledByNative`, R8 configs are used to prevent removal & obfuscation of
+Java symbols. C++ functions are generated that use JNI APIs to invoke the
+functions.
+
+In non-multiplexed builds, each `@CalledByNative` stub generates inline string
+literals (for method names and signatures) and local `static std::atomic` caches
+for `jclass` and `jmethodID`.
+
+When JNI multiplexing is enabled (release mode), `generate_final_jni()`
+optimizes `@CalledByNative` calls by pooling metadata at link time:
+
+- Class names, method names, and method signatures are deduplicated into shared
+  string pools (`kClassNameStringPool`, `kMethodNameStringPool`,
+  `kDescriptorStringPool`).
+- Descriptor metadata and class offsets are stored in compact tables
+  (`kCbnDescriptors`, `kClassNameOffsets`).
+- Cached `jclass` and `jmethodID` atomic variables (`cached_jclasses`,
+  `cached_method_ids`) are defined once in the final registration file rather
+  than duplicated per call site.
+- Stubs in generated headers look up classes and method IDs by index, reducing
+  the per-stub size vs. non-pooled stubs.
+
+Note: `generate_jar_jni()` codegen is not pooled. Because JAR generation creates
+bindings for all public methods (many of which are never called), keeping them
+standalone allows `--gc-sections` to strip unreferenced methods and strings.
+
+#### Weak Called-by-Natives
+
+Some standalone native tools and test binaries (e.g. `sandbox_linux_unittests`,
+`quic_server`) depend on core libraries like `//base` or `//net` without having
+a Java component or a `generate_final_jni()` target.
+
+Setting `use_weak_called_by_natives = true` on `generate_jni` emits
+`@CalledByNative` functions with `[[gnu::weak]]` fallback implementations. If
+linked into a standalone binary without `generate_final_jni()`, these weak
+symbols allow the binary to link. If linked into a binary that includes a
+`generate_final_jni()` step, the pooled multiplexed implementations override the
+weak stubs.
+
+### Java -> Native (@NativeMethods)
 
 JNI Zero has 2 primary modes for `@NativeMethods`. In each, we insert a "proxy"
 class per annotated class which allows us to fake for tests and optimize better.
@@ -563,7 +599,7 @@ int Java_GEN_JNI_org_bar_Bar_b() {
 }
 ```
 
-### Debug Mode
+#### Debug Mode
 
 In debug mode, the `GEN_JNI` is a file containing `native` methods that match
 every single `@NativeMethods` from every `generate_jni` in our program.
@@ -575,7 +611,7 @@ class GEN_JNI {
 }
 ```
 
-### Release Mode
+#### Release Mode
 
 In release mode, the `GEN_JNI.java` is just a callthrough shim to `N.java` (a
 short name to reduce size), and `N` uses multiplexing by signature type to
@@ -615,7 +651,7 @@ it's so that Chrome can support multiple ABIs with a single Java file - we put
 the smaller (subset) ABI switch numbers first, and the superset ABI's unique
 classes get the final switch numbers.
 
-#### Per-File Natives
+### Per-File Natives
 
 This was added to make transitioning to JNI Zero easier. It allows using
 `@NativeMethods` without needing a registration step at the cost of extra binary
@@ -639,22 +675,6 @@ class BarJni {
 ```
 
 ### Legacy Modes
-
-These are modes which JNI provides currently, but we hope to remove. Please do
-not add any new uses of these.
-
-#### Using the "native" Keyword
-
-E.g.:
-
-```
-class Foo {
-    native someMethod();
-}
-```
-
-This is still supported by default, but is less efficient than `@NativeMethods`
-interfaces. We plan to delete support for this.
 
 #### Hashed Names
 

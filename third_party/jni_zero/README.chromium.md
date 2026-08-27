@@ -16,6 +16,15 @@ Given a set of Java files, generates a header file to call into Java for all
 `.srcjar` containing `<ClassName>Jni.java`, which should be depended on via the
 generated GN target `<generate_jni's target name>_java`.
 
+**Key Variables:**
+
+- `sources`: List of `.java` files to generate JNI bindings for.
+- `use_weak_called_by_natives`: (Optional) Emits `@CalledByNative` stubs with
+- `[[gnu::weak]]` fallback implementations. Allows the bindings to be used
+- with or without a `generate_final_jni()` target.
+- `module_name`: (Optional) Namespaces the generated `GEN_JNI` class (e.g. for
+- APK splits, or `apk_under_test`).
+
 **Example:**
 
 ```python
@@ -30,10 +39,10 @@ android_library("abcd_java") {
 }
 
 source_set("abcd") {
- ...
- # Allows the cc files to include the generated `${OriginalClassName}_jni.h`
- # headers.
- deps = [ ":abcd_jni" ]
+  ...
+  # Allows the cc files to include the generated `${OriginalClassName}_jni.h`
+  # headers.
+  deps = [ ":abcd_jni" ]
 }
 ```
 
@@ -45,8 +54,16 @@ to `generate_jni`, if every method and public field were annotated by
 
 ### generate_final_jni
 
-Generates a whole-program Java and native link - required for all Java that
-calls into native via `@NativeMethods`.
+Generates a whole-program Java and native link:
+
+- Multiplexes `@NativeMethods` into signature-based entry points to reduce
+  binary size.
+- Pools `@CalledByNative` metadata (string pools, descriptor tables, and cached
+  class/method ID arrays) when multiplexing is enabled.
+
+Required for all Java that calls into native via `@NativeMethods`, and for
+native binaries that call `@CalledByNative` functions when multiplexing is
+enabled.
 
 ### shared_library_with_jni
 
