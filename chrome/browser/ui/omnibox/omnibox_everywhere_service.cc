@@ -141,9 +141,11 @@ void OmniboxEverywhereService::OnScreensharePickerClosed() {
 
 void OmniboxEverywhereService::ShowRegionSelectOverlay(
     const SkBitmap& screenshot,
+    const RegionCaptureSource& source,
     RegionSelectedCallback callback) {
   if (ui_manager()) {
-    ui_manager()->ShowRegionSelectOverlay(screenshot, std::move(callback));
+    ui_manager()->ShowRegionSelectOverlay(screenshot, source,
+                                          std::move(callback));
     return;
   }
   std::move(callback).Run(SkBitmap());

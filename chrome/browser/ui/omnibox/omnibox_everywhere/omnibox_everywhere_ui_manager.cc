@@ -764,6 +764,7 @@ void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
 
 void OmniboxEverywhereUIManager::ShowRegionSelectOverlay(
     const SkBitmap& screenshot,
+    const RegionCaptureSource& source,
     RegionSelectedCallback callback) {
   if (region_select_overlay_) {
     auto old_overlay = std::move(region_select_overlay_);
@@ -772,7 +773,7 @@ void OmniboxEverywhereUIManager::ShowRegionSelectOverlay(
   gfx::NativeWindow context =
       widget_ ? widget_->GetNativeWindow() : gfx::NativeWindow();
   region_select_overlay_ = OmniboxEverywhereRegionSelectOverlay::Create(
-      screenshot,
+      screenshot, source,
       base::BindOnce(&OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       context);

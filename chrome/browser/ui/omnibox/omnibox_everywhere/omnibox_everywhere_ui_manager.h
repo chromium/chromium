@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/context_menu_params.h"
@@ -164,11 +165,14 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnDrivePickerOpened();
   void OnDrivePickerClosed();
 
+  using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
+
   void OnScreensharePickerOpened();
   void OnScreensharePickerClosed();
   using RegionSelectedCallback =
       base::OnceCallback<void(const SkBitmap& result_bitmap)>;
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                               const RegionCaptureSource& source,
                                RegionSelectedCallback callback);
   void OnRegionSelectOverlayClosed(RegionSelectedCallback callback,
                                    const SkBitmap& result_bitmap);

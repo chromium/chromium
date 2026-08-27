@@ -23,6 +23,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -165,9 +166,12 @@ class ContextualSearchboxHandler
     // Invoked when the screenshare picker is opened or closed.
     virtual void OnScreensharePickerOpened() {}
     virtual void OnScreensharePickerClosed() {}
+
+    using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
     using RegionSelectedCallback =
         base::OnceCallback<void(const SkBitmap& result_bitmap)>;
     virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                                         const RegionCaptureSource& source,
                                          RegionSelectedCallback callback) {}
   };
 

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_SERVICE_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_SERVICE_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -36,6 +38,19 @@ class OmniboxEverywhereFeaturePromoController;
 
 class OmniboxEverywhereService : public KeyedService {
  public:
+  struct RegionCaptureSource {
+    enum class Type { kAllDisplays, kSpecificDisplay };
+    Type type = Type::kAllDisplays;
+    std::optional<int64_t> display_id;
+
+    static RegionCaptureSource AllDisplays() {
+      return {.type = Type::kAllDisplays};
+    }
+    static RegionCaptureSource ForDisplay(int64_t id) {
+      return {.type = Type::kSpecificDisplay, .display_id = id};
+    }
+  };
+
   explicit OmniboxEverywhereService(Profile* profile);
   OmniboxEverywhereService(const OmniboxEverywhereService&) = delete;
   OmniboxEverywhereService& operator=(const OmniboxEverywhereService&) = delete;
@@ -57,6 +72,7 @@ class OmniboxEverywhereService : public KeyedService {
   using RegionSelectedCallback =
       base::OnceCallback<void(const SkBitmap& result_bitmap)>;
   virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                                       const RegionCaptureSource& source,
                                        RegionSelectedCallback callback);
   void OpenUrl(const GURL& url,
                WindowOpenDisposition disposition,

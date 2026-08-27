@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
@@ -21,11 +22,13 @@ namespace omnibox_everywhere {
 // screenshot for region selection.
 class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
  public:
+  using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
   using CompleteCallback =
       base::OnceCallback<void(const SkBitmap& result_bitmap)>;
 
   static std::unique_ptr<OmniboxEverywhereRegionSelectOverlay> Create(
       const SkBitmap& screenshot,
+      const RegionCaptureSource& source,
       CompleteCallback callback,
       gfx::NativeWindow context = gfx::NativeWindow());
 
@@ -44,7 +47,9 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
 
  private:
   explicit OmniboxEverywhereRegionSelectOverlay(CompleteCallback callback);
-  void Initialize(const SkBitmap& screenshot, gfx::NativeWindow context);
+  void Initialize(const SkBitmap& screenshot,
+                  const RegionCaptureSource& source,
+                  gfx::NativeWindow context);
   void Finish(const SkBitmap& result_bitmap);
 
   CompleteCallback callback_;

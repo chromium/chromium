@@ -117,6 +117,7 @@ class OmniboxEverywhereUI
   void OnScreensharePickerOpened() override;
   void OnScreensharePickerClosed() override;
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                               const RegionCaptureSource& source,
                                RegionSelectedCallback callback) override;
   void OnScreenshotMenuClosed();
 

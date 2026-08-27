@@ -1710,6 +1710,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesPersistentMode) {
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        ShowRegionSelectOverlay_CreateAndDismiss) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   auto ui_manager = CreateUIManager();
 
   SkBitmap bitmap;
@@ -1717,7 +1718,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   bitmap.eraseColor(SK_ColorRED);
 
   base::test::TestFuture<const SkBitmap&> future;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
 
   OmniboxEverywhereRegionSelectOverlay* overlay =
       ui_manager->region_select_overlay_for_testing();
@@ -1738,6 +1740,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        ShowRegionSelectOverlay_ReentrancyCancelsPreviousOverlay) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   auto ui_manager = CreateUIManager();
 
   SkBitmap bitmap;
@@ -1745,11 +1748,13 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   bitmap.eraseColor(SK_ColorRED);
 
   base::test::TestFuture<const SkBitmap&> future1;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future1.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future1.GetCallback());
   EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
 
   base::test::TestFuture<const SkBitmap&> future2;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future2.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future2.GetCallback());
 
   // The first overlay should be cancelled cleanly with empty bitmap.
   EXPECT_TRUE(future1.IsReady());
@@ -1764,6 +1769,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        ShowRegionSelectOverlay_ShutdownOrCleanUpDismisses) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   auto ui_manager = CreateUIManager();
 
   SkBitmap bitmap;
@@ -1771,7 +1777,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   bitmap.eraseColor(SK_ColorRED);
 
   base::test::TestFuture<const SkBitmap&> future;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
   EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
 
   // CleanUpWidget / Shutdown cleanly destroys overlay and resolves callback.
@@ -1782,6 +1789,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   auto ui_manager = CreateUIManager();
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 
@@ -1790,7 +1798,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
   bitmap.eraseColor(SK_ColorRED);
 
   base::test::TestFuture<const SkBitmap&> future;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
 
   ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
@@ -1803,6 +1812,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
 
 TEST_F(OmniboxEverywhereUIManagerTest,
        DismissBypassedDuringRegionSelectOverlay) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
@@ -1819,7 +1829,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   bitmap.eraseColor(SK_ColorRED);
 
   base::test::TestFuture<const SkBitmap&> future;
-  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
 
   // Simulating deactivation while region select overlay is open should NOT

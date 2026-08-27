@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -21,8 +25,34 @@
 
 namespace omnibox_everywhere {
 
+namespace {
+
+// Overrides the active Screen instance for the scope of a test and restores
+// the original instance installed by ChromeViewsTestBase upon destruction.
+class ScopedScreenOverride {
+ public:
+  explicit ScopedScreenOverride(display::Screen* new_screen)
+      : old_screen_(display::Screen::SetScreenInstance(nullptr)) {
+    display::Screen::SetScreenInstance(new_screen);
+  }
+  ~ScopedScreenOverride() {
+    display::Screen::SetScreenInstance(nullptr);
+    if (old_screen_) {
+      display::Screen::SetScreenInstance(old_screen_);
+    }
+  }
+
+ private:
+  raw_ptr<display::Screen> old_screen_;
+};
+
+}  // namespace
+
 class OmniboxEverywhereRegionSelectOverlayTest : public ChromeViewsTestBase {
  public:
+  using RegionCaptureSource =
+      OmniboxEverywhereRegionSelectOverlay::RegionCaptureSource;
+
   OmniboxEverywhereRegionSelectOverlayTest() = default;
   ~OmniboxEverywhereRegionSelectOverlayTest() override = default;
 };
@@ -34,7 +64,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, CreateAndDismiss) {
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-      bitmap, future.GetCallback(), GetContext());
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
   EXPECT_TRUE(overlay->widget()->IsVisible());
@@ -54,7 +85,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, ConfirmReturnsBitmap) {
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-      bitmap, future.GetCallback(), GetContext());
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
 
@@ -77,7 +109,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, EscapeKeyPressedCancels) {
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-      bitmap, future.GetCallback(), GetContext());
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
 
@@ -98,7 +131,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-      bitmap, future.GetCallback(), GetContext());
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
 
@@ -117,13 +151,88 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-      bitmap, future.GetCallback(), GetContext());
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
   ASSERT_TRUE(overlay);
 
   overlay.reset();
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplayVirtualDesktop_SpansAllDisplays) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display2, display::DisplayList::Type::NOT_PRIMARY);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1824, 768);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+            gfx::Rect(0, 0, 1824, 768));
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       SingleDisplayMatch_MatchesTargetDisplay) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display2, display::DisplayList::Type::NOT_PRIMARY);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1024, 768);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::ForDisplay(display2.id()),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+            gfx::Rect(800, 0, 1024, 768));
+}
+
+// Verifies that RegionCaptureSource::ForDisplay correctly targets and scales to
+// a display in portrait orientation.
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplay_MatchesPortraitDisplayBounds) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+  display::Display display1(1, gfx::Rect(0, 0, 1080, 1920));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1080, 1920);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::ForDisplay(display1.id()),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+            gfx::Rect(0, 0, 1080, 1920));
 }
 
 }  // namespace omnibox_everywhere
