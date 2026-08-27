@@ -30,6 +30,8 @@
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserEducationInternalsUI, kMenuElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserEducationInternalsUI,
                                       kMenuItemElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserEducationInternalsUI,
+                                      kToolbarElementId);
 
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
     : DefaultInternalWebUIConfig(chrome::kChromeUIUserEducationInternalsHost) {}
@@ -58,10 +60,8 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this, std::vector<ui::ElementIdentifier>{
-                kWebUIIPHDemoElementIdentifier,
-                kMenuElementId,
-                kMenuItemElementId,
-            });
+                kWebUIIPHDemoElementIdentifier, kMenuElementId,
+                kMenuItemElementId, kToolbarElementId});
 }
 
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;

@@ -39,6 +39,7 @@ class UserEducationInternalsUI
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuItemElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
 
   void BindInterface(
       mojo::PendingReceiver<

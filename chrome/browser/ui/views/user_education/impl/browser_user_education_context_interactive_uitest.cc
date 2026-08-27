@@ -40,19 +40,6 @@ class BrowserUserEducationContextUiTest : public InteractiveBrowserTest {
         chrome_urls::kInternalOnlyUisEnabled, true);
     browser_test_impl().set_max_dom_nodes(100);
   }
-
-  // This is necessary on bots with smaller displays; the browser must be wide
-  // enough to accommodate the full width of the demo page. Size `browser` to
-  // the entire width of the workspace.
-  void SizeBrowser(Browser* browser) {
-    auto* const window = browser->GetWindow();
-    const auto display = display::Screen::Get()->GetDisplayNearestWindow(
-        window->GetNativeWindow());
-    gfx::Rect bounds = window->GetBounds();
-    bounds.set_x(display.work_area().x());
-    bounds.set_width(display.work_area().width());
-    window->SetBounds(bounds);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest, OneProfileFindsView) {
@@ -78,19 +65,17 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   auto filter = ue_context->GetDefaultElementFilter();
   auto* const tracker = ui::ElementTracker::GetElementTracker();
 
-  SizeBrowser(browser());
-
   RunTestSequence(
       InstrumentTab(kBrowser1TabId),
       NavigateWebContents(kBrowser1TabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(UserEducationInternalsUI::kMenuElementId)));
+      InAnyContext(WaitForShow(UserEducationInternalsUI::kToolbarElementId)));
 
   auto elements = tracker->GetAllMatchingElementsInAnyContext(
-      UserEducationInternalsUI::kMenuElementId);
+      UserEducationInternalsUI::kToolbarElementId);
   ASSERT_FALSE(elements.empty());
-  auto* expected =
-      tracker->GetElementInAnyContext(UserEducationInternalsUI::kMenuElementId);
+  auto* expected = tracker->GetElementInAnyContext(
+      UserEducationInternalsUI::kToolbarElementId);
   ASSERT_NE(nullptr, expected);
   EXPECT_EQ(expected, filter.Run(elements));
 }
@@ -158,9 +143,6 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   auto* const incognito_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
 
-  SizeBrowser(browser());
-  SizeBrowser(incognito_browser);
-
   ui::TrackedElement* expected = nullptr;
 
   RunTestSequence(
@@ -168,21 +150,21 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
       NavigateWebContents(kBrowser1TabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
       InAnyContext(
-          AfterShow(UserEducationInternalsUI::kMenuElementId,
+          AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&expected](ui::TrackedElement* el) { expected = el; })),
-      InContext(
-          BrowserElements::From(incognito_browser)->GetContext(),
-          WaitForShow(kToolbarAppMenuButtonElementId),
-          InstrumentTab(kBrowser2TabId),
-          InParallel(RunSubsequence(NavigateWebContents(
-                         kBrowser2TabId,
-                         GURL(chrome::kChromeUIUserEducationInternalsURL))),
-                     RunSubsequence(InAnyContext(
-                         WaitForShow(UserEducationInternalsUI::kMenuElementId)
-                             .SetTransitionOnlyOnEvent(true))))));
+      InContext(BrowserElements::From(incognito_browser)->GetContext(),
+                WaitForShow(kToolbarAppMenuButtonElementId),
+                InstrumentTab(kBrowser2TabId),
+                InParallel(
+                    RunSubsequence(NavigateWebContents(
+                        kBrowser2TabId,
+                        GURL(chrome::kChromeUIUserEducationInternalsURL))),
+                    RunSubsequence(InAnyContext(
+                        WaitForShow(UserEducationInternalsUI::kToolbarElementId)
+                            .SetTransitionOnlyOnEvent(true))))));
 
   auto elements = tracker->GetAllMatchingElementsInAnyContext(
-      UserEducationInternalsUI::kMenuElementId);
+      UserEducationInternalsUI::kToolbarElementId);
   ASSERT_EQ(2U, elements.size());
   EXPECT_EQ(expected, filter.Run(elements));
 }
@@ -196,19 +178,16 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   auto* const incognito_browser =
       CreateIncognitoBrowser(browser()->GetProfile());
 
-  SizeBrowser(browser());
-  SizeBrowser(incognito_browser);
-
   RunTestSequenceInContext(
       BrowserElements::From(incognito_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
       InstrumentTab(kBrowser2TabId),
       NavigateWebContents(kBrowser2TabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      InAnyContext(WaitForShow(UserEducationInternalsUI::kMenuElementId)));
+      InAnyContext(WaitForShow(UserEducationInternalsUI::kToolbarElementId)));
 
   auto elements = tracker->GetAllMatchingElementsInAnyContext(
-      UserEducationInternalsUI::kMenuElementId);
+      UserEducationInternalsUI::kToolbarElementId);
   ASSERT_EQ(1U, elements.size());
   EXPECT_EQ(nullptr, filter.Run(elements));
 }
@@ -338,16 +317,13 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   ui::TrackedElement* element1;
   ui::TrackedElement* element2;
 
-  SizeBrowser(browser());
-  SizeBrowser(other);
-
   RunTestSequence(
       InContext(ui_context1, InstrumentTab(kBrowser1TabId),
                 NavigateWebContents(
                     kBrowser1TabId,
                     GURL(chrome::kChromeUIUserEducationInternalsURL))),
       InAnyContext(
-          AfterShow(UserEducationInternalsUI::kMenuElementId,
+          AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; })),
       NameElement(kElement1Name, std::ref(element1)),
       InContext(ui_context2, WaitForShow(kToolbarAppMenuButtonElementId),
@@ -357,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
               kBrowser2TabId,
               GURL(chrome::kChromeUIUserEducationInternalsURL))),
           RunSubsequence(InAnyContext(
-              AfterShow(UserEducationInternalsUI::kMenuElementId,
+              AfterShow(UserEducationInternalsUI::kToolbarElementId,
                         [&element2](ui::TrackedElement* el) { element2 = el; })
                   .SetTransitionOnlyOnEvent(true)))),
       NameElement(kElement2Name, std::ref(element2)),
@@ -369,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                    [&](ui::TrackedElement* expected) {
                      ui::TrackedElement* actual =
                          filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                             UserEducationInternalsUI::kMenuElementId));
+                             UserEducationInternalsUI::kToolbarElementId));
                      if (actual != expected) {
                        LOG(ERROR)
                            << "Expected " << *expected << " actual " << *actual;
@@ -381,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
       CheckElement(kElement1Name, [&](ui::TrackedElement* expected) {
         ui::TrackedElement* actual =
             filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                UserEducationInternalsUI::kMenuElementId));
+                UserEducationInternalsUI::kToolbarElementId));
         if (actual != expected) {
           LOG(ERROR) << "Expected " << *expected << " actual " << *actual;
           return false;
@@ -407,9 +383,6 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   ui::TrackedElement* element1;
   ui::TrackedElement* element2;
 
-  SizeBrowser(other);
-  SizeBrowser(other2);
-
   RunTestSequence(
       InContext(ui_context1, WaitForShow(kToolbarAppMenuButtonElementId),
                 InstrumentTab(kBrowser1TabId),
@@ -417,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                     kBrowser1TabId,
                     GURL(chrome::kChromeUIUserEducationInternalsURL))),
       InAnyContext(
-          AfterShow(UserEducationInternalsUI::kMenuElementId,
+          AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; })),
       NameElement(kElement1Name, std::ref(element1)),
       InContext(ui_context2, WaitForShow(kToolbarAppMenuButtonElementId),
@@ -427,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
               kBrowser2TabId,
               GURL(chrome::kChromeUIUserEducationInternalsURL))),
           RunSubsequence(InAnyContext(
-              AfterShow(UserEducationInternalsUI::kMenuElementId,
+              AfterShow(UserEducationInternalsUI::kToolbarElementId,
                         [&element2](ui::TrackedElement* el) { element2 = el; })
                   .SetTransitionOnlyOnEvent(true)))),
       NameElement(kElement2Name, std::ref(element2)),
@@ -439,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                    [&](ui::TrackedElement* expected) {
                      ui::TrackedElement* actual =
                          filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                             UserEducationInternalsUI::kMenuElementId));
+                             UserEducationInternalsUI::kToolbarElementId));
                      if (actual != expected) {
                        LOG(ERROR)
                            << "Expected " << *expected << " actual " << *actual;
@@ -451,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
       CheckElement(kElement2Name, [&](ui::TrackedElement* expected) {
         ui::TrackedElement* actual =
             filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                UserEducationInternalsUI::kMenuElementId));
+                UserEducationInternalsUI::kToolbarElementId));
         if (actual != expected) {
           LOG(ERROR) << "Expected " << *expected << " actual " << *actual;
           return false;

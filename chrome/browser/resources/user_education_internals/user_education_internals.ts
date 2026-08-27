@@ -128,6 +128,7 @@ export interface UserEducationInternalsElement {
     errorMessageToast: CrToastElement,
     menu: CrMenuSelectorElement,
     selector: CrPageSelectorElement,
+    toolbar: HTMLElement,
     // <if expr="not is_chromeos">
     whatsNewVersionOverride: CrInputElement,
     // </if>
@@ -240,6 +241,8 @@ export class UserEducationInternalsElement extends
 
     // These are used in tests of the TrackedElementManager and its handler.
     const manager = TrackedElementManager.getInstance();
+    manager.startTracking(
+        this.$.toolbar, 'UserEducationInternalsUI::kToolbarElementId');
     manager.startTracking(
         this.$.menu, 'UserEducationInternalsUI::kMenuElementId');
     for (const child of this.$.menu.children) {
