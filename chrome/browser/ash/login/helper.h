@@ -40,6 +40,10 @@ namespace policy {
 class DeviceLocalAccountPolicyBroker;
 }  // namespace policy
 
+namespace password_manager {
+class PasswordReuseManager;
+}  // namespace password_manager
+
 namespace ash {
 
 // Returns bounds of the screen to use for login wizard.
@@ -121,8 +125,9 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory();
 
 // Saves sync password hash and salt to profile prefs. These will be used to
 // detect Gaia password reuses.
-void SaveSyncPasswordDataToProfile(const UserContext& user_context,
-                                   Profile* profile);
+void SaveSyncPasswordDataToProfile(
+    const UserContext& user_context,
+    password_manager::PasswordReuseManager* reuse_manager);
 
 // Returns time remaining to the next online login. The value can be negative
 // which means that online login should have been already happened in the past.

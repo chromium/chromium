@@ -116,6 +116,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
+#include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1916,7 +1917,8 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     // Save sync password hash and salt to profile prefs if they are available.
     // These will be used to detect Gaia password reuses.
     if (user_context_.GetSyncPasswordData().has_value()) {
-      login::SaveSyncPasswordDataToProfile(user_context_, profile);
+      login::SaveSyncPasswordDataToProfile(
+          user_context_, PasswordReuseManagerFactory::GetForProfile(profile));
     }
 
     if (!user_context_.GetChallengeResponseKeys().empty()) {

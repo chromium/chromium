@@ -59,6 +59,7 @@ include_rules = [
   "+chrome/browser/lifetime",
   "+chrome/browser/manta/manta_service_factory.h",
   "+chrome/browser/net",
+  "+chrome/browser/password_manager",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
