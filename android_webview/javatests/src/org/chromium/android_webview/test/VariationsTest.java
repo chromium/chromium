@@ -96,7 +96,6 @@ public class VariationsTest extends AwParameterizedTest {
     @MediumTest
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
-    // TODO(crbug.com/40701727): Reference this via a Java VariationsSwitches class.
     @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testFeatureEnabled() throws Exception {
         try {
@@ -136,7 +135,6 @@ public class VariationsTest extends AwParameterizedTest {
     @MediumTest
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
-    // TODO(crbug.com/40701727): Reference this via a Java VariationsSwitches class.
     @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";
