@@ -22,6 +22,11 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
+
+  # This is necessary to prevent method id scrambling. This is critical since
+  # the client is shipped separately from the browser. If scrambling is not
+  # disabled, the client will encounter a missing method validation error.
+  scramble_message_ids = false
 }
 
 source_set("geic") {
