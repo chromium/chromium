@@ -7,7 +7,9 @@
 #include <array>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -133,8 +135,7 @@ class PredictionModelComponentInstallerTest : public PlatformTest {
     // Create a default config for testing.
     config_ =
         std::make_unique<optimization_guide::PredictionModelComponentConfig>(
-            "Test Component", std::vector<uint8_t>(kTestPublicKeySHA256.begin(),
-                                                   kTestPublicKeySHA256.end()));
+            "Test Component", base::ToVector(kTestPublicKeySHA256));
 
     policy_ = CreatePredictionModelComponentInstallerPolicy(
         kTestTarget, *config_, listener_.GetWeakPtr());
@@ -212,8 +213,7 @@ TEST_F(PredictionModelComponentInstallerTest, GetRelativeInstallDir) {
 TEST_F(PredictionModelComponentInstallerTest, GetHashAndName) {
   std::vector<uint8_t> hash;
   policy_->GetHash(&hash);
-  EXPECT_EQ(hash, std::vector<uint8_t>(kTestPublicKeySHA256.begin(),
-                                       kTestPublicKeySHA256.end()));
+  EXPECT_EQ(hash, base::ToVector(kTestPublicKeySHA256));
   EXPECT_EQ(policy_->GetName(), "Test Component");
 }
 

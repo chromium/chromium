@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -274,9 +275,8 @@ void ComponentInstallerTest::RunThreads() {
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
   update_client::Unpacker::Unpack(
       "jebgalgnebhfojomionfpkfelancnnkf", "ComponentInstallerTest",
-      std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
-      crx_path, config_->GetUnzipperFactory()->Create(),
-      crx_file::VerifierFormat::CRX3,
+      base::ToVector(kSha256Hash), crx_path,
+      config_->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
       /*is_foreground=*/true,
       base::BindOnce(&ComponentInstallerTest::UnpackComplete,
                      base::Unretained(this)));
@@ -364,9 +364,7 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
   expected_attrs["ap"] = "fake-ap";
   expected_attrs["is-enterprise"] = "1";
 
-  EXPECT_EQ(
-      std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
-      component.pk_hash);
+  EXPECT_EQ(base::ToVector(kSha256Hash), component.pk_hash);
   EXPECT_EQ(base::Version("0.0.0.0"), component.version);
   EXPECT_TRUE(component.fingerprint.empty());
   EXPECT_EQ("fake name", component.name);

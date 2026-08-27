@@ -155,14 +155,9 @@ network::mojom::CTLogInfo::LogType ProtoLogTypeToLogType(
 // Converts a protobuf repeated bytes array to an array of uint8_t arrays.
 std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
     const google::protobuf::RepeatedPtrField<std::string>& proto_bytes) {
-  std::vector<std::vector<uint8_t>> bytes;
-  bytes.reserve(proto_bytes.size());
-  std::ranges::transform(
-      proto_bytes, std::back_inserter(bytes), [](const std::string& element) {
-        const auto bytes = base::as_byte_span(element);
-        return std::vector<uint8_t>(bytes.begin(), bytes.end());
-      });
-  return bytes;
+  return base::ToVector(proto_bytes, [](const std::string& element) {
+    return base::ToVector(base::as_byte_span(element));
+  });
 }
 
 // Converts a protobuf repeated bytes array to an array of SHA256HashValues.

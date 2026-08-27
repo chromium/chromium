@@ -847,8 +847,7 @@ std::string BinaryReadTagString(const base::FilePath& file) {
     return {};
   }
 
-  const std::vector<uint8_t> tag_data = {tag->begin(), tag->end()};
-  const std::string tag_string = ReadTag(tag_data);
+  const std::string tag_string = ReadTag(*tag);
   if (tag_string.empty()) {
     LOG(ERROR) << __func__ << ": file is untagged: " << file;
   }

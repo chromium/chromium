@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1561,7 +1562,7 @@ namespace {
 // appending a fake notarization trailer identified by "t8lr" sentinels to
 // a copy of the provided prefix.
 std::vector<uint8_t> CreateMockPkgBuffer(base::span<const uint8_t> prefix) {
-  std::vector<uint8_t> buffer(prefix.begin(), prefix.end());
+  std::vector<uint8_t> buffer = base::ToVector(prefix);
   buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
   buffer.insert(buffer.end(), 10, 0);  // trailer data
   buffer.append_range(std::to_array<uint8_t>({'t', '8', 'l', 'r'}));
@@ -1647,8 +1648,7 @@ TEST(PkgBinaryTest, ValidEmptyTagOverwrites) {
 TEST(PkgBinaryTest, InvalidTagOverwrites) {
   std::vector<uint8_t> prefix = {'a', 'b', 'c'};
   // Create an invalid tag: magic + length 5, but only 2 bytes follow.
-  std::vector<uint8_t> invalid_tag(tagging::kTagMagicUtf8.begin(),
-                                   tagging::kTagMagicUtf8.end());
+  std::vector<uint8_t> invalid_tag = base::ToVector(tagging::kTagMagicUtf8);
   invalid_tag.push_back(0);
   invalid_tag.push_back(5);  // length 5
   invalid_tag.push_back('x');
