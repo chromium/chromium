@@ -24,6 +24,9 @@ class WebFrame;
                          frame:(base::WeakPtr<web::WebFrame>)frame
                decisionHandler:(void (^)(BOOL accept))decisionHandler;
 
+// Dismisses the password suggestion UI.
+- (void)closePasswordSuggestion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PASSWORD_SUGGESTION_COMMANDS_H_

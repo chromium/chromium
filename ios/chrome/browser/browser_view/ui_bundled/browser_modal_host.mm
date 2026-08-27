@@ -189,7 +189,6 @@ const char kChromeAppStoreUrl[] =
                                 PasswordProtectionCommands,
                                 PasswordProtectionCoordinatorDelegate,
                                 PasswordSuggestionCommands,
-                                PasswordSuggestionCoordinatorDelegate,
                                 PictureInPictureCommands,
                                 PolicyChangeCommands,
                                 PriceTrackedItemsCommands,
@@ -1607,14 +1606,10 @@ const char kChromeAppStoreUrl[] =
                            frame:frame
                  decisionHandler:decisionHandler
                        proactive:proactive];
-  _passwordSuggestionCoordinator.delegate = self;
   [_passwordSuggestionCoordinator start];
 }
 
-#pragma mark - PasswordSuggestionCoordinatorDelegate
-
 - (void)closePasswordSuggestion {
-  // TODO(crbug.com/545532413): Use a command protocol instead of a delegate.
   [_passwordSuggestionCoordinator stop];
   _passwordSuggestionCoordinator = nil;
 }

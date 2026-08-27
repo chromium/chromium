@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -122,18 +122,18 @@ constexpr char kUmaActionPrefix[] =
   // controller for the bottom sheet could really be presented as the completion
   // block is only called when presentation really happens, and we can't get any
   // error message or signal. Based on what we could test, we know that
-  // presentingViewController is only set if the view controller can be
+  // `presentingViewController` is only set if the view controller can be
   // presented, where it is left to nil if the presentation is rejected for
   // various reasons (having another view controller already presented is one of
   // them). One should not think they can know all the reasons why the
   // presentation fails.
   //
-  // Keep this line at the end of -start because the
-  // delegate will likely -stop the coordinator when closing suggestions, so the
-  // coordinator should be in the most up to date state where it can be safely
-  // stopped.
+  // This check is performed after presentation is attempted because
+  // `closePasswordSuggestion` will stop the coordinator, so the coordinator
+  // must be in a state where it can be safely stopped.
   if (!self.viewController.presentingViewController) {
-    [self.delegate closePasswordSuggestion];
+    [self closePasswordSuggestion];
+    return;
   }
 
   [self recordAction:"Present"];
@@ -158,7 +158,7 @@ constexpr char kUmaActionPrefix[] =
 - (void)confirmationAlertPrimaryAction {
   [self recordAction:"Accept"];
   [self handleDecision:YES];
-  [self.delegate closePasswordSuggestion];
+  [self closePasswordSuggestion];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -207,7 +207,7 @@ constexpr char kUmaActionPrefix[] =
   if (refocus) {
     [self refocusIfNeeded];
   }
-  [self.delegate closePasswordSuggestion];
+  [self closePasswordSuggestion];
 }
 
 - (void)recordAction:(std::string_view)name {
@@ -399,6 +399,13 @@ constexpr char kUmaActionPrefix[] =
     std::string frameId = _frame ? _frame->GetFrameId() : "";
     tabHelper->RefocusElementIfNeeded(frameId);
   }
+}
+
+// Closes the password suggestion.
+- (void)closePasswordSuggestion {
+  id<PasswordSuggestionCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PasswordSuggestionCommands);
+  [handler closePasswordSuggestion];
 }
 
 @end

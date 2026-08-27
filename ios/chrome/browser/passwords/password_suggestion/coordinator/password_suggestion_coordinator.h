@@ -11,15 +11,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
-// Delegate for the coordinator.
-@protocol PasswordSuggestionCoordinatorDelegate
-
-// Signals the parent coordinator, BrowserCoordinator, to stop
-// PasswordSuggestionCoordinator.
-- (void)closePasswordSuggestion;
-
-@end
-
 // Presents the password suggestion feature. The content is presented in a
 // half-page sheet (or full-page sheet for devices running iOS 14 or earlier),
 // where the suggested password, current user email, and accept/deny action
@@ -37,9 +28,6 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Delegate for dismissing the coordinator.
-@property(nonatomic, weak) id<PasswordSuggestionCoordinatorDelegate> delegate;
 
 @end
 
