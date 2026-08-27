@@ -31,7 +31,7 @@ public final class NotificationFeatureMap extends FeatureMap {
                     sInstance,
                     ANDROID_RESIZE_LARGE_NOTIFICATION_BITMAPS,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
 
     public static final List<CachedFlag> sCachedFlags =
             List.of(sAndroidResizeLargeNotificationBitmaps);
