@@ -16,9 +16,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 
@@ -50,25 +47,6 @@ ash::BrowserDelegate* GetBrowserForInstance(
   return found_browser;
 }
 
-const BrowserWindowInterface* GetBrowserForTabStripModel(
-    const TabStripModel* model) {
-  const BrowserWindowInterface* found_browser = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [model,
-       &found_browser](BrowserWindowInterface* browser_window_interface) {
-        if (browser_window_interface->GetTabStripModel() == model) {
-          found_browser = browser_window_interface;
-          return false;
-        }
-        return true;
-      });
-
-  if (!found_browser) {
-    LOG(WARNING) << "Could not find a browser for the given TabStripModel.";
-  }
-  return found_browser;
-}
-
 }  // namespace
 
 WebTimeActivityProvider::WebTimeActivityProvider(
@@ -77,15 +55,12 @@ WebTimeActivityProvider::WebTimeActivityProvider(
     : app_time_controller_(app_time_controller) {
   DCHECK(app_time_controller_);
   DCHECK(app_service_wrapper);
-
-  ash::BrowserController::GetInstance()->AddObserver(this);
+  browser_observation_.Observe(ash::BrowserController::GetInstance());
+  browser_tab_observation_.Observe(ash::BrowserController::GetInstance());
   app_service_wrapper_observation_.Observe(app_service_wrapper);
 }
 
-WebTimeActivityProvider::~WebTimeActivityProvider() {
-  ash::BrowserController::GetInstance()->RemoveObserver(this);
-  TabStripModelObserver::StopObservingAll(this);
-}
+WebTimeActivityProvider::~WebTimeActivityProvider() = default;
 
 void WebTimeActivityProvider::OnWebActivityChanged(
     const WebTimeNavigationObserver::NavigationInfo& info) {
@@ -111,7 +86,7 @@ void WebTimeActivityProvider::OnWebActivityChanged(
 
   // The browser window is not active. This may happen when a navigation
   // finishes in the background.
-  if (!browser || !active_browsers_.contains(&browser->GetBrowser())) {
+  if (!browser || !active_browsers_.contains(browser)) {
     return;
   }
 
@@ -129,47 +104,40 @@ void WebTimeActivityProvider::WebTimeNavigationObserverDestroyed(
   navigation_info_map_.erase(navigation_observer);
 }
 
-void WebTimeActivityProvider::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::Type::kInserted) {
-    TabsInserted(change.GetInsert());
+void WebTimeActivityProvider::OnTabInserted(ash::BrowserDelegate* browser,
+                                            content::WebContents* contents) {
+  auto* navigation_observer =
+      WebTimeNavigationObserver::FromWebContents(contents);
+  if (navigation_observer &&
+      !web_time_navigation_observers_.IsObservingSource(navigation_observer)) {
+    web_time_navigation_observers_.AddObservation(navigation_observer);
   }
-
-  const BrowserWindowInterface* browser_window_interface =
-      GetBrowserForTabStripModel(tab_strip_model);
-
-  // If the Browser is not the active browser, simply return.
-  if (!active_browsers_.contains(browser_window_interface)) {
-    return;
-  }
-
-  // Check if the active tab changed, or the content::WebContents in the
-  // active tab was replaced:
-  bool active_tab_changed = selection.active_tab_changed();
-  bool web_content_replaced =
-      change.type() == TabStripModelChange::Type::kReplaced;
-
-  if (!(active_tab_changed || web_content_replaced)) {
-    return;
-  }
-
-  MaybeNotifyStateChange(base::Time::Now());
 }
 
-void WebTimeActivityProvider::OnBrowserCreated(
-    ash::BrowserDelegate* browser_delegate) {
-  browser_delegate->GetBrowser().GetTabStripModel()->AddObserver(this);
+void WebTimeActivityProvider::OnTabReplaced(
+    ash::BrowserDelegate* browser,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  if (active_browsers_.contains(browser)) {
+    MaybeNotifyStateChange(base::Time::Now());
+  }
+}
+
+void WebTimeActivityProvider::OnActiveWebContentsChanged(
+    ash::BrowserDelegate* browser,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  if (active_browsers_.contains(browser)) {
+    MaybeNotifyStateChange(base::Time::Now());
+  }
 }
 
 void WebTimeActivityProvider::OnBrowserClosed(
     ash::BrowserDelegate* browser_delegate) {
-  if (!active_browsers_.contains(&browser_delegate->GetBrowser())) {
-    return;
+  if (active_browsers_.contains(browser_delegate)) {
+    active_browsers_.erase(browser_delegate);
+    MaybeNotifyStateChange(base::Time::Now());
   }
-  active_browsers_.erase(&browser_delegate->GetBrowser());
-  MaybeNotifyStateChange(base::Time::Now());
 }
 
 void WebTimeActivityProvider::OnAppActive(
@@ -187,7 +155,7 @@ void WebTimeActivityProvider::OnAppActive(
     return;
   }
 
-  active_browsers_.insert(&browser->GetBrowser());
+  active_browsers_.insert(browser);
   MaybeNotifyStateChange(timestamp);
 }
 
@@ -206,26 +174,8 @@ void WebTimeActivityProvider::OnAppInactive(
     return;
   }
 
-  if (active_browsers_.erase(&browser->GetBrowser())) {
+  if (active_browsers_.erase(browser)) {
     MaybeNotifyStateChange(timestamp);
-  }
-}
-
-void WebTimeActivityProvider::TabsInserted(
-    const TabStripModelChange::Insert* insert) {
-  for (const TabStripModelChange::ContentsWithIndex& content_with_index :
-       insert->contents) {
-    WebTimeNavigationObserver* navigation_observer =
-        WebTimeNavigationObserver::FromWebContents(content_with_index.contents);
-
-    // Continue if the navigation observer is not created or if |this| already
-    // observes it.
-    if (!navigation_observer ||
-        web_time_navigation_observers_.IsObservingSource(navigation_observer)) {
-      continue;
-    }
-
-    web_time_navigation_observers_.AddObservation(navigation_observer);
   }
 }
 
@@ -242,10 +192,8 @@ void WebTimeActivityProvider::MaybeNotifyStateChange(base::Time timestamp) {
 
 ChromeAppActivityState
 WebTimeActivityProvider::CalculateChromeAppActivityState() const {
-  for (const BrowserWindowInterface* browser_window_interface :
-       active_browsers_) {
-    const content::WebContents* contents =
-        browser_window_interface->GetTabStripModel()->GetActiveWebContents();
+  for (const ash::BrowserDelegate* browser : active_browsers_) {
+    const content::WebContents* contents = browser->GetActiveWebContents();
     if (!contents) {
       continue;
     }

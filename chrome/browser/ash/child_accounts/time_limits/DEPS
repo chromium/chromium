@@ -27,8 +27,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
-  "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_management_type.h",

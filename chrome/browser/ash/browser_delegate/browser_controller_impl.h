@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class BrowserWindowInterface;
@@ -23,7 +24,8 @@ class BrowserDelegate;
 class BrowserDelegateImpl;
 
 class BrowserControllerImpl : public BrowserController,
-                              public BrowserCollectionObserver {
+                              public BrowserCollectionObserver,
+                              public TabStripModelObserver {
  public:
   BrowserControllerImpl();
   ~BrowserControllerImpl() override;
@@ -56,6 +58,8 @@ class BrowserControllerImpl : public BrowserController,
   bool HasShutdownStarted() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void AddTabObserver(TabObserver* observer) override;
+  void RemoveTabObserver(TabObserver* observer) override;
   void CreateAutofillClientForWebContents(
       content::WebContents* web_contents) override;
   std::unique_ptr<views::SimpleWebView> CreateSimpleWebViewForSigninScreen(
@@ -73,11 +77,18 @@ class BrowserControllerImpl : public BrowserController,
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
  private:
   absl::flat_hash_map<BrowserWindowInterface*,
                       std::unique_ptr<BrowserDelegateImpl>>
       browsers_;
   base::ObserverList<Observer> observers_;
+  base::ObserverList<TabObserver> tab_observers_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       observation_{this};
 };

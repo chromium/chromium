@@ -50,7 +50,6 @@ static_library("time_limits") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/experiences/arc:arc_app_constants",

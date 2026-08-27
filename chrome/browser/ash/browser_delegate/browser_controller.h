@@ -13,6 +13,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/apps/link_capturing/intent_picker_info.h"
@@ -56,6 +57,7 @@ class BrowserController {
     // OnBrowserCreated, the new browser will show up for
     // kAscendingCreationTime but not yet for kAscendingActivationTime.
     // TODO(crbug.com/369688254): Revisit this behavior.
+    // Note: No TabObserver events for `browser` will be emitted before this.
     virtual void OnBrowserCreated(BrowserDelegate* browser) {}
 
     // Called when a browser is activated.
@@ -64,6 +66,7 @@ class BrowserController {
 
     // Called when a browser is closed.
     // `browser` is never nullptr.
+    // Note: No TabObserver events for `browser` will be emitted after this.
     virtual void OnBrowserClosed(BrowserDelegate* browser) {}
 
     // Called when the last browser is irrevocably being closed.
@@ -71,6 +74,44 @@ class BrowserController {
     // of the browser (the instance still exists but we shouldn't allow
     // arbitrary operations).
     virtual void OnLastBrowserClosed() {}
+  };
+
+  // See AddTabObserver below.
+  //
+  // Note: When a new browser window is created, all
+  // Observer::OnBrowserCreated() notifications are delivered first. Then,
+  // OnTabInserted() is emitted for each tab in that browser.
+  //
+  // Dually, when a browser window is closed, OnTabRemoved() is emitted for
+  // each remaining tab in that browser before the Observer::OnBrowserClosed()
+  // notifications are delivered.
+  class TabObserver : public base::CheckedObserver {
+   public:
+    // Called when a new tab is inserted into `browser`'s tab strip.
+    // `browser` and `contents` are never nullptr.
+    virtual void OnTabInserted(BrowserDelegate* browser,
+                               content::WebContents* contents) {}
+
+    // Called when a tab in `browser` is removed from its tab strip
+    // (including when an entire browser window closes with remaining tabs).
+    // `browser` and `contents` are never nullptr.
+    virtual void OnTabRemoved(BrowserDelegate* browser,
+                              content::WebContents* contents) {}
+
+    // Called when a tab's WebContents in `browser` is replaced in place (e.g.
+    // discard or prerender swap).
+    // `browser`, `old_contents`, and `new_contents` are never nullptr.
+    virtual void OnTabReplaced(BrowserDelegate* browser,
+                               content::WebContents* old_contents,
+                               content::WebContents* new_contents) {}
+
+    // Called when the active tab in `browser` changes.
+    // `browser` and `new_contents` are never nullptr.
+    // `old_contents` is the previously active WebContents (can be nullptr).
+    virtual void OnActiveWebContentsChanged(
+        BrowserDelegate* browser,
+        content::WebContents* old_contents,
+        content::WebContents* new_contents) {}
   };
 
   // See CreateWebApp below.
@@ -199,6 +240,10 @@ class BrowserController {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Facilitates observation of tab events across all browsers.
+  virtual void AddTabObserver(TabObserver* observer) = 0;
+  virtual void RemoveTabObserver(TabObserver* observer) = 0;
+
   // Encapsulates the creation of AutofillClient instances.
   virtual void CreateAutofillClientForWebContents(
       content::WebContents* web_contents) = 0;
@@ -229,5 +274,22 @@ class BrowserController {
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::BrowserController,
+                               ash::BrowserController::TabObserver> {
+  static void AddObserver(ash::BrowserController* source,
+                          ash::BrowserController::TabObserver* observer) {
+    source->AddTabObserver(observer);
+  }
+  static void RemoveObserver(ash::BrowserController* source,
+                             ash::BrowserController::TabObserver* observer) {
+    source->RemoveTabObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_CONTROLLER_H_
