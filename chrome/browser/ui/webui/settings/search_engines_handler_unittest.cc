@@ -422,10 +422,6 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch_NonEEA) {
 TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Unknown) {
   ConfigureTestWithRegularProfile();
 
-  base::ListValue args;
-  args.Append("callback_id_1");
-  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
-
   histogram_tester().ExpectBucketCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
       false, 1);
@@ -434,24 +430,18 @@ TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Unknown) {
       0);
   histogram_tester().ExpectTotalCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", 0);
-
-  base::ListValue args2;
-  args2.Append("callback_id_2");
-  web_ui()->HandleReceivedMessage("getSearchEnginesList", args2);
-
   histogram_tester().ExpectTotalCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", 1);
 }
 
 TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_NoMatch) {
-  ConfigureTestWithRegularProfile();
-  PrefService* pref_service = profile()->GetPrefs();
+  TestingProfile* test_profile =
+      profile_manager().CreateTestingProfile("Profile 1");
+  test_profile->GetPrefs()->SetTime(
+      prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
+      base::Time::Now());
 
-  pref_service->SetTime(prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
-                        base::Time::Now());
-  base::ListValue args;
-  args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+  ConfigureTestWithProfile(test_profile);
 
   histogram_tester().ExpectBucketCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", true,
@@ -467,11 +457,13 @@ TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_NoMatch) {
 }
 
 TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Match) {
-  ConfigureTestWithRegularProfile();
-  PrefService* pref_service = profile()->GetPrefs();
+  TestingProfile* test_profile =
+      profile_manager().CreateTestingProfile("Profile 1");
+  PrefService* pref_service = test_profile->GetPrefs();
 
   pref_service->SetTime(prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
                         base::Time::Now());
+
   base::DictValue signal_data;
   signal_data.Set(
       "detection_timestamp",
@@ -479,16 +471,11 @@ TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Match) {
   pref_service->SetDict(prefs::kExtensionTelemetrySearchHijackingSignalData,
                         std::move(signal_data));
 
-  base::ListValue args;
-  args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+  ConfigureTestWithProfile(test_profile);
 
   histogram_tester().ExpectBucketCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable", true,
       1);
-  histogram_tester().ExpectBucketCount(
-      "Settings.SearchEngines.SearchHijackingDetector.HeuristicAvailable",
-      false, 0);
   histogram_tester().ExpectBucketCount(
       "Settings.SearchEngines.SearchHijackingDetector.HeuristicMatch", true, 1);
   histogram_tester().ExpectBucketCount(

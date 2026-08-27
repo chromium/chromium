@@ -170,6 +170,8 @@ void SearchEnginesHandler::OnJavascriptAllowed() {
   CHECK(template_url_service);
   scoped_url_service_observation_.Observe(template_url_service);
   list_controller_.Refresh();
+
+  RecordSearchHijackingHeuristicMetric();
 }
 
 void SearchEnginesHandler::OnJavascriptDisallowed() {
@@ -276,7 +278,7 @@ base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
 }
 
 void SearchEnginesHandler::OnTemplateURLServiceChanged() {
-  AllowJavascript();
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M159);
 
   list_controller_.Refresh();
 
@@ -413,9 +415,17 @@ void SearchEnginesHandler::HandleGetCategorizedTemplateUrls(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
+
+  // This adds the TemplateURLService observer.
   AllowJavascript();
 
-  RecordSearchHijackingHeuristicMetric();
+  // Don't send an update if the TemplateURLService is not ready. Once it is
+  // loaded, the TemplateURLService will send an update through the observer.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service || !template_url_service->loaded()) {
+    return;
+  }
 
   ResolveJavascriptCallback(callback_id, GetCategorizedTemplateUrls());
 }
@@ -424,9 +434,17 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
+
+  // This adds the TemplateURLService observer.
   AllowJavascript();
 
-  RecordSearchHijackingHeuristicMetric();
+  // Don't send an update if the TemplateURLService is not ready. Once it is
+  // loaded, the TemplateURLService will send an update through the observer.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service || !template_url_service->loaded()) {
+    return;
+  }
 
   ResolveJavascriptCallback(callback_id, GetSearchEnginesList());
 }
