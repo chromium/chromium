@@ -306,6 +306,32 @@ suite('AppStyleUpdater', () => {
     assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
   });
 
+  test('overflow toolbar changes style based on input', () => {
+    updater.overflowToolbar(true);
+    const scrollOverflow = computeStyle('--app-overflow-x');
+    const scrollMinWidth = computeStyle('--container-min-width');
+
+    updater.overflowToolbar(false);
+    const noScrollOverflow = computeStyle('--app-overflow-x');
+    const noScrollMinWidth = computeStyle('--container-min-width');
+
+    assertNotEquals(scrollOverflow, noScrollOverflow);
+    assertNotEquals(scrollMinWidth, noScrollMinWidth);
+  });
+
+  test('overflow toolbar without scrolling is same as resetting', () => {
+    updater.overflowToolbar(false);
+    const noScrollOverflow = computeStyle('--app-overflow-x');
+    const noScrollMinWidth = computeStyle('--container-min-width');
+
+    updater.resetToolbar();
+    const resetOverflow = computeStyle('--app-overflow-x');
+    const resetMinWidth = computeStyle('--container-min-width');
+
+    assertEquals(resetOverflow, noScrollOverflow);
+    assertEquals(resetMinWidth, noScrollMinWidth);
+  });
+
   test('color theme', () => {
     // Make each expected color distinct so we can verify each color is changed
     // with each update.

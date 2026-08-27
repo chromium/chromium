@@ -9,6 +9,9 @@ import {ContentBrowserProxyImpl} from '../content/content_browser_proxy.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 
+// Determined by experimentation - can be adjusted to fine tune for different
+// platforms.
+export const minOverflowLengthToScroll = 75;
 export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
 

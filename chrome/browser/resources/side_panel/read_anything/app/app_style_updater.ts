@@ -11,6 +11,11 @@ import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import type {VisualBrowserProxy} from './visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from './visual_browser_proxy.js';
 
+// Constants for styling the app when page zoom changes.
+const OVERFLOW_X_TYPICAL = 'hidden';
+const OVERFLOW_X_SCROLL = 'scroll';
+const MIN_WIDTH_TYPICAL = 'auto';
+const MIN_WIDTH_OVERFLOW = 'fit-content';
 // Empty state colors.
 const EMPTY_STATE_HEADING = 'var(--color-read-anything-foreground';
 const EMPTY_STATE_BODY_DEFAULT =
@@ -201,6 +206,22 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--current-highlight-bg-color',
         this.getCurrentHighlightColor_(this.getCurrentColorSuffix_()));
+  }
+
+  resetToolbar() {
+    this.setStyle_('--app-overflow-x', OVERFLOW_X_TYPICAL);
+    this.setStyle_('--container-min-width', MIN_WIDTH_TYPICAL);
+  }
+
+  overflowToolbar(shouldScroll: boolean) {
+    this.setStyle_(
+        '--app-overflow-x',
+        shouldScroll ? OVERFLOW_X_SCROLL : OVERFLOW_X_TYPICAL);
+    this.setStyle_(
+        // When we scroll, we should allow the container to expand and scroll
+        // horizontally.
+        '--container-min-width',
+        shouldScroll ? MIN_WIDTH_OVERFLOW : MIN_WIDTH_TYPICAL);
   }
 
   setTheme() {

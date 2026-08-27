@@ -35,7 +35,7 @@ import type {SpeechListener} from '../read_aloud/speech_controller.js';
 import {VoiceLanguageController} from '../read_aloud/voice_language_controller.js';
 import type {VoiceLanguageListener} from '../read_aloud/voice_language_controller.js';
 import {VoiceNotificationManager} from '../read_aloud/voice_notification_manager.js';
-import {getWordCount, isDistilledByReadability} from '../shared/common.js';
+import {getWordCount, isDistilledByReadability, minOverflowLengthToScroll} from '../shared/common.js';
 import {isPlayPauseShortcut} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger, TimeFrom} from '../shared/read_anything_logger.js';
 
@@ -734,6 +734,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (event.detail && event.detail.data !== undefined) {
       this.presentationState_ = event.detail.data;
     }
+  }
+
+  protected onResetToolbar_() {
+    this.styleUpdater_.resetToolbar();
+  }
+
+  protected onToolbarOverflow_(event: CustomEvent<{overflowLength: number}>) {
+    const shouldScroll =
+        (event.detail.overflowLength >= minOverflowLengthToScroll);
+    this.styleUpdater_.overflowToolbar(shouldScroll);
   }
 
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {

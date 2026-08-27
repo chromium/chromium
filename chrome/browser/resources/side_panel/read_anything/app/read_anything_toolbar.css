@@ -131,6 +131,7 @@
   align-items: center;
   overflow: visible;
   padding: 6px 8px;
+  flex-wrap: var(--toolbar-flex-wrap);
 }
 
 .immersive-toolbar-container {
@@ -145,6 +146,7 @@
   justify-content: end;
   overflow: visible;
   padding: 16px;
+  flex-wrap: var(--toolbar-flex-wrap);
   font-family: var(--immersive-menu-font);
   font-size: var(--immersive-menu-font-size);
   font-style: normal;
