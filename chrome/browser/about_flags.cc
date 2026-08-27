@@ -6914,6 +6914,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopAimGateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kAndroidDesktopAimGate)},
 
+    {"omnibox-disable-tabs-for-canvas",
+     flag_descriptions::kOmniboxDisableTabsForCanvasName,
+     flag_descriptions::kOmniboxDisableTabsForCanvasDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxDisableTabsForCanvas)},
+
     {"omnibox-aim-suppress-verbatim-match",
      flag_descriptions::kAIMSuppressVerbatimMatchName,
      flag_descriptions::kAIMSuppressVerbatimMatchDescription, kOsAndroid,

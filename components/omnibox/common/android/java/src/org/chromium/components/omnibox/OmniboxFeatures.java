@@ -213,6 +213,11 @@ public class OmniboxFeatures {
     public static final CachedFlag sResetSuggestionsScroll =
             newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED);
 
+    public static final CachedFlag sOmniboxDisableTabsForCanvas =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS,
+                    FeatureState.ENABLED_IN_PROD);
+
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
                     sUseFusedLocationProvider,

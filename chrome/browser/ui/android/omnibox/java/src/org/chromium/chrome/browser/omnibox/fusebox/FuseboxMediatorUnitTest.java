@@ -110,6 +110,7 @@ import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
@@ -2255,6 +2256,141 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_canvasDisablesTabs_whenFlagEnabled() {
+        FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
+
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_canvasDoesNotDisableTabs_whenFlagDisabled() {
+        FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_tabsDisableCanvas_whenFlagEnabled() {
+        FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        FuseboxAttachment attachment =
+                addAttachment("Tab Title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+
+        mMediator.onPlusButtonClicked();
+        mAttachments.remove(attachment, /* isFailure= */ false);
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+    }
+
+    @Test
+    public void onInputStateChange_tabsDoNotDisableCanvas_whenFlagDisabled() {
+        FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        addAttachment("Tab Title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+    }
+
+    @Test
+    public void showPopup_tabsDisableCanvas_whenOptimizationsDisabled() {
+        FeatureOverrides.overrideFlag(OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS, true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        recreateMediator();
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        addAttachment("Tab Title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
     }
 
     @Test

@@ -7666,6 +7666,11 @@
     "expiry_milestone": 300
   },
   {
+    "name": "omnibox-disable-tabs-for-canvas",
+    "owners": [ "skym@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-dui-prerendering",
     "owners": [ "robertlin@chromium.org", "chrome-prerendering@google.com" ],
     "expiry_milestone": 160

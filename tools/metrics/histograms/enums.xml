@@ -8962,6 +8962,7 @@ from previous Chrome versions.
   <int value="-1784452112" label="ReplaceSyncPromosWithSignInPromos:enabled"/>
   <int value="-1783790234"
       label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
+  <int value="-1783216033" label="OmniboxDisableTabsForCanvas:disabled"/>
   <int value="-1782989640"
       label="AnnotatedPageContentsVirtualStructure:disabled"/>
   <int value="-1782853869"
@@ -19384,6 +19385,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioAecRequiredForCrasProcessor:disabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
+  <int value="1449275825" label="OmniboxDisableTabsForCanvas:enabled"/>
   <int value="1449281734" label="EdgeToEdgeWebOptIn:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
   <int value="1450313630" label="RestartToGainAccessToKeychain:enabled"/>

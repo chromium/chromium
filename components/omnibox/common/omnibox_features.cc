@@ -197,6 +197,10 @@ BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
 // An additional gate to the behavior of OmniboxMultimodalInput on desktop.
 BASE_FEATURE(kAndroidDesktopAimGate, ENABLED);
 
+// Disables tab attachments for Canvas requests and disables Canvas if tabs are
+// attached.
+BASE_FEATURE(kOmniboxDisableTabsForCanvas, ENABLED);
+
 // Enables the AIM entrypoint for third party search engines.
 BASE_FEATURE(kAim3pEntrypoint, ENABLED);
 const base::FeatureParam<bool> kAim3pEntrypointDebug{
@@ -549,6 +553,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxSearchPrefetchOnEnterKeyDown,
       &kOmniboxAimImageDownscaling,
       &kOmniboxDebounceKeyboardVisibility,
+      &kOmniboxDisableTabsForCanvas,
       &kOmniboxSessionlessVoiceSearch};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

@@ -101,6 +101,7 @@ BASE_DECLARE_FEATURE(kHideAimEntrypointForUrlSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxMultimodalInput);
 BASE_DECLARE_FEATURE(kAndroidDesktopAimGate);
 BASE_DECLARE_FEATURE(kOmniboxDebounceKeyboardVisibility);
+BASE_DECLARE_FEATURE(kOmniboxDisableTabsForCanvas);
 BASE_DECLARE_FEATURE(kAim3pEntrypoint);
 extern const base::FeatureParam<bool> kAim3pEntrypointDebug;
 

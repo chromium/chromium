@@ -3664,6 +3664,12 @@ inline constexpr char kAndroidDesktopAimGateDescription[] =
     "Gates the behavior of Omnibox Multimodal Input on android desktop "
     "devices.";
 
+inline constexpr char kOmniboxDisableTabsForCanvasName[] =
+    "Omnibox Disable Tabs For Canvas";
+inline constexpr char kOmniboxDisableTabsForCanvasDescription[] =
+    "Disables tab attachments when Canvas is active and disables Canvas tool "
+    "when tabs are attached.";
+
 inline constexpr char kOmniboxNumNtpZpsRecentSearchesName[] =
     "Omnibox: Recent Searches on new tab page ZPS";
 inline constexpr char kOmniboxNumNtpZpsRecentSearchesDescription[] =

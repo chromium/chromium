@@ -590,7 +590,6 @@ import java.util.function.Supplier;
         updateModelForCurrentTab();
         updateModelForRecentTabs();
         if (OmniboxFeatures.sShowModelPicker.getValue()
-                && OmniboxFeatures.sModelPickerOptimizations.getValue()
                 && mComposeboxQueryControllerBridge != null) {
             InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
             if (inputState != null) {
@@ -1286,9 +1285,16 @@ import java.util.function.Supplier;
     private void updateModelForPopupInputState(InputState inputState) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
 
+        boolean disableTabsForCanvas = OmniboxFeatures.sOmniboxDisableTabsForCanvas.isEnabled();
+        boolean isCanvasActive =
+                mInput != null && mInput.getRequestType() == AutocompleteRequestType.CANVAS;
+        boolean hasAttachedTabs = mModelList != null && !mModelList.getAttachedTabIds().isEmpty();
+
         // TODO(https://crbug.com/480976526): Control visibility as well.
         boolean tabsEnabled =
-                !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_BROWSER_TAB_VALUE);
+                !(disableTabsForCanvas && isCanvasActive)
+                        && !inputState.disabledInputTypes.contains(
+                                InputType.INPUT_TYPE_BROWSER_TAB_VALUE);
         boolean imagesEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_IMAGE_VALUE);
         boolean filesEnabled =
@@ -1322,7 +1328,11 @@ import java.util.function.Supplier;
                     mInput != null
                             && ToolModeUtils.getRequestTypeForToolMode(toolMode)
                                     == mInput.getRequestType();
-            boolean enabled = inputState.isToolEnabled(toolMode);
+            boolean enabled =
+                    inputState.isToolEnabled(toolMode)
+                            && (!disableTabsForCanvas
+                                    || !hasAttachedTabs
+                                    || toolMode != ToolMode.TOOL_MODE_CANVAS_VALUE);
             boolean hasColor =
                     toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_VALUE
                             || toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE;
