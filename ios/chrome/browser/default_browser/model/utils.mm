@@ -255,17 +255,16 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   return false;
 }
 
-// Struct used to count active overflow menu default browser promo shortcuts
-// across windows (as the FET does not support showing multiple promos for the
-// same FET feature at the same time in a multi-window setup).
-struct DefaultBrowserPromoOverflowMenuShortcutsActiveData
+// Struct used to count active overflow menu default browser promos across
+// windows (as the FET does not support showing multiple promos for the same
+// FET feature at the same time in a multi-window setup).
+struct DefaultBrowserPromoOverflowMenuActiveData
     : public base::SupportsUserData::Data {
   // The number of active menus across all windows.
   int active_menus = 0;
 
   // Key to use for this type in SupportsUserData.
-  static constexpr char key[] =
-      "DefaultBrowserPromoOverflowMenuShortcutsActiveData";
+  static constexpr char key[] = "DefaultBrowserPromoOverflowMenuActiveData";
 };
 
 bool ShouldShowDefaultBrowserPromoOverflowMenu(
@@ -284,10 +283,9 @@ bool ShouldShowDefaultBrowserPromoOverflowMenu(
     return false;
   }
 
-  DefaultBrowserPromoOverflowMenuShortcutsActiveData* data =
-      static_cast<DefaultBrowserPromoOverflowMenuShortcutsActiveData*>(
-          tracker->GetUserData(
-              DefaultBrowserPromoOverflowMenuShortcutsActiveData::key));
+  DefaultBrowserPromoOverflowMenuActiveData* data =
+      static_cast<DefaultBrowserPromoOverflowMenuActiveData*>(
+          tracker->GetUserData(DefaultBrowserPromoOverflowMenuActiveData::key));
 
   // If the promo is already active in another window, increment the refcount
   // without re-querying the FET.
@@ -296,50 +294,68 @@ bool ShouldShowDefaultBrowserPromoOverflowMenu(
     return true;
   }
 
-  if (!tracker->ShouldTriggerHelpUI(
-          feature_engagement::
-              kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)) {
+  const base::Feature* feature = nullptr;
+  switch (type) {
+    case DefaultBrowserPromoOverflowMenuType::kDestination:
+      feature = &feature_engagement::
+                    kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature;
+      break;
+    case DefaultBrowserPromoOverflowMenuType::kShortcuts:
+      feature = &feature_engagement::
+                    kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature;
+      break;
+  }
+
+  if (!tracker->ShouldTriggerHelpUI(*feature)) {
     return false;
   }
 
   // Create user data struct on first trigger.
   if (!data) {
     auto new_data =
-        std::make_unique<DefaultBrowserPromoOverflowMenuShortcutsActiveData>();
+        std::make_unique<DefaultBrowserPromoOverflowMenuActiveData>();
     data = new_data.get();
-    tracker->SetUserData(
-        DefaultBrowserPromoOverflowMenuShortcutsActiveData::key,
-        std::move(new_data));
+    tracker->SetUserData(DefaultBrowserPromoOverflowMenuActiveData::key,
+                         std::move(new_data));
   }
 
   data->active_menus++;
   return true;
 }
 
-void DismissDefaultBrowserPromoOverflowMenuShortcuts(
+void DismissDefaultBrowserPromoOverflowMenu(
     feature_engagement::Tracker* tracker) {
   if (!tracker) {
     return;
   }
 
-  DefaultBrowserPromoOverflowMenuShortcutsActiveData* data =
-      static_cast<DefaultBrowserPromoOverflowMenuShortcutsActiveData*>(
-          tracker->GetUserData(
-              DefaultBrowserPromoOverflowMenuShortcutsActiveData::key));
+  DefaultBrowserPromoOverflowMenuActiveData* data =
+      static_cast<DefaultBrowserPromoOverflowMenuActiveData*>(
+          tracker->GetUserData(DefaultBrowserPromoOverflowMenuActiveData::key));
+
+  CHECK(IsDefaultBrowserPromoOverflowMenuEnabled());
+  const base::Feature* feature = nullptr;
+  switch (CurrentDefaultBrowserPromoOverflowMenuType()) {
+    case DefaultBrowserPromoOverflowMenuType::kDestination:
+      feature = &feature_engagement::
+                    kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature;
+      break;
+    case DefaultBrowserPromoOverflowMenuType::kShortcuts:
+      feature = &feature_engagement::
+                    kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature;
+      break;
+  }
 
   if (data) {
     data->active_menus--;
     if (data->active_menus <= 0) {
-      tracker->Dismissed(
-          feature_engagement::
-              kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature);
-      tracker->RemoveUserData(
-          DefaultBrowserPromoOverflowMenuShortcutsActiveData::key);
+      if (feature) {
+        tracker->Dismissed(*feature);
+      }
+      tracker->RemoveUserData(DefaultBrowserPromoOverflowMenuActiveData::key);
     }
-  } else {
-    tracker->Dismissed(
-        feature_engagement::
-            kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature);
+  } else if (feature) {
+    tracker->Dismissed(*feature);
   }
 }
 

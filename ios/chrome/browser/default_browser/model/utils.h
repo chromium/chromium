@@ -150,9 +150,9 @@ bool ShouldShowDefaultBrowserPromoOverflowMenu(
     DefaultBrowserPromoOverflowMenuType type,
     feature_engagement::Tracker* tracker);
 
-// Dismisses the default browser promo shortcut FET feature and cleans up active
-// tracking data across windows if no active menus remain.
-void DismissDefaultBrowserPromoOverflowMenuShortcuts(
+// Dismisses the default browser promo overflow menu FET feature and cleans up
+// active tracking data across windows if no active menus remain.
+void DismissDefaultBrowserPromoOverflowMenu(
     feature_engagement::Tracker* tracker);
 
 // Returns the number of times the user has seen and interacted with the

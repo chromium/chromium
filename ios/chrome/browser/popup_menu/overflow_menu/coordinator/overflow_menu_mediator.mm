@@ -296,10 +296,14 @@ void GetPresetNTPBackgroundPreview(
       _identityManagerObserverBridge;
 
   // Whether an action (tap) was taken on the default browser promo shortcut.
-  BOOL _defaultBrowserActionTaken;
+  BOOL _defaultBrowserShortcutActionTaken;
 
-  // Whether the default browser promo shortcut is shown in this menu.
-  BOOL _defaultBrowserPromoShortcutsShown;
+  // Whether the default browser promo is shown in this menu.
+  BOOL _defaultBrowserPromoShown;
+
+  // Whether an action (tap or hide) was taken on the default browser promo
+  // destination.
+  BOOL _defaultBrowserDestinationActionTaken;
 }
 
 // The current web state.
@@ -331,6 +335,7 @@ void GetPresetNTPBackgroundPreview(
     OverflowMenuDestination* spotlightDebuggerDestination;
 @property(nonatomic, strong) OverflowMenuDestination* cobaltDestination;
 @property(nonatomic, strong) OverflowMenuDestination* levelUpDestination;
+@property(nonatomic, strong) OverflowMenuDestination* defaultBrowserDestination;
 
 @property(nonatomic, strong) OverflowMenuActionGroup* identityActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* customizationActionsGroup;
@@ -394,7 +399,18 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)disconnect {
-  if (!_defaultBrowserActionTaken && _defaultBrowserPromoShortcutsShown) {
+  if (!_defaultBrowserShortcutActionTaken &&
+      [self.helpActionsGroup.actions
+          containsObject:self.defaultBrowserAction] &&
+      self.defaultBrowserAction.shown) {
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserPromo.OverflowMenu",
+        IOSDefaultBrowserPromoOverflowMenuAction::kNoAction);
+  }
+
+  if (!_defaultBrowserDestinationActionTaken &&
+      [self.model.destinations containsObject:self.defaultBrowserDestination] &&
+      self.defaultBrowserDestination.shown) {
     base::UmaHistogramEnumeration(
         "IOS.DefaultBrowserPromo.OverflowMenu",
         IOSDefaultBrowserPromoOverflowMenuAction::kNoAction);
@@ -431,9 +447,9 @@ void GetPresetNTPBackgroundPreview(
       }
     }
 
-    if (_defaultBrowserPromoShortcutsShown) {
-      DismissDefaultBrowserPromoOverflowMenuShortcuts(self.engagementTracker);
-      _defaultBrowserPromoShortcutsShown = NO;
+    if (_defaultBrowserPromoShown) {
+      DismissDefaultBrowserPromoOverflowMenu(self.engagementTracker);
+      _defaultBrowserPromoShown = NO;
     }
 
     self.engagementTracker = nullptr;
@@ -779,6 +795,9 @@ void GetPresetNTPBackgroundPreview(
 
   // Level Up destination.
   self.levelUpDestination = [self newLevelUpDestination];
+
+  // Default Browser destination.
+  self.defaultBrowserDestination = [self newDefaultBrowserDestination];
 
   [self logTranslateAvailability];
 
@@ -1500,6 +1519,19 @@ void GetPresetNTPBackgroundPreview(
                                      }];
 }
 
+- (OverflowMenuDestination*)newDefaultBrowserDestination {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_USE_CHROME_AS_DEFAULT
+                        destination:overflow_menu::Destination::DefaultBrowser
+                         symbolName:kChromeProductSymbol
+                       systemSymbol:NO
+                    accessibilityID:kToolsMenuDefaultBrowserId
+                            handler:^{
+                              [weakSelf openDefaultBrowserDestination];
+                            }];
+}
+
 - (NSString*)hideItemTextForDestination:
     (overflow_menu::Destination)destination {
   switch (destination) {
@@ -1509,6 +1541,9 @@ void GetPresetNTPBackgroundPreview(
     case overflow_menu::Destination::Cobalt:
       // These items are unhideable.
       return nil;
+    case overflow_menu::Destination::DefaultBrowser:
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_USE_CHROME_AS_DEFAULT);
     case overflow_menu::Destination::LevelUp:
       return l10n_util::GetNSString(
           IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_LEVEL_UP);
@@ -1759,6 +1794,14 @@ void GetPresetNTPBackgroundPreview(
     destinations.push_back(overflow_menu::Destination::LevelUp);
   }
 
+  if (_defaultBrowserPromoShown ||
+      ShouldShowDefaultBrowserPromoOverflowMenu(
+          DefaultBrowserPromoOverflowMenuType::kDestination,
+          self.engagementTracker)) {
+    _defaultBrowserPromoShown = YES;
+    destinations.push_back(overflow_menu::Destination::DefaultBrowser);
+  }
+
   destinations.push_back(overflow_menu::Destination::Cobalt);
 
   return destinations;
@@ -1999,11 +2042,11 @@ void GetPresetNTPBackgroundPreview(
   [helpActions addObject:self.helpAction];
   [helpActions addObject:self.shareChromeAction];
 
-  if (_defaultBrowserPromoShortcutsShown ||
+  if (_defaultBrowserPromoShown ||
       ShouldShowDefaultBrowserPromoOverflowMenu(
           DefaultBrowserPromoOverflowMenuType::kShortcuts,
           self.engagementTracker)) {
-    _defaultBrowserPromoShortcutsShown = YES;
+    _defaultBrowserPromoShown = YES;
     [helpActions addObject:self.defaultBrowserAction];
   }
 
@@ -2613,6 +2656,15 @@ void GetPresetNTPBackgroundPreview(
     }
     case overflow_menu::Destination::LevelUp:
       return self.levelUpDestination;
+    case overflow_menu::Destination::DefaultBrowser:
+      if (_defaultBrowserPromoShown ||
+          ShouldShowDefaultBrowserPromoOverflowMenu(
+              DefaultBrowserPromoOverflowMenuType::kDestination,
+              self.engagementTracker)) {
+        _defaultBrowserPromoShown = YES;
+        return self.defaultBrowserDestination;
+      }
+      return nil;
   }
 }
 
@@ -2645,6 +2697,8 @@ void GetPresetNTPBackgroundPreview(
       return [self newPriceNotificationsDestination];
     case overflow_menu::Destination::LevelUp:
       return [self newLevelUpDestination];
+    case overflow_menu::Destination::DefaultBrowser:
+      return [self newDefaultBrowserDestination];
   }
 }
 
@@ -2977,6 +3031,17 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)hideDestination:(overflow_menu::Destination)destination {
+  if (destination == overflow_menu::Destination::DefaultBrowser) {
+    _defaultBrowserDestinationActionTaken = YES;
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserPromo.OverflowMenu",
+        IOSDefaultBrowserPromoOverflowMenuAction::kHidden);
+    if (self.engagementTracker) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::
+              kDefaultBrowserPromoOverflowMenuDestinationUsed);
+    }
+  }
   DestinationCustomizationModel* destinationCustomizationModel =
       self.menuOrderer.destinationCustomizationModel;
   for (OverflowMenuDestination* menuDestination in destinationCustomizationModel
@@ -3091,7 +3156,7 @@ void GetPresetNTPBackgroundPreview(
 
 // Dismisses the menu and opens default browser settings.
 - (void)openDefaultBrowserSettings {
-  _defaultBrowserActionTaken = YES;
+  _defaultBrowserShortcutActionTaken = YES;
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserPromo.OverflowMenu",
       IOSDefaultBrowserPromoOverflowMenuAction::kTapped);
@@ -3202,6 +3267,27 @@ void GetPresetNTPBackgroundPreview(
                                       BadgeTypePromo)];
 }
 
+// Dismisses the menu and opens default browser settings.
+- (void)openDefaultBrowserDestination {
+  _defaultBrowserDestinationActionTaken = YES;
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserPromo.OverflowMenu",
+      IOSDefaultBrowserPromoOverflowMenuAction::kTapped);
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::
+            kDefaultBrowserPromoOverflowMenuDestinationUsed);
+  }
+
+  __weak id<PictureInPictureCommands> weakPipHandler =
+      self.pictureInPictureHandler;
+  [self dismissMenuWithCompletion:^{
+    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+                                      /*ui_application_to_use=*/nil,
+                                      weakPipHandler);
+  }];
+}
+
 // Presents the home customization menu.
 - (void)openHomeCustomization {
   CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
@@ -3255,6 +3341,7 @@ void GetPresetNTPBackgroundPreview(
     case overflow_menu::Destination::Cobalt:
     case overflow_menu::Destination::PriceNotifications:
     case overflow_menu::Destination::LevelUp:
+    case overflow_menu::Destination::DefaultBrowser:
       // Most destinations have no corresponding destination and nothing special
       // to be done when their shown state is toggled.
       return;

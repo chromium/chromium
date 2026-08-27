@@ -25,6 +25,7 @@ enum class Destination {
   PriceNotifications = 10,
   Cobalt = 11,
   LevelUp = 12,
+  DefaultBrowser = 13,
 };
 // LINT.ThenChange(
 // /ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:destination,

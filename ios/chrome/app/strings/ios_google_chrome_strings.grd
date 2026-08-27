@@ -893,6 +893,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE" desc="Text for the title of a Tips notification that takes the user to the Whats New page">
         What's New in Chrome
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_USE_CHROME_AS_DEFAULT" desc="The title for the context menu item to hide Use Chrome as Default. This should match the title of the Use Chrome as Default destination in the menu." meaning="[iOS only] [Length: Unlimited]">
+        Hide Use Chrome as Default
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SET_CHROME_AS_DEFAULT" desc="The iOS menu item for setting Chrome as the default browser." meaning="[iOS only] [Length: Unlimited]">
         Set Chrome as Default
       </message>
@@ -1281,6 +1284,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_TIPS_NOTIFICATION_SETTINGS_FOOTER" desc="Text for the footer of the Chrome Tips toggle in the notification settings page.">
         Tips on getting the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_USE_CHROME_AS_DEFAULT" desc="The iOS menu item for setting Chrome as the default browser in the overflow menu." meaning="[iOS only] [Length: Unlimited]">
+        Use Chrome as Default
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_NEVER_MESSAGE" desc="Message for the Translate infobar to allow the user to opt out. [Length: 250em]">
         Would you like Google Chrome to offer to translate <ph name="LANGUAGE_NAME">$1<ex>French</ex></ph> pages from this site next time?

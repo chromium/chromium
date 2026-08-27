@@ -445,7 +445,7 @@ TEST_F(DefaultBrowserUtilsTest, TestShouldShowDefaultBrowserPromoOverflowMenu) {
                   feature_engagement::
                       kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
       .Times(0);
-  DismissDefaultBrowserPromoOverflowMenuShortcuts(&mock_tracker);
+  DismissDefaultBrowserPromoOverflowMenu(&mock_tracker);
 
   // Dismissing second window should dismiss FET.
   EXPECT_CALL(mock_tracker,
@@ -453,6 +453,56 @@ TEST_F(DefaultBrowserUtilsTest, TestShouldShowDefaultBrowserPromoOverflowMenu) {
                   feature_engagement::
                       kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature)))
       .Times(1);
-  DismissDefaultBrowserPromoOverflowMenuShortcuts(&mock_tracker);
+  DismissDefaultBrowserPromoOverflowMenu(&mock_tracker);
+}
+
+// Tests ShouldShowDefaultBrowserPromoOverflowMenu with Destination type.
+TEST_F(DefaultBrowserUtilsTest,
+       TestShouldShowDefaultBrowserPromoOverflowMenuDestination) {
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
+
+  // Enable feature flag with Destination variation.
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserPromoOverflowMenu,
+      {{kDefaultBrowserPromoOverflowMenuTypeParam, "0"}});
+
+  EXPECT_FALSE(IsChromeLikelyDefaultBrowser());
+
+  // Mismatch in type param: querying kShortcuts should return false when
+  // kDestination is active.
+  EXPECT_FALSE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kShortcuts, &mock_tracker));
+
+  EXPECT_CALL(
+      mock_tracker,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::
+              kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature)))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kDestination, &mock_tracker));
+
+  // In multi-window setup, ShouldTriggerHelpUI is NOT queried again and returns
+  // true.
+  EXPECT_TRUE(ShouldShowDefaultBrowserPromoOverflowMenu(
+      DefaultBrowserPromoOverflowMenuType::kDestination, &mock_tracker));
+
+  // Dismissing first window should not dismiss FET yet.
+  EXPECT_CALL(
+      mock_tracker,
+      Dismissed(testing::Ref(
+          feature_engagement::
+              kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature)))
+      .Times(0);
+  DismissDefaultBrowserPromoOverflowMenu(&mock_tracker);
+
+  // Dismissing second window should dismiss FET.
+  EXPECT_CALL(
+      mock_tracker,
+      Dismissed(testing::Ref(
+          feature_engagement::
+              kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature)))
+      .Times(1);
+  DismissDefaultBrowserPromoOverflowMenu(&mock_tracker);
 }
 }  // namespace

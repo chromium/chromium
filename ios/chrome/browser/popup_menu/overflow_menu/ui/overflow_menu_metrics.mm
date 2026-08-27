@@ -38,6 +38,8 @@ IOSOverflowMenuDestination HistogramDestinationFromDestination(
       return IOSOverflowMenuDestination::kCobalt;
     case overflow_menu::Destination::LevelUp:
       return IOSOverflowMenuDestination::kLevelUp;
+    case overflow_menu::Destination::DefaultBrowser:
+      return IOSOverflowMenuDestination::kDefaultBrowser;
   }
 }
 

@@ -59,6 +59,9 @@ TEST_F(OverflowMenuConstantsTest, DestinationConversion) {
       case overflow_menu::Destination::LevelUp:
         finalExpectedDestination = overflow_menu::Destination::LevelUp;
         break;
+      case overflow_menu::Destination::DefaultBrowser:
+        finalExpectedDestination = overflow_menu::Destination::DefaultBrowser;
+        break;
     }
 
     // If there's no finalExpectedDestination, then the loop has looped through
