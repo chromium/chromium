@@ -9,6 +9,7 @@ load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//targets.star", "targets")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/gardener_rotations.star", "gardener_rotations")
@@ -19,7 +20,7 @@ load("//lib/xcode.star", "xcode")
 ci.defaults.set(
     executable = "recipe:angle_chromium",
     builder_group = "chromium.angle",
-    pool = gpu.ci.POOL,
+    pool = shared_gpu.ci.POOL,
     gardener_rotations = gardener_rotations.ANGLE,
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
@@ -68,7 +69,7 @@ consoles.console_view(
     },
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "android-angle-chromium-arm64-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -156,7 +157,7 @@ ci.thin_tester(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "fuchsia-angle-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -201,7 +202,7 @@ gpu.ci.linux_builder(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "linux-angle-chromium-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -366,7 +367,7 @@ ci.thin_tester(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "mac-angle-chromium-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -514,7 +515,7 @@ ci.thin_tester(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "ios-angle-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -605,7 +606,7 @@ ci.thin_tester(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.windows_builder(
+shared_gpu.ci.windows_builder(
     name = "win-angle-chromium-arm64-builder",
     description_html = "Compiles ANGLE test binaries for Windows/ARM64 using ToT ANGLE and a known good Chromium revision.",
     builder_spec = builder_config.builder_spec(
@@ -644,7 +645,7 @@ gpu.ci.windows_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-gpu.ci.windows_builder(
+shared_gpu.ci.windows_builder(
     name = "win-angle-chromium-x64-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -818,7 +819,7 @@ ci.thin_tester(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.ci.windows_builder(
+shared_gpu.ci.windows_builder(
     name = "win-angle-chromium-x86-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

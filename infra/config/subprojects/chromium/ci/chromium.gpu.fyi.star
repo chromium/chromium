@@ -11,6 +11,7 @@ load("@chromium-luci//builders.star", "cpu")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//targets.star", "targets")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/gardener_rotations.star", "gardener_rotations")
@@ -20,7 +21,7 @@ load("//lib/siso.star", "siso")
 ci.defaults.set(
     executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu.fyi",
-    pool = gpu.ci.POOL,
+    pool = shared_gpu.ci.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = 6 * time.hour,
@@ -87,7 +88,7 @@ consoles.console_view(
 
 def gpu_fyi_windows_builder(*, name, **kwargs):
     kwargs.setdefault("execution_timeout", ci_constants.DEFAULT_EXECUTION_TIMEOUT)
-    return gpu.ci.windows_builder(name = name, **kwargs)
+    return shared_gpu.ci.windows_builder(name = name, **kwargs)
 
 # TODO(crbug.com/536066698): Move this to gpu.star once multiple files are
 # using use_test_trigger_cas.
@@ -928,7 +929,7 @@ ci.thin_tester(
     ),
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     description_html = "Runs release GPU tests on ChromeOS amd64-generic VMs",
     builder_spec = builder_config.builder_spec(
@@ -1022,7 +1023,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU FYI Android arm Builder",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Builds release Android arm binaries for GPU testing",
@@ -1065,7 +1066,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU FYI Android arm64 Builder",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Builds release Android arm64 binaries for GPU testing",
@@ -1111,7 +1112,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU FYI Linux Wayland Builder",
     description_html = "Builds release Linux x64 binaries with Wayland enabled for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -1146,7 +1147,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU FYI Linux Builder",
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Builds release Linux x64 binaries for GPU testing",
@@ -1184,7 +1185,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU FYI Linux Builder (dbg)",
     description_html = "Builds debug Linux x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -1218,7 +1219,7 @@ gpu.ci.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "Linux FYI GPU TSAN Release",
     description_html = "Builds release Linux x64 binaries with TSan enabled for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -1274,7 +1275,7 @@ gpu.ci.linux_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder",
     description_html = "Builds release Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -1308,7 +1309,7 @@ gpu.ci.mac_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU FYI Mac Builder (dbg)",
     description_html = "Builds debug Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -1342,7 +1343,7 @@ gpu.ci.mac_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU FYI Mac arm64 Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac arm64 binaries for GPU testing",
@@ -1377,7 +1378,7 @@ gpu.ci.mac_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU FYI Mac arm64 Builder (asan)",
     description_html = "Builds release Mac arm64 binaries with ASan enabled for GPU testing",
     builder_spec = builder_config.builder_spec(

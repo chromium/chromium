@@ -6,6 +6,7 @@
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//try.star", "try_")
 load("//lib/gpu.star", "gpu")
 load("//lib/siso.star", "siso")
@@ -30,7 +31,7 @@ consoles.list_view(
     name = "tryserver.chromium.angle",
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "android-angle-chromium-try",
     description_html = "Builds and tests ANGLE on arm64 Android using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -49,7 +50,7 @@ gpu.try_.linux_rate_limited_builder(
     contact_team_email = "angle-team@google.com",
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "fuchsia-angle-try",
     description_html = "Builds ANGLE on x64 Fuchsia using ToT ANGLE and a known good Chromium revision. Compile-only.",
     mirrors = [
@@ -67,7 +68,7 @@ gpu.try_.linux_rate_limited_builder(
     ),
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "linux-angle-chromium-try",
     description_html = "Builds and tests ANGLE on x64 Linux using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -87,7 +88,7 @@ gpu.try_.linux_rate_limited_builder(
     ),
 )
 
-gpu.try_.mac_rate_limited_builder(
+shared_gpu.try_.mac_rate_limited_builder(
     name = "mac-angle-chromium-try",
     description_html = "Builds and tests ANGLE on x64 Mac using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -106,7 +107,7 @@ gpu.try_.mac_rate_limited_builder(
     ),
 )
 
-gpu.try_.win_rate_limited_builder(
+shared_gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-arm64-try",
     description_html = "Builds and tests ANGLE on arm64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -124,7 +125,7 @@ gpu.try_.win_rate_limited_builder(
     ),
 )
 
-gpu.try_.win_rate_limited_builder(
+shared_gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-x64-try",
     description_html = "Builds and tests ANGLE on x64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
@@ -143,7 +144,7 @@ gpu.try_.win_rate_limited_builder(
     ),
 )
 
-gpu.try_.win_rate_limited_builder(
+shared_gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-x86-try",
     description_html = "Builds and tests ANGLE on x86 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [

@@ -10,6 +10,7 @@ load("@chromium-luci//builder_health_indicators.star", "health_spec")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//targets.star", "targets")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/gardener_rotations.star", "gardener_rotations")
@@ -19,7 +20,7 @@ load("//lib/siso.star", "siso")
 ci.defaults.set(
     executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu",
-    pool = gpu.ci.POOL,
+    pool = shared_gpu.ci.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     tree_closing = True,
     tree_closing_notifiers = gpu.ci.TREE_CLOSING_NOTIFIERS,
@@ -63,7 +64,7 @@ consoles.console_view(
     },
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "Android Release (Pixel 2)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs a subset of release GPU tests on stable Pixel 2 configs",
@@ -122,7 +123,7 @@ gpu.ci.linux_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU Linux Builder",
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Builds release Linux x64 binaries for GPU testing",
@@ -165,7 +166,7 @@ gpu.ci.linux_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-gpu.ci.linux_builder(
+shared_gpu.ci.linux_builder(
     name = "GPU Linux Builder (dbg)",
     description_html = "Builds debug Linux x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -200,7 +201,7 @@ gpu.ci.linux_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU Mac Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac x64 binaries for GPU testing",
@@ -244,7 +245,7 @@ gpu.ci.mac_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU Mac Builder (dbg)",
     description_html = "Builds debug Mac x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
@@ -278,7 +279,7 @@ gpu.ci.mac_builder(
     ),
 )
 
-gpu.ci.mac_builder(
+shared_gpu.ci.mac_builder(
     name = "GPU Mac arm64 Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac arm64 binaries for GPU testing",
@@ -321,7 +322,7 @@ gpu.ci.mac_builder(
     ),
 )
 
-gpu.ci.windows_builder(
+shared_gpu.ci.windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds release x64 Windows binaries for GPU testing",
@@ -364,7 +365,7 @@ gpu.ci.windows_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-gpu.ci.windows_builder(
+shared_gpu.ci.windows_builder(
     name = "GPU Win x64 Builder (dbg)",
     description_html = "Builds debug Windows x64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(

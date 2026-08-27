@@ -8,6 +8,7 @@ load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//targets.star", "targets")
 load("@chromium-luci//try.star", "try_")
 load("//lib/gpu.star", "gpu")
@@ -1466,7 +1467,7 @@ try_.builder(
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
-gpu.try_.linux_optional_builder(
+shared_gpu.try_.linux_optional_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 4 devices. Only automatically added to CLs that touch GPU-related files.",
@@ -1487,9 +1488,10 @@ gpu.try_.linux_optional_builder(
     },
     main_list_view = "try",
     max_concurrent_builds = 10,
+    service_account = gpu.try_.SERVICE_ACCOUNT,
 )
 
-gpu.try_.linux_optional_builder(
+shared_gpu.try_.linux_optional_builder(
     name = "gpu-fyi-cq-android-arm64",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 6/10 devices. Only automatically added to CLs that touch GPU-related files.",
@@ -1512,6 +1514,7 @@ gpu.try_.linux_optional_builder(
     },
     main_list_view = "try",
     max_concurrent_builds = 10,
+    service_account = gpu.try_.SERVICE_ACCOUNT,
 )
 
 try_.builder(

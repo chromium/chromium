@@ -6,6 +6,7 @@
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gpu.star", shared_gpu = "gpu")
 load("@chromium-luci//try.star", "try_")
 load("//lib/gpu.star", "gpu")
 load("//lib/siso.star", "siso")
@@ -29,6 +30,7 @@ try_.defaults.set(
     experiments = {
         "chromium_tests.resultdb_module": 100,
     },
+    service_account = gpu.try_.SERVICE_ACCOUNT,
     siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
@@ -57,7 +59,7 @@ _dawn_location_filters = [
     cq.location_filter(path_regexp = "ui/gl/features.gni"),
 ]
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "dawn-chromium-presubmit",
     branch_selector = [
         branches.selector.ANDROID_BRANCHES,
@@ -80,7 +82,7 @@ gpu.try_.linux_rate_limited_builder(
     max_concurrent_builds = 3,
 )
 
-gpu.try_.linux_optional_builder(
+shared_gpu.try_.linux_optional_builder(
     name = "dawn-android-arm-deps-rel",
     mirrors = [
         "ci/Dawn Android arm DEPS Builder",
@@ -97,7 +99,7 @@ gpu.try_.linux_optional_builder(
     ),
 )
 
-gpu.try_.linux_optional_builder(
+shared_gpu.try_.linux_optional_builder(
     name = "dawn-android-arm64-deps-rel",
     mirrors = [
         "ci/Dawn Android arm64 DEPS Builder",
@@ -115,7 +117,7 @@ gpu.try_.linux_optional_builder(
     ),
 )
 
-gpu.try_.linux_optional_builder(
+shared_gpu.try_.linux_optional_builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
@@ -134,7 +136,7 @@ gpu.try_.linux_optional_builder(
     ),
 )
 
-gpu.try_.mac_optional_builder(
+shared_gpu.try_.mac_optional_builder(
     name = "dawn-mac-arm64-deps-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs Dawn tests on Apple silicon at Chromium's pinned Dawn revision",
@@ -153,7 +155,7 @@ gpu.try_.mac_optional_builder(
     ),
 )
 
-gpu.try_.mac_optional_builder(
+shared_gpu.try_.mac_optional_builder(
     name = "dawn-mac-x64-deps-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
@@ -172,7 +174,7 @@ gpu.try_.mac_optional_builder(
     ),
 )
 
-gpu.try_.win_optional_builder(
+shared_gpu.try_.win_optional_builder(
     name = "dawn-win10-x64-deps-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
@@ -191,7 +193,7 @@ gpu.try_.win_optional_builder(
     ),
 )
 
-gpu.try_.win_optional_builder(
+shared_gpu.try_.win_optional_builder(
     name = "dawn-win10-x86-deps-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
@@ -212,7 +214,7 @@ gpu.try_.win_optional_builder(
     ),
 )
 
-gpu.try_.win_optional_builder(
+shared_gpu.try_.win_optional_builder(
     name = "dawn-win11-arm64-deps-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
@@ -230,7 +232,7 @@ gpu.try_.win_optional_builder(
     ),
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "android-dawn-arm-rel",
     mirrors = [
         "ci/Dawn Android arm Builder",
@@ -246,7 +248,7 @@ gpu.try_.linux_rate_limited_builder(
     ),
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "android-dawn-arm64-rel",
     mirrors = [
         "ci/Dawn Android arm64 Builder",
@@ -263,7 +265,7 @@ gpu.try_.linux_rate_limited_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
     mirrors = [
@@ -276,7 +278,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-p10-rel",
     description_html = "Runs ToT Dawn tests on Pixel 10 devices",
     mirrors = [
@@ -289,7 +291,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-s24-rel",
     description_html = "Runs ToT Dawn tests on Samsung S24 devices",
     mirrors = [
@@ -303,7 +305,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "linux-dawn-intel-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Linux/Intel configs",
     mirrors = [
@@ -316,7 +318,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "linux-dawn-nvidia-1660-exp-rel",
     description_html = "Runs ToT Dawn tests on experimental Linux/GTX 1660 configs",
     mirrors = [
@@ -329,7 +331,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.linux_rate_limited_builder(
+shared_gpu.try_.linux_rate_limited_builder(
     name = "linux-dawn-rel",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
@@ -346,7 +348,7 @@ gpu.try_.linux_rate_limited_builder(
     ),
 )
 
-gpu.try_.mac_rate_limited_builder(
+shared_gpu.try_.mac_rate_limited_builder(
     name = "mac-arm64-dawn-rel",
     description_html = "Runs Dawn tests on Apple silicon on Dawn ToT",
     mirrors = [
@@ -360,7 +362,7 @@ gpu.try_.mac_rate_limited_builder(
     ),
 )
 
-gpu.try_.mac_rate_limited_builder(
+shared_gpu.try_.mac_rate_limited_builder(
     name = "mac-dawn-rel",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
@@ -377,7 +379,7 @@ gpu.try_.mac_rate_limited_builder(
     ),
 )
 
-gpu.try_.linux_manual_builder(
+shared_gpu.try_.linux_manual_builder(
     name = "dawn-try-linux-x64-intel-uhd770-rel",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [
@@ -390,7 +392,7 @@ gpu.try_.linux_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-amd-555x-rel",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
@@ -402,7 +404,7 @@ gpu.try_.mac_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-amd-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
@@ -414,7 +416,7 @@ gpu.try_.mac_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-arm64-deps-rel",
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Builder",
@@ -426,7 +428,7 @@ gpu.try_.mac_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-arm64-m2-exp",
     description_html = "Manual-only trybot for running ToT Dawn tests on experimental M2 machines",
     mirrors = [
@@ -439,7 +441,7 @@ gpu.try_.mac_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-arm64-rel",
     mirrors = [
         "ci/Dawn Mac arm64 Builder",
@@ -451,7 +453,7 @@ gpu.try_.mac_manual_builder(
     ),
 )
 
-gpu.try_.mac_manual_builder(
+shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-intel-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
@@ -465,7 +467,7 @@ gpu.try_.mac_manual_builder(
 
 # This will be moved into dawn-win11-arm64-deps-rel once the tests have been
 # confirmed to be stable enough.
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win11-arm64-snapdragon-x-elite-deps-rel",
     mirrors = [
         "ci/Dawn Win11 arm64 DEPS Builder",
@@ -479,7 +481,7 @@ gpu.try_.win_manual_builder(
 
 # This will be moved into win11-arm64-dawn-rel once the tests have been
 # confirmed to be stable enough.
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win11-arm64-snapdragon-x-elite-rel",
     mirrors = [
         "ci/Dawn Win11 arm64 Builder",
@@ -491,7 +493,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x64-intel-exp",
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
@@ -503,7 +505,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x64-intel-uhd770-rel",
     description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [
@@ -520,7 +522,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x64-nvidia-exp",
     description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
     mirrors = [
@@ -533,7 +535,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x86-intel-exp",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",
@@ -545,7 +547,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x86-nvidia-exp",
     description_html = "Runs ToT Dawn tests on experimental Win/NVIDIA/x86 configs",
     mirrors = [
@@ -558,7 +560,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_rate_limited_builder(
+shared_gpu.try_.win_rate_limited_builder(
     name = "win-dawn-rel",
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
@@ -575,7 +577,7 @@ gpu.try_.win_rate_limited_builder(
     ),
 )
 
-gpu.try_.win_rate_limited_builder(
+shared_gpu.try_.win_rate_limited_builder(
     name = "win11-arm64-dawn-rel",
     mirrors = [
         "ci/Dawn Win11 arm64 Builder",
@@ -591,7 +593,7 @@ gpu.try_.win_rate_limited_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win10-x86-rel",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",
@@ -604,7 +606,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win10-x64-intel-asan",
     mirrors = [
         "ci/Dawn Win10 x64 ASAN Builder",
@@ -616,7 +618,7 @@ gpu.try_.win_manual_builder(
     ),
 )
 
-gpu.try_.win_manual_builder(
+shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win10-x64-nvidia-asan",
     mirrors = [
         "ci/Dawn Win10 x64 ASAN Builder",
