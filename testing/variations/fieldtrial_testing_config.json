@@ -8847,34 +8847,13 @@
     "FirstRunDesktopChoiceScreenRefresh": [
         {
             "platforms": [
-                "windows",
-                "linux",
-                "mac"
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
                         "FirstRunDesktopChoiceScreenRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FirstRunDesktopRefresh": [
-        {
-            "platforms": [
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "sign-in-promo-variation": "default"
-                    },
-                    "enable_features": [
-                        "FirstRunDesktopRefresh"
                     ]
                 }
             ]

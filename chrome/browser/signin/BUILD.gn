@@ -128,6 +128,10 @@ source_set("signin") {
     ]
   }
 
+  if (is_mac || is_linux) {
+    public += [ "first_run_desktop_refresh_field_trial.h" ]
+  }
+
   if (enable_dice_support && is_win) {
     public += [ "signin_util_win.h" ]
   }
@@ -388,6 +392,10 @@ source_set("impl") {
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/webui:profile_helper",
     ]
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "first_run_desktop_refresh_field_trial.cc" ]
   }
 
   if (enable_dice_support && is_win) {
