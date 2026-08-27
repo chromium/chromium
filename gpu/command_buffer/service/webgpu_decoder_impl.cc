@@ -1122,7 +1122,11 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
-  webgpu_on_vk_gl_interop_ = gpu_preferences.enable_webgpu_on_vk_via_gl_interop;
+  // TODO(crbug.com/500918256): Move VulkanContextProvider creation earlier
+  // so `enable_webgpu_on_vk_via_gl_interop` is only true if it exists.
+  webgpu_on_vk_gl_interop_ =
+      gpu_preferences.enable_webgpu_on_vk_via_gl_interop &&
+      shared_context_state->vk_context_provider();
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
