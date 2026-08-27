@@ -676,6 +676,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [4515],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/page_action_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4518],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/password_manager/resources.grd": {
     "META": {"sizes": {"includes": [200]}},
     "includes": [4520],

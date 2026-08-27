@@ -252,6 +252,10 @@ inline constexpr char kChromeUIOrganizerPanelURL[] =
     "chrome://organizer-panel.top-chrome/";
 inline constexpr char kChromeUIOnDeviceTranslationInternalsHost[] =
     "on-device-translation-internals";
+inline constexpr char kChromeUIPageActionInternalsHost[] =
+    "page-action-internals";
+inline constexpr char kChromeUIPageActionInternalsURL[] =
+    "chrome://page-action-internals/";
 inline constexpr char kChromeUIPasswordManagerCheckupURL[] =
     "chrome://password-manager/checkup?start=true";
 inline constexpr char kChromeUIPasswordManagerInternalsHost[] =

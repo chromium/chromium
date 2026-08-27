@@ -56,6 +56,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom",
   "//chrome/browser/ui/webui/on_device_internals:mojom",
   "//chrome/browser/ui/webui/on_device_translation_internals:mojo_bindings",
+  "//chrome/browser/ui/webui/page_action_internals:mojo_bindings",
   "//chrome/browser/ui/webui/password_manager:mojo_bindings",
   "//components/private_ai/private_ai_internals/webui:mojo_bindings",
   "//chrome/browser/ui/webui/reset_password:mojo_bindings",

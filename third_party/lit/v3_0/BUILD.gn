@@ -85,6 +85,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/on_device_internals:build_ts",
     "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/organizer_panel:build_ts",
+    "//chrome/browser/resources/page_action_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",

@@ -133,6 +133,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://optimization-guide-internals",
 #if !BUILDFLAG(IS_ANDROID)
       "chrome://organizer-panel.top-chrome",
+      "chrome://page-action-internals",
 #endif
       "chrome://password-manager",
       "chrome://password-manager-internals",

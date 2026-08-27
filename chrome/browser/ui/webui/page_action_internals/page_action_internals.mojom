@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module page_action_internals.mojom;
+
+// Mojo interface definitions for chrome://page-action-internals.
+// This internal page allows configuring and exercising the Page Action and
+// Anchored Messaging frameworks in a controlled debug environment.
+
+// Main handler interface (backend).
+interface PageHandler {
+};
+
+// Factory to bind the handler for chrome://page-action-internals.
+interface PageHandlerFactory {
+  // Create a PageHandler for chrome://page-action-internals.
+  CreatePageHandler(
+      pending_receiver<PageHandler> handler);
+};
