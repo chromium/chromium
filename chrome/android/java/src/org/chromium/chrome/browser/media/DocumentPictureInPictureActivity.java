@@ -163,7 +163,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 || initiatorTab == null
                 // During activity recreation, the initiator tab activity may not be available
                 // because of the tab reparenting process.
-                || (TabUtils.getActivity(mInitiatorTab) == null && !mIsFromActivityRecreation)) {
+                || (TabUtils.getActivity(initiatorTab) == null && !mIsFromActivityRecreation)) {
             Log.e(TAG, "Parent web contents or initiator tab is null, finishing.");
             finish();
             return;
@@ -566,19 +566,18 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
-        assert isContentsInitialized();
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         ProfileProvider profileProvider =
                 new ProfileProvider() {
 
                     @Override
                     public Profile getOriginalProfile() {
-                        return mInitiatorTab.getProfile().getOriginalProfile();
+                        return assumeNonNull(mInitiatorTab).getProfile().getOriginalProfile();
                     }
 
                     @Override
                     public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                        if (!mInitiatorTab.getProfile().isOffTheRecord()) {
+                        if (!assumeNonNull(mInitiatorTab).getProfile().isOffTheRecord()) {
                             assert !createIfNeeded;
                             return null;
                         }

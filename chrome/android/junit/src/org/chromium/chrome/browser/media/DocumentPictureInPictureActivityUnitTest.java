@@ -25,6 +25,7 @@ import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,8 +37,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.content_public.browser.WebContents;
@@ -349,5 +352,16 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.closeActivity();
 
         verify(mActivity, never()).finish();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testCreateProfileProvider_BeforeContentsInitialized() {
+        // createProfileProvider is called during onCreateInternal() before
+        // performPreInflationStartup(). Verify it returns a valid supplier and does not throw.
+        OneshotSupplier<ProfileProvider> supplier = mActivity.createProfileProvider();
+        Assert.assertNotNull(supplier);
+        ProfileProvider profileProvider = supplier.get();
+        Assert.assertNotNull(profileProvider);
     }
 }
