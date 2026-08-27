@@ -538,6 +538,14 @@
   <message name="IDS_AUTOFILL_WALLET_REMINDER_NOTICE_CONFIRM_BUTTON_LABEL" desc="Button label to acknowledge and dismiss the Wallet Reminder Notice prompt." formatter_data="android_java">
     Got it
   </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_WALLET_REMINDER_NOTICE_BOTTOM_SHEET_FULL_HEIGHT" desc="The accessibility announcement when the Autofill Wallet Reminder Notice bottom sheet is opened." formatter_data="android_java">
+      Wallet notice opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_WALLET_REMINDER_NOTICE_BOTTOM_SHEET_CLOSED" desc="The accessibility announcement when the Autofill Wallet Reminder Notice bottom sheet is closed." formatter_data="android_java">
+      Wallet notice closed.
+    </message>
+  </if>
 
   <!-- Explicit save/update address prompt strings -->
   <!-- Common on all platforms (platform-specific defined later): -->

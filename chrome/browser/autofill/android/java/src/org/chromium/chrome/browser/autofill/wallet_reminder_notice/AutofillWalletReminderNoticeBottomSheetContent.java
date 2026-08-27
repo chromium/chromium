@@ -68,19 +68,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/541299511): Add dedicated Wallet Reminder Notice accessibility strings.
-        return R.string.ok;
+        assert false : "This method will not be called.";
+        return 0;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/541299511): Add dedicated Wallet Reminder Notice accessibility strings.
-        return R.string.ok;
+        return R.string.autofill_wallet_reminder_notice_bottom_sheet_full_height;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/541299511): Add dedicated Wallet Reminder Notice accessibility strings.
-        return R.string.ok;
+        return R.string.autofill_wallet_reminder_notice_bottom_sheet_closed;
     }
 }

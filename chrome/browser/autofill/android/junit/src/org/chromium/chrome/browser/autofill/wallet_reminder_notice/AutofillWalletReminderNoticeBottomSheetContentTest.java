@@ -84,11 +84,15 @@ public class AutofillWalletReminderNoticeBottomSheetContentTest {
 
     @Test
     public void testBottomSheetFullHeightAccessibilityStringId() {
-        assertThat(mContent.getSheetFullHeightAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                mContent.getSheetFullHeightAccessibilityStringId(),
+                equalTo(R.string.autofill_wallet_reminder_notice_bottom_sheet_full_height));
     }
 
     @Test
     public void testBottomSheetClosedAccessibilityStringId() {
-        assertThat(mContent.getSheetClosedAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                mContent.getSheetClosedAccessibilityStringId(),
+                equalTo(R.string.autofill_wallet_reminder_notice_bottom_sheet_closed));
     }
 }
