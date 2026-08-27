@@ -126,6 +126,8 @@ class CORE_EXPORT ThreadableLoader final
 
   void Trace(Visitor* visitor) const override;
 
+  static bool IsDomainAllowedForCCNSForTesting(const KURL& url);
+
  private:
   void Clear();
 

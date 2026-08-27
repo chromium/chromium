@@ -75,19 +75,29 @@ bool IsDomainAllowedForCCNS(const KURL& url) {
     return false;
   }
 
-  DEFINE_STATIC_LOCAL(
-      HashSet<String>, allowed_domains, ([]() {
+  String host = url.Host().ToString();
+  if (host.empty()) {
+    return false;
+  }
+
+  // Thread-safe because `allowed_domains` is initialized once and is strictly
+  // read-only thereafter with no concurrent mutations.
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const HashSet<String>, allowed_domains, ([]() {
         HashSet<String> set;
         String param(
             features::kBackForwardCacheCCNSAllowedDomains.Get().c_str());
         Vector<String> list = param.Split(',');
         for (const auto& item : list) {
-          set.insert(item.StripWhiteSpace());
+          String domain = item.StripWhiteSpace();
+          if (!domain.empty()) {
+            set.insert(domain);
+          }
         }
         return set;
       }()));
 
-  return allowed_domains.Contains(url.Host().ToString());
+  return allowed_domains.Contains(host);
 }
 
 }  // namespace
@@ -436,6 +446,11 @@ void ThreadableLoader::Trace(Visitor* visitor) const {
 
 scoped_refptr<base::SingleThreadTaskRunner> ThreadableLoader::GetTaskRunner() {
   return execution_context_->GetTaskRunner(TaskType::kNetworking);
+}
+
+// static
+bool ThreadableLoader::IsDomainAllowedForCCNSForTesting(const KURL& url) {
+  return IsDomainAllowedForCCNS(url);
 }
 
 }  // namespace blink

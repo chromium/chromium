@@ -9,9 +9,11 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -478,6 +480,43 @@ TEST_F(ThreadableLoaderTest, ClearInRedirectDidFinishLoading) {
 
 // TODO(crbug.com/1356128): Add unit tests to cover histogram logging.
 
-}  // namespace
+TEST(ThreadableLoaderCCNSTest, IsDomainAllowedForCCNS) {
+  test::TaskEnvironment task_environment;
 
+  // When feature is disabled:
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kBackForwardCacheCCNSAllowlist);
+    EXPECT_FALSE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://example.com")));
+  }
+
+  // When feature is enabled with allowed domains:
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kBackForwardCacheCCNSAllowlist,
+        {{features::kBackForwardCacheCCNSAllowedDomains.name,
+          "example.com, allowed.org, test.net"}});
+
+    EXPECT_TRUE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://example.com/path")));
+    EXPECT_TRUE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("https://allowed.org:8080/foo?bar=1")));
+    EXPECT_TRUE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://test.net")));
+
+    // Subdomains or other domains are not allowed:
+    EXPECT_FALSE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://sub.example.com")));
+    EXPECT_FALSE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://disallowed.com")));
+    EXPECT_FALSE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(
+        KURL("http://example.com.evil.com")));
+    EXPECT_FALSE(ThreadableLoader::IsDomainAllowedForCCNSForTesting(KURL()));
+  }
+}
+
+}  // namespace
 }  // namespace blink
