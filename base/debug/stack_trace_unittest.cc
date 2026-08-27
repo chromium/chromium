@@ -103,6 +103,14 @@ TEST_F(StackTraceTest, OutputToStream) {
       << backtrace_message;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(StackTraceTest, AndroidBuildIdInOutput) {
+  StackTrace trace;
+  std::string trace_string = trace.ToString();
+  EXPECT_THAT(trace_string, testing::HasSubstr(" (BuildId: "));
+}
+#endif
+
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
 // Disabled in Official builds, where Link-Time Optimization can result in two
 // or fewer stack frames being available, causing the test to fail.
