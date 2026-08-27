@@ -122,6 +122,8 @@ class Surface final : public ui::PropertyHandler {
   bool is_augmented() const { return is_augmented_; }
   void set_is_augmented(bool augmented) { is_augmented_ = augmented; }
 
+  bool is_destroying() const { return is_destroying_; }
+
   // Called when the display the surface is on has changed.
   // Returns true if successful, and false if it fails.
   bool UpdateDisplay(int64_t old_id, int64_t new_id);
@@ -766,6 +768,7 @@ class Surface final : public ui::PropertyHandler {
 
   bool keyboard_shortcuts_inhibited_ = false;
   bool legacy_buffer_release_skippable_ = false;
+  bool is_destroying_ = false;
 
   // Display id state for unmapped surfaces.
   int64_t display_id_ = display::kInvalidDisplayId;

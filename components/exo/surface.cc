@@ -364,6 +364,7 @@ Surface::Surface()
 }
 
 Surface::~Surface() {
+  is_destroying_ = true;
   // Tell WindowDelegate that surface is in destruction phrase, and no need to
   // call back to the surface.
   static_cast<CustomWindowDelegate*>(window_->delegate())->reset_surface();
@@ -1882,6 +1883,10 @@ void Surface::OnWindowOcclusionChanged(
   // `OcclusionState::VISIBLE` anyway once buffer is attached.
   if (old_occlusion_state == aura::Window::OcclusionState::UNKNOWN &&
       new_occlusion_state == aura::Window::OcclusionState::HIDDEN) {
+    return;
+  }
+
+  if (is_destroying_) {
     return;
   }
 

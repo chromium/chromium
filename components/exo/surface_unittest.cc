@@ -96,6 +96,45 @@ std::string TransformToString(Transform transform) {
   return prefix + name;
 }
 
+class DestroyingSurfaceOcclusionObserver : public SurfaceObserver {
+ public:
+  explicit DestroyingSurfaceOcclusionObserver(Surface* surface)
+      : surface_(surface) {
+    surface_->AddSurfaceObserver(this);
+  }
+  DestroyingSurfaceOcclusionObserver(
+      const DestroyingSurfaceOcclusionObserver&) = delete;
+  DestroyingSurfaceOcclusionObserver& operator=(
+      const DestroyingSurfaceOcclusionObserver&) = delete;
+  ~DestroyingSurfaceOcclusionObserver() override {
+    if (surface_) {
+      surface_->RemoveSurfaceObserver(this);
+    }
+  }
+
+  // SurfaceObserver:
+  void OnSurfaceDestroying(Surface* surface) override {
+    EXPECT_TRUE(surface->is_destroying());
+    // Attempt to trigger occlusion observer notification during
+    // OnSurfaceDestroying.
+    surface->OnWindowOcclusionChanged(aura::Window::OcclusionState::VISIBLE,
+                                      aura::Window::OcclusionState::HIDDEN);
+
+    surface_->RemoveSurfaceObserver(this);
+    surface_ = nullptr;
+  }
+
+  void OnWindowOcclusionChanged(Surface* surface) override {
+    called_occlusion_ = true;
+  }
+
+  bool called_occlusion() const { return called_occlusion_; }
+
+ private:
+  raw_ptr<Surface> surface_;
+  bool called_occlusion_ = false;
+};
+
 class SurfaceTest : public test::ExoTestBase,
                     public ::testing::WithParamInterface<float> {
  public:
@@ -1474,6 +1513,18 @@ TEST_P(SurfaceTest, NoOcclusionUpdateOnDestroyingSurface) {
 
   surface.reset();
   EXPECT_EQ(0, parent_observer.num_occlusion_changes());
+}
+
+TEST_P(SurfaceTest, ObserversNotCalledWhenDestroying) {
+  auto surface = std::make_unique<Surface>();
+  surface->SetOcclusionTracking(true);
+  surface->Commit();
+
+  EXPECT_FALSE(surface->is_destroying());
+  DestroyingSurfaceOcclusionObserver observer(surface.get());
+
+  surface.reset();
+  EXPECT_FALSE(observer.called_occlusion());
 }
 
 TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
