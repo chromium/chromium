@@ -707,6 +707,16 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Autofill and passwords settings page"/>
 </enum>
 
+<!-- LINT.IfChange(OnDeviceEncryptionStateHistogramBucket) -->
+
+<enum name="OnDeviceEncryptionStateHistogramBucket">
+  <int value="0" label="On-device encryption not enabled"/>
+  <int value="1" label="Device not ready"/>
+  <int value="2" label="Device ready"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/password_manager/ode/on_device_encryption_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->
+
 <enum name="PasskeysMigrationStatus">
   <int value="0" label="Passkey created"/>
   <int value="1" label="Passkey updated"/>

@@ -15,15 +15,31 @@ source_set("ode") {
 
   public_deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/sync/service",
   ]
 
   deps = [ "//components/sync/base" ]
 
   if (!is_android) {
-    public += [ "passkey_on_device_encryption_state_tracker.h" ]
-    sources += [ "passkey_on_device_encryption_state_tracker.cc" ]
-    public_deps += [ "//chrome/browser/webauthn" ]
+    public += [
+      "on_device_encryption_metrics_reporter.h",
+      "on_device_encryption_metrics_reporter_factory.h",
+      "passkey_on_device_encryption_state_tracker.h",
+    ]
+    sources += [
+      "on_device_encryption_metrics_reporter.cc",
+      "on_device_encryption_metrics_reporter_factory.cc",
+      "passkey_on_device_encryption_state_tracker.cc",
+    ]
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/webauthn",
+    ]
+    deps += [
+      "//chrome/browser/sync",
+      "//components/keyed_service/content",
+    ]
   }
 }
 
@@ -44,7 +60,10 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "passkey_on_device_encryption_state_tracker_unittest.cc" ]
+    sources += [
+      "on_device_encryption_metrics_reporter_unittest.cc",
+      "passkey_on_device_encryption_state_tracker_unittest.cc",
+    ]
     deps += [
       "//chrome/browser/webauthn:test_support",
       "//components/webauthn/core/browser:test_support",

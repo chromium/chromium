@@ -45,4 +45,9 @@ void OnDeviceEncryptionStateTracker::SetState(
   }
 }
 
+void OnDeviceEncryptionStateTracker::SetStateForTesting(
+    OnDeviceEncryptionState new_state) {
+  SetState(new_state);
+}
+
 }  // namespace password_manager

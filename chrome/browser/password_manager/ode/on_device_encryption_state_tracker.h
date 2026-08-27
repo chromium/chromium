@@ -60,6 +60,8 @@ class OnDeviceEncryptionStateTracker {
   // Returns the current OnDeviceEncryptionState.
   OnDeviceEncryptionState GetEncryptionState() const;
 
+  void SetStateForTesting(OnDeviceEncryptionState new_state);
+
  protected:
   // Sets the current state and notifies observers if the state has changed.
   void SetState(OnDeviceEncryptionState new_state);

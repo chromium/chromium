@@ -2433,6 +2433,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.OnDeviceEncryptionState.{Type}"
+    enum="OnDeviceEncryptionStateHistogramBucket" expires_after="2027-02-07">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the on-device encryption state for {Type}. Recorded whenever the
+    state transitions to a new valid on-device encryption state.
+  </summary>
+  <token key="Type">
+    <variant name="Passkeys" summary="passkeys"/>
+    <variant name="Passwords" summary="passwords"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.OpenedAsShortcut" enum="Boolean"
     expires_after="2027-02-07">
   <owner>vsemeniuk@google.com</owner>

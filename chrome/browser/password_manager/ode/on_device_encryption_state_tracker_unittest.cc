@@ -14,23 +14,14 @@ namespace {
 
 using MockObserver = MockOnDeviceEncryptionStateTrackerObserver;
 
-class TestOnDeviceEncryptionStateTracker
-    : public OnDeviceEncryptionStateTracker {
- public:
-  TestOnDeviceEncryptionStateTracker() = default;
-  ~TestOnDeviceEncryptionStateTracker() override = default;
-
-  using OnDeviceEncryptionStateTracker::SetState;
-};
-
 TEST(OnDeviceEncryptionStateTrackerTest, InitialStateIsNotAvailable) {
-  TestOnDeviceEncryptionStateTracker tracker;
+  OnDeviceEncryptionStateTracker tracker;
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
 }
 
 TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
-  TestOnDeviceEncryptionStateTracker tracker;
+  OnDeviceEncryptionStateTracker tracker;
   MockObserver observer;
   tracker.AddObserver(&observer);
 
@@ -40,7 +31,7 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
                   &tracker,
                   OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
                   OnDeviceEncryptionState::kDeviceReady));
-  tracker.SetState(OnDeviceEncryptionState::kDeviceReady);
+  tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kDeviceReady);
 
@@ -48,7 +39,7 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
   EXPECT_CALL(observer, OnDeviceEncryptionStateChanged(
                             &tracker, OnDeviceEncryptionState::kDeviceReady,
                             OnDeviceEncryptionState::kDeviceNotReady));
-  tracker.SetState(OnDeviceEncryptionState::kDeviceNotReady);
+  tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceNotReady);
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kDeviceNotReady);
 
@@ -56,14 +47,14 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
 }
 
 TEST(OnDeviceEncryptionStateTrackerTest, DoesNotNotifyOnDuplicateState) {
-  TestOnDeviceEncryptionStateTracker tracker;
+  OnDeviceEncryptionStateTracker tracker;
   MockObserver observer;
   tracker.AddObserver(&observer);
 
   // Initial state is already kOnDeviceEncryptionStateNotAvailable, setting it
   // again is a no-op.
   EXPECT_CALL(observer, OnDeviceEncryptionStateChanged).Times(0);
-  tracker.SetState(
+  tracker.SetStateForTesting(
       OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
 
   EXPECT_CALL(observer,
@@ -72,27 +63,27 @@ TEST(OnDeviceEncryptionStateTrackerTest, DoesNotNotifyOnDuplicateState) {
                   OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
                   OnDeviceEncryptionState::kDeviceReady))
       .Times(1);
-  tracker.SetState(OnDeviceEncryptionState::kDeviceReady);
+  tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
   // Duplicate state should not notify.
-  tracker.SetState(OnDeviceEncryptionState::kDeviceReady);
+  tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
 
   tracker.RemoveObserver(&observer);
 }
 
 TEST(OnDeviceEncryptionStateTrackerTest, DoesNotNotifyAfterObserverRemoved) {
-  TestOnDeviceEncryptionStateTracker tracker;
+  OnDeviceEncryptionStateTracker tracker;
   MockObserver observer;
   tracker.AddObserver(&observer);
   tracker.RemoveObserver(&observer);
 
   EXPECT_CALL(observer, OnDeviceEncryptionStateChanged).Times(0);
-  tracker.SetState(OnDeviceEncryptionState::kDeviceReady);
+  tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
 }
 
 TEST(OnDeviceEncryptionStateTrackerTest, NotifiesShuttingDownOnDestruction) {
   MockObserver observer;
   {
-    TestOnDeviceEncryptionStateTracker tracker;
+    OnDeviceEncryptionStateTracker tracker;
     tracker.AddObserver(&observer);
 
     EXPECT_CALL(observer, OnDeviceEncryptionStateTrackerShuttingDown(&tracker));
@@ -104,7 +95,7 @@ TEST(OnDeviceEncryptionStateTrackerTest,
   MockObserver observer1;
   MockObserver observer2;
   {
-    TestOnDeviceEncryptionStateTracker tracker;
+    OnDeviceEncryptionStateTracker tracker;
     tracker.AddObserver(&observer1);
     tracker.AddObserver(&observer2);
 
