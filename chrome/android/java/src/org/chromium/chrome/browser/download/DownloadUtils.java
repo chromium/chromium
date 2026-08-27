@@ -691,11 +691,11 @@ public class DownloadUtils {
             @JniType("std::string") String filePath,
             @JniType("std::string") @Nullable String mimeType,
             @JniType("std::string") @Nullable String downloadGuid,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             @JniType("std::string") @Nullable String originalUrl,
             @JniType("std::string") @Nullable String referer,
             @DownloadOpenSource int source,
-            @Nullable String fileName) {
+            @JniType("std::string") @Nullable String fileName) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();

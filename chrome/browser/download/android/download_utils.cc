@@ -8,8 +8,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_number_conversions.h"
-#include "chrome/browser/download/android/jni_headers/MimeUtils_jni.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,9 +22,7 @@
 // Must come after other headers because it uses
 // offline_items_collection::FailState.
 #include "chrome/android/chrome_jni_headers/DownloadUtils_jni.h"
-
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+#include "chrome/browser/download/android/jni_headers/MimeUtils_jni.h"
 
 namespace {
 // If received bytes is more than the size limit and resumption will restart
@@ -35,7 +31,6 @@ constexpr int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
 }  // namespace
 
 static int32_t JNI_DownloadUtils_GetResumeMode(
-    JNIEnv* env,
     const std::string& url,
     offline_items_collection::FailState failState) {
   auto reason =
@@ -45,8 +40,7 @@ static int32_t JNI_DownloadUtils_GetResumeMode(
       true /* user_action_required */));
 }
 
-static bool JNI_DownloadUtils_IsDownloadRestrictedByPolicy(JNIEnv* env,
-                                                           Profile* profile) {
+static bool JNI_DownloadUtils_IsDownloadRestrictedByPolicy(Profile* profile) {
   content::DownloadManager* manager = profile->GetDownloadManager();
   if (manager) {
     return manager->GetDelegate()->IsDownloadRestrictedByPolicy();
@@ -87,8 +81,7 @@ void DownloadUtils::OpenDownload(download::DownloadItem* item,
       env, item->GetTargetFilePath().value(), item->GetMimeType(),
       item->GetGuid(), otr_profile_id, original_url,
       item->GetReferrerUrl().spec(), static_cast<int32_t>(open_source),
-      base::android::ConvertUTF8ToJavaString(
-          env, item->GetFileNameToReportUser().value()));
+      item->GetFileNameToReportUser().value());
 }
 
 // static

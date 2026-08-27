@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <jni.h>
-
 #include <cstdint>
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
@@ -27,25 +23,15 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/enterprise/util/jni_headers/DataProtectionBridge_jni.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
-using content::BrowserContext;
-using content::ClipboardEndpoint;
 using content::ClipboardPasteData;
-using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 
 namespace {
 
-void VerifyCopyIsAllowedByPolicy(
-    const base::android::JavaRef<jobject>& jrender_frame_host,
-    base::OnceCallback<void(bool)> callback,
-    const ui::ClipboardMetadata& metadata,
-    const content::ClipboardPasteData& data) {
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
+void VerifyCopyIsAllowedByPolicy(RenderFrameHost* render_frame_host,
+                                 base::OnceCallback<void(bool)> callback,
+                                 const ui::ClipboardMetadata& metadata,
+                                 const content::ClipboardPasteData& data) {
   if (!render_frame_host) {
     std::move(callback).Run(true);
     return;
@@ -63,14 +49,10 @@ void VerifyCopyIsAllowedByPolicy(
           std::move(callback)));
 }
 
-void VerifyShareIsAllowedByPolicy(
-    const base::android::JavaRef<jobject>& jrender_frame_host,
-    base::OnceCallback<void(bool)> callback,
-    const ui::ClipboardMetadata& metadata,
-    const content::ClipboardPasteData& data) {
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
+void VerifyShareIsAllowedByPolicy(RenderFrameHost* render_frame_host,
+                                  base::OnceCallback<void(bool)> callback,
+                                  const ui::ClipboardMetadata& metadata,
+                                  const content::ClipboardPasteData& data) {
   if (!render_frame_host) {
     std::move(callback).Run(true);
     return;
@@ -89,13 +71,10 @@ void VerifyShareIsAllowedByPolicy(
 }
 
 void VerifyGenericCopyActionIsAllowedByPolicy(
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
   if (!render_frame_host) {
     std::move(callback).Run(true);
     return;
@@ -116,7 +95,6 @@ void VerifyGenericCopyActionIsAllowedByPolicy(
 }  // namespace
 
 static bool JNI_DataProtectionBridge_HasBlockingScreenshotRule(
-    JNIEnv* env,
     Profile* profile) {
   if (!profile) {
     return false;
@@ -132,8 +110,7 @@ static bool JNI_DataProtectionBridge_HasBlockingScreenshotRule(
   return rules_service->HasBlockingScreenshotRule();
 }
 
-static bool JNI_DataProtectionBridge_IsScreenshotAllowed(JNIEnv* env,
-                                                         TabAndroid* tab) {
+static bool JNI_DataProtectionBridge_IsScreenshotAllowed(TabAndroid* tab) {
   if (!tab) {
     return true;
   }
@@ -178,17 +155,14 @@ static void JNI_DataProtectionBridge_ClearScreenshotSubscriptionCallback(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_text,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& text,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
-
   ClipboardPasteData data;
   data.text = text;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           .size = text.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -198,17 +172,14 @@ static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_url,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& url,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
-
   ClipboardPasteData data;
   data.text = url;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           .size = url.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::UrlType(),
@@ -218,18 +189,14 @@ static void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_image_uri,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& image_uri,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string image_uri =
-      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
-
   ClipboardPasteData data;
   data.text = image_uri;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.
@@ -240,17 +207,14 @@ static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_text,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& text,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
-
   ClipboardPasteData data;
   data.text = text;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           .size = text.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -260,17 +224,14 @@ static void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_url,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& url,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
-
   ClipboardPasteData data;
   data.text = url;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           .size = url.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::UrlType(),
@@ -280,18 +241,14 @@ static void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
 
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_image_uri,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& image_uri,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string image_uri =
-      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
-
   ClipboardPasteData data;
   data.text = image_uri;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.
@@ -303,18 +260,14 @@ static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void
 JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_image_uri,
-    const base::android::JavaRef<jobject>& jrender_frame_host,
+    const std::u16string& image_uri,
+    RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback) {
-  std::u16string image_uri =
-      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
-
   ClipboardPasteData data;
   data.text = image_uri;
 
   VerifyGenericCopyActionIsAllowedByPolicy(
-      jrender_frame_host, std::move(callback),
+      render_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.
@@ -324,11 +277,7 @@ JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
 }
 
 static bool JNI_DataProtectionBridge_IsSearchWithAllowed(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-
+    content::WebContents* web_contents) {
   if (!web_contents) {
     return true;
   }
@@ -337,13 +286,9 @@ static bool JNI_DataProtectionBridge_IsSearchWithAllowed(
 }
 
 static void JNI_DataProtectionBridge_ShouldAllowSearchWith(
-    JNIEnv* env,
     int32_t text_length,
-    const base::android::JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     base::OnceClosure callback) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-
   if (!web_contents) {
     std::move(callback).Run();
     return;

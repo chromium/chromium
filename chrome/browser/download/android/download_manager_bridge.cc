@@ -5,26 +5,15 @@
 #include "chrome/browser/download/android/download_manager_bridge.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
-#include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "components/download/public/common/download_features.h"
-#include "url/android/gurl_android.h"
-#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/download/android/jni_headers/DownloadManagerBridge_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-using download::DownloadItem;
-
 static void JNI_DownloadManagerBridge_OnAddCompletedDownloadDone(
-    JNIEnv* env,
     int64_t callback_id,
     int64_t download_id) {
   DCHECK(callback_id);

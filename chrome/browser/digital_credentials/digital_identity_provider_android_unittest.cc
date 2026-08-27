@@ -14,7 +14,7 @@ using RequestStatusForMetrics =
 TEST(DigitalIdentityProviderAndroidTest, ParseResultSuccess) {
   std::string result = "{\"key\": \"value\"}";
   auto expected_value = DigitalIdentityProviderAndroid::ParseResult(
-      result, static_cast<int32_t>(RequestStatusForMetrics::kSuccess));
+      result, RequestStatusForMetrics::kSuccess);
   ASSERT_TRUE(expected_value.has_value());
   EXPECT_EQ(*expected_value->GetDict().FindString("key"), "value");
 }
@@ -22,7 +22,7 @@ TEST(DigitalIdentityProviderAndroidTest, ParseResultSuccess) {
 TEST(DigitalIdentityProviderAndroidTest, ParseResultFailure) {
   std::string result = "";
   auto expected_value = DigitalIdentityProviderAndroid::ParseResult(
-      result, static_cast<int32_t>(RequestStatusForMetrics::kErrorOther));
+      result, RequestStatusForMetrics::kErrorOther);
   ASSERT_FALSE(expected_value.has_value());
   EXPECT_EQ(expected_value.error(), RequestStatusForMetrics::kErrorOther);
 }
@@ -30,7 +30,7 @@ TEST(DigitalIdentityProviderAndroidTest, ParseResultFailure) {
 TEST(DigitalIdentityProviderAndroidTest, ParseResultInvalidJson) {
   std::string result = "{key: value}";  // Invalid JSON (keys must be quoted)
   auto expected_value = DigitalIdentityProviderAndroid::ParseResult(
-      result, static_cast<int32_t>(RequestStatusForMetrics::kSuccess));
+      result, RequestStatusForMetrics::kSuccess);
   ASSERT_FALSE(expected_value.has_value());
   EXPECT_EQ(expected_value.error(), RequestStatusForMetrics::kErrorInvalidJson);
 }
@@ -40,7 +40,7 @@ TEST(DigitalIdentityProviderAndroidTest, ParseResultStrictJson) {
   // extensions
   std::string result = "{\"key\": \"value\"} // comment";
   auto expected_value = DigitalIdentityProviderAndroid::ParseResult(
-      result, static_cast<int32_t>(RequestStatusForMetrics::kSuccess));
+      result, RequestStatusForMetrics::kSuccess);
   ASSERT_FALSE(expected_value.has_value());
   EXPECT_EQ(expected_value.error(), RequestStatusForMetrics::kErrorInvalidJson);
 }

@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/default_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/extensions/api/messaging/android/jni_headers/NativeMessageAndroidPort_jni.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,18 +71,9 @@ std::optional<std::string> NativeMessageAndroidPort::ConnectToApp(
   bool is_verified = delegate.GetVerifierSourceType(*extension) !=
                      ContentVerifierDelegate::VerifierSourceType::NONE;
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> error_java_str =
-      Java_NativeMessageAndroidPort_connectToApp(
-          env, java_peer_, profile->GetJavaObject(),
-          base::android::ConvertUTF8ToJavaString(env, package_name),
-          base::android::ConvertUTF8ToJavaString(env, extension_id),
-          is_verified);
-
-  if (error_java_str.is_null()) {
-    return std::nullopt;
-  }
-  return base::android::ConvertJavaStringToUTF8(env, error_java_str);
+  return Java_NativeMessageAndroidPort_connectToApp(
+      base::android::AttachCurrentThread(), java_peer_, profile, package_name,
+      extension_id, is_verified);
 }
 
 NativeMessageAndroidPort::~NativeMessageAndroidPort() {
@@ -95,28 +89,20 @@ bool NativeMessageAndroidPort::IsValidPort() {
 }
 
 void NativeMessageAndroidPort::DispatchOnMessage(Message message) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   Java_NativeMessageAndroidPort_forwardMessageToApp(
-      env, java_peer_,
-      base::android::ConvertUTF8ToJavaString(env, message.data()));
+      base::android::AttachCurrentThread(), java_peer_, message.data());
 }
 
-void NativeMessageAndroidPort::PostMessageFromApp(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& message) {
+void NativeMessageAndroidPort::PostMessageFromApp(const std::string& message) {
   if (weak_channel_delegate_) {
     weak_channel_delegate_->PostMessage(
-        port_id_, Message(base::android::ConvertJavaStringToUTF8(env, message),
-                          /*user_gesture=*/false));
+        port_id_, Message(message, /*user_gesture=*/false));
   }
 }
 
-void NativeMessageAndroidPort::CloseChannel(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& error_message) {
+void NativeMessageAndroidPort::CloseChannel(const std::string& error_message) {
   if (weak_channel_delegate_) {
-    weak_channel_delegate_->CloseChannel(
-        port_id_, base::android::ConvertJavaStringToUTF8(env, error_message));
+    weak_channel_delegate_->CloseChannel(port_id_, error_message);
   }
 }
 

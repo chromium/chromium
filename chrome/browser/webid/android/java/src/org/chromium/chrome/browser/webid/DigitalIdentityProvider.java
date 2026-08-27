@@ -151,6 +151,7 @@ public class DigitalIdentityProvider {
                 long nativeDigitalIdentityProviderAndroid,
                 @JniType("std::string") String protocol,
                 @JniType("std::string") String digitalIdentity,
-                @DigitalIdentityRequestStatusForMetrics int statusForMetrics);
+                @JniType("RequestStatusForMetrics") @DigitalIdentityRequestStatusForMetrics
+                        int statusForMetrics);
     }
 }

@@ -52,7 +52,7 @@ public class DangerousDownloadDialogBridge {
             @JniType("std::string") String guid,
             @JniType("std::u16string") String fileName,
             long totalBytes,
-            String downloadDomain,
+            @JniType("std::u16string") String downloadDomain,
             int iconId,
             boolean isDangerous) {
         Activity activity = windowAndroid.getActivity().get();

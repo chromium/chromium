@@ -209,45 +209,46 @@ public class DataProtectionBridge {
     @VisibleForTesting
     public interface Natives {
         void verifyCopyTextIsAllowedByPolicy(
-                String text,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String text,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyCopyUrlIsAllowedByPolicy(
-                String url,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String url,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyCopyImageIsAllowedByPolicy(
-                String imageUri,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String imageUri,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareTextIsAllowedByPolicy(
-                String text,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String text,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareUrlIsAllowedByPolicy(
-                String url,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String url,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareImageIsAllowedByPolicy(
-                String imageUri,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String imageUri,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyGenericCopyImageActionIsAllowedByPolicy(
-                String imageUri,
-                RenderFrameHost renderFrameHost,
+                @JniType("std::u16string") String imageUri,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
-        boolean isSearchWithAllowed(@Nullable WebContents webContents);
+        boolean isSearchWithAllowed(
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
 
         void shouldAllowSearchWith(
                 int textLength,
-                @Nullable WebContents webContents,
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
                 @JniType("base::OnceClosure") Runnable callback);
 
         boolean hasBlockingScreenshotRule(@JniType("Profile*") Profile profile);

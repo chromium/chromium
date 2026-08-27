@@ -64,8 +64,9 @@ public final class ContextualTasksUtils {
      */
     public static @Nullable String getReplacementUrl(
             String currentText, int selectionStart, int selectionEnd, GURL functionalGurl) {
-        return ContextualTasksUtilsJni.get()
+        String ret = ContextualTasksUtilsJni.get()
                 .getReplacementUrl(currentText, selectionStart, selectionEnd, functionalGurl);
+        return ret.isEmpty() ? null : ret;
     }
 
     /**
@@ -93,6 +94,7 @@ public final class ContextualTasksUtils {
         GURL getContextualTasksFunctionalURL(
                 @JniType("content::WebContents*") WebContents webContents);
 
+        @JniType("std::string")
         String getReplacementUrl(
                 @JniType("std::u16string") String currentText,
                 int selectionStart,

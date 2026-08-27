@@ -47,12 +47,10 @@ class NativeMessageAndroidPort : public MessagePort {
 
   // Called by Java when the app this port is communicating with sends a message
   // back to the browser.
-  void PostMessageFromApp(JNIEnv* env,
-                          const base::android::JavaRef<jstring>& message);
+  void PostMessageFromApp(const std::string& message);
 
   // Called by Java when the communication channel is closed by the app.
-  void CloseChannel(JNIEnv* env,
-                    const base::android::JavaRef<jstring>& error_message);
+  void CloseChannel(const std::string& error_message);
 
  private:
   NativeMessageAndroidPort(base::WeakPtr<ChannelDelegate> channel_delegate,

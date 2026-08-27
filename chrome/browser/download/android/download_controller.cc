@@ -83,8 +83,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::BrowserThread;
@@ -228,7 +226,6 @@ void DownloadController::ScheduleRemoveDownloadItem(
 }
 
 static void JNI_DownloadController_CancelDownload(
-    JNIEnv* env,
     Profile* profile,
     const std::string& download_guid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -243,13 +240,10 @@ static void JNI_DownloadController_CancelDownload(
 }
 
 static void JNI_DownloadController_DownloadUrl(
-    JNIEnv* env,
     const std::string& url,
-    const base::android::JavaRef<jobject>& jweb_contents) {
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
     return;
   }
@@ -356,13 +350,9 @@ void DownloadController::StartAndroidDownload(
                                 std::string(),  // suggested_name
                                 info.original_mime_type, default_file_name_);
 
-  ScopedJavaLocalRef<jobject> jurl =
-      url::GURLAndroid::FromNativeGURL(env, info.url);
-  ScopedJavaLocalRef<jobject> jreferer =
-      url::GURLAndroid::FromNativeGURL(env, info.referer);
   Java_DownloadController_enqueueAndroidDownloadManagerRequest(
-      env, jurl, info.user_agent, file_name, info.original_mime_type,
-      info.cookie, jreferer);
+      env, info.url, info.user_agent, file_name, info.original_mime_type,
+      info.cookie, info.referer);
 
   WebContents* web_contents = wc_getter.Run();
   CloseTabIfEmpty(web_contents, nullptr);

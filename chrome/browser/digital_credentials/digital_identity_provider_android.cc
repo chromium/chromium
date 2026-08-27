@@ -22,7 +22,6 @@
 #include "chrome/browser/webid/jni_headers/DigitalIdentityProvider_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ScopedJavaLocalRef;
 
 using RequestStatusForMetrics =
@@ -92,7 +91,7 @@ void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
 
   callback_ = std::move(callback);
 
-  base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
+  ScopedJavaLocalRef<jobject> j_window = nullptr;
   if (web_contents && web_contents->GetTopLevelNativeWindow()) {
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
   }
@@ -116,7 +115,7 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
   }
 
   callback_ = std::move(callback);
-  base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
+  ScopedJavaLocalRef<jobject> j_window = nullptr;
   if (web_contents && web_contents->GetTopLevelNativeWindow()) {
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
   }
@@ -126,15 +125,15 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
       origin.Serialize(), *request_str);
 }
 
-void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
-                                               std::string protocol,
-                                               std::string result,
-                                               int32_t j_status_for_metrics) {
+void DigitalIdentityProviderAndroid::OnReceive(
+    std::string protocol,
+    const std::string& result,
+    RequestStatusForMetrics status_for_metrics) {
   if (!callback_) {
     return;
   }
 
-  auto expected_value = ParseResult(result, j_status_for_metrics);
+  auto expected_value = ParseResult(result, status_for_metrics);
   if (expected_value.has_value()) {
     std::move(callback_).Run(DigitalCredential(
         std::move(protocol), std::move(expected_value.value())));
@@ -146,11 +145,9 @@ void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
 // static
 base::expected<base::Value,
                DigitalIdentityProviderAndroid::RequestStatusForMetrics>
-DigitalIdentityProviderAndroid::ParseResult(std::string result,
-                                            int32_t j_status_for_metrics) {
-  auto status_for_metrics =
-      static_cast<RequestStatusForMetrics>(j_status_for_metrics);
-
+DigitalIdentityProviderAndroid::ParseResult(
+    const std::string& result,
+    RequestStatusForMetrics status_for_metrics) {
   if (status_for_metrics != RequestStatusForMetrics::kSuccess) {
     return base::unexpected(status_for_metrics);
   }

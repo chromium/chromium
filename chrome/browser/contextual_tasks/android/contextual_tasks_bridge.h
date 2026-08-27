@@ -37,8 +37,7 @@ class ContextualTasksBridge {
  public:
   DECLARE_USER_DATA(ContextualTasksBridge);
 
-  ContextualTasksBridge(JNIEnv* env,
-                        const jni_zero::JavaRef<jobject>& obj,
+  ContextualTasksBridge(const jni_zero::JavaRef<jobject>& obj,
                         BrowserWindowInterface* window,
                         Profile* profile);
   ~ContextualTasksBridge();
@@ -55,16 +54,16 @@ class ContextualTasksBridge {
       content::WebContents* web_contents,
       base::OnceCallback<void(std::string)> callback);
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   // Called from Java via JNI to undo the closure of the sheet.
-  void UndoClose(JNIEnv* env);
+  void UndoClose();
 
   // Called from Java via JNI to start the Android system voice recognition.
   void StartPlatformVoiceRecognition();
 
   // Called from Java via JNI to send voice search results to WebUI.
-  void OnVoiceTranscribed(JNIEnv* env, const std::string& query);
+  void OnVoiceTranscribed(const std::string& query);
 
   void NotifyShowUndoSnackbar();
   void NotifyOpenFeedbackUi(const GURL& page_url);

@@ -122,10 +122,7 @@ TEST_F(ContextualTasksBridgeTest, InitPopulatesUserData) {
   EXPECT_EQ(nullptr, ActiveTaskContextProvider::Get(unowned_user_data_host_));
 
   // Instantiate the bridge.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ContextualTasksBridge bridge(env,
-                               base::android::ScopedJavaLocalRef<jobject>(),
-                               &mock_browser, profile_.get());
+  ContextualTasksBridge bridge(nullptr, &mock_browser, profile_.get());
 
   // After bridge construction, the features should be present in the host.
   EXPECT_NE(nullptr,

@@ -134,7 +134,7 @@ public class MimeUtils {
      * @return true if the downloaded content should be opened, or false otherwise.
      */
     @CalledByNative
-    public static boolean canAutoOpenMimeType(@Nullable @JniType("std::string") String mimeType) {
+    public static boolean canAutoOpenMimeType(@JniType("std::string") @Nullable String mimeType) {
         return MIME_TYPES_TO_OPEN.contains(mimeType);
     }
 }

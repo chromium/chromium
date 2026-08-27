@@ -320,6 +320,7 @@ public final class StringUtils {
     @NativeMethods
     interface Natives {
         @JniType("std::u16string")
-        String getFailStateMessage(@FailState int failState);
+        String getFailStateMessage(
+                @FailState @JniType("offline_items_collection::FailState") int failState);
     }
 }

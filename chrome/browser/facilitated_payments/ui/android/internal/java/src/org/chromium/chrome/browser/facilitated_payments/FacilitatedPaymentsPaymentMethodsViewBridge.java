@@ -142,7 +142,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
 
     /** Requests to show the Pix account linking prompt in a bottom sheet. */
     @CalledByNative
-    public void showPixAccountLinkingPrompt(int strikeCount, String accountEmail) {
+    public void showPixAccountLinkingPrompt(
+            int strikeCount, @JniType("std::string") String accountEmail) {
         mComponent.showPixAccountLinkingPrompt(strikeCount, accountEmail);
     }
 

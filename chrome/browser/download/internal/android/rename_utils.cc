@@ -8,16 +8,10 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/download/internal/android/jni_headers/RenameUtils_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-
 // static
 static std::string JNI_RenameUtils_GetFileExtension(
-    JNIEnv* env,
-    const std::string& fileName) {
-  return base::FilePath(fileName).Extension();
+    const std::string& file_name) {
+  return base::FilePath(file_name).Extension();
 }
 
 DEFINE_JNI(RenameUtils)

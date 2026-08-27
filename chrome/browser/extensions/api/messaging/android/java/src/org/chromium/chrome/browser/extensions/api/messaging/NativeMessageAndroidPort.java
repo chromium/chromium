@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -91,8 +92,11 @@ public class NativeMessageAndroidPort {
     // to the external app. Returns an error message if the connection immediately fails, or null on
     // success.
     @CalledByNative
-    public @Nullable String connectToApp(
-            Profile profile, String packageName, String extensionId, boolean isVerifiedExtension) {
+    public @JniType("std::optional<std::string>") @Nullable String connectToApp(
+            @JniType("Profile*") Profile profile,
+            @JniType("std::string") String packageName,
+            @JniType("std::string") String extensionId,
+            boolean isVerifiedExtension) {
         NativeMessagingManager manager = NativeMessagingManager.getForProfile(profile);
         return manager.addPort(packageName, extensionId, isVerifiedExtension, this);
     }
@@ -121,7 +125,7 @@ public class NativeMessageAndroidPort {
     // Called to send a message to the external app. If this port is not yet connected to the app's
     // `mRemotePort` receiver then the message is put in a pending queue.
     @CalledByNative
-    public void forwardMessageToApp(String message) {
+    public void forwardMessageToApp(@JniType("std::string") String message) {
         if (mRemotePort != null) {
             send(message);
         } else {
@@ -201,12 +205,14 @@ public class NativeMessageAndroidPort {
     interface Natives {
         // Forwards a message received from the external Android app to the C++
         // NativeMessageAndroidPort, which delivers it to the extension.
-        void postMessageFromApp(long nativeNativeMessageAndroidPort, String message);
+        void postMessageFromApp(
+                long nativeNativeMessageAndroidPort, @JniType("std::string") String message);
 
         // Notifies the C++ NativeMessageAndroidPort that the channel has been closed
         // (e.g. by the app, due to an error, or during teardown), closing the port
         // and dispatching any error message to the extension.
-        void closeChannel(long nativeNativeMessageAndroidPort, String errorMessage);
+        void closeChannel(
+                long nativeNativeMessageAndroidPort, @JniType("std::string") String errorMessage);
     }
 
     // A helper that receives calls from the external app back to the browser

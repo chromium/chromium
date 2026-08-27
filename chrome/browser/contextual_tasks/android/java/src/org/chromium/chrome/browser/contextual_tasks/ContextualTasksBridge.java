@@ -110,7 +110,7 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    void openFeedbackUi(String pageUrl) {
+    void openFeedbackUi(@JniType("std::string") String pageUrl) {
         if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
             return;
         }
