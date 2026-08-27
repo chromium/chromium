@@ -91,7 +91,7 @@ class MemoryConsumerRegistryTest : public Test,
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   void OnMemoryLimitChanged(uint32_t consumer_id,
                             ChildProcessId child_process_id,
-                            int memory_limit) override {}
+                            base::MemoryLimit memory_limit) override {}
 #endif
 
  private:

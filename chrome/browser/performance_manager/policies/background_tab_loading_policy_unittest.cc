@@ -801,7 +801,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnUpdateMemoryLimit) {
 
   // Simulate memory pressure and expect the tab loader to disable loading.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-      base::kModerateMemoryPressureThreshold);
+      base::MemoryLimit::ModeratePressureThreshold());
   test_memory_consumer_registry_.NotifyReleaseMemory();
   task_env().RunUntilIdle();
 

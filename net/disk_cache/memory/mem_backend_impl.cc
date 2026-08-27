@@ -367,17 +367,17 @@ void MemBackendImpl::EvictTill(int target_size) {
 }
 
 int32_t MemBackendImpl::CalculateTargetMemoryLimit() const {
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
     // Under moderate pressure or worse, we use linear interpolation to ensure
     // the cache is never completely cleared. We map the [0, 50] memory limit
     // range to [10%, 50%] of max_size_.
     float min = max_size_ / 10.0f;
     float max = max_size_ / 2.0f;
     return base::checked_cast<int32_t>(
-        std::lerp(min, max, memory_limit_ratio() / 0.5));
+        std::lerp(min, max, memory_limit().ratio() / 0.5));
   }
 
-  return base::ScaleByMemoryLimit(max_size_, memory_limit());
+  return memory_limit().Scale(max_size_);
 }
 
 void MemBackendImpl::OnUpdateMemoryLimit() {
@@ -397,9 +397,10 @@ void MemBackendImpl::OnReleaseMemory() {
     EvictTill(current_max_size_);
   } else {
     // Stateless behavior, evict to specific limits.
-    if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+    if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
       EvictTill(max_size_ / 10);
-    } else if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    } else if (memory_limit() <=
+               base::MemoryLimit::ModeratePressureThreshold()) {
       EvictTill(max_size_ / 2);
     }
   }

@@ -676,7 +676,8 @@ base::WeakPtr<QuotaAllocationTask> BlobMemoryController::ReserveMemoryQuota(
   if (total_bytes_needed <= GetAvailableMemoryForBlobs()) {
     GrantMemoryAllocations(&unreserved_memory_items,
                            static_cast<size_t>(total_bytes_needed));
-    MaybeScheduleEvictionUntilSystemHealthy(base::kNoMemoryPressureThreshold);
+    MaybeScheduleEvictionUntilSystemHealthy(
+        base::MemoryLimit::NoPressureThreshold());
     std::move(done_callback).Run(true);
     return base::WeakPtr<QuotaAllocationTask>();
   }
@@ -688,7 +689,8 @@ base::WeakPtr<QuotaAllocationTask> BlobMemoryController::ReserveMemoryQuota(
   auto weak_ptr =
       AppendMemoryTask(total_bytes_needed, std::move(unreserved_memory_items),
                        std::move(done_callback));
-  MaybeScheduleEvictionUntilSystemHealthy(base::kNoMemoryPressureThreshold);
+  MaybeScheduleEvictionUntilSystemHealthy(
+      base::MemoryLimit::NoPressureThreshold());
   return weak_ptr;
 }
 
@@ -759,7 +761,8 @@ void BlobMemoryController::NotifyMemoryItemsUsed(
       populated_memory_items_.Put(item->item_id(), item.get());
     }
   }
-  MaybeScheduleEvictionUntilSystemHealthy(base::kNoMemoryPressureThreshold);
+  MaybeScheduleEvictionUntilSystemHealthy(
+      base::MemoryLimit::NoPressureThreshold());
 }
 
 void BlobMemoryController::CallWhenStorageLimitsAreKnown(
@@ -888,7 +891,7 @@ size_t BlobMemoryController::CollectItemsForEviction(
 }
 
 void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
-    int memory_limit_percent) {
+    base::MemoryLimit memory_limit) {
   // Don't do eviction when others are happening, as we don't change our
   // pending_memory_quota_total_size_ value until after the paging files have
   // been written.
@@ -899,15 +902,15 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
       static_cast<uint64_t>(pending_memory_quota_total_size_) +
       blob_memory_used_;
 
-  int effective_limit =
+  base::MemoryLimit effective_limit =
       base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)
-          ? memory_limit().percent()
-          : memory_limit_percent;
+          ? this->memory_limit()
+          : memory_limit;
 
   size_t in_memory_limit = limits_.memory_limit_before_paging();
   uint64_t min_page_file_size = limits_.min_page_file_size;
 
-  if (effective_limit <= base::kModerateMemoryPressureThreshold) {
+  if (effective_limit <= base::MemoryLimit::ModeratePressureThreshold()) {
     if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
       // One-shot pressure logic
       in_memory_limit = 0;
@@ -1017,18 +1020,19 @@ void BlobMemoryController::OnEvictionComplete(
 
   // If we still have more blobs waiting and we're not waiting on more paging
   // operations, schedule more.
-  MaybeScheduleEvictionUntilSystemHealthy(base::kNoMemoryPressureThreshold);
+  MaybeScheduleEvictionUntilSystemHealthy(
+      base::MemoryLimit::NoPressureThreshold());
 }
 
 void BlobMemoryController::OnUpdateMemoryLimit() {
   if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     return;
   }
-  if (memory_limit() < base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() < base::MemoryLimit::ModeratePressureThreshold()) {
     return;
   }
-  size_t target_max_memory = base::ScaleByMemoryLimit(
-      base_limits_.max_blob_in_memory_space, memory_limit());
+  size_t target_max_memory =
+      memory_limit().Scale(base_limits_.max_blob_in_memory_space);
   // Clamping prevents synchronous evictions during subsequent allocation
   // checks.
   limits_.max_blob_in_memory_space =
@@ -1037,17 +1041,18 @@ void BlobMemoryController::OnUpdateMemoryLimit() {
 
 void BlobMemoryController::OnReleaseMemory() {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (memory_limit() < base::kModerateMemoryPressureThreshold) {
+    if (memory_limit() < base::MemoryLimit::ModeratePressureThreshold()) {
       return;
     }
     // Enforce the actual scaled target limit now
-    limits_.max_blob_in_memory_space = base::ScaleByMemoryLimit(
-        base_limits_.max_blob_in_memory_space, memory_limit());
-    MaybeScheduleEvictionUntilSystemHealthy(base::kNoMemoryPressureThreshold);
+    limits_.max_blob_in_memory_space =
+        memory_limit().Scale(base_limits_.max_blob_in_memory_space);
+    MaybeScheduleEvictionUntilSystemHealthy(
+        base::MemoryLimit::NoPressureThreshold());
     return;
   }
   // Nothing to do if no pressure.
-  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() > base::MemoryLimit::ModeratePressureThreshold()) {
     return;
   }
 
@@ -1056,7 +1061,7 @@ void BlobMemoryController::OnReleaseMemory() {
   // Furthermore, scheduling a task to write files to disk risks paging-in
   // memory that was already committed to disk which compounds the problem. Do
   // not take any action on critical memory pressure.
-  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
     return;
   }
 

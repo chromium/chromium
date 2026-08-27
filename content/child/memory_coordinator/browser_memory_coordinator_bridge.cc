@@ -110,7 +110,7 @@ void BrowserMemoryCoordinatorBridge::EnableDiagnosticsReporting(
 void BrowserMemoryCoordinatorBridge::OnMemoryLimitChanged(
     uint32_t consumer_id,
     ChildProcessId child_process_id,
-    int memory_limit) {
+    base::MemoryLimit memory_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (diagnostics_host_) {
     diagnostics_host_->OnMemoryLimitChanged(consumer_id, memory_limit);

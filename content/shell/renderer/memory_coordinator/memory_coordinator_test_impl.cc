@@ -50,7 +50,7 @@ MemoryCoordinatorTestImpl::TestMemoryConsumer::TestMemoryConsumer(
   client_.set_disconnect_handler(base::BindOnce(
       &TestMemoryConsumer::OnConnectionError, base::Unretained(this)));
   // Ensure any already assigned memory limit is honored.
-  if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
+  if (memory_limit() != base::MemoryLimit::Default()) {
     OnUpdateMemoryLimit();
   }
 }

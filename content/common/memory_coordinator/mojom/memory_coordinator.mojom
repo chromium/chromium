@@ -4,13 +4,15 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/memory_limit.mojom";
+
 [EnableIf=ENABLE_MEMORY_COORDINATOR_INTERNALS]
 import "content/common/memory_coordinator/mojom/memory_coordinator_diagnostics.mojom";
 
 // Represents a memory update for a consumer.
 struct MemoryConsumerUpdate {
   uint32 consumer_id;
-  int32? percentage;
+  mojo_base.mojom.MemoryLimit? memory_limit;
   bool release_memory;
 };
 

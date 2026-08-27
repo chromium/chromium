@@ -521,7 +521,7 @@ class MockDiagnosticObserver
               OnMemoryLimitChanged,
               (uint32_t consumer_id,
                ChildProcessId child_process_id,
-               int memory_limit),
+               base::MemoryLimit memory_limit),
               (override));
 };
 #endif
@@ -771,7 +771,9 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
 
   // Adding a diagnostic observer should immediately notify the current limit.
   MockDiagnosticObserver observer;
-  EXPECT_CALL(observer, OnMemoryLimitChanged(kConsumerId, kChildId, 50));
+  EXPECT_CALL(observer, OnMemoryLimitChanged(
+                            kConsumerId, kChildId,
+                            base::MemoryLimit::ModeratePressureThreshold()));
   policy_manager().AddDiagnosticObserver(&observer);
   Mock::VerifyAndClearExpectations(&observer);
 

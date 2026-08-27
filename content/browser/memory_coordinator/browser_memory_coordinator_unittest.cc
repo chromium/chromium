@@ -61,7 +61,7 @@ class MockDiagnosticObserver
               OnMemoryLimitChanged,
               (uint32_t consumer_id,
                ChildProcessId child_process_id,
-               int memory_limit),
+               base::MemoryLimit memory_limit),
               (override));
 };
 #endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)

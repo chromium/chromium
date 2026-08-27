@@ -52,7 +52,7 @@ class CONTENT_EXPORT MemoryConsumerRegistry
     ~ConsumerGroup();
 
     void ReleaseMemory();
-    void UpdateMemoryLimit(int percentage);
+    void UpdateMemoryLimit(base::MemoryLimit memory_limit);
 
     // Adds/removes a consumer.
     void AddMemoryConsumer(base::MemoryConsumer* consumer);
@@ -67,7 +67,7 @@ class CONTENT_EXPORT MemoryConsumerRegistry
    private:
     base::MemoryConsumerTraits traits_;
 
-    int memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
+    base::MemoryLimit memory_limit_ = base::MemoryLimit::Default();
 
     base::ObserverList<base::MemoryConsumer> memory_consumers_;
     std::string consumer_name_;

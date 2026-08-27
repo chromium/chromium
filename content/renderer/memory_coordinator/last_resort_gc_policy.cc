@@ -71,7 +71,7 @@ void LastResortGCPolicy::OnV8HeapLastResortGC() {
 }
 
 void LastResortGCPolicy::OnRestoreLimitTimerFired() {
-  SetLimit(base::MemoryConsumer::kDefaultMemoryLimit,
+  SetLimit(base::MemoryLimit::Default().percent(),
            /*release_memory=*/false);
 }
 

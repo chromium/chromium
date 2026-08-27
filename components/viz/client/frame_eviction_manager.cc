@@ -48,11 +48,11 @@ size_t GetBaselineMaxSavedFrames() {
   return baseline;
 }
 
-size_t CalculateTargetMaxSavedFrames(size_t baseline, int memory_limit) {
+size_t CalculateTargetMaxSavedFrames(size_t baseline,
+                                     base::MemoryLimit memory_limit) {
   // Scale the baseline capacity so that 100% memory limit corresponds to
   // 2x baseline capacity, and 50% corresponds to 1x baseline capacity.
-  return std::max(baseline,
-                  base::ScaleByMemoryLimit(baseline * 2, memory_limit));
+  return std::max(baseline, memory_limit.Scale(baseline * 2));
 }
 
 }  // namespace

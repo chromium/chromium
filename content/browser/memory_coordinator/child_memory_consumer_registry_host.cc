@@ -220,12 +220,7 @@ void ChildMemoryConsumerRegistryHost::ClearOverrideLimit(uint32_t consumer_id,
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 void ChildMemoryConsumerRegistryHost::OnMemoryLimitChanged(
     uint32_t consumer_id,
-    int32_t memory_limit) {
-  if (memory_limit < 0) {
-    mojo::ReportBadMessage("OnMemoryLimitChanged: out of range");
-    return;
-  }
-
+    base::MemoryLimit memory_limit) {
   // Ensure a child process can only report diagnostics for registered
   // consumers.
   if (consumers_.find(consumer_id) == consumers_.end()) {

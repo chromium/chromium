@@ -242,7 +242,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
       uint64_t min_page_file_size);
 
   // Schedule paging until our memory usage is below our memory limit.
-  void MaybeScheduleEvictionUntilSystemHealthy(int memory_limit_percent);
+  void MaybeScheduleEvictionUntilSystemHealthy(base::MemoryLimit memory_limit);
 
   // Called when we've completed evicting a list of items to disk. This is where
   // we swap the bytes items for file items, and update our bookkeeping.

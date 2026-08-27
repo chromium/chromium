@@ -65,7 +65,7 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
 
  private:
   const ConsumerPredicate predicate_;
-  int percentage_ = base::MemoryConsumer::kDefaultMemoryLimit;
+  int percentage_ = base::MemoryLimit::Default().percent();
   bool release_memory_ = false;
 
   void TriggerRepeatedRelease();

@@ -272,14 +272,16 @@ class PageNodeContext {
 class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
  public:
   void SimulateMemoryPressure(bool is_critical) {
-    int limit = is_critical ? base::kCriticalMemoryPressureThreshold
-                            : base::kModerateMemoryPressureThreshold;
+    base::MemoryLimit limit =
+        is_critical ? base::MemoryLimit::CriticalPressureThreshold()
+                    : base::MemoryLimit::ModeratePressureThreshold();
     test_registry_.NotifyUpdateMemoryLimit(limit);
     test_registry_.NotifyReleaseMemory();
   }
 
   void SimulateNoMemoryPressure() {
-    test_registry_.NotifyUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+    test_registry_.NotifyUpdateMemoryLimit(
+        base::MemoryLimit::NoPressureThreshold());
     test_registry_.NotifyReleaseMemory();
   }
 

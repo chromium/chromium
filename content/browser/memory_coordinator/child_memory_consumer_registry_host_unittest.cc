@@ -102,7 +102,7 @@ class MockMemoryConsumerGroupController : public MemoryConsumerGroupController {
               OnMemoryLimitChanged,
               (uint32_t consumer_id,
                ChildProcessId child_process_id,
-               int memory_limit),
+               base::MemoryLimit memory_limit),
               (override));
 #endif
 };
@@ -531,45 +531,13 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_Valid) {
   remote_host.FlushForTesting();
 
   // Valid percentage (positive) should be forwarded.
-  EXPECT_CALL(controller_, OnMemoryLimitChanged(kConsumerId, kChildId, 100));
+  EXPECT_CALL(controller_,
+              OnMemoryLimitChanged(kConsumerId, kChildId,
+                                   base::MemoryLimit::NoPressureThreshold()));
   {
     mojo::FakeMessageDispatchContext context;
-    host_impl->OnMemoryLimitChanged(kConsumerId, 100);
-  }
-}
-
-TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_InvalidRange) {
-  const ChildProcessId kChildId(1);
-  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
-  BindHost(PROCESS_TYPE_UTILITY, kChildId,
-           remote_host.BindNewPipeAndPassReceiver());
-
-  auto it = hosts_.find(kChildId);
-  ChildMemoryConsumerRegistryHost* host_impl = it->second.get();
-
-  static constexpr char kConsumerName[] = "consumer";
-  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
-
-  // Register the consumer first.
-  MockChildMemoryCoordinator mock_coordinator;
-  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
-      &mock_coordinator);
-  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
-  EXPECT_CALL(controller_, OnConsumerGroupAdded(kConsumerId, _, _, _));
-  std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
-  registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, kTestTraits));
-  remote_host->Register(std::move(registrations));
-  remote_host.FlushForTesting();
-
-  // Invalid percentage (negative) should trigger a bad message.
-  EXPECT_CALL(controller_, OnMemoryLimitChanged(_, _, _)).Times(0);
-  {
-    mojo::test::BadMessageObserver bad_message_observer;
-    mojo::FakeMessageDispatchContext context;
-    host_impl->OnMemoryLimitChanged(kConsumerId, -1);
-    EXPECT_EQ("OnMemoryLimitChanged: out of range",
-              bad_message_observer.WaitForBadMessage());
+    host_impl->OnMemoryLimitChanged(kConsumerId,
+                                    base::MemoryLimit::NoPressureThreshold());
   }
 }
 
@@ -588,7 +556,8 @@ TEST_F(ChildMemoryConsumerRegistryHostTest,
   {
     mojo::test::BadMessageObserver bad_message_observer;
     mojo::FakeMessageDispatchContext context;
-    host_impl->OnMemoryLimitChanged(kUnknownConsumerId, 100);
+    host_impl->OnMemoryLimitChanged(kUnknownConsumerId,
+                                    base::MemoryLimit::Default());
     EXPECT_EQ("OnMemoryLimitChanged: unknown consumer_id",
               bad_message_observer.WaitForBadMessage());
   }

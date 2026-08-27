@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -22,19 +23,25 @@ TEST(ServiceUtilsTest, UpdateShaderCacheSizeOnMemoryLimit_NonAggressive) {
   feature_list.InitAndDisableFeature(features::kAggressiveShaderCacheLimits);
 
   // None (100%)
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 100),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::NoPressureThreshold()),
             kMaxCacheSize);
 
   // Moderate (50%) -> 25% of max size
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 50),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::ModeratePressureThreshold()),
             kMaxCacheSize / 4);
 
   // Critical (0%) -> 0
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 0), 0u);
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::CriticalPressureThreshold()),
+            0u);
 
   // Intermediate (75%) -> 56.25% of max size (quadratically)
   // 1024 * (0.75 * 0.75) = 1024 * 0.5625 = 576
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 75), 576u);
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::FromPercent(75)),
+            576u);
 }
 
 TEST(ServiceUtilsTest, UpdateShaderCacheSizeOnMemoryLimit_Aggressive) {
@@ -43,29 +50,38 @@ TEST(ServiceUtilsTest, UpdateShaderCacheSizeOnMemoryLimit_Aggressive) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android ignores all pressure.
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 100),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::NoPressureThreshold()),
             kMaxCacheSize);
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 50),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::ModeratePressureThreshold()),
             kMaxCacheSize);
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 0),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::CriticalPressureThreshold()),
             kMaxCacheSize);
 #else
   // Non-Android desktop:
   // Ignore limits above Moderate (50%).
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 100),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::NoPressureThreshold()),
             kMaxCacheSize);
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 75),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::FromPercent(75)),
             kMaxCacheSize);
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 50),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::ModeratePressureThreshold()),
             kMaxCacheSize);
 
   // Interpolate between Moderate (50%) and Critical (0%).
   // 25% -> t = (50 - 25)/50 = 0.5. lerp(1.0, 0.25, 0.5) = 0.625.
   // 1024 * 0.625 = 640.
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 25), 640u);
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::FromPercent(25)),
+            640u);
 
   // Critical (0%) -> 25% of max size
-  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(kMaxCacheSize, 0),
+  EXPECT_EQ(UpdateShaderCacheSizeOnMemoryLimit(
+                kMaxCacheSize, base::MemoryLimit::CriticalPressureThreshold()),
             kMaxCacheSize / 4);
 #endif
 }

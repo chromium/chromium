@@ -263,7 +263,7 @@ void ClientDiscardableSharedMemoryManager::OnUpdateMemoryLimit() {
 }
 
 void ClientDiscardableSharedMemoryManager::OnReleaseMemory() {
-  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
     ReleaseFreeMemory();
   }
 }

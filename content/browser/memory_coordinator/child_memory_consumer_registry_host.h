@@ -78,7 +78,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // mojom::MemoryCoordinatorDiagnosticsHost:
   void OnMemoryLimitChanged(uint32_t consumer_id,
-                            int32_t memory_limit) override;
+                            base::MemoryLimit memory_limit) override;
 
   // Enables/disables additional diagnostics reported by the child process.
   void EnableDiagnosticsReporting();

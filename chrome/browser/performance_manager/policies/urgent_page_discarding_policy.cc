@@ -132,7 +132,7 @@ void UrgentPageDiscardingPolicy::DisableForTesting() {
 void UrgentPageDiscardingPolicy::OnReleaseMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
     return;
   }
 

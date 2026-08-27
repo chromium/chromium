@@ -40,7 +40,7 @@ MemoryReclaimerPressureListener::~MemoryReclaimerPressureListener() = default;
 void MemoryReclaimerPressureListener::OnUpdateMemoryLimit() {}
 
 void MemoryReclaimerPressureListener::OnReleaseMemory() {
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
     ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
   }
 }

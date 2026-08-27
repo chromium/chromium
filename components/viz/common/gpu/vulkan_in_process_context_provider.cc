@@ -294,9 +294,8 @@ void VulkanInProcessContextProvider::OnUpdateMemoryLimit() {
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).
     base::MemoryLimit capped_memory_limit =
-        std::min(base::MemoryLimit::Default(), memory_limit());
-    uint32_t target_limit =
-        base::ScaleByMemoryLimit(*sync_cpu_memory_limit_, capped_memory_limit);
+        std::min(base::MemoryLimit::NoPressureThreshold(), memory_limit());
+    uint32_t target_limit = capped_memory_limit.Scale(*sync_cpu_memory_limit_);
 
     uint32_t new_limit = target_limit;
     uint32_t current_active =
@@ -322,15 +321,15 @@ void VulkanInProcessContextProvider::OnReleaseMemory() {
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).
     base::MemoryLimit capped_memory_limit =
-        std::min(base::MemoryLimit::Default(), memory_limit());
+        std::min(base::MemoryLimit::NoPressureThreshold(), memory_limit());
     uint32_t new_sync_cpu_memory_limit =
-        base::ScaleByMemoryLimit(*sync_cpu_memory_limit_, capped_memory_limit);
+        capped_memory_limit.Scale(*sync_cpu_memory_limit_);
     active_sync_cpu_memory_limit_.store(new_sync_cpu_memory_limit,
                                         std::memory_order_relaxed);
     return;
   }
 
-  if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
     return;
   }
 

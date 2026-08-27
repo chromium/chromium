@@ -316,13 +316,13 @@ void LogSpareProcessTakeActionUMAs(
   }
 }
 
-// Returns the memory limit threshold (expressed as a percentage) that
-// determines when a spare RPH can be created or killed.
-int GetMemoryLimitThreshold() {
+// Returns the memory limit threshold that determines when a spare RPH can be
+// created or killed.
+base::MemoryLimit GetMemoryLimitThreshold() {
   if (base::FeatureList::IsEnabled(kSpareRPHUseCriticalMemoryPressure)) {
-    return base::kCriticalMemoryPressureThreshold;
+    return base::MemoryLimit::CriticalPressureThreshold();
   }
-  return base::kModerateMemoryPressureThreshold;
+  return base::MemoryLimit::ModeratePressureThreshold();
 }
 
 constexpr base::MemoryConsumerTraits kSpareRenderProcessHostManagerTraits(
@@ -1038,7 +1038,7 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
   }
 
   // Don't create spares when under memory pressure.
-  if (memory_limit() < base::kNoMemoryPressureThreshold) {
+  if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
     return false;
   }
 

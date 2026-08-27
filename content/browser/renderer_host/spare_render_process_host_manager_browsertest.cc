@@ -1222,7 +1222,7 @@ struct MemoryPressureTestParams {
   bool enable_multiple_spares;
   bool keep_one_alive;
   bool use_critical_memory_pressure_threshold;
-  int memory_limit;
+  base::MemoryLimit memory_limit;
   size_t expected_spares_after_pressure;
 };
 
@@ -1311,33 +1311,29 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SpareRenderProcessHostManagerMemoryPressureParamTest,
     testing::Values(
-        MemoryPressureTestParams{/*enable_multiple_spares=*/false,
-                                 /*keep_one_alive=*/false,
-                                 /*use_critical_memory_pressure_threshold=*/
-                                 false,
-                                 /*memory_limit=*/
-                                 base::kModerateMemoryPressureThreshold,
-                                 /*expected_spares_after_pressure=*/0u},
-        MemoryPressureTestParams{/*enable_multiple_spares=*/true,
-                                 /*keep_one_alive=*/true,
-                                 /*use_critical_memory_pressure_threshold=*/
-                                 false,
-                                 /*memory_limit=*/
-                                 base::kModerateMemoryPressureThreshold,
-                                 /*expected_spares_after_pressure=*/1u},
-        MemoryPressureTestParams{/*enable_multiple_spares=*/true,
-                                 /*keep_one_alive=*/true,
-                                 /*use_critical_memory_pressure_threshold=*/
-                                 true,
-                                 /*memory_limit=*/
-                                 base::kModerateMemoryPressureThreshold,
-                                 /*expected_spares_after_pressure=*/2u},
-        MemoryPressureTestParams{/*enable_multiple_spares=*/false,
-                                 /*keep_one_alive=*/false,
-                                 /*use_critical_memory_pressure_threshold=*/
-                                 true,
-                                 /*memory_limit=*/
-                                 base::kCriticalMemoryPressureThreshold,
-                                 /*expected_spares_after_pressure=*/0u}));
+        MemoryPressureTestParams{
+            /*enable_multiple_spares=*/false,
+            /*keep_one_alive=*/false,
+            /*use_critical_memory_pressure_threshold=*/false,
+            /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
+            /*expected_spares_after_pressure=*/0u},
+        MemoryPressureTestParams{
+            /*enable_multiple_spares=*/true,
+            /*keep_one_alive=*/true,
+            /*use_critical_memory_pressure_threshold=*/false,
+            /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
+            /*expected_spares_after_pressure=*/1u},
+        MemoryPressureTestParams{
+            /*enable_multiple_spares=*/true,
+            /*keep_one_alive=*/true,
+            /*use_critical_memory_pressure_threshold=*/true,
+            /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
+            /*expected_spares_after_pressure=*/2u},
+        MemoryPressureTestParams{
+            /*enable_multiple_spares=*/false,
+            /*keep_one_alive=*/false,
+            /*use_critical_memory_pressure_threshold=*/true,
+            /*memory_limit=*/base::MemoryLimit::CriticalPressureThreshold(),
+            /*expected_spares_after_pressure=*/0u}));
 
 }  // namespace content

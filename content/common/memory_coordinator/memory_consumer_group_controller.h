@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/buildflags.h"
 #include "content/public/common/child_process_id.h"
@@ -42,7 +43,7 @@ class MemoryConsumerGroupController {
   // child process.
   virtual void OnMemoryLimitChanged(uint32_t consumer_id,
                                     ChildProcessId child_process_id,
-                                    int memory_limit) = 0;
+                                    base::MemoryLimit memory_limit) = 0;
 #endif
 };
 

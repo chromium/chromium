@@ -8,17 +8,18 @@
 #include <optional>
 #include <string>
 
+#include "base/memory_coordinator/memory_limit.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
-// Represents a memory update for a consumer. `percentage` is the new memory
+// Represents a memory update for a consumer. `memory_limit` is the new memory
 // limit to apply if it has a value, or null if the limit remains unchanged.
 // `release_memory` is true if the consumer should be notified to release
 // its memory.
 struct CONTENT_EXPORT MemoryConsumerUpdate {
   uint32_t consumer_id;
-  std::optional<int> percentage;
+  std::optional<base::MemoryLimit> memory_limit;
   bool release_memory = false;
 
   bool operator==(const MemoryConsumerUpdate&) const = default;

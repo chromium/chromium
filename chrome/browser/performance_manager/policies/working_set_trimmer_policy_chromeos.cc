@@ -136,7 +136,7 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // have been backgrounded for some period of time and have not been trimmed for
 // at least the backoff period.
 void WorkingSetTrimmerPolicyChromeOS::OnReleaseMemory() {
-  if (memory_limit() >= base::kNoMemoryPressureThreshold) {
+  if (memory_limit() >= base::MemoryLimit::NoPressureThreshold()) {
     return;
   }
 
@@ -181,7 +181,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnReleaseMemory() {
     if (!last_arcvm_trim_ || (base::TimeTicks::Now() - *last_arcvm_trim_ >
                               params_.arcvm_trim_backoff_time)) {
       const bool is_critical =
-          memory_limit() <= base::kCriticalMemoryPressureThreshold;
+          memory_limit() <= base::MemoryLimit::CriticalPressureThreshold();
       TrimArcVmProcesses(is_critical);
     }
   }

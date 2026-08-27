@@ -148,7 +148,7 @@ TEST_F(KeepAliveDSEPolicyTest, MemoryPressureReleasesKeepAlive) {
 
   // Simulate memory pressure.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-      base::kModerateMemoryPressureThreshold);
+      base::MemoryLimit::ModeratePressureThreshold());
   test_memory_consumer_registry_.NotifyReleaseMemory();
 
   // The process should no longer be kept alive.
@@ -160,7 +160,7 @@ TEST_F(KeepAliveDSEPolicyTest, MemoryPressureReleasesKeepAlive) {
 TEST_F(KeepAliveDSEPolicyTest, NoKeepAliveUnderMemoryPressure) {
   // Simulate memory pressure first.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-      base::kModerateMemoryPressureThreshold);
+      base::MemoryLimit::ModeratePressureThreshold());
   test_memory_consumer_registry_.NotifyReleaseMemory();
 
   NavigateAndCommit(GURL(kDSEUrl));
@@ -176,13 +176,13 @@ TEST_F(KeepAliveDSEPolicyTest, ReacquireKeepAliveWhenMemoryPressureRelieved) {
 
   // Simulate memory pressure.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-      base::kModerateMemoryPressureThreshold);
+      base::MemoryLimit::ModeratePressureThreshold());
   test_memory_consumer_registry_.NotifyReleaseMemory();
   EXPECT_EQ(0, rph->GetPendingReuseRefCountForTesting());
 
   // Relieve memory pressure.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-      base::MemoryConsumer::kDefaultMemoryLimit);
+      base::MemoryLimit::NoPressureThreshold());
 
   // The process should be kept alive again.
   EXPECT_EQ(1, rph->GetPendingReuseRefCountForTesting());

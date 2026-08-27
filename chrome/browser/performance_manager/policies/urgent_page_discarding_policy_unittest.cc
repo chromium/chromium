@@ -55,7 +55,7 @@ class UrgentPageDiscardingPolicyTest
   }
 
  protected:
-  void TriggerMemoryPressure(int memory_limit) {
+  void TriggerMemoryPressure(base::MemoryLimit memory_limit) {
     test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
         memory_limit, base::DoNothing());
     test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
@@ -73,7 +73,7 @@ class UrgentPageDiscardingPolicyTest
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
-  TriggerMemoryPressure(base::kCriticalMemoryPressureThreshold);
+  TriggerMemoryPressure(base::MemoryLimit::CriticalPressureThreshold());
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   // Send a second memory pressure notification without switching back to the
@@ -82,13 +82,13 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
   DiscardEligibilityPolicy::RemovesDiscardAttemptMarkerForTesting(page_node());
-  TriggerMemoryPressure(base::kCriticalMemoryPressureThreshold);
+  TriggerMemoryPressure(base::MemoryLimit::CriticalPressureThreshold());
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
 TEST_F(UrgentPageDiscardingPolicyTest, NoDiscardOnModeratePressure) {
   // No tab should be discarded on moderate pressure.
-  TriggerMemoryPressure(base::kModerateMemoryPressureThreshold);
+  TriggerMemoryPressure(base::MemoryLimit::ModeratePressureThreshold());
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

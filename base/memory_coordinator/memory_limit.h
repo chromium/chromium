@@ -27,6 +27,8 @@ class BASE_EXPORT MemoryLimit {
     return MemoryLimit(kDefaultPercent);
   }
 
+  constexpr MemoryLimit() = default;
+
   // Threshold helpers corresponding to legacy MemoryPressureListener levels
   // (MEMORY_PRESSURE_LEVEL_NONE, MEMORY_PRESSURE_LEVEL_MODERATE, and
   // MEMORY_PRESSURE_LEVEL_CRITICAL). These facilitate the migration of clients

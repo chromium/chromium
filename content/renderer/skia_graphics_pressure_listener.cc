@@ -42,7 +42,7 @@ SkiaGraphicsPressureListener::~SkiaGraphicsPressureListener() = default;
 void SkiaGraphicsPressureListener::OnUpdateMemoryLimit() {}
 
 void SkiaGraphicsPressureListener::OnReleaseMemory() {
-  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
     SkGraphics::PurgeAllCaches();
   }
 }

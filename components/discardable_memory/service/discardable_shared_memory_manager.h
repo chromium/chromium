@@ -165,8 +165,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // Invalidate weak pointers for the mojo thread.
   void InvalidateMojoThreadWeakPtrs(base::WaitableEvent* event);
 
-  void HandleUpdateMemoryLimitOnSequence(int limit);
-  void HandleReleaseMemoryOnSequence(int limit);
+  void HandleUpdateMemoryLimitOnSequence(base::MemoryLimit limit);
+  void HandleReleaseMemoryOnSequence(base::MemoryLimit limit);
 
   int32_t next_client_id_;
 

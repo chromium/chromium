@@ -208,7 +208,7 @@ void KeepAliveDSEPolicy::SetDSEKeepAlive(
   CHECK(!dse_renderer_kept_alive_);
   CHECK(template_url_service);
 
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
     return;
   }
 
@@ -270,7 +270,7 @@ bool KeepAliveDSEPolicy::IsSuitableDSEPage(const PageNode* page_node) const {
 }
 
 void KeepAliveDSEPolicy::OnUpdateMemoryLimit() {
-  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() > base::MemoryLimit::ModeratePressureThreshold()) {
     if (!dse_renderer_kept_alive_) {
       FindAndKeepAliveDSERenderer();
     }
@@ -278,7 +278,7 @@ void KeepAliveDSEPolicy::OnUpdateMemoryLimit() {
 }
 
 void KeepAliveDSEPolicy::OnReleaseMemory() {
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
     if (dse_renderer_kept_alive_) {
       ReleaseDSEKeepAlive();
     }

@@ -912,8 +912,9 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
 // Returns the amount of time to keep subframe processes alive in case they can
 // be reused. Returns zero if under memory pressure, as memory should be freed
 // up as soon as possible if it's limited.
-base::TimeDelta GetSubframeProcessShutdownDelay(BrowserContext* browser_context,
-                                                int memory_limit) {
+base::TimeDelta GetSubframeProcessShutdownDelay(
+    BrowserContext* browser_context,
+    base::MemoryLimit memory_limit) {
   static constexpr base::TimeDelta kZeroDelay;
   if (!RenderProcessHostImpl::ShouldDelayProcessShutdown()) {
     return kZeroDelay;
@@ -921,7 +922,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(BrowserContext* browser_context,
 
   // Don't delay process shutdown under memory pressure. Does not cancel
   // existing shutdown delays for processes already in delayed-shutdown state.
-  if (memory_limit <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit <= base::MemoryLimit::ModeratePressureThreshold()) {
     return kZeroDelay;
   }
 

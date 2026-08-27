@@ -28,6 +28,7 @@ mojom_component("base") {
     "jserror.mojom",
     "language_tag.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
+    "memory_limit.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
     "process_id.mojom",
@@ -151,6 +152,20 @@ mojom_component("base") {
       ]
       traits_headers = [ "//mojo/public/cpp/base/byte_string_mojom_traits.h" ]
       traits_public_deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.MemoryLimit"
+          cpp = "::base::MemoryLimit"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/memory_limit_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
     },
     {
       types = [

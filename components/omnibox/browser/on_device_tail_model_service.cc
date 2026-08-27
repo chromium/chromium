@@ -196,7 +196,7 @@ void OnDeviceTailModelService::OnModelUpdated(
 void OnDeviceTailModelService::OnUpdateMemoryLimit() {}
 
 void OnDeviceTailModelService::OnReleaseMemory() {
-  if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
+  if (memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
     return;
   }
 
@@ -212,7 +212,7 @@ void OnDeviceTailModelService::GetPredictionsForInput(
     ResultCallback result_callback) {
   if (model_task_runner_) {
     // Do not call the model if memory pressure level is too high.
-    if (memory_limit() > base::kCriticalMemoryPressureThreshold) {
+    if (memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
       model_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(),

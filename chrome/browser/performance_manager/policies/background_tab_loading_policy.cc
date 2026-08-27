@@ -460,9 +460,9 @@ void BackgroundTabLoadingPolicy::OnUpdateMemoryLimit() {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* debug = event->add_debug_annotations();
         debug->set_name("memory_limit");
-        debug->set_int_value(memory_limit());
+        debug->set_int_value(memory_limit().percent());
       });
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
     StopLoadingTabs();
   }
 }

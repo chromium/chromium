@@ -54,7 +54,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     // Called when the aggregate memory limit for a consumer group changes.
     virtual void OnMemoryLimitChanged(uint32_t consumer_id,
                                       ChildProcessId child_process_id,
-                                      int memory_limit) = 0;
+                                      base::MemoryLimit memory_limit) = 0;
   };
 #endif
 
@@ -94,7 +94,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   void OnMemoryLimitChanged(uint32_t consumer_id,
                             ChildProcessId child_process_id,
-                            int memory_limit) override;
+                            base::MemoryLimit memory_limit) override;
 #endif
 
   // Called by policies to request actions on multiple consumer groups across
@@ -164,7 +164,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits_;
 
     // The last memory limit that was applied to this group.
-    int current_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
+    int current_limit_ = base::MemoryLimit::Default().percent();
 
     // The memory limit override.
     std::optional<int> override_limit_;
