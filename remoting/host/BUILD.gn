@@ -801,6 +801,8 @@ static_library("common") {
       "pairing_registry_delegate_win.h",
       "remote_client_cert_store.cc",
       "remote_client_cert_store.h",
+      "remote_ssl_private_key.cc",
+      "remote_ssl_private_key.h",
       "sas_injector_win.cc",
       "touch_injector_win.cc",
       "touch_injector_win.h",
@@ -1069,6 +1071,7 @@ source_set("unit_tests") {
       "clipboard_win_unittest.cc",
       "pairing_registry_delegate_win_unittest.cc",
       "remote_client_cert_store_unittest.cc",
+      "remote_ssl_private_key_unittest.cc",
       "touch_injector_win_unittest.cc",
     ]
     deps += [ "//remoting/host/win:unit_tests" ]
