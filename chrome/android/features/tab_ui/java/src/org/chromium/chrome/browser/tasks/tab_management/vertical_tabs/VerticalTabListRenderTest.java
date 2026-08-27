@@ -790,6 +790,84 @@ public class VerticalTabListRenderTest {
                 "tab_group_hover_card_long_titles");
     }
 
+    // =========================================================================================
+    // Multi-Selection Tests
+    // =========================================================================================
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandardTab_MultiSelected() throws IOException {
+        testStandardTabMultiSelected(
+                "Multi-Selected Tab", /* isHovered= */ false, "standard_tab_multi_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandardTab_MultiSelected_Hovered() throws IOException {
+        testStandardTabMultiSelected(
+                "Multi-Selected Tab", /* isHovered= */ true, "standard_tab_multi_selected_hovered");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTab_MultiSelected() throws IOException {
+        testPinnedTabMultiSelected(
+                "Pinned Tab", /* isHovered= */ false, "pinned_tab_multi_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTab_MultiSelected_Hovered() throws IOException {
+        testPinnedTabMultiSelected(
+                "Pinned Tab", /* isHovered= */ true, "pinned_tab_multi_selected_hovered");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testVerticalTabList_MultiSelected() throws IOException {
+        if (mIsIncognito) {
+            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
+        }
+        TabListRecyclerView[] view = new TabListRecyclerView[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabListRecyclerView recyclerView =
+                            (TabListRecyclerView)
+                                    inflateAndAttachView(R.layout.tab_list_recycler_view_layout);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+
+                    TabListModel tabListModel = new TabListModel();
+                    recyclerView.setAdapter(createTabListAdapter(tabListModel));
+                    view[0] = recyclerView;
+
+                    addTabListItem(
+                            tabListModel,
+                            createTabListItemModelBuilder("Active Tab", /* groupId= */ null)
+                                    .with(TabProperties.IS_SELECTED, true)
+                                    .build());
+                    addTabListItem(
+                            tabListModel,
+                            createTabListItemModelBuilder("Multi-Selected Tab", /* groupId= */ null)
+                                    .with(TabProperties.IS_MULTI_SELECTED, true)
+                                    .build());
+                    addTabListItem(
+                            tabListModel,
+                            createTabListItemModelBuilder("Standard Tab", /* groupId= */ null)
+                                    .build());
+                });
+
+        CriteriaHelper.pollUiThread(() -> view[0].getChildCount() > 0);
+        mRenderTestRule.render(
+                mRenderView,
+                "vertical_tab_list_multi_selected" + (mIsIncognito ? "_incognito" : ""));
+    }
+
     private void testTabGroupSpine(boolean isCollapsed, boolean isRtl, boolean isHeaderOffScreen)
             throws IOException {
         if (mIsIncognito) {
@@ -930,6 +1008,49 @@ public class VerticalTabListRenderTest {
         mRenderTestRule.render(mRenderView, finalGoldenName);
     }
 
+    private void testStandardTabMultiSelected(String title, boolean isHovered, String goldenName)
+            throws IOException {
+        if (mIsIncognito) {
+            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
+        }
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
+                    PropertyModel model =
+                            createTabListItemModelBuilder(
+                                            (mIsIncognito ? "Incognito " : "") + title,
+                                            /* groupId= */ null)
+                                    .with(TabProperties.IS_SELECTED, false)
+                                    .with(TabProperties.IS_MULTI_SELECTED, true)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE,
+                                                    /* tabActionListener= */ null))
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        if (isHovered) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        MotionEvent event =
+                                MotionEvent.obtain(
+                                        0, 0, MotionEvent.ACTION_HOVER_ENTER, 0.0f, 0.0f, 0);
+                        view[0].dispatchGenericMotionEvent(event);
+                    });
+        }
+
+        String finalGoldenName =
+                mIsIncognito
+                        ? goldenName.replace("standard_tab_", "standard_incognito_tab_")
+                        : goldenName;
+        mRenderTestRule.render(mRenderView, finalGoldenName);
+    }
+
     private void testPinnedTab(
             String title,
             boolean isSelected,
@@ -953,6 +1074,47 @@ public class VerticalTabListRenderTest {
                                     .with(TabProperties.IS_SELECTED, isSelected)
                                     .with(TabProperties.IS_PINNED, true)
                                     .with(TabProperties.IS_LOADING, isLoading)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindPinnedTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        if (isHovered) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        MotionEvent event =
+                                MotionEvent.obtain(
+                                        0, 0, MotionEvent.ACTION_HOVER_ENTER, 0.0f, 0.0f, 0);
+                        view[0].dispatchGenericMotionEvent(event);
+                    });
+        }
+
+        String finalGoldenName =
+                mIsIncognito
+                        ? goldenName.replace("pinned_tab_", "pinned_incognito_tab_")
+                        : goldenName;
+        mRenderTestRule.render(mRenderView, finalGoldenName);
+    }
+
+    private void testPinnedTabMultiSelected(String title, boolean isHovered, String goldenName)
+            throws IOException {
+        if (mIsIncognito) {
+            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
+        }
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] =
+                            inflateAndAttachView(
+                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
+                    PropertyModel model =
+                            createTabListItemModelBuilder(
+                                            (mIsIncognito ? "Incognito " : "") + title,
+                                            /* groupId= */ null)
+                                    .with(TabProperties.IS_SELECTED, false)
+                                    .with(TabProperties.IS_PINNED, true)
+                                    .with(TabProperties.IS_MULTI_SELECTED, true)
                                     .build();
                     PropertyModelChangeProcessor.create(
                             model, view[0], TabVerticalViewBinder::bindPinnedTab);
