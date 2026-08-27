@@ -134,7 +134,8 @@ base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
     "-L", std::string(kTmuxSocketName),
     "new-session", "-A", "-s", GetTmuxSessionName(id), ";",
     "set-option", "set-titles", "on", ";",
-    "set-option", "set-titles-string", "#T"
+    "set-option", "set-titles-string", "#T", ";",
+    "set-option", "-g", "status", "off"
   };
 
   base::LaunchOptions options;
