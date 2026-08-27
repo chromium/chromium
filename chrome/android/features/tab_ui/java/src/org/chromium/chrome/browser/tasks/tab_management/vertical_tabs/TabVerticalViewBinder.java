@@ -209,7 +209,14 @@ class TabVerticalViewBinder {
      * @param propertyKey the specific property key to bind.
      */
     private static void bindCommonProperties(
-            PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
+        if (view.getVisibility() != View.VISIBLE) {
+            view.setVisibility(View.VISIBLE);
+        }
+        if (view.getAlpha() != 1.0f) {
+            view.setAlpha(1.0f);
+        }
+
         if (TabProperties.FAVICON_FETCHER == propertyKey) {
             updateFaviconImage(model, view);
         } else if (TabProperties.IS_LOADING == propertyKey) {

@@ -472,6 +472,40 @@ public class TabSwitcherDragHandlerUnitTest {
     }
 
     @Test
+    public void testOnDrag_DragEnded_CrossWindowDrop_DoesNotRestoreSourceAlpha() {
+        View dragSourceView = new View(ContextUtils.getApplicationContext());
+        dragSourceView.setAlpha(0f);
+        mDragHandler.mDragSourceView = dragSourceView;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        // Simulate drop handled by another window
+        DragEvent dropEvent = mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        DragEvent dragEndEvent = mock(DragEvent.class);
+        when(dragEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        when(dragEndEvent.getResult()).thenReturn(true);
+        when(dragEndEvent.getX()).thenReturn(10f);
+        when(dragEndEvent.getY()).thenReturn(20f);
+
+        mDragHandler.onDrag(targetView, dragEndEvent);
+
+        // Alpha should NOT be restored to 1.0 on cross-window drops to prevent ghost tabs.
+        assertEquals(0f, dragSourceView.getAlpha(), 0.0f);
+        verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 10f, 20f, true);
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
     public void testOnDrag_DragEnded_NonOSNewWindowDrop_RestoresSourceAlpha() {
         View dragSourceView = new View(ContextUtils.getApplicationContext());
         dragSourceView.setAlpha(0f);
@@ -494,6 +528,49 @@ public class TabSwitcherDragHandlerUnitTest {
         mDragHandler.onDrag(targetView, dragEndEvent);
 
         // Alpha should be restored to 1.0 immediately for non-new-window drops.
+        assertEquals(1f, dragSourceView.getAlpha(), 0.0f);
+        verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 10f, 20f, false);
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testOnDrag_DragEnded_SameWindowDrop_RestoresSourceAlpha() {
+        mDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
+        View dragSourceView = new View(ContextUtils.getApplicationContext());
+        dragSourceView.setAlpha(0f);
+        mDragHandler.mDragSourceView = dragSourceView;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        when(mDragHandlerDelegate.handleDrop(targetView, 10f, 20f)).thenReturn(true);
+
+        // ACTION_DROP handled by this handler
+        DragEvent dropEvent = mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(dropEvent.getX()).thenReturn(10f);
+        when(dropEvent.getY()).thenReturn(20f);
+        mDragHandler.onDrag(targetView, dropEvent);
+
+        // ACTION_DRAG_ENDED
+        DragEvent dragEndEvent = mock(DragEvent.class);
+        when(dragEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        when(dragEndEvent.getResult()).thenReturn(true);
+        when(dragEndEvent.getX()).thenReturn(10f);
+        when(dragEndEvent.getY()).thenReturn(20f);
+
+        mDragHandler.onDrag(targetView, dragEndEvent);
+
+        // Alpha should be restored to 1.0 because this handler handled the drop.
         assertEquals(1f, dragSourceView.getAlpha(), 0.0f);
         verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 10f, 20f, false);
 

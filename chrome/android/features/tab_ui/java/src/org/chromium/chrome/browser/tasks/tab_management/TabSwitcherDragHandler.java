@@ -110,6 +110,14 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     private final TabSwitcherBackPressHandlerManager mDragHandlerManager;
 
     /**
+     * Tracks whether this specific drag handler instance processed {@link DragEvent#ACTION_DROP}.
+     * Used on {@link DragEvent#ACTION_DRAG_ENDED} to distinguish a drop handled internally within
+     * this tab container from an external drop (handled by another tab container, another Chrome
+     * window, or an OS new-window drop).
+     */
+    private boolean mDropHandledInCurrentHandler;
+
+    /**
      * Prepares the tab container view to listen to the drag events and data drop after the drag is
      * initiated.
      *
@@ -311,6 +319,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
 
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
+                mDropHandledInCurrentHandler = false;
                 if (isDraggingBrowserContent(dragEvent.getClipDescription())) {
                     if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
                         return false;
@@ -322,13 +331,13 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 // TODO(crbug.com/518307037): Use a TabModelObserver.
-                boolean isOSNewWindowDrop =
+                boolean isExternalDrop =
                         dragEvent.getResult()
                                 && DragDropGlobalState.hasValue()
-                                && !DragDropGlobalState.didChromeHandleDrop();
+                                && !mDropHandledInCurrentHandler;
                 // Restore items's visibility.
                 if (mDragSourceView != null) {
-                    if (!isOSNewWindowDrop) {
+                    if (!isExternalDrop) {
                         mDragSourceView.setAlpha(1);
                     }
                     finishDrag(dragEvent.getResult());
@@ -337,8 +346,9 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 }
                 res =
                         mDragHandlerDelegate.handleExternalDragEnd(
-                                view, dragEvent.getX(), dragEvent.getY(), isOSNewWindowDrop);
+                                view, dragEvent.getX(), dragEvent.getY(), isExternalDrop);
                 mCurrentDragShadowBuilder = null;
+                mDropHandledInCurrentHandler = false;
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
@@ -362,7 +372,10 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                     return false;
                 }
                 res = mDragHandlerDelegate.handleDrop(view, dragEvent.getX(), dragEvent.getY());
-                if (res) DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
+                if (res) {
+                    mDropHandledInCurrentHandler = true;
+                    DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
+                }
                 break;
         }
         return res;

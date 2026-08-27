@@ -2630,4 +2630,44 @@ public class TabVerticalViewBinderUnitTest {
                 "Background tint should be null when unselected to allow XML color",
                 unselectedTint);
     }
+
+    @Test
+    @SmallTest
+    public void testBindTab_ResetsVisibilityAndAlpha() {
+        mItemView.setVisibility(View.GONE);
+        mItemView.setAlpha(0f);
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, null);
+
+        assertEquals(View.VISIBLE, mItemView.getVisibility());
+        assertEquals(1.0f, mItemView.getAlpha(), 0.0f);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_ResetsVisibilityAndAlpha() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        pinnedView.setVisibility(View.GONE);
+        pinnedView.setAlpha(0f);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+
+        assertEquals(View.VISIBLE, pinnedView.getVisibility());
+        assertEquals(1.0f, pinnedView.getAlpha(), 0.0f);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_HiddenPinnedTab_DoesNotResetVisibility() {
+        ViewGroup hiddenView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_pinned_item_hidden, null, false);
+        assertEquals(View.GONE, hiddenView.getVisibility());
+        assertEquals(R.id.hidden_pinned_tab, hiddenView.getId());
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, hiddenView, TabProperties.TITLE);
+
+        assertEquals(View.GONE, hiddenView.getVisibility());
+    }
 }
