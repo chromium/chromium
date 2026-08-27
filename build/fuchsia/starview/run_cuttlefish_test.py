@@ -22,11 +22,12 @@ def main():
         help='Path to write isolated script test output JSON.',
     )
     args_parsed, extra_args = parser.parse_known_args()
-    # Filter out any other isolated-script arguments from extra_args before passing to run_cuttlefish.py
+    # Filter out any other isolated-script or timeout arguments from extra_args before passing to run_cuttlefish.py
     extra_args = [
         arg
         for arg in extra_args
         if not arg.startswith('--isolated-script-test-')
+        and not arg.startswith('--timeout-scale')
     ]
     starview_dir = os.path.dirname(os.path.abspath(__file__))
     run_script = os.path.join(starview_dir, 'run_cuttlefish.py')
