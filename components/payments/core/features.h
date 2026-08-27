@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace payments {
 namespace features {
@@ -42,10 +43,43 @@ BASE_DECLARE_FEATURE(kEnforceFullDelegation);
 // GPay app and the browser for dynamic updates on shipping and payment data.
 BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 
-// Used to control whether SecurePaymentConfirmation is able to rely on OS-level
-// credential store APIs, or if it can only rely on the user-profile database.
-BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
+// Approach for discovering available Secure Payment Confirmation credentials.
+// Different platforms use different approaches, due to differing capabilities
+// of the authenticators in use by SPC.
+enum class CredentialDiscoveryMode {
+  // Query only the local profile database.
+  kUserDatabaseOnly = 0,
+  // Query both the OS credential store and the local profile database in
+  // parallel. The OS credential store results take precedence if available.
+  kHybrid = 1,
+  // Query only the OS credential store.
+  kOsOnly = 2,
+};
 
+// Returns the string representation for a CredentialDiscoveryMode.
+constexpr const char* CredentialDiscoveryModeToString(
+    CredentialDiscoveryMode mode) {
+  switch (mode) {
+    case CredentialDiscoveryMode::kUserDatabaseOnly:
+      return "database-only";
+    case CredentialDiscoveryMode::kHybrid:
+      return "hybrid";
+    case CredentialDiscoveryMode::kOsOnly:
+      return "os-only";
+  }
+}
+
+// Controls the approach for discovering available Secure Payment Confirmation
+// credentials.
+BASE_DECLARE_FEATURE(kSecurePaymentConfirmationCredentialDiscoveryMode);
+
+extern const base::FeatureParam<CredentialDiscoveryMode>
+    kCredentialDiscoveryModeParam;
+
+// Used to control whether SecurePaymentConfirmation stores newly created
+// credentials in the OS-level credential store (skipping saving to the
+// user-profile database).
+BASE_DECLARE_FEATURE(kSecurePaymentConfirmationStoreCredentialsInOS);
 
 // Used to control the usage of the renderer URL loader in the payment request.
 BASE_DECLARE_FEATURE(kPaymentRequestUseRendererUrlLoader);

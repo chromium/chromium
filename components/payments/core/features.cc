@@ -39,7 +39,30 @@ BASE_FEATURE(kEnforceFullDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGPayAppDynamicUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
+BASE_FEATURE(kSecurePaymentConfirmationCredentialDiscoveryMode,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<CredentialDiscoveryMode>::Option
+    kCredentialDiscoveryModeOptions[] = {
+        {CredentialDiscoveryMode::kUserDatabaseOnly,
+         CredentialDiscoveryModeToString(
+             CredentialDiscoveryMode::kUserDatabaseOnly)},
+        {CredentialDiscoveryMode::kHybrid,
+         CredentialDiscoveryModeToString(CredentialDiscoveryMode::kHybrid)},
+        {CredentialDiscoveryMode::kOsOnly,
+         CredentialDiscoveryModeToString(CredentialDiscoveryMode::kOsOnly)},
+};
+
+const base::FeatureParam<CredentialDiscoveryMode> kCredentialDiscoveryModeParam{
+    &kSecurePaymentConfirmationCredentialDiscoveryMode, "mode",
+#if BUILDFLAG(IS_ANDROID)
+    CredentialDiscoveryMode::kOsOnly,
+#else
+    CredentialDiscoveryMode::kUserDatabaseOnly,
+#endif
+    &kCredentialDiscoveryModeOptions};
+
+BASE_FEATURE(kSecurePaymentConfirmationStoreCredentialsInOS,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

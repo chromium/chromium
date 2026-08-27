@@ -111,8 +111,8 @@ void SecurePaymentConfirmationService::SecurePaymentConfirmationAvailability(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationUseCredentialStoreAPIs) &&
+  if (features::kCredentialDiscoveryModeParam.Get() ==
+          features::CredentialDiscoveryMode::kOsOnly &&
       !authenticator_->IsGetMatchingCredentialIdsSupported()) {
     std::move(callback).Run(mojom::SecurePaymentConfirmationAvailabilityEnum::
                                 kUnavailableUnknownReason);
@@ -228,7 +228,7 @@ void SecurePaymentConfirmationService::
   // If credential-store level APIs are available, the credential information
   // will already have been stored during creation.
   if (base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+          features::kSecurePaymentConfirmationStoreCredentialsInOS)) {
     VLOG(1) << "SecurePaymentConfirmationService::"
                "ContinueStorePaymentCredentialAfterRpIdCheck: Using"
                " Credential Store APIs";

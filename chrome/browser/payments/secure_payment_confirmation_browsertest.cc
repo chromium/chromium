@@ -45,13 +45,17 @@
 namespace payments {
 
 SecurePaymentConfirmationTest::SecurePaymentConfirmationTest() {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{::features::kSecurePaymentConfirmation,
-                            ::features::kSecurePaymentConfirmationDebug},
-      // TODO(crbug.com/40868539): Refactor code to allow mocking out the
-      // credential store APIs.
+  // TODO(crbug.com/40868539): Refactor code to allow mocking out the credential
+  // store APIs for saving and discovering credentials.
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{::features::kSecurePaymentConfirmation, {}},
+       {::features::kSecurePaymentConfirmationDebug, {}},
+       {features::kSecurePaymentConfirmationCredentialDiscoveryMode,
+        {{"mode", features::CredentialDiscoveryModeToString(
+                      features::CredentialDiscoveryMode::kUserDatabaseOnly)}}}},
       /*disabled_features=*/{
-          features::kSecurePaymentConfirmationUseCredentialStoreAPIs,
+          features::kSecurePaymentConfirmationStoreCredentialsInOS,
           features::kSPCLocaleValidation});
 }
 

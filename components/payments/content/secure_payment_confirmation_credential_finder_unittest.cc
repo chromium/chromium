@@ -70,8 +70,10 @@ class SecurePaymentConfirmationCredentialFinderUserDatabaseTest
     : public SecurePaymentConfirmationCredentialFinderTest {
  protected:
   SecurePaymentConfirmationCredentialFinderUserDatabaseTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kSecurePaymentConfirmationUseCredentialStoreAPIs);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSecurePaymentConfirmationCredentialDiscoveryMode,
+        {{"mode", features::CredentialDiscoveryModeToString(
+                      features::CredentialDiscoveryMode::kUserDatabaseOnly)}});
   }
 
  private:
@@ -158,13 +160,16 @@ class SecurePaymentConfirmationCredentialFinderCredentialStoreApisTest
     : public SecurePaymentConfirmationCredentialFinderTest {
  protected:
   SecurePaymentConfirmationCredentialFinderCredentialStoreApisTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSecurePaymentConfirmationCredentialDiscoveryMode,
+        {{"mode", features::CredentialDiscoveryModeToString(
+                      features::CredentialDiscoveryMode::kOsOnly)}});
     ON_CALL(*mock_authenticator_, IsGetMatchingCredentialIdsSupported())
         .WillByDefault(Return(true));
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kSecurePaymentConfirmationUseCredentialStoreAPIs};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the credential finder uses the credential store API path, and that

@@ -59,8 +59,8 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
   // directly. Otherwise, we have to rely on the user profile database.
   //
   // Currently, credential store APIs are only available on Android.
-  if (base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+  if (features::kCredentialDiscoveryModeParam.Get() ==
+      features::CredentialDiscoveryMode::kOsOnly) {
     VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
                "GetMatchingCredentials: Using Credential Store APIs";
     // If we are relying on underlying credential-store level support for SPC,
