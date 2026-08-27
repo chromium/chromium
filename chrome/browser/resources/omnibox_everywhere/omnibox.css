@@ -203,7 +203,7 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start
   : 0px;
   --text-input-inline-start-spacing: 16px;
-  --cr-searchbox-match-padding-inline-start: 24px;
+  --cr-searchbox-match-padding-inline-start: 16px;
 
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;

@@ -25,8 +25,8 @@
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
-  --text-input-inline-start-spacing: 24px;
-  --cr-searchbox-match-padding-inline-start: 24px;
+  --text-input-inline-start-spacing: 16px;
+  --cr-searchbox-match-padding-inline-start: 16px;
   --text-input-max-height: 190px;
   --color-composebox-type-ahead: var(
       --color-searchbox-placeholder,
