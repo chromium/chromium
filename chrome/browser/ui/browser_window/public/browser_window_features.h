@@ -323,10 +323,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  ContentsBorderController* contents_border_controller() {
-    return contents_border_controller_.get();
-  }
-
   BrowserContentSettingBubbleModelDelegate*
   content_setting_bubble_model_delegate() {
     return content_setting_bubble_model_delegate_.get();
@@ -366,10 +362,6 @@ class BrowserWindowFeatures {
   HistoryClustersSidePanelCoordinator*
   history_clusters_side_panel_coordinator() {
     return history_clusters_side_panel_coordinator_.get();
-  }
-
-  ImmersiveModeController* immersive_mode_controller() {
-    return immersive_mode_controller_.get();
   }
 
   IncognitoClearBrowsingDataDialogCoordinator*
@@ -451,12 +443,6 @@ class BrowserWindowFeatures {
   // return nullptr for non-normal browser windows because toasts are not
   // supported for those cases.
   ToastController* toast_controller();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  chromeos::LockedStateController* locked_state_controller() {
-    return locked_state_controller_.get();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
