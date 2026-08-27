@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -136,6 +139,52 @@ NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
   [self.delegate
       assistantAIMHistoryViewController:self
                     didSelectTaskWithId:base::SysUTF8ToNSString(item.task_id)];
+}
+
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point {
+  if (static_cast<size_t>(indexPath.row) >= _items.size()) {
+    return nil;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIContextMenuConfiguration
+      configurationWithIdentifier:nil
+                  previewProvider:nil
+                   actionProvider:^UIMenu*(
+                       NSArray<UIMenuElement*>* suggestedActions) {
+                     return [weakSelf contextMenuForIndexPath:indexPath];
+                   }];
+}
+
+#pragma mark - Private
+
+// Returns the context menu for the item at `indexPath`.
+- (UIMenu*)contextMenuForIndexPath:(NSIndexPath*)indexPath {
+  if (static_cast<size_t>(indexPath.row) >= _items.size()) {
+    return nil;
+  }
+
+  UIAction* shareAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
+                image:SymbolWithPointSize(SymbolShare, kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action){
+                  // TODO(crbug.com/545943169): Implement the action handler.
+              }];
+
+  UIAction* deleteAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
+                image:SymbolWithPointSize(SymbolDeleteAction,
+                                          kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action){
+                  // TODO(crbug.com/545943169): Implement the action handler.
+              }];
+  deleteAction.attributes = UIMenuElementAttributesDestructive;
+
+  return [UIMenu menuWithTitle:@"" children:@[ shareAction, deleteAction ]];
 }
 
 @end
