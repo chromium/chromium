@@ -166,10 +166,7 @@ MediaStreamAudioDestinationNode::GetOwnHandler() const {
 void MediaStreamAudioDestinationNode::SendLogMessage(
     const String& function_name,
     const String& message) {
-  WebRtcLogMessage(String::Format("[WA]MSADN::%s %s",
-                                  function_name.Utf8().c_str(),
-                                  message.Utf8().c_str())
-                       .Utf8());
+  WebRtcLogMessage(StrCat({"[WA]MSADN::", function_name, " ", message}).Utf8());
 }
 
 }  // namespace blink

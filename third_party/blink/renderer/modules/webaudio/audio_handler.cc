@@ -348,9 +348,8 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     }
 
     if (!is_processing_) {
-      SendLogMessage(__func__,
-                     String::Format("=> (processing is alive [frames=%u])",
-                                    frames_to_process));
+      SendLogMessage(__func__, Format("=> (processing is alive [frames={}])",
+                                      frames_to_process));
       is_processing_ = true;
     }
   }
@@ -617,12 +616,10 @@ void AudioHandler::UpdateChannelInterpretation() {
 
 void AudioHandler::SendLogMessage(const String& function_name,
                                   const String& message) {
-  WebRtcLogMessage(
-      StrCat({"[WA]AH::", function_name, " ", message,
-              " [type=", NodeTypeName(), ", this=0x",
-              String::Format("%" PRIXPTR, reinterpret_cast<uintptr_t>(this)),
-              "]"})
-          .Utf8());
+  WebRtcLogMessage(Format("[WA]AH::{} {} [type={}, this=0x{:X}]", function_name,
+                          message, NodeTypeName(),
+                          reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
 }
 
 }  // namespace blink

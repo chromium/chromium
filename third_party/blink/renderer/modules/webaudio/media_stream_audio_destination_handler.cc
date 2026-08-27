@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -182,10 +183,8 @@ void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {
 void MediaStreamAudioDestinationHandler::SendLogMessage(
     const String& function_name,
     const String& message) {
-  WebRtcLogMessage(String::Format("[WA]MSADH::%s %s [this=0x%" PRIXPTR "]",
-                                  function_name.Utf8().c_str(),
-                                  message.Utf8().c_str(),
-                                  reinterpret_cast<uintptr_t>(this))
+  WebRtcLogMessage(Format("[WA]MSADH::{} {} [this=0x{:X}]", function_name,
+                          message, reinterpret_cast<uintptr_t>(this))
                        .Utf8());
 }
 

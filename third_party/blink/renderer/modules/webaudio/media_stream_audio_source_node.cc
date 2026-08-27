@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_handler.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -49,14 +50,12 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(
       *this, std::move(audio_source_provider)));
   SendLogMessage(
       __func__,
-      String::Format(
-          "({audio_track=[kind: %s, id: "
-          "%s, label: %s, enabled: "
-          "%d, muted: %d]}, {handler=0x%" PRIXPTR "}, [this=0x%" PRIXPTR "])",
-          audio_track->kind().Utf8().c_str(), audio_track->id().Utf8().c_str(),
-          audio_track->label().Utf8().c_str(), audio_track->enabled(),
-          audio_track->muted(), reinterpret_cast<uintptr_t>(&Handler()),
-          reinterpret_cast<uintptr_t>(this)));
+      Format("({{audio_track=[kind: {}, id: {}, label: {}, enabled: {:d}, "
+             "muted: {:d}]}}, {{handler=0x{:X}}}, [this=0x{:X}])",
+             audio_track->kind(), audio_track->id(), audio_track->label(),
+             audio_track->enabled(), audio_track->muted(),
+             reinterpret_cast<uintptr_t>(&Handler()),
+             reinterpret_cast<uintptr_t>(this)));
 }
 
 MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
@@ -75,11 +74,11 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
       static_cast<uint32_t>(media::limits::kMaxSamplesPerPacket)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        String::Format(
-            "MediaStreamAudioSourceNode cannot be created because the "
-            "context render quantum size (%u) exceeds the maximum "
-            "supported buffer size (%d).",
-            context.renderQuantumSize(), media::limits::kMaxSamplesPerPacket));
+        Format("MediaStreamAudioSourceNode cannot be created because the "
+               "context render quantum size ({}) exceeds the maximum supported "
+               "buffer size ({}).",
+               context.renderQuantumSize(),
+               media::limits::kMaxSamplesPerPacket));
     return nullptr;
   }
 
@@ -167,10 +166,7 @@ MediaStreamAudioSourceNode::GetMediaStreamAudioSourceHandler() const {
 
 void MediaStreamAudioSourceNode::SendLogMessage(const String& function_name,
                                                 const String& message) {
-  WebRtcLogMessage(String::Format("[WA]MSASN::%s %s",
-                                  function_name.Utf8().c_str(),
-                                  message.Utf8().c_str())
-                       .Utf8());
+  WebRtcLogMessage(StrCat({"[WA]MSASN::", function_name, " ", message}).Utf8());
 }
 
 }  // namespace blink
