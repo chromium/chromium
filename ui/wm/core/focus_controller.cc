@@ -206,7 +206,8 @@ void FocusController::OnWindowHierarchyChanged(
       params.target->Contains(params.receiver) &&
       (!params.new_parent ||
        aura::client::GetFocusClient(params.new_parent) !=
-           aura::client::GetFocusClient(params.receiver))) {
+           aura::client::GetFocusClient(params.receiver) ||
+       (active_window_ && !active_window_->Contains(params.receiver)))) {
     WindowLostFocusFromDispositionChange(params.receiver, params.old_parent);
   }
 }
