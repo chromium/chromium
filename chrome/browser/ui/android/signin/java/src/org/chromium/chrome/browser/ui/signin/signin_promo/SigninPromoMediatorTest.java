@@ -34,10 +34,12 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -48,6 +50,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,7 +61,10 @@ import java.util.Collection;
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+@EnableFeatures({
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT
+})
 public class SigninPromoMediatorTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)
     public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
@@ -169,6 +176,76 @@ public class SigninPromoMediatorTest {
 
         assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
+    }
+
+    @Test
+    public void testVisibleAccountWithPreferredAccount_preferredAccountEnabled() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        TestAccounts.ACCOUNT2.getGaiaId(),
+                        new int[0],
+                        DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
+        when(mAccountPreviewDataService.getPreferredAccountForPromo()).thenReturn(preference);
+        createSigninPromoMediator(mPromoDelegate);
+
+        assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
+    }
+
+    @Test
+    @DisableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
+    public void testVisibleAccountWithPreferredAccount_preferredAccountDisabled() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        createSigninPromoMediator(mPromoDelegate);
+
+        assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
+        verify(mAccountPreviewDataService, never()).getPreferredAccountForPromo();
+    }
+
+    @Test
+    public void testVisibleAccountWithPreferredAccount_signedInUserWithDifferentPreferredAccount() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+        createSigninPromoMediator(mPromoDelegate);
+
+        // Signed-in user should show primary account (ACCOUNT1), even if preferred account is
+        // enabled.
+        assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
+        verify(mAccountPreviewDataService, never()).getPreferredAccountForPromo();
+    }
+
+    @Test
+    public void testVisibleAccountWithPreferredAccount_unknownPreferredAccountFallsBackToDefault() {
+        doReturn(true).when(mSigninManager).didAccountsFetchSucceed();
+        doReturn(true).when(mPromoDelegate).canShowPromo();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(
+                        new GaiaId("unknown-gaia-id"),
+                        new int[0],
+                        DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED);
+        when(mAccountPreviewDataService.getPreferredAccountForPromo()).thenReturn(preference);
+        createSigninPromoMediator(mPromoDelegate);
+
+        assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
                 mMediator.getModel().get(SigninPromoProperties.PROFILE_DATA).getAccountEmail());
     }
 
