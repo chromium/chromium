@@ -89,6 +89,9 @@ void JingleAuthenticationToProto(const JingleAuthentication& auth,
       proto->set_session_authz_session_token(auth.session_authz_session_token);
     }
   }
+  if (auth.pairing_info) {
+    proto->mutable_pairing_info()->set_client_id(auth.pairing_info->client_id);
+  }
 }
 
 void JingleAuthenticationFromProto(const ftl::Authentication& proto,
@@ -111,6 +114,11 @@ void JingleAuthenticationFromProto(const ftl::Authentication& proto,
   if (proto.has_certificate()) {
     auth->certificate.assign(proto.certificate().begin(),
                              proto.certificate().end());
+  }
+  if (proto.has_pairing_info() && proto.pairing_info().has_client_id()) {
+    JingleAuthentication::PairingInfo pairing_info;
+    pairing_info.client_id = proto.pairing_info().client_id();
+    auth->pairing_info = std::move(pairing_info);
   }
   if (proto.has_session_authz_host_token()) {
     // TODO(joedow): Note that if raw bytes happen to form a valid Base64 string
