@@ -343,8 +343,7 @@ void ViewTransition::SkipTransition(PromiseResponse response,
   }
 
   // Resume rendering, and finalize the rest of the state.
-  if (RuntimeEnabledFeatures::ViewTransitionDelayUnpauseOnTeardownEnabled() &&
-      creation_type_ == CreationType::kForSnapshot && document_->hidden()) {
+  if (creation_type_ == CreationType::kForSnapshot && document_->hidden()) {
     if (rendering_paused_scope_) {
       rendering_paused_scope_->SetDelayUntilVisibilityChange();
     }
@@ -503,16 +502,14 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
     case State::kPreview:
     case State::kAnimateTagDiscovery:
     case State::kAnimateRequestPending:
-      return false;
-    case State::kAnimating:
-      return true;
     case State::kPendingDone:
-      return !RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled();
     case State::kFinished:
     case State::kAborted:
     case State::kTimedOut:
     case State::kTransitionStateCallbackDispatched:
       return false;
+    case State::kAnimating:
+      return true;
   }
   NOTREACHED();
 }
@@ -524,8 +521,7 @@ bool ViewTransition::WaitsForNotification(State state) {
          state == State::kWaitForRenderBlock ||
          state == State::kWaitingForCaptureRects ||
          state == State::kTransitionStateCallbackDispatched ||
-         (RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() &&
-          state == State::kPendingDone);
+         state == State::kPendingDone;
 }
 
 // static
@@ -822,20 +818,17 @@ void ViewTransition::ProcessCurrentState() {
               base::Microseconds(1), base::Seconds(1), 100);
         }
 
-        if (RuntimeEnabledFeatures::
-                ViewTransitionUpdateLifecycleBeforeReadyEnabled()) {
-          document_->View()->UpdateAllLifecyclePhasesExceptPaint(
-              DocumentUpdateReason::kViewTransition);
-          // Lifecycle update can cause the transition to abort (e.g. if the
-          // snapshot root changed size during layout).
-          if (IsTerminalState(state_)) {
-            break;
-          }
-          if (!style_tracker_->RunPostPrePaintSteps()) {
-            SkipTransition(PromiseResponse::kRejectInvalidState,
-                           ViewTransitionSkipReason::kPostPrePaintFailed);
-            break;
-          }
+        document_->View()->UpdateAllLifecyclePhasesExceptPaint(
+            DocumentUpdateReason::kViewTransition);
+        // Lifecycle update can cause the transition to abort (e.g. if the
+        // snapshot root changed size during layout).
+        if (IsTerminalState(state_)) {
+          break;
+        }
+        if (!style_tracker_->RunPostPrePaintSteps()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState,
+                         ViewTransitionSkipReason::kPostPrePaintFailed);
+          break;
         }
 
         ResumeRendering();
@@ -885,13 +878,11 @@ void ViewTransition::ProcessCurrentState() {
         // current lifecycle update since WaitsForNotification(kPendingDone)
         // is true.
         process_next_state = AdvanceTo(State::kPendingDone);
-        DCHECK(RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() ==
-               !process_next_state);
+        DCHECK(!process_next_state);
         break;
       }
       case State::kPendingDone:
-        DCHECK(!RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() ||
-               !in_main_lifecycle_update_);
+        DCHECK(!in_main_lifecycle_update_);
         style_tracker_->StartFinished();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(

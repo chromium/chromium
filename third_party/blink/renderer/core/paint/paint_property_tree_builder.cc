@@ -2217,9 +2217,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // backdrop in other cases.
       auto* transition =
           ViewTransitionUtils::TransitionForParticipantOrScope(object_);
-      if (!RuntimeEnabledFeatures::
-              ViewTransitionHoistBackdropFilterEffectEnabled() ||
-          !transition || !transition->IsCapturing() ||
+      if (!transition || !transition->IsCapturing() ||
           !context_.current_effect->Unalias()
                .ViewTransitionElementResourceId()
                .IsValid()) {
@@ -2414,9 +2412,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionScopeRootEffect() {
         state.view_transition_element_resource_id =
             layer->ViewTransitionResourceId();
         // TODO(vmpstr): This may not be necessary for subframe layers.
-        if (RuntimeEnabledFeatures::
-                ViewTransitionHoistBackdropFilterEffectEnabled() &&
-            transition->IsCapturing()) {
+        if (transition->IsCapturing()) {
           PopulateBackdropFilterIfNeeded(
               state, /*mask_compositor_element_id=*/CompositorElementId());
         }
@@ -2478,9 +2474,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
 
       CompositorFilterOperations operations;
       SkPath bounds;
-      if (RuntimeEnabledFeatures::
-              ViewTransitionHoistBackdropFilterEffectEnabled() &&
-          transition->IsCapturing()) {
+      if (transition->IsCapturing()) {
         PopulateBackdropFilterIfNeeded(
             state, /*mask_compositor_element_id=*/CompositorElementId());
       }

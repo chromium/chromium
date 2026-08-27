@@ -2376,11 +2376,7 @@
       // Android P+.
       status: { "Android": "stable" },
     },
-    {
-      // https://chromestatus.com/feature/5067126381215744
-      name: "DocumentActiveViewTransition",
-      status: "stable",
-    },
+
     {
       name: "DocumentCookie",
     },
@@ -6417,16 +6413,7 @@
       name: "TransferableRTCDataChannel",
       status: "stable",
     },
-    // Fixing detection of unhandled promise rejections for view-transitions
-    // created a spike in unhandled rejections for cross-document view
-    // transitions. The transition on the old document is skipped, but as the
-    // old document is only used to capture the snapshot, and a skip is
-    // imminent, the promise rejection is not indicative of unexpected behavior.
-    // crbug.com/496115780
-    {
-      name: "TransitionNavigationQuietSkip",
-      status: "stable"
-    },
+
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",
@@ -6685,32 +6672,12 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionAsyncFinished",
-      status: "stable",
-    },
-    {
-      name: "ViewTransitionDelayUnpauseOnTeardown",
-      status: "stable",
-    },
-    {
       name: "ViewTransitionDOMCallbackAfterCommit",
-      status: "stable",
-    },
-    {
-      name: "ViewTransitionHoistBackdropFilterEffect",
       status: "stable",
     },
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
-    },
-    {
-      name: "ViewTransitionUpdateLifecycleBeforeReady",
-      status: "stable",
-    },
-    {
-      name: "ViewTransitionWaitUntil",
-      status: "stable",
     },
     {
       name: "VisibilityCollapseColumn",

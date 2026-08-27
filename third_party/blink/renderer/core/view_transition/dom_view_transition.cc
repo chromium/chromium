@@ -164,8 +164,7 @@ void DOMViewTransition::DidSkipTransition(
     return;
   }
 
-  if (RuntimeEnabledFeatures::TransitionNavigationQuietSkipEnabled() &&
-      view_transition_ && view_transition_->NavigationSnapshotComplete()) {
+  if (view_transition_ && view_transition_->NavigationSnapshotComplete()) {
     // Suppress reporting of unhandled rejections on the old document
     // for a cross document navigation.  The transition on the old document is
     // skipped when the document is hidden.
