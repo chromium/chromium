@@ -104,7 +104,6 @@ BASE_DECLARE_FEATURE(kBookmarksBarContextMenu);
 BASE_DECLARE_FEATURE(kBookmarksBarNTP);
 BASE_DECLARE_FEATURE(kBottomSheetAsBrowserControls);
 BASE_DECLARE_FEATURE(kBottomSheetOnDesktopWindowing);
-BASE_DECLARE_FEATURE(kBottomSheetTypes);
 BASE_DECLARE_FEATURE(kBrowserControlsDebugging);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kBrowserControlsHidingToken);

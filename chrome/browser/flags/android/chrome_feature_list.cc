@@ -301,7 +301,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksBarNTP,
     &kBottomSheetAsBrowserControls,
     &kBottomSheetOnDesktopWindowing,
-    &kBottomSheetTypes,
     &kBrowserControlsDebugging,
     &kBrowserControlsEarlyResize,
     &kBrowserControlsHidingToken,
@@ -632,7 +631,6 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 // Alphabetical:
 // BASE_FEATURE_START
 // go/keep-sorted start sticky_comments=yes
-
 BASE_FEATURE(kAccountForSuppressedKeyboardInsets, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAccountPickerDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLiveNotification, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -711,7 +709,6 @@ BASE_FEATURE(kBookmarksBarContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarksBarNTP, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBottomSheetAsBrowserControls, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBottomSheetOnDesktopWindowing, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kBottomSheetTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsEarlyResize, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsHidingToken, base::FEATURE_ENABLED_BY_DEFAULT);

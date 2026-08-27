@@ -410,7 +410,6 @@ public abstract class ChromeFeatureList {
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
     public static final String BOTTOM_SHEET_AS_BROWSER_CONTROLS = "BottomSheetAsBrowserControls";
     public static final String BOTTOM_SHEET_ON_DESKTOP_WINDOWING = "BottomSheetOnDesktopWindowing";
-    public static final String BOTTOM_SHEET_TYPES = "BottomSheetTypes";
     public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String BROWSER_CONTROLS_HIDING_TOKEN = "BrowserControlsHidingToken";
@@ -1707,8 +1706,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BOOKMARKS_BAR_CONTEXT_MENU, false);
     public static final MutableFlagWithSafeDefault sBookmarksBarNTP =
             newMutableFlagWithSafeDefault(BOOKMARKS_BAR_NTP, false);
-    public static final MutableFlagWithSafeDefault sBottomSheetTypes =
-            newMutableFlagWithSafeDefault(BOTTOM_SHEET_TYPES, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsPersistsOnCvh =

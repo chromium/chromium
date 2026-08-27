@@ -79,6 +79,7 @@ include_rules = [
   "+components/browser_apis/ui_controllers",
   "+components/browser_sync",
   "+components/browser_ui/accessibility",
+  "+components/browser_ui/bottomsheet",
   "+components/browser_ui/contacts_picker",
   "+components/browser_ui/desktop_windowing/android",
   "+components/browser_ui/modaldialog",

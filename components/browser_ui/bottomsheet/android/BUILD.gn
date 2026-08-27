@@ -6,11 +6,25 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("android") {
+  sources = [
+    "bottom_sheet_feature_map.cc",
+    "features.cc",
+    "features.h",
+  ]
+  deps = [
+    ":bottomsheet_jni_headers",
+    "//base",
+  ]
+}
+
 android_library("java") {
+  srcjar_deps = [ ":bottomsheet_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetContent.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerProvider.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetListViewBase.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserver.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetRecyclerScrollListener.java",
@@ -76,6 +90,9 @@ android_library_factory("factory_java") {
   ]
 }
 
-generate_jni("jni") {
-  sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerProvider.java" ]
+generate_jni("bottomsheet_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerProvider.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetFeatureMap.java",
+  ]
 }

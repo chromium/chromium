@@ -99,6 +99,7 @@
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/browser_ui/bottomsheet/android/features.h"
 #include "components/browser_ui/contacts_picker/android/features.h"
 #include "components/browser_ui/modaldialog/android/features.h"
 #include "components/browsing_data/core/features.h"
@@ -10243,7 +10244,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"bottom-sheet-types", flag_descriptions::kBottomSheetTypesName,
      flag_descriptions::kBottomSheetTypesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBottomSheetTypes)},
+     FEATURE_VALUE_TYPE(browser_ui::kBottomSheetTypes)},
 
     {"dialogs-on-large-form-factors",
      flag_descriptions::kDialogsOnLargeFormFactorsName,

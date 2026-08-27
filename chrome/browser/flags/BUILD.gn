@@ -76,6 +76,7 @@ static_library("flags_android_impl") {
     "//components/android_autofill/browser:features",
     "//components/autofill/core/common:features",
     "//components/browser_sync:switches",
+    "//components/browser_ui/bottomsheet/android",
     "//components/browser_ui/photo_picker/android",
     "//components/browsing_data/core",
     "//components/collaboration/public:features",
