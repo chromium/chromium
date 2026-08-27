@@ -162,4 +162,22 @@ void HidConnectionAndroid::OnReadFeatureComplete(
   std::move(callback).Run(true, std::move(buffer), size);
 }
 
+void HidConnectionAndroid::OnInputReport(
+    JNIEnv* env,
+    uint8_t report_id,
+    const base::android::JavaRef<jbyteArray>& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // HidConnection::ProcessInputReport expects a RefCountedBytes buffer where
+  // byte 0 contains the report ID, followed by payload data.
+  size_t data_size = data.GetSize(env);
+  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(1 + data_size);
+  buffer->as_vector()[0] = report_id;
+  if (data_size > 0) {
+    data.CopyTo(env, base::span(buffer->as_vector()).subspan(1u).data(),
+                data_size);
+  }
+  ProcessInputReport(std::move(buffer), 1 + data_size);
+}
+
 }  // namespace device

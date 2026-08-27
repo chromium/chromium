@@ -32,6 +32,9 @@ class HidConnectionAndroid : public HidConnection {
                              bool success,
                              uint32_t report_id,
                              const std::vector<uint8_t>& data);
+  void OnInputReport(JNIEnv* env,
+                     uint8_t report_id,
+                     const base::android::JavaRef<jbyteArray>& data);
 
  private:
   ~HidConnectionAndroid() override;

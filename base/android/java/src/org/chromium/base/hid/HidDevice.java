@@ -14,6 +14,17 @@ import java.util.concurrent.Executor;
 /** Intermediary interface for `android.hardware.hid.HidDevice`. */
 @NullMarked
 public interface HidDevice {
+    /** Interface for receiving input reports from an open HID device. */
+    interface HidEventListener {
+        /**
+         * Called when an input report is received from the HID device.
+         *
+         * @param reportId The report ID (0 if device does not use report IDs).
+         * @param data The raw payload bytes of the input report.
+         */
+        void onInputReport(int reportId, byte[] data);
+    }
+
     /** Returns the vendor ID of the HID device. */
     int getVendorId();
 
@@ -61,4 +72,19 @@ public interface HidDevice {
     /** Gets a feature report from the HID device. */
     void getFeatureReport(
             int reportId, Executor executor, OutcomeReceiver<byte[], Exception> callback);
+
+    /**
+     * Registers a listener for input report events.
+     *
+     * @param executor The executor on which the listener callback should be invoked.
+     * @param listener The listener receiving input report notifications.
+     */
+    void registerEventListener(Executor executor, HidEventListener listener);
+
+    /**
+     * Unregisters a previously registered input report listener.
+     *
+     * @param listener The listener to remove.
+     */
+    void unregisterEventListener(HidEventListener listener);
 }

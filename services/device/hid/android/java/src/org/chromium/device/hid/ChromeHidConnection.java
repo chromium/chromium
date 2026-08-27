@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.hid.HidDevice;
+import org.chromium.base.hid.HidDevice.HidEventListener;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -35,6 +36,7 @@ public class ChromeHidConnection {
     private final SequencedTaskRunner mUiTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.UI_DEFAULT);
     private long mNativeConnectionPointer;
+    private @Nullable HidEventListener mEventListener;
 
     public ChromeHidConnection(HidDevice device) {
         mDevice = device;
@@ -48,11 +50,32 @@ public class ChromeHidConnection {
     @CalledByNative
     private void setNativeConnection(long nativeConnectionPointer) {
         mNativeConnectionPointer = nativeConnectionPointer;
+        if (nativeConnectionPointer == 0 && mEventListener != null) {
+            mDevice.unregisterEventListener(mEventListener);
+            mEventListener = null;
+        } else if (nativeConnectionPointer != 0 && mEventListener == null) {
+            mEventListener =
+                    new HidEventListener() {
+                        @Override
+                        public void onInputReport(int reportId, byte[] data) {
+                            if (mNativeConnectionPointer != 0) {
+                                ChromeHidConnectionJni.get()
+                                        .onInputReport(mNativeConnectionPointer, reportId, data);
+                            }
+                        }
+                    };
+            try {
+                mDevice.registerEventListener(mUiTaskRunner, mEventListener);
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "Failed to register HID event listener", e);
+            }
+        }
     }
 
     @CalledByNative
     private void close() {
         mNativeConnectionPointer = 0;
+        mEventListener = null;
         if (mDevice.isOpen()) {
             // Note: We catch SecurityException here because on Android 17+, if the user revokes
             // HID Special App Access in Android Settings while a connection is open, subsequent
@@ -197,5 +220,7 @@ public class ChromeHidConnection {
                 boolean success,
                 int reportId,
                 @JniType("std::vector<uint8_t>") byte @Nullable [] data);
+
+        void onInputReport(long nativeHidConnectionAndroid, int reportId, byte[] data);
     }
 }
