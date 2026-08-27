@@ -113,8 +113,11 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kCardRecommendations:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
-    case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return 1;
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
+      // Since ReadAloud prefetches speech synthesis chunks concurrently for
+      // low-latency playback, allow multiple parallel executions.
+      return 10;
     case ModelBasedCapabilityKey::kContextHub:
       // Allow multiple parallel executions for `kContextHub` due to the large
       // size of tab APC, which is inputted per tab into the model.

@@ -611,6 +611,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kUpdaterChat:
     case ModelBasedCapabilityKey::kContextHub:
+    case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(
@@ -620,7 +621,6 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kCardRecommendations:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
-    case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return false;
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return !base::FeatureList::IsEnabled(
