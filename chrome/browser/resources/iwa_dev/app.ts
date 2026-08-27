@@ -7,6 +7,8 @@ import './installed_app_list_item.js';
 import './install_dialog.js';
 import './update_options_dialog.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';

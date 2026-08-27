@@ -67,6 +67,12 @@ h2 {
   /* Aligns perfectly with the 20px padding + 1px border of the app list cards */
   margin-inline-end: 21px;
   min-width: 81px;
+  gap: 4px;
+}
+
+.icon-16 {
+  height: 16px;
+  width: 16px;
 }
 
 #error-message {

@@ -38,7 +38,8 @@ ${!this.devModeEnabled_ ? html`
         </h2>
         <cr-button class="action-button" id="installButton"
             @click="${this.onOpenInstallDialogClick_}">
-          + Install
+          <cr-icon class="icon-16" icon="cr:add" slot="prefix-icon"></cr-icon>
+          Install
         </cr-button>
       </div>
       ${this.installedApps_.length === 0 ? html`
