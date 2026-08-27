@@ -161,6 +161,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       download::features::kEnableDownloadSaveAsContextMenu);
 
+  // Enable open download in preferred app.
+  // TODO(crbug.com/539965859): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(chrome::android::kOpenDownloadInPreferredApp);
+
   // Enable background media capturing on desktop devices.
   // TODO(crbug.com/426461170): Remove once we enable this feature for all form
   // factors. Currently we have no conclusion whether to enable this on mobile
