@@ -310,3 +310,42 @@ TEST_F(ComposeboxMetricsRecorderTest, ModelSelected) {
       "ContextualSearch.Models.Selected.Unknown",
       static_cast<int>(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO), 1);
 }
+
+// Tests recording picker outcomes for various attachment types.
+TEST_F(ComposeboxMetricsRecorderTest, PickerOutcome) {
+  [recorder_ recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+               forAttachmentType:MobileFuseboxPickerAttachmentType::kCamera];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome.Camera",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+
+  [recorder_ recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
+               forAttachmentType:MobileFuseboxPickerAttachmentType::kGallery];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome.Gallery",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+
+  [recorder_ recordPickerOutcome:MobileFuseboxPickerOutcome::kPermissionDenied
+               forAttachmentType:MobileFuseboxPickerAttachmentType::kFile];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kPermissionDenied), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome.File",
+      static_cast<int>(MobileFuseboxPickerOutcome::kPermissionDenied), 1);
+
+  [recorder_ recordPickerOutcome:MobileFuseboxPickerOutcome::kLocalError
+               forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kLocalError), 1);
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.PickerOutcome.Drive",
+      static_cast<int>(MobileFuseboxPickerOutcome::kLocalError), 1);
+}

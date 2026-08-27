@@ -188,6 +188,18 @@ chromium-metrics-reviews@google.com.
                (e.g. 'x.com/q=%s')"/>
 </variants>
 
+<!-- LINT.IfChange(MobileFuseboxPickerAttachmentType) -->
+
+<variants name="MobileFuseboxPickerAttachmentType">
+  <variant name="" summary="all pickers"/>
+  <variant name=".Camera" summary="Camera capture"/>
+  <variant name=".Drive" summary="Google Drive file picker"/>
+  <variant name=".File" summary="Local file / Document picker"/>
+  <variant name=".Gallery" summary="Photo library / Gallery picker"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:MobileFuseboxPickerAttachmentType) -->
+
 <variants name="NavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"
       summary="Recorded for prefetches where Chrome is relatively confident
@@ -3151,6 +3163,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
     The number of Drive files attached to the query when the user selects a
     Drive file.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.PickerOutcome{AttachmentType}"
+    enum="MobileFuseboxPickerOutcome" expires_after="2027-09-01">
+  <owner>erahmaoui@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded when the user finishes an interaction with {AttachmentType}.
+  </summary>
+  <token key="AttachmentType" variants="MobileFuseboxPickerAttachmentType"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"

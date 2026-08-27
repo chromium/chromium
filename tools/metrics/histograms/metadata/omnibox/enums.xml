@@ -331,6 +331,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/search_engines/template_url_prepopulate_data_resolver.cc:MigrationMatch) -->
 
+<!-- LINT.IfChange(MobileFuseboxPickerOutcome) -->
+
+<enum name="MobileFuseboxPickerOutcome">
+  <int value="0" label="Attachment added"/>
+  <int value="1" label="Manual user exit"/>
+  <int value="2" label="Permission denied"/>
+  <int value="3" label="Local error"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:MobileFuseboxPickerOutcome) -->
+
 <!-- LINT.IfChange(OmniboxBuiltinEngineType) -->
 
 <enum name="OmniboxBuiltinEngineType">

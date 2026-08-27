@@ -69,6 +69,25 @@ enum class ComposeboxMetricsAttachmentType {
   kRawFile,
 };
 
+// LINT.IfChange(MobileFuseboxPickerAttachmentType)
+enum class MobileFuseboxPickerAttachmentType {
+  kDrive,
+  kGallery,
+  kCamera,
+  kFile,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:MobileFuseboxPickerAttachmentType)
+
+// LINT.IfChange(MobileFuseboxPickerOutcome)
+enum class MobileFuseboxPickerOutcome {
+  kAttachmentAdded = 0,
+  kManualUserExit = 1,
+  kPermissionDenied = 2,
+  kLocalError = 3,
+  kMaxValue = kLocalError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:MobileFuseboxPickerOutcome)
+
 namespace contextual_search {
 class ContextualSearchMetricsRecorder;
 }
@@ -157,6 +176,10 @@ enum class ComposeboxEntrypoint;
 
 // Records the model explicitly selected in the menu.
 - (void)recordModelSelected:(ComposeboxModelOption)model;
+
+// Records the outcome of a picker session.
+- (void)recordPickerOutcome:(MobileFuseboxPickerOutcome)outcome
+          forAttachmentType:(MobileFuseboxPickerAttachmentType)attachmentType;
 
 @end
 
