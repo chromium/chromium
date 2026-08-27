@@ -94,6 +94,12 @@ ACTION_P(VerifyTitle, expected_title) {
   EXPECT_EQ(expected_title, base::UTF16ToASCII(web_state->GetTitle()));
 }
 
+// Verifies correctness of WebState's visible URL.
+ACTION_P(VerifyVisibleURL, expected_url) {
+  WebState* web_state = arg0;
+  EXPECT_EQ(expected_url, web_state->GetVisibleURL());
+}
+
 // Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
 // passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
@@ -2074,31 +2080,36 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
                   _, RequestInfoMatch(expected_redirect_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _));
+  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _))
+      .WillOnce(VerifyVisibleURL(url));
   EXPECT_CALL(*decider_,
               MockShouldAllowRequest(
                   _, RequestInfoMatch(expected_redirect_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _));
+  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _))
+      .WillOnce(VerifyVisibleURL(url));
   EXPECT_CALL(*decider_,
               MockShouldAllowRequest(
                   _, RequestInfoMatch(expected_redirect_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _));
+  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _))
+      .WillOnce(VerifyVisibleURL(url));
   EXPECT_CALL(*decider_,
               MockShouldAllowRequest(
                   _, RequestInfoMatch(expected_redirect_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _));
+  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _))
+      .WillOnce(VerifyVisibleURL(url));
   EXPECT_CALL(*decider_,
               MockShouldAllowRequest(
                   _, RequestInfoMatch(expected_redirect_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _));
+  EXPECT_CALL(observer_, DidRedirectNavigation(web_state(), _))
+      .WillOnce(VerifyVisibleURL(url));
 
   EXPECT_CALL(*decider_, ShouldAllowResponse(
                              _, ResponseInfoMatch(expected_response_info), _))
@@ -2112,6 +2123,7 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
   ASSERT_TRUE(LoadUrl(url));
+  EXPECT_EQ(redirect_url, web_state()->GetVisibleURL());
 }
 
 // Tests download navigation.
