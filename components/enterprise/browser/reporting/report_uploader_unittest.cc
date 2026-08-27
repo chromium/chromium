@@ -436,6 +436,44 @@ TEST_F(ReportUploaderTestWithProfileReportType, RemoveListenerStopsRetryTimer) {
   RunNextTask();
 }
 
+// Tests that RemoveListener stops the retry timer even when listener_ was
+// nullptr (e.g. for reports without security signals).
+TEST_F(ReportUploaderTestWithProfileReportType,
+       RemoveListenerStopsRetryTimerWhenNoListenerSet) {
+  CreateUploader(/* retry_count = */ 1);
+
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/false, _, _))
+      .WillOnce(ScheduleProfileResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
+
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kSuccess,
+                                SecuritySignalsMode::kNoSignals);
+  RunNextTask();
+
+  // Upload failed and retry timer is running with no listener set.
+  MockReportUploaderListener mock_listener;
+  uploader_->RemoveListener(&mock_listener);
+
+  // Fast forward past the retry timer. No retry upload should be triggered.
+  RunNextTask();
+}
+
+// Tests that SetRequestAndUpload with an empty queue completes without
+// crashing.
+TEST_F(ReportUploaderTestWithProfileReportType, UploadEmptyRequestsQueue) {
+  CreateUploader(/* retry_count = */ 1);
+
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/false, _, _))
+      .Times(0);
+
+  UploadReportAndSetExpectation(/*number_of_request=*/0,
+                                ReportUploader::kSuccess,
+                                SecuritySignalsMode::kNoSignals);
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+}
+
 // Tests that internal retries are not skipped if the feature is enabled but
 // the report has no security signals.
 TEST_F(ReportUploaderTestWithProfileReportType,
