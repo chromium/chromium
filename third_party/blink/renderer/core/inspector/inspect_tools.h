@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
+#include "third_party/blink/renderer/core/inspector/v8_session_holder.h"
 #include "third_party/blink/renderer/platform/heap/weak_cell.h"
 
 namespace blink {
@@ -233,10 +234,10 @@ class PausedInDebuggerTool : public InspectTool {
  public:
   PausedInDebuggerTool(InspectorOverlayAgent* overlay,
                        OverlayFrontend* frontend,
-                       v8_inspector::V8InspectorSession* v8_session,
+                       V8SessionHolder v8_session,
                        const String& message)
       : InspectTool(overlay, frontend),
-        v8_session_(v8_session),
+        v8_session_(std::move(v8_session)),
         message_(message) {}
   PausedInDebuggerTool(const PausedInDebuggerTool&) = delete;
   PausedInDebuggerTool& operator=(const PausedInDebuggerTool&) = delete;
@@ -249,12 +250,10 @@ class PausedInDebuggerTool : public InspectTool {
   void Dispatch(const ScriptValue& message,
                 ExceptionState& exception_state) override;
   String GetOverlayName() override;
-  void OnAgentDisable() override;
+  void Dispose() override;
   void ExecuteOnV8Session(Action action);
 
-  raw_ptr<v8_inspector::V8InspectorSession,
-          UnprotectedInRelease | DanglingUntriaged>
-      v8_session_;
+  V8SessionHolder v8_session_;
   String message_;
   WeakCellFactory<PausedInDebuggerTool> weak_factory_{this};
 };

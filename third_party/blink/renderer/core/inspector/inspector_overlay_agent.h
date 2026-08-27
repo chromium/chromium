@@ -119,7 +119,7 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual void Trace(Visitor* visitor) const;
   virtual bool HideOnHideHighlight();
   virtual bool HideOnMouseMove();
-  virtual void OnAgentDisable() {}
+  virtual void Dispose() {}
 
  protected:
   Member<InspectorOverlayAgent> overlay_;

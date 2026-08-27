@@ -1,0 +1,8 @@
+Verifies that clearing inspect tool and disconnecting session after sending resume/stepOver in overlay does not cause use-after-free.
+Testing resume:
+Paused on debugger statement.
+Cleared inspect tool and disconnected session after resume.
+Testing stepOver:
+Paused on debugger statement.
+Cleared inspect tool and disconnected session after stepOver.
+
