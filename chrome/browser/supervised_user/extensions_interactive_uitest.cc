@@ -104,10 +104,11 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   if (!toggle) {
                     throw Error("Path to extension toggle is invalid.");
                   }
-                  if (toggle.ariaPressed != "%s") {
-                    throw Error("Extension toggle in unexpected state: " + toggle.ariaPressed);
+                  if (toggle.ariaChecked != "%s") {
+                    throw Error("Extension toggle in unexpected state: " +
+                                toggle.ariaChecked);
                   }
-                  if (toggle.ariaPressed == "false") {
+                  if (toggle.ariaChecked == "false") {
                     toggle.click();
                   }
                 }

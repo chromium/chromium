@@ -65,7 +65,7 @@ class DelayedSettingChangeTest
             querySelector('extensions-manager').shadowRoot.
             querySelector('extensions-detail-view').shadowRoot.
             querySelector('%s').shadowRoot.
-            querySelector('cr-toggle').ariaPressed;
+            querySelector('cr-toggle').ariaChecked;
     })();)";
 
     return base::StringPrintf(kScriptTemplate, setting.data());

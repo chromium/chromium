@@ -710,11 +710,11 @@ function assertLanguageLineWithToggleChecked(
   if (expectedChecked) {
     assertTrue(toggle.checked);
     assertTrue(toggle.hasAttribute('checked'));
-    assertEquals('true', toggle.getAttribute('aria-pressed'));
+    assertEquals('true', toggle.getAttribute('aria-checked'));
   } else {
     assertFalse(toggle.checked);
     assertEquals(null, toggle.getAttribute('checked'));
-    assertEquals('false', toggle.getAttribute('aria-pressed'));
+    assertEquals('false', toggle.getAttribute('aria-checked'));
   }
 }
 

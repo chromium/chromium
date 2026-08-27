@@ -97,12 +97,12 @@ export class CrToggleElement extends CrToggleElementBase {
 
   override firstUpdated() {
     if (!this.hasAttribute('role')) {
-      this.setAttribute('role', 'button');
+      this.setAttribute('role', 'switch');
     }
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
-    this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
+    this.setAttribute('aria-checked', this.checked ? 'true' : 'false');
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
 
     this.addEventListener('click', this.onClick_.bind(this));
@@ -116,7 +116,7 @@ export class CrToggleElement extends CrToggleElementBase {
     super.updated(changedProperties);
 
     if (changedProperties.has('checked')) {
-      this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
+      this.setAttribute('aria-checked', this.checked ? 'true' : 'false');
     }
 
     if (changedProperties.has('disabled')) {
