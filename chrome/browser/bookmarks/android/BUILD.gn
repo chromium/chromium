@@ -47,6 +47,7 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
+  deps = [ "//components/browser_ui/widget/android:java_resources" ]
 }
 
 android_library("java") {

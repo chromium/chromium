@@ -44,7 +44,10 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
 
-  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
 }
 
 # The only dependent on this code outside of this component should be glue.

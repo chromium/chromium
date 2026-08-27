@@ -67,10 +67,9 @@ found in the LICENSE file.
                 android:layout_gravity="top|end"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/default_icon_background"
                 android:contentDescription="@string/close"
-                android:padding="12dp"
-                android:scaleType="centerInside"
+                android:scaleType="center"
                 android:src="@drawable/material_ic_close_24dp"
                 android:visibility="gone" />
 

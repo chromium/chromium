@@ -170,11 +170,10 @@ found in the LICENSE file.
                 android:contentDescription="@string/readaloud_close_player_button_content_description"
                 android:layout_width="@dimen/button_size"
                 android:layout_height="@dimen/button_size"
-                android:padding="12dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/rounded_ripple"
-                android:scaleType="fitCenter"/>
+                android:background="@drawable/default_icon_background"
+                android:scaleType="center"/>
 
         </RelativeLayout>
 

@@ -44,9 +44,9 @@ public class PaymentRequestFreeShippingTest {
             new PaymentRequestTestRule(
                     "payment_request_free_shipping_test.html", /* delayStartActivity= */ true);
 
-    private static final int RENDER_TEST_REVISION = 1;
+    private static final int RENDER_TEST_REVISION = 2;
     private static final String RENDER_TEST_REVISION_DESCRIPTION =
-            "Updated EditText hint color for a11y";
+            "Standardize close button highlight and icon styling";
 
     @Rule
     public RenderTestRule mRenderTestRule =

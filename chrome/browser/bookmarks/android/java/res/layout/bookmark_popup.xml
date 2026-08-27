@@ -39,9 +39,8 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/bookmark_popup_close_button_margin"
         android:contentDescription="@string/close"
         android:src="@drawable/material_ic_close_24dp"
-        app:tint="@color/default_icon_color_tint_list"
         android:scaleType="center"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/default_icon_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
