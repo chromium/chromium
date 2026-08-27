@@ -41,12 +41,14 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
   FieldGlobalId other_field_id_{test::MakeFieldGlobalId()};
 };
 
+// Tests that accessing a new field returns `std::nullopt`.
 TEST_F(AtMemoryPersistedStateManagerTest, ReturnsNulloptForNewField) {
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
+// Tests that opening and closing without editing returns `std::nullopt`.
 TEST_F(AtMemoryPersistedStateManagerTest, OpenCloseWithoutEditReturnsNullopt) {
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);
@@ -57,6 +59,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, OpenCloseWithoutEditReturnsNullopt) {
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
+// Tests that filter and retrieved suggestions are stored and restored for the
+// same field.
 TEST_F(AtMemoryPersistedStateManagerTest,
        StoresFilterAndSuggestionsForSameField) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -80,6 +84,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
+// Tests that accessing a different field resets the persisted search state.
 TEST_F(AtMemoryPersistedStateManagerTest,
        ResetsStateWhenAccessingDifferentField) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -95,6 +100,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_EQ(state_manager().field_origin(), OtherFieldOrigin());
 }
 
+// Tests that changing the filter clears retrieved suggestions and search state.
 TEST_F(AtMemoryPersistedStateManagerTest,
        OnFilterChangedClearsSuggestionsAndSearching) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -129,6 +135,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
+// Tests that stopping an ongoing search clears incomplete suggestions.
 TEST_F(AtMemoryPersistedStateManagerTest,
        StopSearchingClearsIncompleteSuggestions) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
@@ -183,6 +190,111 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnSuggestionAccepted(s1);
 
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that accepting a primary suggestion stores it in
+// `previously_filled_suggestions`.
+TEST_F(AtMemoryPersistedStateManagerTest, RetrievedSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+
+  Suggestion primary_suggestion(u"Passport",
+                                SuggestionType::kAtMemorySearchResult);
+  state_manager().OnSuggestionsChanged({primary_suggestion});
+
+  state_manager().OnSuggestionAccepted(primary_suggestion);
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Passport");
+}
+
+// Tests that accepting a previously filled suggestion stores it in
+// `previously_filled_suggestions`.
+TEST_F(AtMemoryPersistedStateManagerTest, PreviouslyFilledSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion primary_suggestion(u"Passport",
+                                SuggestionType::kAtMemorySearchResult);
+
+  // Initially accept the primary suggestion so it enters
+  // `previously_filled_suggestions`.
+  state_manager().OnSuggestionAccepted(primary_suggestion);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Now, in 0-state on a field without active search, accept the previously
+  // filled suggestion.
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnSuggestionAccepted(primary_suggestion);
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Passport");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
+            u"Passport");
+}
+
+// Tests that accepting a child of a retrieved suggestion gets stored as a new
+// entry in `previously_filled_suggestions`.
+TEST_F(AtMemoryPersistedStateManagerTest, ChildOfRetrievedSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnFilterSubmitted(u"passport");
+
+  Suggestion primary_suggestion(u"Passport",
+                                SuggestionType::kAtMemorySearchResult);
+  Suggestion child_suggestion(u"12345678",
+                              SuggestionType::kAtMemorySearchResult);
+  primary_suggestion.children = {child_suggestion};
+
+  state_manager().OnSuggestionsChanged({primary_suggestion});
+
+  state_manager().OnSuggestionAccepted(child_suggestion);
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Passport");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].children.size(),
+            1u);
+}
+
+// Tests that accepting a child of a previously filled suggestion gets stored as
+// a new entry in `previously_filled_suggestions`.
+TEST_F(AtMemoryPersistedStateManagerTest, ChildOfPreviouslyFilledSuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion primary_suggestion(u"Passport",
+                                SuggestionType::kAtMemorySearchResult);
+  Suggestion child_suggestion(u"12345678",
+                              SuggestionType::kAtMemorySearchResult);
+  primary_suggestion.children = {child_suggestion};
+
+  // Initially accept the primary suggestion so it enters
+  // `previously_filled_suggestions`.
+  state_manager().OnSuggestionAccepted(primary_suggestion);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Now, in 0-state on a field without active search, accept the secondary
+  // suggestion.
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  state_manager().OnSuggestionAccepted(child_suggestion);
+
+  // Verify that `previously_filled_suggestions` contains the primary suggestion
+  // (not `child_suggestion`).
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Passport");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
+            u"Passport");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].children.size(),
+            1u);
 }
 
 }  // namespace

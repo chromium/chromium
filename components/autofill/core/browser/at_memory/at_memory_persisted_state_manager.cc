@@ -4,12 +4,50 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
+
+namespace {
+
+// Returns a pointer to the parent suggestion within `suggestions` that contains
+// `suggestion` in its children, or `nullptr` if none is found.
+const Suggestion* FindParentSuggestion(
+    const Suggestion& suggestion,
+    base::span<const Suggestion> suggestions) {
+  const auto it =
+      std::ranges::find_if(suggestions, [&suggestion](const Suggestion& entry) {
+        return std::ranges::contains(entry.children, suggestion);
+      });
+  return it != suggestions.end() ? &(*it) : nullptr;
+}
+
+// Returns the primary parent suggestion for `accepted_suggestion` if it is a
+// child suggestion in `search_state` or `previously_filled_suggestions`.
+// Otherwise returns `accepted_suggestion` itself.
+const Suggestion& GetSuggestionToStore(
+    const Suggestion& accepted_suggestion,
+    const std::optional<AtMemorySearchState>& search_state,
+    base::span<const Suggestion> previously_filled_suggestions) {
+  if (search_state) {
+    if (const Suggestion* parent = FindParentSuggestion(
+            accepted_suggestion, search_state->suggestions)) {
+      return *parent;
+    }
+  }
+  if (const Suggestion* parent = FindParentSuggestion(
+          accepted_suggestion, previously_filled_suggestions)) {
+    return *parent;
+  }
+  return accepted_suggestion;
+}
+
+}  // namespace
 
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager() = default;
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
@@ -61,16 +99,14 @@ void AtMemoryPersistedStateManager::OnSuggestionsChanged(
 
 void AtMemoryPersistedStateManager::OnSuggestionAccepted(
     const Suggestion& suggestion) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemoryPreviouslyFilled)) {
+    // TODO(crbug.com/494559543): Deduplicate suggestions.
+    previously_filled_suggestions_.push_back(GetSuggestionToStore(
+        suggestion, search_state_, previously_filled_suggestions_));
+  }
   field_id_ = FieldGlobalId();
   search_state_.reset();
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryPreviouslyFilled)) {
-    return;
-  }
-  // TODO(crbug.com/494559543): Deduplicate suggestions.
-  // TODO(crbug.com/494559543): For secondary suggestions, push their
-  // corresponding primary suggestion instead.
-  previously_filled_suggestions_.push_back(suggestion);
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {

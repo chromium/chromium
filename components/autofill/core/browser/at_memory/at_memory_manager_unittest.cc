@@ -2853,6 +2853,107 @@ TEST_F(AtMemoryManagerTestBase,
   EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
 }
 
+// Tests that accepting a secondary suggestion from search results stores its
+// parent primary suggestion in previously filled suggestions.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStateSecondarySuggestionAcceptedStoresParentPrimarySuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      {features::kAutofillAtMemoryPreviouslyFilled,
+       features::kAutofillAtMemorySearchStatefulness}};
+
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
+  entry.metadata_list.emplace_back(MemoryDataType::kAddressFull, u"Address",
+                                   u"123 Main St");
+  manager().OnFilterChanged(u"john");
+  MockQueryResultsAndExpectCallback(u"john",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+  ASSERT_FALSE(final_suggestions[0].children.empty());
+
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0].children[0],
+                             /*metadata=*/std::nullopt);
+
+  // Search state for field_id is cleared after suggestion acceptance.
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+
+  // Empty query suggestions should contain the title and the parent primary
+  // suggestion (with its child intact).
+  std::vector<Suggestion> empty_suggestions =
+      manager().GetEmptyQuerySuggestions();
+  ASSERT_EQ(empty_suggestions.size(), 2u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"John Doe");
+  ASSERT_EQ(empty_suggestions[1].children.size(),
+            final_suggestions[0].children.size());
+}
+
+// Tests that accepting a secondary suggestion from previously filled
+// suggestions stores its parent primary suggestion.
+TEST_F(
+    AtMemoryManagerTestBase,
+    PreviouslyFilledSecondarySuggestionAcceptedStoresParentPrimarySuggestion) {
+  base::test::ScopedFeatureList feature_list{
+      {features::kAutofillAtMemoryPreviouslyFilled,
+       features::kAutofillAtMemorySearchStatefulness}};
+
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FieldGlobalId other_field_id = test::MakeFieldGlobalId();
+
+  Suggestion primary_suggestion(u"123 Main St",
+                                SuggestionType::kAtMemorySearchResult);
+  primary_suggestion.payload =
+      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
+  Suggestion child_suggestion(u"Main St",
+                              SuggestionType::kAtMemorySearchResult);
+  child_suggestion.payload = Suggestion::AtMemoryPayload(
+      u"Main St", MemoryDataType::kAddressStreetAddress);
+  primary_suggestion.children = {child_suggestion};
+
+  // Initially accept the primary suggestion so it enters
+  // `previously_filled_suggestions`.
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             primary_suggestion, /*metadata=*/std::nullopt);
+
+  std::vector<Suggestion> empty_suggestions =
+      manager().GetEmptyQuerySuggestions();
+  ASSERT_EQ(empty_suggestions.size(), 2u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
+
+  // Now, in 0-state on a field without active search, accept the secondary
+  // suggestion.
+  manager().FillSearchResult(autofill_manager(), form_id, other_field_id,
+                             child_suggestion, /*metadata=*/std::nullopt);
+
+  // Verify that previously filled suggestions contain two copies of the primary
+  // suggestion (not `child_suggestion`).
+  empty_suggestions = manager().GetEmptyQuerySuggestions();
+  ASSERT_EQ(empty_suggestions.size(), 3u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
+  EXPECT_EQ(empty_suggestions[2].main_text.value, u"123 Main St");
+  ASSERT_EQ(empty_suggestions[1].children.size(), 1u);
+  ASSERT_EQ(empty_suggestions[2].children.size(), 1u);
+}
+
 }  // namespace
 
 }  // namespace autofill
