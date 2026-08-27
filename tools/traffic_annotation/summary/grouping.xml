@@ -415,6 +415,7 @@ after discussions on the right group.
       <annotation id="iwa_dev_ui_update_manifest"/>
       <annotation id="notebooks_service_create_notebook"/>
       <annotation id="notebooks_service_create_notebook_source"/>
+      <annotation id="notebooks_service_list_notebooks_for_user"/>
       <annotation id="fetch_user_data_processing_consent"/>
       <annotation id="device_authorization_key_fetch"/>
       <annotation id="site_token_fetcher"/>

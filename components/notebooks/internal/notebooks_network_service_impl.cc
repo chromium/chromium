@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/notebooks/internal/notebooks_traffic_annotations.h"
 #include "components/notebooks/public/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/url_util.h"
@@ -33,6 +34,7 @@
 
 using endpoint_fetcher::EndpointFetcher;
 using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::HttpMethod;
 
 namespace notebooks {
 
@@ -46,116 +48,8 @@ const char kProvenanceOriginProductIdQueryParamName[] =
 const char kClientInfoApplicationPlatformQueryParamName[] =
     "provenance.client_info.application_platform";
 const char kClientInfoDeviceQueryParamName[] = "provenance.client_info.device";
-
-// TODO(crbug.com/531809229): Update policy list for traffic annotations.
-const net::NetworkTrafficAnnotationTag kCreateNotebookTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("notebooks_service_create_notebook",
-                                        R"(
-      semantics {
-        sender: "Notebooks Service Create Notebook"
-        description:
-          "Chrome feature that creates a notebook, which is a container for "
-          "tab and user-uploaded sources providing functionality for users "
-          "to make queries and generate artifacts based on those sources."
-        trigger: "User upgrades tab group to notebook."
-        data:
-          "The OAuth token for the signed in account and the user-defined "
-          "display name for the notebook."
-        destination: GOOGLE_OWNED_SERVICE
-        user_data {
-          type: ACCESS_TOKEN
-          type: USER_CONTENT
-        }
-        last_reviewed: "2026-07-15"
-        internal {
-          contacts {
-            email: "chrome-ai-productivity-eng@google.com"
-          }
-          contacts {
-            email: "woodchip@chromium.org"
-          }
-        }
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "This feature can be disabled in Chrome settings by toggling off "
-          "'History and tabs' under 'You and Google' > 'In your Google "
-          "Account'."
-        chrome_policy {
-          SyncDisabled {
-            SyncDisabled: true
-          }
-        }
-        chrome_policy {
-          SyncTypesListDisabled {
-            SyncTypesListDisabled {
-              entries: "tabs"
-            }
-          }
-        }
-        chrome_policy {
-          GenAiDefaultSettings {
-            GenAiDefaultSettings: 2
-          }
-        }
-      })");
-
-const net::NetworkTrafficAnnotationTag kCreateNotebookSourceTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation(
-        "notebooks_service_create_notebook_source",
-        R"(
-      semantics {
-        sender: "Notebooks Service Create Notebook Source"
-        description:
-          "Chrome feature that adds a tab source to a notebook. A notebook is "
-          "a container for tab and user-uploaded sources that provides "
-          "functionality for users to make queries and generate artifacts "
-          "based on said sources."
-        trigger: "User opens a new tab inside an existing notebook."
-        data:
-          "The OAuth token for the signed in account, the tab identifier "
-          "string, and the string identifier for the notebook to which the "
-          "source is being added."
-        destination: GOOGLE_OWNED_SERVICE
-        user_data {
-          type: ACCESS_TOKEN
-          type: SENSITIVE_URL
-        }
-        last_reviewed: "2026-07-20"
-        internal {
-          contacts {
-            email: "chrome-ai-productivity-eng@google.com"
-          }
-          contacts {
-            email: "woodchip@chromium.org"
-          }
-        }
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "This feature can be disabled in Chrome settings by toggling off "
-          "'History and tabs' under 'You and Google' > 'In your Google "
-          "Account'."
-        chrome_policy {
-          SyncDisabled {
-            SyncDisabled: true
-          }
-        }
-        chrome_policy {
-          SyncTypesListDisabled {
-            SyncTypesListDisabled {
-              entries: "tabs"
-            }
-          }
-        }
-        chrome_policy {
-          GenAiDefaultSettings {
-            GenAiDefaultSettings: 2
-          }
-        }
-      })");
+const char kNotebookFilterQueryParamName[] = "filter";
+const char kNotebookOwnerFilterQuery[] = "notebook.is_owner = true";
 
 enum class Device {
   kOther,
@@ -223,12 +117,12 @@ std::string_view ApplicationPlatformToString(ApplicationPlatform platform) {
 std::unique_ptr<EndpointFetcher>
 NotebooksNetworkServiceImpl::CreateEndpointFetcher(
     const GURL& url,
+    const HttpMethod& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, identity_manager_,
-      EndpointFetcher::RequestParams::Builder(
-          endpoint_fetcher::HttpMethod::kPost, annotation_tag)
+      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag)
           .SetCredentialsMode(endpoint_fetcher::CredentialsMode::kOmit)
           .SetAuthType(endpoint_fetcher::OAUTH)
           .SetConsentLevel(signin::ConsentLevel::kSignin)
@@ -293,8 +187,8 @@ void NotebooksNetworkServiceImpl::CreateNotebook(
   base::DictValue request;
   request.Set(kNotebookDisplayNameFieldName, notebook_display_name);
   std::optional<std::string> request_string = base::WriteJson(request);
-  FetchInternal(service_url, request_string.value_or(""),
-                kCreateNotebookTrafficAnnotation, std::move(callback));
+  FetchInternal(service_url, HttpMethod::kPost, request_string.value_or(""),
+                GetCreateNotebookTrafficAnnotation(), std::move(callback));
 }
 
 void NotebooksNetworkServiceImpl::CreateNotebookSource(
@@ -326,17 +220,41 @@ void NotebooksNetworkServiceImpl::CreateNotebookSource(
   request.Set(kExternalIdentifierFieldName, std::move(external_id));
 
   std::optional<std::string> request_string = base::WriteJson(request);
-  FetchInternal(service_url, request_string.value_or(""),
-                kCreateNotebookSourceTrafficAnnotation, std::move(callback));
+  FetchInternal(service_url, HttpMethod::kPost, request_string.value_or(""),
+                GetCreateNotebookSourceTrafficAnnotation(),
+                std::move(callback));
+}
+
+void NotebooksNetworkServiceImpl::ListNotebooksForUser(
+    NetworkLoaderCallback callback) {
+  GURL service_url = ConstructServiceURL("");
+  if (!service_url.is_valid()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+  service_url = net::AppendOrReplaceQueryParameter(
+      service_url, kNotebookFilterQueryParamName,
+      base::EscapeAllExceptUnreserved(kNotebookOwnerFilterQuery));
+  if (!service_url.is_valid()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
+  FetchInternal(service_url, HttpMethod::kGet, "",
+                GetListNotebooksForUserTrafficAnnotation(),
+                std::move(callback));
 }
 
 void NotebooksNetworkServiceImpl::FetchInternal(
     const GURL& url,
+    const HttpMethod& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     NetworkLoaderCallback callback) {
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher =
-      CreateEndpointFetcher(url, post_data, annotation_tag);
+      CreateEndpointFetcher(url, http_method, post_data, annotation_tag);
   auto* const fetcher_ptr = endpoint_fetcher.get();
   fetcher_ptr->Fetch(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&NotebooksNetworkServiceImpl::OnDownloadComplete,

@@ -22,6 +22,8 @@ static_library("internal") {
     "notebooks_network_service_impl.h",
     "notebooks_service_impl.cc",
     "notebooks_service_impl.h",
+    "notebooks_traffic_annotations.cc",
+    "notebooks_traffic_annotations.h",
   ]
 
   public_deps = [

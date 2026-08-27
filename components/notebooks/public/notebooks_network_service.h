@@ -60,6 +60,12 @@ class NotebooksNetworkService {
   virtual void CreateNotebookSource(std::string_view notebook_id,
                                     std::string_view source_id,
                                     NetworkLoaderCallback callback) = 0;
+
+  // Called to get a list of notebooks of which the signed-in user is the
+  // owner. If no user is signed in or if a non-network-related error occurs,
+  // a nullptr will be passed to the callback. For network errors, `LoadResult`
+  // will be populated with the error info.
+  virtual void ListNotebooksForUser(NetworkLoaderCallback callback) = 0;
 };
 
 }  // namespace notebooks
