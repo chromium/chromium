@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">কুকি, ছাইটৰ ডেটা</translation>
 <translation id="1312721752506309252">বৰ্ধিত সুৰক্ষা অন আছে</translation>
 <translation id="1321993286294231467">প্ৰতিচ্ছবি ছেভ কৰোঁতে আঁসোৱাহ হৈছে।</translation>
+<translation id="1322683976135389755">প্ৰ’ম্পট্‌: এই প্ৰবন্ধটোৰ সাৰাংশ প্ৰস্তুত কৰক, ৩ টাৰ ভিতৰত ১ নম্বৰটো</translation>
 <translation id="1322735045095424339">আপোনাৰ প্ৰতিষ্ঠানক ইনক’গনিট’ ম’ডৰ আৱশ্যক</translation>
 <translation id="1323735185997015385">মচক</translation>
 <translation id="132683371494960526">পেৰেণ্ট ফ’ল্ডাৰ সলনি কৰিবলৈ দুবাৰ টিপক৷</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">পাছৱৰ্ডবোৰ আপোনাৰ Google একাউণ্টত ছেভ কৰি ৰখা হয় সেইবাবে আপুনি যিকোনো ডিভাইচতে এইবোৰ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4007463141047732631">গোট সম্পাদনা কৰক</translation>
 <translation id="4011489366247192265">উৎস</translation>
+<translation id="4014099645251211155">Chromeত Geminiৰ জৰিয়তে আপোনাৰ পৃষ্ঠাত থকা যিকোনো বস্তুৰ বিষয়ে সোধক</translation>
 <translation id="4017599800655151880">থাম্বনেইল</translation>
 <translation id="4018440314314549819">ছেভ কৰি থোৱা পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="4021447724486050609">আপোনাৰ ব্ৰাউজাৰটো আপডে’ট কৰক</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">স্থান:</translation>
 <translation id="4517684186578051919">ডিভাইচৰ তথ্য</translation>
 <translation id="4520798012560649652">ইনক’গনিট’ ম’ডৰ বিষয়ে অধিক জানক</translation>
+<translation id="4524737913322680818">Chromeত Geminiৰ জৰিয়তে বজাৰ কৰক, পৰিকল্পনা কৰক আৰু অধিক কাৰ্য কৰক</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} টা বুকমাৰ্ক}one{{count} টা বুকমাৰ্ক}other{{count} টা বুকমাৰ্ক}}</translation>
 <translation id="4525629404718770519">লিংকৰ পূৰ্বদৰ্শন দেখুৱাওক</translation>
 <translation id="452750746583162491">আপোনাৰ ছিংক কৰা ডেটা পর্যালোচনা কৰক</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">আপোনাৰ সকলো ডিভাইচত বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ পাবৰ বাবে Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="4985921635659180565">কোনো ফাইল মচাৰ সময়সূচী নিৰ্ধাৰণ কৰাৰ পাছত, সেইটো বাতিল কৰিব নোৱাৰি।</translation>
 <translation id="498624032394115435">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে।</translation>
+<translation id="4986428648020277392">প্ৰ’ম্পট্‌: মই কোনটো কিনিব লাগে? ৩ টাৰ ভিতৰত ২ নম্বৰটো</translation>
+<translation id="498768198683310172">Gemini ব্যৱহাৰ কৰা আৰম্ভ কৰক</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">টেবৰ গোটৰ ৰং <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />এ এতিয়া <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="5241106044372754566">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰা <ph name="NAME" />, <ph name="EMAIL" />ক বৰ্তমান বাছনি কৰা হৈছে। এটা একাউণ্ট বাছনি কৰক।</translation>
 <translation id="5242899254250321823">ৱেবছাইটত পাছৱৰ্ড সলনি কৰক</translation>
+<translation id="524751727772074981">আপুনি য’তেই আছে, Chromeত Geminiৰ জৰিয়তে যিকোনো প্ৰশ্ন সোধক</translation>
 <translation id="5248640482715684545">এই ছাইটটোৱে বাৰে বাৰে অন্য এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="5250371859659394278">অজ্ঞাত উৎসৰ পৰা</translation>
 <translation id="525510229763628836">মিনিমাইজ কৰা হৈছে</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5838430324585198889">Google এপৰ জৰিয়তে আপোনাৰ iPadৰ বাবে অধিক সুবিধা আনলক কৰক</translation>
 <translation id="583923961930319521">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
+<translation id="5841763734702350465">প্ৰ’ম্পট্‌: এইটো মোৰ কেলেণ্ডাৰত যোগ দিয়ক, ৩ টাৰ ভিতৰত ৩ নম্বৰটো</translation>
 <translation id="5843013299019689749">ক’লা পৃষ্ঠভূমিৰ ৰং</translation>
 <translation id="5844284118433003733">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে - কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
 <translation id="5854790677617711513">৩০ দিনতকৈ পুৰণি</translation>

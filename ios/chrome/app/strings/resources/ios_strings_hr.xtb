@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Kolačići, podaci web-lokacije</translation>
 <translation id="1312721752506309252">Uključena je Poboljšana zaštita</translation>
 <translation id="1321993286294231467">Pogreška pri spremanju slike.</translation>
+<translation id="1322683976135389755">Upit: Sažmi ovaj članak, 1 od 3</translation>
 <translation id="1322735045095424339">Vaša organizacija zahtijeva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
 <translation id="132683371494960526">Dodirnite dvaput da biste promijenili nadređenu mapu.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Zaporke se spremaju na vaš Google račun kako biste ih mogli upotrebljavati na bilo kojem uređaju.</translation>
 <translation id="4007463141047732631">Uredi grupu</translation>
 <translation id="4011489366247192265">Od</translation>
+<translation id="4014099645251211155">Postavite pitanje o bilo čemu na stranici uz Gemini u Chromeu</translation>
 <translation id="4017599800655151880">Minijatura</translation>
 <translation id="4018440314314549819">Automatsko unošenje spremljenih zaporki</translation>
 <translation id="4021447724486050609">Ažurirajte preglednik</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Lokacija:</translation>
 <translation id="4517684186578051919">Informacije uređaja</translation>
 <translation id="4520798012560649652">Saznajte više o anonimnom načinu</translation>
+<translation id="4524737913322680818">Kupujte, planirajte i obavite više uz Gemini u Chromeu</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="4525629404718770519">Prikaz pregleda veza</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Prijavite se Google računom da biste imali pristup svojim oznakama, zaporkama, povijesti i ostalim postavkama na svim svojim uređajima</translation>
 <translation id="4985921635659180565">Nakon što se datoteka zakaže za brisanje, to se ne može otkazati.</translation>
 <translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
+<translation id="4986428648020277392">Upit: Što trebam kupiti? 2 od 3</translation>
+<translation id="498768198683310172">Počnite upotrebljavati Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pod upravljanjem vaše organizacije.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> sada može koristiti vaše korisničko ime i zaporku kad upotrebljava Google upravitelj zaporki za prijavu na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">Trenutačno je odabran račun <ph name="EMAIL" /> korisnika <ph name="NAME" /> kojim upravlja vaša organizacija. Odaberite račun.</translation>
 <translation id="5242899254250321823">Promijenite zaporku na web-lokaciji</translation>
+<translation id="524751727772074981">Pitajte bilo što, gdje god se nalazili, uz Gemini u Chromeu</translation>
 <translation id="5248640482715684545">Ova web-lokacija pokušava otvoriti drugu aplikaciju.</translation>
 <translation id="5250371859659394278">Iz nepoznatog izvora</translation>
 <translation id="525510229763628836">Minimizirano</translation>
@@ -1472,6 +1478,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5838430324585198889">Otključajte više značajki za svoj iPad uz Googleove aplikacije</translation>
 <translation id="583923961930319521">Upotreba zaporki na svim uređajima</translation>
+<translation id="5841763734702350465">Upit: Dodaj u moj kalendar, 3 od 3</translation>
 <translation id="5843013299019689749">Boja pozadine: crna</translation>
 <translation id="5844284118433003733">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>

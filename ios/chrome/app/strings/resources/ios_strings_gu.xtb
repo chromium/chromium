@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">કૂકીઝ, સાઈટ ડેટા</translation>
 <translation id="1312721752506309252">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="1321993286294231467">છબી સાચવવામાં ભૂલ.</translation>
+<translation id="1322683976135389755">પ્રૉમ્પ્ટ: આ લેખનો સારાંશ આપો, 3માંથી 1</translation>
 <translation id="1322735045095424339">તમારી સંસ્થાને છૂપા મોડની જરૂર છે</translation>
 <translation id="1323735185997015385">ડિલીટ કરો</translation>
 <translation id="132683371494960526">મૂળ ફોલ્ડર બદલવા માટે બે વાર ટૅપ કરો.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરી શકો.</translation>
 <translation id="4007463141047732631">ગ્રૂપમાં ફેરફાર કરો</translation>
 <translation id="4011489366247192265">આમાંથી</translation>
+<translation id="4014099645251211155">Gemini in Chrome વડે તમારા પેજ પરના કોઈપણ કન્ટેન્ટ વિશે પૂછો</translation>
 <translation id="4017599800655151880">થંબનેલ</translation>
 <translation id="4018440314314549819">સાચવેલા પાસવર્ડ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="4021447724486050609">તમારું બ્રાઉઝર અપડેટ કરો</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">સ્થાન:</translation>
 <translation id="4517684186578051919">ડિવાઇસની માહિતી</translation>
 <translation id="4520798012560649652">છૂપા મોડ વિશે વધુ જાણો</translation>
+<translation id="4524737913322680818">Gemini in Chrome વડે ખરીદી કરો, પ્લાન બનાવો અને બીજું ઘણું કરો</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
 <translation id="4525629404718770519">લિંકના પ્રીવ્યૂ બતાવો</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">તમારા બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજા સેટિંગને તમારા બધા ડિવાઇસ પર મેળવવા માટે તમારા Google એકાઉન્ટ સાથે સાઇન ઇન કરો.</translation>
 <translation id="4985921635659180565">એકવાર ફાઇલ ડિલીટ થવા માટે શેડ્યૂલ થાય તે પછી, તેને રદ કરી શકાતી નથી.</translation>
 <translation id="498624032394115435">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફારો કરી શકે છે.</translation>
+<translation id="4986428648020277392">પ્રૉમ્પ્ટ: મારે કયું ખરીદવું જોઈએ? 3માંથી 2</translation>
+<translation id="498768198683310172">Geminiનો ઉપયોગ કરવાનું શરૂ કરો</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ટૅબના ગ્રૂપનો રંગ <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />માં સાઇન ઇન કરવા માટે જ્યારે <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> Google Password Managerનો ઉપયોગ કરે, ત્યારે તેઓ હવેથી તમારું વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, "તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે" હાલમાં પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="5242899254250321823">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
+<translation id="524751727772074981">Gemini in Chromium વડે તમે જ્યાં પણ હો, ત્યાંથી કંઈપણ પૂછો</translation>
 <translation id="5248640482715684545">આ સાઇટ અન્ય ઍપ્લિકેશન ખોલવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="5250371859659394278">કોઈ અજાણ્યા સૉર્સમાંથી</translation>
 <translation id="525510229763628836">નાની કરેલી</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5838430324585198889">Google ઍપ વડે તમારા iPad માટે વધુ સુવિધાઓ અનલૉક કરો</translation>
 <translation id="583923961930319521">તમારા બધા ડિવાઇસ પર પાસવર્ડનો ઉપયોગ કરો</translation>
+<translation id="5841763734702350465">પ્રૉમ્પ્ટ: આને મારા કૅલેન્ડરમાં ઉમેરો, 3માંથી 3</translation>
 <translation id="5843013299019689749">બૅકગ્રાઉન્ડનો કાળો રંગ</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>

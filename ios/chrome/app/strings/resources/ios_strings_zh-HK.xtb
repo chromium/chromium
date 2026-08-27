@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookie 和網站數據</translation>
 <translation id="1312721752506309252">已開啟「強化保護功能」</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
+<translation id="1322683976135389755">提示：總結呢篇文章，第 1 個，總共 3 個</translation>
 <translation id="1322735045095424339">您的機構要求使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
 <translation id="132683371494960526">扲兩下就可以更改上層資料夾。</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">密碼會儲存在您的 Google 帳戶中，讓您在任何裝置上使用。</translation>
 <translation id="4007463141047732631">編輯群組</translation>
 <translation id="4011489366247192265">原文</translation>
+<translation id="4014099645251211155">透過 Chrome 版 Gemini 查詢網頁上的任何內容</translation>
 <translation id="4017599800655151880">縮圖</translation>
 <translation id="4018440314314549819">自動填入已儲存的密碼</translation>
 <translation id="4021447724486050609">更新瀏覽器</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">位置：</translation>
 <translation id="4517684186578051919">裝置資訊</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
+<translation id="4524737913322680818">無論購物、規劃抑或各種大小事，Chrome 版 Gemini 都可讓你事半功倍</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="4525629404718770519">顯示連結預覽</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
+<translation id="4986428648020277392">提示：我應該買邊款？第 2 個，總共 3 個</translation>
+<translation id="498768198683310172">開始使用 Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" /></translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />現在透過「Google 密碼管理工具」登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以使用你的使用者名稱和密碼。</translation>
 <translation id="5241106044372754566">目前選取 <ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。請選擇帳戶。</translation>
 <translation id="5242899254250321823">變更網站上的密碼</translation>
+<translation id="524751727772074981">隨時隨地向 Chrome 版 Gemini 提問</translation>
 <translation id="5248640482715684545">此網站正在嘗試開啟另一個應用程式。</translation>
 <translation id="5250371859659394278">來源不明</translation>
 <translation id="525510229763628836">已經縮到最細</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">不明</translation>
 <translation id="5838430324585198889">在 iPad 上使用 Google 應用程式，解鎖更多功能</translation>
 <translation id="583923961930319521">在所有裝置上使用密碼</translation>
+<translation id="5841763734702350465">提示：將呢個加去日曆度，第 3 個，總共 3 個</translation>
 <translation id="5843013299019689749">黑色背景</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="5854790677617711513">超過 30 天</translation>

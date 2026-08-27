@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookie файлдары, сайт деректері</translation>
 <translation id="1312721752506309252">Күшейтілген қорғаныс қосулы.</translation>
 <translation id="1321993286294231467">Сурет сақтау кезінде қате шықты.</translation>
+<translation id="1322683976135389755">Нұсқау: осы мақаланы қорытындыла, 1/3</translation>
 <translation id="1322735045095424339">Ұйымыңыз инкогнито режимін талап етеді.</translation>
 <translation id="1323735185997015385">Жою</translation>
 <translation id="132683371494960526">Түпкі қалтаны өзгерту үшін екі рет түртіңіз.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз.</translation>
 <translation id="4007463141047732631">Топты өзгерту</translation>
 <translation id="4011489366247192265">Түпнұсқа тілі</translation>
+<translation id="4014099645251211155">Chrome-дағы Gemini-дан беттегі кез келген нәрсе туралы сұраңыз</translation>
 <translation id="4017599800655151880">Нобай</translation>
 <translation id="4018440314314549819">Сақталған құпия сөздермен автоматты түрде толтыру</translation>
 <translation id="4021447724486050609">Браузерді жаңартыңыз</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Орны:</translation>
 <translation id="4517684186578051919">Құрылғы ақпараты</translation>
 <translation id="4520798012560649652">Инкогнито режимі туралы толық ақпарат</translation>
+<translation id="4524737913322680818">Chrome-дағы Search-пен көбірек іс тындырыңыз</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} бетбелгі}other{{count} бетбелгі}}</translation>
 <translation id="4525629404718770519">Сілтемені алдын ала көру</translation>
 <translation id="452750746583162491">Синхрондалған деректерді қарау</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Барлық құрылғыларда бетбелгілерді, құпия сөздерді, тарихты және басқа параметрлерді алу үшін Google аккаунтымен кіріңіз</translation>
 <translation id="4985921635659180565">Файлды жою жоспарланса, одан бас тарта алмайсыз.</translation>
 <translation id="498624032394115435">Сілтемені алған кез келген адам барлық қойындыны өзгерте алады.</translation>
+<translation id="4986428648020277392">Нұсқау: қайсысын сатып алған дұрыс? 2/3</translation>
+<translation id="498768198683310172">Gemini-ды пайдалануды бастау</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, ұйымыңыз басқарады.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Қойындылар тобының түсі <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, қазір таңдалған ұйымыңыз басқарады. Аккаунт таңдаңыз.</translation>
 <translation id="5242899254250321823">Құпия сөзді веб-сайтта өзгерту</translation>
+<translation id="524751727772074981">Қай жерде болсаңыз да, Chrome-дағы Gemini-ға кез келген сұрақ қойыңыз</translation>
 <translation id="5248640482715684545">Бұл сайт басқа қолданбаны ашқалы жатыр.</translation>
 <translation id="5250371859659394278">Белгісіз дереккөзден алынған</translation>
 <translation id="525510229763628836">Кішірейтілді</translation>
@@ -1472,6 +1478,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5838430324585198889">iPad-қа арналған басқа мүмкіндіктердің де құлпын Google қолданбаларымен ашыңыз.</translation>
 <translation id="583923961930319521">Құпия сөздерді барлық құрылғыда пайдалану</translation>
+<translation id="5841763734702350465">Нұсқау: мұны күнтізбеме қос, 3/3</translation>
 <translation id="5843013299019689749">Қара фон түсі</translation>
 <translation id="5844284118433003733">Аккаунтқа кірген кезде, осы деректер сізді Google қызметтерінде қорғау, мысалы, қауіпсіздікке қатысты оқиғадан кейін Gmail қызметінде қорғанысты жақсарту үшін Google аккаунтыңызбен байланыстырылады.</translation>
 <translation id="5854790677617711513">30 күннен асқан</translation>

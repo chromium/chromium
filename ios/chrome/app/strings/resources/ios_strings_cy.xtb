@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cwcis, data gwefan</translation>
 <translation id="1312721752506309252">Mae gwell amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="1321993286294231467">Bu gwall wrth gadw'r llun.</translation>
+<translation id="1322683976135389755">Anogwr: Crynhowch yr erthygl hon, 1 o 3</translation>
 <translation id="1322735045095424339">Mae eich sefydliad yn gofyn am y Modd Anhysbys</translation>
 <translation id="1323735185997015385">Dileu</translation>
 <translation id="132683371494960526">Tapiwch ddwywaith i newid y ffolder rhiant.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Mae cyfrineiriau'n cael eu cadw yn eich Cyfrif Google fel y gallwch eu defnyddio ar unrhyw ddyfais.</translation>
 <translation id="4007463141047732631">Golygu'r Grŵp</translation>
 <translation id="4011489366247192265">O</translation>
+<translation id="4014099645251211155">Gofynnwch am unrhyw beth ar eich tudalen gyda Gemini yn Chrome</translation>
 <translation id="4017599800655151880">Mân-lun</translation>
 <translation id="4018440314314549819">Awtolenwi Cyfrineiriau sydd wedi'u Cadw</translation>
 <translation id="4021447724486050609">Diweddarwch eich porwr</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Lleoliad:</translation>
 <translation id="4517684186578051919">Gwybodaeth am y Ddyfais</translation>
 <translation id="4520798012560649652">Dysgu rhagor am y modd Anhysbys</translation>
+<translation id="4524737913322680818">Siopa, cynllunio a gwneud rhagor gyda Gemini yn Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} nod tudalen}zero{{count} nod tudalen}two{{count} nod tudalen}few{{count} nod tudalen}many{{count} nod tudalen}other{{count} nod tudalen}}</translation>
 <translation id="4525629404718770519">Dangos rhagolygon dolenni</translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Mewngofnodwch gyda'ch Cyfrif Google i gael eich nodau tudalen, eich cyfrineiriau, eich hanes a'ch gosodiadau eraill ar eich holl ddyfeisiau</translation>
 <translation id="4985921635659180565">Unwaith y bydd ffeil wedi'i threfnu i gael ei dileu, ni ellir ei chanslo.</translation>
 <translation id="498624032394115435">Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau.</translation>
+<translation id="4986428648020277392">Anogwr: Pa un ddylwn i ei brynu? 2 o 3</translation>
+<translation id="498768198683310172">Dechrau defnyddio Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, rheolir gan eich sefydliad.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lliw grŵp tabiau <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">Gall <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> bellach ddefnyddio'ch enw defnyddiwr a'ch cyfrinair pan fyddant yn defnyddio Rheolwr Cyfrineiriau Google i fewngofnodi i <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, rheolir gan eich sefydliad wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>
 <translation id="5242899254250321823">Newid cyfrinair ar y wefan</translation>
+<translation id="524751727772074981">Gofyn unrhyw beth, yn y fan a'r lle, gyda Gemini yn Chrome</translation>
 <translation id="5248640482715684545">Mae'r wefan hon yn ceisio agor ap arall.</translation>
 <translation id="5250371859659394278">O ffynhonnell anhysbys</translation>
 <translation id="525510229763628836">Wedi ei leihau</translation>
@@ -1472,6 +1478,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="583281660410589416">Anhysbys</translation>
 <translation id="5838430324585198889">Datgloi mwy o nodweddion ar gyfer eich iPad gydag apiau Google</translation>
 <translation id="583923961930319521">Defnyddio cyfrineiriau ar eich holl ddyfeisiadau</translation>
+<translation id="5841763734702350465">Anogwr: Ychwanegwch hwn at fy nghalendr, 3 o 3</translation>
 <translation id="5843013299019689749">Lliw cefndir du</translation>
 <translation id="5844284118433003733">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="5854790677617711513">Hŷn na 30 diwrnod</translation>

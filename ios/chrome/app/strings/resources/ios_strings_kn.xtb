@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">ಕುಕೀಗಳು, ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="1312721752506309252">ಸುಧಾರಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="1321993286294231467">ಚಿತ್ರ ಉಳಿಸುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ.</translation>
+<translation id="1322683976135389755">ಪ್ರಾಂಪ್ಟ್: ಈ ಲೇಖನವನ್ನು ಸಾರಾಂಶಗೊಳಿಸು, 3 ರಲ್ಲಿ 1</translation>
 <translation id="1322735045095424339">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಅಜ್ಞಾತ ಮೋಡ್ ಬಳಸಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="1323735185997015385">ಅಳಿಸಿ</translation>
 <translation id="132683371494960526">ಮೂಲ ಫೋಲ್ಡರ್‌ ಅನ್ನು ಬದಲಾಯಿಸಲು ಡಬಲ್‌ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
 <translation id="4007463141047732631">ಗುಂಪನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4011489366247192265">ಆರಂಭ ದಿನಾಂಕ</translation>
+<translation id="4014099645251211155">Chrome ನಲ್ಲಿ Gemini ಮೂಲಕ ನಿಮ್ಮ ಪುಟದಲ್ಲಿ ಏನನ್ನಾದರೂ ಕೇಳಿ</translation>
 <translation id="4017599800655151880">ಥಂಬ್‌ನೇಲ್</translation>
 <translation id="4018440314314549819">ಸೇವ್ ಮಾಡಲಾಗಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="4021447724486050609">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">ಸ್ಥಳ:</translation>
 <translation id="4517684186578051919">ಸಾಧನ ಮಾಹಿತಿ</translation>
 <translation id="4520798012560649652">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="4524737913322680818">Chrome ನಲ್ಲಿ Gemini ಮೂಲಕ ಶಾಪಿಂಗ್ ಮಾಡಿ, ಪ್ಲಾನ್ ಮಾಡಿ ಮತ್ತು ಹೆಚ್ಚಿನ ಕೆಲಸಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} ಬುಕ್‌ಮಾರ್ಕ್‌}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="4525629404718770519">ಲಿಂಕ್ ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಡೆಯಲು ನಿಮ್ಮ Google ಖಾತೆ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4985921635659180565">ಫೈಲ್ ಅನ್ನು ಅಳಿಸಲು ನಿಗದಿಪಡಿಸಿದ ನಂತರ, ಅದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="498624032394115435">ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
+<translation id="4986428648020277392">ಪ್ರಾಂಪ್ಟ್: ನಾನು ಯಾವುದನ್ನು ಖರೀದಿಸಬೇಕು? 3 ರಲ್ಲಿ 2</translation>
+<translation id="498768198683310172">Gemini ಅನ್ನು ಬಳಸಲು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516"><ph name="COLOR" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಬಣ್ಣ</translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ಅವರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, ಪ್ರಸ್ತುತ ಆಯ್ಕೆ ಮಾಡಲಾದ ನಿಮ್ಮ ಸಂಸ್ಥೆಯಿಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ. ಖಾತೆಯೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5242899254250321823">ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="524751727772074981">ನೀವು ಎಲ್ಲಿದ್ದರೂ, Chrome ನಲ್ಲಿ Gemini ಮೂಲಕ ಏನನ್ನಾದರೂ ಕೇಳಿ</translation>
 <translation id="5248640482715684545">ಈ ಸೈಟ್ ಇನ್ನೊಂದು ಆ್ಯಪ್‌ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="5250371859659394278">ಅಜ್ಞಾತ ಮೂಲಗಳಿಂದ</translation>
 <translation id="525510229763628836">ಮಿನಿಮೈಸ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5838430324585198889">Google ಆ್ಯಪ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ iPad ಗಾಗಿ ಹೆಚ್ಚಿನ ಫೀಚರ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="583923961930319521">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
+<translation id="5841763734702350465">ಪ್ರಾಂಪ್ಟ್: ಇದನ್ನು ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸು, 3 ರಲ್ಲಿ 3</translation>
 <translation id="5843013299019689749">ಕಪ್ಪು ಹಿನ್ನೆಲೆ ಬಣ್ಣ</translation>
 <translation id="5844284118433003733">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ಸಂಯೋಜಿಸಲಾಗುತ್ತದೆ, ಇದು ಎಲ್ಲಾ Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಭದ್ರತಾ ಇನ್ಸಿಡೆಂಟ್ ಸಂದರ್ಭದಲ್ಲಿ Gmail ನಲ್ಲಿ ರಕ್ಷಣೆ ಹೆಚ್ಚಾಗುತ್ತದೆ.</translation>
 <translation id="5854790677617711513">30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದು</translation>

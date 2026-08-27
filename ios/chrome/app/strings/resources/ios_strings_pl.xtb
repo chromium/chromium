@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Pliki cookie i dane stron</translation>
 <translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
+<translation id="1322683976135389755">Prompt: streść ten artykuł, 1 z 3</translation>
 <translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
 <translation id="1323735185997015385">Usuń</translation>
 <translation id="132683371494960526">Kliknij dwukrotnie, by zmienić folder nadrzędny.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu.</translation>
 <translation id="4007463141047732631">Edytuj grupę</translation>
 <translation id="4011489366247192265">Z języka</translation>
+<translation id="4014099645251211155">Zadawaj pytania dotyczące dowolnych treści na stronie za pomocą Gemini w Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Automatycznie uzupełniaj zapisane hasła</translation>
 <translation id="4021447724486050609">Zaktualizuj przeglądarkę</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Lokalizacja:</translation>
 <translation id="4517684186578051919">Informacje z urządzenia</translation>
 <translation id="4520798012560649652">Więcej informacji o trybie incognito</translation>
+<translation id="4524737913322680818">Kupuj, planuj i rób więcej dzięki Gemini w Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
 <translation id="4525629404718770519">Pokaż podglądy linków</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Zaloguj się na konto Google, by korzystać z zakładek, haseł, historii i innych ustawień na wszystkich urządzeniach</translation>
 <translation id="4985921635659180565">Zaplanowanego usunięcia pliku nie można anulować.</translation>
 <translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
+<translation id="4986428648020277392">Prompt: który mam kupić? 2 z 3</translation>
+<translation id="498768198683310172">Zacznij korzystać z Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kolor grupy kart: <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację (obecnie wybraną). Wybierz konto.</translation>
 <translation id="5242899254250321823">Zmień hasło na stronie</translation>
+<translation id="524751727772074981">Gemini w Chrome – zapytaj o cokolwiek, gdziekolwiek jesteś</translation>
 <translation id="5248640482715684545">Ta witryna próbuje otworzyć inną aplikację.</translation>
 <translation id="5250371859659394278">Z nieznanego źródła</translation>
 <translation id="525510229763628836">Zminimalizowane</translation>
@@ -1472,6 +1478,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5838430324585198889">Odkryj nowe funkcje swojego iPada dzięki aplikacjom Google</translation>
 <translation id="583923961930319521">Używaj haseł na wszystkich swoich urządzeniach</translation>
+<translation id="5841763734702350465">Prompt: dodaj to do mojego kalendarza, 3 z 3</translation>
 <translation id="5843013299019689749">Kolor tła: czarny</translation>
 <translation id="5844284118433003733">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>

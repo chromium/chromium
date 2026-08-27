@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Файлы cookie, даныя сайтаў</translation>
 <translation id="1312721752506309252">Палепшаная абарона ўключана</translation>
 <translation id="1321993286294231467">Памылка пры захаванні фота.</translation>
+<translation id="1322683976135389755">Запыт: падсумуй гэты артыкул, 1 з 3</translation>
 <translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
 <translation id="132683371494960526">Каб змяніць бацькоўскую папку, націсніце двойчы.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады.</translation>
 <translation id="4007463141047732631">Змяніць групу</translation>
 <translation id="4011489366247192265">З</translation>
+<translation id="4014099645251211155">Задавайце Gemini ў Chrome пытанні пра любое змесціва на старонцы</translation>
 <translation id="4017599800655151880">Мініяцюра</translation>
 <translation id="4018440314314549819">Аўтазапаўненне захаваных пароляў</translation>
 <translation id="4021447724486050609">Абнавіце браўзер</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Месцазнаходжанне:</translation>
 <translation id="4517684186578051919">Звесткі пра прыладу</translation>
 <translation id="4520798012560649652">Даведацца больш пра рэжым інкогніта</translation>
+<translation id="4524737913322680818">Gemini ў Chrome дапамагае рабіць куплі, складаць планы і выконваць іншыя задачы</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладкі}many{{count} закладак}other{{count} закладкі}}</translation>
 <translation id="4525629404718770519">Паказваць перадпрагляд спасылак</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
 <translation id="4985921635659180565">Запланаванае выдаленне файла нельга адмяніць.</translation>
 <translation id="498624032394115435">Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі.</translation>
+<translation id="4986428648020277392">Запыт: што мне купіць? 2 з 3</translation>
+<translation id="498768198683310172">Выкарыстоўваць Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />: <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колер групы ўкладак <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">Цяпер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> можа ўваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з вашым імем карыстальніка і паролем, якія захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, выбраным уліковым запісам кіруе ваша арганізацыя. Выберыце ўліковы запіс.</translation>
 <translation id="5242899254250321823">Змяніць пароль на вэб-сайце</translation>
+<translation id="524751727772074981">Gemini ў Chrome: задавайце любыя пытанні з любога месца</translation>
 <translation id="5248640482715684545">Гэты сайт спрабуе адкрыць іншую праграму.</translation>
 <translation id="5250371859659394278">З невядомай крыніцы</translation>
 <translation id="525510229763628836">Згорнута</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5838430324585198889">Атрымайце доступ да большай колькасці функцый iPad з дапамогай праграм Google</translation>
 <translation id="583923961930319521">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
+<translation id="5841763734702350465">Запыт: дадай гэта ў мой каляндар, 3 з 3</translation>
 <translation id="5843013299019689749">Чорны колер фону</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>

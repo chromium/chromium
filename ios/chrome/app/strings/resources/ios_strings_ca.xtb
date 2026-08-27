@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Galetes, dades de llocs</translation>
 <translation id="1312721752506309252">La protecció millorada està activada</translation>
 <translation id="1321993286294231467">Hi ha hagut un error en desar la imatge.</translation>
+<translation id="1322683976135389755">Indicació: Resumeix aquest article (1 de 3)</translation>
 <translation id="1322735045095424339">La teva organització requereix el mode d'incògnit</translation>
 <translation id="1323735185997015385">Suprimeix</translation>
 <translation id="132683371494960526">Feu doble toc per canviar la carpeta principal.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius.</translation>
 <translation id="4007463141047732631">Edita el grup</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Pregunta sobre qualsevol cosa de la pàgina amb Gemini a Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Emplena automàticament les contrasenyes desades</translation>
 <translation id="4021447724486050609">Actualitza el navegador</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Ubicació:</translation>
 <translation id="4517684186578051919">Informació del dispositiu</translation>
 <translation id="4520798012560649652">Més informació sobre el mode d'incògnit</translation>
+<translation id="4524737913322680818">Compra, planifica i fes més coses amb Gemini a Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} adreça d'interès}other{{count} adreces d'interès}}</translation>
 <translation id="4525629404718770519">Mostra les previsualitzacions dels enllaços</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
@@ -1208,6 +1211,7 @@
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="4985921635659180565">Un cop programada, la supressió d'un fitxer no es pot cancel·lar.</translation>
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
+<translation id="4986428648020277392">Indicació: Quins hauria de comprar? 2 de 3</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
@@ -1294,6 +1298,7 @@
 <translation id="5238596603078743134">Ara, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> pot fer servir el teu nom d'usuari i la teva contrasenya quan utilitzi el gestor de contrasenyes de Google per iniciar la sessió a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització, està seleccionat actualment. Tria un compte.</translation>
 <translation id="5242899254250321823">Canvia la contrasenya al lloc web</translation>
+<translation id="524751727772074981">Fes una pregunta, des d'on siguis, amb Gemini a Chrome</translation>
 <translation id="5248640482715684545">Aquest lloc web està provant d'obrir una altra aplicació.</translation>
 <translation id="5250371859659394278">Des d'una font desconeguda</translation>
 <translation id="525510229763628836">Minimitzat</translation>
@@ -1393,6 +1398,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
 <translation id="5611398002774823980">Desa al compte</translation>
+<translation id="5612225021788368236">Tanca la promoció del navegador predeterminat</translation>
 <translation id="561269594905823128">Toca <ph name="BEGIN_BOLD" />Selecciona el fitxer<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordena per més recents</translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
@@ -1471,6 +1477,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5838430324585198889">Desbloqueja més funcions per al teu iPad amb les aplicacions de Google</translation>
 <translation id="583923961930319521">Utilitza contrasenyes en tots els teus dispositius</translation>
+<translation id="5841763734702350465">Indicació: Afegeix-ho al meu calendari, 3 de 3</translation>
 <translation id="5843013299019689749">Color de fons negre</translation>
 <translation id="5844284118433003733">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
 <translation id="5854790677617711513">Anterior a 30 dies</translation>

@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookie 和网站数据</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
+<translation id="1322683976135389755">提示：总结这篇文章（第 1 个，共 3 个）</translation>
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
 <translation id="1323735185997015385">删除</translation>
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
@@ -505,7 +506,7 @@
 <translation id="2584994295315085351">离开 Chrome 4 小时后返回时打开新标签页</translation>
 <translation id="2593272815202181319">等宽</translation>
 <translation id="2601778637777010194">跟踪商品降价情况</translation>
-<translation id="2602372807870028932">此操作会删除保存在此设备上的所选信息</translation>
+<translation id="2602372807870028932">此操作将删除保存在本设备上的所选信息</translation>
 <translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2612676031748830579">卡号</translation>
 <translation id="261305050785128654">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
@@ -718,14 +719,14 @@
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
 <translation id="3350976670663926380">修改已保存</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
-<translation id="3365529507898144230">保存在相册中</translation>
+<translation id="3365529507898144230">保存到相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3378214228000661758">使用以下名称创建通行密钥</translation>
 <translation id="3380352560400387991">此网站正在尝试打开某款应用。这会使您退出无痕模式。</translation>
 <translation id="3391765987934722383">别错过降价</translation>
 <translation id="3392923070107623576">创建标签页分组，让一切井井有条</translation>
-<translation id="3404232721752787413">保存在 Google 相册中</translation>
+<translation id="3404232721752787413">保存到 Google 相册中</translation>
 <translation id="3406506285180498376">分享页面…</translation>
 <translation id="340669334496430859">上次修改时间</translation>
 <translation id="3409785640040772790">地图</translation>
@@ -806,7 +807,7 @@
 <translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3662966164093827811">{count,plural, =1{已选择 1 个}other{已选择 # 个}}</translation>
 <translation id="3668816008081204991">已隐藏阅读清单</translation>
-<translation id="3670030362669914947">卡号</translation>
+<translation id="3670030362669914947">号码</translation>
 <translation id="3672283986707092811">全选</translation>
 <translation id="3679163990085797665">删除已读项</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用。</translation>
 <translation id="4007463141047732631">修改分组</translation>
 <translation id="4011489366247192265">源语言</translation>
+<translation id="4014099645251211155">使用 Chrome 中的 Gemini，针对网页上的任何内容进行提问</translation>
 <translation id="4017599800655151880">缩略图</translation>
 <translation id="4018440314314549819">自动填充已保存的密码</translation>
 <translation id="4021447724486050609">更新浏览器</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">位置：</translation>
 <translation id="4517684186578051919">设备信息</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
+<translation id="4524737913322680818">使用 Chrome 中的 Gemini 购物、规划和执行更多操作</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="4525629404718770519">显示链接预览</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
+<translation id="4986428648020277392">提示：我该买哪个？（第 2 个，共 3 个）</translation>
+<translation id="498768198683310172">开始使用 Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
@@ -1234,7 +1239,7 @@
 <translation id="507187271399539513">{count,plural, =1{第 {position} 种建议支付方式，共 {count} 种}other{第 {position} 种建议支付方式，共 {count} 种}}</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5076534614343816664">价格跟踪</translation>
-<translation id="507762438756999615">根据您所在组织的政策，您无法共享文件</translation>
+<translation id="507762438756999615">根据您所在组织的政策，无法共享文件</translation>
 <translation id="5078303485429639424">开启“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">现在，<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="5241106044372754566">目前选择的是<ph name="NAME" /> (<ph name="EMAIL" />)，该账号由组织管理。请选择一个账号。</translation>
 <translation id="5242899254250321823">更改网站上的密码</translation>
+<translation id="524751727772074981">借助 Chrome 中的 Gemini，无需离开当前页面即可随心提问</translation>
 <translation id="5248640482715684545">此网站正在尝试打开另一款应用。</translation>
 <translation id="5250371859659394278">来自未知来源</translation>
 <translation id="525510229763628836">已最小化</translation>
@@ -1468,10 +1474,11 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">正在同步…</translation>
-<translation id="5831217499016131155">Google 电子钱包</translation>
+<translation id="5831217499016131155">Google 钱包</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5838430324585198889">在 iPad 上使用 Google 应用，解锁更多精彩功能</translation>
 <translation id="583923961930319521">在您的所有设备上使用密码</translation>
+<translation id="5841763734702350465">提示：将此添加到我的日历（第 3 个，共 3 个）</translation>
 <translation id="5843013299019689749">黑色背景颜色</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
@@ -1936,7 +1943,7 @@
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
-<translation id="73750335798090836">为提高安全性，请在使用旅行证件和身份证件等敏感信息时，始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="73750335798090836">为提高安全性，在使用旅行证件和身份证件等敏感信息时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="7380698179418029202">选择您从 Safari 导出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
@@ -2192,7 +2199,7 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132598642024322408">现价 <ph name="PRICE" />，原价 <ph name="PREVIOUS_PRICE" />。</translation>
 <translation id="813370552429173916">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。点击可立即打开相应网站并更改密码。</translation>
-<translation id="8133810265969517544">不建议分享</translation>
+<translation id="8133810265969517544">不建议共享</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} 个标签页已关闭}other{{count} 个标签页已关闭}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="8150167929304790980">姓名</translation>
@@ -2250,7 +2257,7 @@
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="8325455175867928593">隐藏“根据您的兴趣推荐的评价”</translation>
 <translation id="8333459276976141586">Live 模式会使用麦克风。点按“Live”按钮即可开启麦克风。如要关闭麦克风，请点按“停止”按钮或关闭 Gemini。</translation>
-<translation id="833647236762414178">您可以创建、保存和管理密码和通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="833647236762414178">您可以创建、保存和管理密码与通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8345328955902001853">{count,plural, =1{再完成 1 项任务即可升级}other{再完成 {count} 项任务即可升级}}</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
@@ -2347,7 +2354,7 @@
 <translation id="8633025649649592204">近期活动</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
-<translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{暂无已泄露的密码}=1{{COUNT} 个已泄露的密码}other{{COUNT} 个已泄露的密码}}</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8642417828095157370">系统会共享标签页以提供更相关的回答</translation>
 <translation id="8643403533759285912">删除分组</translation>
@@ -2468,7 +2475,7 @@
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
-<translation id="8990960056509724223">根据您所在组织的政策，您无法保存文件</translation>
+<translation id="8990960056509724223">根据您所在组织的政策，无法保存文件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>
 <translation id="9003677638446136377">再次检查</translation>

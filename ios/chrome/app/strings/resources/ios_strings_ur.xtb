@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">کوکیز، سائٹ ڈیٹا</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
+<translation id="1322683976135389755">پرامپٹ: اس مضمون کا خلاصہ کریں، 3 میں سے 1</translation>
 <translation id="1322735045095424339">آپ کی تنظیم پوشیدگی وضع چاہتی ہے</translation>
 <translation id="1323735185997015385">حذف کریں</translation>
 <translation id="132683371494960526">پیرینٹ فولڈر تبدیل کرنے کیلئے دو بار تھپتھپائیں۔</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">‏پاس ورڈز آپ کے Google اکاؤنٹ میں محفوظ ہو جاتے ہیں لہذا آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں۔</translation>
 <translation id="4007463141047732631">گروپ میں ترمیم کریں</translation>
 <translation id="4011489366247192265">سے</translation>
+<translation id="4014099645251211155">‏‫Chrome میں Gemini کے ساتھ اپنے صفحہ پر کسی بھی چیز کے بارے میں پوچھیں</translation>
 <translation id="4017599800655151880">تھمب نیل</translation>
 <translation id="4018440314314549819">محفوظ کردہ پاس ورڈز کو آٹو فل کریں</translation>
 <translation id="4021447724486050609">اپنے براؤزر کو اپ ڈیٹ کریں</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">مقام:</translation>
 <translation id="4517684186578051919">آلہ کی معلومات</translation>
 <translation id="4520798012560649652">پوشیدگی وضع کے بارے میں مزید جانیں</translation>
+<translation id="4524737913322680818">‏‫Chrome میں Gemini کے ساتھ خریداری کریں، پلان کریں اور مزید بہت کچھ کریں</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} بُک مارک}other{{count} بُک مارکس}}</translation>
 <translation id="4525629404718770519">لنک کے پیش مناظر دکھائیں</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">‏اپنے سبھی آلات پر اپنے بُک مارکس، پاس ورڈز، سرگزشت اور دیگر ترتیبات حاصل کرنے کیلئے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="4985921635659180565">اگر کوئی فائل حذف کرنے کے لیے شیڈول کر دی جاتی ہے تو اسے منسوخ نہیں کیا جا سکتا۔</translation>
 <translation id="498624032394115435">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔</translation>
+<translation id="4986428648020277392">پرامپٹ: مجھے کون سا خریدنا چاہیے؟ ‫3 میں سے 2</translation>
+<translation id="498768198683310172">‏Gemini استعمال کرنا شروع کريں</translation>
 <translation id="499122600724363620"><ph name="NAME" />، <ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />۔ <ph name="AI_TIER" />۔</translation>
 <translation id="4992255726304765516">ٹیب گروپ کا رنگ <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">‏Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> میں سائن ان کرنے کے لیے <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتا ہے۔</translation>
 <translation id="5241106044372754566">فی الوقت منتخب کردہ <ph name="NAME" />، <ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="5242899254250321823">ویب سائٹ پر پاس ورڈ تبدیل کریں</translation>
+<translation id="524751727772074981">‏‫Chrome میں Gemini کے ساتھ، آپ جہاں ہیں وہیں سے کچھ بھی پوچھیں</translation>
 <translation id="5248640482715684545">یہ سائٹ دوسری ایپلیکیشن کو کھولنے کی کوشش کر رہی ہے۔</translation>
 <translation id="5250371859659394278">ایک نامعلوم ذریعے سے</translation>
 <translation id="525510229763628836">کم کردیا گیا</translation>
@@ -1472,6 +1478,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5838430324585198889">‏‫Google ایپس کے ساتھ اپنے iPad کے لیے مزید خصوصیات کو غیر مقفل کریں</translation>
 <translation id="583923961930319521">اپنے تمام آلات پر پاس ورڈز استعمال کریں</translation>
+<translation id="5841763734702350465">پرامپٹ: اسے میرے کیلنڈر میں شامل کریں، 3 میں سے 3</translation>
 <translation id="5843013299019689749">پس منظر کا سیاہ رنگ</translation>
 <translation id="5844284118433003733">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک ہو جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>

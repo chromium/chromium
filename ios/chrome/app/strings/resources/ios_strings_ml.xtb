@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">കുക്കികൾ, സൈറ്റ് ഡാറ്റ</translation>
 <translation id="1312721752506309252">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="1321993286294231467">ചിത്രം സംരക്ഷിക്കുന്നതിൽ പിശക്.</translation>
+<translation id="1322683976135389755">പ്രോംപ്റ്റ്: ഈ ലേഖനം സംഗ്രഹിക്കുക, 3-ൽ 1</translation>
 <translation id="1322735045095424339">അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു</translation>
 <translation id="1323735185997015385">ഇല്ലാതാക്കുക</translation>
 <translation id="132683371494960526">പാരന്റ് ഫോൾഡർ മാറ്റാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">പാസ്‌വേഡുകൾ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നതിനാൽ, ഏത് ഉപകരണത്തിലും അവ ഉപയോഗിക്കാനാവും.</translation>
 <translation id="4007463141047732631">ഗ്രൂപ്പ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4011489366247192265">ഇതിൽ നിന്ന്</translation>
+<translation id="4014099645251211155">Chrome-ലെ Gemini ഉപയോഗിച്ച് നിങ്ങളുടെ പേജിലെ എന്തിനെക്കുറിച്ചും ചോദിക്കുക</translation>
 <translation id="4017599800655151880">ലഘുചിത്രം</translation>
 <translation id="4018440314314549819">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="4021447724486050609">നിങ്ങളുടെ ബ്രൗസർ‌ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">സ്ഥാനം:</translation>
 <translation id="4517684186578051919">ഉപകരണ വിവരം</translation>
 <translation id="4520798012560649652">അദൃശ്യ മോഡ് സംബന്ധിച്ച് കൂടുതലറിയുക</translation>
+<translation id="4524737913322680818">Chrome-ലെ Gemini ഉപയോഗിച്ച് ഷോപ്പ് ചെയ്യലും പ്ലാൻ ചെയ്യലും മറ്റ് കാര്യങ്ങളും ചെയ്യൂ</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} ബുക്ക്‌മാർക്ക്}other{{count} ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="4525629404718770519">ലിങ്ക് പ്രിവ്യൂകൾ കാണിക്കുക</translation>
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4985921635659180565">ഒരു ഫയൽ ഇല്ലാതാക്കാൻ ഷെഡ്യൂൾ ചെയ്‌തുകഴിഞ്ഞാൽ, അത് റദ്ദാക്കാനാകില്ല.</translation>
 <translation id="498624032394115435">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം.</translation>
+<translation id="4986428648020277392">പ്രോംപ്റ്റ്: ഞാൻ ഏതാണ് വാങ്ങേണ്ടത്? 3-ൽ 2</translation>
+<translation id="498768198683310172">Gemini ഉപയോഗിച്ച് തുടങ്ങുക</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ടാബ് ഗ്രൂപ്പ് നിറം <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> എന്നയാൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="5241106044372754566">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്ന, <ph name="NAME" />, <ph name="EMAIL" />, നിലവിൽ തിരഞ്ഞെടുത്തു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5242899254250321823">വെബ്‌സൈറ്റിലെ പാസ്‌വേഡ് മാറ്റുക</translation>
+<translation id="524751727772074981">Chrome-ലെ Gemini ഉപയോഗിച്ച്, നിങ്ങൾ എവിടെയായിരുന്നാലും എന്തിനെക്കുറിച്ചും ചോദിക്കൂ</translation>
 <translation id="5248640482715684545">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ സൈറ്റ് ശ്രമിക്കുന്നു.</translation>
 <translation id="5250371859659394278">അറിയാത്ത ഉറവിടത്തിൽ നിന്ന്</translation>
 <translation id="525510229763628836">ചെറുതാക്കി</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5838430324585198889">Google ആപ്പുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ iPad-ൽ കൂടുതൽ ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യൂ</translation>
 <translation id="583923961930319521">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
+<translation id="5841763734702350465">പ്രോംപ്റ്റ്: ഇത് എന്റെ കലണ്ടറിലേക്ക് ചേർക്കുക, 3-ൽ 3</translation>
 <translation id="5843013299019689749">പശ്ചാത്തല നിറം കറുപ്പ്</translation>
 <translation id="5844284118433003733">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നതിന് ഈ ഡാറ്റ നിങ്ങളുടെ Google Account-മായി ലിങ്ക് ചെയ്യും, ഉദാഹരണത്തിന് സുരക്ഷാ വീഴ്ചക്ക് ശേഷം Gmail-ൽ പരിരക്ഷ വർദ്ധിപ്പിക്കുക.</translation>
 <translation id="5854790677617711513">30 ദിവസത്തിൽ കൂടുതൽ പഴക്കമുള്ളത്</translation>

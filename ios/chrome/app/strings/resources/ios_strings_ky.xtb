@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Кукилер, сайттагы нерселерди</translation>
 <translation id="1312721752506309252">Күчөтүлгөн коргоо күйүк</translation>
 <translation id="1321993286294231467">Сүрөттү сактоодо ката кетти.</translation>
+<translation id="1322683976135389755">Сурам: Бул макаланын корутундусун түз, 3 ичинен 1</translation>
 <translation id="1322735045095424339">Уюмуңуз жашыруун режимди колдонууну талап кылат</translation>
 <translation id="1323735185997015385">Жок кылуу</translation>
 <translation id="132683371494960526">Түпкү куржунду өзгөртүү үчүн эки жолу таптап коюңуз.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Бардык түзмөктөрүңүздө колдонуу үчүн сырсөздөр Google аккаунтуңузда сакталат.</translation>
 <translation id="4007463141047732631">Топту түзөтүү</translation>
 <translation id="4011489366247192265">Кимден:</translation>
+<translation id="4014099645251211155">Chrome'догу Gemini аркылуу бетиңиздеги каалаган нерсе тууралуу сураңыз</translation>
 <translation id="4017599800655151880">Эскиз</translation>
 <translation id="4018440314314549819">Сакталган сырсөздөрдү автотолтуруу</translation>
 <translation id="4021447724486050609">Серепчиңизди жаңыртыңыз</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Жайгашкан жер:</translation>
 <translation id="4517684186578051919">Түзмөк тууралуу маалымат</translation>
 <translation id="4520798012560649652">Жашыруун режим жөнүндө кеңири маалымат</translation>
+<translation id="4524737913322680818">Chrome'догу Gemini менен соода кылып, пландаштырып жана башка көп иштерди бүтүрүңүз</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} кыстарма}other{{count} кыстарма}}</translation>
 <translation id="4525629404718770519">Шилтемелерди карап көрүүлөрдү көрсөтүү</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Бардык түзмөктөрүңүздөн кыстармалар, сырсөздөр, таржымал жана башка параметрлериңизди алуу үчүн аккаунтка кириңиз</translation>
 <translation id="4985921635659180565">Файлды өчүрүү пландаштырылгандан кийин, аны жокко чыгарууга болбойт.</translation>
 <translation id="498624032394115435">Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алышат.</translation>
+<translation id="4986428648020277392">Сурам: Кайсынысын сатып алсам болот? 3 ичинен 2</translation>
+<translation id="498768198683310172">Gemini'ды колдонуп баштаңыз</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> эми <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> вебсайтына Сырсөздөрдү башкаргычтын жардамы менен кирүүдө колдонуучу атыңызды жана сырсөзүңүздү колдоно алат.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" /> аккаунтун учурда уюмуңуз тескейт. Аккаунт тандаңыз.</translation>
 <translation id="5242899254250321823">Вебсайттагы сырсөзүңүздү өзгөртүңүз</translation>
+<translation id="524751727772074981">Chrome'догу Gemini'дан каалаган нерсе жөнүндө сураңыз</translation>
 <translation id="5248640482715684545">Бул сайт башка колдонмону ачууга аракет кылып жатат.</translation>
 <translation id="5250371859659394278">Белгисиз булактан</translation>
 <translation id="525510229763628836">Кичирейтилди</translation>
@@ -1472,6 +1478,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5838430324585198889">Google колдонмолору менен iPad'дын көбүрөөк функцияларын колдонуңуз</translation>
 <translation id="583923961930319521">Бардык түзмөктөрүңүздө сырсөздөрдү колдонуңуз</translation>
+<translation id="5841763734702350465">Сурам: Муну жылнаамама кош, 3 ичинен 3</translation>
 <translation id="5843013299019689749">Кара фон түсү</translation>
 <translation id="5844284118433003733">Кирип турганыңызда, сизди Google кызматтарында коргоо үчүн бул дайындар Google аккаунтуңузга байланыштырылат. Мисалы, коопсуздук тутумундагы бузулуулардан кийин Gmail'де коргоону жогорулатуу.</translation>
 <translation id="5854790677617711513">30 күндөн мурунку</translation>

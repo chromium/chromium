@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">کوکی‌ها، داده‌های سایت</translation>
 <translation id="1312721752506309252">محافظت بهبودیافته روشن است</translation>
 <translation id="1321993286294231467">خطایی هنگام ذخیره کردن تصویر روی داد.</translation>
+<translation id="1322683976135389755">پیام‌واره: این مقاله را خلاصه کن، ۱ از ۳</translation>
 <translation id="1322735045095424339">سازمانتان استفاده از «حالت ناشناس» را الزامی کرده است</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">برای تغییر پوشه والد دو ضربه سریع بزنید.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید.</translation>
 <translation id="4007463141047732631">ویرایش گروه</translation>
 <translation id="4011489366247192265">از</translation>
+<translation id="4014099645251211155">‏با «Gemini در Chrome»، درباره هر چیزی در صفحه بپرسید</translation>
 <translation id="4017599800655151880">ریزعکس</translation>
 <translation id="4018440314314549819">تکمیل خودکار گذرواژه‌های ذخیره‌شده</translation>
 <translation id="4021447724486050609">مرورگرتان را به‌روز کنید</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">محل:</translation>
 <translation id="4517684186578051919">اطلاعات دستگاه</translation>
 <translation id="4520798012560649652">درباره «حالت ناشناس» بیشتر بدانید</translation>
+<translation id="4524737913322680818">‏با «Gemini در Chrome» خرید کنید، برنامه‌ریزی کنید، و کارهای بیشتری انجام دهید</translation>
 <translation id="452503091941773389">{count,plural, =1{‫{count} نشانک}one{‫{count} نشانک}other{‫{count} نشانک}}</translation>
 <translation id="4525629404718770519">نشان دادن پیش‌نمایش‌های پیوند</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">‏برای دریافت نشانک‌ها، گذرواژه‌ها، سابقه و تنظیمات دیگر در همه دستگاه‌هایتان، به سیستم حساب Google خودتان وارد شوید</translation>
 <translation id="4985921635659180565">وقتی فایلی برای حذف زمان‌بندی شود، دیگر قابل‌لغو نیست.</translation>
 <translation id="498624032394115435">هر کسی پیوند را داشته باشد می‌تواند همه زبانه‌ها را ویرایش کند.</translation>
+<translation id="4986428648020277392">پیام‌واره: کدام را بخرم؟ ‫۲ از ۳</translation>
+<translation id="498768198683310172">‏شروع استفاده از Gemini</translation>
 <translation id="499122600724363620">‫<ph name="NAME" />،‏ <ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">رنگ <ph name="COLOR" /> گروه زبانه</translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">‏‫<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> اکنون می‌تواند هنگام ورود به سیستم <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرد.</translation>
 <translation id="5241106044372754566">‫<ph name="NAME" />،‏ <ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود، اکنون انتخاب شده است. حسابی انتخاب کنید.</translation>
 <translation id="5242899254250321823">تغییر دادن گذرواژه در وب‌سایت</translation>
+<translation id="524751727772074981">‏در همان جایی که هستید، درباره هر چیزی از «Gemini در Chrome» بپرسید</translation>
 <translation id="5248640482715684545">این سایت تلاش می‌کند برنامه دیگری را باز کند.</translation>
 <translation id="5250371859659394278">از منبع ناشناخته</translation>
 <translation id="525510229763628836">کوچک‌شده</translation>
@@ -1472,6 +1478,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5838430324585198889">‏با برنامه‌های Google، به ویژگی‌های بیشتری برای iPad دسترسی پیدا کنید</translation>
 <translation id="583923961930319521">استفاده از گذرواژه‌ها در همه دستگاه‌هایتان</translation>
+<translation id="5841763734702350465">پیام‌واره: این را به تقویم من اضافه کن، ۳ از ۳</translation>
 <translation id="5843013299019689749">رنگ پس‌زمینه سیاه</translation>
 <translation id="5844284118433003733">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>

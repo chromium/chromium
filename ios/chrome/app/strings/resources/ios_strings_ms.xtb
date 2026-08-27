@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Kuki, data tapak</translation>
 <translation id="1312721752506309252">Perlindungan dipertingkat dihidupkan</translation>
 <translation id="1321993286294231467">Ralat menyimpan imej.</translation>
+<translation id="1322683976135389755">Gesaan: Ringkaskan artikel ini, 1 daripada 3</translation>
 <translation id="1322735045095424339">Organisasi anda menghendaki Mod inkognito digunakan</translation>
 <translation id="1323735185997015385">Padam</translation>
 <translation id="132683371494960526">Ketik dua kali untuk menukar folder induk.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti.</translation>
 <translation id="4007463141047732631">Edit Kumpulan</translation>
 <translation id="4011489366247192265">Daripada</translation>
+<translation id="4014099645251211155">Tanya tentang apa-apa sahaja pada halaman anda dengan Gemini dalam Chrome</translation>
 <translation id="4017599800655151880">Lakaran kecil</translation>
 <translation id="4018440314314549819">Autolengkap Kata Laluan yang Disimpan</translation>
 <translation id="4021447724486050609">Kemas kinikan Penyemak Imbas anda</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Lokasi:</translation>
 <translation id="4517684186578051919">Maklumat Peranti</translation>
 <translation id="4520798012560649652">Ketahui lebih lanjut tentang mod Inkognito</translation>
+<translation id="4524737913322680818">Beli-belah, rancang dan lakukan pelbagai lagi dengan Gemini dalam Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} penanda halaman}other{{count} penanda halaman}}</translation>
 <translation id="4525629404718770519">Tunjukkan pratonton pautan</translation>
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
 <translation id="4985921635659180565">Setelah fail dijadualkan untuk dipadamkan, tindakan tersebut tidak boleh dibatalkan.</translation>
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
+<translation id="4986428648020277392">Gesaan: Manakah yang perlu saya beli? 2 daripada 3</translation>
+<translation id="498768198683310172">Mula menggunakan Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">Kini <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda, dipilih pada masa ini. Pilih akaun.</translation>
 <translation id="5242899254250321823">Tukar kata laluan pada laman web</translation>
+<translation id="524751727772074981">Tanya apa-apa sahaja, di tempat anda berada, dengan Gemini dalam Chrome</translation>
 <translation id="5248640482715684545">Laman ini sedang mencuba membuka aplikasi lain.</translation>
 <translation id="5250371859659394278">Daripada sumber tidak diketahui</translation>
 <translation id="525510229763628836">Minimumkan</translation>
@@ -1472,6 +1478,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5838430324585198889">Dapatkan lebih banyak ciri untuk iPad anda dengan apl Google</translation>
 <translation id="583923961930319521">Gunakan kata laluan pada semua peranti anda</translation>
+<translation id="5841763734702350465">Gesaan: Tambahkan acara ini pada kalendar saya, 3 daripada 3</translation>
 <translation id="5843013299019689749">Warna latar hitam</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="5854790677617711513">Lebih lama daripada 30 hari</translation>

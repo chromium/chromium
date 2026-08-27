@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">‏קובצי cookie, נתוני אתרים</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
+<translation id="1322683976135389755">פרומפט: תסכם את המאמר הזה, 1 מתוך 3</translation>
 <translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
 <translation id="1323735185997015385">מחיקה</translation>
 <translation id="132683371494960526">יש ללחוץ פעמיים כדי לשנות את תיקיית האב.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים.</translation>
 <translation id="4007463141047732631">עריכת הקבוצה</translation>
 <translation id="4011489366247192265">מ-</translation>
+<translation id="4014099645251211155">‏יש לך שאלה על הדף? Gemini ב-Chrome כאן כדי לענות</translation>
 <translation id="4017599800655151880">תמונה ממוזערת</translation>
 <translation id="4018440314314549819">מילוי אוטומטי של סיסמאות שמורות</translation>
 <translation id="4021447724486050609">עדכון הדפדפן</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">מיקום:</translation>
 <translation id="4517684186578051919">מידע מהמכשירים שלך</translation>
 <translation id="4520798012560649652">למידע נוסף בנושא המצב הפרטי</translation>
+<translation id="4524737913322680818">‏עם Gemini ב-Chrome אפשר לקנות, לתכנן ולהספיק יותר</translation>
 <translation id="452503091941773389">{count,plural, =1{סימניה אחת ({count})}one{{count} סימניות}two{{count} סימניות}other{{count} סימניות}}</translation>
 <translation id="4525629404718770519">הפעלת התצוגה המקדימה של הקישורים</translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4985921635659180565">אחרי שקובעים מועד מחיקה לקובץ, אי אפשר לבטל את המחיקה.</translation>
 <translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
+<translation id="4986428648020277392">פרומפט: מה כדאי לי לקנות? ‫2 מתוך 3</translation>
+<translation id="498768198683310172">‏אני רוצה להתחיל להשתמש ב-Gemini</translation>
 <translation id="499122600724363620">‫<ph name="NAME" />, <ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />,‏ <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">הצבע של קבוצת הכרטיסיות <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">‏עכשיו <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> יכול/ה להשתמש בשם המשתמש ובסיסמה שלך במסגרת השימוש במנהל הסיסמאות של Google כדי להיכנס אל <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">החשבון שנבחר: <ph name="NAME" />, <ph name="EMAIL" />, מנוהל על ידי הארגון שלך. צריך לבחור חשבון.</translation>
 <translation id="5242899254250321823">שינוי הסיסמה באתר</translation>
+<translation id="524751727772074981">‏עם Gemini ב-Chrome אפשר לשאול כל דבר, מכל מקום</translation>
 <translation id="5248640482715684545">האתר הזה מנסה לפתוח אפליקציה אחרת.</translation>
 <translation id="5250371859659394278">ממקור לא ידוע</translation>
 <translation id="525510229763628836">ממוזער</translation>
@@ -1472,6 +1478,7 @@
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5838430324585198889">‏עם האפליקציות של Google, האייפד שלך יכול לעשות יותר</translation>
 <translation id="583923961930319521">שימוש בסיסמאות בכל המכשירים</translation>
+<translation id="5841763734702350465">פרומפט: תוסיף את זה ליומן שלי, 3 מתוך 3</translation>
 <translation id="5843013299019689749">צבע רקע שחור</translation>
 <translation id="5844284118433003733">‏אחרי שנכנסת לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="5854790677617711513">לפני יותר מ-30 ימים</translation>

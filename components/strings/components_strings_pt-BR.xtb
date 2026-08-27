@@ -506,7 +506,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem seus pensamentos</translation>
 <translation id="1839551713262164453">Falha com erros na validação dos valores da política</translation>
-<translation id="184153295865602321">Para ter mais proteção, sempre use sua impressão digital, rosto ou outro bloqueio de tela ao pagar usando o preenchimento automático</translation>
+<translation id="184153295865602321">Para mais proteção, sempre use sua digital, rosto ou outro bloqueio de tela ao pagar com o preenchimento automático</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="184517536440397176">Um familiar ou responsável precisa autorizar seu acesso a este site. Antes de você pedir a autorização, precisamos confirmar sua identidade.</translation>
 <translation id="1846432862466000825">Plástico (permanente)</translation>
@@ -840,9 +840,9 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
-<translation id="2403474027143565107">Exato</translation>
+<translation id="2403474027143565107">Preciso</translation>
 <translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
-<translation id="2404715426538856682">Cartões de crédito e débito · IBANs · Cartões fidelidade</translation>
+<translation id="2404715426538856682">Crédito e débito · IBANs · Fidelidade</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
@@ -1734,7 +1734,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3965672182149944205">Salvar endereço?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
 <translation id="396761677631735618">Cartões fidelidade disponíveis para preenchimento com um toque abertos na metade do tamanho.</translation>
-<translation id="3970239200223030389">Data de emissão</translation>
+<translation id="3970239200223030389">Emissão</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3984581365661308170">Envelope 11</translation>
@@ -2807,7 +2807,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5752519522101347518">Carregando o site de verificação bancária</translation>
 <translation id="5753570386948603678">Excluir do histórico</translation>
 <translation id="5759751709240058861">Usar e mover sua câmera</translation>
-<translation id="5762131895127128324">Carteira de habilitação · Documentos de identidade · Passaporte</translation>
+<translation id="5762131895127128324">Habilitação · Identidades · Passaportes</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ativo hoje}=1{Ativo há um dia}one{Ativo há # dia}other{Ativo há # dias}}</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
@@ -3315,7 +3315,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6652101503459149953">Usar Windows Hello</translation>
 <translation id="6654244995031366386">Vidro (texturizado)</translation>
 <translation id="6655085656059574817">Manter sua conta vinculada ajuda a pagar mais rapidamente com o <ph name="BNPL_ISSUER_NAME" />, mas você pode desvincular a conta em <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
-<translation id="6656935431494847393">Inclui informações como reservas de voos e dados do veículo</translation>
+<translation id="6656935431494847393">Inclui informações como reservas de voos e dados de veículos</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659246032834639189">Esse preço está baixo</translation>
 <translation id="6660413144148052430">local</translation>
@@ -3716,7 +3716,7 @@ Mais detalhes:
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Manipuladores de protocolo</translation>
 <translation id="7374733840632556089">Esse problema acontece devido a um certificado que você ou outra pessoa instalou no dispositivo. O certificado é conhecido por ser usado para monitorar e interceptar redes, e o Chrome não o considera confiável. Embora casos legítimos de monitoramento existam, como em redes de escolas ou empresas, o Chrome quer ter certeza de que você está ciente de tudo o que está acontecendo, mesmo que você não possa fazer nada para impedir isso. O monitoramento pode acontecer em qualquer navegador ou aplicativo que acesse a Web.</translation>
-<translation id="73750335798090836">Para ter mais proteção, sempre use sua impressão digital, rosto ou outro bloqueio de tela ao acessar informações sensíveis, como documentos de viagem e de identidade</translation>
+<translation id="73750335798090836">Para mais proteção, sempre use sua digital, rosto ou outro bloqueio de tela ao preencher informações sensíveis, como documentos de viagem e de identidade</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nenhum site permitido}=1{1 site permitido}one{# site permitido}other{# sites permitidos}}</translation>
 <translation id="7375818412732305729">Um arquivo é anexado</translation>
 <translation id="7376031331622621328">Página inferior de comércio</translation>
@@ -4470,7 +4470,7 @@ Mais detalhes:
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
 <translation id="8694684557210599098">Adicionar veículo</translation>
-<translation id="8696297579102085705">Enviar para seu dispositivo</translation>
+<translation id="8696297579102085705">Enviar ao dispositivo</translation>
 <translation id="8698428283892912525">O Chrome tem recursos de segurança integrados para proteger você, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou softwares nocivos recentemente<ph name="END_LINK" /> no site que você tentou acessar.</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>

@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Témoins, données de sites</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1321993286294231467">Une erreur s'est produite lors de l'enregistrement de l'image.</translation>
+<translation id="1322683976135389755">Requête : Résume cet article, 1 sur 3</translation>
 <translation id="1322735045095424339">Votre organisation vous demande d'utiliser le mode de navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
 <translation id="132683371494960526">Touchez deux fois pour modifier le dossier parent.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil.</translation>
 <translation id="4007463141047732631">Modifier le groupe</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Posez des questions sur n'importe quel élément de votre page avec Gemini dans Chrome</translation>
 <translation id="4017599800655151880">Miniature</translation>
 <translation id="4018440314314549819">Remplir automatiquement les mots de passe enregistrés</translation>
 <translation id="4021447724486050609">Mettre à jour votre navigateur</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Chemin d'accès :</translation>
 <translation id="4517684186578051919">Renseignements sur l’appareil</translation>
 <translation id="4520798012560649652">En savoir plus à propos du mode de navigation privée</translation>
+<translation id="4524737913322680818">Magasinez, planifiez et faites plus de choses avec Gemini dans Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="4525629404718770519">Afficher les aperçus des liens</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="4985921635659180565">Une fois que la suppression d'un fichier est programmée, elle ne peut plus être annulée.</translation>
 <translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
+<translation id="4986428648020277392">Requête : Lequel devrais-je acheter? 2 sur 3</translation>
+<translation id="498768198683310172">Commencer à utiliser Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets : <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> peut désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'il utilise le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation, actuellement sélectionné. Sélectionnez un compte.</translation>
 <translation id="5242899254250321823">Modifier le mot de passe sur le site Web</translation>
+<translation id="524751727772074981">Poser toutes vos questions, où que vous soyez, avec Gemini dans Chrome</translation>
 <translation id="5248640482715684545">Ce site essaie d'ouvrir une autre application.</translation>
 <translation id="5250371859659394278">À partir d'une source inconnue</translation>
 <translation id="525510229763628836">Réduit</translation>
@@ -1472,6 +1478,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838430324585198889">Débloquez plus de fonctionnalités pour votre iPad avec les applis Google</translation>
 <translation id="583923961930319521">Utiliser des mots de passe sur tous vos appareils</translation>
+<translation id="5841763734702350465">Requête : Ajoute ceci à mon agenda, 3 sur 3</translation>
 <translation id="5843013299019689749">Couleur d'arrière-plan noire</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>

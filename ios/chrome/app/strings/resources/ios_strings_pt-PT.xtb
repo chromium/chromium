@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">Cookies, dados de sites</translation>
 <translation id="1312721752506309252">A proteção melhorada está ativada</translation>
 <translation id="1321993286294231467">Erro ao guardar a imagem.</translation>
+<translation id="1322683976135389755">Comando: resume este artigo, 1 de 3</translation>
 <translation id="1322735045095424339">A sua entidade requer o Modo de navegação anónima</translation>
 <translation id="1323735185997015385">Eliminar</translation>
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta principal.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
 <translation id="4011489366247192265">De</translation>
+<translation id="4014099645251211155">Faça perguntas sobre qualquer coisa na sua página com o Gemini no Chrome</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Preencha automaticamente as palavras-passe guardadas</translation>
 <translation id="4021447724486050609">Atualize o navegador</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">Localização:</translation>
 <translation id="4517684186578051919">Informações do dispositivo</translation>
 <translation id="4520798012560649652">Saiba mais acerca do Modo de navegação anónima</translation>
+<translation id="4524737913322680818">Compre, planeie e faça mais com o Gemini no Chrome</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="4525629404718770519">Mostrar pré-visualizações de links</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">Inicie sessão com a sua Conta Google para aceder aos marcadores, às palavras-passe, ao histórico e a outras definições em todos os dispositivos</translation>
 <translation id="4985921635659180565">Quando é agendada a eliminação de um ficheiro, não é possível cancelá-la.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
+<translation id="4986428648020277392">Comando: qual devo comprar? 2 de 3</translation>
+<translation id="498768198683310172">Começar a usar o Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de separadores: <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, gerida pela sua organização, atualmente selecionada. Selecione uma conta.</translation>
 <translation id="5242899254250321823">Alterar palavra-passe no Website</translation>
+<translation id="524751727772074981">Pergunte o que quiser, em qualquer lugar, com o Gemini no Chrome</translation>
 <translation id="5248640482715684545">Este site está a tentar abrir outra aplicação.</translation>
 <translation id="5250371859659394278">A partir de uma fonte desconhecida</translation>
 <translation id="525510229763628836">Minimizada</translation>
@@ -1472,6 +1478,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838430324585198889">Desbloqueie mais funcionalidades para o seu iPad com as apps Google</translation>
 <translation id="583923961930319521">Use palavras-passe em todos os dispositivos</translation>
+<translation id="5841763734702350465">Comando: adiciona isto ao meu calendário, 3 de 3</translation>
 <translation id="5843013299019689749">Cor de fundo preta</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>

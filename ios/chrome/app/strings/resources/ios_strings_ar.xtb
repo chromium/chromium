@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">ملفات تعريف الارتباط، وبيانات المواقع الإلكترونية</translation>
 <translation id="1312721752506309252">ميزة الحماية المُحسَّنة مفعَّلة.</translation>
 <translation id="1321993286294231467">حدث خطأ أثناء حفظ الصورة.</translation>
+<translation id="1322683976135389755">الطلب: أريد تلخيص هذه المقالة، 1 من 3</translation>
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">انقر مرّتين لتغيير المجلد الرئيسي.</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
 <translation id="4007463141047732631">تعديل المجموعة</translation>
 <translation id="4011489366247192265">من</translation>
+<translation id="4014099645251211155">‏أصبح الاستفسار عن أي شيء على صفحتك سهلاً باستخدام "Gemini في Chrome"</translation>
 <translation id="4017599800655151880">صورة مصغّرة</translation>
 <translation id="4018440314314549819">الملء التلقائي لكلمات المرور المحفوظة</translation>
 <translation id="4021447724486050609">تحديث المتصفِّح</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">المجلد:</translation>
 <translation id="4517684186578051919">معلومات الجهاز</translation>
 <translation id="4520798012560649652">مزيد من المعلومات حول وضع التصفّح المتخفي</translation>
+<translation id="4524737913322680818">‏يتيح لك "Gemini في Chrome" التسوّق والتخطيط وإنجاز المزيد من المهام</translation>
 <translation id="452503091941773389">{count,plural, =1{إشارة مرجعية واحدة ({count})}zero{{count} إشارة مرجعية}two{إشارتان مرجعيتان ({count})}few{{count} إشارات مرجعية}many{{count} إشارةً مرجعيةً}other{{count} إشارة مرجعية}}</translation>
 <translation id="4525629404718770519">عرض معاينات الروابط</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4985921635659180565">بعد تحديد موعد لحذف ملف، لا يمكن إلغاء ذلك.</translation>
 <translation id="498624032394115435">يمكن لأي مستخدم لديه الرابط تعديل جميع علامات التبويب.</translation>
+<translation id="4986428648020277392">الطلب: أيّ منتج يجب أن أشتري؟ 2 من 3</translation>
+<translation id="498768198683310172">‏البدء باستخدام Gemini</translation>
 <translation id="499122600724363620">تدير مؤسستك حساب "<ph name="NAME" />" (<ph name="EMAIL" />).</translation>
 <translation id="4991383000638469704">‫"<ph name="USER_NAME" />"، <ph name="EMAIL" />. "<ph name="AI_TIER" />"</translation>
 <translation id="4992255726304765516">لون مجموعة علامات التبويب: <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134">‏بإمكان "<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />" حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك هو الذي تم اختياره حاليًا. يُرجى اختيار حساب.</translation>
 <translation id="5242899254250321823">تغيير كلمة المرور على الموقع الإلكتروني</translation>
+<translation id="524751727772074981">‏طرح أي سؤال من أي مكان باستخدام "Gemini في Chrome"</translation>
 <translation id="5248640482715684545">يحاول هذا الموقع الإلكتروني فتح تطبيق آخر.</translation>
 <translation id="5250371859659394278">من مصدر غير معروف</translation>
 <translation id="525510229763628836">تم التصغير</translation>
@@ -1470,6 +1476,7 @@
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5838430324585198889">‏ميزات إضافية على جهاز iPad تتيحها لك تطبيقات Google</translation>
 <translation id="583923961930319521">استخدام كلمات المرور على جميع أجهزتك</translation>
+<translation id="5841763734702350465">الطلب: أريد إضافة هذا الحدث إلى تقويمي، 3 من 3</translation>
 <translation id="5843013299019689749">لون خلفية أسود</translation>
 <translation id="5844284118433003733">‏عند تسجيل الدخول، يتم ربط هذه البيانات بحسابك على Google لحمايتك على خدمات Google، مثلاً تتم زيادة مستوى الحماية في Gmail بعد وقوع محاولة اختراق أمني.</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
@@ -2139,7 +2146,7 @@
 <translation id="797824194429476746">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة نهائيًا.</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="798299424881500862">مظهر باللون البرتقالي</translation>
-<translation id="7987685713885608670">‏لتوفير مزيد من الأمان، يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
+<translation id="7987685713885608670">‏لتوفير مزيد من الأمان، يمكنك تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور في Google".</translation>
 <translation id="798991908416757345">مجموعات علامات التبويب غير متاحة</translation>
 <translation id="7993170188789685695">انقر مرّتين لإغلاق هذا الإشعار.</translation>
 <translation id="7996239959906074962">إعداد…</translation>
@@ -2558,7 +2565,7 @@
 <translation id="963102227019621224">النشاط على الويب وفي التطبيقات</translation>
 <translation id="965259330007686240">‏يمكنك إنشاء صورة باستخدام Gemini</translation>
 <translation id="965879457362663186">إضافة مرفق</translation>
-<translation id="966593914872420832">بحث صوتي</translation>
+<translation id="966593914872420832">البحث الصوتي</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />"}=1{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />" ومستخدمًا واحدًا آخر ({COUNT})}two{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />" ومستخدمَين آخرَين ({COUNT})}few{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />" و{COUNT} مستخدمِين آخرِين}many{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />" و{COUNT} مستخدمًا آخر}other{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_NAME" />" و{COUNT} مستخدم آخر}}</translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="973788791897303708">مجموعة علامات التبويب هذه ممتلئة</translation>

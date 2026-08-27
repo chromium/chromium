@@ -102,6 +102,7 @@
 <translation id="1312168552565502328">ကွတ်ကီးများ၊ ဆိုက်ဒေတာများ</translation>
 <translation id="1312721752506309252">အဆင့်မြှင့်ထားသော ကာကွယ်မှု ဖွင့်ထားသည်</translation>
 <translation id="1321993286294231467">ပုံသိမ်းရာတွင် အမှားဖြစ်သွားသည်။</translation>
+<translation id="1322683976135389755">နှိုးဆော်ချက်- ဤဆောင်းပါးကို အနှစ်ချုပ်ပါ။ ၃ ခုအနက် ၁</translation>
 <translation id="1322735045095424339">'ရုပ်ဖျက်မုဒ်' အသုံးပြုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားသည်</translation>
 <translation id="1323735185997015385">ဖျက်ရန်</translation>
 <translation id="132683371494960526">ပင်ရင်းဖိုင်တွဲကိုပြောင်းရန် နှစ်ချက်တို့ပါ။</translation>
@@ -911,6 +912,7 @@
 <translation id="4004204301268239848">မည်သည့်စက်ပစ္စည်းတွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google အကောင့်ထဲတွင် သိမ်းဆည်းထားပါသည်။</translation>
 <translation id="4007463141047732631">အုပ်စု တည်းဖြတ်ရန်</translation>
 <translation id="4011489366247192265">မှ</translation>
+<translation id="4014099645251211155">‘Chrome ရှိ Gemini’ ဖြင့် သင့်စာမျက်နှာရှိ မည်သည့်အရာကိုမဆို မေးမြန်းပါ</translation>
 <translation id="4017599800655151880">ပုံသေး</translation>
 <translation id="4018440314314549819">သိမ်းထားသော စကားဝှက်များ အော်တိုဖြည့်ခြင်း</translation>
 <translation id="4021447724486050609">ဘရောင်ဇာကို အပ်ဒိတ်လုပ်ရန်</translation>
@@ -1053,6 +1055,7 @@
 <translation id="4509345063551561634">တည်နေရာ</translation>
 <translation id="4517684186578051919">ကိရိယာ၏ အချက်အလက်များ</translation>
 <translation id="4520798012560649652">‘ရုပ်ဖျက်မုဒ်’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="4524737913322680818">‘Chrome ရှိ Gemini’ ဖြင့် ဈေးဝယ်ခြင်း၊ အစီအစဉ်ဆွဲခြင်း စသည်တို့ကို ပိုမိုလုပ်ဆောင်ပါ</translation>
 <translation id="452503091941773389">{count,plural, =1{လိပ်စာ {count} ခု}other{လိပ်စာ {count} ခု}}</translation>
 <translation id="4525629404718770519">လင့်ခ်အစမ်းကြည့်ရှုမှု ပြပါ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
@@ -1208,6 +1211,8 @@
 <translation id="4979397965658815378">သင့်စက်ပစ္စည်းများအားလုံးပေါ်တွင် စာညှပ်များ၊ စကားဝှက်များ၊ မှတ်တမ်းနှင့် အခြားဆက်တင်များ ရယူအသုံးပြုနိုင်ရန် သင့် Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4985921635659180565">ဖိုင်ကို ဖျက်ရန် အချိန်ဇယားဆွဲထားပါက ပယ်ဖျက်၍မရပါ။</translation>
 <translation id="498624032394115435">လင့်ခ်ရှိသူတိုင်း တဘ်အားလုံးကို တည်းဖြတ်နိုင်သည်။</translation>
+<translation id="4986428648020277392">နှိုးဆော်ချက်- ဘယ်ဟာကို ဝယ်ရမလဲ။ ၃ ခုအနက် ၂</translation>
+<translation id="498768198683310172">Gemini စသုံးရန်</translation>
 <translation id="499122600724363620">သင်၏အဖွဲ့အစည်းက စီမံခန့်ခွဲသည့် <ph name="NAME" />၊ <ph name="EMAIL" />။</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />၊ <ph name="EMAIL" />။ <ph name="AI_TIER" />။</translation>
 <translation id="4992255726304765516">တဘ်အုပ်စု အရောင် <ph name="COLOR" /></translation>
@@ -1294,6 +1299,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> က <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> သို့ လက်မှတ်ထိုးဝင်ရန် Google Password Manager သုံးသောအခါ သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်တို့ကို ယခုသုံးနိုင်သည်။</translation>
 <translation id="5241106044372754566">လက်ရှိရွေးချယ်ထားသော သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည့် <ph name="NAME" />၊ <ph name="EMAIL" />။ အကောင့်ရွေးပါ။</translation>
 <translation id="5242899254250321823">ဝဘ်ဆိုက်ပေါ်ရှိ စကားဝှက်ပြောင်းရန်</translation>
+<translation id="524751727772074981">Chrome ရှိ Gemini ဖြင့် ရောက်ရာနေရာမှ ဘာမဆို မေးပါ</translation>
 <translation id="5248640482715684545">ဤဝဘ်ဆိုက်က အပလီကေးရှင်းနောက်တစ်ခုကို ဖွင့်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="5250371859659394278">မူရင်းမသိရှိသော ရင်းမြစ်မှ</translation>
 <translation id="525510229763628836">ချုံ့ထားသည်</translation>
@@ -1471,6 +1477,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5838430324585198889">Google အက်ပ်များသုံး၍ သင့် iPad အတွက် နောက်ထပ်တူးလ်များ ရယူနိုင်သည်</translation>
 <translation id="583923961930319521">သင့်စက်အားလုံးတွင် စကားဝှက်များသုံးခြင်း</translation>
+<translation id="5841763734702350465">နှိုးဆော်ချက်- ၎င်းကို ကျွန်ုပ်၏ ပြက္ခဒိန်သို့ ထည့်ပါ။ ၃ ခုအနက် ၃</translation>
 <translation id="5843013299019689749">နက်မှောင် နောက်ခံအရောင်</translation>
 <translation id="5844284118433003733">သင်လက်မှတ်ထိုးဝင်သောအခါ လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်တစ်ခု ဖြစ်ပေါ်ပြီးနောက် Gmail တွင် ကာကွယ်မှု တိုးမြှင့်ခြင်းကဲ့သို့ Google ဝန်ဆောင်မှုများတွင် သင့်ကို ကာကွယ်ပေးရန် ဤဒေတာကို သင့် Google Account တွင် လင့်ခ်ချိတ်ပါသည်။</translation>
 <translation id="5854790677617711513">ရက် ၃၀ ထက် ပိုဟောင်းသော</translation>
