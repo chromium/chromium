@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 
@@ -77,20 +78,6 @@ bool ContainsSpiiDataType(const Filter& filter) {
   return false;
 }
 
-// Formats filter `value` for logging, redacting sensitive information.
-template <typename T>
-LogBuffer FormatFilterValue(const T& value, bool is_spii) {
-  LogBuffer buf;
-  if (is_spii) {
-    buf << Tag{"span"} << Attrib{"data-pii", "true"} << value << CTag{"span"};
-  } else {
-    buf << value;
-  }
-  return buf;
-}
-
-}  // namespace
-
 LogBuffer& operator<<(LogBuffer& buffer, const TypedValue& typed_value) {
   switch (typed_value.value_case()) {
     case TypedValue::kCountryCode:
@@ -122,6 +109,18 @@ LogBuffer& operator<<(LogBuffer& buffer, const TypedValue& typed_value) {
   }
 }
 
+// Formats data `value` for logging, redacting sensitive information.
+template <typename T>
+LogBuffer FormatDataValue(const T& value, bool is_spii) {
+  LogBuffer buf;
+  if (is_spii) {
+    buf << Tag{"span"} << Attrib{"data-pii", "true"} << value << CTag{"span"};
+  } else {
+    buf << value;
+  }
+  return buf;
+}
+
 LogBuffer& operator<<(LogBuffer& buffer, const Filter& filter) {
   if (filter.data_types().empty()) {
     buffer << Tr{} << "Data Types:" << "(none)";
@@ -141,7 +140,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const Filter& filter) {
 
   if (filter.has_string_filter()) {
     buffer << Tr{} << "String Filter:"
-           << FormatFilterValue(filter.string_filter().value(), is_spii);
+           << FormatDataValue(filter.string_filter().value(), is_spii);
     buffer << Tr{} << "Filter mode:"
            << StringFilterModeToStringView(filter.string_filter().mode());
   }
@@ -149,8 +148,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const Filter& filter) {
   if (filter.has_typed_value_filter()) {
     if (filter.typed_value_filter().has_typed_value()) {
       buffer << Tr{} << "Typed Value Filter:"
-             << FormatFilterValue(filter.typed_value_filter().typed_value(),
-                                  is_spii);
+             << FormatDataValue(filter.typed_value_filter().typed_value(),
+                                is_spii);
     }
     buffer << Tr{} << "Operator:"
            << FilterOperatorToStringView(
@@ -178,16 +177,76 @@ LogBuffer& operator<<(LogBuffer& buffer,
   return buffer;
 }
 
+LogBuffer& operator<<(LogBuffer& buffer, const EntryMetadata& metadata) {
+  LogBuffer type_buf;
+  type_buf << metadata.type_name << " ("
+           << MemoryDataTypeToStringView(metadata.type) << "):";
+  const bool is_spii = IsSpiiMemoryDataType(metadata.type);
+  LogBuffer value_buf;
+  value_buf << Tag{"div"} << FormatDataValue(metadata.value, is_spii)
+            << CTag{"div"};
+  if (metadata.typed_value.has_value()) {
+    value_buf << Tag{"div"} << "Typed value: "
+              << FormatDataValue(*metadata.typed_value, is_spii) << CTag{"div"};
+  }
+  buffer << Tr{} << std::move(type_buf) << std::move(value_buf);
+  return buffer;
+}
+
+LogBuffer& operator<<(LogBuffer& buffer, const MemorySearchResult& result) {
+  buffer << Tag{"table"} << Attrib{"class", "form"};
+  LogBuffer type_buf;
+  type_buf << result.type_name << " ("
+           << MemoryDataTypeToStringView(result.type) << ")";
+  buffer << Tr{} << "Type:" << std::move(type_buf);
+  const bool is_spii = IsSpiiMemoryDataType(result.type);
+  buffer << Tr{} << "Value:" << FormatDataValue(result.value, is_spii);
+  if (result.typed_value.has_value()) {
+    buffer << Tr{}
+           << "Typed Value:" << FormatDataValue(*result.typed_value, is_spii);
+  }
+  if (result.is_obfuscated) {
+    buffer << Tr{} << "Is Obfuscated:" << "true";
+  }
+  if (result.metadata_list.empty()) {
+    buffer << Tr{} << "Metadata:" << "(none)";
+  } else {
+    LogBuffer meta_buf;
+    meta_buf << Tag{"table"};
+    for (const EntryMetadata& meta : result.metadata_list) {
+      meta_buf << meta;
+    }
+    meta_buf << CTag{"table"};
+    buffer << Tr{} << "Metadata:" << std::move(meta_buf);
+  }
+  buffer << CTag{"table"};
+  return buffer;
+}
+
+}  // namespace
+
 LogBuffer& operator<<(LogBuffer& buffer, const AutofillFetchPlan& plan) {
   if (plan.fetch_specifications().empty()) {
     buffer << "(No fetch specifications)";
     return buffer;
   }
-  buffer << Tag{"table"};
+  buffer << Tag{"table"} << Attrib{"class", "form"};
   for (const AutofillFetchSpecification& spec : plan.fetch_specifications()) {
     buffer << spec;
   }
   buffer << CTag{"table"};
+  return buffer;
+}
+
+LogBuffer& operator<<(LogBuffer& buffer,
+                      const std::vector<MemorySearchResult>& results) {
+  if (results.empty()) {
+    buffer << "(No results)";
+    return buffer;
+  }
+  for (const MemorySearchResult& result : results) {
+    buffer << Tag{"div"} << result << CTag{"div"};
+  }
   return buffer;
 }
 

@@ -2397,17 +2397,67 @@ TEST_F(AtMemoryQueryServiceTest, LogsFetchPlanWhenReceived) {
 
   StubFetchContextResponse(std::move(response));
 
-  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
-    const std::string log_str = entry.DebugString();
-    EXPECT_THAT(log_str, HasSubstr("Evaluating Autofill fetch plan"));
-    EXPECT_THAT(log_str, HasSubstr("VehicleMake"));
-    EXPECT_THAT(log_str, HasSubstr("BMW"));
-    EXPECT_THAT(log_str, HasSubstr("EXACT"));
+  EXPECT_CALL(receiver, LogEntry)
+      .WillOnce([](const base::DictValue& entry) {
+        const std::string log_str = entry.DebugString();
+        EXPECT_THAT(log_str, HasSubstr("Evaluating Autofill fetch plan"));
+        EXPECT_THAT(log_str, HasSubstr("VehicleMake"));
+        EXPECT_THAT(log_str, HasSubstr("BMW"));
+        EXPECT_THAT(log_str, HasSubstr("EXACT"));
 
-    EXPECT_THAT(log_str, HasSubstr("PassportNumber"));
-    EXPECT_THAT(log_str, HasSubstr("\"data-pii\": \"true\""));
-    EXPECT_THAT(log_str, HasSubstr("\"value\": \"ABC\""));
-    EXPECT_THAT(log_str, HasSubstr("SUBSTRING"));
+        EXPECT_THAT(log_str, HasSubstr("PassportNumber"));
+        EXPECT_THAT(log_str, HasSubstr("\"data-pii\": \"true\""));
+        EXPECT_THAT(log_str, HasSubstr("\"value\": \"ABC\""));
+        EXPECT_THAT(log_str, HasSubstr("SUBSTRING"));
+      })
+      .WillRepeatedly(testing::Return());
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"query", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+  EXPECT_TRUE(future.Wait());
+
+  log_router.UnregisterReceiver(&receiver);
+}
+
+// Tests that retrieved local data search results and subsequent filtered
+// results are logged to autofill-internals logs.
+TEST_F(AtMemoryQueryServiceTest, LogsLocalResultsWhenRetrieved) {
+  LogRouter log_router;
+  MockLogReceiver receiver;
+  log_router.RegisterReceiver(&receiver);
+
+  auto provider = std::make_unique<FakeMemoryDataProvider>();
+  provider->SetResults({MemorySearchResult(MemoryDataType::kVehiclePlateNumber,
+                                           u"Plate", u"12345")});
+
+  auto service = CreateQueryService(std::move(provider), &log_router);
+
+  AtMemoryQueryResponse response;
+  response.set_query_classification(
+      AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
+  auto* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_PLATE_NUMBER);
+
+  StubFetchContextResponse(std::move(response));
+
+  InSequence seq;
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Evaluating Autofill fetch plan"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("Retrieved local data results (unfiltered)"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("VehiclePlateNumber"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("12345"));
+  });
+  EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Filtered local data results"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("VehiclePlateNumber"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("12345"));
   });
 
   TestFuture<MemorySearchResults> future;

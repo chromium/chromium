@@ -882,11 +882,18 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
       "Autofill.AtMemory.ProviderResultCount.AutofillDataProvider",
       local_results.size());
 
+  LOG_AF(*log_manager_) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                        << "Retrieved local data results (unfiltered):" << Br{}
+                        << local_results;
+
   std::vector<MemorySearchResult> filtered_local_results =
       !fetch_specifications.empty()
           ? FilterResults(std::move(local_results), fetch_specifications)
           : std::move(local_results);
 
+  LOG_AF(*log_manager_) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                        << "Filtered local data results:" << Br{}
+                        << filtered_local_results;
   std::vector<MemorySearchResult> ranked_results =
       RankResults(std::move(filtered_local_results), std::move(remote_results));
   DeduplicateResults(ranked_results);
