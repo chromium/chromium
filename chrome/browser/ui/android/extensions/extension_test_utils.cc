@@ -71,6 +71,15 @@ static void JNI_ExtensionTestUtils_UninstallExtension(
       extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 }
 
+static jboolean JNI_ExtensionTestUtils_IsExtensionEnabled(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id) {
+  return extensions::ExtensionRegistry::Get(profile)
+      ->enabled_extensions()
+      .Contains(extension_id);
+}
+
 static void JNI_ExtensionTestUtils_TriggerInstallSuccessForTesting(
     JNIEnv* env,
     Profile* profile,

@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -425,6 +426,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
 IN_PROC_BROWSER_TEST_F(
     ExtensionOverrideTest,
     MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus) {
+  // Disable the "NTP overridden" dialog so it does not interfere with page
+  // focus.
+  extensions::SetNtpPostInstallUiEnabledForTesting(false);
+
   // Load an extension that overrides the new tab page.
   const Extension* extension = LoadExtension(data_dir().AppendASCII("newtab"));
 

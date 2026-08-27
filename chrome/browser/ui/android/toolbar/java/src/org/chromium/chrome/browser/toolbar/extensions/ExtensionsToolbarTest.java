@@ -20,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertArrayEquals;
@@ -69,6 +70,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
@@ -496,6 +498,27 @@ public class ExtensionsToolbarTest {
         writeFile(
                 new File(dir, "popup.js"),
                 String.format("chrome.test.sendMessage('%s');", message));
+        return installTestExtension(dir);
+    }
+
+    private String loadNtpOverrideExtension(String dirName, String name) throws IOException {
+        File dir = mTempDir.newFolder(dirName);
+        writeFile(
+                new File(dir, "manifest.json"),
+                String.format(
+                        """
+                        {
+                          "name": "%s",
+                          "manifest_version": 3,
+                          "version": "0.1",
+                          "permissions": ["test"],
+                          "chrome_url_overrides": {
+                            "newtab": "newtab.html"
+                          }
+                        }
+                        """,
+                        name));
+        writeFile(new File(dir, "newtab.html"), "<html><body>Custom NTP</body></html>");
         return installTestExtension(dir);
     }
 
@@ -1273,5 +1296,29 @@ public class ExtensionsToolbarTest {
 
         // Confirm that the popup is still open after being clicked.
         assertEquals(1, ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId));
+    }
+
+    @Test
+    @LargeTest
+    public void testNtpOverrideConfirmationDialog() throws IOException {
+        String extensionId = loadNtpOverrideExtension("ntp_ext", "NTP Override Extension");
+        assertTrue(ExtensionTestUtils.isExtensionEnabled(mProfile, extensionId));
+
+        // Load the new tab page in a new tab.
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL);
+
+        // Verify the NTP confirmation dialog appears with the extension message and buttons.
+        ViewUtils.onViewWaiting(withText(containsString("NTP Override Extension")))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withText("Keep it")).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withText("Change it back")).check(matches(isDisplayed()));
+
+        // Click "Change it back" to revert settings and disable the extension.
+        ViewUtils.onViewWaiting(withText("Change it back")).perform(click());
+
+        // Verify that the extension is disabled.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> !ExtensionTestUtils.isExtensionEnabled(mProfile, extensionId),
+                "Extension should have been disabled after clicking 'Change it back'");
     }
 }

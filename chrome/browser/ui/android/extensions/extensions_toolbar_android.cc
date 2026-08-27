@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
@@ -188,7 +189,11 @@ void ExtensionsToolbarAndroid::OnActiveWebContentsChanged(
     bool /*is_same_document*/,
     content::WebContents* web_contents) {
   Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(
-      AttachCurrentThread(), java_object_, web_contents->GetJavaWebContents());
+      AttachCurrentThread(), java_object_,
+      web_contents ? web_contents->GetJavaWebContents() : nullptr);
+  if (web_contents) {
+    extensions::MaybeShowExtensionControlledNewTabPage(browser_, web_contents);
+  }
 }
 
 void ExtensionsToolbarAndroid::OnToolbarControlStateUpdated() {

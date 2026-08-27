@@ -173,6 +173,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_transit",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",

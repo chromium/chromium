@@ -393,7 +393,6 @@ source_set("impl") {
       "//chrome/browser/sharing_hub",
       "//chrome/browser/speech",
       "//chrome/browser/ui/commerce",
-      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/send_tab_to_self",
@@ -427,6 +426,7 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
       "//extensions/browser",
     ]
   }

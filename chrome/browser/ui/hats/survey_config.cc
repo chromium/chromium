@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"

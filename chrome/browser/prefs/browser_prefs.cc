@@ -252,6 +252,8 @@
 #include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/preinstalled_extensions.h"
+#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui_prefs.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
@@ -261,8 +263,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
-#include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
-#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "extensions/browser/api/audio/audio_api.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1955,17 +1955,17 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kPinExtensionsMenuButton, true);
 #endif
+  // TODO(devlin): This would be more inline with the other calls here if it
+  // were nested in either a class or separate namespace with a simple
+  // Register[Profile]Prefs() name.
+  extensions::RegisterSettingsOverriddenUiPrefs(registry);
+  ExtensionSettingsOverriddenDialog::RegisterProfilePrefs(registry);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   RegisterAnimationPolicyPrefs(registry);
   extensions::AudioAPI::RegisterUserPrefs(registry);
-  // TODO(devlin): This would be more inline with the other calls here if it
-  // were nested in either a class or separate namespace with a simple
-  // Register[Profile]Prefs() name.
-  extensions::RegisterSettingsOverriddenUiPrefs(registry);
-  ExtensionSettingsOverriddenDialog::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)

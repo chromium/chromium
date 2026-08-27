@@ -86,6 +86,18 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Checks if the extension with the given ID is enabled.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension.
+     * @return True if the extension is enabled, false otherwise.
+     */
+    public static boolean isExtensionEnabled(Profile profile, String extensionId) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ExtensionTestUtilsJni.get().isExtensionEnabled(profile, extensionId));
+    }
+
+    /**
      * Uninstalls the extension with the given ID.
      *
      * @param profile The profile the extension belongs to.
@@ -390,6 +402,9 @@ public class ExtensionTestUtils {
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void uninstallExtension(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
+
+        boolean isExtensionEnabled(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void triggerInstallSuccessForTesting(
