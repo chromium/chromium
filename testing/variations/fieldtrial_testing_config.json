@@ -12644,24 +12644,6 @@
             ]
         }
     ],
-    "MacTabSwitchRegressionFix": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SendAllSavedFramesToDelegatedFrameHost": "true"
-                    },
-                    "enable_features": [
-                        "UseHadSavedFrameAtStart"
-                    ]
-                }
-            ]
-        }
-    ],
     "MachIPCVouchersHoldback": [
         {
             "platforms": [
