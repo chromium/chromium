@@ -577,6 +577,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        HandlesFailureFromGenerateRequest) {
+  base::UserActionTester user_action_tester;
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -1129,6 +1130,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBFCacheBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        RegenerateImageFlow) {
+  base::UserActionTester user_action_tester;
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -1178,6 +1180,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
                                                   success_url1.spec()));
 
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Success"),
+            1);
+
   // Call RegenerateImage() to trigger a new generation.
   EXPECT_TRUE(manager->RegenerateImage());
 
@@ -1195,6 +1200,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                                                   success_url2.spec()));
   EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
                                                   success_url2.spec()));
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Success"),
+            2);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -2081,4 +2089,54 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerCacheDisabledBrowserTest,
                                      0);
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       RegenerateImageFailureFlow) {
+  base::UserActionTester user_action_tester;
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest(0);
+  GURL success_url1(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url1, 0);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url1.spec()));
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Success"),
+            1);
+
+  EXPECT_TRUE(manager->RegenerateImage());
+
+  fake_api_.WaitForGenerateRequest(1);
+  fake_api_.SendErrorResponse(1);
+
+  // Error handling resets the replacements and shows a toast.
+  ToastController* toast_controller = ToastController::MaybeGetForTabInterface(
+      tabs::TabInterface::GetFromContents(web_contents));
+  ASSERT_TRUE(toast_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return toast_controller->IsShowingToast(); }));
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+}
 }  // namespace indigo

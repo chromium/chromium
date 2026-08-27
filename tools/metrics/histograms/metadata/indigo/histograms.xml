@@ -143,6 +143,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.Transformation.TriggerSource"
+    enum="IndigoTransformationTriggerSource" expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records the trigger source of a transformation event. This tracks which UI
+    surface or action initiated the transformation request.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

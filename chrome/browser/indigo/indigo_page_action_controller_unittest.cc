@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
@@ -1017,10 +1018,14 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
             1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.TriggerSource",
+      IndigoTransformationTriggerSource::kPageAction, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -1472,6 +1477,7 @@ TEST_F(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
   navigation->Commit();
 
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 
   // The agent should not be triggered yet because we haven't executed
@@ -1493,6 +1499,9 @@ TEST_F(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
   // The agent should now be triggered.
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
             1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.TriggerSource",
+      IndigoTransformationTriggerSource::kPageAction, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -1527,6 +1536,7 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 
   // The agent should not be triggered yet because we haven't executed
@@ -1554,6 +1564,9 @@ TEST_F(IndigoPageActionControllerTest,
   // The agent should now be triggered.
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
             1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.TriggerSource",
+      IndigoTransformationTriggerSource::kPageAction, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest, HeuristicShowsActionOnSuccess) {

@@ -114,6 +114,19 @@ enum class OnboardingDisposition {
   kReplacePhoto,
 };
 
+// Represents the UI surface that triggered an Indigo transformation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoTransformationTriggerSource)
+enum class IndigoTransformationTriggerSource {
+  kPageAction = 0,
+  kErrorToastRetry = 1,
+  kRegenerate = 2,
+  kReplacePhoto = 3,
+  kMaxValue = kReplacePhoto,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationTriggerSource)
+
 enum class EntryPoint {
   kSuggestionChip = 0,
   kAnchoredMessage = 1,
@@ -288,9 +301,13 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   bool MaybeInvokeGlic();
 
   // Helper to invoke IndigoAgent.
-  void TriggerIndigoAgent();
+  void TriggerIndigoAgent(IndigoTransformationTriggerSource source);
+
   // Same as above, but introduces a delay before invoking.
-  void TriggerIndigoAgentWithDelay();
+  void TriggerIndigoAgentWithDelay(IndigoTransformationTriggerSource source);
+
+  // Handles executing the regenerate logic with a specified trigger source.
+  void TriggerRegeneration(IndigoTransformationTriggerSource source);
 
   // Updates state and handles preference changes when the dialog closes.
   void OnOnboardingDialogClosed(OnboardingDisposition disposition,

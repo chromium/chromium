@@ -61,6 +61,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationResult) -->
 
+<!-- LINT.IfChange(IndigoTransformationTriggerSource) -->
+
+<enum name="IndigoTransformationTriggerSource">
+  <int value="0" label="Page Action"/>
+  <int value="1" label="Error Toast Retry"/>
+  <int value="2" label="Regenerate"/>
+  <int value="3" label="Replace Photo"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationTriggerSource) -->
+
 <!-- LINT.IfChange(IndigoTriggerSource) -->
 
 <enum name="IndigoTriggerSource">

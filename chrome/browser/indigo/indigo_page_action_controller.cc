@@ -337,8 +337,9 @@ void IndigoPageActionController::ContinueInvoke(
   const bool invoked_glic = !skip_glic_invoke && MaybeInvokeGlic();
   if (!invoked_glic) {
     // The glic invocation path will trigger the Indigo agent after the panel is opened.
-    // Otherwise, do so now.
-    TriggerIndigoAgent();
+    TriggerIndigoAgent(skip_glic_invoke
+                           ? IndigoTransformationTriggerSource::kErrorToastRetry
+                           : IndigoTransformationTriggerSource::kPageAction);
   }
 }
 
@@ -411,7 +412,8 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
   // image elements in the process.
   options.on_panel_opened =
       base::BindOnce(&IndigoPageActionController::TriggerIndigoAgentWithDelay,
-                     invoke_weak_ptr_factory_.GetWeakPtr());
+                     invoke_weak_ptr_factory_.GetWeakPtr(),
+                     IndigoTransformationTriggerSource::kPageAction);
 
   options.prompts.push_back(std::move(prompt));
   glic_keyed_service->InvokeWithAutoSubmit(
@@ -420,7 +422,8 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
   return true;
 }
 
-void IndigoPageActionController::TriggerIndigoAgent() {
+void IndigoPageActionController::TriggerIndigoAgent(
+    IndigoTransformationTriggerSource source) {
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
@@ -429,15 +432,18 @@ void IndigoPageActionController::TriggerIndigoAgent() {
           ->Invoke()) {
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Trigger"));
+    base::UmaHistogramEnumeration("Indigo.Transformation.TriggerSource",
+                                  source);
   }
 }
 
-void IndigoPageActionController::TriggerIndigoAgentWithDelay() {
+void IndigoPageActionController::TriggerIndigoAgentWithDelay(
+    IndigoTransformationTriggerSource source) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigoOpenGlic));
   delay_agent_invoke_timer_.Start(
       FROM_HERE, features::kIndigoGlicTriggerDelay.Get(),
       base::BindOnce(&IndigoPageActionController::TriggerIndigoAgent,
-                     invoke_weak_ptr_factory_.GetWeakPtr()));
+                     invoke_weak_ptr_factory_.GetWeakPtr(), source));
 }
 
 void IndigoPageActionController::ShowOnboardingDialog(
@@ -523,6 +529,7 @@ void IndigoPageActionController::ShowInvocationErrorToast(
     IndigoTransformationResult result) {
   CHECK_NE(result, IndigoTransformationResult::kSuccess);
   base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
+  base::RecordAction(base::UserMetricsAction("Indigo.Transformation.Failure"));
 
   ToastController* toast_controller =
       ToastController::MaybeGetForTabInterface(&tab());
@@ -619,6 +626,11 @@ void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
 }
 
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
+  TriggerRegeneration(IndigoTransformationTriggerSource::kRegenerate);
+}
+
+void IndigoPageActionController::TriggerRegeneration(
+    IndigoTransformationTriggerSource source) {
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
@@ -629,6 +641,10 @@ void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
   auto* manager =
       IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
   if (manager && manager->RegenerateImage()) {
+    base::RecordAction(
+        base::UserMetricsAction("Indigo.Transformation.Trigger"));
+    base::UmaHistogramEnumeration("Indigo.Transformation.TriggerSource",
+                                  source);
     DestroyToolbar();
   }
 }
@@ -828,7 +844,7 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
 
     if (disposition == OnboardingDisposition::kReplacePhoto) {
       indigo_service_->NotifyPhotoChanged();
-      OnRegenerate(toolbar_.get());
+      TriggerRegeneration(IndigoTransformationTriggerSource::kReplacePhoto);
     } else {
       indigo_service_->GetCombinedEligibility(base::BindOnce(
           &IndigoPageActionController::ContinueInvoke,

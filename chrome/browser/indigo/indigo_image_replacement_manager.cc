@@ -342,8 +342,6 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
   if (!result.has_value()) {
     DVLOG(1) << "Generate image failed: " << result.error().message;
-    base::RecordAction(
-        base::UserMetricsAction("Indigo.Transformation.Failure"));
     ClearCachedImage();
     Reset(ResetType::kResetReplacementsAndContentScript);
     ShowErrorToast(IndigoTransformationResult::kGenerateImageError);
