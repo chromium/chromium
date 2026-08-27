@@ -5415,6 +5415,7 @@ test("unit_tests") {
     "//chrome/browser/segmentation_platform:unit_tests",
     "//chrome/browser/send_tab_to_self:unit_tests",
     "//chrome/browser/serial:unit_tests",
+    "//chrome/browser/service_worker:unit_tests",
     "//chrome/browser/sessions:unit_tests",
     "//chrome/browser/share:unit_tests",
     "//chrome/browser/sharing",

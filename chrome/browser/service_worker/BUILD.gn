@@ -8,10 +8,13 @@ source_set("service_worker") {
   sources = [
     "service_worker_prewarm.cc",
     "service_worker_prewarm.h",
+    "service_worker_synthetic_response.cc",
+    "service_worker_synthetic_response.h",
   ]
   public_deps = [ "//content/public/browser" ]
   deps = [
     "//base",
+    "//chrome/browser/preloading/prerender",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//components/search_engines",
@@ -46,4 +49,19 @@ if (enable_extensions) {
       "//content/test:test_support",
     ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_worker_synthetic_response_unittest.cc" ]
+  deps = [
+    ":service_worker",
+    "//base",
+    "//chrome/browser/search_engines",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/search_engines",
+    "//testing/gtest",
+    "//url",
+  ]
 }

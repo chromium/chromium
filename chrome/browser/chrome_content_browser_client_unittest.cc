@@ -41,7 +41,6 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -77,7 +76,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
@@ -134,7 +132,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/search_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -746,71 +743,6 @@ TEST_F(ChromeContentBrowserClientTestWithWebContents,
 
   ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
-}
-
-// TODO(crbug.com/352578800): Move this from
-// `ChromeContentBrowserClientWindowTest` to run the test on Android.
-TEST_F(ChromeContentBrowserClientTestWithWebContents,
-       IsServiceWorkerSyntheticResponseAllowed) {
-  ChromeContentBrowserClient browser_client;
-
-  // Update the default search engine.
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile());
-  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
-  TemplateURLData data;
-  data.SetShortName(u"example.com");
-  data.SetURL("https://example.com/test?q={searchTerms}");
-  data.new_tab_url = chrome::kChromeUINewTabURL;
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://foo.com/test")));
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://example.com/")));
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://example.com/test")));
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://example.com/test?q=")));
-  EXPECT_TRUE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://example.com/test?q=test")));
-}
-
-TEST_F(ChromeContentBrowserClientTestWithWebContents,
-       IsServiceWorkerSyntheticResponseAllowedForAlternateUrls) {
-  ChromeContentBrowserClient browser_client;
-
-  // Update the default search engine with an alternate URL on a different
-  // origin.
-  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile());
-  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
-  TemplateURLData data;
-  data.SetShortName(u"example.com");
-  data.SetURL("https://example.com/test?q={searchTerms}");
-  data.alternate_urls.push_back("https://other.test/{searchTerms}");
-  data.new_tab_url = chrome::kChromeUINewTabURL;
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-  // The synthetic response should only be allowed for navigations to the
-  // default search provider's own origin, even when an alternate URL on a
-  // different origin matches.
-  EXPECT_TRUE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://example.com/test?q=test")));
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("https://other.test/page")));
-  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
-      profile(), GURL("http://example.com/test?q=test")));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

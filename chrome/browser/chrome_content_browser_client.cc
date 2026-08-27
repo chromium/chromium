@@ -170,6 +170,7 @@
 #include "chrome/browser/sensor/chrome_sensor_delegate.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
 #include "chrome/browser/service_worker/service_worker_prewarm.h"
+#include "chrome/browser/service_worker/service_worker_synthetic_response.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
@@ -3678,36 +3679,8 @@ bool ChromeContentBrowserClient::IsServiceWorkerAutoPreloadAllowed(
 bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || profile->IsSystemProfile()) {
-    // Exclude if the profile is a system profile.
-    return false;
-  }
-
-  if (!prerender_utils::IsDefaultSearchEngine(profile, url)) {
-    return false;
-  }
-
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  CHECK(template_url_service);
-  const url::Origin dse_origin =
-      template_url_service->GetDefaultSearchProviderOrigin();
-
-  // The synthetic registration is created for `url`'s origin. Restrict it to
-  // the default search provider's own origin so that alternate URLs on other
-  // origins don't get a synthetic registration.
-  if (!dse_origin.IsSameOriginWith(url)) {
-    return false;
-  }
-
-  // Prewarm page can be treated as a DSE. As we don't want to enable synthetic
-  // response on the prewarm page, manually exclude it.
-  if (prerender_utils::IsPrewarmUrl(url, dse_origin)) {
-    return false;
-  }
-
-  return true;
+  return chrome_service_worker::IsServiceWorkerSyntheticResponseAllowed(
+      browser_context, url);
 }
 
 bool ChromeContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
