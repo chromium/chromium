@@ -246,12 +246,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return personalDataManager.isAutofillProfileManaged();
                     }
-
-                    @Override
-                    public boolean isPreferenceClickDisabled(Preference preference) {
-                        return personalDataManager.isAutofillProfileManaged()
-                                && !personalDataManager.isAutofillProfileEnabled();
-                    }
                 });
         // For testing.
         autofillSwitch.setKey(SAVE_AND_FILL_ADDRESSES);
