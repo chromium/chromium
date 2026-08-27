@@ -206,11 +206,6 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
                                   const GURL& icon_url,
                                   bool icon_url_changed,
                                   const gfx::Image& image) {
-  if (notification_icon_type != NON_TOUCH_LARGEST &&
-      notification_icon_type != TOUCH_LARGEST) {
-    return;
-  }
-
   SkBitmap favicon = image.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
   if (favicon.empty()) {
     return;

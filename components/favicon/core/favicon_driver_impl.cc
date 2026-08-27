@@ -13,20 +13,28 @@
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/favicon_url.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace favicon {
 namespace {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const bool kEnableTouchIcon = true;
+bool EnableTouchIcon() {
+#if BUILDFLAG(IS_ANDROID)
+  return !base::android::device_info::is_desktop();
+#elif BUILDFLAG(IS_IOS)
+  return true;
 #else
-const bool kEnableTouchIcon = false;
+  return false;
 #endif
+}
 
 }  // namespace
 
 FaviconDriverImpl::FaviconDriverImpl(CoreFaviconService* favicon_service)
     : favicon_service_(favicon_service) {
-  if (kEnableTouchIcon) {
+  if (EnableTouchIcon()) {
     handlers_.push_back(std::make_unique<FaviconHandler>(
         favicon_service_, this, FaviconDriverObserver::NON_TOUCH_LARGEST));
     handlers_.push_back(std::make_unique<FaviconHandler>(
