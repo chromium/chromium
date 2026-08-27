@@ -47,6 +47,15 @@ this directory.
 
 <!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationStreamStartTrigger) -->
 
+<!-- LINT.IfChange(DictationUrlCategory) -->
+
+<enum name="DictationUrlCategory">
+  <int value="0" label="Web"/>
+  <int value="1" label="Glic"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationUrlCategory) -->
+
 </enums>
 
 </histogram-configuration>

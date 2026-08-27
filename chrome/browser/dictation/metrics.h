@@ -15,6 +15,8 @@ inline constexpr std::string_view kIsEnabledOnProfileInitHistogramName =
     "VoiceTyping.IsEnabledOnProfileInit";
 inline constexpr std::string_view kSessionStartSourceHistogramName =
     "VoiceTyping.SessionStartSource";
+inline constexpr std::string_view kSessionUrlCategoryHistogramName =
+    "VoiceTyping.SessionUrlCategory";
 inline constexpr std::string_view kStreamStartTriggerHistogramName =
     "VoiceTyping.StreamStartTrigger";
 
@@ -40,6 +42,17 @@ enum class DictationSessionEntryPoint {
   kMaxValue = kHotkeyToggle,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationSessionEntryPoint)
+
+// Active UI surface or URL context where Voice Typing was engaged.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DictationUrlCategory)
+enum class DictationUrlCategory {
+  kWeb = 0,   // Standard Web page loaded in a browser tab.
+  kGlic = 1,  // Gemini in Chrome UI surface.
+  kMaxValue = kGlic,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationUrlCategory)
 
 // Triggers for starting a Dictation stream.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -77,6 +90,9 @@ void RecordDictationIsEnabledOnProfileInit(bool is_enabled);
 
 // Records the entry point for starting a Dictation session.
 void RecordDictationSessionStartSource(DictationSessionEntryPoint entry_point);
+
+// Records the active UI surface where a Dictation session was engaged.
+void RecordDictationSessionUrlCategory(DictationUrlCategory category);
 
 // Records the trigger for starting a Dictation stream.
 void RecordDictationStreamStartTrigger(DictationStreamStartTrigger trigger);

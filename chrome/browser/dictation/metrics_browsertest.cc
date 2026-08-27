@@ -86,4 +86,35 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSessionStartSourceHistogramName, 1);
 }
 
+// Note: DictationUrlCategory::kGlic is tested in
+// DictationGlicBrowserTest.RecordsSessionUrlCategoryGlic in
+// dictation_keyed_service_browsertest.cc.
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordSessionUrlCategoryWebOnSessionStart) {
+  base::HistogramTester histogram_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+
+  histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
+                                      DictationUrlCategory::kWeb, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordSessionUrlCategoryOnlyOnceForExistingSession) {
+  base::HistogramTester histogram_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+
+  // Trigger context menu again during existing session.
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(456));
+
+  // Category is only recorded once for the session.
+  histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
+                                      DictationUrlCategory::kWeb, 1);
+  histogram_tester.ExpectTotalCount(kSessionUrlCategoryHistogramName, 1);
+}
+
 }  // namespace dictation
