@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
@@ -25,7 +26,6 @@
 #include "chrome/grit/bookmarks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
@@ -150,9 +150,9 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
 
   source->AddBoolean("menuSimplification",
                      features::IsMenuSimplificationEnabled());
-  source->AddBoolean("isIsolatedModeEnabled",
-                     enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-                         *profile->GetPrefs(), chrome::GetChannel()));
+  source->AddBoolean(
+      "isIsolatedModeEnabled",
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile));
 
   source->AddResourcePath(
       "images/batch_upload_bookmarks_promo.svg",

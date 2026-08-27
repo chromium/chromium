@@ -48,6 +48,7 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -125,7 +126,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/handoff/handoff_manager.h"
 #include "components/handoff/handoff_utility.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -2173,8 +2173,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   }
 
   bool isolated_mode_enabled =
-      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-          *profile->GetPrefs(), chrome::GetChannel());
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile);
 
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
       policy::IncognitoModeAvailability::kDisabled) {
@@ -2250,8 +2249,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
     if (incognitoItem && isolatedItem) {
       bool isolated_mode_enabled =
-          profile && enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-                         *profile->GetPrefs(), chrome::GetChannel());
+          enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile);
 
       // Toggle visibility of Isolated Mode item based on policy.
       isolatedItem.hidden = !isolated_mode_enabled;

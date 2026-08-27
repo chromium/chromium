@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -35,7 +36,6 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -139,8 +139,7 @@ NTPResourceCache::WindowType NTPResourceCache::GetWindowType(Profile* profile) {
     return GUEST;
   }
   if (profile->IsIncognitoProfile() || profile->IsOffTheRecord()) {
-    if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-            *profile->GetPrefs(), chrome::GetChannel())) {
+    if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile)) {
       return ISOLATED;
     }
     if (profile->IsIncognitoProfile()) {

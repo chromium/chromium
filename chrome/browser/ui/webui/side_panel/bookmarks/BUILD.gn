@@ -44,6 +44,7 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
+    "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/extensions",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/page_image_service",

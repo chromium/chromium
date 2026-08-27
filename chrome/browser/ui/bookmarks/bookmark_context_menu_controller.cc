@@ -21,6 +21,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
@@ -45,7 +46,6 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/enterprise/isolated_mode/settings.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -245,8 +245,7 @@ size_t BookmarkContextMenuController::GetIndexForNewNodes() const {
 
 void BookmarkContextMenuController::BuildMenu() {
   bool isolated_mode_enabled =
-      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-          *profile_->GetPrefs(), chrome::GetChannel());
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_);
 
   if (selection_.size() == 1 && selection_[0]->is_url()) {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL, IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
@@ -708,8 +707,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       IncognitoModePrefs::GetAvailability(prefs);
 
   bool isolated_mode_enabled =
-      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
-          *prefs, chrome::GetChannel());
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_);
 
   switch (command_id) {
     case IDC_BOOKMARK_BAR_OPEN_INCOGNITO:
