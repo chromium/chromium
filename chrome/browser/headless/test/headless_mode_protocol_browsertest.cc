@@ -540,4 +540,8 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeProtocolBrowserTestWithDownload,
                               FileDownloadRepeated,
                               "shared/file-download-repeated.js")
 
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeProtocolBrowserTestWithDownload,
+                              FileDownloadSecondTab,
+                              "shared/file-download-second-tab.js")
+
 }  // namespace headless
