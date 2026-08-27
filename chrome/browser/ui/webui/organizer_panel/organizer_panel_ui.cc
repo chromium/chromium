@@ -22,11 +22,12 @@
 #include "ui/webui/webui_util.h"
 
 OrganizerPanelUIConfig::OrganizerPanelUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIOrganizerPanelHost) {}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIOrganizerPanelHost) {}
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : TopChromeWebUIController(web_ui,
+                               true /* Needed for webui browser tests */) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIOrganizerPanelHost);
@@ -34,6 +35,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
+      {"title", IDS_ORGANIZER_PANEL},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -51,3 +53,5 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
 }
 
 OrganizerPanelUI::~OrganizerPanelUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(OrganizerPanelUI)

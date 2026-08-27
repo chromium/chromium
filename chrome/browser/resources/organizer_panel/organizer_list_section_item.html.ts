@@ -7,6 +7,7 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 
 export function getHtml(this: OrganizerListSectionItemElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <!-- TODO(b/549796273): Use custom title and description element. -->
 <cr-url-list-item id="crUrlListItem" .title="${this.item.title}"
@@ -19,4 +20,5 @@ export function getHtml(this: OrganizerListSectionItemElement) {
   ` : ''}
 </cr-url-list-item>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

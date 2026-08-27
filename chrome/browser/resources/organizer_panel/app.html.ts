@@ -7,13 +7,14 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OrganizerPanelAppElement} from './app.js';
 
 export function getHtml(this: OrganizerPanelAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
-<cr-toolbar-search-field id="searchField"
-    label="$i18n{searchTabs}"
+<cr-toolbar-search-field id="searchField" label="$i18n{searchTabs}"
     clear-label="$i18n{clearSearch}">
   <div id="shortcut" slot="suffixElement">${this.shortcut_}</div>
 </cr-toolbar-search-field>
 <organizer-list id="list" .sectionDelegates="${this.sectionDelegates_}">
 </organizer-list>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {OrganizerListSectionDelegate} from 'chrome://organizer-panel.top-chrome/organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_list_section_item.js';
+import type {OrganizerListSectionDelegate, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 export class TestSectionDelegate implements OrganizerListSectionDelegate {
   private header_: string;

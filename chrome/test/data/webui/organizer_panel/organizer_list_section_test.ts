@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://organizer-panel.top-chrome/organizer_list_section.js';
+import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import type {OrganizerListSectionElement} from 'chrome://organizer-panel.top-chrome/organizer_list_section.js';
-import type {OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_list_section_item.js';
+import type {OrganizerListSectionElement, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -29,7 +28,7 @@ suite('OrganizerListSectionTest', () => {
     listSection.delegate = new TestSectionDelegate('Open Tabs', items);
     await microtasksFinished();
 
-    const header = listSection.shadowRoot.querySelector('#header');
+    const header = listSection.$.header;
     assertTrue(!!header);
     assertEquals('Open Tabs', header.textContent);
 

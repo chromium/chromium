@@ -2,13 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_linux || is_chromeos || is_win || is_mac)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 source_set("organizer_panel") {
   sources = [
     "organizer_panel_ui.cc",
     "organizer_panel_ui.h",
   ]
 
-  public_deps = [ "//content/public/browser" ]
+  public_deps = [
+    "//chrome/browser/ui/webui/top_chrome",
+    "//content/public/browser",
+  ]
 
   deps = [
     "//chrome/app:generated_resources",

@@ -10,6 +10,13 @@ import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 
+export interface OrganizerListSectionElement {
+  $: {
+    header: HTMLElement,
+    items: HTMLElement,
+  };
+}
+
 export class OrganizerListSectionElement extends CrLitElement {
   static get is() {
     return 'organizer-list-section';
