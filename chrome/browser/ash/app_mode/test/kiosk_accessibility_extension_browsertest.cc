@@ -122,19 +122,29 @@ class KioskAccessibilityExtensionTest
     ASSERT_TRUE(WaitKioskLaunched());
   }
 
+  void TearDownOnMainThread() override {
+    // Unload the ChromeVox extension so the browser doesn't try to respond to
+    // in-flight requests during test shutdown.
+    DisableChromeVoxExtension();
+  }
+
   void EnableChromeVoxExtension() {
     chromevox_test_utils_ = std::make_unique<ChromeVoxTestUtils>();
     chromevox_test_utils_->EnableChromeVox(/*check_for_speech=*/false);
   }
 
   bool DisableChromeVoxExtension(Profile& profile) {
-    chromevox_test_utils_.reset();
-    AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    DisableChromeVoxExtension();
     auto& registry = CHECK_DEREF(extensions::ExtensionRegistry::Get(&profile));
     return base::test::RunUntil([&registry] {
       return !registry.ready_extensions().Contains(
           extension_misc::kChromeVoxExtensionId);
     });
+  }
+
+  void DisableChromeVoxExtension() {
+    chromevox_test_utils_.reset();
+    AccessibilityManager::Get()->EnableSpokenFeedback(false);
   }
 
  private:
@@ -148,14 +158,8 @@ class KioskAccessibilityExtensionTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/550911616): Test is flaky on debug and ASAN/LSAN builds.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_KeepsStateOnExtensionRestart DISABLED_KeepsStateOnExtensionRestart
-#else
-#define MAYBE_KeepsStateOnExtensionRestart KeepsStateOnExtensionRestart
-#endif
 IN_PROC_BROWSER_TEST_P(KioskAccessibilityExtensionTest,
-                       MAYBE_KeepsStateOnExtensionRestart) {
+                       KeepsStateOnExtensionRestart) {
   auto& profile = CurrentProfile();
 
   EnableChromeVoxExtension();
