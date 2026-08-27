@@ -2045,70 +2045,6 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                /*additional_params=*/{}, is_voice_search);
 }
 
-void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
-    const std::string& query,
-    content::WebContents* web_contents_for_window) {
-  if (!IsContextualSearchTabSharingEligible()) {
-    return;
-  }
-  if (!contextual_tasks_context_service_) {
-    return;
-  }
-
-  std::vector<GURL> explicit_urls;
-  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
-    for (const contextual_search::FileInfo* file_info :
-         contextual_session_handle->GetController()->GetFileInfoList()) {
-      if (file_info->tab_url) {
-        explicit_urls.push_back(*(file_info->tab_url));
-      }
-    }
-  }
-
-  contextual_tasks::ConversationThread conversation_thread;
-  conversation_thread.query = query;
-  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
-    conversation_thread.previous_turns =
-        contextual_session_handle->previous_turns();
-    conversation_thread.shared_tab_titles =
-        contextual_session_handle->GetSubmittedContextTabTitles();
-  }
-
-  const bool is_eligible_for_promo =
-      !IsSmartTabSharingActive() &&
-      contextual_tasks::ContextualTasksContextService::
-          GetIsSmartTabSharingEnabled(profile_);
-  if (is_eligible_for_promo) {
-    contextual_tasks::TabSelectionOptions tab_selection_options;
-    tab_selection_options.tab_selection_timeout =
-        contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
-    if (auto* browser_window_interface =
-            webui::GetBrowserWindowInterface(web_contents_for_window)) {
-      tab_selection_options.browser_window_interface =
-          browser_window_interface->GetWeakPtr();
-    }
-    tab_selection_options.min_model_score = static_cast<float>(
-        contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
-    contextual_tasks_context_service_->GetRelevantTabsForConversationThread(
-        tab_selection_options, conversation_thread, explicit_urls,
-        base::BindOnce(
-            &ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else if (!contextual_tasks::ContextualTasksContextService::
-                 GetIsSmartTabSharingEnabled(profile_)) {
-    // Run dark experiment if smart tab sharing is not enabled and do not
-    // block.
-    contextual_tasks::TabSelectionOptions tab_selection_options;
-    if (auto* browser_window_interface =
-            webui::GetBrowserWindowInterface(web_contents_for_window)) {
-      tab_selection_options.browser_window_interface =
-          browser_window_interface->GetWeakPtr();
-    }
-    contextual_tasks_context_service_->GetRelevantTabsForConversationThread(
-        tab_selection_options, conversation_thread, explicit_urls,
-        base::DoNothing());
-  }
-}
 
 void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     const std::string& query_text,
@@ -2116,8 +2052,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
-  MaybeTriggerSmartTabSharingPromo(query_text, web_contents_);
-
   contextual_tasks::LogThreadWithTabsSubmitted(IsSmartTabSharingActive());
   if (IsSmartTabSharingActive()) {
     auto* session_handle = GetContextualSessionHandle();
@@ -2152,24 +2086,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
                          std::move(additional_params), is_voice_search);
 }
 
-void ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo(
-    std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
-  if (relevant_tabs.empty()) {
-    return;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* web_ui_interface = GetContextualTasksUiInterface()) {
-    if (web_ui_interface->GetPageRemote().is_bound()) {
-      if (feature_engagement::NonIphPromo::RequestPermissionToShow(
-              profile_, feature_engagement::kIPHSmartTabSharingTryItFeature)) {
-        contextual_tasks::LogPromoInteraction(
-            contextual_tasks::SmartTabSharingPromoAction::kPromoShown);
-        web_ui_interface->GetPageRemote()->ShowSmartTabSharingTryItIph();
-      }
-    }
-  }
-#endif
-}
 
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,

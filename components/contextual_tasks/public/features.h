@@ -390,8 +390,6 @@ extern bool GetIsContextualTasksSuggestionsEnabled();
 // Returns the timeout for smart tab sharing tab selection.
 extern base::TimeDelta GetSmartTabSharingTabSelectionTimeout();
 
-// Returns the score threshold required to display the smart tab sharing promo.
-extern double GetSmartTabSharingPromoScoreThreshold();
 
 // Enables tab auto-chip for contextual tasks. When disabled, no suggested
 // chips will be shown in the composebox automatically.

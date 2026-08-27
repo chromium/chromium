@@ -552,15 +552,6 @@ class ContextualSearchboxHandler
   // Gets the `ActiveTaskContextProvider` to update tab underlines.
   contextual_tasks::ActiveTaskContextProvider* GetActiveTaskContextProvider();
 
-  // Checks eligibility and triggers the smart tab sharing IPH promo logic.
-  void MaybeTriggerSmartTabSharingPromo(
-      const std::string& query,
-      content::WebContents* web_contents_for_window);
-
-  // Callback invoked when relevant tabs are determined for the query to inform
-  // if the smart tab sharing promo should be shown to the user.
-  virtual void OnRelevantTabsReceivedToMaybeShowPromo(
-      std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
   // Cleans up the drive picker controller and result handler receiver.
   // Declared virtual to allow subclasses (such as OmniboxEverywhereHandler) to

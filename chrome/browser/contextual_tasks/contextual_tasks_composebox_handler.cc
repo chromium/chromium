@@ -414,9 +414,6 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
 
-  MaybeTriggerSmartTabSharingPromo(query,
-                                   web_ui_interface_->GetWebUIWebContents());
-
   bool is_only_visual_selection =
       has_visual_selection && !IsAnyContextUploading() && session_handle &&
       session_handle->GetUploadedContextTokens().empty();

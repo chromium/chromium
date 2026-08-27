@@ -1717,16 +1717,7 @@ TEST_F(SmartTabSharingTest, SubmitQuery_SmartTabSharingOverrideDisabled) {
   EXPECT_CALL(*mock_service_,
               GetRelevantTabsForConversationThread(testing::_, testing::_,
                                                    testing::_, testing::_))
-      .Times(1)
-      .WillOnce([](const auto& options, const auto& conversation_thread,
-                   const auto& explicit_urls, auto callback) {
-        // The min model score should be set to the promo value.
-        ASSERT_EQ(
-            options.min_model_score.value_or(-1.0f),
-            static_cast<float>(
-                contextual_tasks::GetSmartTabSharingPromoScoreThreshold()));
-        std::move(callback).Run({});
-      });
+      .Times(0);
 
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectUniqueSample(
@@ -1889,10 +1880,7 @@ TEST_F(SmartTabSharingTest, SubmitQuery_PersistsSmartTabSharingInactive) {
   EXPECT_CALL(*mock_service_,
               GetRelevantTabsForConversationThread(testing::_, testing::_,
                                                    testing::_, testing::_))
-      .Times(1)
-      .WillOnce([](const auto& options, const auto& conversation_thread,
-                   const auto& explicit_urls,
-                   auto callback) { std::move(callback).Run({}); });
+      .Times(0);
 
   SubmitQueryAndWaitForNavigation();
 
@@ -1948,39 +1936,6 @@ TEST_F(SmartTabSharingTest, LogOptOutMidThread) {
       "ContextualSearch.SmartTabSharing.OptOutMidThread", true, 1);
 }
 
-TEST_F(SmartTabSharingTest, LogPromoShownMetrics) {
-  base::HistogramTester histogram_tester;
-
-  // Ensure STS is OFF so we are eligible for promo.
-  handler().SetSmartTabSharingActive(false);
-
-  // Mock tracker to allow showing the promo.
-  EXPECT_CALL(*mock_tracker(),
-              ShouldTriggerHelpUI(testing::Ref(
-                  feature_engagement::kIPHSmartTabSharingTryItFeature)))
-      .Times(1)
-      .WillOnce(testing::Return(true));
-
-  // Mock service to return a relevant tab.
-  EXPECT_CALL(*mock_service_,
-              GetRelevantTabsForConversationThread(testing::_, testing::_,
-                                                   testing::_, testing::_))
-      .Times(1)
-      .WillOnce([&](const auto& options, const auto& conversation_thread,
-                    const auto& explicit_urls, auto callback) {
-        std::vector<base::WeakPtr<content::WebContents>> tabs;
-        tabs.push_back(web_contents()->GetWeakPtr());
-        std::move(callback).Run(tabs);
-      });
-
-  // Submit query to trigger the flow.
-  SubmitQueryAndWaitForNavigation();
-
-  // Verify PromoInteraction(kPromoShown) is logged.
-  histogram_tester.ExpectUniqueSample(
-      "ContextualSearch.SmartTabSharing.PromoInteraction",
-      contextual_tasks::SmartTabSharingPromoAction::kPromoShown, 1);
-}
 
 TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
   omnibox::InputState received_state_1;
