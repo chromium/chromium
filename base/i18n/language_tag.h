@@ -104,18 +104,39 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // Creates a new `LanguageTag` containing only the language subtag.
   LanguageTag WithLanguageSubtagOnly() const;
 
+  // Returns the script subtag in the language tag, if present.
+  // Examples:
+  // - "zh-Hant-TW" -> "Hant"
+  // - "zh-TW" -> ""
+  // - "sr-Latn" -> "Latn"
+  // - "zh-Hans" -> "Hans"
+  constexpr std::string_view script_subtag() const LIFETIME_BOUND {
+    return i18n_internal::ParseBcp47Tag(tag_string())
+        .value_or(i18n_internal::ParsedBcp47Tag())
+        .script;
+  }
   // Returns the region subtag in the language tag if present.
   // Examples:
   // - "en-US" -> "US"
   // - "zh-Hant-TW" -> "TW"
   // - "en" -> ""
   // - "sr-Latn" -> ""
-  // Note that the region subtag is not always present, if it is not set, an
-  // empty string is returned.
   constexpr std::string_view region_subtag() const LIFETIME_BOUND {
     return i18n_internal::ParseBcp47Tag(tag_string())
         .value_or(i18n_internal::ParsedBcp47Tag())
         .region;
+  }
+
+  // Returns the variant subtags in the language tag if present.
+  // Examples:
+  // - "en-US" -> []
+  // - "en-GB-oxendict" -> ["oxendict"]
+  // - "sl-IT-rozaj-biske" -> ["biske", "rozaj"]
+  constexpr std::vector<std::string_view> variant_subtags() const
+      LIFETIME_BOUND {
+    return i18n_internal::ParseBcp47Tag(tag_string())
+        .value_or(i18n_internal::ParsedBcp47Tag())
+        .variants;
   }
 
   // Returns the parent language tag of this language tag by stripping the most

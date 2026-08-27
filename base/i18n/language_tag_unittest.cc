@@ -635,6 +635,69 @@ TEST(LanguageTagTest, GetRegionSubtag) {
   EXPECT_TRUE(lt_script_ext_no_region.region_subtag().empty());
 }
 
+TEST(LanguageTagTest, GetScriptSubtag) {
+  // Simple case with script.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_zh_hant_tw,
+      LanguageTagConverter::GetInstance().FromString("zh-Hant-TW"));
+  EXPECT_EQ(lt_zh_hant_tw.script_subtag(), "Hant");
+
+  // Script but no region.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_sr_latn,
+      LanguageTagConverter::GetInstance().FromString("sr-Latn"));
+  EXPECT_EQ(lt_sr_latn.script_subtag(), "Latn");
+
+  // No script.
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt_en_us,
+                       LanguageTagConverter::GetInstance().FromString("en-US"));
+  EXPECT_TRUE(lt_en_us.script_subtag().empty());
+
+  // Complex case with extensions and script.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_complex,
+      LanguageTagConverter::GetInstance().FromString("sr-Latn-u-ca-gregory"));
+  EXPECT_EQ(lt_complex.script_subtag(), "Latn");
+
+  // Undefined language with script.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_und_latn,
+      LanguageTagConverter::GetInstance().FromString("und-Latn"));
+  EXPECT_EQ(lt_und_latn.script_subtag(), "Latn");
+}
+
+TEST(LanguageTagTest, GetVariantSubtags) {
+  // No variants.
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt_en_us,
+                       LanguageTagConverter::GetInstance().FromString("en-US"));
+  EXPECT_TRUE(lt_en_us.variant_subtags().empty());
+
+  // Single variant.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_oxendict,
+      LanguageTagConverter::GetInstance().FromString("en-GB-oxendict"));
+  EXPECT_THAT(lt_oxendict.variant_subtags(), ElementsAre("oxendict"));
+
+  // Numeric variant.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_de_1996,
+      LanguageTagConverter::GetInstance().FromString("de-1996"));
+  EXPECT_THAT(lt_de_1996.variant_subtags(), ElementsAre("1996"));
+
+  // Multiple variants.
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt_multiple,
+      LanguageTagConverter::GetInstance().FromString("sl-IT-rozaj-biske"));
+  // Variants are sorted.
+  EXPECT_THAT(lt_multiple.variant_subtags(), ElementsAre("biske", "rozaj"));
+
+  // Complex tag with variants and extension.
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt_complex,
+                       LanguageTagConverter::GetInstance().FromString(
+                           "en-GB-oxendict-u-ca-gregory"));
+  EXPECT_THAT(lt_complex.variant_subtags(), ElementsAre("oxendict"));
+}
+
 TEST(LanguageTagTest, GetParentEnUs) {
   ASSERT_OK_AND_ASSIGN(LanguageTag lt,
                        LanguageTagConverter::GetInstance().FromString("en-US"));

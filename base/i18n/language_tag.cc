@@ -103,20 +103,8 @@ LanguageTag LanguageTag::WithExtensionStringInternal(
     return *this;
   }
 
-  for (std::pair<char, std::vector<std::string_view>>& extension :
-       parsed->extensions) {
-    if (extension.first == key) {
-      extension.second = base::SplitStringPiece(
-          subtags, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
-    }
-  }
-
-  parsed->extensions.emplace_back(
-      key, base::SplitStringPiece(subtags, "-", base::KEEP_WHITESPACE,
-                                  base::SPLIT_WANT_ALL));
-  // Canonicalization applied to have all the extensions sorted by singleton.
-  std::ranges::sort(parsed->extensions);
+  parsed->extensions[key] = base::SplitStringPiece(
+      subtags, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
 }
 
