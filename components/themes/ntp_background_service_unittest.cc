@@ -258,6 +258,72 @@ TEST_F(NtpBackgroundServiceTest, GoodCollectionsResponse) {
   EXPECT_EQ(service()->collection_error_info().error_type, ErrorType::NONE);
 }
 
+TEST_F(NtpBackgroundServiceTest, CollectionsResponseRejectsNonHttpPreviewUrl) {
+  ntp::background::GetCollectionsResponse response;
+  for (const std::string& url :
+       {"data:image/png;base64,AAAA=", "chrome://favicon2/?pageUrl=x",
+        "file:///etc/passwd", "javascript:alert(1)"}) {
+    ntp::background::Collection* collection = response.add_collections();
+    collection->set_collection_id("id");
+    collection->set_collection_name("name");
+    collection->add_preview()->set_image_url(url);
+  }
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetCollectionsLoadURLForTesting(),
+                        response_string);
+
+  EXPECT_CALL(observer_, OnCollectionInfoAvailable).Times(1);
+  service()->FetchCollectionInfo();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(4u, service()->collection_info().size());
+  for (const auto& info : service()->collection_info()) {
+    EXPECT_TRUE(info.preview_image_url.is_empty())
+        << info.preview_image_url.possibly_invalid_spec();
+  }
+}
+
+TEST_F(NtpBackgroundServiceTest,
+       CollectionImagesResponseRejectsNonHttpImageUrl) {
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url("data:image/png;base64,AAAA=");
+  ntp::background::GetImagesInCollectionResponse response;
+  *response.add_images() = image;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(1);
+  service()->FetchCollectionImageInfo("shapes");
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(1u, service()->collection_images().size());
+  EXPECT_TRUE(service()->collection_images().at(0).image_url.is_empty());
+  EXPECT_TRUE(
+      service()->collection_images().at(0).thumbnail_image_url.is_empty());
+}
+
+TEST_F(NtpBackgroundServiceTest, AddOptionsToImageURLRequiresHttpScheme) {
+  EXPECT_EQ(GURL("https://wallpapers.co/img=w100"),
+            AddOptionsToImageURL("https://wallpapers.co/img", "=w100"));
+  EXPECT_EQ(GURL("http://wallpapers.co/img=w100"),
+            AddOptionsToImageURL("http://wallpapers.co/img", "=w100"));
+  EXPECT_EQ(GURL("https://wallpapers.co/img=s"),
+            AddOptionsToImageURL("https://wallpapers.co/img=s", "=w100"));
+
+  EXPECT_TRUE(AddOptionsToImageURL("", "=w100").is_empty());
+  EXPECT_TRUE(AddOptionsToImageURL("not a url", "=w100").is_empty());
+  EXPECT_TRUE(
+      AddOptionsToImageURL("data:image/png;base64,AAAA=", "=w100").is_empty());
+  EXPECT_TRUE(AddOptionsToImageURL("chrome://favicon2/?pageUrl=x", "=w100")
+                  .is_empty());
+  EXPECT_TRUE(AddOptionsToImageURL("file:///etc/passwd", "=w100").is_empty());
+}
+
 TEST_F(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasNoReplacement) {
   ntp::background::Collection collection;
   collection.set_collection_id("shapes");

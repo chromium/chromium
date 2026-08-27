@@ -56,9 +56,13 @@ std::string GetImageOptions() {
 
 GURL AddOptionsToImageURL(const std::string& image_url,
                           const std::string& image_options) {
-  return GURL(image_url + ((image_url.find('=') == std::string::npos)
-                               ? image_options
-                               : std::string("")));
+  GURL url(image_url + ((image_url.find('=') == std::string::npos)
+                            ? image_options
+                            : std::string("")));
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return GURL();
+  }
+  return url;
 }
 
 GURL RemoveOptionsFromImageURL(const std::string& image_url) {

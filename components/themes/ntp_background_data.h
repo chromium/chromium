@@ -41,6 +41,7 @@ std::string GetImageOptions();
 
 // Adds options for resizing an image to its url.
 // Without options added to the image, it is 512x512.
+// Returns an empty GURL if `image_url` is not a valid HTTP(S) URL.
 // TODO(crbug.com/41408116): Request resolution from service, instead of
 // setting it here.
 GURL AddOptionsToImageURL(const std::string& image_url,
