@@ -55,22 +55,11 @@ public class VariationsTest extends AwParameterizedTest {
                 };
     }
 
-    private void createAndLoadSeedFile(FeatureAssociation features) throws FileNotFoundException {
+    private void createAndLoadSeedFile(VariationsSeed seed) throws FileNotFoundException {
         // Disable seed verification so we don't reject the fake seed created below.
         VariationsTestUtils.disableSignatureVerificationForTesting();
 
-        // Write a fake seed to disk that will enable a Feature.
-        VariationsSeed seed =
-                VariationsSeed.newBuilder()
-                        .addStudy(
-                                Study.newBuilder()
-                                        .setName("TestStudy")
-                                        .addExperiment(
-                                                Experiment.newBuilder()
-                                                        .setName("default")
-                                                        .setProbabilityWeight(100)
-                                                        .setFeatureAssociation(features)))
-                        .build();
+        // Write a fake seed to disk.
         SeedInfo seedInfo = new SeedInfo();
         seedInfo.signature = "";
         seedInfo.country = "US";
@@ -101,12 +90,23 @@ public class VariationsTest extends AwParameterizedTest {
     @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testFeatureEnabled() throws Exception {
         try {
-            FeatureAssociation features =
-                    FeatureAssociation.newBuilder()
-                            .addEnableFeature(AwFeatures.WEBVIEW_TEST_FEATURE)
+            Experiment launchGroup =
+                    Experiment.newBuilder()
+                            .setName("Launched")
+                            .setProbabilityWeight(100)
+                            .setFeatureAssociation(
+                                    FeatureAssociation.newBuilder()
+                                            .addEnableFeature(AwFeatures.WEBVIEW_TEST_FEATURE))
+                            .build();
+            VariationsSeed seed =
+                    VariationsSeed.newBuilder()
+                            .addStudy(
+                                    Study.newBuilder()
+                                            .setName("TestStudy")
+                                            .addExperiment(launchGroup))
                             .build();
             WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
-            createAndLoadSeedFile(features);
+            createAndLoadSeedFile(seed);
 
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
@@ -131,10 +131,23 @@ public class VariationsTest extends AwParameterizedTest {
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";
         try {
+            Experiment defaultGroup =
+                    Experiment.newBuilder()
+                            .setName("default")
+                            .setProbabilityWeight(100)
+                            .setFeatureAssociation(FeatureAssociation.getDefaultInstance())
+                            .build();
+            VariationsSeed seed =
+                    VariationsSeed.newBuilder()
+                            .addStudy(
+                                    Study.newBuilder()
+                                            .setName("TestStudy")
+                                            .addExperiment(defaultGroup))
+                            .build();
             HistogramWatcher histogramExpectation =
                     HistogramWatcher.newSingleRecordWatcher(seedFreshnessHistogramName, 0);
             WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
-            createAndLoadSeedFile(FeatureAssociation.getDefaultInstance());
+            createAndLoadSeedFile(seed);
 
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
