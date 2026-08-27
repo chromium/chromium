@@ -1240,6 +1240,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // the tab strip.
         if (isOnTabStrip(event)) return false;
 
+        // Don't consume the event if it is below the toolbar container and was not handled by any
+        // child (such as the tablet find toolbar).
+        if (isBelowToolbarContainer(event)) return false;
+
         // If we have ACTION_DOWN in this context, that means either no child consumed the event or
         // this class is the top UI at the event position. Then, we don't need to feed the event to
         // mGestureDetector here because the event is already once fed in onInterceptTouchEvent().
@@ -1258,6 +1262,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // the event here.
         if (!isToolbarContainerFullyVisible()) return true;
         if (isOnTabStrip(event)) return true;
+        if (isBelowToolbarContainer(event)) return false;
 
         if (mSwipeGestureListener != null && mSwipeGestureListener.onTouchEvent(event)) return true;
 
@@ -1273,6 +1278,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // Otherwise, permit bottom toolbar to handle swipe up gesture to open tab switcher.
         int tabStripHeight = mToolbar.getTabStripHeight();
         return tabStripHeight != 0 && e.getY() <= tabStripHeight;
+    }
+
+    private boolean isBelowToolbarContainer(MotionEvent e) {
+        return mToolbarContainer != null && e.getY() > mToolbarContainer.getBottom();
     }
 
     /**

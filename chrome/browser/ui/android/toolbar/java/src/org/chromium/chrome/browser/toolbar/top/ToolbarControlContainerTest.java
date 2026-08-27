@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarVi
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.TestActivity;
@@ -1100,6 +1101,45 @@ public class ToolbarControlContainerTest {
 
         doReturn(true).when(mTouchEventObserver).onInterceptTouchEvent(clickEvent);
         assertTrue(controlContainer.onInterceptTouchEvent(clickEvent));
+    }
+
+    @Test
+    public void testTouchEvent_BelowToolbarContainer() {
+        ToolbarControlContainer controlContainer =
+                (ToolbarControlContainer)
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
+        controlContainer.initWithToolbar(R.layout.toolbar_phone, R.dimen.toolbar_height_no_shadow);
+        controlContainer.setPostInitializationDependencies(
+                mToolbar,
+                mToolbarView,
+                false,
+                mConstraintsSupplier,
+                mTabSupplier,
+                mCompositorInMotionSupplier,
+                mBrowserStateBrowserControlsVisibilityDelegate,
+                mLayoutStateProviderSupplier,
+                mFullscreenManager,
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider,
+                null,
+                mTopControlsStacker);
+        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
+                controlContainer.findViewById(R.id.toolbar_container);
+        toolbarContainer.setVisibility(View.VISIBLE);
+        toolbarContainer.layout(0, 0, 1000, 100);
+        controlContainer.setSwipeHandler(mock(SwipeHandler.class));
+
+        // Click within the toolbar container.
+        MotionEvent toolbarClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+        assertFalse(controlContainer.onInterceptTouchEvent(toolbarClickEvent));
+        assertTrue(controlContainer.onTouchEvent(toolbarClickEvent));
+
+        // Click below the toolbar container (e.g. on bookmark bar or web contents).
+        MotionEvent belowToolbarClickEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 150, 0);
+        assertFalse(controlContainer.onInterceptTouchEvent(belowToolbarClickEvent));
+        assertFalse(controlContainer.onTouchEvent(belowToolbarClickEvent));
     }
 
     @Test

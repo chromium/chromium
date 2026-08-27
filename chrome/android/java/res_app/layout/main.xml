@@ -143,11 +143,6 @@ found in the LICENSE file.
             android:layout="@layout/bottom_control_container" />
 
         <ViewStub
-            android:id="@+id/control_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ViewStub
             android:inflatedId="@+id/toolbar_progress_bar_container"
             android:id="@+id/progress_bar_stub"
             android:layout="@layout/toolbar_progress_bar"
@@ -156,6 +151,11 @@ found in the LICENSE file.
             android:layout_gravity="center"
             app:layout_anchor="@id/control_container"
             app:layout_anchorGravity="bottom"/>
+
+        <ViewStub
+            android:id="@+id/control_container_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <ViewStub
             android:id="@+id/bottom_app_bar_container_stub"
