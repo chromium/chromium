@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -14,14 +16,21 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
+#include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 
 namespace gcm {
 
 namespace {
+
+// Maximum number of unhandled buffered messages allowed per app_id.
+constexpr size_t kMaxBufferedMessagesPerApp = 5;
+// Maximum number of distinct app_ids allowed in the buffering map.
+constexpr size_t kMaxBufferedApps = 50;
 
 // Copied from
 // https://source.chromium.org/chromium/chromium/src/+/main:components/invalidation/invalidation_listener.h;l=76;drc=16479132e8be0c0b5740b34ddfd62817ec490945.
@@ -30,20 +39,6 @@ constexpr char kFcmInvalidationsApplicationName[] =
 // Copied from components/sync/invalidations/sync_invalidations_service_impl.cc.
 constexpr char kSyncInvalidationsApplicationName[] =
     "com.google.chrome.sync.invalidations";
-
-void LogDeliveredToAppHandler(const std::string& app_id, bool has_app_handler) {
-  base::UmaHistogramBoolean("GCM.DeliveredToAppHandler", has_app_handler);
-
-  // Record for sync-related app handlers, used to estimate missed sync
-  // invalidations.
-  if (app_id == kSyncInvalidationsApplicationName) {
-    base::UmaHistogramBoolean("GCM.DeliveredToAppHandler.SyncInvalidations",
-                              has_app_handler);
-  } else if (app_id.starts_with(kFcmInvalidationsApplicationName)) {
-    base::UmaHistogramBoolean("GCM.DeliveredToAppHandler.FcmInvalidations",
-                              has_app_handler);
-  }
-}
 
 }  // namespace
 
@@ -245,6 +240,7 @@ void GCMDriver::Shutdown() {
     iter->second->ShutdownHandler();
   }
   app_handlers_.clear();
+  ClearBufferedMessages();
 }
 
 void GCMDriver::AddAppHandler(const std::string& app_id,
@@ -254,6 +250,10 @@ void GCMDriver::AddAppHandler(const std::string& app_id,
   DCHECK_EQ(app_handlers_.count(app_id), 0u);
   app_handlers_[app_id] = handler;
   DVLOG(1) << "App handler added for: " << app_id;
+
+  if (base::FeatureList::IsEnabled(features::kGCMMessageBuffering)) {
+    DeliverBufferedMessagesForHandler(handler);
+  }
 }
 
 void GCMDriver::RemoveAppHandler(const std::string& app_id) {
@@ -310,12 +310,15 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
     case GCMDecryptionResult::DECRYPTED_DRAFT_03:
     case GCMDecryptionResult::DECRYPTED_DRAFT_08: {
       GCMAppHandler* handler = GetAppHandler(app_id);
-      LogDeliveredToAppHandler(app_id, !!handler);
 
-      // TODO(crbug.com/40888673): store incoming messages in memory while
-      // AppHandler is not registered.
-      if (handler)
-        handler->OnMessage(app_id, message);
+      if (handler) {
+        LogDeliveredToAppHandler(app_id, /*has_app_handler=*/true);
+        handler->OnMessage(app_id, std::move(message));
+      } else if (base::FeatureList::IsEnabled(features::kGCMMessageBuffering)) {
+        BufferUnhandledMessage(app_id, std::move(message));
+      } else {
+        LogDeliveredToAppHandler(app_id, /*has_app_handler=*/false);
+      }
 
       // TODO(peter/harkness): Surface unavailable app handlers on
       // chrome://gcm-internals and send a delivery receipt.
@@ -344,6 +347,28 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
   }
 
   NOTREACHED();
+}
+
+void GCMDriver::BufferUnhandledMessage(const std::string& app_id,
+                                       IncomingMessage message) {
+  if (buffered_messages_.size() >= kMaxBufferedApps &&
+      !buffered_messages_.contains(app_id)) {
+    PruneExpiredBufferedMessages();
+  }
+  auto it = buffered_messages_.find(app_id);
+  if (it != buffered_messages_.end()) {
+    base::circular_deque<BufferedMessage>& queue = it->second;
+    if (queue.size() >= kMaxBufferedMessagesPerApp) {
+      queue.pop_front();
+      LogDeliveredToAppHandler(app_id, /*has_app_handler=*/false);
+    }
+    queue.emplace_back(std::move(message), base::TimeTicks::Now());
+  } else if (buffered_messages_.size() < kMaxBufferedApps) {
+    buffered_messages_[app_id].emplace_back(std::move(message),
+                                            base::TimeTicks::Now());
+  } else {
+    LogDeliveredToAppHandler(app_id, /*has_app_handler=*/false);
+  }
 }
 
 void GCMDriver::RegisterAfterUnregister(
@@ -398,6 +423,82 @@ void GCMDriver::OnMessageDecrypted(DecryptMessageCallback callback,
   UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.DecryptMessageResult", result,
                             GCMDecryptionResult::ENUM_SIZE);
   std::move(callback).Run(result, std::move(message.raw_data));
+}
+
+void GCMDriver::LogMessagesDropped(const std::string& app_id, size_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    LogDeliveredToAppHandler(app_id, /*has_app_handler=*/false);
+  }
+}
+
+void GCMDriver::ClearBufferedMessages() {
+  for (const auto& [app_id, queue] : buffered_messages_) {
+    LogMessagesDropped(app_id, queue.size());
+  }
+  buffered_messages_.clear();
+}
+
+void GCMDriver::DeliverBufferedMessagesForHandler(GCMAppHandler* handler) {
+  PruneExpiredBufferedMessages();
+  for (auto it = buffered_messages_.begin(); it != buffered_messages_.end();) {
+    if (GetAppHandler(it->first) == handler) {
+      std::string app_id = it->first;
+      base::circular_deque<BufferedMessage> messages = std::move(it->second);
+      it = buffered_messages_.erase(it);
+      for (BufferedMessage& buffered_msg : messages) {
+        // Guard against the handler getting unregistered or deleted during a
+        // previous `OnMessage()` call.
+        CHECK_EQ(GetAppHandler(app_id), handler);
+        LogDeliveredToAppHandler(app_id, /*has_app_handler=*/true);
+        handler->OnMessage(app_id, std::move(buffered_msg.message));
+      }
+    } else {
+      ++it;
+    }
+  }
+}
+
+void GCMDriver::PruneExpiredBufferedMessages() {
+  CHECK(base::FeatureList::IsEnabled(features::kGCMMessageBuffering));
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta ttl = features::GetGCMMessageBufferingTTL();
+  for (auto& [app_id, queue] : buffered_messages_) {
+    size_t size_before = queue.size();
+    base::EraseIf(queue, [now, ttl](const BufferedMessage& msg) {
+      return now - msg.receive_time >= ttl;
+    });
+    LogMessagesDropped(app_id, size_before - queue.size());
+  }
+  base::EraseIf(buffered_messages_,
+                [](const auto& entry) { return entry.second.empty(); });
+}
+
+void GCMDriver::DispatchMessageForTesting(  // IN-TEST
+    const std::string& app_id,
+    const IncomingMessage& message) {
+  DispatchMessage(app_id, message);
+}
+
+size_t GCMDriver::GetBufferedMessagesCountForTesting(  // IN-TEST
+    const std::string& app_id) const {
+  auto it = buffered_messages_.find(app_id);
+  return it != buffered_messages_.end() ? it->second.size() : 0u;
+}
+
+// static
+void GCMDriver::LogDeliveredToAppHandler(const std::string& app_id,
+                                         bool has_app_handler) {
+  base::UmaHistogramBoolean("GCM.DeliveredToAppHandler", has_app_handler);
+
+  // Record for sync-related app handlers, used to estimate missed sync
+  // invalidations.
+  if (app_id == kSyncInvalidationsApplicationName) {
+    base::UmaHistogramBoolean("GCM.DeliveredToAppHandler.SyncInvalidations",
+                              has_app_handler);
+  } else if (app_id.starts_with(kFcmInvalidationsApplicationName)) {
+    base::UmaHistogramBoolean("GCM.DeliveredToAppHandler.FcmInvalidations",
+                              has_app_handler);
+  }
 }
 
 }  // namespace gcm

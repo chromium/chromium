@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 
 namespace gcm {
@@ -20,6 +21,12 @@ void FakeGCMAppHandler::WaitForNotification() {
   run_loop_.reset();
 }
 
+const IncomingMessage& FakeGCMAppHandler::message() const {
+  static const base::NoDestructor<IncomingMessage> kEmptyMessage;
+  return received_messages_.empty() ? *kEmptyMessage
+                                    : received_messages_.back().message;
+}
+
 void FakeGCMAppHandler::ShutdownHandler() {}
 
 void FakeGCMAppHandler::OnStoreReset() {}
@@ -29,7 +36,7 @@ void FakeGCMAppHandler::OnMessage(const std::string& app_id,
   ClearResults();
   received_event_ = MESSAGE_EVENT;
   app_id_ = app_id;
-  message_ = message;
+  received_messages_.push_back({app_id, message});
   if (run_loop_)
     run_loop_->Quit();
 }
@@ -78,7 +85,6 @@ void FakeGCMAppHandler::ClearResults() {
   received_event_ = NO_EVENT;
   app_id_.clear();
   acked_message_id_.clear();
-  message_ = IncomingMessage();
   send_error_details_ = GCMClient::SendErrorDetails();
 }
 
