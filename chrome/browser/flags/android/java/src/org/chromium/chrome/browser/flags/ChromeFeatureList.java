@@ -875,6 +875,7 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID =
             "YourSavedInfoSettingsPageAndroid";
+
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
 

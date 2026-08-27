@@ -22,6 +22,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
@@ -352,6 +354,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
     public void testDownloadPage() throws Exception {
         final OfflinePageOrigin origin =
                 new OfflinePageOrigin("abc.xyz", new String[] {"deadbeef"});
