@@ -220,7 +220,7 @@ ui::ImageModel GlicCueTarget::GetOmniboxChipIcon() const {
 #else
   return ui::ImageModel::FromVectorIcon(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-      ui::kColorSysOnSurface, 18);
+      ui::kColorSysOnSurface, 16);
 #endif
 }
 

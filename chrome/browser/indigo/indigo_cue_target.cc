@@ -132,7 +132,7 @@ ui::ImageModel IndigoCueTarget::GetAnchoredMessageIcon() const {
 ui::ImageModel IndigoCueTarget::GetOmniboxChipIcon() const {
   return ui::ImageModel::FromVectorIcon(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-      ui::kColorSysOnSurface);
+      ui::kColorSysOnSurface, 16);
 }
 
 contextual_cueing::CueActionData IndigoCueTarget::CueActionDataFromResponse(
