@@ -4,6 +4,7 @@
 
 import './omnibox.js';
 import './composebox.js';
+import './fre_modal.js';
 import '/strings.m.js';
 import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
@@ -83,6 +84,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       callbackRouter_: {type: Object},
       mostVisitedEnabled_: {type: Boolean},
       showShortcuts_: {type: Boolean},
+      showFreModal_: {type: Boolean},
     };
   }
 
@@ -115,7 +117,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
   protected accessor showShortcuts_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereShowShortcuts');
-
+  protected accessor showFreModal_: boolean =
+      loadTimeData.getBoolean('initialShowFre');
   private eventTracker_ = new EventTracker();
   private addFileContextListenerId_: number|null = null;
   // TODO(crbug.com/552539106): Refactor client-side file context buffering once
@@ -133,6 +136,10 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.addFileContextListenerId_ =
         this.callbackRouter_.addFileContext.addListener(
             this.onAddFileContext_.bind(this));
+
+    this.callbackRouter_.setShowFre.addListener((show: boolean) => {
+      this.showFreModal_ = show;
+    });
   }
 
   override disconnectedCallback() {
@@ -143,6 +150,19 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.callbackRouter_.removeListener(this.addFileContextListenerId_);
       this.addFileContextListenerId_ = null;
     }
+  }
+
+  protected onFreClose_() {
+    this.showFreModal_ = false;
+    SearchboxBrowserProxy.getInstance().handler.dismissFre();
+  }
+
+  protected onFreAcceptHotkey_() {
+    this.onFreClose_();
+  }
+
+  protected onFreOpenSettings_() {
+    SearchboxBrowserProxy.getInstance().handler.openHotkeySettings();
   }
 
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {

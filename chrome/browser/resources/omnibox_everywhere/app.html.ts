@@ -35,11 +35,21 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
                                    this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-omnibox>
   `}
-  ${this.mostVisitedEnabled_ && this.showShortcuts_ ? html`
+  ${
+      this.mostVisitedEnabled_ && this.showShortcuts_ &&
+      !this.showFreModal_ ? html`
     <div id="mostVisitedContainer">
       <cr-most-visited id="mostVisited" single-row non-editable hide-title
           max-tiles="7"></cr-most-visited>
     </div>
+  ` : ''}
+  ${
+      this.showFreModal_ ? html`
+    <fre-modal
+        @close="${this.onFreClose_}"
+        @accept-hotkey="${this.onFreAcceptHotkey_}"
+        @open-settings="${this.onFreOpenSettings_}">
+    </fre-modal>
   ` : ''}
 </div>
 <div id="dialogAnchor"></div>

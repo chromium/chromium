@@ -170,3 +170,12 @@ cr-most-visited {
 #mostVisitedContainer:has(cr-most-visited[hidden]) {
   display: none;
 }
+
+fre-modal {
+  margin-top: 10px;
+}
+
+#content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) fre-modal,
+#content:has(#composebox) fre-modal {
+  display: none;
+}

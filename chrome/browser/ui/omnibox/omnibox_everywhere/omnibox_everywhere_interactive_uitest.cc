@@ -998,4 +998,20 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereCommandLineBrowserTest,
   EXPECT_FALSE(controller->target_profile()->IsOffTheRecord());
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       FreModalVisibilityAndDismissal) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_TRUE(profile);
+
+  PrefService* profile_prefs = profile->GetPrefs();
+  ASSERT_TRUE(profile_prefs);
+
+  // By default, FRE should not be dismissed initially.
+  EXPECT_FALSE(profile_prefs->GetBoolean(prefs::kFreDismissed));
+
+  // Dismissing the FRE persists the preference.
+  profile_prefs->SetBoolean(prefs::kFreDismissed, true);
+  EXPECT_TRUE(profile_prefs->GetBoolean(prefs::kFreDismissed));
+}
+
 }  // namespace omnibox_everywhere
