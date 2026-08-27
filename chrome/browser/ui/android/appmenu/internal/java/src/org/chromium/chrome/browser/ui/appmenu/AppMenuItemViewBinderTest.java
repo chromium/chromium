@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -261,22 +262,28 @@ public class AppMenuItemViewBinderTest {
 
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
         view.onInitializeAccessibilityNodeInfo(info);
-        Assert.assertFalse("Should not be checkable initially", info.isCheckable());
-        Assert.assertFalse("Should not be checked initially", info.isChecked());
+        Assert.assertNull("Should not have RadioButton class initially", info.getClassName());
+        Assert.assertFalse("Should not be selected initially", info.isSelected());
+        Assert.assertNull(
+                "Should not have collection item info initially", info.getCollectionItemInfo());
 
         standardModel.set(AppMenuItemProperties.CHECKABLE, true);
         standardModel.set(AppMenuItemProperties.CHECKED, true);
 
         AccessibilityNodeInfo checkedInfo = AccessibilityNodeInfo.obtain();
         view.onInitializeAccessibilityNodeInfo(checkedInfo);
-        Assert.assertTrue("Should be checkable", checkedInfo.isCheckable());
+        Assert.assertEquals(RadioButton.class.getName(), checkedInfo.getClassName());
         Assert.assertTrue("Should be checked", checkedInfo.isChecked());
+        Assert.assertNotNull(checkedInfo.getCollectionItemInfo());
+        Assert.assertEquals(0, checkedInfo.getCollectionItemInfo().getColumnIndex());
+        Assert.assertEquals(0, checkedInfo.getCollectionItemInfo().getRowIndex());
 
         standardModel.set(AppMenuItemProperties.CHECKED, false);
         AccessibilityNodeInfo uncheckedInfo = AccessibilityNodeInfo.obtain();
         view.onInitializeAccessibilityNodeInfo(uncheckedInfo);
-        Assert.assertTrue("Should be checkable", uncheckedInfo.isCheckable());
-        Assert.assertFalse("Should not be checked", uncheckedInfo.isChecked());
+        Assert.assertEquals(RadioButton.class.getName(), uncheckedInfo.getClassName());
+        Assert.assertFalse("Should not be selected", uncheckedInfo.isSelected());
+        Assert.assertNotNull(uncheckedInfo.getCollectionItemInfo());
     }
 
     @Test

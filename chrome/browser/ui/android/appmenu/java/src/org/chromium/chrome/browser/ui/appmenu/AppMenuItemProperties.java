@@ -99,7 +99,7 @@ public class AppMenuItemProperties {
             new WritableObjectPropertyKey<>("END_ICON");
 
     /** The the menu item's position in the menu. */
-    static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
+    public static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
 
     /** The click handler for the menu item. */
     public static final WritableObjectPropertyKey<@Nullable AppMenuClickHandler> CLICK_HANDLER =

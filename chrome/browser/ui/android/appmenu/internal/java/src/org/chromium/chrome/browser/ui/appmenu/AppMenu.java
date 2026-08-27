@@ -25,10 +25,12 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -621,6 +623,7 @@ class AppMenu implements OnKeyListener {
         listView.setAdapter(adapter);
         listView.setItemsCanFocus(true);
         listView.setOnScrollChangeListener(scrollListener);
+        setRadioGroupAccessibilityDelegate(listView, adapter.getCount());
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
         int maxWidth =
@@ -1077,5 +1080,24 @@ class AppMenu implements OnKeyListener {
             // http://crbug.com/41379062 & https://crbug.com/40706027.
             return;
         }
+    }
+
+    private void setRadioGroupAccessibilityDelegate(ListView listView, int itemCount) {
+        listView.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setClassName(RadioGroup.class.getName());
+                        info.setCollectionInfo(
+                                AccessibilityNodeInfo.CollectionInfo.obtain(
+                                        /* rowCount= */ itemCount,
+                                        /* columnCount= */ 1,
+                                        /* hierarchical= */ false,
+                                        AccessibilityNodeInfo.CollectionInfo
+                                                .SELECTION_MODE_SINGLE));
+                    }
+                });
     }
 }
