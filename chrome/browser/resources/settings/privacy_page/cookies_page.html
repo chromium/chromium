@@ -138,6 +138,14 @@
     </h2>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
+    <template is="dom-if" if="[[showUniversalOptOutSettings_]]" restamp>
+      <settings-toggle-button id="universalOptOutToggle" class="toggle"
+          label="$i18n{universalOptOutLabel}"
+          pref="{{prefs.universal_optout.enabled}}"
+          icon="settings20:front-hand"
+          sub-label="$i18n{universalOptOutSubLabel}">
+      </settings-toggle-button>
+    </template>
     <cr-link-row id="siteDataTrigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">

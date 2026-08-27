@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -159,6 +159,53 @@ suite('CookiesPageTest', function() {
         page.getPref('generated.third_party_cookie_blocking_setting').value);
     assertTrue(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
+  });
+});
+
+suite('UniversalOptOut', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  function createPage(showSettings: boolean) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({showUniversalOptOutSettings: showSettings});
+
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.universal_optout.enabled.value', false);
+
+    document.body.appendChild(page);
+    flush();
+  }
+
+  test('UniversalOptOutToggle', function() {
+    createPage(true);
+    assertTrue(isChildVisible(page, '#universalOptOutToggle'));
+
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#universalOptOutToggle');
+    assertTrue(!!toggle);
+    const pref = page.getPref<boolean>('universal_optout.enabled');
+
+    toggle.click();
+    flush();
+    assertTrue(toggle.checked);
+    assertTrue(pref.value);
+
+    toggle.click();
+    flush();
+    assertFalse(toggle.checked);
+    assertFalse(pref.value);
+  });
+
+  test('UniversalOptOutToggle_Hidden', function() {
+    createPage(false);
+    assertFalse(isChildVisible(page, '#universalOptOutToggle'));
   });
 });
 

@@ -1738,6 +1738,12 @@
     <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL" desc="The accessibility label for a link to learn more about Do Not Track">
       Learn more about Do Not Track
     </message>
+    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_LABEL" desc="Label of the Universal Opt-Out settings toggle" translateable="false">
+      Send an opt-out request to sites regarding use of your data
+    </message>
+    <message name="IDS_SETTINGS_UNIVERSAL_OPT_OUT_SUB_LABEL" desc="Sub-label of the Universal Opt-Out settings toggle" translateable="false">
+      The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale or sharing of your data or its use for personalized ads.
+    </message>
     <message name="IDS_SETTINGS_PERMISSIONS_DESCRIPTION" desc="Description of the controls available on the permissions and site content settings page">
       Controls what information sites can use and show (location, camera, pop-ups, and more)
     </message>

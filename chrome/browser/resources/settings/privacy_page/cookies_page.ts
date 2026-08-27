@@ -79,6 +79,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: ContentSettingsTypes.COOKIES,
       },
 
+      showUniversalOptOutSettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
+      },
+
       isRelatedWebsiteSetsUiEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsUiEnabled'),
@@ -88,6 +93,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   declare searchTerm: string;
   declare private cookiesContentSettingType_: ContentSettingsTypes;
+  declare private showUniversalOptOutSettings_: boolean;
   declare private isRelatedWebsiteSetsUiEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =

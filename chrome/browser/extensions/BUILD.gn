@@ -608,6 +608,7 @@ source_set("extensions") {
     "//components/spellcheck/browser",
     "//components/supervised_user/core/browser",
     "//components/tabs:public",
+    "//components/universal_optout",
     "//components/update_client",
     "//components/update_client:common_impl",
     "//components/user_prefs",

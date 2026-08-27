@@ -315,6 +315,7 @@ source_set("impl") {
     "//components/skills:features",
     "//components/strings:components_strings",
     "//components/sync/service",
+    "//components/universal_optout",
     "//components/user_manager:common",
     "//components/wallet/core/browser",
     "//components/webapps/isolated_web_apps:scheme",

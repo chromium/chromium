@@ -76,6 +76,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/universal_optout/prefs.h"
 #include "components/url_formatter/url_fixer.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -488,6 +489,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kPrivacySandboxRelatedWebsiteSetsEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[universal_optout::prefs::kUniversalOptOutEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // Sync and personalization page.
   (*s_allowlist)[::prefs::kSearchSuggestEnabled] =
