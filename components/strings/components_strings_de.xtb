@@ -3121,7 +3121,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5716325061445053985">Tippe hier, um den Tab auf dem Smartphone zu öffnen</translation>
 <translation id="5717509257172454543">Eislaufen</translation>
 <translation id="5718326209176373202">Anmerkungen hinzufügen</translation>
-<translation id="5718601519531438273">Dazu gehören Informationen wie Reisepässe und Führerscheine</translation>
+<translation id="5718601519531438273">Dazu gehören Informationen aus Reisepässen und Führerscheinen</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="5720895412771013401">Computer</translation>
 <translation id="5721147290164931316">Zum Anmelden mit dem Smartphone scannen</translation>
@@ -3733,7 +3733,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6652101503459149953">Windows Hello verwenden</translation>
 <translation id="6654244995031366386">Glas (texturiert)</translation>
 <translation id="6655085656059574817">Wenn du dein Konto verknüpft lässt, kannst du schneller mit <ph name="BNPL_ISSUER_NAME" /> bezahlen. Du kannst die Verknüpfung jedoch unter <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> aufheben.</translation>
-<translation id="6656935431494847393">Enthält Informationen wie Flugbuchungen und Fahrzeugdaten</translation>
+<translation id="6656935431494847393">Dazu gehören z. B. Flugbuchungen und Fahrzeugdaten</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659246032834639189">Dieser Preis ist niedrig</translation>
 <translation id="6660413144148052430">Standort</translation>
@@ -4927,7 +4927,7 @@ Weitere Details:
 <translation id="8449036207308062757">Speicherplatz verwalten</translation>
 <translation id="8449155699563577224">17 × 24 Zoll</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
-<translation id="8451518040456311377">Ausweisdokumente speichern und ausfüllen</translation>
+<translation id="8451518040456311377">Ausweisdokumente für Autofill speichern</translation>
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Die Ansicht am unteren Rand ist geschlossen.</translation>
 <translation id="8456775115498700722">Deine Karteninformationen von <ph name="CARD_ISSUER_NAME" /> können jetzt automatisch eingefügt werden, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist.</translation>
@@ -5125,7 +5125,7 @@ Weitere Details:
 <translation id="8781278378794969337">Button „Seite übersetzen“ – aktivieren, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="8785658048882205566">Motorräder</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>
-<translation id="8790668801880409584">Reiseinformationen speichern und ausfüllen</translation>
+<translation id="8790668801880409584">Reiseinformationen für Autofill speichern</translation>
 <translation id="8792272652220298572">Kunststoff (glänzend)</translation>
 <translation id="8792621596287649091">Du könntest den Zugriff auf dein <ph name="ORG_NAME" />-Konto verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
 <translation id="8792626944327216835">Mikrofon</translation>

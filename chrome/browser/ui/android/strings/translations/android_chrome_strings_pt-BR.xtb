@@ -657,7 +657,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3738139272394829648">Pesquisa por toque</translation>
 <translation id="3739455665973395693">Não há senhas comprometidas na sua Conta do Google</translation>
 <translation id="3739899004075612870">Adicionado aos favoritos no <ph name="PRODUCT_NAME" /></translation>
-<translation id="3740290940447881599">Confirme se este site é confiável</translation>
+<translation id="3740290940447881599">Confirme se a página é confiável</translation>
 <translation id="3740525748616366977">A pesquisa por voz não está disponível neste dispositivo</translation>
 <translation id="3749289110408117711">Nome do arquivo</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
@@ -1925,7 +1925,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="867914734596684889">Mostrar ou ocultar barra de favoritos</translation>
 <translation id="8683039184091909753">imagem</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> (guia selecionada)</translation>
-<translation id="8696297579102085705">Enviar para seu dispositivo</translation>
+<translation id="8696297579102085705">Enviar ao dispositivo</translation>
 <translation id="8697753151306746444">Compartilhar a janela ou a tela</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
 <translation id="8700565880437506364">Conheça o Gemini no Chrome</translation>

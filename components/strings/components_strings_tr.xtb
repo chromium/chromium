@@ -3046,7 +3046,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5587987780934666589">Platform kullanıcısı</translation>
 <translation id="5593349413089863479">Bağlantı tam olarak güvenli değil</translation>
 <translation id="5593640815048812868">Dizüstü Bilgisayarlar</translation>
-<translation id="5595485650161345191">Adresi düzenle</translation>
+<translation id="5595485650161345191">Adresi düzenleyin</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5596939519753369075">2 x 3,5 inç</translation>
 <translation id="5597254438174353289">Mavi 3</translation>
@@ -4929,7 +4929,7 @@ Ek ayrıntılar:
 <translation id="8449036207308062757">Depolama alanını yönet</translation>
 <translation id="8449155699563577224">17 x 24 inç</translation>
 <translation id="8449836157089738489">Tümünü yeni sekme grubunda aç</translation>
-<translation id="8451518040456311377">Kimlik belgelerini kaydedip doldurun</translation>
+<translation id="8451518040456311377">Kimlik belgelerini kaydedip doldur</translation>
 <translation id="84561192812921051">Yöneticiniz profilinizde ve tarayıcınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.  <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Alt sayfa kapatıldı.</translation>
 <translation id="8456775115498700722"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay'e bağlı olduğu için artık <ph name="CARD_ISSUER_NAME" /> kartlarınızı otomatik olarak doldurabilirsiniz.</translation>
@@ -5066,7 +5066,7 @@ Ek ayrıntılar:
 <translation id="8694684557210599098">Araç ekleyin</translation>
 <translation id="8696297579102085705">Cihazıma gönder</translation>
 <translation id="8698428283892912525">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede kısa süre önce <ph name="BEGIN_LINK" />zararlı yazılım tespit etti<ph name="END_LINK" />.</translation>
-<translation id="869891660844655955">Son kullanma tarihi</translation>
+<translation id="869891660844655955">Geçerlilik tarihi</translation>
 <translation id="8699041776323235191">HID cihazı</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>
 <translation id="8702965365666568344">Montaj Bandı</translation>

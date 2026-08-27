@@ -942,7 +942,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
-<translation id="2403474027143565107">Exato</translation>
+<translation id="2403474027143565107">Preciso</translation>
 <translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
 <translation id="2404715426538856682">Crédito e débito · IBANs · Fidelidade</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
@@ -5064,7 +5064,7 @@ Mais detalhes:
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
 <translation id="8694684557210599098">Adicionar veículo</translation>
-<translation id="8696297579102085705">Enviar para seu dispositivo</translation>
+<translation id="8696297579102085705">Enviar ao dispositivo</translation>
 <translation id="8698428283892912525">O Chrome tem recursos de segurança integrados para proteger você, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou softwares nocivos recentemente<ph name="END_LINK" /> no site que você tentou acessar.</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>

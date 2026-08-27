@@ -496,7 +496,7 @@
 <translation id="2584994295315085351">4 saat sonra Chrome'a döndüğünüzde yeni sekme açın</translation>
 <translation id="2593272815202181319">Sabit boşluklu</translation>
 <translation id="2601778637777010194">Ürünlerdeki fiyat düşüşlerini takip edin</translation>
-<translation id="2602372807870028932">Bu cihazda kayıtlı seçili bilgiler silinir</translation>
+<translation id="2602372807870028932">Bu cihaza kaydedilen seçili bilgiler silinecek</translation>
 <translation id="260378315836159338">Ekranın üst tarafındaki + simgesine dokunun.</translation>
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="261305050785128654">Konuştuğunuz dilleri web sitelerine bildirin. Mümkün olduğunda bu dillerde içerik gösterirler.</translation>
@@ -1368,7 +1368,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5585019845078534178">Kartlar</translation>
 <translation id="5591526871732898147">Eklenen resim {index}</translation>
 <translation id="5594597292424622277">Videoyu duraklat</translation>
-<translation id="5595485650161345191">Adresi düzenle</translation>
+<translation id="5595485650161345191">Adresi düzenleyin</translation>
 <translation id="559567008082979829">İndirdikleriniz bir ay sonra silinir.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="560322036295180549">Kuruluşunuz tarafından kapatıldı.</translation>
@@ -2338,7 +2338,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8692897097252418799">Dışa aktarmak istediğiniz verileri seçin</translation>
 <translation id="8694281486652655615">Bu öğeyi gösterir</translation>
 <translation id="8697136149718343437">Adres çubuğunu en alta taşı</translation>
-<translation id="869891660844655955">Son kullanma tarihi</translation>
+<translation id="869891660844655955">Geçerlilik tarihi</translation>
 <translation id="8706253136355675497">Sıcaklık</translation>
 <translation id="8706806585855470492">Sekme gruplarını paylaşabilir, bunlara katılabilir ve gruplarda ortak çalışma yapabilirsiniz</translation>
 <translation id="8709409604518538305">Sekmeler kapatıldı</translation>

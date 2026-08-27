@@ -854,7 +854,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="22792995594807632">Bạn cần xem xét trước khi tải xuống</translation>
 <translation id="2283340219607151381">Lưu và điền địa chỉ</translation>
 <translation id="2283447177162560884">Đã xóa "<ph name="PAGE_TITLE" />"</translation>
-<translation id="2283599456633275070">Du lịch</translation>
+<translation id="2283599456633275070">Thông tin đi lại</translation>
 <translation id="2285709459648658719">Hộ chiếu</translation>
 <translation id="2286383991450886080">34 x 44 inch</translation>
 <translation id="2288422996159078444">Mọi thông tin bạn nhập, mọi trang bạn xem hoặc mọi hoạt động khác trên web đều sẽ bị theo dõi. Nội dung trên các trang web có thể bị thay đổi mà bạn không hề hay biết.</translation>
@@ -3724,7 +3724,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6633476656216409494">Phần mềm kinh doanh và tăng năng suất</translation>
 <translation id="6635900375070654124">thiết bị xác thực</translation>
 <translation id="6641852376826221947">Xác nhận giao dịch mua</translation>
-<translation id="6643016212128521049">Xóa</translation>
+<translation id="6643016212128521049">Xoá</translation>
 <translation id="6644868143085860957">Không lưu được thẻ này vào Google Wallet. Thay vào đó, thẻ sẽ được lưu vào Chrome trên thiết bị này.</translation>
 <translation id="6645291930348198241">Truy cập vào cookie và dữ liệu trang web.</translation>
 <translation id="6645478838938543427">Thông báo giảm giá sẽ được gửi đến <ph name="EMAIL_ADDRESS" /></translation>
@@ -3735,7 +3735,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6652101503459149953">Sử dụng Windows Hello</translation>
 <translation id="6654244995031366386">Thuỷ tinh (Có hoạ tiết)</translation>
 <translation id="6655085656059574817">Nếu tiếp tục liên kết tài khoản, bạn sẽ thanh toán nhanh hơn bằng <ph name="BNPL_ISSUER_NAME" />, tuy nhiên, bạn có thể huỷ liên kết bằng cách truy cập vào <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
-<translation id="6656935431494847393">Bao gồm thông tin như việc đặt vé máy bay và thông tin về xe</translation>
+<translation id="6656935431494847393">Bao gồm những thông tin như thông tin đặt vé máy bay và thông tin về phương tiện</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659246032834639189">Đây là mức giá thấp</translation>
 <translation id="6660413144148052430">vị trí</translation>
@@ -5127,7 +5127,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8781278378794969337">Nút Dịch trang, hãy nhấn nút này để dịch trang này bằng Google Dịch</translation>
 <translation id="8785658048882205566">Xe mô tô</translation>
 <translation id="8790007591277257123">&amp;Làm lại xóa</translation>
-<translation id="8790668801880409584">Lưu và điền thông tin chuyến đi</translation>
+<translation id="8790668801880409584">Lưu và điền thông tin đi lại</translation>
 <translation id="8792272652220298572">Nhựa (Bóng)</translation>
 <translation id="8792621596287649091">Bạn có thể mất quyền truy cập vào tài khoản <ph name="ORG_NAME" /> của mình hoặc bị đánh cắp danh tính. Chromium khuyên bạn nên thay đổi mật khẩu ngay bây giờ.</translation>
 <translation id="8792626944327216835">micrô</translation>

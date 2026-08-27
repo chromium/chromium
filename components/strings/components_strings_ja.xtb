@@ -1344,7 +1344,7 @@
 <translation id="3041584414879052436">後払い決済のカード発行会社のリストが閉じられました。</translation>
 <translation id="3041612393474885105">証明書情報</translation>
 <translation id="3045769629416806687">エクストリーム スポーツ</translation>
-<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> で<ph name="BEGIN_LINK" />情報を管理<ph name="END_LINK" />できます。</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />で<ph name="BEGIN_LINK" />情報を管理<ph name="END_LINK" />できます。</translation>
 <translation id="305162504811187366">Chrome リモート デスクトップの履歴（タイムスタンプ、ホスト、クライアント セッション ID を含む）</translation>
 <translation id="3052868890529250114">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
@@ -3735,7 +3735,7 @@
 <translation id="6652101503459149953">Windows Hello を使用</translation>
 <translation id="6654244995031366386">ガラス（テクスチャ）</translation>
 <translation id="6655085656059574817">アカウントをリンクしたままにすると、<ph name="BNPL_ISSUER_NAME" /> ですばやくお支払いできます。もしくは、<ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> でリンクを解除できます。</translation>
-<translation id="6656935431494847393">フライトの予約や車両情報などの情報が含められます</translation>
+<translation id="6656935431494847393">フライトの予約や車両情報などの情報が含まれます</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659246032834639189">この価格は低額です</translation>
 <translation id="6660413144148052430">現在地情報</translation>
@@ -4909,7 +4909,7 @@
 詳細:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
-<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="GOOGLE_WALLET_TITLE_2" /> で<ph name="MANAGE_INFO_LINK" />できます。</translation>
+<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" />に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="GOOGLE_WALLET_TITLE_2" />で<ph name="MANAGE_INFO_LINK" />できます。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426945547715537628">キーボードのオーバーライドを許可しますか？</translation>
