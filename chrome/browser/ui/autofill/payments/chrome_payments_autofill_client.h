@@ -81,6 +81,8 @@ class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;
 class PaymentsChurnedUsersManager;
 class PaymentsWindowManager;
+class WalletReminderNoticeManager;
+class WalletReminderNoticeUiDelegate;
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
 // and Clank. Owned by the ChromeAutofillClient. Created lazily in the
@@ -252,6 +254,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
   WalletReminderNoticeUiDelegate* GetWalletReminderNoticeUiDelegate() override;
+  WalletReminderNoticeManager* GetWalletReminderNoticeManager() override;
 #if !BUILDFLAG(IS_ANDROID)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowExpandedOmniboxAutofillChip(
@@ -409,11 +412,16 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // Lazily initialized: access only through `GetBnplUiDelegate()`.
   std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
 
-  // The WalletReminderNoticeUiDelegate used to handle the UI shown on the
-  // Wallet reminder notice. Lazily initialized: access only through
+  // The WalletReminderNoticeUiDelegate used to handle the UI in the Wallet
+  // Reminder Notice flow. Lazily initialized: access only through
   // `GetWalletReminderNoticeUiDelegate()`.
   std::unique_ptr<WalletReminderNoticeUiDelegate>
       wallet_reminder_notice_ui_delegate_;
+
+  // The WalletReminderNoticeManager used to orchestrate the Wallet Reminder
+  // Notice flow. Lazily initialized: access only through
+  // `GetWalletReminderNoticeManager()`.
+  std::unique_ptr<WalletReminderNoticeManager> wallet_reminder_notice_manager_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // The OmniboxAutofillDelegate used to handle the logic flow and user

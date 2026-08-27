@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -95,6 +96,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
+#include "chrome/browser/ui/android/autofill/wallet_reminder_notice_ui_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
@@ -1281,12 +1283,24 @@ BnplUiDelegate* ChromePaymentsAutofillClient::GetBnplUiDelegate() {
 WalletReminderNoticeUiDelegate*
 ChromePaymentsAutofillClient::GetWalletReminderNoticeUiDelegate() {
   if (!wallet_reminder_notice_ui_delegate_) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    wallet_reminder_notice_ui_delegate_ =
+        std::make_unique<WalletReminderNoticeUiDelegateAndroid>(&client_.get());
+#else
     wallet_reminder_notice_ui_delegate_ =
         std::make_unique<WalletReminderNoticeUiDelegateDesktop>(&client_.get());
 #endif
   }
   return wallet_reminder_notice_ui_delegate_.get();
+}
+
+WalletReminderNoticeManager*
+ChromePaymentsAutofillClient::GetWalletReminderNoticeManager() {
+  if (!wallet_reminder_notice_manager_) {
+    wallet_reminder_notice_manager_ =
+        std::make_unique<WalletReminderNoticeManager>(&client_.get());
+  }
+  return wallet_reminder_notice_manager_.get();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
