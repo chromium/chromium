@@ -266,6 +266,16 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   // Verify that the side panel is open.
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  // Verify that the side panel web contents is focused.
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
+  ASSERT_TRUE(controller);
+  content::WebContents* side_panel_contents =
+      controller->GetActiveWebContents();
+  ASSERT_TRUE(side_panel_contents);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_contents->ContainsOrIsFocusedWebContents(); }));
 }
 
 class ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest
