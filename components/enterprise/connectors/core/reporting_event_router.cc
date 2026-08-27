@@ -247,7 +247,9 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
             url, threat_type, response,
             reporting_client_->GetProfileIdentifier(),
             reporting_client_->GetProfileUserName(), active_user,
-            referrer_chain);
+            referrer_chain,
+            /*tab_title=*/"");  // TODO(b/552985411): Plumb the actual title
+                                // down from the observer in a follow-up CL.
 
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 

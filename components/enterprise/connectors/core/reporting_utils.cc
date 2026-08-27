@@ -560,8 +560,12 @@ proto::UrlFilteringInterstitialEvent GetUrlFilteringInterstitialEvent(
     const std::string& profile_identifier,
     const std::string& profile_username,
     const std::string& active_user,
-    const ReferrerChain& referrer_chain) {
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title) {
   proto::UrlFilteringInterstitialEvent event;
+  if (!tab_title.empty()) {
+    event.set_tab_title(tab_title);
+  }
   event.set_url(url.spec());
   EventResult event_result = GetEventResultFromThreatType(threat_type);
   event.set_clicked_through(event_result == EventResult::BYPASSED);
@@ -900,6 +904,9 @@ void MaybeTruncateLongUrls(proto::Event& event_variant) {
     }
     case proto::Event::kUrlFilteringInterstitialEvent: {
       auto* event = event_variant.mutable_url_filtering_interstitial_event();
+      if (!event->tab_title().empty()) {
+        TRUNCATE_STRING_URL(event, tab_title);
+      }
       TRUNCATE_STRING_URL(event, url);
       TRUNCATE_URL_INFO(event, url_info);
       TRUNCATE_REPEATED_STRING_URL(event, referrer_urls);

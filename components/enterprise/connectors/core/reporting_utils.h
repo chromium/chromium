@@ -109,7 +109,8 @@ GetUrlFilteringInterstitialEvent(
     const std::string& profile_identifier,
     const std::string& profile_username,
     const std::string& active_user,
-    const ReferrerChain& referrer_chain);
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title);
 
 chrome::cros::reporting::proto::UnscannedFileEvent GetUnscannedFileEvent(
     const GURL& url,

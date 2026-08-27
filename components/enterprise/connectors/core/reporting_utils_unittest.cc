@@ -203,8 +203,10 @@ TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username",
       /*active_user=*/"active_user@example.com",
-      /*referrer_chain=*/referrer_chain);
+      /*referrer_chain=*/referrer_chain,
+      /*tab_title=*/"My Test Tab Title");
 
+  ASSERT_EQ(event.tab_title(), "My Test Tab Title");
   ASSERT_EQ(event.url(), "https://filteredurl.com/");
   ASSERT_FALSE(event.clicked_through());
   ASSERT_EQ(event.threat_type(),
