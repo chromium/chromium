@@ -34,6 +34,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorUtils;
+import org.chromium.chrome.browser.actor.BackgroundTabRestorationHelper;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -76,6 +78,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -203,6 +206,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     // Keys are the original tab indexes, values are the tab ids.
     private @Nullable SparseIntArray mNormalTabsRestored;
     private @Nullable SparseIntArray mIncognitoTabsRestored;
+    private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
     private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
     private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
     // Tracks whether this TabPersistentStore's tabs are being loaded.
@@ -525,6 +529,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         initializeRestoreVars(ignoreIncognitoFiles, ignoreRegularFiles);
 
+        mBackgroundTabIds =
+                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                        mTabModelSelector, ignoreRegularFiles);
+
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
             if (mIsAuthoritative) {
@@ -624,6 +632,11 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
+        if (mBackgroundTabIds.isEmpty()) {
+            mBackgroundTabIds =
+                    BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                            mTabModelSelector, mCancelNormalTabLoads);
+        }
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
             // If the active tab can't be restored, restore and select another tab. Otherwise, the
@@ -797,7 +810,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     tabToRestore.url, mSeenTabUrlMap.getOrDefault(tabToRestore.url, 0) + 1);
         }
 
-        if (tabState != null) {
+        if (maybeRestoreBackgroundTab(
+                tabToRestore, restoredIndex, tabState, isIncognito, setAsActive)) {
+            // Handled as a background tab.
+        } else if (tabState != null) {
             if (tabState.contentsState != null) {
                 tabState.contentsState.setFallbackUrlForRestorationFailure(tabToRestore.url);
             }
@@ -818,9 +834,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
             if (tab == null) return;
             if (setAsActive) {
-                for (TabPersistentStoreObserver observer : mObservers) {
-                    observer.onActiveTabLoaded(isIncognito);
-                }
+                notifyActiveTabLoaded(isIncognito);
             }
 
             if (tabState.shouldMigrate) {
@@ -860,9 +874,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             }
 
             if (setAsActive) {
-                for (TabPersistentStoreObserver observer : mObservers) {
-                    observer.onActiveTabLoaded(isIncognito);
-                }
+                notifyActiveTabLoaded(isIncognito);
             }
 
             RecordHistogram.recordEnumeratedHistogram(
@@ -1008,10 +1020,40 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         return null;
     }
 
+    private boolean maybeRestoreBackgroundTab(
+            TabRestoreDetails tabToRestore,
+            int restoredIndex,
+            @Nullable TabState tabState,
+            boolean isIncognito,
+            boolean setAsActive) {
+        if (!ActorUtils.isBackgroundActuationEnabled()
+                || !mBackgroundTabIds.contains(tabToRestore.id)) {
+            return false;
+        }
+
+        Tab tab =
+                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                        mTabModelSelector, tabToRestore.id, restoredIndex, tabState);
+        if (tab == null) return false;
+
+        if (setAsActive) {
+            notifyActiveTabLoaded(isIncognito);
+        }
+        mSeenTabIds.add(tabToRestore.id);
+        return true;
+    }
+
+    private void notifyActiveTabLoaded(boolean isIncognito) {
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onActiveTabLoaded(isIncognito);
+        }
+    }
+
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mDestroyed = true;
+        mBackgroundTabIds = Collections.emptySet();
         if (mTabModelObserver != null) {
             mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
