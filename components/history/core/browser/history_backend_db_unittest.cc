@@ -3381,23 +3381,16 @@ TEST_P(HistoryBackendDBTest, CantUseLockedDatabase) {
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
 
-  // Open the database and leave it open.
+  // Open the database, acquire an exclusive lock, and leave it open.
   sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+  ASSERT_TRUE(db.Execute("BEGIN EXCLUSIVE"));
 
-  // The database can't be opened if it's locked. In WAL mode, the failure
-  // occurs at OPEN (journal mode change blocked); otherwise at COMMIT.
+  // The database can't be opened if it's locked.
   EXPECT_FALSE(CreateBackendAndDatabase());
-#if !BUILDFLAG(IS_FUCHSIA)
-  const auto expected_step = IsWalModeEnabled()
-                                 ? HistoryDatabase::InitStep::OPEN
-                                 : HistoryDatabase::InitStep::COMMIT;
-#else
-  const auto expected_step = HistoryDatabase::InitStep::COMMIT;
-#endif  // !BUILDFLAG(IS_FUCHSIA)
   EXPECT_THAT(
       histogram_tester.GetAllSamples("History.InitializationFailureStep"),
-      BucketsAre(Bucket(expected_step, /*count=*/1)));
+      BucketsAre(Bucket(HistoryDatabase::InitStep::OPEN, /*count=*/1)));
 }
 
 TEST_P(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
