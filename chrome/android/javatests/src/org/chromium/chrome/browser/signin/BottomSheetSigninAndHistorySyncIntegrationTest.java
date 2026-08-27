@@ -405,7 +405,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void
             testWithExistingAccount_signIn_historySyncDeclinedOften_forceHistoryOptInScreen_legacy() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
         launchActivity(
@@ -413,7 +413,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.OPTIONAL);
 
-        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* hasSignedIn= */ true);
     }
 
