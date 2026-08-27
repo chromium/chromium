@@ -8234,6 +8234,11 @@ TEST_F(WebFrameTest, fixedPositionInFixedViewport) {
 }
 
 TEST_F(WebFrameTest, FrameViewMoveWithSetFrameRect) {
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    // We will never call SetFrameRect() with a non-zero origin, so this test
+    // is not applicable.
+    GTEST_SKIP();
+  }
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad("about:blank");
   web_view_helper.Resize(gfx::Size(200, 200));
@@ -14597,7 +14602,7 @@ TEST_F(WebFrameTest, RemoteFrameCompositingRectUpdatesWithFrameRect) {
   RemoteFrameView* remote_frame_view = remote_frame->GetFrame()->View();
   ASSERT_EQ(remote_frame_view->GetCompositingRect(), gfx::Rect(0, 0, 120, 120));
 
-  remote_frame_view->SetFrameRect(gfx::Rect(0, 0, 520, 320));
+  remote_frame_view->Resize(520, 320);
 
   EXPECT_EQ(remote_frame_view->GetCompositingRect(), gfx::Rect(0, 0, 520, 320));
 }

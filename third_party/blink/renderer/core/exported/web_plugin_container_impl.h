@@ -125,7 +125,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   void EnqueueMessageEvent(const WebDOMMessageEvent&) override;
   void Invalidate() override;
   void ScheduleAnimation() override;
-  void ReportGeometry() override;
+  void ReportGeometry() override { PropagateFrameRects(); }
   v8::Local<v8::Object> V8ObjectForElement() override;
   void LoadFrameRequest(const WebURLRequest&, const WebString& target) override;
   bool IsRectTopmost(const gfx::Rect&) override;
@@ -189,14 +189,14 @@ class CORE_EXPORT WebPluginContainerImpl final
   // method. Here we call Dispose() which does the correct virtual dispatch.
   void PreFinalize() { Dispose(); }
   void Dispose() override;
-  void SetFrameRect(const gfx::Rect&) override;
-  void PropagateFrameRects() override { ReportGeometry(); }
+  void SetFrameRect(const gfx::Rect& frame_rect) override;
 
   void MaybeLostMouseLock();
 
   mojom::blink::WebFeature SvgFilterPaintedCounter() const override;
 
  protected:
+  void PropagateFrameRectsInternal() override;
   void ParentVisibleChanged() override;
 
  private:

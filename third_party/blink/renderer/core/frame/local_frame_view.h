@@ -309,7 +309,6 @@ class CORE_EXPORT LocalFrameView final
   void ClearNaturalDimensions() override;
 
   void Dispose() override;
-  void PropagateFrameRects() override;
   void ZoomFactorChanged(float zoom_factor) override;
   void InvalidateAllCustomScrollbarsOnActiveChanged();
 
@@ -907,6 +906,8 @@ class CORE_EXPORT LocalFrameView final
   void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
   void ParentVisibleChanged() override;
+  void PropagateFrameRectsInternal() override;
+  void PropagateFrameRectsRecursively(bool force = false);
   void NotifyFrameRectsChangedIfNeeded();
 
   // Updates viewport intersection state when LocalFrame's scroll positions,

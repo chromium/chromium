@@ -57,7 +57,11 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   // This method pushes information about our frame rect to consumers.
   // Typically, it will be invoked by FrameRectsChanged; but it can also be
   // called directly to push frame rect information without changing it.
-  virtual void PropagateFrameRects() = 0;
+  // When AvoidEmbeddedContentViewLocation is enabled, this method is called by
+  // - SetFrameRect() immediately if the size changes;
+  // - LocalFrameView::PropagateFrameRectsRecursively() if this or an ancestor
+  //   local frame has NeedsFrameRectPropagation().
+  void PropagateFrameRects();
 
   // See WebFrameWidgetImpl::SetZoomLevel() for how this value is used.
   virtual void ZoomFactorChanged(float zoom_factor) {}
@@ -93,7 +97,20 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   bool IsVisible() const { return self_visible_ && parent_visible_; }
   virtual mojom::blink::WebFeature SvgFilterPaintedCounter() const = 0;
 
+  // Called when the location/size in the containing local frame may have
+  // changed after layout or scroll. The flag will be reset by
+  // PropagateFrameRects(). Not applicable to the local root frame because its
+  // size change is always propagated immediately.
+  void SetNeedsFrameRectPropagation() { needs_frame_rect_propagation_ = true; }
+  bool NeedsFrameRectPropagation() const {
+    return needs_frame_rect_propagation_;
+  }
+
  protected:
+  // Called by PropagateFrameRects() after resetting
+  // `needs_frame_rect_propagation_`. The implementation is responsible for
+  // pushing frame rect information to consumers.
+  virtual void PropagateFrameRectsInternal() = 0;
   // Called when our frame rect changes (or the rect/scroll offset of an
   // ancestor changes).
   virtual void FrameRectsChanged(const gfx::Rect&) { PropagateFrameRects(); }
@@ -108,6 +125,7 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   bool self_visible_;
   bool parent_visible_;
   bool is_attached_;
+  bool needs_frame_rect_propagation_ = true;
 };
 
 }  // namespace blink

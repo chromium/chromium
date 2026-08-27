@@ -466,13 +466,15 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
     // Update regions, scrolling may change the clip of a particular region.
     frame_view->UpdateDocumentDraggableRegions();
 
-    // As a performance optimization, the scroll offset of the root layer is
-    // not included in EmbeddedContentView's stored frame rect, so there is no
-    // reason to mark the FrameView as needing a geometry update here.
-    if (is_root_layer)
+    if (is_root_layer &&
+        !RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+      // As a performance optimization, the scroll offset of the root layer is
+      // not included in EmbeddedContentView's stored frame rect, so there is no
+      // reason to mark the FrameView as needing a geometry update here.
       frame_view->SetRootLayerDidScroll();
-    else
+    } else {
       frame_view->SetNeedsUpdateGeometries();
+    }
   }
 
   if (auto* scrolling_coordinator = GetScrollingCoordinator()) {

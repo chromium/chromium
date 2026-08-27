@@ -52,7 +52,6 @@ class CORE_EXPORT RemoteFrameView final
 
   void Dispose() override;
   void SetFrameRect(const gfx::Rect&) override;
-  void PropagateFrameRects() override;
   void ZoomFactorChanged(float zoom_factor) override;
   void Paint(const PaintInfo&,
              const CullRect&,
@@ -99,6 +98,7 @@ class CORE_EXPORT RemoteFrameView final
   mojom::blink::WebFeature SvgFilterPaintedCounter() const override;
 
  protected:
+  void PropagateFrameRectsInternal() override;
   bool NeedsViewportOffset() const override { return true; }
   // This is used to service IntersectionObservers in an OOPIF child document.
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&
@@ -133,7 +133,6 @@ class CORE_EXPORT RemoteFrameView final
 
   std::optional<NaturalSizingInfo> natural_sizing_info_;
   bool needs_occlusion_tracking_ = false;
-  bool needs_frame_rect_propagation_ = false;
 };
 
 template <>

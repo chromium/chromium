@@ -433,6 +433,13 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
 void LayoutEmbeddedContent::UpdateGeometry(
     EmbeddedContentView& embedded_content_view) {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    embedded_content_view.SetNeedsFrameRectPropagation();
+    embedded_content_view.SetFrameRect(
+        gfx::Rect(ToCeiledSize(ReplacedContentRect().size)));
+    return;
+  }
+
   // TODO(wangxianzhu): We reset subpixel accumulation at some boundaries, so
   // the following code is incorrect when some ancestors are such boundaries.
   // What about multicol? Need a LayoutBox function to query sub-pixel

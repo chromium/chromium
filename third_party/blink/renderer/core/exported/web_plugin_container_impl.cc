@@ -609,7 +609,7 @@ void WebPluginContainerImpl::ScheduleAnimation() {
     frame_view->ScheduleAnimation();
 }
 
-void WebPluginContainerImpl::ReportGeometry() {
+void WebPluginContainerImpl::PropagateFrameRectsInternal() {
   // Ignore when SetFrameRect/ReportGeometry is called from
   // UpdateOnEmbeddedContentViewChange before plugin is attached.
   if (!IsAttached())
