@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -310,10 +311,10 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
   // any thread in case this thread was terminated. Ref to SwapBuffers is enough
   // to keep underlying resources alive, so we don't need to hold ref to
   // WebGPUSwapBufferProvider itself.
-  *out_release_callback = blink::BindOnce(
+  *out_release_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
       &WebGPUSwapBufferProvider::MailboxReleased,
       weak_ptr_factory_.GetWeakPtr(), base::PlatformThread::CurrentRef(),
-      std::move(current_swap_buffer_));
+      std::move(current_swap_buffer_)));
 
   return shared_image;
 }
