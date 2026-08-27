@@ -226,6 +226,7 @@
 }
 
 #ai-playback-toggle {
+  --cr-icon-button-size: 32px;
   background-color: var(--color-read-anything-ai-playback-background);
   --cr-icon-button-fill-color: var(--color-read-anything-ai-playback-icon);
   border-radius: 50%;
