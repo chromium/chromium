@@ -659,13 +659,7 @@ public class VerticalTabListRenderTest {
                     pinnedRecyclerView.setVisibility(View.VISIBLE);
                     pinnedRecyclerView.setLayoutManager(new GridLayoutManager(mActivity, 1));
                     TabListModel pinnedTabsModel = new TabListModel();
-                    SimpleRecyclerViewAdapter pinnedAdapter =
-                            new SimpleRecyclerViewAdapter(pinnedTabsModel);
-                    pinnedAdapter.registerType(
-                            UiType.PINNED_TAB,
-                            parent -> inflateView(R.layout.vertical_tab_pinned_item, parent),
-                            TabVerticalViewBinder::bindPinnedTab);
-                    pinnedRecyclerView.setAdapter(pinnedAdapter);
+                    pinnedRecyclerView.setAdapter(createPinnedTabListAdapter(pinnedTabsModel));
 
                     PropertyModel pinnedTabModel =
                             createTabListItemModelBuilder("Pinned Tab", /* groupId= */ null)
@@ -674,8 +668,7 @@ public class VerticalTabListRenderTest {
                                             TabProperties.RAIL_COLLAPSE_STATE,
                                             RailCollapseState.COLLAPSED)
                                     .build();
-                    pinnedTabsModel.add(
-                            new MVCListAdapter.ListItem(UiType.PINNED_TAB, pinnedTabModel));
+                    addPinnedTabListItem(pinnedTabsModel, pinnedTabModel);
 
                     // Setup Tab List Recycler View.
                     TabListRecyclerView recyclerView =
@@ -741,6 +734,44 @@ public class VerticalTabListRenderTest {
 
         mRenderTestRule.render(
                 mRenderView, "vertical_tab_collapsed_rail" + (mIsIncognito ? "_incognito" : ""));
+    }
+
+    // =========================================================================================
+    // Pinned Tabs Grid Dynamic Balancing Tests
+    // =========================================================================================
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTabsGrid_SingleRow_FiveTabs() throws IOException {
+        testPinnedTabsGrid(
+                /* numTabs= */ 5, EXPANDED_RAIL_WIDTH_DP, "pinned_tabs_grid_single_row_five_tabs");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTabsGrid_MultiRow_SixTabs() throws IOException {
+        testPinnedTabsGrid(
+                /* numTabs= */ 6, EXPANDED_RAIL_WIDTH_DP, "pinned_tabs_grid_multi_row_six_tabs");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTabsGrid_MultiRow_SevenTabs() throws IOException {
+        testPinnedTabsGrid(
+                /* numTabs= */ 7, EXPANDED_RAIL_WIDTH_DP, "pinned_tabs_grid_multi_row_seven_tabs");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTabsGrid_NarrowRail_FiveTabs() throws IOException {
+        testPinnedTabsGrid(
+                /* numTabs= */ 5,
+                VerticalTabUtils.MIN_EXPANDED_WIDTH_DP,
+                "pinned_tabs_grid_narrow_rail_five_tabs");
     }
 
     // =========================================================================================
@@ -1241,6 +1272,60 @@ public class VerticalTabListRenderTest {
         mRenderTestRule.render(mRenderView, finalGoldenName);
     }
 
+    private void testPinnedTabsGrid(int numTabs, int railWidthDp, String goldenName)
+            throws IOException {
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int widthPx = ViewUtils.dpToPx(mActivity, railWidthDp);
+                    TabListRecyclerView pinnedRecyclerView =
+                            (TabListRecyclerView)
+                                    inflateAndAttachView(
+                                            R.layout.tab_list_recycler_view_layout, widthPx);
+                    pinnedRecyclerView.setVisibility(View.VISIBLE);
+                    int availableWidth =
+                            widthPx
+                                    - pinnedRecyclerView.getPaddingStart()
+                                    - pinnedRecyclerView.getPaddingEnd();
+                    int spanCount =
+                            VerticalTabListCoordinator.calculateBalancedSpanCount(
+                                    availableWidth,
+                                    numTabs,
+                                    mActivity.getResources(),
+                                    VerticalTabUtils.isTablet(mActivity));
+
+                    pinnedRecyclerView.setLayoutManager(
+                            new GridLayoutManager(mActivity, spanCount));
+                    pinnedRecyclerView.addItemDecoration(
+                            VerticalTabListCoordinator.createPinnedTabItemDecoration());
+
+                    TabListModel pinnedTabsModel = new TabListModel();
+                    pinnedRecyclerView.setAdapter(createPinnedTabListAdapter(pinnedTabsModel));
+
+                    for (int i = 0; i < numTabs; i++) {
+                        PropertyModel pinnedTabModel =
+                                createTabListItemModelBuilder(
+                                                "Pinned Tab " + (i + 1), /* groupId= */ null)
+                                        .with(TabProperties.IS_PINNED, true)
+                                        .with(
+                                                TabProperties.RAIL_COLLAPSE_STATE,
+                                                RailCollapseState.EXPANDED)
+                                        .with(TabProperties.IS_SELECTED, i == 0)
+                                        .build();
+                        addPinnedTabListItem(pinnedTabsModel, pinnedTabModel);
+                    }
+
+                    view[0] = pinnedRecyclerView;
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        String finalGoldenName =
+                mIsIncognito
+                        ? goldenName.replace("pinned_tabs_grid_", "pinned_tabs_grid_incognito_")
+                        : goldenName;
+        mRenderTestRule.render(mRenderView, finalGoldenName);
+    }
+
     private Bitmap createThumbnailBitmap(@ColorInt int color) {
         Bitmap bitmap = Bitmap.createBitmap(300, 200, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(color);
@@ -1351,6 +1436,15 @@ public class VerticalTabListRenderTest {
         return adapter;
     }
 
+    private SimpleRecyclerViewAdapter createPinnedTabListAdapter(TabListModel pinnedTabsModel) {
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(pinnedTabsModel);
+        adapter.registerType(
+                UiType.PINNED_TAB,
+                parent -> inflateView(R.layout.vertical_tab_pinned_item, parent),
+                TabVerticalViewBinder::bindPinnedTab);
+        return adapter;
+    }
+
     private PropertyModel.Builder createTabListItemModelBuilder(
             String title, @Nullable Token groupId) {
         return new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
@@ -1380,6 +1474,10 @@ public class VerticalTabListRenderTest {
 
     private void addTabListItem(TabListModel tabListModel, PropertyModel model) {
         tabListModel.add(new MVCListAdapter.ListItem(UiType.TAB, model));
+    }
+
+    private void addPinnedTabListItem(TabListModel tabListModel, PropertyModel model) {
+        tabListModel.add(new MVCListAdapter.ListItem(UiType.PINNED_TAB, model));
     }
 
     private void addGroupHeaderListItem(TabListModel tabListModel, PropertyModel model) {

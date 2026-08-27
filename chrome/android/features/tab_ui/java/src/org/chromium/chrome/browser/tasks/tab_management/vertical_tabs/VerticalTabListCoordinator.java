@@ -640,17 +640,7 @@ public class VerticalTabListCoordinator {
         pinnedTabsRecyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
         mPinnedLayoutManager = new GridLayoutManager(activity, getSpanCount());
         pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
-        pinnedTabsRecyclerView.addItemDecoration(
-                new RecyclerView.ItemDecoration() {
-                    @Override
-                    public void getItemOffsets(
-                            Rect outRect,
-                            View view,
-                            RecyclerView parent,
-                            RecyclerView.State state) {
-                        calculatePinnedTabItemOffsets(outRect, view, parent);
-                    }
-                });
+        pinnedTabsRecyclerView.addItemDecoration(createPinnedTabItemDecoration());
 
         mPinnedDropIndicatorDecoration = new VerticalTabPinnedDropIndicatorDecoration(activity);
         pinnedTabsRecyclerView.addItemDecoration(mPinnedDropIndicatorDecoration);
@@ -1747,66 +1737,14 @@ public class VerticalTabListCoordinator {
 
         Resources res = mContainerView.getContext().getResources();
         boolean isTablet = VerticalTabUtils.isTablet(mContainerView.getContext());
-        int minItemWidth =
-                res.getDimensionPixelSize(
-                        isTablet
-                                ? R.dimen.vertical_tab_pinned_item_min_width_tablet
-                                : R.dimen.vertical_tab_pinned_item_min_width);
-        int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-        if (minItemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
-
-        float spansFittingWidth =
-                (float) (availableWidth + minHorizontalGap) / (minItemWidth + minHorizontalGap)
-                        + SPAN_CALCULATION_EPSILON;
-        int maxFitSpans =
-                Math.clamp((int) Math.floor(spansFittingWidth), 1, MAX_SINGLE_ROW_SPAN_COUNT);
-
         int pinnedTabCount = mPinnedTabsModelList != null ? mPinnedTabsModelList.size() : 0;
-        if (pinnedTabCount <= 0) {
-            return maxFitSpans;
-        }
-
-        // Uses integer ceiling division (A + B - 1) / B instead of A / B (which truncates and
-        // would yield 0 rows when pinnedTabCount < maxFitSpans) to calculate the full number of
-        // rows needed, balancing tabs evenly across rows.
-        int rows = (pinnedTabCount + maxFitSpans - 1) / maxFitSpans;
-        int columns = (pinnedTabCount + rows - 1) / rows;
-        return Math.clamp(columns, 1, maxFitSpans);
+        return calculateBalancedSpanCount(availableWidth, pinnedTabCount, res, isTablet);
     }
 
     private void updatePinnedLayoutSpanCount() {
         if (mPinnedLayoutManager == null) return;
         mPinnedLayoutManager.setSpanCount(getSpanCount());
         mPinnedTabsRecyclerView.invalidateItemDecorations();
-    }
-
-    /**
-     * Distributes inter-item horizontal gaps evenly across grid columns without outer margins,
-     * ensuring identical visual item widths since RecyclerView does not support layout_weight.
-     */
-    private void calculatePinnedTabItemOffsets(Rect outRect, View view, RecyclerView parent) {
-
-        int position = parent.getChildAdapterPosition(view);
-        if (position == RecyclerView.NO_POSITION) {
-            position = parent.indexOfChild(view);
-        }
-        if (position == RecyclerView.NO_POSITION) return;
-        int spanCount = mPinnedLayoutManager.getSpanCount();
-        if (spanCount <= 1) {
-            outRect.left = 0;
-            outRect.right = 0;
-            return;
-        }
-        int minHorizontalGap =
-                parent.getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-        int column = position % spanCount;
-        int left = column * minHorizontalGap / spanCount;
-        int right = minHorizontalGap - (column + 1) * minHorizontalGap / spanCount;
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        outRect.left = isRtl ? right : left;
-        outRect.right = isRtl ? left : right;
     }
 
     private boolean openContextMenuForFocusedItem(RecyclerView recyclerView) {
@@ -2236,6 +2174,79 @@ public class VerticalTabListCoordinator {
         groupHeaderView.layout(0, 0, width, height);
 
         return groupHeaderView;
+    }
+
+    /**
+     * Calculates the grid column span count for pinned tabs based on available width and tab count.
+     */
+    @VisibleForTesting
+    static int calculateBalancedSpanCount(
+            int availableWidth, int pinnedTabCount, Resources res, boolean isTablet) {
+        int minItemWidth =
+                res.getDimensionPixelSize(
+                        isTablet
+                                ? R.dimen.vertical_tab_pinned_item_min_width_tablet
+                                : R.dimen.vertical_tab_pinned_item_min_width);
+        int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
+        if (minItemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
+
+        float spansFittingWidth =
+                (float) (availableWidth + minHorizontalGap) / (minItemWidth + minHorizontalGap)
+                        + SPAN_CALCULATION_EPSILON;
+        int maxFitSpans =
+                Math.clamp((int) Math.floor(spansFittingWidth), 1, MAX_SINGLE_ROW_SPAN_COUNT);
+
+        if (pinnedTabCount <= 0) {
+            return maxFitSpans;
+        }
+
+        // Uses integer ceiling division (A + B - 1) / B instead of A / B (which truncates and
+        // would yield 0 rows when pinnedTabCount < maxFitSpans) to calculate the full number of
+        // rows needed, balancing tabs evenly across rows.
+        int rows = (pinnedTabCount + maxFitSpans - 1) / maxFitSpans;
+        int columns = (pinnedTabCount + rows - 1) / rows;
+        return Math.clamp(columns, 1, maxFitSpans);
+    }
+
+    @VisibleForTesting
+    static RecyclerView.ItemDecoration createPinnedTabItemDecoration() {
+        return new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(
+                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                calculatePinnedTabItemOffsets(outRect, view, parent);
+            }
+        };
+    }
+
+    /**
+     * Distributes inter-item horizontal gaps evenly across grid columns without outer margins,
+     * ensuring identical visual item widths since RecyclerView does not support layout_weight.
+     */
+    private static void calculatePinnedTabItemOffsets(
+            Rect outRect, View view, RecyclerView parent) {
+        int position = parent.getChildAdapterPosition(view);
+        if (position == RecyclerView.NO_POSITION) {
+            position = parent.indexOfChild(view);
+        }
+        if (position == RecyclerView.NO_POSITION) return;
+        if (!(parent.getLayoutManager() instanceof GridLayoutManager gridLayoutManager)) return;
+        int spanCount = gridLayoutManager.getSpanCount();
+        if (spanCount <= 1) {
+            outRect.left = 0;
+            outRect.right = 0;
+            return;
+        }
+        int minHorizontalGap =
+                parent.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
+        int column = position % spanCount;
+        int left = column * minHorizontalGap / spanCount;
+        int right = minHorizontalGap - (column + 1) * minHorizontalGap / spanCount;
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        outRect.left = isRtl ? right : left;
+        outRect.right = isRtl ? left : right;
     }
 
     @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
