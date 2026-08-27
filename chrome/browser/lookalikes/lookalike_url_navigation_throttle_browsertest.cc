@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -121,6 +122,10 @@ void SetEngagementScore(BrowserWindowInterface* browser,
                         double score) {
   site_engagement::SiteEngagementService::Get(browser->GetProfile())
       ->ResetBaseScoreForURL(url, score);
+  base::test::TestFuture<const std::vector<lookalikes::DomainInfo>&> configured;
+  LookalikeUrlServiceFactory::GetForProfile(browser->GetProfile())
+      ->ForceUpdateEngagedSites(configured.GetCallback());
+  EXPECT_TRUE(configured.Wait());
 }
 
 bool IsUrlShowing(BrowserWindowInterface* browser) {
