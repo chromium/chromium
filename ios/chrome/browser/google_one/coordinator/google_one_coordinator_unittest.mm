@@ -13,8 +13,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -23,6 +21,10 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -59,11 +61,13 @@
     : NSObject <GoogleOneControllerFactory>
 @property(nonatomic, strong)
     CoordinatorTestFakeGoogleOneController* lastCreatedController;
+@property(nonatomic, strong) GoogleOneConfiguration* lastCreatedConfiguration;
 @end
 
 @implementation CoordinatorTestFakeGoogleOneControllerFactory
 - (id<GoogleOneController>)createControllerWithConfiguration:
     (GoogleOneConfiguration*)configuration {
+  self.lastCreatedConfiguration = configuration;
   self.lastCreatedController =
       [[CoordinatorTestFakeGoogleOneController alloc] init];
   return self.lastCreatedController;
@@ -102,10 +106,8 @@ class GoogleOneCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     base_view_controller_ = [[UIViewController alloc] init];
 
-    mock_scene_commands_ = OCMStrictProtocolMock(@protocol(SceneCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_scene_commands_
-                     forProtocol:@protocol(SceneCommands)];
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
 
     mock_google_one_commands_ =
         OCMStrictProtocolMock(@protocol(GoogleOneCommands));
@@ -127,7 +129,6 @@ class GoogleOneCoordinatorTest : public PlatformTest {
   FakeSceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  id mock_scene_commands_;
   id mock_google_one_commands_;
   base::HistogramTester histogram_tester_;
 };
@@ -143,12 +144,17 @@ TEST_F(GoogleOneCoordinatorTest, StartSignedOutWithInputURL) {
                       entryPoint:GoogleOneEntryPoint::kSettings
                         inputURL:input_url];
 
-  OCMExpect([mock_scene_commands_ openURLInNewTab:[OCMArg any]]);
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
   OCMExpect([mock_google_one_commands_ hideGoogleOne]);
 
   [coordinator start];
 
-  EXPECT_OCMOCK_VERIFY(mock_scene_commands_);
+  EXPECT_EQ(url_loader->load_new_tab_call_count, 1);
+  EXPECT_EQ(url_loader->last_params.web_params.url, input_url);
+  EXPECT_FALSE(url_loader->last_params.in_incognito);
   EXPECT_OCMOCK_VERIFY(mock_google_one_commands_);
 
   histogram_tester_.ExpectUniqueSample(
@@ -183,6 +189,47 @@ TEST_F(GoogleOneCoordinatorTest, StartSignedInWithIdentity) {
 
   [coordinator stop];
   EXPECT_TRUE(factory.lastCreatedController.stopped);
+
+  ios::provider::SetGoogleOneControllerFactory(nil);
+}
+
+// Tests that when openURLCallback is invoked, it loads the URL in a new tab
+// via UrlLoadingBrowserAgent.
+TEST_F(GoogleOneCoordinatorTest, OpenURLCallbackLoadsInNewTab) {
+  CoordinatorTestFakeGoogleOneControllerFactory* factory =
+      [[CoordinatorTestFakeGoogleOneControllerFactory alloc] init];
+  ios::provider::SetGoogleOneControllerFactory(factory);
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager* fake_system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  fake_system_identity_manager->AddIdentity(identity);
+
+  GoogleOneCoordinator* coordinator = [[GoogleOneCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                      entryPoint:GoogleOneEntryPoint::kSettings
+                        identity:identity];
+
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
+  [coordinator start];
+
+  ASSERT_NE(factory.lastCreatedConfiguration, nil);
+  ASSERT_NE(factory.lastCreatedConfiguration.openURLCallback, nil);
+
+  NSURL* test_url = [NSURL URLWithString:@"https://one.google.com/help"];
+  factory.lastCreatedConfiguration.openURLCallback(test_url);
+
+  EXPECT_EQ(url_loader->load_new_tab_call_count, 1);
+  EXPECT_EQ(url_loader->last_params.web_params.url,
+            GURL("https://one.google.com/help"));
+  EXPECT_FALSE(url_loader->last_params.in_incognito);
+
+  [coordinator stop];
 
   ios::provider::SetGoogleOneControllerFactory(nil);
 }
