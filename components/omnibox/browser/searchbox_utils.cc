@@ -457,7 +457,6 @@ void RecordSuggestionUsedMetrics(const AutocompleteMatch& match) {
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
                                 match.rich_autocompletion_triggered);
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 }
 
 WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(

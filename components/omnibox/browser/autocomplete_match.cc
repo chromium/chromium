@@ -61,7 +61,6 @@
 #include "url/url_util.h"
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
@@ -497,33 +496,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
-const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
-    omnibox::AnswerType type) {
-  switch (type) {
-    case omnibox::ANSWER_TYPE_CURRENCY:
-      return features::IsRoundedIconsEnabled()
-                 ? omnibox::kAutorenewIcon
-                 : omnibox::kAnswerCurrencyChromeRefreshOldIcon;
-    case omnibox::ANSWER_TYPE_DICTIONARY:
-      return features::IsRoundedIconsEnabled()
-                 ? omnibox::kBookIcon
-                 : omnibox::kAnswerDictionaryChromeRefreshOldIcon;
-    case omnibox::ANSWER_TYPE_FINANCE:
-      return features::IsRoundedIconsEnabled()
-                 ? omnibox::kSwapVertIcon
-                 : omnibox::kAnswerFinanceChromeRefreshOldIcon;
-    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return features::IsRoundedIconsEnabled()
-                 ? omnibox::kWbSunnyIcon
-                 : omnibox::kAnswerSunriseChromeRefreshOldIcon;
-    case omnibox::ANSWER_TYPE_TRANSLATION:
-      return features::IsRoundedIconsEnabled()
-                 ? omnibox::kTranslateIcon
-                 : omnibox::kAnswerTranslationChromeRefreshOldIcon;
-    default:
-      return omnibox::kAnswerDefaultIcon;
-  }
-}
 
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
@@ -584,9 +556,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                : omnibox::kBookmarkChromeRefreshOldIcon;
   }
 
-  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-    return AnswerTypeToAnswerIcon(answer_type);
-  }
 
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
@@ -1772,9 +1741,6 @@ bool AutocompleteMatch::HasCustomDescription() const {
 
 bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
-  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-    return false;
-  }
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::HISTORY_URL ||
          type == AutocompleteMatchType::HISTORY_TITLE ||

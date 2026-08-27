@@ -504,20 +504,3 @@ TEST_F(OmniboxAutocompleteControllerTest, IPv4AddressPartsCount) {
       testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
                            base::Bucket(4, 1)));
 }
-
-// Tests AnswerInSuggest logging.
-TEST_F(OmniboxAutocompleteControllerTest, LogAnswerUsed) {
-  base::HistogramTester histogram_tester;
-  AutocompleteMatch match(autocomplete_controller_->search_provider(), 0, false,
-                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-  match.destination_url = GURL("https://foo");
-  [controller_ openMatch:match
-               popupSelection:OmniboxPopupSelection(0)
-        windowOpenDisposition:WindowOpenDisposition::CURRENT_TAB
-              alternateNavURL:GURL()
-                   pastedText:u""
-      matchSelectionTimestamp:base::TimeTicks()];
-  histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
-                                      8, 1);
-}

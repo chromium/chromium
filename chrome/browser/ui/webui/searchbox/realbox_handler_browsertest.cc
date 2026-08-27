@@ -469,32 +469,3 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, MatchVectorIcons) {
   }
 }
 
-// Tests that all Omnibox Answer vector icons map to an equivalent SVG for use
-// in the NTP Realbox.
-IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, AnswerVectorIcons) {
-  for (int answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
-       answer_type != omnibox::AnswerType_ARRAYSIZE; answer_type++) {
-    AutocompleteMatch match;
-    match.answer_type = static_cast<omnibox::AnswerType>(answer_type);
-    const bool is_bookmark = RealboxHandlerTest::GetParam();
-    const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
-    const std::string& svg_name =
-        handler_->AutocompleteIconToResourceName(vector_icon);
-    if (is_bookmark) {
-      EXPECT_EQ(
-          features::IsWebUIRoundedIconsEnabled()
-              ? "//resources/cr_components/searchbox/icons/bookmark_cr23.svg"
-              : "//resources/cr_components/searchbox/icons/"
-                "bookmark_cr23_old.svg",
-          svg_name);
-    } else {
-      EXPECT_FALSE(svg_name.empty());
-      EXPECT_NE(
-          features::IsWebUIRoundedIconsEnabled()
-              ? "//resources/cr_components/searchbox/icons/search_cr23.svg"
-              : "//resources/cr_components/searchbox/icons/"
-                "search_cr23_old.svg",
-          svg_name);
-    }
-  }
-}

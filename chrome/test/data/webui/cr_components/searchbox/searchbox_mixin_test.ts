@@ -141,9 +141,9 @@ function createCalculatorMatch(modifiers: Partial<AutocompleteMatch>):
 
 function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   assertEquals('option', matchEl.getAttribute('role'));
-  const matchContents = match.answer ? match.answer.firstLine : match.contents;
+  const matchContents = match.contents;
   const matchDescription =
-      match.answer ? match.answer.secondLine : match.description;
+      match.description;
   const separatorText =
       (match.swapContentsAndDescription ? match.contents : match.description) ?
       loadTimeData.getString('searchboxSeparator') :
@@ -975,27 +975,6 @@ suite('SearchboxMixinTest', () => {
     assertTrue(matchEls[0]!.hasAttribute('selected'));
   });
 
-  test('renders rich suggestion answer and hides separator', async () => {
-    const matches = [createSearchMatchForTesting({
-      answer: {
-        firstLine: 'When is Christmas Day',
-        secondLine: 'Saturday, December 25, 2021',
-      },
-      isRichSuggestion: true,
-    })];
-    const mockInput = element.getInputElement();
-    await simulateUserTextInput(mockInput, 'When is Christmas Day');
-    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
-      queryId: element.activeQueryId,
-      input: 'When is Christmas Day',
-      matches: matches,
-    }));
-    await microtasksFinished();
-
-    const matchEl = element.getDropdownElement().shadowRoot.querySelector(
-        'cr-searchbox-match')!;
-    assertEquals(window.getComputedStyle(matchEl.$.separator).display, 'none');
-  });
 
   test('autocomplete response', async () => {
     const mockInput = element.getInputElement();

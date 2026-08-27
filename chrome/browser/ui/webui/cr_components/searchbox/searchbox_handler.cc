@@ -79,7 +79,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
@@ -977,7 +976,6 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->is_rich_suggestion =
       !mojom_match->image_url.empty() ||
       match.type == AutocompleteMatchType::CALCULATOR ||
-      match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
       match.enterprise_search_aggregator_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
   if (!match.from_keyword) {

@@ -36,8 +36,6 @@ export function createAutocompleteMatch(
     type: '',
     isContextualSuggestion: false,
     isRichSuggestion: false,
-    isWeatherAnswerSuggestion: null,
-    answer: null,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,

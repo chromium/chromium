@@ -11,14 +11,13 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** A class that handles model and view creation for the most commonly used omnibox suggestion. */
+/** A class that handles model and view creation for calculator answers. */
 @NullMarked
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
@@ -94,39 +93,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
         int icon = 0;
-
-        AnswerType type = suggestion.getAnswerType();
-        if (type == null) {
-            type = AnswerType.ANSWER_TYPE_UNSPECIFIED;
-        }
-        if (type != AnswerType.ANSWER_TYPE_UNSPECIFIED) {
-            switch (type) {
-                case ANSWER_TYPE_DICTIONARY:
-                    icon = R.drawable.ic_book_round;
-                    break;
-                case ANSWER_TYPE_FINANCE:
-                    icon = R.drawable.ic_swap_vert_round;
-                    break;
-                case ANSWER_TYPE_GENERIC_ANSWER:
-                case ANSWER_TYPE_SPORTS:
-                    icon = R.drawable.ic_google_round;
-                    break;
-                case ANSWER_TYPE_SUNRISE_SUNSET:
-                    icon = R.drawable.ic_wb_sunny_round;
-                    break;
-                case ANSWER_TYPE_TRANSLATION:
-                    icon = R.drawable.logo_translate_round;
-                    break;
-                case ANSWER_TYPE_WEATHER:
-                    icon = R.drawable.logo_partly_cloudy;
-                    break;
-                case ANSWER_TYPE_CURRENCY:
-                    icon = R.drawable.ic_loop_round;
-                    break;
-                default:
-                    break;
-            }
-        } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
+        if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
             icon = R.drawable.ic_equals_sign_round;
         }
 

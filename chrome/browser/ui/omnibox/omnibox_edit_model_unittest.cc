@@ -60,7 +60,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -1862,19 +1861,6 @@ TEST_F(OmniboxEditModelTest, OpenAiModeTriggersContextualizeWithoutService) {
   // Reset the mock contextualizer so it is destroyed before the local
   // fake_delegate it points to.
   model()->SetQueryContextualizerForTesting(nullptr);
-}
-
-TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
-  base::HistogramTester histogram_tester;
-  AutocompleteMatch match(
-      controller()->autocomplete_controller()->search_provider(), 0, false,
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-  match.destination_url = GURL("https://foo");
-  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
-                               GURL(), std::u16string(), 0);
-  histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
-                                      8, 1);
 }
 
 // Tests `GetPopupRichSuggestionBitmap()` method, verifying that no bitmap is

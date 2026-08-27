@@ -16,7 +16,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/search_engines/search_engine_type.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"

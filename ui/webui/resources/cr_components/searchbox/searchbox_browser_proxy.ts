@@ -44,8 +44,6 @@ export function createAutocompleteMatch(
     removeButtonA11yLabel: '',
     type: '',
     isRichSuggestion: false,
-    isWeatherAnswerSuggestion: null,
-    answer: null,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,

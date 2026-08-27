@@ -42,10 +42,9 @@ namespace {
 
 using ::ash::string_matching::TokenizedString;
 
-// Returns true if the match is an answer, including calculator answers.
-bool IsAnswer(const AutocompleteMatch& match) {
-  return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
-         match.type == AutocompleteMatchType::CALCULATOR;
+// Returns true if the match is a calculator answer.
+bool IsCalculator(const AutocompleteMatch& match) {
+  return match.type == AutocompleteMatchType::CALCULATOR;
 }
 
 }  //  namespace
@@ -138,7 +137,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
                        BookmarkModelFactory::GetForBrowserContext(profile_),
                        input_),
           last_tokenized_query_.value(), &favicon_cache_));
-    } else if (!IsAnswer(match)) {
+    } else if (!IsCalculator(match)) {
       // Filters out omnibox results if web is disabled in launcher search
       // controls.
       if (!IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {

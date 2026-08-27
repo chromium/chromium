@@ -21,7 +21,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -61,11 +60,11 @@ static constexpr int kToolbeltTextInsetRight = 8;
 // The radius of the rounded square backgrounds of icons, answers, and entities.
 static constexpr int kIconAndImageCornerRadius = 4;
 
-// Size of weather icon with a round square background.
-static constexpr int kWeatherImageSize = 24;
+// Size of Lens thumbnail with a round square background.
+static constexpr int kThumbnailImageSize = 24;
 
-// Size of the weather's round square background.
-static constexpr int kWeatherBackgroundSize = 28;
+// Size of the Lens thumbnail's round square background.
+static constexpr int kThumbnailBackgroundSize = 28;
 
 // The vertical gap between the contents and descriptions for multiline answers.
 static constexpr int kHistoryEmbeddingAnswerGap = 3;
@@ -213,8 +212,7 @@ bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
   // Extension suggestions in unscoped mode can have an `image_url` specified,
   // but they should be displayed as icon view instead of an image view (i.e.
   // following the default icon view size instead the larger image view size).
-  return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
-         match.type == AutocompleteMatchType::CALCULATOR ||
+  return match.type == AutocompleteMatchType::CALCULATOR ||
          (!match.image_url.is_empty() &&
           match.provider->type() !=
               AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) ||
@@ -289,30 +287,20 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     answer_image_view_->SetImage(ui::ImageModel());
     answer_image_view_->SetSize(gfx::Size());
   } else {
-    // Determine if we have a local icon (or else it will be downloaded).
-    if (match.answer_type == omnibox::ANSWER_TYPE_WEATHER) {
-      // Weather icons are downloaded. We just need to set the correct size.
-      answer_image_view_->SetImageSize(
-          gfx::Size(kUniformRowHeightIconSize, kUniformRowHeightIconSize));
-    } else if (match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-      apply_vector_icon(
-          AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer_type));
-    } else {
-      // Use the hovered background color as the default placeholder color.
-      SkColor color = GetColorProvider()->GetColor(
-          GetOmniboxBackgroundColorId(OmniboxPartState::HOVERED));
-      // If `image_dominant_color` is provided, override the default.
-      if (!match.image_dominant_color.empty()) {
-        content::ParseHexColorString(match.image_dominant_color, &color);
-        color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
-      }
-
-      gfx::Size size(kUniformRowHeightIconSize, kUniformRowHeightIconSize);
-      answer_image_view_->SetImageSize(size);
-      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
-          gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(
-              size, color)));
+    // Use the hovered background color as the default placeholder color.
+    SkColor color = GetColorProvider()->GetColor(
+        GetOmniboxBackgroundColorId(OmniboxPartState::HOVERED));
+    // If `image_dominant_color` is provided, override the default.
+    if (!match.image_dominant_color.empty()) {
+      content::ParseHexColorString(match.image_dominant_color, &color);
+      color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
     }
+
+    gfx::Size size(kUniformRowHeightIconSize, kUniformRowHeightIconSize);
+    answer_image_view_->SetImageSize(size);
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(size,
+                                                                      color)));
   }
   SetTailSuggestCommonPrefixWidth(
       (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
@@ -379,42 +367,32 @@ void OmniboxMatchCellView::ClearIcon() {
 
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
                                     const AutocompleteMatch& match) {
-  // Weather icons are also sourced remotely and therefore fall into this flow.
-  // Other answers don't.
-  const bool is_weather_answer =
-      match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
-
   int width = image.width();
   int height = image.height();
 
-  // Weather icon square background should be the same color as the pop-up
-  // background. The experimental thumbnail is treated similar to the
-  // weather icon and is likewise resized to reduce downscaling artifacts.
+  // The experimental thumbnail is resized to reduce downscaling artifacts.
   // However, thumbnails are usually rectangular and should preserve aspect
   // ratio by cropping edges and scaling to fill, not by shrinking to fit.
   const bool is_thumbnail =
       match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
       omnibox_feature_configs::ContextualSearch::Get()
           .open_lens_action_uses_thumbnail;
-  if (is_weather_answer || is_thumbnail) {
+  if (is_thumbnail) {
     // Explicitly resize to avoid pixelation. Note the thumbnail uses best
     // quality because it makes a noticeable difference for so much downscaling.
     // UX also suggested a 5% opacity black overlay to reduce white on white
     // edgeless thumbnail effect. Reducing HSL lightness does this efficiently.
     gfx::ImageSkia resized_image =
-        is_thumbnail ? gfx::ImageSkiaOperations::CreateHSLShiftedImage(
-                           gfx::ImageSkiaOperations::CreateResizedImage(
-                               gfx::ImageSkiaOperations::ExtractSubset(
-                                   image, FullCenteredSquare(image.size())),
-                               skia::ImageOperations::RESIZE_BEST,
-                               gfx::Size(kWeatherImageSize, kWeatherImageSize)),
-                           {-1, -1, 0.5 - (0.05 / 2)})
-                     : gfx::ImageSkiaOperations::CreateResizedImage(
-                           image, skia::ImageOperations::RESIZE_GOOD,
-                           gfx::Size(kWeatherImageSize, kWeatherImageSize));
+        gfx::ImageSkiaOperations::CreateHSLShiftedImage(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                gfx::ImageSkiaOperations::ExtractSubset(
+                    image, FullCenteredSquare(image.size())),
+                skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kThumbnailImageSize, kThumbnailImageSize)),
+            {-1, -1, 0.5 - (0.05 / 2)});
     answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            gfx::SizeF(kWeatherBackgroundSize, kWeatherBackgroundSize),
+            gfx::SizeF(kThumbnailBackgroundSize, kThumbnailBackgroundSize),
             kIconAndImageCornerRadius,
             GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
             resized_image)));

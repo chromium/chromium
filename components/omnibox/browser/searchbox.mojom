@@ -33,12 +33,6 @@ struct Action {
   string a11y_label;
 };
 
-// See components/omnibox/browser/suggestion_answer.h
-struct SuggestionAnswer {
-  mojo_base.mojom.String16 first_line;
-  mojo_base.mojom.String16 second_line;
-};
-
 enum KeywordType {
   kChip,
   kInKeyword,
@@ -65,7 +59,6 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16 a11y_label;
   bool allowed_to_be_default_match;
   array<Action> actions;
-  SuggestionAnswer? answer;
   mojo_base.mojom.String16 contents;
   array<ACMatchClassification> contents_class;
   mojo_base.mojom.String16 description;
@@ -73,7 +66,6 @@ struct AutocompleteMatch {
   url.mojom.Url destination_url;
   mojo_base.mojom.String16 inline_autocompletion;
   mojo_base.mojom.String16 fill_into_edit;
-  bool? is_weather_answer_suggestion;
   // The path for the suggestion icon. This is a relative url pointing to a
   // bundled resource and is used directly in CSS to show the icon.
   string icon_path;

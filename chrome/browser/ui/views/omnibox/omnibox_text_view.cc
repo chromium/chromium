@@ -38,30 +38,6 @@ constexpr int kTextStyle = views::style::STYLE_PRIMARY;
 // entire font.
 static constexpr int kVerticalPadding = 3;
 
-void ApplyTextStyleForAnswer(OmniboxResultView* result_view,
-                             gfx::RenderText* render_text,
-                             const gfx::Range& range,
-                             bool is_headline) {
-  render_text->ApplyWeight(gfx::Font::Weight::NORMAL, range);
-  render_text->ApplyBaselineStyle(gfx::BaselineStyle::kNormalBaseline, range);
-  const bool selected =
-      result_view->GetThemeState() == OmniboxPartState::SELECTED;
-  ui::ColorId id;
-  if (is_headline) {
-    id = selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
-  } else {
-    id = selected ? kColorOmniboxResultsTextDimmedSelected
-                  : kColorOmniboxResultsTextDimmed;
-  }
-  render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
-}
-
-// Dictionary and translation answers have a max number of lines > 1.
-bool AnswerHasDefinedMaxLines(omnibox::AnswerType answer_type) {
-  return answer_type == omnibox::ANSWER_TYPE_DICTIONARY ||
-         answer_type == omnibox::ANSWER_TYPE_TRANSLATION;
-}
-
 }  // namespace
 
 OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
@@ -152,42 +128,6 @@ void OmniboxTextView::SetTextWithStyling(
 
   // `ReapplyStyling()` will update the preferred size and request a repaint.
   ReapplyStyling();
-}
-
-void OmniboxTextView::AppendAndStyleAnswerText(
-    const omnibox::FormattedString& formatted_string,
-    size_t fragment_index,
-    const omnibox::AnswerType& answer_type,
-    bool is_headline) {
-  cached_classifications_.reset();
-  wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
-  const auto fragments_size =
-      static_cast<size_t>(formatted_string.fragments_size());
-  for (size_t i = fragment_index; i < fragments_size; ++i) {
-    const std::u16string space_separator = i == 0u ? u"" : u" ";
-    const std::u16string append_text =
-        space_separator +
-        base::UTF8ToUTF16(formatted_string.fragments(i).text());
-    size_t offset = render_text_ ? render_text_->text().length() : 0u;
-    gfx::Range range(offset, offset + append_text.length());
-    render_text_->AppendText(append_text);
-    ApplyTextStyleForAnswer(result_view_, render_text_.get(), range,
-                            is_headline);
-  }
-  OnStyleChanged();
-}
-
-void OmniboxTextView::SetMultilineAnswerText(
-    const omnibox::FormattedString& formatted_string,
-    const omnibox::AnswerType& answer_type) {
-  render_text_ = CreateRenderText(u"");
-  if (formatted_string.fragments_size() > 0 &&
-      AnswerHasDefinedMaxLines(answer_type)) {
-    render_text_->SetMultiline(true);
-    render_text_->SetMaxLines(1);
-  }
-  AppendAndStyleAnswerText(formatted_string, /*fragment_index=*/0u, answer_type,
-                           /*is_headline=*/false);
 }
 
 void OmniboxTextView::SetMultilineText(const std::u16string& text) {

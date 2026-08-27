@@ -28,7 +28,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -376,9 +375,6 @@ struct AutocompleteMatch {
 #endif
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
-  // Converts omnibox::AnswerType to an answer vector icon.
-  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(
-      omnibox::AnswerType type);
 
   // Gets the vector icon identifier for the icon to be shown for this match. If
   // `is_bookmark` is true, returns a bookmark icon rather than what the type

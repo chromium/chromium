@@ -192,7 +192,6 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 
   TemplateURLService* service = _omniboxClient->GetTemplateURLService();
   TemplateURL* templateURL = match.GetTemplateURL(service);

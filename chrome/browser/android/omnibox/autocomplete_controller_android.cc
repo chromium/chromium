@@ -378,7 +378,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   }
 
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
-  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (template_url_service &&

@@ -13,8 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "third_party/omnibox_proto/answer_type.pb.h"
-#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/view.h"
@@ -55,20 +53,6 @@ class OmniboxTextView : public views::View {
   // Used for standard suggestions.
   void SetTextWithStyling(std::u16string_view new_text,
                           const ACMatchClassifications& classifications);
-
-  // Used for search answers using `RichAnswerTemplate`.
-  // Sets the styling for `FormattedString`'s `FormattedStringFragment`s.
-  // `fragment_index` specifies where to start appending and styling text from.
-  // Headlines should be styled differently than subheads.
-  void AppendAndStyleAnswerText(
-      const omnibox::FormattedString& formatted_string,
-      size_t fragment_index,
-      const omnibox::AnswerType& answer_type,
-      bool is_headline);
-
-  // Used for suggestions using `RichAnswerTemplate`.
-  void SetMultilineAnswerText(const omnibox::FormattedString& formatted_string,
-                              const omnibox::AnswerType& answer_type);
 
   // Used for history embedding answers.
   void SetMultilineText(const std::u16string& text);

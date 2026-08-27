@@ -76,10 +76,6 @@ export class SearchboxIconElement extends CrLitElement {
        * Whether icon belongs to an answer or not. Used to prevent
        * the match image from taking size of container.
        */
-      isAnswer: {
-        type: Boolean,
-        reflect: true,
-      },
 
       /**
        * Whether icon belongs to a starter pack match.
@@ -101,10 +97,6 @@ export class SearchboxIconElement extends CrLitElement {
        * Whether suggestion answer is of answer type weather. Weather answers
        * don't have the same background as other suggestion answers.
        */
-      isWeatherAnswer: {
-        type: Boolean,
-        reflect: true,
-      },
 
       /**
        * Whether suggestion is an enterprise search aggregator people
@@ -218,10 +210,8 @@ export class SearchboxIconElement extends CrLitElement {
   accessor defaultIcon: string = '';
   accessor hasIconContainerBackground: boolean = false;
   accessor inSearchbox: boolean = false;
-  accessor isAnswer: boolean = false;
   accessor isStarterPack = false;
   accessor isFeaturedEnterpriseSearch = false;
-  accessor isWeatherAnswer: boolean = false;
   accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
   accessor maskImage: string = '';
   accessor match: AutocompleteMatch|null = null;
@@ -270,20 +260,16 @@ export class SearchboxIconElement extends CrLitElement {
         this.imageLoading_ = !!this.imageSrc_;
         this.imageError_ = false;
       }
-
-      this.isAnswer = this.computeIsAnswer_();
       this.isEnterpriseSearchAggregatorPeopleType =
           this.computeIsEnterpriseSearchAggregatorPeopleType_();
       this.isStarterPack = this.computeIsStarterPack_();
       this.isFeaturedEnterpriseSearch =
           this.computeIsFeaturedEnterpriseSearch_();
-      this.isWeatherAnswer = this.computeIsWeatherAnswer_();
       this.hasImage_ = this.computeHasImage_();
       this.maskImage = this.computeMaskImage_();
     }
 
-    if (changedProperties.has('match') ||
-        changedProperties.has('isWeatherAnswer')) {
+    if (changedProperties.has('match')) {
       this.hasIconContainerBackground =
           this.computeHasIconContainerBackground_();
     }
@@ -389,14 +375,6 @@ export class SearchboxIconElement extends CrLitElement {
     }
 
     return '';
-  }
-
-  private computeIsAnswer_(): boolean {
-    return !!this.match && !!this.match.answer;
-  }
-
-  private computeIsWeatherAnswer_(): boolean {
-    return this.match?.isWeatherAnswerSuggestion || false;
   }
 
   private computeHasImage_(): boolean {
@@ -571,8 +549,7 @@ export class SearchboxIconElement extends CrLitElement {
       return this.match.type === PEDAL ||
           this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
           this.match.type === CALCULATOR || this.match.type === STARTER_PACK ||
-          this.match.type === FEATURED_ENTERPRISE_SEARCH ||
-          (!!this.match.answer && !this.isWeatherAnswer);
+          this.match.type === FEATURED_ENTERPRISE_SEARCH;
     }
     return false;
   }

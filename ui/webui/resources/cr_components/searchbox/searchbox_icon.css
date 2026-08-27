@@ -34,7 +34,7 @@
 }
 
 /* Entities may feature a dominant color background until image loads. */
-:host([has-image_]:not([in-searchbox]):not([is-weather-answer])) #container {
+:host([has-image_]:not([in-searchbox])) #container {
   background-color: var(--color-searchbox-results-icon-container-background,
       var(--container-bg-color));
 }
@@ -44,9 +44,6 @@
   background-color: var(--color-searchbox-answer-icon-background);
 }
 
-:host([is-weather-answer]:not([in-searchbox])) #container {
-  background-color: var(--color-searchbox-results-background);
-}
 
 #image {
   display: none;
@@ -59,10 +56,6 @@
   display: initial;
 }
 
-:host([is-answer]) #image {
-  max-height: 24px;
-  max-width: 24px;
-}
 
 #icon {
   -webkit-mask-position: center;

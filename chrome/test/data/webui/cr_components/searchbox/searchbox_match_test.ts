@@ -302,23 +302,6 @@ suite('CrComponentsRealboxMatchTest', () => {
         contentsEl.innerHTML);
   });
 
-  test('EscapesAnswerDescription', async () => {
-    const match = createAutocompleteMatch();
-    match.answer = {
-      firstLine: 'test@example.com',
-      secondLine: '<email>Contact Info</email>',
-    };
-    matchEl.match = match;
-    await microtasksFinished();
-
-    const descriptionEl = matchEl.shadowRoot.querySelector('#description');
-    assertTrue(!!descriptionEl);
-    // `<email>` XHTML tag is escaped. Answer description is rendered unstyled.
-    assertEquals(
-        '<span>&lt;email&gt;Contact Info&lt;/email&gt;</span>',
-        descriptionEl.innerHTML);
-    assertEquals(0, descriptionEl.querySelectorAll('email').length);
-  });
 
   test('EscapesContentsAndDescription', async () => {
     const match = createAutocompleteMatch();

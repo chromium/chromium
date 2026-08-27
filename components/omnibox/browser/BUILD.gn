@@ -347,8 +347,6 @@ static_library("browser") {
     "shortcuts_database.h",
     "shortcuts_provider.cc",
     "shortcuts_provider.h",
-    "suggestion_answer.cc",
-    "suggestion_answer.h",
     "suggestion_group_util.cc",
     "suggestion_group_util.h",
     "tab_group_provider.cc",
@@ -782,7 +780,6 @@ if (is_android) {
       "autocomplete_match.h",
       "autocomplete_match_type.h",
       "most_visited_sites_provider.cc",
-      "suggestion_answer.h",
     ]
   }
 
