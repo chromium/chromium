@@ -79,7 +79,7 @@ constexpr CGFloat kDoodleBottomMarginAdjustment = 10;
 constexpr CGFloat kLogoTopMarginAdjustment = kDoodleLogoDelta -
                                              kDoodleTopMarginAdjustment -
                                              kDoodleBottomMarginAdjustment;
-constexpr CGFloat kCleanupDoodleTopMarginAdjustment = 4;
+constexpr CGFloat kCleanupDoodleTopMarginAdjustment = 15;
 constexpr CGFloat kCleanupDoodleBottomMarginAdjustment = 4;
 
 // The size of the symbol image.
@@ -169,22 +169,22 @@ const CGFloat kHintTextScaleUICleanup = 0.0;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
 // Tight Padding Arm.
-const CGFloat kLogoTopPaddingTight = 24.0;
-const CGFloat kLogoToFakeboxPaddingTight = 32.0;
+const CGFloat kLogoTopPaddingTight = 9.0;
+const CGFloat kLogoToFakeboxPaddingTight = 36.0;
 const CGFloat kDoodleTopPaddingTight = 16.0;
 const CGFloat kDoodleToFakeboxPaddingTight = 16.0;
 const CGFloat kMostVisitedTopPaddingTight = 32.0;
 
 // Medium Padding Arm.
-const CGFloat kLogoTopPaddingMedium = 36.0;
-const CGFloat kLogoToFakeboxPaddingMedium = 36.0;
+const CGFloat kLogoTopPaddingMedium = 21.0;
+const CGFloat kLogoToFakeboxPaddingMedium = 40.0;
 const CGFloat kDoodleTopPaddingMedium = 24.0;
 const CGFloat kDoodleToFakeboxPaddingMedium = 24.0;
 const CGFloat kMostVisitedTopPaddingMedium = 36.0;
 
 // Preferred Padding Arm.
-const CGFloat kLogoTopPaddingPreferred = 48.0;
-const CGFloat kLogoToFakeboxPaddingPreferred = 36.0;
+const CGFloat kLogoTopPaddingPreferred = 33.0;
+const CGFloat kLogoToFakeboxPaddingPreferred = 40.0;
 const CGFloat kDoodleTopPaddingPreferred = 36.0;
 const CGFloat kDoodleToFakeboxPaddingPreferred = 24.0;
 const CGFloat kMostVisitedTopPaddingPreferred = 36.0;
@@ -565,7 +565,13 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
 
 UIColor* SearchHintLabelColor() {
   if (IsNewTabPageUICleanupEnabled()) {
-    return [UIColor colorNamed:kTextSecondaryColor];
+    return [UIColor colorWithDynamicProvider:^UIColor*(
+                        UITraitCollection* trait_collection) {
+      if (trait_collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        return [UIColor colorNamed:kTextSecondaryColor];
+      }
+      return [UIColor colorNamed:kTextTertiaryColor];
+    }];
   }
   return [UIColor colorNamed:kGrey800Color];
 }

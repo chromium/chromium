@@ -33,9 +33,6 @@ const CGFloat kCustomSearchEngineLabelFontSize = 13;
 const CGFloat kCustomSearchEngineLabelHeight = 18;
 // The height of the header container.
 const CGFloat kDiscoverFeedHeaderHeight = 30;
-// Height of the Discover header when the Discover title is hidden. This is used
-// to ensure sufficient top padding.
-const CGFloat kDiscoverFeedHeaderHeightUICleanup = 6;
 // Max size that the Title and Segmented Control fonts will scale to.
 const CGFloat kMaxFontSize = 24;
 
@@ -89,8 +86,8 @@ const CGFloat kMaxFontSize = 24;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
-  if (![self shouldShowTitleLabel]) {
-    return kDiscoverFeedHeaderHeightUICleanup;
+  if (![self shouldShowHeader]) {
+    return 0;
   }
   return kDiscoverFeedHeaderHeight;
 }
@@ -101,7 +98,7 @@ const CGFloat kMaxFontSize = 24;
   }
   [self.titleLabel removeFromSuperview];
   self.titleLabel = nil;
-  if ([self shouldShowTitleLabel]) {
+  if ([self shouldShowHeader]) {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
   }
@@ -116,7 +113,7 @@ const CGFloat kMaxFontSize = 24;
 #pragma mark - Private
 
 - (void)configureHeaderViews {
-  if ([self shouldShowTitleLabel]) {
+  if ([self shouldShowHeader]) {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
   }
@@ -125,8 +122,9 @@ const CGFloat kMaxFontSize = 24;
   }
 }
 
-// Returns whether the Discover feed header title label should be shown.
-- (BOOL)shouldShowTitleLabel {
+// Returns whether the Discover feed header should be shown. When NO, the
+// header view is hidden, its height is 0, and the title label is not created.
+- (BOOL)shouldShowHeader {
   if (IsNewTabPageUICleanupEnabled() &&
       [self.NTPDelegate isGoogleDefaultSearchEngine]) {
     return NO;
@@ -176,6 +174,8 @@ const CGFloat kMaxFontSize = 24;
     self.feedHeaderConstraints = nil;
   }
   self.feedHeaderConstraints = [[NSMutableArray alloc] init];
+
+  self.view.hidden = ![self shouldShowHeader];
 
   [self anchorContainer];
   if (self.titleLabel) {
