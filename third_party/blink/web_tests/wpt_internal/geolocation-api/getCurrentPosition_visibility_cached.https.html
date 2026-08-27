@@ -12,13 +12,13 @@
 <div id='log'></div>
 
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 await test_driver.set_permission({name: 'geolocation'}, 'granted', true);
 
 promise_test(async t => {
   const mock = new GeolocationMock();
-  mock.setGeolocationPermission(true);
+  mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
   mock.setGeolocationPosition(31.478, -0.166, 100);
 
   assert_equals(document.visibilityState, "visible");

@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("This tests removing the watcher from a position callback does not causes assertions.");
 
@@ -16,7 +16,7 @@ const mockLongitude = -0.166;
 const mockAccuracy = 100;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationPosition(mockLatitude,
                             mockLongitude,
                             mockAccuracy);

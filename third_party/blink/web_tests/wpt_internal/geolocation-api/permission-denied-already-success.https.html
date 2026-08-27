@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that when Geolocation permission has been denied prior to a call to a Geolocation method, the error callback is invoked with code PERMISSION_DENIED, when the Geolocation service has a good position.");
 
@@ -15,7 +15,7 @@ let error;
 
 // Prime the Geolocation instance by denying permission.
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(false);
+mock.setGeolocationPermission(GeolocationPermissionStatus.DENIED);
 mock.setGeolocationPosition(51.478, -0.166, 100);
 
 navigator.geolocation.getCurrentPosition(function(p) {

@@ -7,14 +7,14 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that reentrant calls to Geolocation methods from the error callback due to a PERMISSION_DENIED error are OK.");
 
 let error;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(false);
+mock.setGeolocationPermission(GeolocationPermissionStatus.DENIED);
 mock.setGeolocationPosition(51.478, -0.166, 100.0);
 
 function checkPermissionError(e) {

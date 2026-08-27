@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description('Tests that when a cached position is available the callback for getCurrentPosition is called only once. This is a regression test for http://crbug.com/311876 .');
 
@@ -39,7 +39,7 @@ function getPosition(milliseconds) {
 
 const mock = new GeolocationMock();
 mock.setGeolocationPosition(31.478, -0.166, 100);
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 
 // Make a geolocation request to populate the cached value so requests with a
 // timeout of 0 can succeed.

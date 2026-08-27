@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <script type="module">
-import {GeolocationMock} from './geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './geolocation-mock.js';
 
 const parent = window.parent;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 
 // Query the position but intercept the query so the service doesn't respond
 // immediately. If it responds too early, we won't exercise the intended code

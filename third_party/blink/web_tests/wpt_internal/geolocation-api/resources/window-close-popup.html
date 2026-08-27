@@ -1,5 +1,5 @@
 <script type="module">
-import {GeolocationMock} from './geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './geolocation-mock.js';
 
 const mockLatitude = 51.478;
 const mockLongitude = -0.166;
@@ -7,7 +7,7 @@ const mockAccuracy = 100.0;
 
 window.loadNext = () => {
     const mock = new GeolocationMock();
-    mock.setGeolocationPermission(true);
+    mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
     mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
 
     navigator.geolocation.watchPosition(window.opener.gotPosition);

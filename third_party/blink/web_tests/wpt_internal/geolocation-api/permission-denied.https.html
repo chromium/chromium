@@ -7,14 +7,14 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests Geolocation when permission is denied, using the mock service.");
 
 let error;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(false);
+mock.setGeolocationPermission(GeolocationPermissionStatus.DENIED);
 mock.setGeolocationPosition(51.478, -0.166, 100.0);
 
 navigator.geolocation.getCurrentPosition(function(p) {

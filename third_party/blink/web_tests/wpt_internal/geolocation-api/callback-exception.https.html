@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 setup({allow_uncaught_exception: true});
 
@@ -21,7 +21,7 @@ let position;
 
 let gotError = false;
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationPosition(mockLatitude,
                             mockLongitude,
                             mockAccuracy);

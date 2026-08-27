@@ -1,12 +1,18 @@
 /*
- * geolocation-mock contains a mock implementation of Geolocation and
- * PermissionService.
+ * geolocation-mock contains a mock implementation of Geolocation.
  */
 
 import {GeolocationReceiver} from '/gen/services/device/public/mojom/geolocation.mojom.m.js';
 import {GeopositionErrorCode} from '/gen/services/device/public/mojom/geoposition.mojom.m.js';
 import {GeolocationService, GeolocationServiceReceiver} from '/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.m.js';
 import {PermissionStatus} from '/gen/third_party/blink/public/mojom/permissions/permission_status.mojom.m.js';
+
+export const GeolocationPermissionStatus = {
+  ASK: 'ASK',
+  DENIED: 'DENIED',
+  GRANTED_PRECISE: 'GRANTED_PRECISE',
+  GRANTED_APPROXIMATE: 'GRANTED_APPROXIMATE',
+};
 
 export class GeolocationMock {
   constructor() {
@@ -37,16 +43,11 @@ export class GeolocationMock {
     this.pendingPermissionRequest_ = null;
 
     /**
-     * The status to respond to permission requests with. If set to ASK, then
-     * permission requests will block until setGeolocationPermission is called
-     * to allow or deny permission requests.
+     * The status to respond to permission requests with.
      *
-     * @type {!PermissionStatus}
+     * @type {!GeolocationPermissionStatus}
      */
-    this.permissionStatus_ = {
-      precise: PermissionStatus.ASK,
-      approximate: PermissionStatus.ASK
-    };
+    this.permissionStatus_ = GeolocationPermissionStatus.ASK;
     this.rejectGeolocationServiceConnections_ = false;
 
     this.systemPermissionStatus_ = PermissionStatus.GRANTED;
@@ -148,7 +149,7 @@ export class GeolocationMock {
 
   makeGeoposition(latitude, longitude, accuracy, altitude = undefined,
                   altitudeAccuracy = undefined, heading = undefined,
-                  speed = undefined) {
+                  speed = undefined, accuracyMode = 'precise') {
     // The new Date().getTime() returns the number of milliseconds since the
     // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
     // device.mojom.Geoposition represents the value of microseconds since the
@@ -161,10 +162,6 @@ export class GeolocationMock {
     const epochDeltaInMs = unixEpoch - windowsEpoch;
     const timestamp =
         {internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)};
-    const accuracyMode =
-        this.permissionStatus_.precise === PermissionStatus.GRANTED ?
-        'precise' :
-        'approximate';
     return {
       latitude,
       longitude,
@@ -184,9 +181,11 @@ export class GeolocationMock {
    * position set by this call.
    */
   setGeolocationPosition(latitude, longitude, accuracy, altitude,
-                         altitudeAccuracy, heading, speed) {
-    const position = this.makeGeoposition(latitude, longitude, accuracy,
-        altitude, altitudeAccuracy, heading, speed);
+                         altitudeAccuracy, heading, speed,
+                         accuracyMode = 'precise') {
+    const position =
+        this.makeGeoposition(latitude, longitude, accuracy, altitude,
+                             altitudeAccuracy, heading, speed, accuracyMode);
     this.result_ = {position};
     this.cachedResult_ = {position};
   }
@@ -227,16 +226,16 @@ export class GeolocationMock {
    * granted.
    */
   createGeolocation(receiver, user_gesture, accuracy) {
-    if (this.permissionStatus_.precise === PermissionStatus.ASK &&
-        this.permissionStatus_.approximate === PermissionStatus.ASK) {
+    if (this.permissionStatus_ === GeolocationPermissionStatus.ASK) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(this.createGeolocation(receiver, user_gesture, accuracy));
         }, 50);
       });
-    } else if (
-        this.permissionStatus_.precise === PermissionStatus.GRANTED ||
-        this.permissionStatus_.approximate === PermissionStatus.GRANTED) {
+    } else if (this.permissionStatus_ ===
+                   GeolocationPermissionStatus.GRANTED_PRECISE ||
+               this.permissionStatus_ ===
+                   GeolocationPermissionStatus.GRANTED_APPROXIMATE) {
       this.geolocationReceiver_.$.bindHandle(receiver.handle);
       return Promise.resolve(PermissionStatus.GRANTED);
     } else {
@@ -247,17 +246,11 @@ export class GeolocationMock {
 
   /**
    * Sets whether the next geolocation permission request should be allowed.
+   *
+   * @param {!GeolocationPermissionStatus} status
    */
-  setGeolocationPermission(allowedPrecise, allowedApproximate = undefined) {
-    this.permissionStatus_.precise =
-        allowedPrecise ? PermissionStatus.GRANTED : PermissionStatus.DENIED;
-    if (allowedApproximate === undefined) {
-      this.permissionStatus_.approximate = this.permissionStatus_.precise;
-    } else {
-      this.permissionStatus_.approximate = allowedApproximate ?
-          PermissionStatus.GRANTED :
-          PermissionStatus.DENIED;
-    }
+  setGeolocationPermission(status) {
+    this.permissionStatus_ = status;
   }
 
   setSystemGeolocationPermission(allowed) {

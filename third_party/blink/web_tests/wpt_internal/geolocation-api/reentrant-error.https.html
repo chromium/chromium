@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that reentrant calls to Geolocation methods from the error callback are OK.");
 
@@ -16,7 +16,7 @@ let mockMessage = 'test';
 let error;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationPositionUnavailableError(mockMessage);
 
 let errorCallbackInvoked = false;

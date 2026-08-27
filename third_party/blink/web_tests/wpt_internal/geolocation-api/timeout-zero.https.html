@@ -7,14 +7,14 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that when timeout is zero (and maximumAge is too), the error callback is called immediately with code TIMEOUT.");
 
 let error;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationTimeoutError(true);
 
 navigator.geolocation.getCurrentPosition(function(p) {

@@ -7,11 +7,11 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 document.body.onload = function() {
     const mock = new GeolocationMock();
-    mock.setGeolocationPermission(true);
+    mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
     mock.setGeolocationPosition(51.478, -0.166, 100);
 
     navigator.geolocation.watchPosition(() => {});

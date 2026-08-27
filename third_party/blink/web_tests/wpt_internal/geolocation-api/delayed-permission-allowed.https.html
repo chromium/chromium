@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that when a position is available, no callbacks are invoked until permission is allowed.");
 
@@ -18,7 +18,7 @@ let permissionSet = false;
 
 function allowPermission() {
     permissionSet = true;
-    mock.setGeolocationPermission(true);
+    mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 }
 
 navigator.geolocation.getCurrentPosition(function() {

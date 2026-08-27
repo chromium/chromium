@@ -2,11 +2,11 @@
 <html>
   <head>
     <script type="module">
-      import {GeolocationMock} from './geolocation-mock.js';
+      import {GeolocationMock, GeolocationPermissionStatus} from './geolocation-mock.js';
 
       window.init = function() {
           const mock = new GeolocationMock();
-          mock.setGeolocationPermission(true);
+          mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
           mock.setGeolocationPosition(51.478, -0.166, 100);
           window.parent.onIframeReady()
       }

@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 const mock = new GeolocationMock();
 const mockCoords = {accuracy: 100,
@@ -19,11 +19,11 @@ const mockCoords = {accuracy: 100,
                     speed: null};
 
 [
-  {precise: true, approximate: true},
-  {precise: false, approximate: true}
-].forEach(({precise, approximate}) => {
+  {status: GeolocationPermissionStatus.GRANTED_PRECISE, label: 'precise'},
+  {status: GeolocationPermissionStatus.GRANTED_APPROXIMATE, label: 'approximate'}
+].forEach(({status, label}) => {
     promise_test(async () => {
-    mock.setGeolocationPermission(precise, approximate);
+    mock.setGeolocationPermission(status);
     mock.setGeolocationPosition(mockCoords.latitude,
                                 mockCoords.longitude,
                                 mockCoords.accuracy);
@@ -39,7 +39,7 @@ const mockCoords = {accuracy: 100,
     const timestamp = position.timestamp;
     const expectedPosition = {timestamp, coords: mockCoords};
     assert_object_equals(position.toJSON(), expectedPosition);
-  }, `Tests toJSON() on GeolocationPosition and GeolocationCoordinates with precise: ${precise}, approximate: ${approximate}.`);
+  }, `Tests toJSON() on GeolocationPosition and GeolocationCoordinates with ${label} accuracy.`);
 });
 </script>
 </body>

@@ -12,7 +12,7 @@
 <div id='log'></div>
 
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 await test_driver.set_permission({name: 'geolocation'}, 'granted', true);
 const mock = new GeolocationMock();
@@ -57,7 +57,7 @@ promise_test(async t => {
 }, "getCurrentPosition returns after visibilityState changes");
 
 promise_test(async t => {
-  mock.setGeolocationPermission(true);
+  mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
   mock.setGeolocationTimeoutError(true); // Force hardware to never reply
 
   assert_equals(document.visibilityState, "visible");

@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that when Geolocation permission is denied, watches are stopped, as well as one-shots.");
 
@@ -16,7 +16,7 @@ let error;
 // Configure the mock Geolocation service to report a position to cause permission
 // to be requested, then deny it.
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(false);
+mock.setGeolocationPermission(GeolocationPermissionStatus.DENIED);
 mock.setGeolocationPosition(51.478, -0.166, 100.0);
 
 let errorCallbackInvoked = false;

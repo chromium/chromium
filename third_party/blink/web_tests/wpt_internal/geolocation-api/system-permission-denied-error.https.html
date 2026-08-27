@@ -6,11 +6,11 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 async_test(function(t) {
     const mock = new GeolocationMock();
-    mock.setGeolocationPermission(true);
+    mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
     mock.setSystemGeolocationPermission(false);
 
     let errorCallbackInvoked = false;

@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that when a request is made on a Geolocation object and its Frame is disconnected before a callback is made, no callbacks are made.");
 
@@ -36,7 +36,7 @@ window.onIframePageHidden = function() {
 
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationPosition(51.478, -0.166, 100);
 
 iframe.src = 'resources/disconnected-frame-inner.html';

@@ -7,7 +7,7 @@
 </head>
 <body>
 <script type="module">
-import {GeolocationMock} from './resources/geolocation-mock.js';
+import {GeolocationMock, GeolocationPermissionStatus} from './resources/geolocation-mock.js';
 
 description("Tests that Geoposition timestamps are well-formed (non-zero and in the same units as Date.getTime).");
 
@@ -21,7 +21,7 @@ let t = null;
 let then = null;
 
 const mock = new GeolocationMock();
-mock.setGeolocationPermission(true);
+mock.setGeolocationPermission(GeolocationPermissionStatus.GRANTED_PRECISE);
 mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
 
 function checkPosition(p) {
