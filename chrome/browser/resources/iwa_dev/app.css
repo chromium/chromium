@@ -23,7 +23,7 @@ h1 {
 #learn-more {
   color: var(--cr-secondary-text-color);
   font-size: 1rem;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 #learn-more a,
@@ -77,4 +77,3 @@ h2 {
 #error-message p {
   margin: 6px 0;
 }
-
