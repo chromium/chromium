@@ -322,3 +322,50 @@ if (enable_dice_support) {
     ]
   }
 }
+
+source_set("profile_picker_utils") {
+  public = [ "profile_picker_utils.h" ]
+  sources = [ "profile_picker_utils.cc" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/navigator",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ui/base",
+  ]
+}
+
+source_set("batch_upload_dialog_view") {
+  public = [ "batch_upload_dialog_view.h" ]
+  sources = [ "batch_upload_dialog_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles/batch_upload",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/webui/signin:batch_upload",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/input",
+    "//components/tabs:public",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/views/controls/webview",
+  ]
+}

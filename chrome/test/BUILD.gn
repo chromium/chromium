@@ -3720,10 +3720,12 @@ if (!is_android) {
         "//chrome/browser/ui/views/autofill/payments:payments_view_util",
         "//chrome/browser/ui/views/autofill/payments:payments_window_user_consent_dialog_view",
         "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
+        "//chrome/browser/ui/views/autofill/payments:save_card_manage_cards_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:wallet_reminder_notice_bubble_view",
         "//chrome/browser/ui/views/autofill/payments:webauthn_dialog_view",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
+        "//chrome/browser/ui/views/profiles:batch_upload_dialog_view",
         "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/search_engines",
         "//chrome/browser/ui/views/web_apps",
@@ -3791,6 +3793,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ui/views/autofill/popup",
         "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
+        "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       ]
       if (is_win) {
         deps +=
@@ -7903,6 +7906,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/autofill/popup:popup_separator_view",
       "//chrome/browser/ui/views/autofill/popup:popup_title_view",
       "//chrome/browser/ui/views/autofill/popup:popup_warning_view",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
     ]
 
     deps += [
@@ -7910,7 +7914,6 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
-      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",

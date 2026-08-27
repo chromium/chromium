@@ -2290,10 +2290,6 @@ static_library("ui") {
   }
 
   if (enable_dice_support || is_chromeos) {
-    sources += [
-      "views/profiles/batch_upload_dialog_view.cc",
-      "views/profiles/batch_upload_dialog_view.h",
-    ]
     deps += [
       "webui/signin:batch_upload",
       "webui/signin/batch_upload:mojo_bindings",
@@ -2477,10 +2473,6 @@ static_library("ui") {
       "views/autofill/payments/bnpl_issuer_view.h",
       "views/autofill/payments/omnibox_autofill_bubble_view.cc",
       "views/autofill/payments/omnibox_autofill_bubble_view.h",
-      "views/autofill/payments/save_card_manage_cards_bubble_views.cc",
-      "views/autofill/payments/save_card_manage_cards_bubble_views.h",
-      "views/autofill/payments/save_card_offer_bubble_views.cc",
-      "views/autofill/payments/save_card_offer_bubble_views.h",
       "views/autofill/payments/select_bnpl_issuer_dialog.cc",
       "views/autofill/payments/select_bnpl_issuer_dialog.h",
       "views/autofill/popup/popup_base_view.cc",
@@ -2512,8 +2504,6 @@ static_library("ui") {
       "views/extensions/extensions_menu_coordinator.h",
       "views/extensions/extensions_menu_delegate_desktop.cc",
       "views/extensions/extensions_menu_delegate_desktop.h",
-      "views/extensions/extensions_menu_main_page_view.cc",
-      "views/extensions/extensions_menu_main_page_view.h",
       "views/extensions/extensions_menu_view.cc",
       "views/extensions/extensions_menu_view.h",
       "views/extensions/extensions_request_access_button.cc",
@@ -2795,6 +2785,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/autofill/payments:save_and_fill_dialog",
       "//chrome/browser/ui/views/autofill/payments:save_and_fill_view_desktop",
       "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
+      "//chrome/browser/ui/views/autofill/payments:save_card_manage_cards_bubble_views",
+      "//chrome/browser/ui/views/autofill/payments:save_card_offer_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:wallet_reminder_notice_bubble_view",
@@ -2832,6 +2824,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extensions_menu_button",
       "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_site_permissions_page_view",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/extensions:windows_utils_views",
@@ -2884,6 +2877,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button_impl",
+      "//chrome/browser/ui/views/profiles:batch_upload_dialog_view",
+      "//chrome/browser/ui/views/profiles:profile_picker_utils",
       "//chrome/browser/ui/views/promos",
       "//chrome/browser/ui/views/qrcode_generator",
       "//chrome/browser/ui/views/select_audio_output",
@@ -2993,6 +2988,7 @@ static_library("ui") {
       # following header gets componentized:
       # c/b/ui/browser.h
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
@@ -3946,6 +3942,7 @@ static_library("test_support") {
       "//chrome/browser/ui/views/extensions:extensions_menu_button",
       "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
       "//components/constrained_window",
       "//components/webauthn/content/browser",

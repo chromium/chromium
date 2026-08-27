@@ -36,6 +36,7 @@ source_set("settings_overridden_dialog_view_utils") {
   deps = [ "//ui/views" ]
   public_deps = [
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//ui/base",
   ]
 }
@@ -87,6 +88,7 @@ source_set("extensions_menu_entry_view") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/views/controls",
     "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//ui/base/metadata",
@@ -110,6 +112,7 @@ source_set("extensions_menu_site_permissions_page_view") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//extensions/browser",
     "//extensions/common",
     "//ui/views",
@@ -135,6 +138,7 @@ source_set("extensions_container_views") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/toolbar",
     "//extensions/common",
     "//ui/views",
@@ -148,6 +152,7 @@ source_set("extensions_menu_item_view") {
     ":extensions_menu_button",
     "//base",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//ui/base/metadata",
     "//ui/views",
@@ -212,6 +217,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/toolbar:test_support",
     "//chrome/browser/ui/views:device_chooser_content_view",
     "//chrome/browser/ui/views/controls",
@@ -274,6 +280,7 @@ source_set("browser_tests") {
       ":extensions_menu_button",
       ":extensions_menu_entry_view",
       ":extensions_menu_item_view",
+      ":extensions_menu_main_page_view",
       ":extensions_menu_site_permissions_page_view",
       ":extensions_views_utils",
       ":security_dialog_tracker",
@@ -353,6 +360,7 @@ source_set("interactive_ui_tests") {
     ":extensions_menu_button",
     ":extensions_menu_entry_view",
     ":extensions_menu_item_view",
+    ":extensions_menu_main_page_view",
     ":extensions_menu_site_permissions_page_view",
     ":security_dialog_tracker",
     ":test_support",
@@ -368,6 +376,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_ui_controller",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/extensions:test_support",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/tabs:tab_enums",
@@ -422,6 +431,7 @@ source_set("extensions_views_utils") {
   ]
   deps = [
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views:device_chooser_content_view",
     "//chrome/browser/ui/views:layout_provider",
@@ -473,4 +483,36 @@ if (is_chromeos) {
       "//ui/native_theme",
     ]
   }
+}
+
+source_set("extensions_menu_main_page_view") {
+  public = [ "extensions_menu_main_page_view.h" ]
+  sources = [ "extensions_menu_main_page_view.cc" ]
+  public_deps = [
+    ":extensions_menu_entry_view",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/ui/toolbar",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":extensions_menu_button",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/views/controls",
+    "//components/vector_icons",
+    "//extensions/common",
+    "//ui/base",
+    "//ui/gfx",
+  ]
 }
