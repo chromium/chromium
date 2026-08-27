@@ -36,7 +36,7 @@ WalletReminderNoticeBubbleView::WalletReminderNoticeBubbleView(
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_WALLET_REMINDER_NOTICE_CONFIRM_BUTTON_LABEL));
-  SetShowCloseButton(false);
+  SetShowCloseButton(true);
   SetAcceptCallback(base::BindOnce(
       &WalletReminderNoticeBubbleController::OnAcceptButton, controller_));
 
