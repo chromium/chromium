@@ -180,6 +180,14 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
     return sct_auditing_delegate_;
   }
 
+  // Returns the EchMode for `hostname`. If `ssl_config_service_` is null,
+  // defaults to EchMode::kOpportunistic.
+  EchMode GetEchMode(std::string_view hostname) const;
+
+  // Returns true if ECH is enabled for `hostname` (i.e. GetEchMode(hostname) !=
+  // EchMode::kDisabled).
+  bool IsEchEnabled(std::string_view hostname) const;
+
   // Creates a new SSLClientSocket which can then be used to establish an SSL
   // connection to |host_and_port| over the already-connected |stream_socket|.
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(

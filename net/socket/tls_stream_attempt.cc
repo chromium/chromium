@@ -41,6 +41,14 @@ std::string_view TlsStreamAttempt::StateToString(State state) {
   }
 }
 
+namespace {
+
+bool IsEchEnabled(SSLClientContext* ssl_client_context, std::string_view host) {
+  return ssl_client_context && ssl_client_context->IsEchEnabled(host);
+}
+
+}  // namespace
+
 TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
                                    handles::NetworkHandle target_network,
@@ -209,7 +217,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
       ssl_config_->trust_anchor_ids =
           ssl_context_config.SelectAllTrustAnchorIDs();
     }
-    if (ssl_context_config.ech_enabled) {
+    if (IsEchEnabled(params().ssl_client_context, host_port_pair_.host())) {
       ssl_config_->ech_config_list = endpoint->metadata.ech_config_list;
     }
     ssl_config_->server_padding_to_request =
@@ -267,7 +275,8 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   mutable_connect_timing().ssl_end = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Stop();
 
-  const bool ech_enabled = params().ssl_client_context->config().ech_enabled;
+  const bool ech_enabled =
+      IsEchEnabled(params().ssl_client_context, host_port_pair_.host());
 
   if (!ech_retry_configs_ && rv == ERR_ECH_NOT_NEGOTIATED && ech_enabled) {
     CHECK(ssl_socket_);

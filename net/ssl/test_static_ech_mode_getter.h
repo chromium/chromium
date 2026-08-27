@@ -5,6 +5,7 @@
 #ifndef NET_SSL_TEST_STATIC_ECH_MODE_GETTER_H_
 #define NET_SSL_TEST_STATIC_ECH_MODE_GETTER_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -17,7 +18,9 @@ namespace net {
 // returns a static EchMode configured at construction.
 class TestStaticEchModeGetter final : public EchModeGetter {
  public:
-  TestStaticEchModeGetter(EchMode ech_mode, std::string_view expected_host);
+  explicit TestStaticEchModeGetter(
+      EchMode ech_mode,
+      std::optional<std::string_view> expected_host = std::nullopt);
   TestStaticEchModeGetter(EchMode ech_mode, const char* expected_host);
   TestStaticEchModeGetter(EchMode ech_mode, std::string&& expected_host);
   ~TestStaticEchModeGetter() override;
@@ -26,7 +29,7 @@ class TestStaticEchModeGetter final : public EchModeGetter {
 
  private:
   const EchMode ech_mode_;
-  const std::string expected_host_;
+  const std::optional<std::string> expected_host_;
 };
 
 }  // namespace net

@@ -1333,9 +1333,10 @@ TEST_P(SSLConnectJobTest, EncryptedClientHello) {
 
   for (bool ech_enabled : {true, false}) {
     SCOPED_TRACE(ech_enabled);
-    SSLContextConfig config;
-    config.ech_enabled = ech_enabled;
-    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    ssl_config_service_->SetEchModeGetter(
+        std::make_unique<TestStaticEchModeGetter>(
+            ech_enabled ? EchMode::kOpportunistic : EchMode::kDisabled,
+            kHostHttps.host()));
 
     // The first connection attempt will be to `endpoint1`, which will fail.
     StaticSocketDataProvider data1;

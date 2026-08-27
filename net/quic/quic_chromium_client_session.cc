@@ -501,9 +501,6 @@ void LogSessionMetricsToHistogram(
 EchMode GetEchModeForHost(SSLConfigService* ssl_config_service,
                           std::string_view host) {
   CHECK(ssl_config_service);
-  if (!ssl_config_service->GetSSLContextConfig().ech_enabled) {
-    return EchMode::kDisabled;
-  }
   return ssl_config_service->GetEchMode(host);
 }
 

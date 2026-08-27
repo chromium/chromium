@@ -237,12 +237,6 @@ bool DetermineIfHttpsSvcbRequired(bool is_secure_dns,
 
   SSLConfigService* ssl_config_service =
       resolve_context.url_request_context()->ssl_config_service();
-  // TODO(crbug.com/534432929): Deprecate `ech_enabled` and consolidate on
-  // `EchMode`.
-  if (!ssl_config_service->GetSSLContextConfig().ech_enabled) {
-    return false;
-  }
-
   return ssl_config_service->GetEchMode(host) == EchMode::kStrict;
 }
 

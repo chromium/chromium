@@ -40,6 +40,7 @@ SSLConfigServiceMojo::SSLConfigServiceMojo(
           initial_config ? initial_config->client_cert_pooling_policy
                          : std::vector<std::string>()) {
   if (initial_config) {
+    ech_enabled_ = initial_config->ech_enabled;
     cert_verifier_config_ = MojoSSLConfigToCertVerifierConfig(initial_config);
     ssl_context_config_ = MojoSSLConfigToSSLContextConfig(initial_config);
   }
@@ -59,8 +60,15 @@ void SSLConfigServiceMojo::SetCertVerifierForConfiguring(
 }
 
 void SSLConfigServiceMojo::OnSSLConfigUpdated(mojom::SSLConfigPtr ssl_config) {
+  // Connection pooling logic does not take into account EchMode. If ECH is
+  // enabled, or disabled, by a change in policy, force an update to clean up
+  // any existing connection. This makes it sure that we abide the new ECH
+  // policy. Note: we don't account for EchMode in the pooling logic because a
+  // change in policy is the only way to change EchMode for a given host.
   bool force_notification =
-      client_cert_pooling_policy_ != ssl_config->client_cert_pooling_policy;
+      client_cert_pooling_policy_ != ssl_config->client_cert_pooling_policy ||
+      ech_enabled_ != ssl_config->ech_enabled;
+  ech_enabled_ = ssl_config->ech_enabled;
   client_cert_pooling_policy_ = ssl_config->client_cert_pooling_policy;
 
   net::SSLContextConfig old_config = ssl_context_config_;
@@ -79,6 +87,9 @@ net::SSLContextConfig SSLConfigServiceMojo::GetSSLContextConfig() {
 }
 
 net::EchMode SSLConfigServiceMojo::GetEchMode(std::string_view hostname) const {
+  if (!ech_enabled_) {
+    return net::EchMode::kDisabled;
+  }
   if (ech_mode_getter_) {
     return ech_mode_getter_->GetEchMode(hostname);
   }

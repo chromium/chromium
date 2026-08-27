@@ -185,8 +185,7 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kSSLVersionMax, std::string());
   registry->RegisterListPref(prefs::kCipherSuiteBlacklist);
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
-  registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
-                                default_context_config.ech_enabled);
+  registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled, true);
   // The following two prefs for SSL compliance policies are used here as
   // local_state prefs, but the same pref names are also used as Profile prefs
   // in certain Profiles. Their value is only used if managed.

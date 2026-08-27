@@ -56,6 +56,7 @@
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -581,9 +582,9 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
     // sockets, etc., from the previous loop iteration.
     ResetContext();
 
-    SSLContextConfig config;
-    config.ech_enabled = ech_enabled;
-    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    ssl_config_service_->SetEchModeGetter(
+        std::make_unique<TestStaticEchModeGetter>(
+            ech_enabled ? EchMode::kOpportunistic : EchMode::kDisabled));
 
     TestDelegate d;
     std::unique_ptr<URLRequest> r = context()->CreateRequest(

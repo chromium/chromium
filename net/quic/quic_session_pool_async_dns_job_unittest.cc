@@ -34,6 +34,7 @@
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_session_pool_test_base.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
@@ -3382,9 +3383,9 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SvcbOptionalWhenEchDisabled) {
           {endpoint},
           /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
 
-  SSLContextConfig ssl_config;
-  ssl_config.ech_enabled = false;
-  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                kDefaultServerHostName));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();

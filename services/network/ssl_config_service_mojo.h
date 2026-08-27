@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   mojo::Receiver<mojom::SSLConfigClient> receiver_{this};
 
   std::unique_ptr<net::EchModeGetter> ech_mode_getter_;
+  bool ech_enabled_ = true;
 
   net::SSLContextConfig ssl_context_config_;
   net::CertVerifier::Config cert_verifier_config_;

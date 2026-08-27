@@ -245,6 +245,17 @@ SSLClientContext::~SSLClientContext() {
   CertDatabase::GetInstance()->RemoveObserver(this);
 }
 
+EchMode SSLClientContext::GetEchMode(std::string_view hostname) const {
+  if (ssl_config_service_) {
+    return ssl_config_service_->GetEchMode(hostname);
+  }
+  return EchMode::kOpportunistic;
+}
+
+bool SSLClientContext::IsEchEnabled(std::string_view hostname) const {
+  return GetEchMode(hostname) != EchMode::kDisabled;
+}
+
 std::unique_ptr<SSLClientSocket> SSLClientContext::CreateSSLClientSocket(
     std::unique_ptr<StreamSocket> stream_socket,
     const HostPortPair& host_and_port,

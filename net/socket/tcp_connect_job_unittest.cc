@@ -1317,31 +1317,6 @@ TEST_F(TcpConnectJobTest, H2Disabled) {
                           /*expect_sync_result=*/true);
 }
 
-// Test that disabling ECH makes `svcb_optional_` true.
-TEST_F(TcpConnectJobTest, EchDisabled) {
-  SSLContextConfig ssl_context_config;
-  ssl_context_config.ech_enabled = false;
-  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_context_config);
-
-  // IPs with H3 alpns still rejected.
-  host_resolver_.ConfigureDefaultResolution()
-      .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}, {"h3"}))
-      .CompleteStartSynchronously(OK);
-  InitRunAndExpectError(
-      ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true,
-      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
-
-  // Ech will no longer disable non-svcb records.
-  host_resolver_.ConfigureDefaultResolution()
-      .add_endpoint(
-          CreateServiceEndpoint({kIpV4Endpoint1}, {"h3"}, /*ech=*/true))
-      .add_endpoint(CreateServiceEndpoint({kIpV6Endpoint1}))
-      .CompleteStartSynchronously(OK);
-  AddConnect(MockConnect(ASYNC, OK), kIpV6Endpoint1);
-  InitRunAndExpectSuccess(kIpV6Endpoint1,
-                          CreateServiceEndpoint({kIpV6Endpoint1}),
-                          /*expect_sync_result=*/false);
-}
 
 // Test that setting EchMode::kDisabled makes `svcb_optional_` true.
 TEST_F(TcpConnectJobTest, EchModeDisabled) {

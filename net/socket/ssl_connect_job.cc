@@ -44,6 +44,12 @@ namespace {
 // Timeout for the SSL handshake portion of the connect.
 constexpr base::TimeDelta kSSLHandshakeTimeout(base::Seconds(30));
 
+bool IsEchEnabled(SSLClientContext* ssl_client_context,
+                  const HostPortPair& host_and_port) {
+  return ssl_client_context &&
+         ssl_client_context->IsEchEnabled(host_and_port.host());
+}
+
 }  // namespace
 
 SSLSocketParams::SSLSocketParams(
@@ -251,7 +257,7 @@ int SSLConnectJob::DoTransportConnect() {
     std::optional<TcpConnectJob::ServiceEndpointOverride>
         service_endpoint_override;
     if (ech_retry_configs_) {
-      DCHECK(ssl_client_context()->config().ech_enabled);
+      DCHECK(IsEchEnabled(ssl_client_context(), params_->host_and_port()));
       DCHECK(service_endpoint_result_);
       service_endpoint_override.emplace(*service_endpoint_result_,
                                         dns_aliases_);
@@ -267,7 +273,7 @@ int SSLConnectJob::DoTransportConnect() {
     std::optional<TransportConnectJob::EndpointResultOverride>
         endpoint_result_override;
     if (ech_retry_configs_) {
-      DCHECK(ssl_client_context()->config().ech_enabled);
+      DCHECK(IsEchEnabled(ssl_client_context(), params_->host_and_port()));
       DCHECK(endpoint_result_);
       endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
     }
@@ -397,7 +403,7 @@ int SSLConnectJob::DoSSLConnect() {
     ssl_config.early_data_enabled = false;
   }
 
-  if (ssl_client_context()->config().ech_enabled) {
+  if (IsEchEnabled(ssl_client_context(), params_->host_and_port())) {
     if (ech_retry_configs_) {
       ssl_config.ech_config_list = *ech_retry_configs_;
     } else if (endpoint_result_) {
@@ -422,7 +428,8 @@ int SSLConnectJob::DoSSLConnect() {
 
   net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
     base::DictValue dict;
-    dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
+    dict.Set("ech_enabled",
+             IsEchEnabled(ssl_client_context(), params_->host_and_port()));
     dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
     if (ssl_config.trust_anchor_ids) {
       dict.Set(
@@ -493,7 +500,8 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
        !endpoint_result_->metadata.ech_config_list.empty()) ||
       (service_endpoint_result_ &&
        !service_endpoint_result_->metadata.ech_config_list.empty());
-  const bool ech_enabled = ssl_client_context()->config().ech_enabled;
+  const bool ech_enabled =
+      IsEchEnabled(ssl_client_context(), params_->host_and_port());
 
   if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED && ech_enabled) {
     // We used ECH, and the server could not decrypt the ClientHello. However,

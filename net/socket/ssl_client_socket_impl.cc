@@ -1819,17 +1819,11 @@ int SSLClientSocketImpl::MapLastOpenSSLError(
 }
 
 int SSLClientSocketImpl::ConfigureEch() {
-  EchMode ech_mode = EchMode::kOpportunistic;
-  if (!context_->config().ech_enabled) {
-    DCHECK(ssl_config_.ech_config_list.empty());
-    ech_mode = EchMode::kDisabled;
-  } else if (context_->ssl_config_service()) {
-    ech_mode =
-        context_->ssl_config_service()->GetEchMode(host_and_port_.host());
-  }
+  EchMode ech_mode = context_->GetEchMode(host_and_port_.host());
 
   switch (ech_mode) {
     case EchMode::kDisabled:
+      DCHECK(ssl_config_.ech_config_list.empty());
       return OK;
     case EchMode::kStrict:
       if (ssl_config_.ech_config_list.empty()) {

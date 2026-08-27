@@ -505,6 +505,31 @@ TEST_F(NetworkServiceSSLConfigServiceTest, GetEchMode) {
   EXPECT_TRUE(mode == net::EchMode::kDisabled ||
               mode == net::EchMode::kOpportunistic ||
               mode == net::EchMode::kStrict);
+
+  // Test with ech_enabled = false
+  network_context_params = mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config->ech_enabled = false;
+  SetUpNetworkContext(std::move(network_context_params));
+
+  config_service =
+      network_context_->url_request_context()->ssl_config_service();
+  EXPECT_EQ(net::EchMode::kDisabled, config_service->GetEchMode("example.com"));
+
+  // Test updating ech_enabled dynamically and verifying observer notification.
+  TestSSLConfigServiceObserver observer(config_service);
+  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
+  mojo_config->ech_enabled = true;
+  ssl_config_client_->OnSSLConfigUpdated(std::move(mojo_config));
+  observer.WaitForChange();
+  EXPECT_EQ(net::EchMode::kOpportunistic,
+            config_service->GetEchMode("example.com"));
+
+  mojo_config = mojom::SSLConfig::New();
+  mojo_config->ech_enabled = false;
+  ssl_config_client_->OnSSLConfigUpdated(std::move(mojo_config));
+  observer.WaitForChange();
+  EXPECT_EQ(net::EchMode::kDisabled, config_service->GetEchMode("example.com"));
 }
 
 }  // namespace

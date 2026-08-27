@@ -916,9 +916,8 @@ bool QuicSessionPool::AsyncDnsJob::IsSvcbOptional(
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
   // alternative endpoints support ECH, disable the A/AAAA fallback. See
   // Section 5.1 of draft-ietf-tls-svcb-ech-08.
-  if (!pool_->ssl_config_service_->GetSSLContextConfig().ech_enabled ||
-      pool_->ssl_config_service_->GetEchMode(key().session_key().host()) ==
-          EchMode::kDisabled) {
+  if (pool_->ssl_config_service_->GetEchMode(key().session_key().host()) ==
+      EchMode::kDisabled) {
     return true;  // ECH is not supported for this request.
   }
 

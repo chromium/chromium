@@ -92,9 +92,6 @@ struct NET_EXPORT SSLContextConfig {
   // default.
   std::vector<SSLNamedGroupInfo> supported_named_groups;
 
-  // Controls whether ECH is enabled.
-  bool ech_enabled = true;
-
   // TLS Trust Anchor IDs that are configured as trusted, as a list of Trust
   // Anchor IDs in binary representation.
   absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids;
@@ -132,9 +129,6 @@ class NET_EXPORT SSLConfigService {
   virtual SSLContextConfig GetSSLContextConfig() = 0;
 
   // Returns the host-specific EchMode for `hostname`.
-  //
-  // NOTE: This method should only be called when `ech_enabled` is true in
-  // `SSLContextConfig`.
   virtual EchMode GetEchMode(std::string_view hostname) const = 0;
 
   // Returns true if connections to |hostname| can reuse, or are permitted to

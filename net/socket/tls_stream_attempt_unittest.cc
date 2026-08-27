@@ -183,12 +183,6 @@ class TlsStreamAttemptTest : public TestWithTaskEnvironment {
  protected:
   MockClientSocketFactory& socket_factory() { return socket_factory_; }
 
-  void SetEchEnabled(bool ech_enabled) {
-    SSLContextConfig config = ssl_config_service_->GetSSLContextConfig();
-    config.ech_enabled = ech_enabled;
-    ssl_config_service_->UpdateSSLConfigAndNotify(config);
-  }
-
   void SetEchMode(EchMode ech_mode) {
     ssl_config_service_->SetEchModeGetter(
         std::make_unique<TestStaticEchModeGetter>(
@@ -535,8 +529,6 @@ TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {
 }
 
 TEST_F(TlsStreamAttemptTest, EchOk) {
-  SetEchEnabled(true);
-
   std::vector<uint8_t> ech_config_list;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list));
@@ -560,7 +552,6 @@ TEST_F(TlsStreamAttemptTest, EchOk) {
 }
 
 TEST_F(TlsStreamAttemptTest, EchRetryOk) {
-  SetEchEnabled(true);
 
   std::vector<uint8_t> ech_config_list;
   ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
@@ -596,8 +587,6 @@ TEST_F(TlsStreamAttemptTest, EchRetryOk) {
 }
 
 TEST_F(TlsStreamAttemptTest, EchRetryFail) {
-  SetEchEnabled(true);
-
   std::vector<uint8_t> ech_config_list;
   ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
                               &ech_config_list));
@@ -634,7 +623,6 @@ TEST_F(TlsStreamAttemptTest, EchRetryFail) {
 // Tests that strict ECH mode triggers error when the server provides
 // an empty retry config.
 TEST_F(TlsStreamAttemptTest, EchStrictRetryEmptyFail) {
-  SetEchEnabled(true);
   SetEchMode(EchMode::kStrict);
 
   std::vector<uint8_t> ech_config_list;

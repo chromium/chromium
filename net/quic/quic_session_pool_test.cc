@@ -15341,48 +15341,6 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
             config.ech_config_list);
 }
 
-// Test that, when ECH is disabled, neither ECH nor ECH GREASE are configured.
-TEST_P(QuicSessionPoolTest, EchDisabled) {
-  quic_params_->supported_versions = {version_};
-  HostResolverEndpointResult endpoint;
-  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
-  endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
-  endpoint.metadata.ech_config_list = {1, 2, 3, 4};
-
-  host_resolver_ = std::make_unique<MockHostResolver>();
-  host_resolver_->rules()->AddRule(
-      kDefaultServerHostName,
-      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
-
-  SSLContextConfig ssl_config;
-  ssl_config.ech_enabled = false;
-  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
-
-  Initialize();
-  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
-  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
-
-  MockQuicData socket_data(version_);
-  socket_data.AddReadPauseForever();
-  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddSocketDataToFactory(socket_factory_.get());
-
-  RequestBuilder builder(this);
-  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
-  builder.require_dns_https_alpn = true;
-  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
-  ASSERT_THAT(callback_.WaitForResult(), IsOk());
-
-  QuicChromiumClientSession* session = GetActiveSession(
-      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      ProxyChain::Direct(), SessionUsage::kDestination,
-      /*require_dns_https_alpn=*/true);
-  ASSERT_TRUE(session);
-  quic::QuicSSLConfig config = session->GetSSLConfig();
-  EXPECT_TRUE(config.ech_config_list.empty());
-  EXPECT_FALSE(config.ech_grease_enabled);
-}
-
 // Test that, when EchMode is kDisabled for the host, neither ECH nor ECH GREASE
 // are configured.
 TEST_P(QuicSessionPoolTest, EchModeDisabledForHost) {
@@ -15504,9 +15462,9 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
       MockHostResolverBase::RuleResolver::RuleResult(std::move(endpoints)));
 
   // But this client is not ECH-capable, so the connection should succeed.
-  SSLContextConfig ssl_config;
-  ssl_config.ech_enabled = false;
-  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+  ssl_config_service_.SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                kDefaultServerHostName));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
