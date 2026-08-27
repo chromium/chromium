@@ -29,6 +29,7 @@
 #include <libxml/xpathInternals.h>
 #include <libxslt/extensions.h>
 #include <libxslt/extra.h>
+#include <libxslt/xslt.h>
 #include <libxslt/xsltutils.h>
 
 #include "base/check.h"
@@ -82,6 +83,28 @@ void RegisterXSLTExtensions(xsltTransformContextPtr ctxt,
   xsltRegisterExtFunction(ctxt, (const xmlChar*)"node-set",
                           (const xmlChar*)"http://exslt.org/common",
                           ExsltNodeSetFunction);
+}
+
+void InitializeLibXSLT() {
+  static bool did_init = false;
+  if (did_init) {
+    return;
+  }
+  did_init = true;
+
+  // xsltInit() auto-registers a set of non-standard multi-document output
+  // extension elements (libxslt:debug, saxon:output, xalan:write,
+  // xt:document and xsl:document). XSLTProcessor only ever produces a
+  // single result tree, so unregister them before any stylesheet is
+  // compiled so that the standard xsl:fallback handling applies instead.
+  xsltInit();
+  xsltUnregisterExtModuleElement((const xmlChar*)"debug",
+                                 XSLT_LIBXSLT_NAMESPACE);
+  xsltUnregisterExtModuleElement((const xmlChar*)"output",
+                                 XSLT_SAXON_NAMESPACE);
+  xsltUnregisterExtModuleElement((const xmlChar*)"write", XSLT_XALAN_NAMESPACE);
+  xsltUnregisterExtModuleElement((const xmlChar*)"document", XSLT_XT_NAMESPACE);
+  xsltUnregisterExtModuleElement((const xmlChar*)"document", XSLT_NAMESPACE);
 }
 
 }  // namespace blink

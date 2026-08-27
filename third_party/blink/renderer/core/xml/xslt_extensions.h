@@ -34,6 +34,7 @@ class ExecutionContext;
 
 void RegisterXSLTExtensions(xsltTransformContextPtr ctxt,
                             const ExecutionContext* context);
+void InitializeLibXSLT();
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_EXTENSIONS_H_

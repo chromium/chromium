@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script>
+function transform(xslSource) {
+  const parser = new DOMParser();
+  const xsl = parser.parseFromString(xslSource, 'text/xml');
+  const xml = parser.parseFromString('<root/>', 'text/xml');
+  const processor = new XSLTProcessor();
+  processor.importStylesheet(xsl);
+  return processor.transformToFragment(xml, document);
+}
+
+test(() => {
+  const result = transform(`<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:libxslt="http://xmlsoft.org/XSLT/namespace"
+    xmlns:saxon="http://icl.com/saxon"
+    xmlns:xalan="org.apache.xalan.xslt.extensions.Redirect"
+    xmlns:xt="http://www.jclark.com/xt">
+    <xsl:output method="text"/>
+    <xsl:template match="/"
+      >[<xsl:if test="element-available('libxslt:debug')">libxslt:debug </xsl:if
+      ><xsl:if test="element-available('saxon:output')">saxon:output </xsl:if
+      ><xsl:if test="element-available('xalan:write')">xalan:write </xsl:if
+      ><xsl:if test="element-available('xt:document')">xt:document </xsl:if
+      ><xsl:if test="element-available('xsl:document')">xsl:document </xsl:if
+      >]</xsl:template>
+  </xsl:stylesheet>`);
+  assert_equals(result.textContent, '[]');
+}, 'non-standard multi-document output extension elements are not available');
+
+test(() => {
+  const result = transform(`<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xalan="org.apache.xalan.xslt.extensions.Redirect"
+    extension-element-prefixes="xalan">
+    <xsl:output method="text"/>
+    <xsl:template match="/">
+      <xalan:write select="{name(*)}">
+        <xsl:fallback>fallback</xsl:fallback>
+      </xalan:write>
+    </xsl:template>
+  </xsl:stylesheet>`);
+  assert_not_equals(result, null, 'transform should succeed');
+  assert_equals(result.textContent.trim(), 'fallback');
+}, 'unsupported extension elements run their xsl:fallback content');
+</script>
