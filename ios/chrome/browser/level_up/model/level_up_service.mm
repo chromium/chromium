@@ -352,9 +352,9 @@ void LevelUpService::PopulateTasks() {
   tasks_[TaskType::kSafeBrowsing] = CreateSafeBrowsingTaskInfo();
   tasks_[TaskType::kIncognito] = CreateIncognitoTaskInfo();
   tasks_[TaskType::kPasswordCheckup] = CreatePasswordCheckupTaskInfo();
-  tasks_[TaskType::kLensSearch] = CreateLensSearchTaskInfo();
+  tasks_[TaskType::kLensWebsiteSearch] = CreateLensWebsiteSearchTaskInfo();
   tasks_[TaskType::kAISearch] = CreateAISearchTaskInfo();
-  tasks_[TaskType::kCameraSearch] = CreateCameraSearchTaskInfo();
+  tasks_[TaskType::kLensCameraSearch] = CreateLensCameraSearchTaskInfo();
 
   stat_trigger_user_actions_["Mobile.LensOverlay.CameraSearch.Performed"] =
       LevelUpTaskStatType::kPhotoSearchesPerformed;

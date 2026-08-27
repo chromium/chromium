@@ -12,13 +12,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-class CameraSearchTaskInfo : public TaskInfo {
+class LensCameraSearchTaskInfo : public TaskInfo {
  public:
-  CameraSearchTaskInfo() = default;
-  ~CameraSearchTaskInfo() override = default;
+  LensCameraSearchTaskInfo() = default;
+  ~LensCameraSearchTaskInfo() override = default;
 
   // TaskInfo implementation.
-  TaskType GetTaskType() const override { return TaskType::kCameraSearch; }
+  TaskType GetTaskType() const override { return TaskType::kLensCameraSearch; }
   std::string GetTitle() const override { return "Search with camera"; }
   std::string GetTaskDescription() const override {
     return "Shop, translate and identify what you see with your camera";
@@ -32,7 +32,7 @@ class CameraSearchTaskInfo : public TaskInfo {
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(
-        IDS_IOS_LEVEL_UP_TASK_COMPLETED_CAMERA_SEARCH);
+        IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
     return base::BindRepeating(^(CommandDispatcher* dispatcher) {
@@ -43,6 +43,6 @@ class CameraSearchTaskInfo : public TaskInfo {
   }
 };
 
-std::unique_ptr<TaskInfo> CreateCameraSearchTaskInfo() {
-  return std::make_unique<CameraSearchTaskInfo>();
+std::unique_ptr<TaskInfo> CreateLensCameraSearchTaskInfo() {
+  return std::make_unique<LensCameraSearchTaskInfo>();
 }

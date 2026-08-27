@@ -4608,17 +4608,17 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_PROMO_CONTENT_3" desc="Text for the Level Up promo content checklist item 3. [iOS only]">
         Use AI to get more done
       </message>
-      <message name="IDS_IOS_LEVEL_UP_PROMO_PRIVACY_DISCLAIMER" desc="Text for the Level Up promo privacy disclaimer. [iOS only]">
-        Google uses your feature usage data to recommend tasks and update progress. You can turn off Level Up at any time.
-      </message>
-      <message name="IDS_IOS_LEVEL_UP_PROMO_TITLE" desc="Text for the Level Up promo title. [iOS only]">
-        Level up your browsing
-      </message>
       <message name="IDS_IOS_LEVEL_UP_PROMO_PRIMARY_BUTTON" desc="Text for the Level Up promo primary button. [iOS only]">
         Get started
       </message>
+      <message name="IDS_IOS_LEVEL_UP_PROMO_PRIVACY_DISCLAIMER" desc="Text for the Level Up promo privacy disclaimer. [iOS only]">
+        Google uses your feature usage data to recommend tasks and update progress. You can turn off Level Up at any time.
+      </message>
       <message name="IDS_IOS_LEVEL_UP_PROMO_SECONDARY_BUTTON" desc="Text for the Level Up promo secondary button. [iOS only]">
         Not now
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_PROMO_TITLE" desc="Text for the Level Up promo title. [iOS only]">
+        Level up your browsing
       </message>
       <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
         See All
@@ -4675,16 +4675,16 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL" desc="Completion snackbar message for the Autofill task. [iOS only]">
         Passwords and Autofill completed!
       </message>
-      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_CAMERA_SEARCH" desc="Completion snackbar message for the Camera Search task. [iOS only]">
-        Search with camera completed!
-      </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI" desc="Completion snackbar message for the Gemini task. [iOS only]">
         Use Gemini in Chrome completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_INCOGNITO" desc="Completion snackbar message for the Incognito task. [iOS only]">
         Go Incognito completed!
       </message>
-      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_SEARCH" desc="Completion snackbar message for the Lens Search task. [iOS only]">
+      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH" desc="Completion snackbar message for the Lens Camera Search task. [iOS only]">
+        Search with camera completed!
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_WEBSITE_SEARCH" desc="Completion snackbar message for the Lens Website Search task. [iOS only]">
         Google Lens completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PASSWORD_CHECKUP" desc="Completion snackbar message for the Password Checkup task. [iOS only]">

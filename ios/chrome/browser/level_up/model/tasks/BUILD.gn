@@ -6,10 +6,10 @@ source_set("tasks") {
   sources = [
     "ai_search_task_info.mm",
     "autofill_task_info.mm",
-    "camera_search_task_info.mm",
     "gemini_task_info.mm",
     "incognito_task_info.mm",
-    "lens_search_task_info.mm",
+    "lens_camera_search_task_info.mm",
+    "lens_website_search_task_info.mm",
     "password_checkup_task_info.mm",
     "payment_methods_task_info.mm",
     "pin_tabs_task_info.mm",

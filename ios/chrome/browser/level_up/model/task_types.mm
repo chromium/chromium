@@ -26,11 +26,11 @@ std::string TaskTypeToString(TaskType type) {
       return "Incognito";
     case TaskType::kPasswordCheckup:
       return "PasswordCheckup";
-    case TaskType::kLensSearch:
-      return "LensSearch";
+    case TaskType::kLensWebsiteSearch:
+      return "LensWebsiteSearch";
     case TaskType::kAISearch:
       return "AISearch";
-    case TaskType::kCameraSearch:
-      return "CameraSearch";
+    case TaskType::kLensCameraSearch:
+      return "LensCameraSearch";
   }
 }

@@ -11,13 +11,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-class LensSearchTaskInfo : public TaskInfo {
+class LensWebsiteSearchTaskInfo : public TaskInfo {
  public:
-  LensSearchTaskInfo() = default;
-  ~LensSearchTaskInfo() override = default;
+  LensWebsiteSearchTaskInfo() = default;
+  ~LensWebsiteSearchTaskInfo() override = default;
 
   // TaskInfo implementation.
-  TaskType GetTaskType() const override { return TaskType::kLensSearch; }
+  TaskType GetTaskType() const override { return TaskType::kLensWebsiteSearch; }
   std::string GetTitle() const override {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS);
   }
@@ -33,13 +33,13 @@ class LensSearchTaskInfo : public TaskInfo {
   std::string GetTriggerUserAction() const override { return ""; }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(
-        IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_SEARCH);
+        IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_WEBSITE_SEARCH);
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
     return base::DoNothing();
   }
 };
 
-std::unique_ptr<TaskInfo> CreateLensSearchTaskInfo() {
-  return std::make_unique<LensSearchTaskInfo>();
+std::unique_ptr<TaskInfo> CreateLensWebsiteSearchTaskInfo() {
+  return std::make_unique<LensWebsiteSearchTaskInfo>();
 }

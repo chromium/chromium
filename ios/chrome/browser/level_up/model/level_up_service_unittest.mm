@@ -93,9 +93,9 @@ TEST_F(LevelUpServiceTest, TestMilestoneProgression) {
 
   // Complete remaining 4 tasks (total 12).
   service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
-  service_->MarkTaskCompleted(TaskType::kLensSearch);
+  service_->MarkTaskCompleted(TaskType::kLensWebsiteSearch);
   service_->MarkTaskCompleted(TaskType::kAISearch);
-  service_->MarkTaskCompleted(TaskType::kCameraSearch);
+  service_->MarkTaskCompleted(TaskType::kLensCameraSearch);
   EXPECT_EQ(service_->GetCurrentLevel(), 4);
   EXPECT_EQ(service_->GetTasksRemainingForNextLevel(), 0);
 }
