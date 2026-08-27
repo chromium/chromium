@@ -4,6 +4,11 @@
 
 #include "base/trace_event/malloc_dump_provider.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/allocator/buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,6 +95,204 @@ TEST(MallocDumpProviderTest, WinHeapInfo_LargeAllocBecomesOrphanBusy) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// The malloc/win_heap dump is only created when PartitionAlloc is the malloc
+// implementation. Without it, ReportWinHeapStats folds the WinHeap numbers
+// into the malloc totals and is passed no dump to populate.
+#if BUILDFLAG(IS_WIN) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+namespace {
+
+constexpr char kWinHeapWasteDumpName[] =
+    "malloc/win_heap/metadata_fragmentation_caches";
+constexpr char kMallocWasteDumpName[] = "malloc/metadata_fragmentation_caches";
+constexpr char kPartitionsDumpName[] = "malloc/partitions";
+
+const MemoryAllocatorDump* FindAllocatorDump(const ProcessMemoryDump& pmd,
+                                             std::string_view name) {
+  auto it = pmd.allocator_dumps().find(std::string(name));
+  return it == pmd.allocator_dumps().cend() ? nullptr : it->second.get();
+}
+
+std::optional<uint64_t> GetScalarEntry(const MemoryAllocatorDump& dump,
+                                       std::string_view name,
+                                       std::string_view units) {
+  for (const auto& entry : dump.entries()) {
+    if (entry.name == name) {
+      CHECK_EQ(MemoryAllocatorDump::Entry::EntryType::kUint64,
+               entry.entry_type);
+      CHECK_EQ(units, entry.units);
+      return entry.value_uint64;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<uint64_t> GetBytesEntry(const MemoryAllocatorDump& dump,
+                                      std::string_view name) {
+  return GetScalarEntry(dump, name, MemoryAllocatorDump::kUnitsBytes);
+}
+
+}  // namespace
+
+// malloc/win_heap reports the resident footprint of the heap. The objects
+// allocated out of it are reported by malloc/allocated_objects/win_heap.
+TEST(MallocDumpProviderTest, WinHeapDumpReportsFootprint) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* win_heap_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeap);
+  const MemoryAllocatorDump* win_heap_objects_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeapAllocatedObjects);
+  ASSERT_TRUE(win_heap_dump);
+  ASSERT_TRUE(win_heap_objects_dump);
+
+  std::optional<uint64_t> size =
+      GetBytesEntry(*win_heap_dump, MemoryAllocatorDump::kNameSize);
+  std::optional<uint64_t> committed_size =
+      GetBytesEntry(*win_heap_dump, "virtual_committed_size");
+  std::optional<uint64_t> virtual_size =
+      GetBytesEntry(*win_heap_dump, "virtual_size");
+  std::optional<uint64_t> allocated_size =
+      GetBytesEntry(*win_heap_objects_dump, MemoryAllocatorDump::kNameSize);
+  std::optional<uint64_t> wasted = GetBytesEntry(*win_heap_dump, "wasted");
+  std::optional<uint64_t> fragmentation =
+      GetScalarEntry(*win_heap_dump, "fragmentation", "percent");
+  ASSERT_TRUE(size.has_value());
+  ASSERT_TRUE(committed_size.has_value());
+  ASSERT_TRUE(virtual_size.has_value());
+  ASSERT_TRUE(allocated_size.has_value());
+  ASSERT_TRUE(wasted.has_value());
+  ASSERT_TRUE(fragmentation.has_value());
+
+  // Resident size is approximated with the committed heap size.
+  EXPECT_EQ(*size, *committed_size);
+  // virtual_size is committed + uncommitted, and the committed bytes of a
+  // region already include the blocks allocated inside it.
+  EXPECT_GE(*virtual_size, *committed_size);
+  EXPECT_GE(*committed_size, *allocated_size);
+  // The committed bytes are either handed out to a live allocation or wasted.
+  EXPECT_EQ(*committed_size, *allocated_size + *wasted);
+  EXPECT_LE(*fragmentation, 100u);
+}
+
+// The wasted bytes are reported under malloc/win_heap so that its children
+// account for the whole committed heap, and are excluded from the malloc-wide
+// malloc/metadata_fragmentation_caches to avoid counting them twice.
+TEST(MallocDumpProviderTest, WinHeapWasteReportedUnderHeapDump) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* win_heap_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeap);
+  ASSERT_TRUE(win_heap_dump);
+  std::optional<uint64_t> wasted = GetBytesEntry(*win_heap_dump, "wasted");
+  ASSERT_TRUE(wasted.has_value());
+
+  // The WinHeap waste is the only contributor to the malloc-wide waste dump on
+  // Windows, so excluding it leaves nothing to report there.
+  EXPECT_FALSE(FindAllocatorDump(pmd, kMallocWasteDumpName));
+
+  const MemoryAllocatorDump* waste_dump =
+      FindAllocatorDump(pmd, kWinHeapWasteDumpName);
+  if (*wasted == 0) {
+    // A heap whose committed bytes are all handed out gets no waste dump.
+    EXPECT_FALSE(waste_dump);
+    return;
+  }
+  ASSERT_TRUE(waste_dump);
+  EXPECT_EQ(GetBytesEntry(*waste_dump, MemoryAllocatorDump::kNameSize), wasted);
+}
+
+// The objects allocated out of the WinHeap are accounted for under the system
+// allocator pool, and reported as suballocated from malloc/win_heap so that the
+// heap dump does not account for them a second time.
+TEST(MallocDumpProviderTest, WinHeapAllocatedObjectsAreSuballocatedFromHeap) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* win_heap_objects_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeapAllocatedObjects);
+  ASSERT_TRUE(win_heap_objects_dump);
+  EXPECT_TRUE(
+      GetBytesEntry(*win_heap_objects_dump, MemoryAllocatorDump::kNameSize)
+          .has_value());
+  EXPECT_TRUE(GetScalarEntry(*win_heap_objects_dump,
+                             MemoryAllocatorDump::kNameObjectCount,
+                             MemoryAllocatorDump::kUnitsObjects)
+                  .has_value());
+
+  // AddSuballocation() names the child after the owner's guid and leaves it
+  // without a size of its own: the UI groups nodes named this way under a
+  // synthetic "suballocations" entry of the parent, and takes their size from
+  // the owner.
+  const std::string suballocation_name =
+      std::string(MallocDumpProvider::kWinHeap) + "/__" +
+      win_heap_objects_dump->guid().ToString();
+  const MemoryAllocatorDump* suballocation_dump =
+      FindAllocatorDump(pmd, suballocation_name);
+  ASSERT_TRUE(suballocation_dump);
+  EXPECT_FALSE(
+      GetBytesEntry(*suballocation_dump, MemoryAllocatorDump::kNameSize)
+          .has_value());
+
+  const auto& edges = pmd.allocator_dumps_edges();
+  auto edge = edges.find(win_heap_objects_dump->guid());
+  ASSERT_TRUE(edge != edges.cend());
+  EXPECT_EQ(edge->second.target.ToUint64(),
+            suballocation_dump->guid().ToUint64());
+}
+
+// An allocator dump can only own a single target, and malloc/allocated_objects
+// already owns malloc/partitions. Attributing the WinHeap objects with an
+// ownership edge instead of a child dump would DCHECK in AddOwnershipEdge and
+// drop one of the two.
+TEST(MallocDumpProviderTest, SystemAllocatorPoolStillOwnsPartitions) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* allocated_objects_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kAllocatedObjects);
+  const MemoryAllocatorDump* partitions_dump =
+      FindAllocatorDump(pmd, kPartitionsDumpName);
+  ASSERT_TRUE(allocated_objects_dump);
+  ASSERT_TRUE(partitions_dump);
+
+  const auto& edges = pmd.allocator_dumps_edges();
+  auto edge = edges.find(allocated_objects_dump->guid());
+  ASSERT_TRUE(edge != edges.cend());
+  EXPECT_EQ(edge->second.target.ToUint64(), partitions_dump->guid().ToUint64());
+}
+
+// Walking the heap is too expensive for the lighter levels of detail, so no
+// dumps are created for them at all.
+TEST(MallocDumpProviderTest, WinHeapDumpsOmittedBelowDetailedLevel) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kBackground};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  EXPECT_FALSE(FindAllocatorDump(pmd, MallocDumpProvider::kWinHeap));
+  EXPECT_FALSE(
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeapAllocatedObjects));
+  EXPECT_FALSE(FindAllocatorDump(pmd, kWinHeapWasteDumpName));
+}
+
+#endif  // BUILDFLAG(IS_WIN) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

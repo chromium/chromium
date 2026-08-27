@@ -39,6 +39,12 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   // from other dump providers.
   static const char kAllocatedObjects[];
 
+#if BUILDFLAG(IS_WIN)
+  // Names of the WinHeap dumps. Only reported at kDetailed level of detail.
+  static const char kWinHeap[];
+  static const char kWinHeapAllocatedObjects[];
+#endif
+
   static MallocDumpProvider* GetInstance();
 
   // The Extreme LUD is implemented in //components/gwp_asan, which //base
