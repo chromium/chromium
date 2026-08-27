@@ -15,11 +15,10 @@ namespace blink {
 /* static */
 bool CompositorAnimationColorCurve::ValidateColorValue(
     Element* element,
+    const CSSPropertyName& property_name,
     const CSSValue* css_value,
     const TypedInterpolationValue* interpolation_value) {
   if (css_value) {
-    const CSSPropertyName property_name =
-        CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value =
         StyleResolver::ComputeValue(element, property_name, *css_value);
     return computed_value->IsColorValue();

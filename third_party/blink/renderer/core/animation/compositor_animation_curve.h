@@ -24,6 +24,7 @@ class CORE_EXPORT CompositorAnimationCurve
 
   using ValueFilter =
       bool (*)(Element* element,
+               const CSSPropertyName& property_name,
                const CSSValue* css_value,
                const TypedInterpolationValue* interpolation_value);
 

@@ -188,27 +188,35 @@ BackgroundColorPaintDefinition::BackgroundColorPaintDefinition(
           &local_root,
           PaintWorkletInput::PaintWorkletInputType::kBackgroundColor) {}
 
-PaintRecord BackgroundColorPaintDefinition::Paint(
+Color BackgroundColorPaintDefinition::Sample(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   const auto* input = To<BackgroundColorPaintWorkletInput>(compositor_input);
-
   Color color = input->MainThreadValue();
   if (!animated_property_values.empty()) {
     DCHECK_EQ(animated_property_values.size(), 1u);
     const auto& entry = animated_property_values.begin();
-    double progress = entry->second.float_value.value();
-    color = input->Interpolate(progress);
+    std::optional<double> progress = entry->second.float_value;
+    if (progress) {
+      color = input->Interpolate(progress.value());
+    }
   }
+  return color;
+}
 
-  // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
+PaintRecord BackgroundColorPaintDefinition::Paint(
+    const CompositorPaintWorkletInput* compositor_input,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  Color color = Sample(compositor_input, animated_property_values);
   SkColor4f sk_color = color.toSkColor4f();
 
   cc::InspectablePaintRecorder paint_recorder;
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.
-  const gfx::Size container_size(gfx::ToRoundedSize(input->ContainerSize()));
+  const gfx::Size container_size(gfx::ToRoundedSize(
+      To<BackgroundColorPaintWorkletInput>(compositor_input)->ContainerSize()));
   cc::PaintCanvas* canvas = paint_recorder.beginRecording(container_size);
   canvas->drawColor(sk_color);
   return paint_recorder.finishRecordingAsPicture();
@@ -250,9 +258,10 @@ scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
   return PaintWorkletDeferredImage::Create(std::move(input), container_size);
 }
 
-PaintRecord BackgroundColorPaintDefinition::PaintForTest(
+Color BackgroundColorPaintDefinition::SampleForTest(
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
+    const Color& main_thread_value,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   gfx::SizeF container_size(100, 100);
@@ -262,9 +271,9 @@ PaintRecord BackgroundColorPaintDefinition::PaintForTest(
       CSSPropertyName(CSSPropertyID::kBackgroundColor));
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
-          container_size, 1u, std::move(color_curve), Color(),
+          container_size, 1u, std::move(color_curve), main_thread_value,
           std::move(property_keys));
-  return Paint(input.get(), animated_property_values);
+  return Sample(input.get(), animated_property_values);
 }
 
 void BackgroundColorPaintDefinition::Trace(Visitor* visitor) const {

@@ -76,7 +76,7 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
     if (frame->IsCSSPropertySpecificKeyframe()) {
       const CSSValue* css_value =
           To<CSSPropertySpecificKeyframe>(frame.Get())->Value();
-      if (!value_filter(element, css_value, nullptr)) {
+      if (!value_filter(element, PropertyName(), css_value, nullptr)) {
         return false;
       }
       if (IsStyleDependent(css_value)) {
@@ -91,7 +91,8 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
           To<TransitionKeyframe::PropertySpecificKeyframe>(frame.Get());
       const TypedInterpolationValue* interpolation_value =
           transition_keyframe->GetValue();
-      if (!value_filter(element, nullptr, interpolation_value)) {
+      if (!value_filter(element, PropertyName(), nullptr,
+                        interpolation_value)) {
         return false;
       }
       AddKeyframe(offset, timing_function, interpolation_value);

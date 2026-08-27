@@ -37,6 +37,12 @@
 
 namespace blink {
 
+#define EXPECT_COLORS_EQ(c1, c2)           \
+  EXPECT_FLOAT_EQ(c1.Red(), c2.Red());     \
+  EXPECT_FLOAT_EQ(c1.Green(), c2.Green()); \
+  EXPECT_FLOAT_EQ(c1.Blue(), c2.Blue());   \
+  EXPECT_FLOAT_EQ(c1.Alpha(), c2.Alpha())
+
 // TODO(kevers): Deprecate in favor of a setting to enable generators for
 // testing. Currently, the generator requires a compositor thread.
 class FakeBackgroundColorPaintImageGenerator
@@ -79,15 +85,16 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
         generator);
   }
 
-  // Crash testing of BackgroundColorPaintDefinition::Paint
-  void RunPaintForTest(const Vector<Color>& animated_colors,
-                       const Vector<double>& offsets,
-                       const CompositorPaintWorkletJob::AnimatedPropertyValues&
-                           property_values) {
+  Color SampleForTest(const Vector<Color>& animated_colors,
+                      const Vector<double>& offsets,
+                      const Color& main_thread_value,
+                      const CompositorPaintWorkletJob::AnimatedPropertyValues&
+                          property_values) {
     BackgroundColorPaintDefinition* definition =
         MakeGarbageCollected<BackgroundColorPaintDefinition>(
             BackgroundColorPaintDefinition::KeyForTest());
-    definition->PaintForTest(animated_colors, offsets, property_values);
+    return definition->SampleForTest(animated_colors, offsets,
+                                     main_thread_value, property_values);
   }
 
   Animation* GetAnimation(Element* element) {
@@ -1036,40 +1043,69 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintNewStartTime) {
   EXPECT_FALSE(animation->CompositorPending());
 }
 
-// Test that calling BackgroundColorPaintDefinition::Paint won't crash
-// when the animated property value is empty.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithNoPropertyValue) {
+// WHen the animated property value is empty use the main thread value.
+// This condition occurs when when animation has not had a chance to tick
+// on the compositor thread.
+TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNoPropertyValue) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Color main_thread_value = Color::kBlack;
   Vector<double> offsets = {0, 1};
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
-  RunPaintForTest(animated_colors, offsets, property_values);
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
+  EXPECT_EQ(value, main_thread_value);
 }
 
-// Test that BackgroundColorPaintDefinition::Paint won't crash if the
-// progress of the animation is a negative number.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithNegativeProgress) {
+// Sample when there is an property value, but it's value is empty. This
+// condition occurs when the animation is not in effect. In this case,
+// the main thread value is correct.
+TEST_F(BackgroundColorPaintDefinitionTest, SampleWithEmptyPropertyValue) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Color main_thread_value = Color::kBlack;
   Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  CompositorPaintWorkletInput::PropertyKey property_key(
+      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
+      CompositorElementId(1u));
+  CompositorPaintWorkletInput::PropertyValue property_value;
+  property_values.insert(std::make_pair(property_key, property_value));
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
+  EXPECT_EQ(value, main_thread_value);
+}
+
+// Sample with negative progress.
+TEST_F(BackgroundColorPaintDefinitionTest, SampleWithNegativeProgress) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  Vector<Color> animated_colors = {Color(0, 128, 0), Color(255, 0, 0)};
+  Vector<double> offsets = {0, 1};
+  Color main_thread_value = Color::kBlack;
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
   CompositorPaintWorkletInput::PropertyKey property_key(
       CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
       CompositorElementId(1u));
   CompositorPaintWorkletInput::PropertyValue property_value(-0.0f);
   property_values.insert(std::make_pair(property_key, property_value));
-  RunPaintForTest(animated_colors, offsets, property_values);
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
+  EXPECT_COLORS_EQ(value, Color(0, 128, 0));
+
+  // Update the progress to -1, and resample.
+  const auto& entry = property_values.begin();
+  entry->second.float_value = -1;
+  value = SampleForTest(animated_colors, offsets, main_thread_value,
+                        property_values);
+  EXPECT_COLORS_EQ(value, Color(0, 255, 0));
 }
 
-// Test that BackgroundColorPaintDefinition::Paint won't crash if the
-// progress of the animation is > 1.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithLargerThanOneProgress) {
+// Sample when the progress of the animation is > 1.
+TEST_F(BackgroundColorPaintDefinitionTest, SampleWithLargerThanOneProgress) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
-  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(128, 0, 0)};
   Vector<double> offsets = {0, 1};
+  Color main_thread_value = Color::kBlack;
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
   CompositorPaintWorkletInput::PropertyKey property_key(
       CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
@@ -1077,17 +1113,25 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   float progress = 1 + std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  RunPaintForTest(animated_colors, offsets, property_values);
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
+  EXPECT_COLORS_EQ(value, Color(128, 0, 0));
+
+  // Update progress to 2, and resample.
+  const auto& entry = property_values.begin();
+  entry->second.float_value = 2;
+  value = SampleForTest(animated_colors, offsets, main_thread_value,
+                        property_values);
+  EXPECT_COLORS_EQ(value, Color(255, 0, 0));
 }
 
-// Test that BackgroundColorPaintDefinition::Paint won't crash when the
-// largest offset is not exactly one.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithCloseToOneOffset) {
+// Sample when largest offset < 1.
+TEST_F(BackgroundColorPaintDefinitionTest, SamplewithCloseToOneOffset) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(0, 255, 255),
                                    Color(255, 0, 0)};
   Vector<double> offsets = {0, 0.6, 0.99999};
+  Color main_thread_value = Color::kBlack;
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
   CompositorPaintWorkletInput::PropertyKey property_key(
       CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
@@ -1095,19 +1139,20 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   float progress = 1 - std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  RunPaintForTest(animated_colors, offsets, property_values);
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
+  EXPECT_COLORS_EQ(value, Color(255, 0, 0));
 }
 
-// Test that BackgroundColorPaintDefinition::Paint handles colors with
-// differing color spaces - i.e won't crash/DCHECK.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithColorOfDifferingColorSpaces) {
+// Sample when keyframes have different color spaces.
+TEST_F(BackgroundColorPaintDefinitionTest, SampleWithDifferingColorSpaces) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {
-      Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 1, 0, 0, 1),
+      Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 255, 0, 0, 1),
       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0, 0.5, 0, 1),
   };
   Vector<double> offsets = {0, 1};
+  Color main_thread_value = Color::kBlack;
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
   CompositorPaintWorkletInput::PropertyKey property_key(
       CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
@@ -1115,27 +1160,21 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   float progress = 0.5f;
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  RunPaintForTest(animated_colors, offsets, property_values);
-}
+  Color value = SampleForTest(animated_colors, offsets, main_thread_value,
+                              property_values);
 
-// Test that BackgroundColorPaintDefinition::Paint handles colors with
-// differing color spaces - i.e won't crash/DCHECK.
-TEST_F(BackgroundColorPaintDefinitionTest,
-       ProxyClientPaintWithColorOfDifferingColorSpacesReverse) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
-  Vector<Color> animated_colors = {
-      Color::FromColorSpace(Color::ColorSpace::kSRGB, 1, 0, 0, 1),
-      Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 0, 0.5, 0, 1),
+  // Interpolation is in OKlab color space and not RGB, which is why we
+  // don't get Color(128, 64, 0), which would the result if interpolating in
+  // legacy RGB.
+  EXPECT_COLORS_EQ(value, Color(166, 105, 0));
+
+  animated_colors = {
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0, 0.5, 0, 1),
+      Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 255, 0, 0, 1),
   };
-  Vector<double> offsets = {0, 1};
-  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
-  CompositorPaintWorkletInput::PropertyKey property_key(
-      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
-      CompositorElementId(1u));
-  float progress = 0.5f;
-  CompositorPaintWorkletInput::PropertyValue property_value(progress);
-  property_values.insert(std::make_pair(property_key, property_value));
-  RunPaintForTest(animated_colors, offsets, property_values);
+  Color reversed_value = SampleForTest(animated_colors, offsets,
+                                       main_thread_value, property_values);
+  EXPECT_COLORS_EQ(value, reversed_value);
 }
 
 TEST_F(BackgroundColorPaintDefinitionTest, OffscreenToOnScreen) {

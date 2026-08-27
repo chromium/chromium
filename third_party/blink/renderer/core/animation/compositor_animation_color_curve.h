@@ -17,6 +17,7 @@ class CORE_EXPORT CompositorAnimationColorCurve
   // worklet.
   static bool ValidateColorValue(
       Element* element,
+      const CSSPropertyName& property_name,
       const CSSValue* value,
       const TypedInterpolationValue* interpolation_value);
 
