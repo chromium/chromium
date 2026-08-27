@@ -161,7 +161,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // wait then do the checks
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(1, callback.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -216,7 +216,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                         runOnWorkerThread, "http://www.example.com", getAwPrefetchParameters());
 
         // wait then do the checks
-        callback.mOnErrorHelper.waitForNext();
+        callback.getOnErrorHelper().waitForNext();
         Assert.assertEquals(1, callback.getOnErrorHelper().getCallCount());
         Assert.assertEquals(
                 IllegalArgumentException.class, callback.getOnErrorHelper().getError().getClass());
@@ -280,7 +280,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                             runOnWorkerThread, "https://www.example.com", prefetchParameters);
 
             // wait then do the checks
-            callback.mOnErrorHelper.waitForNext();
+            callback.getOnErrorHelper().waitForNext();
             Assert.assertEquals(1, callback.getOnErrorHelper().getCallCount());
             Assert.assertEquals(
                     IllegalArgumentException.class,
@@ -350,7 +350,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
 
         // wait then do the checks
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(1, callback.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -391,7 +391,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         }
 
         // wait then do the checks
-        callback2.mOnStatusUpdatedHelper.waitForNext();
+        callback2.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
                 callback2.getOnStatusUpdatedHelper().getStatusCode());
@@ -401,7 +401,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         if (runOnWorkerThread && omtEnabled) {
             // TODO(crbug.com/519611014): PrePrefetch failure fallback triggers a second duplicate
             // check on the UI thread, causing the duplicate callback to run twice.
-            callback2.mOnStatusUpdatedHelper.waitForNext();
+            callback2.getOnStatusUpdatedHelper().waitForNext();
             Assert.assertEquals(2, callback2.getOnStatusUpdatedHelper().getCallCount());
             Assert.assertEquals(
                     AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
@@ -417,7 +417,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                         runOnWorkerThread, prefetchUrlWithUnexpectedQueryParam, prefetchParameters);
 
         // wait then do the checks
-        callback3.mOnStatusUpdatedHelper.waitForNext();
+        callback3.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(1, callback3.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertNotEquals(
                 AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
@@ -474,7 +474,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // Wait for the prefetch success & key for cancellation.
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(1, callback.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -805,7 +805,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // wait then do the checks
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         HashMap<String, String> prefetchHeaders =
                 mTestServer.getRequestHeadersForUrl(BASIC_PREFETCH_RELATIVE_PATH);
         String secPurposeHeaderValue = prefetchHeaders.get("Sec-Purpose");
@@ -874,7 +874,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         // --- 2. Execute Prefetch Request ---
         TestAwPrefetchCallback prefetchCallback =
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
-        prefetchCallback.mOnStatusUpdatedHelper.waitForNext(); // Wait for status update
+        prefetchCallback.getOnStatusUpdatedHelper().waitForNext(); // Wait for status update
 
         // --- 3. FIRST CHECK: Nothing saved after ONLY calling prefetch ---
         InstrumentationRegistry.getInstrumentation()
@@ -1008,7 +1008,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             // Make a prefetch request with the exact same URL as the navigation.
             TestAwPrefetchCallback callback =
                     startPrefetchAndWait(runOnWorkerThread, url, getAwPrefetchParameters());
-            callback.mOnStatusUpdatedHelper.waitForNext();
+            callback.getOnStatusUpdatedHelper().waitForNext();
 
             // Cancel the prefetch so that the histogram is logged.
             ThreadUtils.runOnUiThreadBlocking(
@@ -1092,7 +1092,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             final String url = getUrl(BASIC_PREFETCH_RELATIVE_PATH);
             TestAwPrefetchCallback callback =
                     startPrefetchAndWait(runOnWorkerThread, url, getAwPrefetchParameters());
-            callback.mOnStatusUpdatedHelper.waitForNext();
+            callback.getOnStatusUpdatedHelper().waitForNext();
 
             // Cancel the prefetch so that the histogram is logged.
             ThreadUtils.runOnUiThreadBlocking(
@@ -1160,7 +1160,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 new AwPrefetchParameters(additionalHeaders, null, true);
         TestAwPrefetchCallback callback =
                 startPrefetchAndWait(runOnWorkerThread, testUrl, prefetchParameters);
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(
                 "Prefetch should complete successfully.",
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -1243,7 +1243,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         // Perform a standard prefetch to populate the cache with a cacheable response.
         TestAwPrefetchCallback callback =
                 startPrefetchAndWait(runOnWorkerThread, testUrl, getAwPrefetchParameters());
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(
                 "Prefetch should complete successfully.",
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -1343,7 +1343,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
 
         // wait then do the checks
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
                 callback.getOnStatusUpdatedHelper().getStatusCode());
@@ -1382,7 +1382,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 startPrefetchAndWait(
                         /* runOnWorkerThread= */ true, mPrefetchUrl, getAwPrefetchParameters());
 
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         Assert.assertEquals(
                 "PrePrefetch should complete successfully.",
                 AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
@@ -1484,7 +1484,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 prefetchStartedLatch.await(5, TimeUnit.SECONDS));
 
         // Wait for completion.
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
         fallbackHistogramWatcher.assertExpected();
         Assert.assertEquals(
                 "Fallback prefetch should complete successfully.",
@@ -1558,7 +1558,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             throws Throwable {
         TestAwPrefetchCallback callback =
                 startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
-        callback.mOnStatusUpdatedHelper.waitForNext();
+        callback.getOnStatusUpdatedHelper().waitForNext();
 
         HashMap<String, String> prefetchHeaders =
                 mTestServer.getRequestHeadersForUrl(BASIC_PREFETCH_RELATIVE_PATH);
@@ -1606,7 +1606,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         TestAwPrefetchCallback prefetchCallback =
                 startPrefetchAndWait(
                         /* runOnWorkerThread= */ false, prefetchUrl, getAwPrefetchParameters());
-        prefetchCallback.mOnStatusUpdatedHelper.waitForNext();
+        prefetchCallback.getOnStatusUpdatedHelper().waitForNext();
         HashMap<String, String> prefetchHeaders =
                 mTestServer.getRequestHeadersForUrl(prefetchUrlPath);
 
@@ -1618,7 +1618,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         TestAwPrefetchCallback prePrefetchCallback =
                 startPrefetchAndWait(
                         /* runOnWorkerThread= */ true, prePrefetchUrl, getAwPrefetchParameters());
-        prePrefetchCallback.mOnStatusUpdatedHelper.waitForNext();
+        prePrefetchCallback.getOnStatusUpdatedHelper().waitForNext();
         HashMap<String, String> prePrefetchHeaders =
                 mTestServer.getRequestHeadersForUrl(prePrefetchUrlPath);
 
