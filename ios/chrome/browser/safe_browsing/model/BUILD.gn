@@ -139,11 +139,13 @@ source_set("model") {
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/safe_browsing/model/client_side_detection",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/safe_browsing",
@@ -180,6 +182,34 @@ source_set("infobar_delegate") {
   ]
 }
 
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safe_browsing_app_interface.h",
+    "safe_browsing_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "safe_browsing_app_interface.h",
+    "safe_browsing_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/common/phishing_classifier",
+    "//components/safe_browsing/ios/browser:client_side_detection_images_cache",
+    "//ios/chrome/browser/safe_browsing/model/client_side_detection",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -188,6 +218,7 @@ source_set("eg2_tests") {
     "safe_browsing_egtest.mm",
   ]
   deps = [
+    ":eg_test_support+eg2",
     "//base",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:chrome_reporting_entity",

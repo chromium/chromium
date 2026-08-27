@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -90,6 +91,13 @@ NSString* const kPrimaryButtonID = @"primary-button";
 
 // Duration to wait for an enterprise security event report.
 constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
+
+// Duration to wait for client-side detection classification to finish and cache
+// a verdict. On high-resolution devices (e.g. iPad Pro 13-inch) on loaded bots,
+// cold-start model loading, snapshot generation, and BEST_EFFORT background ML
+// visual feature extraction require additional time beyond default action
+// timeouts.
+constexpr base::TimeDelta kClassificationVerdictTimeout = base::Seconds(30);
 
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
@@ -182,6 +190,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
+  config.additional_args.push_back(
+      "--host-resolver-rules=MAP test.localhost 127.0.0.1");
+
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.
   config.additional_args.push_back(std::string("--mark_as_phishing=") +
@@ -246,6 +257,12 @@ void EnableEnterpriseUrlFilteringPrefs() {
         _realTimePhishingURL.spec());
   }
 
+  if ([self isRunningTest:@selector(testClientSideDetectionRuns)]) {
+    config.additional_args.push_back(
+        std::string("--enable-features=") +
+        safe_browsing::kClientSideDetectionEnabledIos.name);
+  }
+
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -283,10 +300,11 @@ void EnableEnterpriseUrlFilteringPrefs() {
   _safeContent2 = "also_safe";
 
   // Artificial verdict caching for hash prefix real time causes URLs with the
-  // same host to be seen as unsafe. Replacing the host string with localhost
-  // allows for proper testing between safe browsing v5 and iframe queries.
+  // same host to be seen as unsafe. Replacing the host string with
+  // test.localhost allows for proper testing between safe browsing v5 and
+  // iframe queries.
   GURL::Replacements replacements;
-  replacements.SetHostStr("localhost");
+  replacements.SetHostStr("test.localhost");
   _safeURL1 = _safeURL1.ReplaceComponents(replacements);
   _safeURL2 = _safeURL2.ReplaceComponents(replacements);
   _iframeWithPhishingURL =
@@ -361,6 +379,13 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // Ensure that the real-time Safe Browsing opt-in is reset to its original
   // value.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+
+  // Clear browsing history (which also clears Safe Browsing verdict caches)
+  // for good test hygiene.
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Clear mock scorer in ClientSideDetectionService for test isolation.
+  [SafeBrowsingAppInterface clearScorer];
 
   [super tearDownHelper];
 }
@@ -1219,6 +1244,48 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // contents are loaded.
   [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+}
+
+// Tests that client-side detection triggers classification when enabled and a
+// scorer is present.
+- (void)testClientSideDetectionRuns {
+  [SafeBrowsingAppInterface setMockScorer];
+
+  GREYAssertTrue([SafeBrowsingAppInterface isScorerSet],
+                 @"Scorer was not set.");
+
+  NSString* targetURL = base::SysUTF8ToNSString(_safeURL2.spec());
+  GREYAssertFalse([SafeBrowsingAppInterface hasCachedVerdictForURL:targetURL],
+                  @"Verdict should not be cached prior to navigation.");
+
+  [ChromeEarlGrey loadURL:_safeURL2];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+
+  // Wait for pre-classification & snapshot generation to complete.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kClassificationVerdictTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                 expectCount:1
+                   forBucket:static_cast<int>(
+                                 safe_browsing::PreClassificationCheckResult::
+                                     CLASSIFY)
+                forHistogram:@"SBClientPhishing.PreClassificationCheckResult"];
+            return error == nil;
+          }),
+      @"Timed out waiting for CSD pre-classification checks and snapshot to "
+      @"finish.");
+
+  // Verify that client-side detection classification completed and cached a
+  // verdict for the URL.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kClassificationVerdictTimeout,
+          ^{
+            return [SafeBrowsingAppInterface hasCachedVerdictForURL:targetURL];
+          }),
+      @"Timed out waiting for CSD classification verdict to be cached.");
 }
 
 @end

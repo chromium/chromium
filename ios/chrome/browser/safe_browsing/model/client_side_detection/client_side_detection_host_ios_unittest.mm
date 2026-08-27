@@ -434,6 +434,124 @@ TEST_F(ClientSideDetectionHostIOSTest, GetFeatureCacheNullWebState) {
   EXPECT_EQ(host->GetFeatureCache(), nullptr);
 }
 
+// Tests that ClientSideDetectionHostIOS is created via SafeBrowsingTabHelper
+// when the feature is enabled and there is no filter.
+TEST_F(ClientSideDetectionHostIOSTest, HostCreatedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kEmpty);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_TRUE(sb_tab_helper->client_side_detection_host());
+}
+
+// Tests that ClientSideDetectionHostIOS is not created when the feature is
+// disabled.
+TEST_F(ClientSideDetectionHostIOSTest, DisabledFeaturePreventsHostCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kEmpty);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_FALSE(sb_tab_helper->client_side_detection_host());
+}
+
+// Tests that ClientSideDetectionHostIOS is not created for prerender WebStates.
+TEST_F(ClientSideDetectionHostIOSTest, PrerenderFilterPreventsHostCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kPrerender);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_FALSE(sb_tab_helper->client_side_detection_host());
+}
+
+// Tests that ClientSideDetectionHostIOS is not created for lens overlay
+// WebStates.
+TEST_F(ClientSideDetectionHostIOSTest, LensOverlayFilterPreventsHostCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kLensOverlay);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_FALSE(sb_tab_helper->client_side_detection_host());
+}
+
+// Tests that ClientSideDetectionHostIOS is not created for incognito
+// (off-the-record) WebStates.
+TEST_F(ClientSideDetectionHostIOSTest, OffTheRecordPreventsHostCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  // Set up an incognito profile.
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      ClientSideDetectionServiceFactory::GetInstance(),
+      base::BindRepeating(&BuildMockClientSideDetectionService));
+  std::unique_ptr<TestProfileIOS> original_profile = std::move(builder).Build();
+  ProfileIOS* otr_profile = original_profile->GetOffTheRecordProfile();
+
+  web::FakeWebState otr_web_state;
+  otr_web_state.SetBrowserState(otr_profile);
+  otr_web_state.SetWebFramesManager(
+      web::ContentWorld::kPageContentWorld,
+      std::make_unique<web::FakeWebFramesManager>());
+  otr_web_state.SetWebFramesManager(
+      web::ContentWorld::kIsolatedWorld,
+      std::make_unique<web::FakeWebFramesManager>());
+  otr_web_state.SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+
+  AttachTabHelpers(&otr_web_state, TabHelperFilter::kEmpty);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&otr_web_state);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_FALSE(sb_tab_helper->client_side_detection_host());
+}
+
+// Tests that toggling Safe Browsing pref dynamically creates and destroys the
+// ClientSideDetectionHostIOS.
+TEST_F(ClientSideDetectionHostIOSTest,
+       SafeBrowsingPrefToggleDestroysAndRecreatesHost) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kEmpty);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  EXPECT_TRUE(sb_tab_helper->client_side_detection_host());
+
+  // Disable Safe Browsing -> host should be destroyed.
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_FALSE(sb_tab_helper->client_side_detection_host());
+
+  // Re-enable Safe Browsing (Standard Protection) -> host should be re-created.
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_TRUE(sb_tab_helper->client_side_detection_host());
+
+  // Enhanced Protection -> host remains active.
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_TRUE(sb_tab_helper->client_side_detection_host());
+}
+
 // Tests that snapshot failure prevents visual classification and logs
 // kSnapshotFailed.
 TEST_F(ClientSideDetectionHostIOSTest, SnapshotFailedPreventsClassification) {

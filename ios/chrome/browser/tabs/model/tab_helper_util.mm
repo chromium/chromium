@@ -233,22 +233,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPropagateFormFields));
 
-  SafeBrowsingClient* client =
-      SafeBrowsingClientFactory::GetForProfile(profile);
-  attacher.Create<SafeBrowsingQueryManager>(client);
-  attacher.Create<SafeBrowsingTabHelper>(client);
-  attacher.Create<SafeBrowsingUrlAllowList>();
-  attacher.Create<SafeBrowsingUnsafeResourceContainer>();
-
-  attacher.Create<TailoredSecurityTabHelper>(
-      TailoredSecurityServiceFactory::GetForProfile(profile));
-  attacher.Create<PolicyUrlBlockingTabHelper>();
-
-  // Supervised user services are not supported for off-the-record.
-  attacher.CreateWhen<SupervisedUserURLFilterTabHelper>(
-      !attacher.IsOffTheRecord());
-  attacher.CreateWhen<SupervisedUserErrorContainer>(!attacher.IsOffTheRecord());
-
   attacher.Create<ImageFetchTabHelper>();
   attacher.Create<NewTabPageTabHelper>();
   attacher.Create<ShareFileDownloadTabHelper>();
@@ -294,6 +278,26 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
                                                !attacher.IsForPrerender());
   attacher.CreateWhen<PagePlaceholderTabHelper>(!attacher.IsForLensOverlay() &&
                                                 !attacher.IsForPrerender());
+
+  // Must be attached after `SnapshotTabHelper` because `SafeBrowsingTabHelper`
+  // instantiates `ClientSideDetectionHostIOS` during construction, which
+  // requires `SnapshotTabHelper` to already be attached to `web_state`.
+  SafeBrowsingClient* client =
+      SafeBrowsingClientFactory::GetForProfile(profile);
+  attacher.Create<SafeBrowsingQueryManager>(client);
+  attacher.Create<SafeBrowsingTabHelper>(client);
+  attacher.Create<SafeBrowsingUrlAllowList>();
+  attacher.Create<SafeBrowsingUnsafeResourceContainer>();
+
+  attacher.Create<TailoredSecurityTabHelper>(
+      TailoredSecurityServiceFactory::GetForProfile(profile));
+  attacher.Create<PolicyUrlBlockingTabHelper>();
+
+  // Supervised user services are not supported for off-the-record.
+  attacher.CreateWhen<SupervisedUserURLFilterTabHelper>(
+      !attacher.IsOffTheRecord());
+  attacher.CreateWhen<SupervisedUserErrorContainer>(!attacher.IsOffTheRecord());
+
   // Must be attached before `AutofillTabHelper` so `ChromeAutofillClientIOS`
   // can observe `ActorTabHelper` upon construction.
   const bool is_actor_tab_helper_enabled =

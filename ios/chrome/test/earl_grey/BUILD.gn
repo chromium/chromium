@@ -221,6 +221,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/recent_tabs/test:eg_app_support+eg2",
     "//ios/chrome/browser/safari_data_import/test:eg_app_support+eg2",
+    "//ios/chrome/browser/safe_browsing/model:eg_app_support+eg2",
     "//ios/chrome/browser/safe_mode/ui_bundled",
     "//ios/chrome/browser/safe_mode/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/search_engines/model:eg_app_support+eg2",
