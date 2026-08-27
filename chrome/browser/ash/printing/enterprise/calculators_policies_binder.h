@@ -64,7 +64,7 @@ class CalculatorsPoliciesBinder {
   // Returns the access mode integer preference for |name|.
   virtual int GetAccessMode(const char* name) const = 0;
 
-  // Returns a string list for the prefrence |name|.
+  // Returns a string list for the preference |name|.
   virtual std::vector<std::string> GetStringList(const char* name) const = 0;
 
  private:
