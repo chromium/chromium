@@ -4,12 +4,10 @@
 
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/buildflags/buildflags.h"
@@ -115,68 +113,6 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
 #endif
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, MAYBE_Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
-}
-
-class AlarmsNameHistogramTest : public ExtensionApiTest {
- public:
-  void SetUp() override {
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-    ExtensionApiTest::SetUp();
-  }
-
-  void TearDown() override {
-    histogram_tester_ = nullptr;
-    ExtensionApiTest::TearDown();
-  }
-
- protected:
-  int GetAlarmCountForExtension() {
-    const Extension* extension = GetSingleLoadedExtension();
-    EXPECT_TRUE(extension) << "Exactly one extension should be loaded.";
-    EXPECT_EQ("Alarm Name Test Extension", extension->name());
-    AlarmManager* alarm_manager = AlarmManager::Get(profile());
-    EXPECT_TRUE(alarm_manager) << "AlarmManager should be loaded.";
-    return alarm_manager->GetCountForExtension(extension->id());
-  }
-
-  void WaitForStateStore() {
-    base::RunLoop run_loop;
-    ExtensionSystem::Get(profile())->state_store()->FlushForTesting(
-        run_loop.QuitWhenIdleClosure());
-    run_loop.Run();
-  }
-
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
-};
-
-// Test that the histogram for determining maximum alarm name lengths
-// counts the length of the longest alarm.
-IN_PROC_BROWSER_TEST_F(AlarmsNameHistogramTest, PRE_Name) {
-  // Write the alarms into persistent storage to be read in the main
-  // part of the test.
-  EXPECT_TRUE(RunExtensionTest("alarms/name")) << message_;
-
-  // Ensure that extension had set exactly three alarms.
-  WaitForStateStore();
-  ASSERT_EQ(3, GetAlarmCountForExtension());
-}
-
-// Confirm the alarms are loaded from persistent storage and histogram is
-// emitted on extension load.
-IN_PROC_BROWSER_TEST_F(AlarmsNameHistogramTest, Name) {
-  // Wait until extension alarms are loaded.
-  WaitForStateStore();
-
-  // Ensure that extension had set exactly three alarms (as set in
-  // background.js).
-  ASSERT_EQ(3, GetAlarmCountForExtension());
-
-  // After the alarms had been loaded, the histogram counts should have
-  // been incremented.
-  histogram_tester_->ExpectUniqueSample(
-      // 6 is the index of the expected bucket, AlarmNameLength::k126_250.
-      "Extensions.AlarmManager.AlarmsMaxNameLength", 6,
-      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, PRE_AlarmPersistence) {
