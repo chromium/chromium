@@ -62,6 +62,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   views::BubbleAnchor GetAnchor() override;
   void SetBubbleOwner(BubbleOwnerDelegate* owner) override;
   void ExecuteForTesting() override;
+  void EndAnimationForTesting() override;
 
   // Called from WebUI
   void OnExpandAnimationEnded();

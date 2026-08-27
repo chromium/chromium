@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -161,13 +163,16 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requesting_origin));
     test_api_->AddSimpleRequest(GetActiveMainFrame(), type);
     base::RunLoop().RunUntilIdle();
-    views::test::RunScheduledLayout(GetLocationBarView());
+    if (LocationBarView* lbv = BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->GetLocationBarView()) {
+      views::test::RunScheduledLayout(lbv);
+    }
   }
 
-  LocationBarView* GetLocationBarView() {
+  LocationBar* GetLocationBar() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar_view();
+    return browser_view->toolbar()->location_bar();
   }
 
   ChipController* GetChipController() {
@@ -178,23 +183,24 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     return lb->GetChipController();
   }
 
-  PermissionChipView* GetChip() {
-    return views::AsViewClass<PermissionChipView>(
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            PermissionChipView::kPermissionRequestChipElementId,
-            views::ElementTrackerViews::GetContextForView(
-                BrowserView::GetBrowserViewForBrowser(browser()))));
-  }
+  PermissionChipInterface* GetChip() { return GetChipController()->chip(); }
 
-  void ClickOnChip(PermissionChipView* chip) {
+  void ClickOnChip(PermissionChipInterface* chip) {
     ASSERT_TRUE(chip != nullptr);
     ASSERT_TRUE(chip->GetVisible());
     ASSERT_FALSE(GetChipController()->GetBubbleWidget());
 
-    views::test::ButtonTestApi(chip).NotifyClick(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
+    chip->ExecuteForTesting();
+  }
+
+  void ForceUpdateVisibility() {
+    // Force synchronous update of layout values. In the actual code,
+    // InvalidateLayout() is sufficient, but leaves stale visibility values for
+    // testing.
+    if (LocationBarView* lbv = BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->GetLocationBarView()) {
+      lbv->DeprecatedLayoutImmediately();
+    }
   }
 
   // Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.
@@ -235,10 +241,18 @@ class LocationBarIconOverrideTest : public PermissionChipInteractiveUITest {
   }
 
   bool IsLocationIconVisible() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetLocationBarView()
-        ->location_icon_view()
-        ->GetVisible();
+    return LocationIconTestAccessor(browser()).IsVisible();
+  }
+
+  void ExpectLocationIconVisibility(bool expected) {
+    if (BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetLocationBarView()) {
+      EXPECT_EQ(expected, IsLocationIconVisible());
+    } else {
+      // With WebUI, we have to check asynchronously.
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return IsLocationIconVisible() == expected; }));
+    }
   }
 
  private:
@@ -249,12 +263,12 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
                        OverrideLocationBarIconDuringChipOnlyForOverrideFlags) {
   // Initially the location bar icon should be visible for any feature flag
   // configuration
-  EXPECT_TRUE(IsLocationIconVisible());
+  ExpectLocationIconVisibility(true);
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
   // After a request, a chip is shown, which should override the lock icon.
-  EXPECT_FALSE(IsLocationIconVisible());
+  ExpectLocationIconVisibility(false);
 
   base::RunLoop().RunUntilIdle();
 
@@ -266,41 +280,29 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
   test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
 
   base::RunLoop().RunUntilIdle();
-
-  // Force synchronous update of layout values. In the actual code,
-  // InvalidateLayout() is sufficient, but leaves stale visibility values for
-  // testing.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetLocationBarView()
-      ->DeprecatedLayoutImmediately();
+  ForceUpdateVisibility();
 
   // Test with confirmation chip.
   // Verify chip is still visible and has the confirmation text
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_TRUE(GetChip()->GetText() ==
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
 
-  EXPECT_FALSE(IsLocationIconVisible());
+  ExpectLocationIconVisibility(false);
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
   EXPECT_TRUE(GetChipController()->is_collapse_timer_running_for_testing());
   GetChipController()->fire_collapse_timer_for_testing();
-  GetChip()->animation_for_testing()->End();
+  GetChip()->EndAnimationForTesting();
   base::RunLoop().RunUntilIdle();
-
-  // Force synchronous update of layout values. In the actual code,
-  // InvalidateLayout() is sufficient, but leaves stale visibility values for
-  // testing.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->GetLocationBarView()
-      ->DeprecatedLayoutImmediately();
+  ForceUpdateVisibility();
 
   // With any feature flag configuration, we have to ensure that the location
   // bar icon is visible after the chip collapsed.
   EXPECT_FALSE(GetChip()->GetVisible());
-  EXPECT_TRUE(IsLocationIconVisible());
+  ExpectLocationIconVisibility(true);
 }
 
 class ConfirmationChipEnabledInteractiveTest
@@ -316,23 +318,25 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
 
   // Chip should be visible and show geolocation request
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_TRUE(GetChip()->GetText() ==
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
 
   test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
 
   // Confirmation chip should be visible
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_TRUE(GetChip()->GetText() ==
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
+  EXPECT_EQ(GetChip()->GetThemeForTesting(),
+            PermissionChipTheme::kNormalVisibility);
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
   EXPECT_TRUE(GetChipController()->is_collapse_timer_running_for_testing());
   GetChipController()->fire_collapse_timer_for_testing();
-  GetChip()->animation_for_testing()->End();
+  GetChip()->EndAnimationForTesting();
+
   base::RunLoop().RunUntilIdle();
 
   // Chip should no longer be visible.
@@ -343,17 +347,18 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_EQ(GetChip()->GetText(),
-            l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
+              l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
 
   test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
 
   // After deny, the deny confirmation should be displayed
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_EQ(GetChip()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kLowVisibility);
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
+              l10n_util::GetStringUTF16(
+                  IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
+  EXPECT_EQ(GetChip()->GetThemeForTesting(),
+            PermissionChipTheme::kLowVisibility);
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
@@ -368,16 +373,16 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
 
   // Since a new request came in, the new request should be displayed
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_EQ(GetChip()->GetText(),
-            l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
+              l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
 
   test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
 
   // After the deny, the deny confirmation should be displayed
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_EQ(GetChip()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
+              l10n_util::GetStringUTF16(
+                  IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
@@ -401,10 +406,10 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   page_info_bubble->CloseBubble();
 
   // Fast forward animation to trigger callback and wait until it completes.
-  GetChip()->animation_for_testing()->End();
+  GetChip()->EndAnimationForTesting();
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(GetChip()->GetVisible());
+  EXPECT_FALSE(GetChip()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
@@ -412,22 +417,23 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_TRUE(GetChip()->GetText() ==
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
 
   test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
   EXPECT_TRUE(GetChip()->GetVisible());
-  EXPECT_TRUE(GetChip()->GetText() ==
+  EXPECT_TRUE(GetChip()->GetTextForTesting() ==
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
+  EXPECT_EQ(GetChip()->GetThemeForTesting(),
+            PermissionChipTheme::kNormalVisibility);
 
   // Simulate the user editing the omnibox.
-  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
   omnibox_view->SetFocus(/*is_user_initiated=*/true);
   omnibox_view->SetUserText(u"Typing in the Omnibox...");
-  views::test::RunScheduledLayout(GetLocationBarView());
-  EXPECT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+  ForceUpdateVisibility();
+  EXPECT_TRUE(GetLocationBar()->IsEditingOrEmpty());
   EXPECT_FALSE(GetChip()->GetVisible());
 }
 
@@ -494,12 +500,7 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
 
  private:
   void OpenPageInfoBubble(Browser* browser) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    LocationIconView* location_icon_view =
-        browser_view->toolbar()->location_bar_view()->location_icon_view();
-    ASSERT_TRUE(location_icon_view);
-    ui::test::TestEvent event;
-    location_icon_view->ShowBubble(event);
+    LocationIconTestAccessor(browser).ShowBubble();
     views::BubbleDialogDelegateView* page_info =
         PageInfoBubbleView::GetPageInfoBubbleForTesting();
     EXPECT_NE(nullptr, page_info);
@@ -589,13 +590,13 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
 
   test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
 
-  content::WebContents* web_contents = GetLocationBarView()->GetWebContents();
+  content::WebContents* web_contents = GetLocationBar()->GetWebContents();
   const GURL& origin = permissions::PermissionUtil::GetLastCommittedOriginAsURL(
       web_contents->GetPrimaryMainFrame());
   permissions::OriginKeyedPermissionActionService* permission_action_service =
       permissions::PermissionsClient::Get()
           ->GetOriginKeyedPermissionActionService(
-              GetLocationBarView()->GetWebContents()->GetBrowserContext());
+              GetLocationBar()->GetWebContents()->GetBrowserContext());
 
   // Get recorded entry and manually change its time to 2 minutes ago.
   std::optional<permissions::PermissionActionTime> record =
@@ -1521,8 +1522,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permissions::PermissionRequestObserver observer(web_contents);
 
-  LocationBarView* location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  LocationBar* location_bar = GetLocationBar();
   ASSERT_TRUE(location_bar);
   ChipController* chip_controller = location_bar->GetChipController();
   ChipExpansionObserver chip_expansion_observer(chip_controller->chip());
@@ -1596,11 +1596,11 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   EXPECT_TRUE(test_api_->manager()->IsRequestInProgress());
 
   // Simulate the user editing the omnibox.
-  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
+  ForceUpdateVisibility();
   omnibox_view->SetFocus(/*is_user_initiated=*/true);
   omnibox_view->SetUserText(u"Typing in the Omnibox...");
-  views::test::RunScheduledLayout(GetLocationBarView());
-  ASSERT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+  ASSERT_TRUE(GetLocationBar()->IsEditingOrEmpty());
 
   EXPECT_FALSE(test_api_->manager()->IsRequestInProgress());
   EXPECT_FALSE(GetChip()->GetVisible());
