@@ -849,3 +849,28 @@ TEST_F(AimEligibilityServiceTest, LogsFuseboxEligibilityHistogram) {
       "Omnibox.AimEligibility.EligibilityResponse.is_fusebox_eligible", true,
       1);
 }
+
+TEST_F(AimEligibilityServiceTest, FetchEligibilityWithLocaleChange) {
+  base::HistogramTester histogram_tester;
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kLocaleChange);
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::string response_string;
+  response.SerializeToString(&response_string);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request.url.spec(), response_string, net::HTTP_OK);
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityResponse.LocaleChange.is_eligible",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityResponse.is_eligible", true, 1);
+}

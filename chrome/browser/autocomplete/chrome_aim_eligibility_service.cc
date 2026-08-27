@@ -32,7 +32,17 @@ ChromeAimEligibilityService::ChromeAimEligibilityService(
                             url_loader_factory,
                             identity_manager,
                             GetLocaleImpl(),
-                            std::move(configuration)) {}
+                            std::move(configuration)) {
+  if (g_browser_process && g_browser_process->GetFeatures() &&
+      g_browser_process->GetFeatures()->application_locale_storage()) {
+    locale_change_subscription_ =
+        g_browser_process->GetFeatures()
+            ->application_locale_storage()
+            ->RegisterOnLocaleChangedCallback(base::BindRepeating(
+                &ChromeAimEligibilityService::OnLocaleChanged,
+                weak_factory_.GetWeakPtr()));
+  }
+}
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 
@@ -47,4 +57,9 @@ std::string ChromeAimEligibilityService::GetLocaleImpl() const {
 variations::VariationsService*
 ChromeAimEligibilityService::GetVariationsService() const {
   return g_browser_process ? g_browser_process->variations_service() : nullptr;
+}
+
+void ChromeAimEligibilityService::OnLocaleChanged(
+    const std::string& /*new_locale*/) {
+  FetchEligibility(RequestSource::kLocaleChange);
 }

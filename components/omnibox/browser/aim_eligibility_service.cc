@@ -770,6 +770,8 @@ std::string AimEligibilityService::RequestSourceToString(RequestSource source) {
       return "RefreshTokenError";
     case RequestSource::kOAuthFallbackCookieChange:
       return "OAuthFallbackCookieChange";
+    case RequestSource::kLocaleChange:
+      return "LocaleChange";
   }
 }
 
