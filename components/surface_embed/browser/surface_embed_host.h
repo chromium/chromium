@@ -52,7 +52,8 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   // mojom::SurfaceEmbedHost implementation:
   void SetSurfaceEmbed(mojo::PendingAssociatedRemote<mojom::SurfaceEmbed>
                            surface_embed) override;
-  void AttachConnector(const base::UnguessableToken& content_id) override;
+  void AttachConnector(const base::UnguessableToken& content_id,
+                       bool is_embed_element_focused) override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override;
@@ -92,6 +93,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
 
   void OnMojoDisconnect();
   void OnRequestFocusOnEmbedElementCompleted();
+  void FocusChildWebContents();
 
   // May return null.
   content::SurfaceEmbedConnector* GetConnector() const;

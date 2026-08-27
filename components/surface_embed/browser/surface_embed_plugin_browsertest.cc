@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
+#include "components/surface_embed/common/constants.h"
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -1334,6 +1335,89 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusPreservedAfterNavigation) {
       content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool());
   EXPECT_TRUE(content::EvalJs(child_contents.get(), "document.hasFocus()")
                   .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       AttachToFocusedEmbedHasPageFocus) {
+  NavigateToTestUrl(kFocusHarnessUrl);
+  content::ReadyForInputObserver(web_contents()).Wait();
+
+  // 1. Create an <embed> element without content ID and insert it into the DOM.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace(R"(
+        const embed = document.createElement('embed');
+        embed.setAttribute('type', $1);
+        embed.style.position = 'absolute';
+        embed.style.left = '10px';
+        embed.style.top = '50px';
+        embed.style.width = '100px';
+        embed.style.height = '100px';
+        embed.id = 'my_embed';
+        const outer2 = document.getElementById('outer2');
+        document.body.insertBefore(embed, outer2);
+      )", kInternalPluginMimeType)));
+
+  WaitForHostCount(1);
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(host, nullptr);
+
+  // 2. Focus the <embed> element in the outer page before attaching.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('my_embed').focus()"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "document.activeElement.id") ==
+               "my_embed" &&
+           content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool();
+  }));
+
+  // 3. Create the inner child WebContents.
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kInnerPageUrl);
+  content::ReadyForInputObserver(child_contents.get()).Wait();
+
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(guest_handle, nullptr);
+
+  // 4. Attach the inner WebContents to the already focused <embed> by setting
+  // data-content-id and re-triggering plugin creation.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace(R"(
+        const embed = document.getElementById('my_embed');
+        embed.setAttribute('data-content-id', $1);
+        embed.removeAttribute('type');
+        embed.setAttribute('type', $2);
+      )", guest_handle->id().ToString(), kInternalPluginMimeType)));
+
+  // 5. Verify that the child WebContents has page focus after attaching to the
+  // already focused <embed>.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetSurfaceEmbedConnector() != nullptr &&
+           content::GetFocusedWebContents(web_contents()) ==
+               child_contents.get() &&
+           web_contents()->GetFocusedFrame() ==
+               child_contents->GetPrimaryMainFrame() &&
+           content::EvalJs(web_contents(), "document.activeElement.id") ==
+               "my_embed" &&
+           content::EvalJs(web_contents(), "document.hasFocus()")
+               .ExtractBool() &&
+           content::EvalJs(child_contents.get(), "document.hasFocus()")
+               .ExtractBool();
+  }));
+
+  EXPECT_TRUE(
+      content::EvalJs(web_contents(), "document.hasFocus()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(child_contents.get(), "document.hasFocus()")
+                  .ExtractBool());
+  EXPECT_EQ(child_contents.get(),
+            content::GetFocusedWebContents(web_contents()));
+  EXPECT_EQ(child_contents->GetPrimaryMainFrame(),
+            web_contents()->GetFocusedFrame());
+  EXPECT_EQ(child_contents.get(),
+            content::GetFocusedWebContents(child_contents.get()));
+  EXPECT_EQ(child_contents->GetPrimaryMainFrame(),
+            child_contents->GetFocusedFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByTabKey) {

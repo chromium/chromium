@@ -111,8 +111,8 @@ void SurfaceEmbedHost::SetSurfaceEmbed(
       &SurfaceEmbedHost::OnMojoDisconnect, base::Unretained(this)));
 }
 
-void SurfaceEmbedHost::AttachConnector(
-    const base::UnguessableToken& content_id) {
+void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
+                                       bool is_embed_element_focused) {
   // Should never call attach without having a valid SurfaceEmbed remote already
   // bound.
   CHECK(surface_embed_);
@@ -155,6 +155,16 @@ void SurfaceEmbedHost::AttachConnector(
   // pass it to the connector now.
   if (container_accessibility_node_id_ != ui::kInvalidAXNodeID) {
     ForwardParentAccessibilityInfo();
+  }
+
+  if (is_embed_element_focused) {
+    FocusChildWebContents();
+  }
+}
+
+void SurfaceEmbedHost::FocusChildWebContents() {
+  if (child_contents_ && !child_contents_->ContainsOrIsFocusedWebContents()) {
+    child_contents_->Focus();
   }
 }
 
@@ -215,9 +225,7 @@ void SurfaceEmbedHost::OnEmbedElementFocused(
     child_contents_->FocusThroughTabTraversal(/*reverse=*/true);
   }
 
-  if (!child_contents_->ContainsOrIsFocusedWebContents()) {
-    child_contents_->Focus();
-  }
+  FocusChildWebContents();
 }
 
 void SurfaceEmbedHost::OnEmbedElementThrottlingStatusChanged(

@@ -112,7 +112,10 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
 
   // Then attach with the content ID.
   if (!contents_id_.is_empty()) {
-    host_->AttachConnector(contents_id_);
+    bool is_focused =
+        container_ &&
+        container_->GetDocument().FocusedElement() == container_->GetElement();
+    host_->AttachConnector(contents_id_, is_focused);
   }
 
   // If accessibility was already enabled before the plugin was created,

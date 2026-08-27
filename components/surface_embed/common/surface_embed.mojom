@@ -68,7 +68,10 @@ interface SurfaceEmbedHost {
   SetSurfaceEmbed(pending_associated_remote<SurfaceEmbed> surface_embed);
 
   // Attaches the child content identified by `content_id` to the parent.
-  AttachConnector(mojo_base.mojom.UnguessableToken content_id);
+  // `is_embed_element_focused` indicates whether the <embed> element currently
+  // has focus in the parent document.
+  AttachConnector(mojo_base.mojom.UnguessableToken content_id,
+                  bool is_embed_element_focused);
 
   // Synchronizes the visual properties of the <embed> element.
   // `is_visible` reports visibility with respect to "visibility:" CSS property;
