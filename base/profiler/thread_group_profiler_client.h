@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
+#include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 
 namespace base {

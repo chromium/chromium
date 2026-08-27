@@ -22,6 +22,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/profiler/module_cache.h"
+#include "base/profiler/profile_builder.h"
+#include "base/profiler/thread_group_profiler.h"
+#include "base/profiler/thread_group_profiler_client.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -1675,6 +1679,192 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, RacyCleanup) {
 
   // Unwinding this test will be racy if worker cleanup can race with
   // ThreadGroupImpl destruction : https://crbug.com/810464.
+  mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
+  thread_group_.reset();
+}
+
+namespace {
+
+class MockProfileBuilder : public ProfileBuilder {
+ public:
+  MockProfileBuilder() = default;
+  void OnProfileCompleted(TimeDelta profile_duration,
+                          TimeDelta sampling_period) override {}
+  ModuleCache* GetModuleCache() override { return &module_cache_; }
+  MOCK_METHOD(void,
+              OnSampleCompleted,
+              (std::vector<Frame> frames, TimeTicks sample_timestamp),
+              (override));
+
+ protected:
+  ModuleCache module_cache_;
+};
+
+class MockThreadGroupProfilerClient : public ThreadGroupProfilerClient {
+ public:
+  MockThreadGroupProfilerClient() = default;
+  StackSamplingProfiler::SamplingParams GetSamplingParams() override {
+    return {.samples_per_profile = 300, .sampling_interval = Milliseconds(100)};
+  }
+  std::unique_ptr<ProfileBuilder> CreateProfileBuilder(
+      OnceClosure callback) override {
+    return std::make_unique<MockProfileBuilder>();
+  }
+  bool IsProfilerEnabledForCurrentProcess() override { return true; }
+  bool IsSingleProcess(const CommandLine& command_line) override {
+    return false;
+  }
+  StackSamplingProfiler::UnwindersFactory GetUnwindersFactory() override {
+    return {};
+  }
+};
+
+class MockProfiler : public ThreadGroupProfiler::Profiler {
+ public:
+  MockProfiler() = default;
+  void Start() override {}
+
+ protected:
+  ~MockProfiler() override = default;
+};
+
+ThreadGroupProfiler::ActiveCollection CreateTestActiveCollection() {
+  return ThreadGroupProfiler::ActiveCollection(
+      /*thread_group_type=*/0,
+      /*sampling_duration=*/Seconds(10),
+      BindRepeating([](int64_t, SamplingProfilerThreadToken,
+                       const StackSamplingProfiler::SamplingParams&,
+                       std::unique_ptr<ProfileBuilder>,
+                       StackSamplingProfiler::UnwindersFactory)
+                        -> scoped_refptr<ThreadGroupProfiler::Profiler> {
+        return MakeRefCounted<MockProfiler>();
+      }));
+}
+
+}  // namespace
+
+class ThreadGroupImplProfilingTest : public ThreadGroupImplImplTestBase,
+                                     public testing::Test {
+ public:
+  ThreadGroupImplProfilingTest() = default;
+
+  void SetUp() override {
+    ThreadGroupProfiler::SetClient(
+        std::make_unique<MockThreadGroupProfilerClient>());
+    CreateAndStartThreadGroup();
+  }
+
+  void TearDown() override {
+    ThreadGroupImplImplTestBase::CommonTearDown();
+    ThreadGroupProfiler::SetClient(nullptr);
+  }
+
+ protected:
+  bool HasActiveCollection() {
+    CheckedAutoLock auto_lock(thread_group_->lock_);
+    return thread_group_->active_collection_.has_value();
+  }
+
+  void StartProfilingSession() {
+    TestWaitableEvent done;
+    service_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        BindOnce(&ThreadGroupImpl::OnStartProfilingSession,
+                 Unretained(thread_group_.get()), CreateTestActiveCollection())
+            .Then(BindOnce(&TestWaitableEvent::Signal, Unretained(&done))));
+    done.Wait();
+  }
+
+  void EndProfilingSession() {
+    TestWaitableEvent done;
+    service_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        BindOnce(&ThreadGroupImpl::OnEndProfilingSession,
+                 Unretained(thread_group_.get()))
+            .Then(BindOnce(&TestWaitableEvent::Signal, Unretained(&done))));
+    done.Wait();
+  }
+};
+
+TEST_F(ThreadGroupImplProfilingTest, CollectAndEndActiveCollection) {
+  EXPECT_FALSE(HasActiveCollection());
+
+  scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
+      {WithBaseSyncPrimitives()}, &mock_pooled_task_runner_delegate_);
+  TestWaitableEvent task_running;
+  TestWaitableEvent unblock_task;
+  task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](TestWaitableEvent* running, TestWaitableEvent* unblock) {
+            running->Signal();
+            unblock->Wait();
+          },
+          Unretained(&task_running), Unretained(&unblock_task)));
+  task_running.Wait();
+
+  StartProfilingSession();
+  EXPECT_TRUE(HasActiveCollection());
+
+  // Post another task while active collection is in progress.
+  TestWaitableEvent task2_running;
+  TestWaitableEvent unblock_task2;
+  task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](TestWaitableEvent* running, TestWaitableEvent* unblock) {
+            running->Signal();
+            unblock->Wait();
+          },
+          Unretained(&task2_running), Unretained(&unblock_task2)));
+  task2_running.Wait();
+  EXPECT_TRUE(HasActiveCollection());
+
+  // End the active collection session.
+  EndProfilingSession();
+  EXPECT_FALSE(HasActiveCollection());
+
+  unblock_task.Signal();
+  unblock_task2.Signal();
+  task_tracker_.FlushForTesting();
+}
+
+TEST_F(ThreadGroupImplProfilingTest, JoinDuringActiveCollection) {
+  scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
+      {WithBaseSyncPrimitives()}, &mock_pooled_task_runner_delegate_);
+  TestWaitableEvent task_running;
+  TestWaitableEvent unblock_task;
+  task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](TestWaitableEvent* running, TestWaitableEvent* unblock) {
+            running->Signal();
+            unblock->Wait();
+          },
+          Unretained(&task_running), Unretained(&unblock_task)));
+  task_running.Wait();
+
+  StartProfilingSession();
+  EXPECT_TRUE(HasActiveCollection());
+
+  unblock_task.Signal();
+  task_tracker_.FlushForTesting();
+
+  // In ThreadPoolImpl, the service thread is stopped before joining thread
+  // groups.
+  service_thread_.Stop();
+  thread_group_->JoinForTesting();
+  EXPECT_FALSE(HasActiveCollection());
+
+  mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
+  thread_group_.reset();
+}
+
+TEST_F(ThreadGroupImplProfilingTest, NoOpAfterShutdown) {
+  service_thread_.Stop();
+  thread_group_->JoinForTesting();
+  EXPECT_FALSE(HasActiveCollection());
+
   mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
   thread_group_.reset();
 }

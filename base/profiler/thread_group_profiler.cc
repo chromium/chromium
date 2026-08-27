@@ -5,19 +5,17 @@
 #include "base/profiler/thread_group_profiler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/thread_group_profiler_client.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 // Required solely to avoid complaints on incomplete type for
 // Unretained(worker_thread) invocations. This code otherwise treats
@@ -88,217 +86,163 @@ bool ThreadGroupProfiler::IsProfilingEnabled() {
 }
 
 ThreadGroupProfiler::ThreadGroupProfiler(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
     int64_t thread_group_type,
+    Delegate* delegate,
     std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler,
     ProfilerFactory profiler_factory)
     : thread_group_type_(thread_group_type),
-      periodic_sampling_scheduler_(std::move(periodic_sampling_scheduler)),
-      task_runner_(std::move(task_runner)),
+      delegate_(delegate),
+      periodic_sampling_scheduler_(
+          periodic_sampling_scheduler
+              ? std::move(periodic_sampling_scheduler)
+              : std::make_unique<PeriodicSamplingScheduler>(
+                    GetSamplingDuration(),
+                    kFractionOfExecutionTimeToSample,
+                    TimeTicks::Now())),
       stack_sampling_profiler_factory_(std::move(profiler_factory)) {
-  DETACH_FROM_SEQUENCE(task_runner_sequence_checker_);
-  if (!periodic_sampling_scheduler_) {
-    periodic_sampling_scheduler_ = std::make_unique<PeriodicSamplingScheduler>(
-        GetClient()->GetSamplingParams().sampling_interval *
-            GetClient()->GetSamplingParams().samples_per_profile,
-        kFractionOfExecutionTimeToSample, TimeTicks::Now());
-  }
-  task_runner_->PostTask(
-      FROM_HERE, BindOnce(&ThreadGroupProfiler::StartTask, Unretained(this)));
+  CHECK(delegate_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-ThreadGroupProfiler::~ThreadGroupProfiler() {
-  // Shutdown has been run before destruction.
-  CHECK(!active_collection_);
+ThreadGroupProfiler::~ThreadGroupProfiler() = default;
+
+void ThreadGroupProfiler::Start(
+    scoped_refptr<SequencedTaskRunner> service_thread_task_runner) {
+  service_thread_task_runner_ = std::move(service_thread_task_runner);
+  ScheduleNextCollection();
 }
 
-void ThreadGroupProfiler::Shutdown() {
-  // Must be destroyed from the same sequence as constructor.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(construction_sequence_checker_);
-  // CHECK that the task runner has actually been shutdown.
-  CHECK(!task_runner_->PostTask(FROM_HERE, DoNothing()));
-
-  TS_UNCHECKED_READ(active_collection_).reset();
-  thread_group_profiler_shutdown_.Signal();
+void ThreadGroupProfiler::ScheduleNextCollection() {
+  // It is safe to call `GetTimeToNextCollection()` here: the first call occurs
+  // during `Start()` (thread pool initialization) before any other tasks run,
+  // and every subsequent call runs on `sequence_checker_` in
+  // `OnEndProfilingSessionTask()`.
+  service_thread_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&ThreadGroupProfiler::OnStartProfilingSessionTask,
+               weak_ptr_factory_.GetWeakPtr()),
+      periodic_sampling_scheduler_->GetTimeToNextCollection());
 }
 
-void ThreadGroupProfiler::OnWorkerThreadStarted(
-    internal::WorkerThread* worker_thread) {
-  task_runner_->PostTask(
-      FROM_HERE, BindOnce(&ThreadGroupProfiler::OnWorkerThreadStartedTask,
-                          Unretained(this), Unretained(worker_thread),
-                          GetSamplingProfilerCurrentThreadToken()));
+void ThreadGroupProfiler::OnStartProfilingSessionTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->OnStartProfilingSession(CreateActiveCollection());
+  service_thread_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&ThreadGroupProfiler::OnEndProfilingSessionTask,
+               weak_ptr_factory_.GetWeakPtr()),
+      GetSamplingDuration());
 }
 
-void ThreadGroupProfiler::OnWorkerThreadActive(
-    internal::WorkerThread* worker_thread) {
-  task_runner_->PostTask(
-      FROM_HERE, BindOnce(&ThreadGroupProfiler::OnWorkerThreadActiveTask,
-                          Unretained(this), Unretained(worker_thread)));
+void ThreadGroupProfiler::OnEndProfilingSessionTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->OnEndProfilingSession();
+  ScheduleNextCollection();
 }
 
-void ThreadGroupProfiler::OnWorkerThreadIdle(
-    internal::WorkerThread* worker_thread) {
-  task_runner_->PostTask(FROM_HERE,
-                         BindOnce(&ThreadGroupProfiler::OnWorkerThreadIdleTask,
-                                  Unretained(this), Unretained(worker_thread)));
-}
-
-void ThreadGroupProfiler::OnWorkerThreadExiting(
-    internal::WorkerThread* worker_thread) {
-  WaitableEvent profiling_has_stopped;
-  task_runner_->PostTask(
-      FROM_HERE, BindOnce(&ThreadGroupProfiler::OnWorkerThreadExitingTask,
-                          Unretained(this), Unretained(worker_thread),
-                          Unretained(&profiling_has_stopped)));
-  base::WaitableEvent* event_array[] = {&profiling_has_stopped,
-                                        &thread_group_profiler_shutdown_};
-  // During shutdown profiling_has_stopped may not get a chance to signal as
-  // task runner is stopped, profiler_shutdown event will signal instead
-  // indicating that clean up has finished and worker thread may safely exit.
-  WaitableEvent::WaitMany(event_array);
+ThreadGroupProfiler::ActiveCollection
+ThreadGroupProfiler::CreateActiveCollection() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ActiveCollection(thread_group_type_, GetSamplingDuration(),
+                          stack_sampling_profiler_factory_);
 }
 
 // Production implementation that wraps an actual StackSamplingProfiler.
 class ThreadGroupProfiler::ProfilerImpl : public ThreadGroupProfiler::Profiler {
  public:
-  ProfilerImpl(SamplingProfilerThreadToken thread_token,
+  ProfilerImpl(int64_t thread_group_type,
+               SamplingProfilerThreadToken thread_token,
                const StackSamplingProfiler::SamplingParams& params,
                std::unique_ptr<ProfileBuilder> profile_builder,
                StackSamplingProfiler::UnwindersFactory unwinder_factory)
-      : sampling_profiler_{thread_token, params, std::move(profile_builder),
+      : thread_group_type_(thread_group_type),
+        thread_token_(thread_token),
+        sampling_profiler_{thread_token, params, std::move(profile_builder),
                            std::move(unwinder_factory)} {}
-  ~ProfilerImpl() override = default;
 
   // Profiler:
-  void Start() override { sampling_profiler_.Start(); }
+  void Start() override {
+    AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
+                                thread_group_type_, thread_token_.id);
+    sampling_profiler_.Start();
+  }
+
+ protected:
+  ~ProfilerImpl() override = default;
 
  private:
+  const int64_t thread_group_type_;
+  const SamplingProfilerThreadToken thread_token_;
   StackSamplingProfiler sampling_profiler_;
 };
 
 ThreadGroupProfiler::ActiveCollection::ActiveCollection(
-    const flat_map<internal::WorkerThread*, WorkerThreadContext>&
-        worker_thread_context_set,
     int64_t thread_group_type,
     TimeDelta sampling_duration,
-    SequencedTaskRunner* task_runner,
-    ProfilerFactory factory,
-    OnceClosure collection_complete_callback)
+    ProfilerFactory factory)
     : thread_group_type_(thread_group_type),
-      task_runner_(task_runner),
       stack_sampling_profiler_factory_(factory),
-      collection_complete_callback_(std::move(collection_complete_callback)),
       sampling_duration_(sampling_duration),
-      collection_end_time_(TimeTicks::Now() + sampling_duration),
-      empty_collection_closure_{
-          BindOnce(&ActiveCollection::OnEmptyCollectionCompleted,
-                   Unretained(this))} {
-  decltype(profilers_)::container_type new_profilers;
-  for (auto& [worker_thread, context] : worker_thread_context_set) {
-    // Only create profilers for active threads.
-    if (!context.is_idle) {
-      std::unique_ptr<Profiler> profiler = CreateSamplingProfilerForThread(
-          worker_thread, context.token, GetClient()->GetSamplingParams());
-      profiler->Start();
-      AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
-                                  thread_group_type_, context.token.id);
-      new_profilers.emplace_back(worker_thread, std::move(profiler));
-    }
-  }
-  // More efficient to construct flat_map from containers then adding each
-  // profiler in a loop.
-  profilers_ = flat_map(std::move(new_profilers));
-  if (profilers_.empty()) {
-    // Queue a delayed empty collection callback to run after the sampling
-    // duration if there are no active threads to sample.
-    task_runner_->PostDelayedTask(
-        FROM_HERE, empty_collection_closure_.callback(), sampling_duration_);
-  } else {
-    empty_collection_closure_.Cancel();
-  }
-}
+      collection_end_time_(TimeTicks::Now() + sampling_duration) {}
 
-void ThreadGroupProfiler::ActiveCollection::MaybeAddWorkerThread(
+scoped_refptr<ThreadGroupProfiler::Profiler>
+ThreadGroupProfiler::ActiveCollection::MaybeAddWorkerThread(
     internal::WorkerThread* worker_thread,
-    const SamplingProfilerThreadToken& token) {
+    SamplingProfilerThreadToken token) {
   // Skip if the remaining time of current sampling session is less than the
   // threshold.
   if ((collection_end_time_ - TimeTicks::Now()) <
       kMinRemainingTimeForNewThreadSampling) {
-    return;
+    return nullptr;
   }
   // Skip if there's already a profiler for this thread. A worker thread can
   // flip between idle and active anytime during the collection but profiler
   // should only be created for it the first time it becomes active.
   if (profilers_.find(worker_thread) != profilers_.end()) {
-    return;
+    return nullptr;
   }
   StackSamplingProfiler::SamplingParams sampling_params =
       GetClient()->GetSamplingParams();
   // Calculate remaining samples until end of collection period.
+  const TimeDelta remaining = collection_end_time_ - TimeTicks::Now();
   sampling_params.samples_per_profile =
-      ClampFloor((collection_end_time_ - TimeTicks::Now()) /
-                 sampling_params.sampling_interval);
-  std::unique_ptr<Profiler> profiler =
+      ClampFloor(remaining / sampling_params.sampling_interval);
+  scoped_refptr<Profiler> profiler =
       CreateSamplingProfilerForThread(worker_thread, token, sampling_params);
-  profiler->Start();
-  AddProfileMetadataForThread(kProfilerMetadataThreadGroupType,
-                              thread_group_type_, token.id);
-  profilers_.emplace(worker_thread, std::move(profiler));
-  // Cancel empty callback since there is a profiler running now.
-  empty_collection_closure_.Cancel();
+  profilers_.emplace(worker_thread, profiler);
+  return profiler;
 }
 
-void ThreadGroupProfiler::ActiveCollection::RemoveWorkerThread(
+scoped_refptr<ThreadGroupProfiler::Profiler>
+ThreadGroupProfiler::ActiveCollection::RemoveWorkerThread(
     internal::WorkerThread* worker_thread) {
-  // If there's a profiler associated, remove it. Will block until profiler
-  // destructor finishes but it should be a rare case (during shutdown or
-  // ThreadGroup::JoinForTesting) as we only sample active threads; they should
-  // not get reclaimed during sampling session.
-  const bool was_present = profilers_.erase(worker_thread) == 1;
-  if (!was_present || !profilers_.empty()) {
-    return;
+  auto it = profilers_.find(worker_thread);
+  if (it == profilers_.end()) {
+    return nullptr;
   }
-  // Queue a delayed empty collection callback to run after the sampling
-  // duration if there are no active threads to sample.
-  empty_collection_closure_.Reset(BindOnce(
-      &ActiveCollection::OnEmptyCollectionCompleted, Unretained(this)));
-  task_runner_->PostDelayedTask(FROM_HERE, empty_collection_closure_.callback(),
-                                collection_end_time_ - TimeTicks::Now());
+  scoped_refptr<Profiler> profiler = std::move(it->second);
+  profilers_.erase(it);
+  return profiler;
 }
 
-std::unique_ptr<ThreadGroupProfiler::Profiler>
+scoped_refptr<ThreadGroupProfiler::Profiler>
 ThreadGroupProfiler::ActiveCollection::CreateSamplingProfilerForThread(
     internal::WorkerThread* worker_thread,
     const SamplingProfilerThreadToken& token,
     const StackSamplingProfiler::SamplingParams& sampling_params) {
-  ThreadGroupProfilerClient* client = ThreadGroupProfiler::GetClient();
+  ThreadGroupProfilerClient* client = GetClient();
   return stack_sampling_profiler_factory_.Run(
-      token, sampling_params,
-      client->CreateProfileBuilder(BindPostTask(
-          task_runner_,
-          BindOnce(&ActiveCollection::OnProfilerCollectionCompleted,
-                   Unretained(this), Unretained(worker_thread)))),
-      client->GetUnwindersFactory());
-}
-
-void ThreadGroupProfiler::ActiveCollection::OnProfilerCollectionCompleted(
-    internal::WorkerThread* worker_thread) {
-  DCHECK(!profilers_.empty());
-  profilers_.erase(worker_thread);
-  // Notify the collection is complete when there's no outstanding profilers.
-  if (profilers_.empty()) {
-    std::move(collection_complete_callback_).Run();
-  }
-}
-
-void ThreadGroupProfiler::ActiveCollection::OnEmptyCollectionCompleted() {
-  DCHECK(profilers_.empty());
-  std::move(collection_complete_callback_).Run();
+      thread_group_type_, token, sampling_params,
+      client->CreateProfileBuilder(DoNothing()), client->GetUnwindersFactory());
 }
 
 ThreadGroupProfiler::ActiveCollection::~ActiveCollection() = default;
+
+ThreadGroupProfiler::ActiveCollection::ActiveCollection(ActiveCollection&&) =
+    default;
+
+ThreadGroupProfiler::ActiveCollection&
+ThreadGroupProfiler::ActiveCollection::operator=(ActiveCollection&&) = default;
 
 // static
 ThreadGroupProfilerClient* ThreadGroupProfiler::GetClient() {
@@ -311,14 +255,14 @@ ThreadGroupProfilerClient* ThreadGroupProfiler::GetClient() {
 ThreadGroupProfiler::ProfilerFactory
 ThreadGroupProfiler::GetDefaultProfilerFactory() {
   return BindRepeating(
-      [](SamplingProfilerThreadToken thread_token,
+      [](int64_t thread_group_type, SamplingProfilerThreadToken thread_token,
          const StackSamplingProfiler::SamplingParams& params,
          std::unique_ptr<ProfileBuilder> profile_builder,
          StackSamplingProfiler::UnwindersFactory unwinder_factory)
-          -> std::unique_ptr<Profiler> {
-        return std::make_unique<ProfilerImpl>(thread_token, params,
-                                              std::move(profile_builder),
-                                              std::move(unwinder_factory));
+          -> scoped_refptr<Profiler> {
+        return MakeRefCounted<ProfilerImpl>(thread_group_type, thread_token,
+                                            params, std::move(profile_builder),
+                                            std::move(unwinder_factory));
       });
 }
 
@@ -327,89 +271,6 @@ TimeDelta ThreadGroupProfiler::GetSamplingDuration() {
   StackSamplingProfiler::SamplingParams params =
       GetClient()->GetSamplingParams();
   return params.sampling_interval * params.samples_per_profile;
-}
-
-void ThreadGroupProfiler::ThreadGroupProfiler::StartTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ThreadGroupProfiler::CollectProfilesTask,
-                     Unretained(this)),
-      periodic_sampling_scheduler_->GetTimeToNextCollection());
-}
-
-void ThreadGroupProfiler::OnWorkerThreadStartedTask(
-    internal::WorkerThread* worker_thread,
-    SamplingProfilerThreadToken token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  const bool inserted = worker_thread_context_set_
-                            .try_emplace(worker_thread, token, /*is_idle=*/true)
-                            .second;
-  // Worker thread should not be present before this call.
-  DCHECK(inserted);
-}
-
-// A worker thread starts out on the idle set when it's created. On its
-// ThreadMain it will call Delegate::GetWork() and when it does obtain a task
-// source it will be removed from idle set and becomes active.
-// OnWorkerThreadActive() will be called at that point. When it exhausted the
-// task source, it will be placed on idle set and nullptr returned from
-// GetWork()/ProcessSwappedTask(). The worker thread will then enter a
-// TimedWait until it's either wake up or reaches its reclaim time.
-void ThreadGroupProfiler::OnWorkerThreadActiveTask(
-    internal::WorkerThread* worker_thread) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  auto it = worker_thread_context_set_.find(worker_thread);
-  // Profiler token should already be set since OnWorkerThreadActive will
-  // be called strictly after worker thread creation.
-  DCHECK(it != worker_thread_context_set_.end());
-  // Mark worker thread as active.
-  it->second.is_idle = false;
-  if (active_collection_) {
-    active_collection_->MaybeAddWorkerThread(worker_thread, it->second.token);
-  }
-}
-
-void ThreadGroupProfiler::OnWorkerThreadIdleTask(
-    internal::WorkerThread* worker_thread) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  auto it = worker_thread_context_set_.find(worker_thread);
-  DCHECK(it != worker_thread_context_set_.end());
-  // Mark worker thread as idle.
-  it->second.is_idle = true;
-}
-
-void ThreadGroupProfiler::OnWorkerThreadExitingTask(
-    internal::WorkerThread* worker_thread,
-    WaitableEvent* profiling_has_stopped) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  if (active_collection_) {
-    active_collection_->RemoveWorkerThread(worker_thread);
-  }
-  worker_thread_context_set_.erase(worker_thread);
-  profiling_has_stopped->Signal();
-}
-
-void ThreadGroupProfiler::CollectProfilesTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  DCHECK(!active_collection_);
-  active_collection_.emplace(
-      worker_thread_context_set_, thread_group_type_, GetSamplingDuration(),
-      task_runner_.get(), stack_sampling_profiler_factory_,
-      BindOnce(&ThreadGroupProfiler::EndActiveCollectionTask,
-               Unretained(this)));
-}
-
-void ThreadGroupProfiler::EndActiveCollectionTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(task_runner_sequence_checker_);
-  DCHECK(active_collection_);
-  active_collection_.reset();
-  // Schedule the next collection.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ThreadGroupProfiler::CollectProfilesTask,
-                     Unretained(this)),
-      periodic_sampling_scheduler_->GetTimeToNextCollection());
 }
 
 }  // namespace base
