@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/events/event_handler.h"
 
 class VerticalTabStripRegionView;
@@ -30,7 +31,11 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
   ~VerticalTabStripFocusSwipeController() override;
 
   // ui::EventHandler:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void OnMouseEvent(ui::MouseEvent* event) override;
+#elif BUILDFLAG(IS_MAC)
   void OnScrollEvent(ui::ScrollEvent* event) override;
+#endif
 
   bool has_triggered_in_current_gesture_for_testing() const {
     return has_triggered_in_current_gesture_;
@@ -43,6 +48,7 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
     kVerticalPassthrough,
   };
 
+  void ProcessSwipeOffset(float x_offset, float y_offset, ui::Event* event);
   void ResetGesture();
   void RotateTabGroupFocus(bool forward);
 

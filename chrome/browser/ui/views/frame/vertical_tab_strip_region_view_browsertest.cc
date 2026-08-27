@@ -1884,6 +1884,15 @@ class VerticalTabStripFocusSwipeTest : public VerticalTabStripRegionViewTest {
     return enabled;
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void SendMouseWheelEvent(int x_offset, int y_offset) {
+    ui::MouseWheelEvent wheel_event(gfx::Vector2d(x_offset, y_offset),
+                                    gfx::PointF(10, 10), gfx::PointF(10, 10),
+                                    base::TimeTicks::Now(), 0, 0);
+    region_view()->focus_swipe_controller_for_testing()->OnMouseEvent(
+        &wheel_event);
+  }
+#elif BUILDFLAG(IS_MAC)
   void SendScrollEvent(
       float x_offset,
       float y_offset,
@@ -1896,8 +1905,33 @@ class VerticalTabStripFocusSwipeTest : public VerticalTabStripRegionViewTest {
     region_view()->focus_swipe_controller_for_testing()->OnScrollEvent(
         &scroll_event);
   }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
+                       MouseWheelSwipeRotatesFocusedGroup) {
+  EnterVerticalTabsMode();
+  ASSERT_TRUE(region_view()->focus_swipe_controller_for_testing());
+
+  // Setup: Tab 0 (ungrouped), Tab 1 & 2 in group0, Tab 3 & 4 in group1.
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(5, tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group0 =
+      tab_strip_model()->AddToNewGroup({1, 2});
+  tab_strip_model()->AddToNewGroup({3, 4});
+
+  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+
+  // Forward swipe (negative x_offset for physical rightward swipe).
+  SendMouseWheelEvent(-static_cast<int>(kSwipeOverThreshold), 0);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+}
+#elif BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
                        SwipeRotatesFocusedGroup) {
   EnterVerticalTabsMode();
@@ -2011,3 +2045,4 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
   EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
