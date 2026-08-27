@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -24,6 +25,14 @@ BlockTestsWritingToSpecialDirs::Get() {
 bool BlockTestsWritingToSpecialDirs::CanWriteToPath(const FilePath& path) {
   auto& dir_blocker = Get();
   if (!dir_blocker.has_value()) {
+    return true;
+  }
+  // Allow writing to temporary directories (or sub-directories of DIR_TEMP),
+  // even if DIR_TEMP resides under a blocked directory (e.g.
+  // DIR_SRC_TEST_DATA_ROOT).
+  FilePath temp_path;
+  if (PathService::Get(DIR_TEMP, &temp_path) &&
+      (temp_path == path || temp_path.IsParent(path))) {
     return true;
   }
   if (!dir_blocker->blocked_dirs_.empty()) {
