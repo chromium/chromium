@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_PERSISTED_STATE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_PERSISTED_STATE_MANAGER_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -34,6 +35,8 @@ namespace autofill {
 // a query.
 class AtMemoryPersistedStateManager {
  public:
+  static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
+
   AtMemoryPersistedStateManager();
   ~AtMemoryPersistedStateManager();
 

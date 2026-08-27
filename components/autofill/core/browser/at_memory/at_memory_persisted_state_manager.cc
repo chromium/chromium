@@ -108,6 +108,11 @@ void AtMemoryPersistedStateManager::OnSuggestionAccepted(
     if (it != previously_filled_suggestions_.end()) {
       std::rotate(it, it + 1, previously_filled_suggestions_.end());
     } else {
+      if (previously_filled_suggestions_.size() >=
+          kMaxPreviouslyFilledSuggestions) {
+        previously_filled_suggestions_.erase(
+            previously_filled_suggestions_.begin());
+      }
       previously_filled_suggestions_.push_back(suggestion_to_store);
     }
   }

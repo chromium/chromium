@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -317,6 +318,42 @@ TEST_F(AtMemoryPersistedStateManagerTest, DeduplicatesAndPreservesMruOrder) {
             u"Suggestion 2");
   EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
             u"Suggestion 1");
+}
+
+// Tests that accepting more than `kMaxPreviouslyFilledSuggestions` evicts the
+// oldest suggestion.
+TEST_F(AtMemoryPersistedStateManagerTest, EvictsOldestWhenLimitReached) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  for (size_t i = 0;
+       i < AtMemoryPersistedStateManager::kMaxPreviouslyFilledSuggestions;
+       ++i) {
+    state_manager().OnSuggestionAccepted(Suggestion(
+        base::NumberToString16(i), SuggestionType::kAtMemorySearchResult));
+  }
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(),
+            AtMemoryPersistedStateManager::kMaxPreviouslyFilledSuggestions);
+  EXPECT_EQ(
+      state_manager().previously_filled_suggestions().front().main_text.value,
+      u"0");
+  EXPECT_EQ(
+      state_manager().previously_filled_suggestions().back().main_text.value,
+      u"19");
+
+  // Accept a new suggestion when the limit is reached.
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"20", SuggestionType::kAtMemorySearchResult));
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(),
+            AtMemoryPersistedStateManager::kMaxPreviouslyFilledSuggestions);
+  // Oldest suggestion "0" should be evicted, so "1" is now the oldest.
+  EXPECT_EQ(
+      state_manager().previously_filled_suggestions().front().main_text.value,
+      u"1");
+  EXPECT_EQ(
+      state_manager().previously_filled_suggestions().back().main_text.value,
+      u"20");
 }
 
 }  // namespace
