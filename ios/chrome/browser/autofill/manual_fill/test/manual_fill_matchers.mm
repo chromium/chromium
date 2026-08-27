@@ -126,4 +126,9 @@ id<GREYMatcher> PasswordManualFillViewButton() {
                     nil);
 }
 
+id<GREYMatcher> PasswordCellLabelWithText(NSString* text) {
+  return grey_allOf(chrome_test_util::ContainsPartialText(text),
+                    grey_ancestor(PasswordTableViewMatcher()), nil);
+}
+
 }  // namespace manual_fill

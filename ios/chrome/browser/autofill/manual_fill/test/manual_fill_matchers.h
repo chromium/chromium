@@ -88,6 +88,10 @@ id<GREYMatcher> ChipButton(std::u16string title);
 // Matcher for the expanded password manual fill view button.
 id<GREYMatcher> PasswordManualFillViewButton();
 
+// Returns a matcher for a cell label containing `text` in the password table
+// view.
+id<GREYMatcher> PasswordCellLabelWithText(NSString* text);
+
 }  // namespace manual_fill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MANUAL_FILL_TEST_MANUAL_FILL_MATCHERS_H_
