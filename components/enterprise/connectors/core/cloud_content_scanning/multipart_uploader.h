@@ -126,14 +126,26 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   // successful. Used in testing only.
   void MarkScanAsCompleteForTesting();
 
-  // TODO(crbug.com/481674868): Move the methods to private after the unit test
-  // consolidation.
- protected:
+ private:
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, GeneratesCorrectBody);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, RetriesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, Retries);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, MAYBE_Retries);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, DataControls);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
+                           EquivalentToStringRequest);
+
+  // Called to send a single request. Is overridden in tests.
+  virtual void SendRequest();
+
+  // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
+  // is known to be initialized to a correct state. Is overridden in tests.
+  virtual void CompleteSendRequest(
+      std::unique_ptr<network::ResourceRequest> request);
+
   // Helper method to create the multipart request body.
   std::string GenerateRequestBody(const std::string& metadata,
                                   const std::string& data);
-  // Called to send a single request. Is overridden in tests.
-  virtual void SendRequest();
 
   // Called whenever a net request finishes (on success or failure).
   void OnURLLoaderComplete(std::optional<std::string> response_body);
@@ -145,23 +157,6 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
 
   // Set the boundary between parts.
   void set_boundary(const std::string& boundary) { boundary_ = boundary; }
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestBaseTest,
-                           GeneratesCorrectBody);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestBaseTest, RetriesCorrectly);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, GeneratesCorrectBody);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, RetriesCorrectly);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, Retries);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, MAYBE_Retries);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, DataControls);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
-                           EquivalentToStringRequest);
-
-  // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
-  // is known to be initialized to a correct state.
-  virtual void CompleteSendRequest(
-      std::unique_ptr<network::ResourceRequest> request);
 
   void SendStringRequest(std::unique_ptr<network::ResourceRequest> request);
   void SendFileRequest(std::unique_ptr<network::ResourceRequest> request);

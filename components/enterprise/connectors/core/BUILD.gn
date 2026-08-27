@@ -320,7 +320,6 @@ if (enterprise_cloud_content_analysis || is_android) {
       "cloud_content_scanning/file_analysis_request_base_unittest.cc",
       "cloud_content_scanning/file_opening_job_unittest.cc",
       "cloud_content_scanning/files_request_handler_base_unittest.cc",
-      "cloud_content_scanning/multipart_uploader_base_unittest.cc",
       "cloud_content_scanning/multipart_uploader_unittest.cc",
       "cloud_content_scanning/resumable_uploader_base_unittest.cc",
     ]
