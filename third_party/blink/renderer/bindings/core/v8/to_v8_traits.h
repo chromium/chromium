@@ -442,13 +442,6 @@ struct ToV8Traits<IDLSequence<T>> {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
   }
-
-  // TODO(crbug.com/1185046): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Object> ToV8(
-      ScriptState* script_state,
-      const v8::LocalVector<v8::Value>& value) {
-    return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
-  }
 };
 
 template <typename T>
