@@ -386,7 +386,7 @@ inline constexpr MessageInfo kFrameStageCalculation = {
 
 // Proto Message: ScrollJankV4Result
 inline constexpr int kScrollJankV4ResultIndices[] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -1};
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, -1};
 inline constexpr MessageInfo const* kScrollJankV4ResultComplexMessages[] = {
     nullptr, &kMissedVsyncsForJankReason,
     nullptr, nullptr,
@@ -394,7 +394,8 @@ inline constexpr MessageInfo const* kScrollJankV4ResultComplexMessages[] = {
     nullptr, nullptr,
     nullptr, &kScrollUpdates,
     nullptr, nullptr,
-    nullptr, &kFrameStageCalculation};
+    nullptr, &kFrameStageCalculation,
+    nullptr};
 inline constexpr MessageInfo kScrollJankV4Result = {
     kScrollJankV4ResultIndices, kScrollJankV4ResultComplexMessages};
 
