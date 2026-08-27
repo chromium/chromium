@@ -34,6 +34,7 @@
 #include <concepts>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
@@ -71,7 +72,7 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
 
   SVGElement* ContextElement() const { return context_element_.Get(); }
 
-  const QualifiedName& AttributeName() const { return attribute_name_; }
+  const QualifiedName& AttributeName() const { return *attribute_name_; }
 
   CSSPropertyID CssPropertyId() const {
     return static_cast<CSSPropertyID>(css_property_id_);
@@ -144,7 +145,8 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
   unsigned content_attribute_state_ : 2;
 
   Member<SVGElement> context_element_;
-  const QualifiedName& attribute_name_;
+  const raw_ref<const QualifiedName, UnprotectedInRelease | DanglingUntriaged>
+      attribute_name_;
 };
 
 template <typename T>

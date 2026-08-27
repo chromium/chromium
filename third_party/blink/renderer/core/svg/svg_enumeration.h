@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ENUMERATION_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -76,7 +77,7 @@ class SVGEnumeration : public SVGPropertyBase {
 
   // SVGPropertyBase:
   SVGEnumeration* Clone() const {
-    return MakeGarbageCollected<SVGEnumeration>(value_, map_);
+    return MakeGarbageCollected<SVGEnumeration>(value_, *map_);
   }
 
   String ValueAsString() const override;
@@ -113,7 +114,9 @@ class SVGEnumeration : public SVGPropertyBase {
   virtual void NotifyChange() {}
 
   uint16_t value_;
-  const SVGEnumerationMap& map_;
+  const raw_ref<const SVGEnumerationMap,
+                UnprotectedInRelease | DanglingUntriaged>
+      map_;
 };
 
 template <>

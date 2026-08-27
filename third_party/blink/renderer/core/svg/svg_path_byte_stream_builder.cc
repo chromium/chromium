@@ -24,12 +24,15 @@
 #include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
 // Helper class that coalesces writes to a SVGPathByteStream to a local buffer.
 class SVGPathByteStreamBuilder::CoalescingBuffer {
+  STACK_ALLOCATED();
+
  public:
   explicit CoalescingBuffer(SVGPathByteStreamBuilderStorage& result)
       : remaining_(bytes_), result_(result) {}

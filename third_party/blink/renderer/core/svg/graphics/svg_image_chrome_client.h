@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_CHROME_CLIENT_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -86,7 +87,7 @@ class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
   TimerBase& GetTimerForTesting() const { return animation_timer_->Value(); }
   void AnimationTimerFired(TimerBase*);
 
-  SVGImage* image_;
+  raw_ptr<SVGImage, UnprotectedInRelease | DanglingUntriaged> image_;
   Member<DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>>
       animation_timer_;
   enum {

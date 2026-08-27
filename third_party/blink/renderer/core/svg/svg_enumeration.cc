@@ -36,8 +36,9 @@
 namespace blink {
 
 String SVGEnumeration::ValueAsString() const {
-  if (const char* enum_name = map_.NameFromValue(value_))
+  if (const char* enum_name = map_->NameFromValue(value_)) {
     return String(enum_name);
+  }
 
   DCHECK_LT(value_, MaxInternalEnumValue());
   return g_empty_string;
@@ -49,7 +50,7 @@ void SVGEnumeration::SetValue(uint16_t value) {
 }
 
 SVGParsingError SVGEnumeration::SetValueAsString(const String& string) {
-  uint16_t value = map_.ValueFromName(string);
+  uint16_t value = map_->ValueFromName(string);
   if (value) {
     SetValue(value);
     return SVGParseStatus::kNoError;
@@ -59,11 +60,11 @@ SVGParsingError SVGEnumeration::SetValueAsString(const String& string) {
 }
 
 uint16_t SVGEnumeration::MaxExposedEnumValue() const {
-  return map_.MaxExposedValue();
+  return map_->MaxExposedValue();
 }
 
 uint16_t SVGEnumeration::MaxInternalEnumValue() const {
-  return map_.ValueOfLast();
+  return map_->ValueOfLast();
 }
 
 bool SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {

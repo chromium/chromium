@@ -100,11 +100,11 @@ SVGImageForContainer::SVGImageForContainer(
     const SVGImageViewInfo* viewinfo,
     mojom::blink::PreferredColorScheme preferred_color_scheme)
     : SVGImageForContainer(image, container_size, zoom, viewinfo) {
-  image_.SetPreferredColorScheme(preferred_color_scheme);
+  image_->SetPreferredColorScheme(preferred_color_scheme);
 }
 
 bool SVGImageForContainer::HasIntrinsicSize() const {
-  return image_.HasIntrinsicSize();
+  return image_->HasIntrinsicSize();
 }
 
 void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
@@ -114,7 +114,7 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, viewinfo_,
                                      draw_options.apply_dark_mode);
-  image_.DrawForContainer(draw_info, canvas, flags, dst_rect, src_rect);
+  image_->DrawForContainer(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
 void SVGImageForContainer::DrawPattern(GraphicsContext& context,
@@ -124,8 +124,8 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
                                        const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, viewinfo_,
                                      draw_options.apply_dark_mode);
-  image_.DrawPatternForContainer(draw_info, context, flags, dst_rect,
-                                 tiling_info);
+  image_->DrawPatternForContainer(draw_info, context, flags, dst_rect,
+                                  tiling_info);
 }
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
@@ -134,14 +134,14 @@ bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
                                        const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, viewinfo_,
                                      draw_options.apply_dark_mode);
-  return image_.ApplyShaderForContainer(draw_info, flags, src_rect,
-                                        local_matrix);
+  return image_->ApplyShaderForContainer(draw_info, flags, src_rect,
+                                         local_matrix);
 }
 
 PaintImage SVGImageForContainer::PaintImageForCurrentFrame() {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, viewinfo_, false);
   auto builder = CreatePaintImageBuilder();
-  image_.PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
+  image_->PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
@@ -31,7 +32,8 @@ namespace blink {
 namespace {
 
 struct SameSizeAsInkOverflow {
-  void* pointer;
+  // Excluded from raw_ptr because this is only used for size comparison.
+  RAW_PTR_EXCLUSION void* pointer;
 #if DCHECK_IS_ON()
   InkOverflow::Type type;
 #endif

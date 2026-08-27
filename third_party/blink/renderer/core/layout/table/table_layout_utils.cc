@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
@@ -334,6 +335,8 @@ TableTypes::Row ComputeMinimumRowBlockSize(
 
 // Computes inline constraints for COLGROUP/COLs.
 class ColumnConstraintsBuilder {
+  STACK_ALLOCATED();
+
  public:
   void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,

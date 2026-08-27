@@ -50,7 +50,7 @@ SVGAnimatedPropertyBase::SVGAnimatedPropertyBase(
       context_element_(context_element),
       attribute_name_(attribute_name) {
   DCHECK(context_element_);
-  DCHECK(attribute_name_ != QualifiedName::Null());
+  DCHECK((*attribute_name_) != QualifiedName::Null());
   DCHECK_EQ(GetType(), type);
   DCHECK_EQ(CssPropertyId(), css_property_id);
   DCHECK_EQ(initial_value_storage_, initial_value);
@@ -72,7 +72,7 @@ bool SVGAnimatedPropertyBase::NeedsSynchronizeAttribute() const {
 
 void SVGAnimatedPropertyBase::SynchronizeAttribute() {
   AtomicString value(BaseValueBase().ValueAsString());
-  context_element_->SetSynchronizedLazyAttribute(attribute_name_, value);
+  context_element_->SetSynchronizedLazyAttribute(*attribute_name_, value);
   DCHECK(NeedsSynchronizeAttribute());
   SetContentAttributeState(value.IsNull() ? kNotSet : kHasValue);
 }
@@ -84,7 +84,7 @@ const CSSValue* SVGAnimatedPropertyBase::CssValue() const {
 void SVGAnimatedPropertyBase::BaseValueChanged(
     BaseValueChangeType change_type) {
   DCHECK(context_element_);
-  DCHECK(attribute_name_ != QualifiedName::Null());
+  DCHECK((*attribute_name_) != QualifiedName::Null());
   SetContentAttributeState(change_type == BaseValueChangeType::kRemoved
                                ? kUnsynchronizedRemoval
                                : kUnsynchronizedValue);

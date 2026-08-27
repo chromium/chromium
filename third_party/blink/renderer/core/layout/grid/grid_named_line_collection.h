@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_NAMED_LINE_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_NAMED_LINE_COLLECTION_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
 
@@ -13,6 +14,8 @@ namespace blink {
 class ComputedGridTrackList;
 
 class GridNamedLineCollection {
+  STACK_ALLOCATED();
+
  public:
   GridNamedLineCollection(const String& named_line,
                           GridTrackSizingDirection track_direction,

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_PLACEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_PLACEMENT_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
@@ -72,8 +74,10 @@ class CORE_EXPORT GridPlacement {
 
    private:
     GridPosition start_, end_;
-    PlacedGridItem* next_{nullptr};
-    PlacedGridItem* prev_{nullptr};
+    raw_ptr<PlacedGridItem, UnprotectedInRelease | DanglingUntriaged> next_{
+        nullptr};
+    raw_ptr<PlacedGridItem, UnprotectedInRelease | DanglingUntriaged> prev_{
+        nullptr};
   };
 
   class AutoPlacementCursor {
@@ -112,7 +116,9 @@ class CORE_EXPORT GridPlacement {
 
     Vector<const PlacedGridItem*, 16> items_overlapping_major_line_;
     bool should_move_to_next_item_major_end_line_ : 1;
-    const PlacedGridItem* next_placed_item_;
+    // Excluded for performance reasons: this cursor is short-lived, so BRP
+    // ref-count churn would cost more than the protection is worth.
+    RAW_PTR_EXCLUSION const PlacedGridItem* next_placed_item_;
     GridPosition current_position_;
   };
 

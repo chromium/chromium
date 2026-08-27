@@ -128,7 +128,7 @@ class CORE_EXPORT LayoutShiftTracker final
   };
 
   class CORE_EXPORT ContainingBlockScope {
-    USING_FAST_MALLOC(ContainingBlockScope);
+    STACK_ALLOCATED();
 
    public:
     // |old_size| and |new_size| are the border box sizes.

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -157,7 +158,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
   void DestroyDecodedData() override {}
 
-  SVGImage& image_;
+  const raw_ref<SVGImage, UnprotectedInRelease | DanglingUntriaged> image_;
   Persistent<const SVGImageViewInfo> viewinfo_;
   const gfx::SizeF container_size_;
   const float zoom_;
