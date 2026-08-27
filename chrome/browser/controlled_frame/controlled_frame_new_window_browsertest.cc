@@ -5,9 +5,22 @@
 #include <optional>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
+#include "chrome/browser/hid/chrome_hid_delegate.h"
+#include "chrome/browser/hid/hid_chooser_context.h"
+#include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/common/extension_features.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -236,6 +249,100 @@ async function executeScriptOnFrame(frame, script) {
       embedded_https_test_server().GetURL("/index.html"));
 
   EXPECT_EQ("SUCCESS", content::EvalJs(app_frame, test_script));
+}
+
+class ControlledFrameNewWindowHidBrowserTest
+    : public ControlledFrameNewWindowBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ControlledFrameNewWindowBrowserTest::SetUpOnMainThread();
+
+    guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
+        profile(), extensions::ExtensionsAPIClient::Get()
+                       ->CreateGuestViewManagerDelegate());
+
+    mojo::PendingRemote<device::mojom::HidManager> pending_remote;
+    hid_manager_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+    base::test::TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>>
+        devices_future;
+    auto* chooser_context = HidChooserContextFactory::GetForProfile(profile());
+    chooser_context->SetHidManagerForTesting(std::move(pending_remote),
+                                             devices_future.GetCallback());
+    ASSERT_TRUE(devices_future.Wait());
+  }
+
+  void TearDownOnMainThread() override {
+    guest_view_manager_ = nullptr;
+    ControlledFrameNewWindowBrowserTest::TearDownOnMainThread();
+  }
+
+  guest_view::TestGuestViewManager* guest_view_manager() {
+    return guest_view_manager_;
+  }
+
+  device::FakeHidManager& hid_manager() { return hid_manager_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kEnableWebHidInWebView};
+  guest_view::TestGuestViewManagerFactory factory_;
+  raw_ptr<guest_view::TestGuestViewManager> guest_view_manager_ = nullptr;
+  device::FakeHidManager hid_manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameNewWindowHidBrowserTest,
+                       UnattachedGuestUsesWebViewPermissionStore) {
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/std::nullopt,
+          "/controlled_frame.html");
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  // Connect a fake device and grant the guest's origin profile-level access to
+  // it, as if the same origin had been granted access from a top-level tab.
+  device::mojom::HidDeviceInfoPtr device = hid_manager().CreateAndAddDevice(
+      "physical-id", /*vendor_id=*/0x1234, /*product_id=*/0xabcd,
+      "Test HID Device", "serial", device::mojom::HidBusType::kHIDBusTypeUSB);
+  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile());
+  const url::Origin guest_origin = controlled_frame->GetLastCommittedOrigin();
+  chooser_context->GrantDevicePermission(guest_origin, *device);
+  ASSERT_TRUE(chooser_context->HasDevicePermission(guest_origin, *device));
+
+  // Open a new window from the guest and leave it unattached.
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
+    const frame = document.getElementsByTagName('controlledframe')[0];
+    frame.addEventListener('newwindow', (e) => {
+      e.preventDefault();
+      window.pendingNewWindow = e.window;
+    });
+    frame.executeScript({code: 'window.open();'});
+  )"));
+  guest_view_manager()->WaitForNumGuestsCreated(2u);
+
+  guest_view::GuestViewBase* new_guest =
+      guest_view_manager()->GetLastGuestViewCreated();
+  ASSERT_TRUE(new_guest);
+  ASSERT_FALSE(new_guest->attached());
+  content::RenderFrameHost* new_guest_rfh = new_guest->GetGuestMainFrame();
+  ASSERT_TRUE(new_guest_rfh);
+  ASSERT_TRUE(extensions::WebViewGuest::FromRenderFrameHost(new_guest_rfh));
+  ASSERT_EQ(guest_origin, new_guest_rfh->GetLastCommittedOrigin());
+
+  // Permission checks for guests must be answered from the per-embedder
+  // WebViewChooserContext rather than the profile-level store, so neither the
+  // attached opener nor the unattached new window should be granted access.
+  ChromeHidDelegate hid_delegate;
+  EXPECT_FALSE(hid_delegate.HasDevicePermission(profile(), controlled_frame,
+                                                guest_origin, *device));
+  EXPECT_FALSE(hid_delegate.HasDevicePermission(profile(), new_guest_rfh,
+                                                guest_origin, *device));
+
+  // Revoking on behalf of the unattached guest must not touch the
+  // profile-level grant.
+  hid_delegate.RevokeDevicePermission(profile(), new_guest_rfh, guest_origin,
+                                      *device);
+  EXPECT_TRUE(chooser_context->HasDevicePermission(guest_origin, *device));
 }
 
 }  // namespace controlled_frame
