@@ -2674,6 +2674,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "desktop-android-twa-disclosures-help-link",
+    "owners": [ "aixba@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "desktop-fling-curve-on-android",
     "owners": [ "lizeb@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 165

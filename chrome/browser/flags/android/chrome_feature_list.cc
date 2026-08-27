@@ -366,6 +366,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDeferNavigationStateChanged,
     &kDesktopAndroidLinkCapturing,
     &kDesktopAndroidTWADisclosures,
+    &kDesktopAndroidTWADisclosuresHelpLink,
     &kDesktopUAOnConnectedDisplay,
     &kDisableGridTabSwitcher,
     &kDisablePartnerHomepageAndroid,
@@ -776,6 +777,7 @@ BASE_FEATURE(kDefaultBrowserPromoFre, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDeferNavigationStateChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopAndroidLinkCapturing, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopAndroidTWADisclosures, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDesktopAndroidTWADisclosuresHelpLink, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopUAOnConnectedDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDisableGridTabSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDisablePartnerHomepageAndroid, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -518,6 +518,8 @@ public abstract class ChromeFeatureList {
     public static final String DEFER_NAVIGATION_STATE_CHANGED = "DeferNavigationStateChanged";
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
     public static final String DESKTOP_ANDROID_TWA_DISCLOSURES = "DesktopAndroidTWADisclosures";
+    public static final String DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK =
+            "DesktopAndroidTWADisclosuresHelpLink";
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISABLE_GRID_TAB_SWITCHER = "DisableGridTabSwitcher";
@@ -1107,6 +1109,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, true);
     public static final CachedFlag sDesktopAndroidTWADisclosures =
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES, false);
+    public static final CachedFlag sDesktopAndroidTWADisclosuresHelpLink =
+            newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
             newCachedFlag(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
@@ -1547,6 +1551,7 @@ public abstract class ChromeFeatureList {
                     sDefaultBrowserPromoEntryPoint,
                     sDesktopAndroidLinkCapturing,
                     sDesktopAndroidTWADisclosures,
+                    sDesktopAndroidTWADisclosuresHelpLink,
                     sDesktopUAOnConnectedDisplay,
                     sDisablePartnerHomepageAndroid,
                     sDocumentPictureInPictureAPI,

@@ -12827,6 +12827,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopAndroidTWADisclosuresName,
      flag_descriptions::kDesktopAndroidTWADisclosuresDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDesktopAndroidTWADisclosures)},
+    {"desktop-android-twa-disclosures-help-link",
+     flag_descriptions::kDesktopAndroidTWADisclosuresHelpLinkName,
+     flag_descriptions::kDesktopAndroidTWADisclosuresHelpLinkDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kDesktopAndroidTWADisclosuresHelpLink)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -16489,6 +16489,7 @@ from previous Chrome versions.
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:disabled"/>
   <int value="561162418" label="DrawKeyNativeEdgeToEdge:disabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>
+  <int value="561405242" label="DesktopAndroidTWADisclosuresHelpLink:enabled"/>
   <int value="561692339" label="dictation-eval-mode:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>
@@ -17536,6 +17537,7 @@ from previous Chrome versions.
   <int value="877591544" label="StylusHandwritingWin:disabled"/>
   <int value="877907263" label="StrictExtensionIsolation:disabled"/>
   <int value="878493795" label="SideBySideSessionRestore:enabled"/>
+  <int value="878696922" label="DesktopAndroidTWADisclosuresHelpLink:disabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879538323"
       label="ForceMajorVersionInMinorPositionInUserAgent:enabled"/>

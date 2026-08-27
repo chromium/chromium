@@ -6122,6 +6122,13 @@ inline constexpr char kDesktopAndroidTWADisclosuresDescription[] =
     "This suppresses the FRE disclosures, displays the origin on the app "
     "header, and provides a new uninstall dialog to delete browser data.";
 
+inline constexpr char kDesktopAndroidTWADisclosuresHelpLinkName[] =
+    "Desktop Android TWA Disclosures Help Link";
+inline constexpr char kDesktopAndroidTWADisclosuresHelpLinkDescription[] =
+    "Enables linking to the help article from the TWA 3-dot menu footer on "
+    "desktop Android. This is a follow up feature to Desktop Android TWA "
+    "Disclosures Suppression.";
+
 inline constexpr char kDesktopFlingCurveOnAndroidName[] =
     "Desktop Fling Curve on Android";
 inline constexpr char kDesktopFlingCurveOnAndroidDescription[] =
