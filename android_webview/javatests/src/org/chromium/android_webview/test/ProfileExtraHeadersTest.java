@@ -25,7 +25,7 @@ import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwOriginMatchedHeader;
 import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.AwWebResourceRequest;
-import org.chromium.android_webview.test.AwPrefetchTest.TestAwPrefetchCallback;
+import org.chromium.android_webview.test.AwPrefetchTestBase.TestAwPrefetchCallback;
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;

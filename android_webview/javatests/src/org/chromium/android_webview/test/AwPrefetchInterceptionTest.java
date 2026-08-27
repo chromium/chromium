@@ -134,8 +134,8 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
     }
 
     private void triggerEmbedderPrefetchAndWait(String targetUrl) throws Exception {
-        AwPrefetchTest.TestAwPrefetchCallback callback =
-                new AwPrefetchTest.TestAwPrefetchCallback();
+        AwPrefetchTestBase.TestAwPrefetchCallback callback =
+                new AwPrefetchTestBase.TestAwPrefetchCallback();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwPrefetchManager prefetchManager = mBrowserContext.getPrefetchManager();

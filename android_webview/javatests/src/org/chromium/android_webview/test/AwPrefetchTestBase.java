@@ -20,9 +20,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
@@ -36,7 +33,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.NavigationControllerUtil;
@@ -58,10 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This test should cover all WebView's expectations for Prefetch. Changing any of these tests
  * should be reflected in our API docs as they map to our API usage expectations.
  */
-@RunWith(Parameterized.class)
-@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
-public class AwPrefetchTest extends AwParameterizedTest {
+public abstract class AwPrefetchTestBase extends AwParameterizedTest {
 
     // Current tests doesn't require a complex webpage to test. Later on we may need to add specific
     // page with different resources in it.
@@ -74,7 +67,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     private AwBrowserContext mBrowserContext;
     private AwPrefetchManager mPrefetchManager;
 
-    public AwPrefetchTest(AwSettingsMutation param) {
+    public AwPrefetchTestBase(AwSettingsMutation param) {
         mActivityTestRule = new AwActivityTestRule(param.getMutation());
         mContentsClient = new TestAwContentsClient();
     }
