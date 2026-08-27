@@ -23,6 +23,7 @@ source_set("speech") {
   if (!is_android) {
     public += [
       "chrome_speech_recognition_service.h",
+      "on_device_live_caption_recognizer.h",
       "speech_recognition_client_browser_interface.h",
       "speech_recognition_client_browser_interface_factory.h",
       "speech_recognition_service.h",
@@ -36,6 +37,7 @@ source_set("speech") {
       "//components/optimization_guide/core:ondevice",
       "//components/soda",
       "//components/soda:constants",
+      "//media",
       "//media/mojo/mojom",
       "//media/mojo/mojom:speech_recognition",
       "//services/on_device_model/public/mojom",
@@ -112,6 +114,7 @@ source_set("impl") {
   if (!is_android) {
     sources += [
       "chrome_speech_recognition_service.cc",
+      "on_device_live_caption_recognizer.cc",
       "speech_recognition_client_browser_interface.cc",
       "speech_recognition_client_browser_interface_factory.cc",
       "speech_recognition_service_factory.cc",
@@ -231,18 +234,30 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "on_device_live_caption_recognizer_unittest.cc",
       "speech_recognition_service_factory_unittest.cc",
       "speech_recognition_small_expert_model_installer_unittest.cc",
     ]
     deps = [
       ":speech",
+      ":test_support",
       "//base",
+      "//chrome/browser/accessibility/live_caption",
       "//chrome/test:test_support",
       "//components/live_caption:constants",
+      "//components/soda:test_support",
       "//content/test:test_support",
+      "//media",
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//services/on_device_model/public/mojom",
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (!is_chromeos) {
+      sources += [ "chrome_speech_recognition_service_unittest.cc" ]
+    }
 
     if (is_chromeos) {
       sources += [

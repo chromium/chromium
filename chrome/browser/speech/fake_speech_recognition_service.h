@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/speech/fake_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_service.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -39,7 +39,7 @@ class FakeSpeechRecognitionService
 
   FakeSpeechRecognitionService();
   FakeSpeechRecognitionService(const FakeSpeechRecognitionService&) = delete;
-  FakeSpeechRecognitionService& operator=(const SpeechRecognitionService&) =
+  FakeSpeechRecognitionService& operator=(const FakeSpeechRecognitionService&) =
       delete;
   ~FakeSpeechRecognitionService() override;
 

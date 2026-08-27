@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -533,6 +534,37 @@ TEST_F(SpeechRecognitionSmallExpertModelInstallerTest,
 
   EXPECT_EQ(installer()->GetSpeechRecognitionSmallExpertModelState(),
             State::kNotInstalled);
+  EXPECT_FALSE(installer()->IsSpeechRecognitionSmallExpertModelDownloading());
+  EXPECT_FALSE(installer()->IsSpeechRecognitionSmallExpertModelInstalled());
+}
+
+TEST_F(SpeechRecognitionSmallExpertModelInstallerTest,
+       InstallWithNullOptGuideDoesNotIncrementRetryCount) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kLiveCaptionSpeechRecognitionSmallExpertModel);
+
+  // A profile without OptimizationGuideKeyedService (e.g. Guest profile)
+  TestingProfile* profile =
+      profile_manager()->CreateTestingProfile("no_opt_guide_profile");
+  profile->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
+
+  EXPECT_EQ(installer()->GetSpeechRecognitionSmallExpertModelRetryCount(), 0);
+
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<SpeechRecognitionSmallExpertModelInstaller,
+                          SpeechRecognitionSmallExpertModelInstaller::Observer>
+      observation(&observer);
+  observation.Observe(installer());
+
+  EXPECT_CALL(observer, OnSpeechRecognitionSmallExpertModelInstallError())
+      .Times(0);
+
+  installer()->InstallSpeechRecognitionSmallExpertModel(profile);
+
+  EXPECT_EQ(installer()->GetSpeechRecognitionSmallExpertModelState(),
+            State::kNotInstalled);
+  EXPECT_EQ(installer()->GetSpeechRecognitionSmallExpertModelRetryCount(), 0);
   EXPECT_FALSE(installer()->IsSpeechRecognitionSmallExpertModelDownloading());
   EXPECT_FALSE(installer()->IsSpeechRecognitionSmallExpertModelInstalled());
 }

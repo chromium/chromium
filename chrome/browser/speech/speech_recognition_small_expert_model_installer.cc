@@ -54,7 +54,7 @@ bool IsLiveCaptionEnabled(Profile* profile) {
   if (!profile) {
     return false;
   }
-  PrefService* prefs = profile->GetOriginalProfile()->GetPrefs();
+  PrefService* prefs = profile->GetPrefs();
   return prefs && (prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
                    (captions::IsHeadlessCaptionFeatureSupported() &&
                     prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)));
@@ -118,7 +118,7 @@ void SpeechRecognitionSmallExpertModelInstaller::
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           profile->GetOriginalProfile());
   if (!opt_guide) {
-    HandleSpeechRecognitionSmallExpertModelError();
+    SetState(State::kNotInstalled);
     return;
   }
 
