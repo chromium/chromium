@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
@@ -20,18 +21,26 @@ IdentityValidator* g_instance = nullptr;
 }  // namespace
 
 IdentityValidator::IdentityValidator() {
-  CHECK(!g_instance);
-  g_instance = this;
+  if (!g_instance) {
+    g_instance = this;
+  }
 }
 
 IdentityValidator::~IdentityValidator() {
-  CHECK(g_instance);
-  g_instance = nullptr;
+  if (g_instance == this) {
+    g_instance = nullptr;
+  }
 }
 
 void IdentityValidator::CreateInstanceForTesting() {
   static base::NoDestructor<IdentityValidator> instance;
   instance.get();
+}
+
+// static
+base::AutoReset<IdentityValidator*> IdentityValidator::SetInstanceForTesting(
+    IdentityValidator* instance) {
+  return base::AutoReset<IdentityValidator*>(&g_instance, instance);
 }
 
 // static

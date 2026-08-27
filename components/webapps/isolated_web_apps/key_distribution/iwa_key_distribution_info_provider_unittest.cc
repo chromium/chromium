@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -40,10 +36,12 @@
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
-#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "components/webapps/isolated_web_apps/test_support/key_distribution/test_utils.h"
+#include "components/webapps/isolated_web_apps/test_support/scoped_iwa_identity_validator.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -426,10 +424,16 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
  public:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    IwaIdentityValidator::CreateSingleton();
-    ChromeIwaClient::CreateSingleton();
     provider_reset_ = IwaRuntimeDataProvider::SetInstanceForTesting(
         &IwaKeyDistributionInfoProvider::GetInstanceForTesting());
+    iwa_client_.SetRuntimeDataProvider(
+        &IwaKeyDistributionInfoProvider::GetInstanceForTesting());
+  }
+
+  void TearDown() override {
+    iwa_client_.SetRuntimeDataProvider(nullptr);
+    provider_reset_.reset();
+    IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();
   }
 
   base::FilePath WriteSignedWebBundleToDisk(
@@ -444,11 +448,13 @@ class SignedWebBundleSignatureVerifierWithKeyDistributionTest
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  test::ScopedIwaIdentityValidator iwa_identity_validator_;
+  test::TestIwaClient iwa_client_;
   std::optional<base::AutoReset<IwaRuntimeDataProvider*>> provider_reset_;
 };
 
 TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
-       DISABLED_VerifySignaturesWithKeyDistribution) {
+       VerifySignaturesWithKeyDistribution) {
   using Error = web_package::SignedWebBundleSignatureVerifier::Error;
 
   auto key_pairs = web_package::test::KeyPairs{
@@ -735,10 +741,6 @@ class IwaKeyDistributionInfoProviderReadinessTest
   scoped_refptr<update_client::CrxInstaller> installer_;
 
   std::unique_ptr<base::ScopedTempDir> dir_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  base::test::ScopedFeatureList features_{
-      component_updater::kIwaKeyDistributionComponent};
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // TODO(crbug.com/393102554): Remove this after launch.
 #if BUILDFLAG(IS_WIN)

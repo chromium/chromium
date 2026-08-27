@@ -32,10 +32,11 @@ class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaIdentityValidator
       const std::vector<web_package::PublicKey>& public_keys,
       bool allow_soft_key_rotation);
 
- private:
+ protected:
   IwaIdentityValidator() = default;
   ~IwaIdentityValidator() override = default;
 
+ private:
   friend base::NoDestructor<IwaIdentityValidator>;
 };
 

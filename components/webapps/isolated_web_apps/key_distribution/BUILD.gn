@@ -24,3 +24,23 @@ source_set("key_distribution") {
     "//services/network/public/cpp",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "iwa_key_distribution_info_provider_unittest.cc" ]
+  deps = [
+    "//components/webapps/isolated_web_apps",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/component_updater",
+    "//components/component_updater:test_support",
+    "//components/component_updater/installer_policies:installer_policies_with_content_deps",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps/test_support",
+    "//content/public/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

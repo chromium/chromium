@@ -11,6 +11,10 @@ source_set("test_support") {
   sources = [
     "fake_iwa_runtime_data_provider.cc",
     "fake_iwa_runtime_data_provider.h",
+    "key_distribution/test_utils.cc",
+    "key_distribution/test_utils.h",
+    "scoped_iwa_identity_validator.cc",
+    "scoped_iwa_identity_validator.h",
     "signed_web_bundle_utils.cc",
     "signed_web_bundle_utils.h",
     "signing_keys.h",

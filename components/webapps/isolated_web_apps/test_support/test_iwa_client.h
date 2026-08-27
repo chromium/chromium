@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_TEST_IWA_CLIENT_H_
 #define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TEST_SUPPORT_TEST_IWA_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/client.h"
@@ -25,7 +26,11 @@ class TestIwaClient : public IwaClient {
       base::OnceCallback<
           void(base::expected<IwaSourceWithModeOrGeneratedResponse,
                               SourceRequestError>)> callback) override;
+  void SetRuntimeDataProvider(IwaRuntimeDataProvider* provider);
   IwaRuntimeDataProvider* GetRuntimeDataProvider() override;
+
+ private:
+  raw_ptr<IwaRuntimeDataProvider> provider_ = nullptr;
 };
 
 }  // namespace web_app::test

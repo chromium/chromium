@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app::test {
 
@@ -26,8 +27,12 @@ void TestIwaClient::GetIwaSourceForRequest(
   NOTREACHED();
 }
 
+void TestIwaClient::SetRuntimeDataProvider(IwaRuntimeDataProvider* provider) {
+  provider_ = provider;
+}
+
 IwaRuntimeDataProvider* TestIwaClient::GetRuntimeDataProvider() {
-  return nullptr;
+  return provider_;
 }
 
 }  // namespace web_app::test

@@ -1023,7 +1023,6 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/isolated_web_app_url_loader_factory_unittest.cc",
     "isolated_web_apps/isolated_web_app_user_installed_manager_unittest.cc",
     "isolated_web_apps/iwa_permissions_policy_cache_unittest.cc",
-    "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider_unittest.cc",
     "isolated_web_apps/manifest_update_unittest.cc",
     "isolated_web_apps/policy/isolated_web_app_installer_unittest.cc",
     "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
