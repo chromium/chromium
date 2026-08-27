@@ -11,6 +11,8 @@
 
 namespace blink {
 
+struct RendererPreferences;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -36,7 +38,8 @@ BLINK_COMMON_EXPORT bool IsGlobalPrivacyControlFeatureEnabled();
 // the GPC header, but not to gate API access.
 // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables this
 // but it should be removed once we have a real setting to test.
-BLINK_COMMON_EXPORT bool IsGlobalPrivacyControlFeatureAndSettingEnabled();
+BLINK_COMMON_EXPORT bool IsGlobalPrivacyControlFeatureAndSettingEnabled(
+    const RendererPreferences& renderer_preferences);
 
 // Records the source of the GPC signal in a subsampled histogram.
 // The histogram is subsampled one out of one thousand times.

@@ -84,7 +84,7 @@ WebServiceWorkerFetchContextImpl::WebServiceWorkerFetchContextImpl(
         pending_subresource_loader_updater,
     Vector<String> cors_exempt_header_list,
     const bool is_third_party_context)
-    : renderer_preferences_(renderer_preferences),
+    : WebServiceWorkerFetchContext(renderer_preferences),
       worker_script_url_(worker_script_url),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       pending_script_loader_factory_(std::move(pending_script_loader_factory)),
@@ -151,7 +151,7 @@ void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
   }
-  if (IsGlobalPrivacyControlFeatureAndSettingEnabled()) {
+  if (IsGlobalPrivacyControlFeatureAndSettingEnabled(renderer_preferences_)) {
     request.SetHttpHeaderField(WebString::FromUtf8(kGlobalPrivacyControlHeader),
                                "1");
     blink::MaybeRecordGlobalPrivacyControlSourceMetric(

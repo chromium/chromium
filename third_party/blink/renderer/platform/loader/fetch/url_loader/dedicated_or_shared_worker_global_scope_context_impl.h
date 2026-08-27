@@ -267,8 +267,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerGlobalScopeContextImpl final
   net::SiteForCookies site_for_cookies_;
   std::optional<url::Origin> top_frame_origin_;
 
-  RendererPreferences renderer_preferences_;
-
   // |preference_watcher_receiver_| and |child_preference_watchers_| are for
   // keeping track of updates in the renderer preferences.
   mojo::Receiver<mojom::blink::RendererPreferenceWatcher>

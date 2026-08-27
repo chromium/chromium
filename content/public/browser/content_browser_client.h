@@ -1019,6 +1019,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // are to be sent to the renderer process when a worker is created. Note that
   // We don't use this method for Dedicated Workers as they inherit preferences
   // from their closest ancestor frame.
+  // Note: You probably want to call `UpdateRendererPreferencesForWorkerHelper`
+  // to ensure proper content-specific overrides are applied.
   virtual void UpdateRendererPreferencesForWorker(
       BrowserContext* browser_context,
       blink::RendererPreferences* out_prefs);

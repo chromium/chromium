@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
@@ -160,6 +161,17 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   CreateServiceWorkerProvider() {
     return nullptr;
   }
+
+  const RendererPreferences& GetRendererPreferences() const {
+    return renderer_preferences_;
+  }
+
+ protected:
+  explicit WebWorkerFetchContext(
+      const RendererPreferences& renderer_preferences)
+      : renderer_preferences_(renderer_preferences) {}
+
+  RendererPreferences renderer_preferences_;
 };
 
 }  // namespace blink

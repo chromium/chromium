@@ -51,6 +51,8 @@ class WorkerOrWorkletScriptController;
 class WorkerReportingProxy;
 class WorkerThread;
 
+struct RendererPreferences;
+
 class CORE_EXPORT WorkerOrWorkletGlobalScope
     : public EventTarget,
       public ExecutionContext,
@@ -203,6 +205,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(
       const base::UnguessableToken& token) = 0;
+
+  const RendererPreferences& GetRendererPreferences() const;
 
  protected:
   // Sets outside's CSP used for off-main-thread top-level worker script

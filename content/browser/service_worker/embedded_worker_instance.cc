@@ -26,6 +26,7 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_preferences_util.h"
 #include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_content_settings_proxy_impl.h"
@@ -403,7 +404,7 @@ void EmbeddedWorkerInstance::Start(
   DCHECK(context_->wrapper()->browser_context() ||
          process_manager->IsShutdown());
   params->renderer_preferences = blink::RendererPreferences();
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
+  UpdateRendererPreferencesForWorkerHelper(
       context_->wrapper()->browser_context(), &params->renderer_preferences);
 
   {

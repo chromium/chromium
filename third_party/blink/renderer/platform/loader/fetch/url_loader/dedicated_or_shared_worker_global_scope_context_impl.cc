@@ -199,7 +199,8 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::
             pending_resource_load_info_notifier,
         scoped_refptr<WebServiceWorkerProviderContext>
             service_worker_provider_context)
-    : service_worker_client_receiver_(
+    : WebDedicatedOrSharedWorkerGlobalScopeContext(renderer_preferences),
+      service_worker_client_receiver_(
           std::move(service_worker_client_receiver)),
       pending_service_worker_worker_client_registry_(
           std::move(pending_service_worker_worker_client_registry)),
@@ -208,7 +209,6 @@ DedicatedOrSharedWorkerGlobalScopeContextImpl::
       service_worker_container_host_(std::move(service_worker_container_host)),
       pending_subresource_loader_updater_(
           std::move(pending_subresource_loader_updater)),
-      renderer_preferences_(renderer_preferences),
       preference_watcher_pending_receiver_(
           std::move(preference_watcher_receiver)),
       throttle_provider_(std::move(throttle_provider)),
@@ -378,7 +378,7 @@ void DedicatedOrSharedWorkerGlobalScopeContextImpl::FinalizeRequest(
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
   }
-  if (IsGlobalPrivacyControlFeatureAndSettingEnabled()) {
+  if (IsGlobalPrivacyControlFeatureAndSettingEnabled(renderer_preferences_)) {
     request.SetHttpHeaderField(WebString::FromUtf8(kGlobalPrivacyControlHeader),
                                "1");
     blink::MaybeRecordGlobalPrivacyControlSourceMetric(

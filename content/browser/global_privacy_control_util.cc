@@ -6,18 +6,33 @@
 
 #include <atomic>
 #include <optional>
+#include <ranges>
+
+#include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
+
+namespace {
+
+void SyncRendererPrefs() {
+  std::ranges::for_each(
+      WebContentsImpl::GetAllWebContents(),
+      [](WebContentsImpl* web_contents) { web_contents->SyncRendererPrefs(); });
+}
+
+}  // namespace
 
 static std::atomic<std::optional<bool>>
     g_global_privacy_control_devtools_override;
 
 void UpdateGlobalPrivacyControlDevToolsOverride(bool new_gpc) {
   g_global_privacy_control_devtools_override.store(new_gpc);
+  SyncRendererPrefs();
 }
 
 void ResetGlobalPrivacyControlDevToolsOverride() {
   g_global_privacy_control_devtools_override.store(std::nullopt);
+  SyncRendererPrefs();
 }
 
 bool IsGlobalPrivacyControlSettingEnabled() {

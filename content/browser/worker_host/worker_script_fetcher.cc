@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_preferences_util.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
@@ -118,8 +119,8 @@ void AddAdditionalRequestHeaders(network::ResourceRequest* resource_request,
       net::HttpRequestHeaders::kAccept, network::kDefaultAcceptHeaderValue);
 
   blink::RendererPreferences renderer_preferences;
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      browser_context, &renderer_preferences);
+  UpdateRendererPreferencesForWorkerHelper(browser_context,
+                                           &renderer_preferences);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       &resource_request->headers, browser_context,
       /*should_update_existing_headers=*/false, renderer_preferences,

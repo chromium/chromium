@@ -1214,6 +1214,8 @@ source_set("browser") {
     "media/capture/desktop_streams_registry_impl.cc",
     "media/capture/desktop_streams_registry_impl.h",
     "permissions/permission_descriptor_util.cc",
+    "renderer_preferences_util.cc",
+    "renderer_preferences_util.h",
     "web_contents_based_canceller.cc",
     "web_contents_based_canceller.h",
 

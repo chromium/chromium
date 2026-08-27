@@ -9,12 +9,23 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 
 namespace blink {
 namespace NavigatorGlobalPrivacyControl {
 
 bool globalPrivacyControl(NavigatorBase& navigator) {
-  return IsGlobalPrivacyControlFeatureAndSettingEnabled();
+  if (navigator.DomWindow()) {
+    return IsGlobalPrivacyControlFeatureAndSettingEnabled(
+        navigator.DomWindow()->GetFrame()->GetPage()->GetRendererPreferences());
+  } else if (WorkerOrWorkletGlobalScope* worker_scope =
+                 DynamicTo<WorkerOrWorkletGlobalScope>(
+                     navigator.GetExecutionContext())) {
+    return IsGlobalPrivacyControlFeatureAndSettingEnabled(
+        worker_scope->GetRendererPreferences());
+  }
+  return false;
 }
 
 }  // namespace NavigatorGlobalPrivacyControl

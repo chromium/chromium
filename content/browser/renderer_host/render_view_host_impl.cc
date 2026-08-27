@@ -41,6 +41,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/global_privacy_control_util.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -285,6 +286,8 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection);
 #endif
+  prefs->is_global_privacy_control_setting_enabled =
+      IsGlobalPrivacyControlSettingEnabled();
 }
 
 // static

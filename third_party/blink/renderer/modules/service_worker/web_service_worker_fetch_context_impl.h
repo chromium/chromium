@@ -89,7 +89,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   // Implements mojom::blink::RendererPreferenceWatcher.
   void NotifyUpdate(const RendererPreferences& new_prefs) override;
 
-  RendererPreferences renderer_preferences_;
   const KURL worker_script_url_;
   // Consumed on the worker thread to create |url_loader_factory_|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

@@ -18,6 +18,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
+#include "content/browser/renderer_preferences_util.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
@@ -292,8 +293,8 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
   request.do_not_prompt_for_login = true;
 
   blink::RendererPreferences renderer_preferences;
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      &browser_context, &renderer_preferences);
+  UpdateRendererPreferencesForWorkerHelper(&browser_context,
+                                           &renderer_preferences);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       &request.headers, &browser_context,
       /*should_update_existing_headers=*/false, renderer_preferences,

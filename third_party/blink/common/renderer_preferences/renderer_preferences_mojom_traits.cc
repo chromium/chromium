@@ -135,6 +135,9 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 
   out->system_color_chooser_is_modal = data.system_color_chooser_is_modal();
 
+  out->is_global_privacy_control_setting_enabled =
+      data.is_global_privacy_control_setting_enabled();
+
   return true;
 }
 

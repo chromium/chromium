@@ -274,6 +274,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 
 class EmptyWebWorkerFetchContext : public WebWorkerFetchContext {
  public:
+  explicit EmptyWebWorkerFetchContext()
+      : WebWorkerFetchContext(RendererPreferences()) {}
+
   void SetTerminateSyncLoadEvent(base::WaitableEvent*) override {}
   void InitializeOnWorkerThread(AcceptLanguagesWatcher*) override {}
   URLLoaderFactory* GetURLLoaderFactory() override { return nullptr; }

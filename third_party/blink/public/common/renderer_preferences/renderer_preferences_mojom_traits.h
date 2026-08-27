@@ -294,6 +294,11 @@ struct BLINK_COMMON_EXPORT
     return data.system_color_chooser_is_modal;
   }
 
+  static bool is_global_privacy_control_setting_enabled(
+      const ::blink::RendererPreferences& data) {
+    return data.is_global_privacy_control_setting_enabled;
+  }
+
   static bool Read(blink::mojom::RendererPreferencesDataView,
                    ::blink::RendererPreferences* out);
 };

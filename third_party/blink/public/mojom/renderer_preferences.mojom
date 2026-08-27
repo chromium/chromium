@@ -212,4 +212,9 @@ struct RendererPreferences {
   // Whether the system color chooser is a modal dialog that steals focus from
   // the browser window.
   bool system_color_chooser_is_modal = false;
+
+  // Whether the Global Privacy Control is enabled for the profile (or via the
+  // DevTools override). Do not check this directly, instead use
+  // `IsGlobalPrivacyControlFeature(AndSetting)Enabled` to gate features/headers.
+  bool is_global_privacy_control_setting_enabled = false;
 };

@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_preferences_util.h"
 #include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -385,7 +386,7 @@ void SharedWorkerHost::Start(
       instance_.same_site_cookies(), instance_.extended_lifetime()));
 
   auto renderer_preferences = blink::RendererPreferences();
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
+  UpdateRendererPreferencesForWorkerHelper(
       GetProcessHost()->GetBrowserContext(), &renderer_preferences);
 
   // Create a RendererPreferenceWatcher to observe updates in the preferences.
