@@ -2847,6 +2847,13 @@ ci.builder(
         mixins = [
             "linux-jammy",
         ],
+        per_test_modifications = {
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
     ),
     console_view_entry = consoles.console_view_entry(
         category = "webdriver",
