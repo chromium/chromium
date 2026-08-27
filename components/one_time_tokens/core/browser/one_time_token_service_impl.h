@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_IMPL_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -49,6 +50,10 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
       base::Time expiration,
       Callback callback,
       base::OnceClosure expiration_callback) override;
+  [[nodiscard]] ExpiringSubscription SubscribeToTickles(
+      OneTimeTokenSource source,
+      base::Time expiration,
+      TickleCallback callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
   void RequestOneTimeToken(
       base::TimeDelta timeout,

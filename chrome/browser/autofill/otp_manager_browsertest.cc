@@ -92,6 +92,12 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
     return one_time_tokens::ExpiringSubscription();
   }
 
+  one_time_tokens::ExpiringSubscription SubscribeToTickles(
+      base::Time expiration,
+      TickleCallback callback) override {
+    return one_time_tokens::ExpiringSubscription();
+  }
+
   // one_time_tokens::GmailOtpBackend:
   void OnIncomingOneTimeTokenBackendNotification(
       const one_time_tokens::OneTimeTokenBackendNotification& notification)

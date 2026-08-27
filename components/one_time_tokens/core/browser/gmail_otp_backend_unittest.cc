@@ -483,4 +483,57 @@ TEST_F(GmailOtpBackendImplTest,
   EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
 }
 
+TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesAndReceiveNotification) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> future;
+  ExpiringSubscription subscription = backend_.SubscribeToTickles(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(
+          EncryptedMessageReference("encrypted_reference")));
+
+  EXPECT_TRUE(future.WaitAndClear());
+  // Ensure no network requests were made for payload fetching.
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
+}
+
+TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesWithPreCachedNotification) {
+  base::HistogramTester histogram_tester;
+  // Push arrives BEFORE subscription.
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(
+          EncryptedMessageReference("encrypted_reference")));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
+
+  // Now subscribe to tickles: it should immediately fire for the cached
+  // notification.
+  base::test::TestFuture<void> future;
+  ExpiringSubscription subscription = backend_.SubscribeToTickles(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  EXPECT_TRUE(future.WaitAndClear());
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
+}
+
+TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesExpiration) {
+  base::test::TestFuture<void> future;
+  ExpiringSubscription subscription = backend_.SubscribeToTickles(
+      base::Time::Now() + base::Seconds(30), future.GetRepeatingCallback());
+
+  EXPECT_TRUE(subscription.IsAlive());
+  task_environment_.FastForwardBy(base::Seconds(31));
+  EXPECT_FALSE(subscription.IsAlive());
+
+  // Further notifications should not reach the expired subscription.
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(
+          EncryptedMessageReference("encrypted_reference")));
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace one_time_tokens

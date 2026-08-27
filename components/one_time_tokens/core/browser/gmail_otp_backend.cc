@@ -80,13 +80,31 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
   return subscription;
 }
 
+ExpiringSubscription GmailOtpBackendImpl::SubscribeToTickles(
+    base::Time expiration,
+    TickleCallback callback) {
+  ExpiringSubscription subscription = tickle_subscription_manager_.Subscribe(
+      expiration, callback, /*expiration_callback=*/base::DoNothing());
+
+  // If there are unexpired notifications in the cache, notify the new
+  // subscriber immediately about the pre-arrival tickle.
+  if (!notification_cache_.PurgeExpiredAndGetItems().empty()) {
+    callback.Run();
+  }
+
+  return subscription;
+}
+
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification& notification) {
   base::UmaHistogramBoolean(
       "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription",
-      subscription_manager_.GetNumberSubscribers() > 0);
+      subscription_manager_.GetNumberSubscribers() > 0 ||
+          tickle_subscription_manager_.GetNumberSubscribers() > 0);
 
   LOG_OTT(log_sink_) << "Tickle received";
+
+  tickle_subscription_manager_.Notify();
 
   if (base::TimeTicks::Now() - notification.notification_received_timeticks >
       kNotificationExpirationDuration) {

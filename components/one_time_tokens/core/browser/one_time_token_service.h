@@ -55,6 +55,8 @@ class OneTimeTokenService : public KeyedService {
   // Returns the cached one-time tokens.
   virtual std::vector<OneTimeToken> GetCachedOneTimeTokens() const = 0;
 
+  using TickleCallback = base::RepeatingCallback<void(OneTimeTokenSource)>;
+
   // Creates a subscription for new incoming one time tokens. It's possible that
   // the same one time token is reported many times while a subscription is
   // active. It's the responsibility of the caller to deduplicate those.
@@ -63,6 +65,13 @@ class OneTimeTokenService : public KeyedService {
       base::Time expiration,
       Callback callback,
       base::OnceClosure expiration_callback) = 0;
+
+  // Creates a subscription for incoming push notifications (tickles) without
+  // triggering token fetching or network requests.
+  [[nodiscard]] virtual ExpiringSubscription SubscribeToTickles(
+      OneTimeTokenSource source,
+      base::Time expiration,
+      TickleCallback callback) = 0;
 
   // Requests one time tokens from the underlying backend. `callback` is called
   // exactly once when the request is complete, with the fetched token if

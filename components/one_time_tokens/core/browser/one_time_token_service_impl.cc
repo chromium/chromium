@@ -89,6 +89,30 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
   }
 }
 
+ExpiringSubscription OneTimeTokenServiceImpl::SubscribeToTickles(
+    OneTimeTokenSource source,
+    base::Time expiration,
+    TickleCallback callback) {
+  LOG_OTT(&log_sink_) << "Tickle subscription updated: source="
+                      << std::to_underlying(source)
+                      << ", expiration=" << expiration;
+  switch (source) {
+    case OneTimeTokenSource::kGmail: {
+      if (!gmail_.backend) {
+        return ExpiringSubscription();
+      }
+      return gmail_.backend->SubscribeToTickles(
+          expiration,
+          base::BindRepeating(std::move(callback), OneTimeTokenSource::kGmail));
+    }
+    case OneTimeTokenSource::kUnknown:
+    case OneTimeTokenSource::kOnDeviceSms:
+      NOTREACHED()
+          << "OneTimeTokenServiceImpl::SubscribeToTickles: Unsupported source "
+          << static_cast<int>(source);
+  }
+}
+
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
     const {
   return base::ToVector(cache_.GetItems());

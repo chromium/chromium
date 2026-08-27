@@ -29,6 +29,12 @@ class MockOneTimeTokenService : public OneTimeTokenService {
                Callback callback,
                base::OnceClosure expiration_callback),
               (override));
+  MOCK_METHOD(ExpiringSubscription,
+              SubscribeToTickles,
+              (OneTimeTokenSource source,
+               base::Time expiration,
+               TickleCallback callback),
+              (override));
   MOCK_METHOD(void,
               RequestOneTimeToken,
               (base::TimeDelta timeout,

@@ -112,6 +112,13 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
                                            std::move(expiration_callback));
   }
 
+  one_time_tokens::ExpiringSubscription SubscribeToTickles(
+      one_time_tokens::OneTimeTokenSource source,
+      base::Time expiration,
+      TickleCallback callback) override {
+    return one_time_tokens::ExpiringSubscription();
+  }
+
   void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<one_time_tokens::OneTimeToken>)>

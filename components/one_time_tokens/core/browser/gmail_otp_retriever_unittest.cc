@@ -68,6 +68,14 @@ class FakeOneTimeTokenService : public OneTimeTokenService {
                                            std::move(expiration_callback));
   }
 
+  ExpiringSubscription SubscribeToTickles(OneTimeTokenSource source,
+                                          base::Time expiration,
+                                          TickleCallback callback) override {
+    return tickle_subscription_manager_.Subscribe(
+        expiration, std::move(callback),
+        /*expiration_callback=*/base::DoNothing());
+  }
+
   void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) override {
@@ -89,6 +97,8 @@ class FakeOneTimeTokenService : public OneTimeTokenService {
 
  private:
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+  ExpiringSubscriptionManager<void(OneTimeTokenSource)>
+      tickle_subscription_manager_;
   std::vector<OneTimeToken> cached_tokens_;
 };
 

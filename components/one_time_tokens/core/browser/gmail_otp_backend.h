@@ -58,9 +58,17 @@ class GmailOtpBackend : public KeyedService {
 
   virtual void SetLogSink(OneTimeTokenLogSink* log_sink) {}
 
+  using TickleCallback = base::RepeatingClosure;
+
   // Creates a subscription for new incoming OTPs.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
                                                        Callback callback) = 0;
+
+  // Creates a subscription for incoming push notifications (tickles) without
+  // triggering token fetching or network requests.
+  [[nodiscard]] virtual ExpiringSubscription SubscribeToTickles(
+      base::Time expiration,
+      TickleCallback callback) = 0;
 
   // Called when a new OTP is received via the OneTimeToken notification.
   virtual void OnIncomingOneTimeTokenBackendNotification(
@@ -87,6 +95,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   ExpiringSubscription Subscribe(base::Time expiration,
                                  Callback callback) override;
+
+  ExpiringSubscription SubscribeToTickles(base::Time expiration,
+                                          TickleCallback callback) override;
 
   void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) override;
@@ -120,6 +131,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   // Handles subscriptions to the `GmailOtpBackend`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+
+  // Handles tickle-only subscriptions to the `GmailOtpBackend`.
+  ExpiringSubscriptionManager<void()> tickle_subscription_manager_;
 
   // Owned by `OneTimeTokenServiceImpl`, outlives this backend. May be null.
   raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;
