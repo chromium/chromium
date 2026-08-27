@@ -252,6 +252,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on ChromeOS, mirroring linux-chromeos-annotator-rel.",
     mirrors = [
         "ci/linux-chromeos-annotator-rel",
     ],
@@ -264,6 +265,7 @@ try_.builder(
             "enable_backup_ref_ptr_feature_flag",
         ],
     ),
+    contact_team_email = "cbe-compliance@google.com",
 )
 
 try_.builder(

@@ -12,7 +12,6 @@ ci/Win 10 Fast Ring
 ci/android-11-x86-fyi-rel
 ci/android-11-x86-rel
 ci/android-12-x64-dbg-tests
-ci/android-annotator-rel
 ci/android-arm64-archive-rel
 ci/android-avd-packager
 ci/android-code-coverage
@@ -38,11 +37,9 @@ ci/ios26-beta-simulator
 ci/ios26-sdk-simulator
 ci/ios27-beta-simulator
 ci/ios27-sdk-simulator
-ci/linux-annotator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
 ci/linux-blink-wpt-reset-rel
-ci/linux-chromeos-annotator-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-code-coverage
 ci/linux-code-coverage
@@ -62,7 +59,6 @@ ci/mac-perfetto-rel
 ci/mac-ubsan-fyi-rel
 ci/metadata-exporter
 ci/rts-suite-analysis
-ci/win-annotator-rel
 ci/win-fieldtrial-rel
 ci/win-perfetto-rel
 ci/win-upload-perfetto
@@ -147,7 +143,6 @@ try/ios26-sdk-simulator
 try/ios27-beta-simulator
 try/ios27-sdk-simulator
 try/leak_detection_linux
-try/linux-annotator-rel
 try/linux-asan-dbg
 try/linux-asan-media-rel
 try/linux-asan-media-v8-arm-rel
@@ -158,7 +153,6 @@ try/linux-blink-heap-verification-try
 try/linux-blink-web-tests-force-accessibility-rel
 try/linux-centipede-asan-rel
 try/linux-cfm-rel
-try/linux-chromeos-annotator-rel
 try/linux-chromeos-asan-rel
 try/linux-chromeos-clang-tidy-rel
 try/linux-chromeos-code-coverage
@@ -243,7 +237,6 @@ try/targets-config-verifier
 try/tricium-clang-tidy
 try/tricium-metrics-analysis
 try/tricium-oilpan-analysis
-try/win-annotator-rel
 try/win-asan
 try/win-asan-media-rel
 try/win-asan-rel

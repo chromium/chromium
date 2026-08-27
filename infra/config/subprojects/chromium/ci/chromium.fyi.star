@@ -204,6 +204,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on Linux.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -232,12 +233,14 @@ ci.builder(
         category = "network|traffic|annotations",
         short_name = "lnx",
     ),
+    contact_team_email = "cbe-compliance@google.com",
     notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "linux-chromeos-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on ChromeOS.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -275,6 +278,7 @@ ci.builder(
         category = "release",
         short_name = "rel",
     ),
+    contact_team_email = "cbe-compliance@google.com",
     execution_timeout = 3 * time.hour,
     notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -2278,6 +2282,7 @@ ci.builder(
 
 ci.builder(
     name = "win-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on Windows.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -2308,6 +2313,7 @@ ci.builder(
         category = "network|traffic|annotations",
         short_name = "win",
     ),
+    contact_team_email = "cbe-compliance@google.com",
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,

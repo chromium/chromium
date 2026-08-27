@@ -143,6 +143,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on Linux, mirroring linux-annotator-rel.",
     mirrors = ["ci/linux-annotator-rel"],
     gn_args = gn_args.config(
         configs = [
@@ -151,6 +152,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    contact_team_email = "cbe-compliance@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

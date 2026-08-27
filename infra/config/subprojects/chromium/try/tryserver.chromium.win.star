@@ -68,6 +68,7 @@ try_.builder(
 
 try_.builder(
     name = "win-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on Windows, mirroring win-annotator-rel.",
     mirrors = ["ci/win-annotator-rel"],
     gn_args = gn_args.config(
         configs = [
@@ -76,6 +77,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    contact_team_email = "cbe-compliance@google.com",
 )
 
 try_.builder(

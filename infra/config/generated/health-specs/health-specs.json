@@ -6880,6 +6880,7 @@
         ]
       },
       "android-annotator-rel": {
+        "contact_team_email": "cbe-compliance@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9373,6 +9374,7 @@
         ]
       },
       "linux-annotator-rel": {
+        "contact_team_email": "cbe-compliance@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9830,6 +9832,7 @@
         ]
       },
       "linux-chromeos-annotator-rel": {
+        "contact_team_email": "cbe-compliance@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12454,6 +12457,7 @@
         ]
       },
       "win-annotator-rel": {
+        "contact_team_email": "cbe-compliance@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

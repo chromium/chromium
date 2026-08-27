@@ -483,6 +483,7 @@ ci.builder(
 
 ci.builder(
     name = "android-annotator-rel",
+    description_html = "Runs tests for the Network Traffic Annotation Auditor on Android.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -522,6 +523,7 @@ ci.builder(
         category = "network|traffic|annotations",
         short_name = "and",
     ),
+    contact_team_email = "cbe-compliance@google.com",
     notifies = ["annotator-rel"],
 )
 
