@@ -5047,6 +5047,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024809" label="E_INVALIDARG"/>
   <int value="-2147024784" label="ERROR_DISK_FULL"/>
   <int value="-2147024775" label="ERROR_SEM_TIMEOUT"/>
+  <int value="-2147024774" label="ERROR_INSUFFICIENT_BUFFER"/>
   <int value="-2147024770" label="E_MOD_NOT_FOUND / ERROR_MOD_NOT_FOUND"/>
   <int value="-2147024769" label="ERROR_PROC_NOT_FOUND"/>
   <int value="-2147024738" label="ERROR_NOT_LOCKED"/>
@@ -5595,6 +5596,7 @@ shown properly on the user-facing crash UI.
   <int value="-805306067" label="STATUS_COMMITMENT_LIMIT"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="-536870363" label="ERROR_NO_SUCH_DEVICE_INTERFACE"/>
+  <int value="-1" label="UNKNOWN (-1)"/>
   <int value="0" label="S_OK"/>
   <int value="866008" label="MF_S_MULTIPLE_BEGIN"/>
   <int value="866045" label="MF_S_ACTIVATE_REPLACED"/>
