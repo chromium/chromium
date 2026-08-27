@@ -1,167 +1,142 @@
 ---
 name: chrome-performance-optimizer
 description: >-
-  Autonomous performance optimization agent loop for Chromium and V8.
-  Supports both profile-seeded mode (analyzing Speedometer 3 / JetStream profiles
-  from pprof links, profile IDs, or Sagacity MCP tools) and pattern-driven discovery
-  mode (mining high-leverage architectural patterns and historical winning CLs from
-  references/optimization_patterns.md). Identifies bottlenecks, formulates unexplored
-  macro hypotheses, implements engine optimizations, verifies local tests, submits CLs
-  to Gerrit, triggers 150-iteration Pinpoint try jobs on Apple Silicon M1 hardware,
-  evaluates statistical significance, and either proposes winning CLs or abandons non-improving changes.
+  Autonomous multi-agent performance optimization loop for Chromium and V8.
+  Supports profile-seeded mode (analyzing Speedometer 3 / JetStream profiles via
+  pprof or Sagacity MCP) and pattern-driven discovery mode (fan-out exploration of
+  Blink and V8 macro-patterns grounded in historical wins and past rejected CLs).
+  Dispatches isolated implementations in git worktrees, verifies local tests, uploads
+  CLs, triggers 150-iteration Pinpoint try jobs on Apple Silicon M1 hardware, pipelines
+  subsequent hypotheses asynchronously, evaluates statistical significance, and
+  manages CL lifecycles.
 ---
 
 # Chrome & V8 Autonomous Performance Optimization Loop
 
-This skill provides an autonomous agent loop that operates in two primary modes:
+This skill provides an autonomous multi-agent optimization loop designed to
+uncover, implement, and validate engine-level optimizations across Chromium and
+V8.
 
-1. **Profile-Seeded Mode**: Ingests performance profiles (from web pprof links,
-   profile IDs, Sagacity MCP, or Crossbench logs) to pinpoint hot subtrees and
-   functions.
-2. **Pattern-Driven Mode (No Profile Seeded)**: Directly mines and
-   cross-references high-leverage architectural patterns from
-   [Macro-Optimization Patterns](references/optimization_patterns.md) and
-   historical top-win CLs, queries Gerrit for tried CLs, and formulates
-   unexplored macro-hypotheses across Blink and V8 subsystems.
+## 🔁 Multi-Agent Architecture & Pipelined Workflow
 
-Both modes validate correctness locally, test on Pinpoint hardware bots, and
-manage CL lifecycles based on statistical confidence.
-
-______________________________________________________________________
-
-## 🔁 The Optimization Loop Workflow
+The optimization process divides responsibilities across specialized subagents
+to enable parallel exploration and asynchronous Pinpoint pipelining:
 
 ```mermaid
 graph TD
-    A[1. Opportunity Discovery: Seeded Profile or Optimization Patterns] --> B[2. Fetch Tried CLs: topic:chrome-perf-opt-rejected & accepted]
-    B --> C[3. Formulate Unexplored Macro Hypothesis]
-    C --> D[4. Implement on Dedicated Branch]
-    D --> E[5. Verify Locally: Tests & Crossbench]
-    E -->|Fail| D
-    E -->|Pass| F[6. Upload CL to Gerrit]
-    F --> G[7. Run Pinpoint on M1: pp c -c m1 -t sp3 -r 150]
-    G --> H[8. Poll & Evaluate Results: pp s]
-    H -->|Stat-Significant Improvement| I[9. Tag topic:chrome-perf-opt-accepted & Propose CL]
-    H -->|No Improvement or Regressed| J[10. Tag topic:chrome-perf-opt-rejected & Abandon CL]
-    I --> A
-    J --> A
+    Main["Orchestrator Agent<br/>Backlog, Pipelining & Global Decisions"]
+
+    subgraph Discovery["Phase 1: Parallel Opportunity Exploration"]
+        E1["Opportunity Explorer #1<br/>Historical & Pattern Learning"]
+        E2["Opportunity Explorer #2<br/>Historical & Pattern Learning"]
+        E3["Opportunity Explorer #3<br/>Historical & Pattern Learning"]
+    end
+
+    subgraph Execution["Phase 2: Isolated Worktrees (Workspace: 'share')"]
+        Imp1["Implementer & Local Tester #1"]
+        Imp2["Implementer & Local Tester #2"]
+    end
+
+    subgraph RemoteEval["Phase 3: Async Remote Evaluation"]
+        PP1["Pinpoint & Gerrit Lifecycle Worker #1"]
+        PP2["Pinpoint & Gerrit Lifecycle Worker #2"]
+    end
+
+    Main -->|1. Fan-out General Exploration| Discovery
+    Discovery -->|2. Propose Macro-Hypotheses| Main
+    Main -->|3. Dispatch Candidate| Execution
+    Execution -->|4. Verified Patch & Smoke Test| Main
+    Main -->|5. Upload CL & Launch Pinpoint on M1| RemoteEval
+    Main -.->|6. Pipeline Next Candidate (Do not wait idle)| Execution
+    RemoteEval -->|7. Stat-Significant Win / Regressed| Main
+    Main -->|8. Accept (Keep CL) or Reject (Abandon CL)| Main
 ```
 
 ______________________________________________________________________
 
 ## Step 1: Bottleneck & Opportunity Discovery
 
-The loop starts either from a provided profile or directly from known
-high-leverage optimization patterns:
+Discovery operates either from a provided profile or directly from known
+high-leverage architectural patterns and historical learning:
 
 ### Mode A: When a Performance Profile is Provided (Profile-Seeded)
 
-Ingest the profile from any of the following sources:
-
-- **Web pprof link(s)**: `pprof/?id=XYZ` or
-  `https://pprof.corp.google.com/?id=XYZ`
-- **Native pprof ID(s)**: `id:XYZ` or raw ID `XYZ`
-- **Sagacity MCP Tools**: `fetch_uploaded_profile(profileKey="XYZ")`
-- **Local Benchmark Profiles**: Crossbench CSV, Linux perf, or `v8.log`
-
-#### Profile Analysis Commands:
-
-1. **Top Cumulative Call Stacks (identify caller subtrees)**:
-   ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=cum --nodecount=30
-   ```
-2. **Top Flat Functions (identify hot leaf loops)**:
-   ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=flat --nodecount=30
-   ```
-3. **Inspect Callers & Callees for a Specific Symbol**:
-   ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=peek --symbol="*HasOwnProperty*"
-   ```
-4. **Compare Two Profiles (Diff Mode)**:
-   ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
-   ```
-
-### Mode B: When No Profile is Provided (Pattern-Driven Discovery)
-
-When starting without a seeded profile, systematically mine the historical top
-wins and architectural levers documented in
-[Macro-Optimization Patterns](references/optimization_patterns.md):
-
-1. **Examine Subsystem Archetypes**:
-
-   - **Blink Style & Cascade**: RuleSet deduplication, Matched Properties Cache
-     (MPC) by-value comparison and multi-candidate buckets, fast selector
-     bucketing for frequent attributes/pseudo-classes, UA rule walk elimination.
-   - **Blink Layout, Text & Font Shaping**: HarfBuzz AAT fast path and ligature
-     pair caching, short-text shape cache (`NSShapeCache`),
-     `LazyLineBreakIterator` fast Latin-1 tables and iterator resets,
-     devirtualizing `LayoutObject`/`Node` type checks.
-   - **Blink DOM Parsing & Mutation**: `HTMLFastPathParser` tag/attribute
-     expansion and routing for `DOMParser.parseFromString`, lazy state
-     initialization (`DocumentToken`, `VisitedLinkState`, `Editor`),
-     vector-backed observer sets, parsed SVG path caching.
-   - **V8 & Memory Management (GC / Oilpan)**: Oilpan (cppgc) idle and
-     concurrent sweeping, minor GC scheduling on context disposal, Sparkplug+
-     Embedded Feedback (EFB), macOS shared mutex optimizations, COW microtask
-     queues.
-   - **2D Canvas, Graphics & Memory Primitives**: Dedicated `PaintOp`s and
-     `SkPath` bypass for primitive shapes, `rapidhash` string hashing,
-     eliminating `HeapVector` inline storage zeroing.
-   - **Toolchain & PGO**: Clang PGO `-vp-counters-per-site` value profiling,
-     benchmark weighting.
-
-2. **Cross-Check Codebase State**: Inspect the current Chromium / V8
-   implementation of the candidate target to see if the pattern is already
-   implemented, partially implemented, or can be extended to new element types,
-   CSS properties, or bytecode handlers.
-
-______________________________________________________________________
-
-### Fetch & Exclude Previously Attempted CLs
-
-In **both modes**, you **MUST** query all previously attempted CLs on Gerrit
-before writing code:
+Ingest profiles from web pprof links (`https://pprof.corp.google.com/?id=XYZ`),
+native IDs (`id:XYZ`), Sagacity MCP tools (`fetch_uploaded_profile`), or local
+Crossbench CSVs.
 
 ```bash
-vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+# 1. Top Cumulative Call Stacks (identify caller subtrees):
+vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=cum --nodecount=30
+
+# 2. Top Flat Functions (identify hot leaf loops):
+vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=flat --nodecount=30
+
+# 3. Inspect Callers & Callees for a Specific Symbol:
+vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=peek --symbol="*HasOwnProperty*"
+
+# 4. Compare Two Profiles (Diff Mode):
+vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
 ```
 
-- **`topic:chrome-perf-opt-rejected`**: CLs that failed Pinpoint evaluation ($p
-  \> 0.05$). You **MUST NOT** repeat or re-propose any of these changes or
-  micro-variations of them.
-- **`topic:chrome-perf-opt-accepted`**: Validated benchmark winners. Use these
-  as reference implementations and build atop them.
+### Mode B: When No Profile is Provided (General Opportunity Exploration)
+
+When exploring without a seeded profile, spawn parallel Opportunity Explorer
+subagents to scan the codebase holistically, guided by past lessons:
+
+1. **Learning from Historical Archetypes**: Internalize the macro-optimization
+   archetypes documented in
+   [Macro-Optimization Patterns](references/optimization_patterns.md):
+
+   - **Allocation Elimination**: Eliminate heap / GC allocations in hot
+     per-element or per-token loops.
+   - **Invariant Caching**: Cache expensive cross-iteration computations (e.g.
+     style match trees, parsed path/SVG streams, shaped word glyphs).
+   - **Fast-Path Short-Circuits**: Bypass heavy multi-layer framework code (e.g.
+     ICU, HarfBuzz, full CSS cascade) for common-case inputs.
+   - **Devirtualization & Inlining**: Devirtualize hot type checks and indirect
+     calls.
+   - **Concurrency & Deferral**: Defer non-critical work to idle tasks or worker
+     threads (e.g. sweeping, lazy state initialization).
+
+2. **Learning from Past Attempts**: Study all previously attempted CLs on
+   Gerrit:
+
+   ```bash
+   vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+   ```
+
+   - **`topic:chrome-perf-opt-accepted`**: Study why these succeeded and explore
+     generalizing their architectural principles.
+   - **`topic:chrome-perf-opt-rejected`**: Study what failed or vanished in
+     noise. **NEVER repeat any rejected pattern or variation.**
+
+3. **Subagent Fan-Out via `invoke_subagent`**: Launch general Opportunity
+   Explorer subagents (see [Agent Roles Guide](references/agent_roles.md) for
+   full prompt templates) to explore different architectural angles across the
+   entire engine simultaneously.
 
 ______________________________________________________________________
 
-## Step 2: Formulate Macro Hypothesis & Create Isolated Branch
+## Step 2: Formulate Macro Hypothesis & Isolated Worktree Implementation
 
-> [!IMPORTANT] **Mandatory High-Impact & Non-Duplication Standard**:
+> [!IMPORTANT] **Mandatory High-Impact Standard**:
 >
-> 1. **No Duplication**: Check `fetch_tried_cls.py` output. NEVER repeat changes
->    listed under `topic:chrome-perf-opt-rejected` or
->    `topic:chrome-perf-opt-accepted`.
-> 2. **No Micro-Tweaks**: Do NOT propose trivial micro-tweaks (such as isolated
->    bounds checks, micro-inlining of small helpers, or single variable renames)
->    that produce `< 0.1%` change and vanish in Pinpoint noise.
->
-> Every optimization hypothesis MUST aim for **architectural leverage**:
->
-> - **Allocation Elimination**: Eliminate heap / GC allocations in hot
->   per-element or per-token loops.
-> - **Invariant Caching**: Cache expensive cross-iteration computations (e.g.
->   style match trees, parsed SVG/path byte streams, shaped word glyphs).
-> - **Fast-Path Short-Circuits**: Bypass heavy multi-layer framework code (e.g.
->   ICU, HarfBuzz, SkPath, full CSS cascade) for common-case inputs.
-> - **Concurrency / Deferral**: Defer non-critical work to idle tasks or worker
->   threads (e.g. sweeping, lazy state initialization).
->
-> Continue iterating through candidate profiles and patterns autonomously until
-> a statistically significant win ($p < 0.05$) is confirmed on Pinpoint.
+> - **No Duplication**: Verify candidate against `fetch_tried_cls.py`.
+> - **No Micro-Tweaks**: Do NOT propose single variable renames, isolated
+>   trivial bound checks, or micro-helpers that produce `< 0.1%` change and
+>   vanish in Pinpoint noise.
+> - **Macro Leverage**: Target allocation elimination in hot loops, invariant
+>   caching across iterations, fast-path short-circuits, or idle
+>   concurrency/deferral.
 
-1. Create a dedicated branch for the optimization:
+### Isolated Implementation (`Workspace: 'share'`)
+
+To allow concurrent development without dirtying or blocking the root workspace,
+delegate implementation to an Implementer Subagent with `Workspace: 'share'`
+(creates an isolated git worktree sharing repository storage):
+
+1. Create a dedicated branch:
    ```bash
    # For Blink / Chromium root changes:
    git checkout -b perf_<feature_name> origin/main
@@ -169,14 +144,13 @@ ______________________________________________________________________
    # For V8 engine submodule changes:
    git -C v8 checkout -b perf_<feature_name> origin/main
    ```
-2. Implement the macro-optimization cleanly, adhering to codebase conventions.
+2. Implement the macro-optimization cleanly adhering to codebase conventions.
 
 ______________________________________________________________________
 
 ## Step 3: Local Verification & Correctness Testing
 
-Always verify correctness before uploading to avoid wasting Pinpoint bot
-resources:
+Verify correctness locally in the worktree before uploading to Gerrit:
 
 1. **Unit Tests**:
 
@@ -228,7 +202,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## Step 5: Run Pinpoint Try Job on M1 Hardware
+## Step 5: Launch Pinpoint Try Job & Asynchronous Pipelining
 
 Launch a 150-iteration try job on Apple Silicon M1 bots:
 
@@ -238,19 +212,28 @@ pp c -c m1 -t sp3 -r 150
 
 - `-c m1`: Target M1 hardware bot.
 - `-t sp3`: Target Speedometer 3 benchmark template.
-- `-r 150`: 150 repetitions per variant for high statistical confidence.
+- `-r 150`: 150 repetitions per variant for robust statistical confidence.
+
+### Asynchronous Pipelining (Do Not Block Idle):
+
+- Because 150-iteration Pinpoint jobs take 45–90+ minutes, **the Orchestrator
+  does not sit idle waiting.**
+- Record the `JOB_ID` and dispatch a background monitoring task or subagent.
+- Immediately proceed to the next candidate hypothesis in the queue,
+  implementing and verifying it in another isolated worktree.
+- Limit active in-flight Pinpoint try jobs to **max 2** concurrent jobs.
 
 ______________________________________________________________________
 
 ## Step 6: Evaluate Results & Autonomous Decision
 
-1. Inspect results once the job completes:
+1. Check comparison results once the job completes:
 
    ```bash
    vpython3 agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action evaluate --job-id <JOB_ID>
    ```
 
-   Or directly view the comparison table:
+   Or inspect the comparison table directly:
 
    ```bash
    pp s <JOB_ID>
@@ -263,7 +246,7 @@ ______________________________________________________________________
        ```bash
        vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-accepted'})"
        ```
-     - Add the Pinpoint benchmark results to the CL description:
+     - Add Pinpoint benchmark results to CL description:
        ```bash
        git cl upload -m "Add Pinpoint M1 benchmark results (+X.X% improvement)"
        ```
@@ -277,13 +260,13 @@ ______________________________________________________________________
        ```bash
        git cl abandon -m "Pinpoint try job (150 iterations on M1) showed no statistically significant speedup."
        ```
-     - Switch back to `origin/main` and iterate to the next candidate
-       profile/bottleneck.
+     - Free the worktree and iterate on the next candidate in the pipeline.
 
 ______________________________________________________________________
 
 ## References & Utilities
 
+- [Multi-Agent Roles & Pipelining Guide](references/agent_roles.md)
 - [Macro-Optimization Patterns](references/optimization_patterns.md)
 - [Pinpoint & Gerrit Workflow Guide](references/pinpoint_workflow.md)
 - [Fetch Previously Tried CLs Script](scripts/fetch_tried_cls.py)
