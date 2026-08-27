@@ -22,6 +22,7 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/slot_address_and_size.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
 
@@ -175,6 +176,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       SafeShift<CountType>(1, std::countr_zero(kPtrCountMask));
   static constexpr auto kUnprotectedPtrInc =
       SafeShift<CountType>(1, std::countr_zero(kUnprotectedPtrCountMask));
+
+  PA_ALWAYS_INLINE static InSlotMetadata* From(
+      SlotAddressAndSize slot_and_size);
 
   PA_ALWAYS_INLINE InSlotMetadata();
 
@@ -569,8 +573,8 @@ GetInSlotMetadataIndexMultiplierShift() {
   return SystemPageShift() * 2 - kSuperPageShift - kInSlotMetadataSizeShift;
 }
 
-PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
-                                                       size_t slot_size) {
+PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadata::From(
+    SlotAddressAndSize slot_and_size) {
   // In-slot metadata is typically put at the end of the slot. However, there
   // are a handful of issues that need to be considered:
   // 1. GWP-ASan uses 2-page slots and wants the 2nd page to be inaccissable, so
@@ -586,6 +590,8 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
   // the InSlotMetadata object out-of-line in this case, specifically in a
   // special table after the super page metadata (see InSlotMetadataTable in
   // partition_alloc_constants.h).
+  uintptr_t slot_start = slot_and_size.slot_start.value();
+  size_t slot_size = slot_and_size.size;
   if (slot_start & SystemPageOffsetMask()) [[likely]] {
     uintptr_t refcount_address =
         slot_start + slot_size - sizeof(InSlotMetadata);

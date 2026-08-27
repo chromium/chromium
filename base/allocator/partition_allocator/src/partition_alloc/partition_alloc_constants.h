@@ -210,7 +210,7 @@ MaxRegularSlotSpanSize() {
 //
 // If ENABLE_BACKUP_REF_PTR_SUPPORT is on, InSlotMetadataTable(4KiB) is inserted
 // after the Metadata page, which hosts what normally would be in-slot metadata,
-// but for reasons described in InSlotMetadataPointer() can't always be placed
+// but for reasons described in InSlotMetadata::From() can't always be placed
 // inside the slot. BRP ref-count is there, hence the connection with
 // ENABLE_BACKUP_REF_PTR_SUPPORT.
 // The guard page after the table is reduced to 4KiB.

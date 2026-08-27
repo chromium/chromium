@@ -653,8 +653,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
-    auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-        slot_start.Untag(), size_details.slot_size);
+    auto* ref_count = internal::InSlotMetadata::From(
+        {slot_start.Untag(), size_details.slot_size});
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes. Zapping must
@@ -768,8 +768,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Currently, InSlotMetadata is allocated when BRP is used.
   PA_DCHECK(root->brp_enabled());
-  PA_DCHECK(!PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-                 slot_start, slot_span->bucket->slot_size)
+  PA_DCHECK(!internal::InSlotMetadata::From(
+                 {slot_start, slot_span->bucket->slot_size})
                  ->IsAlive());
 
   // Iterating over the entire slot can be really expensive.
@@ -793,7 +793,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
       1, std::memory_order_relaxed);
 
   internal::InSlotMetadata* metadata =
-      internal::InSlotMetadataPointer(slot_start.value(), slot_size);
+      internal::InSlotMetadata::From({slot_start, slot_size});
   auto size_details = internal::BucketSizeDetails{
       .bucket_index =
           SizeToBucketIndex(slot_size, root->GetBucketDistribution()),
@@ -1179,18 +1179,11 @@ PA_ALWAYS_INLINE size_t PartitionRoot::AllocationCapacityFromSlotStart(
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_ALWAYS_INLINE internal::InSlotMetadata*
-PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-    internal::UntaggedSlotStart slot_start,
-    size_t slot_size) {
-  return internal::InSlotMetadataPointer(slot_start.value(), slot_size);
-}
-
-PA_ALWAYS_INLINE internal::InSlotMetadata*
 PartitionRoot::InSlotMetadataPointerFromObjectForTesting(void* object) const {
   auto slot_start = internal::SlotStart::Unchecked(object).Untag();
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, this);
-  return InSlotMetadataPointerFromSlotStartAndSize(
-      slot_start, slot_span->bucket->slot_size);
+  return internal::InSlotMetadata::From(
+      {slot_start, slot_span->bucket->slot_size});
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
@@ -1493,7 +1486,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
     auto* ref_count =
-        new (InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size))
+        new (internal::InSlotMetadata::From({slot_start, slot_size}))
             internal::InSlotMetadata();
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
     ref_count->SetRequestedSize(requested_size);

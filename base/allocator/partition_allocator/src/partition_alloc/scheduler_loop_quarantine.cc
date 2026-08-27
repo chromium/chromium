@@ -117,8 +117,8 @@ PA_ALWAYS_INLINE void BatchFreeQueue<true>::Purge() {
     auto size_details = root_->SlotSpanToBucketSizeDetails(entry.slot_span);
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (root_->brp_enabled()) {
-      auto* metadata = PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-          entry.slot_start, size_details.slot_size);
+      auto* metadata =
+          InSlotMetadata::From({entry.slot_start, size_details.slot_size});
       if (metadata->IsAlive()) {
         // Since `FreeNoHooksImmediateInternal()` checks double-free, see if
         // the object is still alive.

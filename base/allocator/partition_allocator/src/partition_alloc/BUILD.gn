@@ -258,8 +258,7 @@ component("raw_ptr") {
       "pointers/raw_ptr_backup_ref_impl.h",
     ]
 
-    # Depends on FreeAfterBRPQuarantine() and
-    # InSlotMetadataPointerFromSlotStartAndSize(). Is it possible to make
+    # Depends on FreeAfterBRPQuarantine(). Is it possible to make
     # FreeAfterBRPQuarantine() PA_NOINLINE like FreeNoInline?
     deps += [ ":internal_headers" ]
   } else if (use_raw_ptr_hookable_impl) {

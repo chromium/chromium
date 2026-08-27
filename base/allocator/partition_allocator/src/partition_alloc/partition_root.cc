@@ -1325,8 +1325,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
                                     slot_span->bucket->slot_size, raw_size);
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   if (brp_enabled()) [[likely]] {
-    auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-        slot_span_start.AsSlotStart(), new_slot_size);
+    auto* ref_count = internal::InSlotMetadata::From(
+        {slot_span_start.AsSlotStart(), new_slot_size});
     ref_count->SetRequestedSize(requested_size);
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
@@ -1382,8 +1382,8 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 #if PARTITION_ALLOC_REALLOC_MANIPULATES_IN_SLOT_METADATA
   internal::InSlotMetadata* ref_count = nullptr;
   if (brp_enabled()) [[likely]] {
-    ref_count = InSlotMetadataPointerFromSlotStartAndSize(
-        internal::UntaggedSlotStart(slot_start), slot_span->bucket->slot_size);
+    ref_count = internal::InSlotMetadata::From(
+        {slot_start, slot_span->bucket->slot_size});
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
     ref_count->SetRequestedSize(new_size);
 #endif
@@ -1395,10 +1395,8 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     slot_span->SetRawSize(new_raw_size);
 #if PARTITION_ALLOC_HAS_DCHECKED_BRP
     if (brp_enabled()) [[likely]] {
-      internal::InSlotMetadata* new_ref_count =
-          InSlotMetadataPointerFromSlotStartAndSize(
-              internal::UntaggedSlotStart(slot_start),
-              slot_span->bucket->slot_size);
+      internal::InSlotMetadata* new_ref_count = internal::InSlotMetadata::From(
+          {slot_start, slot_span->bucket->slot_size});
       PA_DCHECK(new_ref_count == ref_count);
     }
 #endif  // PARTITION_ALLOC_HAS_DCHECKED_BRP

@@ -589,10 +589,6 @@ class alignas(internal::kPartitionCachelineSize)
   PA_NOINLINE size_t AllocationCapacityFromRequestedSize(size_t size) const;
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  PA_ALWAYS_INLINE static internal::InSlotMetadata*
-  InSlotMetadataPointerFromSlotStartAndSize(
-      internal::UntaggedSlotStart slot_start,
-      size_t slot_size);
   PA_ALWAYS_INLINE internal::InSlotMetadata*
   InSlotMetadataPointerFromObjectForTesting(void* object) const;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

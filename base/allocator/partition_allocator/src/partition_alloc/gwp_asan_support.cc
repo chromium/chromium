@@ -111,8 +111,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
         for (uintptr_t slot_idx = 0; slot_idx < kSlotsPerSlotSpan; ++slot_idx) {
           auto slot_start =
               slot_span_start.GetNthSlotStart(slot_idx, kSlotSize);
-          PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(slot_start,
-                                                                   kSlotSize)
+          internal::InSlotMetadata::From({slot_start, kSlotSize})
               ->InitializeForGwpAsan();
           size_t global_slot_idx = (slot_start.value() - super_page_span_start -
                                     kSuperPageGwpAsanSlotAreaBeginOffset) /
@@ -137,8 +136,8 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 // static
 bool GwpAsanSupport::CanReuse(uintptr_t slot_start) {
   const size_t kSlotSize = 2 * internal::SystemPageSize();
-  return PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-             internal::UntaggedSlotStart::Unchecked(slot_start), kSlotSize)
+  return internal::InSlotMetadata::From(
+             {internal::UntaggedSlotStart::Unchecked(slot_start), kSlotSize})
       ->CanBeReusedByGwpAsan();
 }
 

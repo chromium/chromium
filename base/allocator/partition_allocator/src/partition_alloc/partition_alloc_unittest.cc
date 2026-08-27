@@ -5157,7 +5157,7 @@ TEST_P(PartitionAllocTest, ExtraExtrasNullfyOffByOneDetection) {
       {});
 
   // `ptr1` can be located at page start hence lacks in-slot style
-  // `InSlotMetadata`. See `InSlotMetadataPointer`.
+  // `InSlotMetadata`. See `InSlotMetadata::From`.
   int64_t* ptr1 = static_cast<int64_t*>(root_no_extra->Alloc(8));
   int64_t* ptr2 = static_cast<int64_t*>(root_no_extra->Alloc(8));
 

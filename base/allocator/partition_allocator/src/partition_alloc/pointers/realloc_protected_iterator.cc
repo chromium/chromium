@@ -31,9 +31,9 @@ partition_alloc::SlotAddressAndSize WrapBackingSlot(
   if (!partition_alloc::IsManagedByPartitionAllocBRPPool(addr)) {
     return {};
   }
-  auto slot_and_size = partition_alloc::SlotAddressAndSize::FromBRPPool(addr);
-  partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-      slot_and_size.slot_start, slot_and_size.size)
+  const auto slot_and_size =
+      partition_alloc::SlotAddressAndSize::FromBRPPool(addr);
+  partition_alloc::internal::InSlotMetadata::From(slot_and_size)
       ->AcquireFromUnprotectedPtr();
   return slot_and_size;
 #else
@@ -47,9 +47,7 @@ void UnwrapBackingSlot(
   if (!slot.slot_start) {
     return;
   }
-  auto* metadata =
-      partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-          slot.slot_start, slot.size);
+  auto* metadata = partition_alloc::internal::InSlotMetadata::From(slot);
 
   // Security check: if the backing was freed while the wrapper held its ref,
   // the slot's "allocated" bit in InSlotMetadata is clear. That means the
