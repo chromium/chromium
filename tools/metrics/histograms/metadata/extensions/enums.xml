@@ -2912,6 +2912,7 @@ Called by update_extension_histograms.py.-->
       label="ENTERPRISEREPORTINGPRIVATE_REPORTFORCESAVETOCLOUDEVENTHANDLED"/>
   <int value="1981" label="AUTOFILLPRIVATE_FETCHUSERDATAPROCESSINGCONSENT"/>
   <int value="1982" label="DEVELOPERPRIVATE_OPENREVIEWPAGE"/>
+  <int value="1983" label="TABS_CREATESPLIT"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

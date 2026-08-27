@@ -427,6 +427,32 @@
         }
       },
       {
+        "name": "createSplit",
+        "type": "function",
+        "nodoc": true,
+        "description": "Splits two existing tabs into a Split View.",
+        "parameters": [
+          {
+            "type": "array",
+            "name": "tabIds",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"type": "integer", "minimum": 0},
+            "description": "An array of exactly two tab IDs to pair into a Split View. All tabs must meet the following conditions: <ul><li>They must be adjacent.</li><li>They must not already be in a split view.</li><li>They must have matching <code>windowId</code>, <code>pinned</code>, and <code>groupId</code> states.</li></ul>"
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "splitViewId",
+              "type": "integer",
+              "description": "The ID of the newly created Split View containing the tabs specified."
+            }
+          ]
+        }
+      },
+      {
         "name": "duplicate",
         "type": "function",
         "description": "Duplicates a tab.",

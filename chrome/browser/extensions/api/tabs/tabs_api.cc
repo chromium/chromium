@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2161,8 +2162,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
               : nullptr;
       if (split_with_browser != browser) {
         return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-            tabs_constants::kSplitWithTabNotInSameWindowError,
-            base::NumberToString(*split_with_tab_id_))));
+            tabs_constants::kSplitWithTabsMatchingStateError,
+            tabs_constants::kWindowIdKey)));
       }
 
       // 4. Check that the index (if specified) is adjacent to the split-with
@@ -2170,11 +2171,8 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
       if (create_properties.index) {
         int index = *create_properties.index;
         if (index < target_index || index > target_index + 1) {
-          return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-              tabs_constants::kSplitWithTabIndexNotAdjacentError,
-              base::NumberToString(*split_with_tab_id_),
-              base::NumberToString(target_index),
-              base::NumberToString(index))));
+          return RespondNow(
+              Error(tabs_constants::kSplitWithTabIndexNotAdjacentError));
         }
       }
     }
@@ -3491,6 +3489,97 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
 
   tab_list->Ungroup(tabs);
   return true;
+}
+
+TabsCreateSplitFunction::~TabsCreateSplitFunction() = default;
+
+ExtensionFunction::ResponseAction TabsCreateSplitFunction::Run() {
+  std::optional<tabs::CreateSplit::Params> params =
+      tabs::CreateSplit::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(params->tab_ids.size() == 2u);
+
+  const std::vector<int>& tab_ids = params->tab_ids;
+  if (tab_ids[0] == tab_ids[1]) {
+    return RespondNow(Error(tabs_constants::kSplitWithDuplicateTabsError));
+  }
+
+  std::string error;
+  WindowController* window = nullptr;
+  bool pinned = false;
+  std::optional<tab_groups::TabGroupId> group_id;
+  int previous_tab_index = -1;
+  std::vector<::tabs::TabHandle> tab_handles;
+  tab_handles.reserve(tab_ids.size());
+
+  for (size_t i = 0; i < tab_ids.size(); ++i) {
+    WindowController* tab_window = nullptr;
+    content::WebContents* web_contents = nullptr;
+    int tab_index = -1;
+    if (!tabs_internal::GetTabById(tab_ids[i], browser_context(),
+                                   include_incognito_information(), &tab_window,
+                                   &web_contents, &tab_index, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    // 1. Check that the tab is not a DevTools tab.
+    if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+    }
+    ::tabs::TabInterface* tab =
+        ::tabs::TabInterface::GetFromContents(web_contents);
+    CHECK(tab);
+    // 2. Check that the tab is not already in a split view.
+    if (tab->IsSplit()) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          tabs_constants::kSplitWithTabAlreadyInSplitViewError,
+          base::NumberToString(tab_ids[i]))));
+    }
+
+    // 3. Check that tab is in the same window, has matching pinned and group ID
+    // states, and is adjacent.
+    if (i == 0) {
+      // Use the first tab to set the baseline state for validation.
+      window = tab_window;
+      pinned = tab->IsPinned();
+      group_id = tab->GetGroup();
+      CHECK(window);
+      if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
+        return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+      }
+    } else {
+      if (tab_window != window) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            tabs_constants::kSplitWithTabsMatchingStateError,
+            tabs_constants::kWindowIdKey)));
+      }
+      if (tab->IsPinned() != pinned) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            tabs_constants::kSplitWithTabsMatchingStateError,
+            tabs_constants::kPinnedKey)));
+      }
+      if (tab->GetGroup() != group_id) {
+        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+            tabs_constants::kSplitWithTabsMatchingStateError,
+            tabs_constants::kGroupIdKey)));
+      }
+      if (std::abs(tab_index - previous_tab_index) != 1) {
+        return RespondNow(
+            Error(tabs_constants::kSplitWithTabIndexNotAdjacentError));
+      }
+    }
+    previous_tab_index = tab_index;
+    tab_handles.push_back(tab->GetHandle());
+  }
+
+  BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
+  CHECK(browser);
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_list ? tab_list->CreateSplit(tab_handles) : std::nullopt;
+  if (!split_id) {
+    return RespondNow(Error(tabs_constants::kSplitViewCreationFailedError));
+  }
+  return RespondNow(WithArguments(ExtensionTabUtil::GetSplitId(*split_id)));
 }
 
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {

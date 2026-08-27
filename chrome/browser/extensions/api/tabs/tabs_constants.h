@@ -25,6 +25,8 @@ inline constexpr char kTitleKey[] = "title";
 inline constexpr char kUrlKey[] = "url";
 inline constexpr char kPendingUrlKey[] = "pendingUrl";
 inline constexpr char kWindowIdKey[] = "windowId";
+inline constexpr char kPinnedKey[] = "pinned";
+inline constexpr char kGroupIdKey[] = "groupId";
 
 // Error messages.
 inline constexpr char kCannotZoomDisabledTabError[] =
@@ -67,14 +69,13 @@ inline constexpr char kGroupParamsError[] =
 inline constexpr char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
 inline constexpr char kSplitWithTabAlreadyInSplitViewError[] =
-    "Cannot create split view with 'splitWithTabId': *. Tab is already in a "
-    "split view.";
-inline constexpr char kSplitWithTabNotInSameWindowError[] =
-    "Cannot create split view with 'splitWithTabId': *. Tab is not in the same "
-    "window as the target window.";
+    "Tab ID * is already in a split view.";
 inline constexpr char kSplitWithTabIndexNotAdjacentError[] =
-    "Cannot create split view with 'splitWithTabId': Tab ID * is at index *, "
-    "which is not adjacent to 'index' *.";
+    "Cannot create split view with non-adjacent tabs.";
+inline constexpr char kSplitWithDuplicateTabsError[] =
+    "Cannot create a split view with duplicate tab IDs.";
+inline constexpr char kSplitWithTabsMatchingStateError[] =
+    "Cannot create split view with tabs of mismatching '*' states.";
 inline constexpr char kSplitViewCreationFailedError[] =
     "Failed to create split view.";
 #if BUILDFLAG(IS_ANDROID)

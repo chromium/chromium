@@ -161,8 +161,7 @@ chrome.test.runTests([
     const firstSplit = await chrome.tabs.create({splitWithTabId: tab.id});
     await chrome.test.assertPromiseRejects(
         chrome.tabs.create({splitWithTabId: tab.id}),
-        `Error: Cannot create split view with 'splitWithTabId': ${tab.id}. ` +
-            `Tab is already in a split view.`);
+        `Error: Tab ID ${tab.id} is already in a split view.`);
     await chrome.tabs.remove([tab.id, firstSplit.id]);
     chrome.test.succeed();
   },
@@ -177,8 +176,8 @@ chrome.test.runTests([
           windowId: otherWin.id,
           splitWithTabId: tab.id,
         }),
-        `Error: Cannot create split view with 'splitWithTabId': ${tab.id}. ` +
-            `Tab is not in the same window as the target window.`);
+        `Error: Cannot create split view with tabs of mismatching 'windowId' ` +
+            `states.`);
     await chrome.tabs.remove(tab.id);
     await chrome.windows.remove(otherWin.id);
     await chrome.windows.update(primaryWin.id, {focused: true});
@@ -190,9 +189,7 @@ chrome.test.runTests([
     const tab2 = await createFreshTab();
     await chrome.test.assertPromiseRejects(
         chrome.tabs.create({splitWithTabId: tab2.id, index: 0}),
-        `Error: Cannot create split view with 'splitWithTabId': Tab ID ` +
-            `${tab2.id} is at index ${tab2.index}, which is not adjacent to ` +
-            `'index' 0.`);
+        `Error: Cannot create split view with non-adjacent tabs.`);
     await chrome.tabs.remove([tab1.id, tab2.id]);
     chrome.test.succeed();
   },
@@ -201,9 +198,7 @@ chrome.test.runTests([
     const tab = await createFreshTab();
     await chrome.test.assertPromiseRejects(
         chrome.tabs.create({splitWithTabId: tab.id, index: 100}),
-        `Error: Cannot create split view with 'splitWithTabId': Tab ID ` +
-            `${tab.id} is at index ${tab.index}, which is not adjacent to ` +
-            `'index' 100.`);
+        `Error: Cannot create split view with non-adjacent tabs.`);
     await chrome.tabs.remove(tab.id);
     chrome.test.succeed();
   },

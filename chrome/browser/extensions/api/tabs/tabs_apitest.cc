@@ -1128,4 +1128,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabSplitViewTest, CreateSplitWithTabId) {
   ASSERT_TRUE(RunExtensionTest("tabs/split_view_create_split_with_id"))
       << message_;
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabSplitViewTest, CreateSplit) {
+  ASSERT_TRUE(RunExtensionTest("tabs/split_view_create_split")) << message_;
+}
 #endif  // !BUILDFLAG(IS_ANDROID)

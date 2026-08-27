@@ -962,6 +962,9 @@
     ],
     "platforms": ["chromeos"]
   }],
+  "tabs.createSplit": {
+    "feature_flag": "ApiTabsSplitView"
+  },
   "tabs.executeScript": {
     "max_manifest_version": 2
   },
