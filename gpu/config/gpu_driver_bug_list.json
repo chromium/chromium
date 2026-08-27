@@ -3840,6 +3840,18 @@
       "features": [
         "lose_gl_context_when_increase_texture_3d_depth"
       ]
+    },
+    {
+      "id": 490,
+      "cr_bugs": [551573368],
+      "description": "Reset texture base level before calling glTexStorage2D to work around PowerVR driver bug.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "reset_tex_storage_base_level"
+      ]
     }
   ]
 }

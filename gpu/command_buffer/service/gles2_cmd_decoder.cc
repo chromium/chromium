@@ -16380,6 +16380,12 @@ void GLES2DecoderImpl::TexStorageImpl(GLenum target,
   // TODO(zmo): We might need to emulate TexStorage using TexImage or
   // CompressedTexImage on Mac OSX where we expose ES3 APIs when the underlying
   // driver is lower than 4.2 and ARB_texture_storage extension doesn't exist.
+  bool reset_base_level =
+      workarounds().reset_tex_storage_base_level && texture->base_level() != 0;
+  if (reset_base_level) {
+    api()->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL, 0);
+  }
+
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(function_name);
   if (dimension == ContextState::k2D) {
     api()->glTexStorage2DEXTFn(target, levels, compatibility_internal_format,
@@ -16387,6 +16393,11 @@ void GLES2DecoderImpl::TexStorageImpl(GLenum target,
   } else {
     api()->glTexStorage3DFn(target, levels, compatibility_internal_format,
                             width, height, depth);
+  }
+
+  if (reset_base_level) {
+    api()->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL,
+                             texture->base_level());
   }
   GLenum error = LOCAL_PEEK_GL_ERROR(function_name);
   if (error != GL_NO_ERROR) {
