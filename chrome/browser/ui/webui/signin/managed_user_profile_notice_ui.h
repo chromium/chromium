@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/browser/web_ui_controller.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/webui_url_constants.h"
@@ -37,7 +37,7 @@ class ManagedUserProfileNoticeUIConfig
 };
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-class ManagedUserProfileNoticeUI : public content::WebUIController {
+class ManagedUserProfileNoticeUI : public ui::MojoWebUIController {
  public:
   // Type of a managed user notice screen.
   // LINT.IfChange(ScreenType)

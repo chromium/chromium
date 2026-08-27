@@ -350,6 +350,10 @@ void ProfilePickerView::ShowScreen(
     return;
   }
 
+  if (GetWidget()) {
+    contents->SetColorProviderSource(GetWidget());
+  }
+
   contents->GetController().LoadURL(url, content::Referrer(),
                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                     std::string());

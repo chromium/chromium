@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -66,6 +67,11 @@ export class HistorySyncOptinAppRefreshElement extends
   private onAccountInfoDataReceivedListenerId_: number|null = null;
   private onScreenModeDataReceivedListenerId_: number|null = null;
   private accessor screenMode_: ScreenMode = ScreenMode.kPending;
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
