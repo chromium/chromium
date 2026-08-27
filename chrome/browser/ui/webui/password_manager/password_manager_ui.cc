@@ -145,10 +145,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ERROR},
       {"automatedPasswordChangeTitle",
        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_TITLE},
-      {"automatedPasswordChangeDescription",
-       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_DESCRIPTION},
-      {"passwordChangeSettingToggleLabel",
-       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_TOGGLE_LABEL},
       {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
       {"backToCheckup",
        IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
@@ -189,6 +185,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_CLOSE_PROMO_CARD_BUTTON_ARIA_LABEL},
       {"columnHeadingConsider", IDS_SETTINGS_COLUMN_HEADING_CONSIDER},
       {"columnHeadingWhenUsed", IDS_SETTINGS_COLUMN_HEADING_WHEN_USED},
+      {"columnHeadingWhenOn", IDS_SETTINGS_COLUMN_HEADING_WHEN_ON},
       {"compromisedPasswordsDescription",
        IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_DESCRIPTION},
       {"compromisedPasswordsEmpty",
@@ -381,7 +378,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_SETTINGS_PASSWORD_CHANGE_WHERE_SAVED},
       {"passwordChangeSettingExperimental",
        IDS_SETTINGS_PASSWORD_CHANGE_EXPERIMENTAL},
-      {"passwordChangeSettingContent", IDS_SETTINGS_PASSWORD_CHANGE_CONTENT},
+      {"passwordChangeSettingPrivateInference",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_PRIVATE_INFERENCE},
       {"passwordChangeSettingEncryption",
        IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
       {"passwordCopiedToClipboard",
@@ -698,10 +696,29 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                      PasswordChangeServiceFactory::GetForProfile(profile)
                          ->UserIsActivePasswordChangeUser());
 
-  source->AddBoolean("isPasswordChangeWithPrivateInferenceLoginCheckEnabled",
-                     base::FeatureList::IsEnabled(
-                         password_change::features::
-                             kPasswordChangeWithPrivateInferenceLoginCheck));
+  const bool is_password_change_with_private_inference_login_check_enabled =
+      base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck);
+  source->AddBoolean(
+      "isPasswordChangeWithPrivateInferenceLoginCheckEnabled",
+      is_password_change_with_private_inference_login_check_enabled);
+
+  webui::AddLocalizedString(
+      source, "automatedPasswordChangeDescription",
+      is_password_change_with_private_inference_login_check_enabled
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_WITH_PRIVATE_INFERENCE_DESCRIPTION
+          : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_DESCRIPTION);
+  webui::AddLocalizedString(
+      source, "passwordChangeSettingToggleLabel",
+      is_password_change_with_private_inference_login_check_enabled
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_WITH_PRIVATE_INFERENCE_TOGGLE_LABEL
+          : IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_TOGGLE_LABEL);
+  webui::AddLocalizedString(
+      source, "passwordChangeSettingContent",
+      is_password_change_with_private_inference_login_check_enabled
+          ? IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_SETTINGS_CONTENT
+          : IDS_SETTINGS_PASSWORD_CHANGE_CONTENT);
 
   source->AddBoolean(
       "enablePasswordManagerMojoApi",

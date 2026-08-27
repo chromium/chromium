@@ -7,7 +7,7 @@ import 'chrome://password-manager/password_manager.js';
 import type {PasswordChangeDetailsElement, PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {makePasswordManagerPrefs} from './test_util.js';
 
@@ -34,6 +34,11 @@ suite('PasswordChangeDetailsTest', function() {
     assertTrue(toggle.pref.value);
     const fallbackDiv = element.shadowRoot!.querySelector('.cr-row.first');
     assertFalse(!!fallbackDiv);
+    const header = element.shadowRoot!.querySelector('#descriptionHeader');
+    assertTrue(!!header);
+    assertEquals(
+        loadTimeData.getString('columnHeadingWhenOn'),
+        header.textContent.trim());
   });
 
   test('pref-toggle-button reflects disabled pref value', function() {
@@ -67,5 +72,10 @@ suite('PasswordChangeDetailsTest', function() {
     assertFalse(!!toggle);
     const fallbackDiv = element.shadowRoot!.querySelector('.cr-row.first');
     assertTrue(!!fallbackDiv);
+    const header = element.shadowRoot!.querySelector('#descriptionHeader');
+    assertTrue(!!header);
+    assertEquals(
+        loadTimeData.getString('columnHeadingWhenUsed'),
+        header.textContent.trim());
   });
 });
