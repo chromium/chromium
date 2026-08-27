@@ -1881,6 +1881,140 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_EQ("[foopy_valid:8080]", info.proxy_chain().ToDebugString());
 }
 
+// Test what happens when the ProxyResolver fails with
+// ERR_PAC_SCRIPT_TERMINATED while multiple requests are in progress, and the
+// subsequent proxy re-initialization completes synchronously (e.g. fails and
+// falls back to DIRECT). Make sure no use-after-free occurs.
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       ProxyResolverTerminatedDuringRequestWithSyncReinit) {
+  class SyncFailProxyResolverFactory : public ProxyResolverFactory {
+   public:
+    explicit SyncFailProxyResolverFactory(bool resolvers_expect_pac_bytes)
+        : ProxyResolverFactory(resolvers_expect_pac_bytes),
+          async_factory_(resolvers_expect_pac_bytes) {}
+
+    int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
+                            std::unique_ptr<ProxyResolver>* resolver,
+                            CompletionOnceCallback callback,
+                            std::unique_ptr<ProxyResolverFactory::Request>*
+                                request_handle) override {
+      if (synchronous_fail_) {
+        return ERR_PAC_SCRIPT_FAILED;
+      }
+      return async_factory_.CreateProxyResolver(
+          pac_script, resolver, std::move(callback), request_handle);
+    }
+
+    void set_synchronous_fail(bool synchronous_fail) {
+      synchronous_fail_ = synchronous_fail;
+    }
+
+    const MockAsyncProxyResolverFactory::RequestsList& pending_requests()
+        const {
+      return async_factory_.pending_requests();
+    }
+
+   private:
+    bool synchronous_fail_ = false;
+    MockAsyncProxyResolverFactory async_factory_;
+  };
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
+
+  MockAsyncProxyResolver resolver;
+  auto resolver_factory = std::make_unique<SyncFailProxyResolverFactory>(false);
+  auto* resolver_factory_ptr = resolver_factory.get();
+
+  ConfiguredProxyResolutionService service(std::move(config_service),
+                                           std::move(resolver_factory),
+                                           mock_host_resolver_.get(), nullptr,
+                                           /*quick_check_enabled=*/true);
+
+  // Start two resolve requests.
+  GURL url1("http://www.google.com/");
+  GURL url2("https://www.google.com/");
+  ProxyInfo info1, info2;
+  std::unique_ptr<ProxyResolutionRequest> request1, request2;
+
+  int callback1_result = ERR_IO_PENDING;
+  base::RunLoop run_loop1;
+  auto callback1 = base::BindLambdaForTesting([&](int rv) {
+    callback1_result = rv;
+    // Destroy the request inside the completion callback, simulating the
+    // behavior of consumers like HttpStreamFactory::JobController.
+    request1.reset();
+    run_loop1.Quit();
+  });
+
+  int callback2_result = ERR_IO_PENDING;
+  base::RunLoop run_loop2;
+  auto callback2 = base::BindLambdaForTesting([&](int rv) {
+    callback2_result = rv;
+    request2.reset();
+    run_loop2.Quit();
+  });
+
+  // Request 1: In-flight resolve request that will encounter
+  // ERR_PAC_SCRIPT_TERMINATED and trigger proxy re-initialization.
+  int rv1 = service.ResolveProxy(url1, std::string(), NetworkAnonymizationKey(),
+                                 handles::kInvalidNetworkHandle, &info1,
+                                 std::move(callback1), &request1,
+                                 NetLogWithSource(), DEFAULT_PRIORITY);
+
+  // Request 2: Concurrent in-flight resolve request that will be paused in
+  // `pending_requests_` and restarted upon re-initialization.
+  int rv2 = service.ResolveProxy(url2, std::string(), NetworkAnonymizationKey(),
+                                 handles::kInvalidNetworkHandle, &info2,
+                                 std::move(callback2), &request2,
+                                 NetLogWithSource(), DEFAULT_PRIORITY);
+
+  // Both requests should be waiting for PAC compilation now.
+  EXPECT_THAT(rv1, IsError(ERR_IO_PENDING));
+  EXPECT_THAT(rv2, IsError(ERR_IO_PENDING));
+
+  // The service must first create a ProxyResolver by fetching and compiling
+  // the PAC script. We should have one PAC factory creation request for
+  // "http://foopy/proxy.pac".
+  ASSERT_EQ(1u, resolver_factory_ptr->pending_requests().size());
+  EXPECT_EQ(GURL("http://foopy/proxy.pac"),
+            resolver_factory_ptr->pending_requests()[0]->script_data()->url());
+
+  // Complete PAC script compilation now so the service becomes ready and
+  // dispatches `url1` and `url2` to the resolver.
+  resolver_factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(
+      OK, &resolver);
+
+  // Both `url1` and `url2` are now running as in-flight jobs in the resolver.
+  JobMap jobs = GetPendingJobsForURLs(resolver, url1, url2);
+
+  // Configure the next CreateProxyResolver call (when the service attempts to
+  // reset and re-initialize the PAC resolver after `url1` crashes) to fail
+  // synchronously.
+  resolver_factory_ptr->set_synchronous_fail(true);
+
+  // Simulate a PAC script crash on `url1`. DidFinishResolvingProxy() will then
+  // reset the configuration, attempt re-initialization (which fails
+  // synchronously), and fall back to DIRECT.
+  //
+  // Note: this covers the edge case reported in crbug.com/533534913 and
+  // confirms that destroying `request1` inside its completion callback does not
+  // cause a use-after-free.
+  jobs[url1]->CompleteNow(ERR_PAC_SCRIPT_TERMINATED);
+
+  // `request1` fell back to DIRECT per-request as the error fallback for
+  // PAC runtime script crash (ERR_PAC_SCRIPT_TERMINATED).
+  run_loop1.Run();
+  EXPECT_THAT(callback1_result, IsOk());
+  EXPECT_TRUE(info1.is_direct());
+
+  // PAC re-initialization failed, so the entire service entered DIRECT fallback
+  // mode and restarted `request2` against this new DIRECT configuration.
+  run_loop2.Run();
+  EXPECT_THAT(callback2_result, IsOk());
+  EXPECT_TRUE(info2.is_direct());
+}
+
 TEST_F(ConfiguredProxyResolutionServiceTest,
        PacFileFetcherFailsDownloadingMandatoryPac) {
   // Test what happens when the ProxyResolver fails to download a mandatory PAC
