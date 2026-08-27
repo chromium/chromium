@@ -7,7 +7,7 @@
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/test_support/glic_browser_interactive_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -33,11 +33,9 @@ namespace {
 // hides based on the user's Glic status. It also checks the state of the Glic
 // settings bubble, ensuring that for signed-in users, a "cr-domain" icon is
 // visible and relevant controls are disabled.
-class GlicUserStatusInteractiveUiTest : public GlicBrowserInteractiveTest {
+// TODO(crbug.com/537846755): Migrate this test suite to GlicBrowserTest.
+class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
  public:
-  // This test won't work on Android, so allow use of browser().
-  using InProcessBrowserTest::browser;
-
   GlicUserStatusInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicUserStatusCheck,
@@ -45,8 +43,8 @@ class GlicUserStatusInteractiveUiTest : public GlicBrowserInteractiveTest {
   }
 
   void SetUpOnMainThread() override {
-    GlicBrowserInteractiveTest::SetUpOnMainThread();
-    service()->enabling().SetUserStatusFetchOverrideForTest(
+    InteractiveGlicTestMixin::SetUpOnMainThread();
+    glic_service()->enabling().SetUserStatusFetchOverrideForTest(
         base::BindRepeating(&GlicUserStatusInteractiveUiTest::UserStatusFetch,
                             base::Unretained(this)));
   }
@@ -150,7 +148,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusInteractiveUiTest,
                        GlicButtonVisibilityAndSettingsState) {
-  Profile* profile = GetProfile();
+  Profile* profile = browser()->GetProfile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -201,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusInteractiveUiTest,
       // Learn that Glic is disabled.
       Do([this] {
         user_status_.user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
-        service()->enabling().UpdateUserStatusWithThrottling();
+        glic_service()->enabling().UpdateUserStatusWithThrottling();
       }),
 
       // The Glic related controls should be hidden or disabled.
@@ -223,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusInteractiveUiTest,
       // Learn that Glic is enabled.
       Do([this] {
         user_status_.user_status_code = UserStatusCode::ENABLED;
-        service()->enabling().UpdateUserStatusWithThrottling();
+        glic_service()->enabling().UpdateUserStatusWithThrottling();
       }),
 
       // The Glic related controls should be available and enabled.
