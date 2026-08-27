@@ -242,3 +242,7 @@
 
 # Times out on Linux accessibility: crbug.com/546479367
 -PKIMetadataComponentChromeRootStoreMtcMetadataTest.Revocation*
+
+# Flaky: crbug.com/546808320
+-CrComponentsSearchboxTest.SearchboxIconTest
+-CrComponentsSearchboxTest.SearchboxIconTest__CrComponentsSearchboxIconTest_inSearchbox_renders_favicon_for_navigation_match
