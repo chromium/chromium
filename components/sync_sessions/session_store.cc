@@ -11,6 +11,8 @@
 #include <set>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -18,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -123,9 +126,9 @@ std::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
     std::string* session_name,
     std::unique_ptr<DataTypeStore::RecordList> record_list) {
   TRACE_EVENT0("sync", "sync_sessions::ParseInitialDataOnBackendSequence");
-  DCHECK(initial_data);
-  DCHECK(initial_data->empty());
-  DCHECK(record_list);
+  CHECK(initial_data, base::NotFatalUntil::M158);
+  CHECK(initial_data->empty(), base::NotFatalUntil::M158);
+  CHECK(record_list, base::NotFatalUntil::M158);
 
   for (DataTypeStore::Record& record : *record_list) {
     const std::string& storage_key = record.id;
@@ -158,7 +161,7 @@ struct SessionStore::Builder {
 void SessionStore::Open(const std::string& cache_guid,
                         SyncSessionsClient* sessions_client,
                         OpenCallback callback) {
-  DCHECK(sessions_client);
+  CHECK(sessions_client, base::NotFatalUntil::M158);
 
   DVLOG(1) << "Opening session store";
 
@@ -184,14 +187,15 @@ SessionStore::WriteBatch::WriteBatch(
       commit_cb_(std::move(commit_cb)),
       error_handler_(std::move(error_handler)),
       session_tracker_(session_tracker) {
-  DCHECK(batch_);
-  DCHECK(commit_cb_);
-  DCHECK(error_handler_);
-  DCHECK(session_tracker_);
+  CHECK(batch_, base::NotFatalUntil::M158);
+  CHECK(commit_cb_, base::NotFatalUntil::M158);
+  CHECK(error_handler_, base::NotFatalUntil::M158);
+  CHECK(session_tracker_, base::NotFatalUntil::M158);
 }
 
 SessionStore::WriteBatch::~WriteBatch() {
-  DCHECK(!batch_) << "Destructed without prior commit";
+  CHECK(!batch_, base::NotFatalUntil::M158)
+      << "Destructed without prior commit";
 }
 
 std::string SessionStore::WriteBatch::PutAndUpdateTracker(
@@ -209,8 +213,9 @@ SessionStore::WriteBatch::DeleteForeignEntityAndUpdateTracker(
   EntityType type;
   bool success =
       DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
-  DCHECK(success);
-  DCHECK_NE(session_tag, session_tracker_->GetLocalSessionTag());
+  CHECK(success, base::NotFatalUntil::M158);
+  CHECK_NE(session_tag, session_tracker_->GetLocalSessionTag(),
+           base::NotFatalUntil::M158);
 
   base::flat_set<std::string> deleted_storage_keys;
   deleted_storage_keys.insert(storage_key);
@@ -244,7 +249,7 @@ SessionStore::WriteBatch::DeleteForeignEntityAndUpdateTracker(
 
 std::string SessionStore::WriteBatch::PutWithoutUpdatingTracker(
     const sync_pb::SessionSpecifics& specifics) {
-  DCHECK(AreValidSpecifics(specifics));
+  CHECK(AreValidSpecifics(specifics), base::NotFatalUntil::M158);
 
   const std::string storage_key = GetStorageKey(specifics);
   batch_->WriteData(storage_key, specifics.SerializeAsString());
@@ -268,7 +273,7 @@ MetadataChangeList* SessionStore::WriteBatch::GetMetadataChangeList() {
 
 // static
 void SessionStore::WriteBatch::Commit(std::unique_ptr<WriteBatch> batch) {
-  DCHECK(batch);
+  CHECK(batch, base::NotFatalUntil::M158);
   std::move(batch->commit_cb_)
       .Run(std::move(batch->batch_),
            base::BindOnce(&ForwardError, std::move(batch->error_handler_)));
@@ -322,19 +327,19 @@ bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
 
 // static
 std::string SessionStore::GetClientTag(const SessionSpecifics& specifics) {
-  DCHECK(AreValidSpecifics(specifics));
+  CHECK(AreValidSpecifics(specifics), base::NotFatalUntil::M158);
 
   if (specifics.has_header()) {
     return specifics.session_tag();
   }
 
-  DCHECK(specifics.has_tab());
+  CHECK(specifics.has_tab(), base::NotFatalUntil::M158);
   return TabNodeIdToClientTag(specifics.session_tag(), specifics.tab_node_id());
 }
 
 // static
 std::string SessionStore::GetStorageKey(const SessionSpecifics& specifics) {
-  DCHECK(AreValidSpecifics(specifics));
+  CHECK(AreValidSpecifics(specifics), base::NotFatalUntil::M158);
   return EncodeStorageKey(specifics.session_tag(), specifics.tab_node_id());
 }
 
@@ -346,7 +351,7 @@ std::string SessionStore::GetHeaderStorageKey(const std::string& session_tag) {
 // static
 std::string SessionStore::GetTabStorageKey(const std::string& session_tag,
                                            int tab_node_id) {
-  DCHECK_GE(tab_node_id, 0);
+  CHECK_GE(tab_node_id, 0, base::NotFatalUntil::M158);
   return EncodeStorageKey(session_tag, tab_node_id);
 }
 
@@ -357,7 +362,7 @@ bool SessionStore::StorageKeyMatchesLocalSession(
   EntityType type;
   bool success =
       DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M158);
   return session_tag == local_session_info_.session_tag;
 }
 
@@ -372,7 +377,7 @@ void SessionStore::OnStoreCreated(
     std::unique_ptr<Builder> builder,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<DataTypeStore> underlying_store) {
-  DCHECK(builder);
+  CHECK(builder, base::NotFatalUntil::M158);
 
   if (error) {
     std::move(builder->callback)
@@ -381,7 +386,7 @@ void SessionStore::OnStoreCreated(
     return;
   }
 
-  DCHECK(underlying_store);
+  CHECK(underlying_store, base::NotFatalUntil::M158);
   builder->underlying_store = std::move(underlying_store);
 
   Builder* builder_copy = builder.get();
@@ -395,7 +400,7 @@ void SessionStore::OnReadAllMetadata(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("sync", "sync_sessions::SessionStore::OnReadAllMetadata");
-  DCHECK(builder);
+  CHECK(builder, base::NotFatalUntil::M158);
 
   if (error) {
     std::move(builder->callback)
@@ -404,7 +409,7 @@ void SessionStore::OnReadAllMetadata(
     return;
   }
 
-  DCHECK(metadata_batch);
+  CHECK(metadata_batch, base::NotFatalUntil::M158);
   builder->metadata_batch = std::move(metadata_batch);
 
   Builder* builder_copy = builder.get();
@@ -421,7 +426,7 @@ void SessionStore::OnReadAllData(
     std::unique_ptr<Builder> builder,
     const std::optional<syncer::ModelError>& error) {
   TRACE_EVENT0("sync", "sync_sessions::SessionStore::OnReadAllData");
-  DCHECK(builder);
+  CHECK(builder, base::NotFatalUntil::M158);
 
   if (error) {
     std::move(builder->callback)
@@ -477,8 +482,8 @@ SessionStore::SessionStore(
       local_session_info_.session_tag, local_session_info_.client_name,
       local_session_info_.device_type, local_session_info_.device_form_factor);
 
-  DCHECK(store_);
-  DCHECK(sessions_client_);
+  CHECK(store_, base::NotFatalUntil::M158);
+  CHECK(sessions_client_, base::NotFatalUntil::M158);
 
   DVLOG(1) << "Initializing session store with " << initial_data.size()
            << " restored entities and " << initial_metadata.size()
@@ -513,7 +518,7 @@ SessionStore::SessionStore(
 
       // Two local headers cannot coexist because they would use the very same
       // storage key in DataTypeStore/LevelDB.
-      DCHECK(!found_local_header);
+      CHECK(!found_local_header, base::NotFatalUntil::M158);
       found_local_header = true;
 
       UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
@@ -556,7 +561,7 @@ std::unique_ptr<syncer::DataBatch> SessionStore::GetSessionDataForKeys(
     EntityType type;
     bool success =
         DecodeStorageKey(storage_key, &session_tag, &tab_node_id, &type);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M158);
     switch (type) {
       case EntityType::kHeader:
       case EntityType::kTab:
@@ -573,7 +578,7 @@ std::unique_ptr<syncer::DataBatch> SessionStore::GetSessionDataForKeys(
       base::BindRepeating(
           [](syncer::MutableDataBatch* batch, const std::string& session_name,
              sync_pb::SessionSpecifics* specifics) {
-            DCHECK(AreValidSpecifics(*specifics));
+            CHECK(AreValidSpecifics(*specifics), base::NotFatalUntil::M158);
             // Local variable used to avoid assuming argument evaluation order.
             const std::string storage_key = GetStorageKey(*specifics);
             batch->Put(storage_key, MoveToEntityData(session_name, specifics));
@@ -589,7 +594,7 @@ std::unique_ptr<syncer::DataBatch> SessionStore::GetAllSessionData() const {
       base::BindRepeating(
           [](syncer::MutableDataBatch* batch, const std::string& session_name,
              sync_pb::SessionSpecifics* specifics) {
-            DCHECK(AreValidSpecifics(*specifics));
+            CHECK(AreValidSpecifics(*specifics), base::NotFatalUntil::M158);
             // Local variable used to avoid assuming argument evaluation order.
             const std::string storage_key = GetStorageKey(*specifics);
             batch->Put(storage_key, MoveToEntityData(session_name, specifics));
