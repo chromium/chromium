@@ -110,12 +110,15 @@ class Extension;
 //       * that there is a worker renderer process thread running the service
 //         worker code
 //       * the worker has done one pass and executed it’s entire JS global scope
-//       * as part of executing that scope: the worker has registered all its
+//       * as part of executing that scope: the worker has registered its
 //         (top-level/global) event listeners with the //extensions layer (all
 //         event listener mojom calls have been received and processed). This
 //         ordering is guaranteed because the mojom message that calls this
 //         signal is after the event listener mojom messages on an associated
-//         mojom pipe.
+//         mojom pipe. In classic listener registration, all listeners must be
+//         registered at this point; with async listener registration,
+//         listeners can continue to be registered until calling
+//         `runtime.markListenerRegistrationComplete()`.
 //   * `worker_id_.has_value()`: this signal confirms that
 //     the class is populated with the running service worker’s information
 //     (render process and thread id, and worker version id) . This confirms

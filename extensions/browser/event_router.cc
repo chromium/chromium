@@ -1862,6 +1862,9 @@ void EventRouter::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                       UnloadedExtensionReason reason) {
   // Remove all registered listeners from our cache.
   listeners_.RemoveListenersForExtension(extension->id());
+
+  // Drop registration phases across all contexts on unload.
+  listener_registration_phases_.RemoveAllForExtension(extension->id());
 }
 
 void EventRouter::OnStoppedTrackingServiceWorkerInstance(

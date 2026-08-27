@@ -165,6 +165,18 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
     return;
   }
 
+  if (BackgroundInfo::HasAsyncListenerRegistration(extension)) {
+    // Asynchronous listener registration does not support sub-event-named
+    // listeners (e.g. "webRequest.onBeforeRequest/s1"), which exist only in
+    // legacy webRequest per-listener dispatch mode.
+    CHECK(base::FeatureList::IsEnabled(
+        extensions_features::kWebRequestPerContextEventDispatch));
+    if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+      event_router->listener_registration_phases().Start(
+          extension_id, *browser_context_, service_worker_token);
+    }
+  }
+
   util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
                                                browser_context_);
   ProcessManager::Get(browser_context_)
@@ -199,6 +211,12 @@ void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
 
 void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
     const WorkerId& worker_id) {
+  // Abort the listener registration phase for this worker instance, if started.
+  if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+    CHECK(worker_id.start_token);
+    event_router->listener_registration_phases().AbortForInstance(
+        worker_id.extension_id, *browser_context_, *worker_id.start_token);
+  }
   if (auto activation_token =
           GetCurrentActivationToken(worker_id.extension_id)) {
     auto [worker_state, context_id] =
@@ -394,6 +412,12 @@ void ServiceWorkerTaskQueue::VerifyRegistration(
 
 void ServiceWorkerTaskQueue::Shutdown() {
   browser_context_shutting_down_ = true;
+
+  // Drop all registration phases for this context on shutdown.
+  if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+    event_router->listener_registration_phases().RemoveAllForContext(
+        *browser_context_);
+  }
 }
 
 void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
@@ -491,6 +515,13 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
         context_id.extension_id, tasks ? tasks->size() : 0, status.status_code);
   }
 
+  // Abort any started listener registration phase if the worker failed to
+  // start.
+  if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+    event_router->listener_registration_phases().Abort(context_id.extension_id,
+                                                       *browser_context_);
+  }
+
   RunAndClearPendingTasksWithNullContext(context_id);
   // TODO(crbug.com/40680422): Needs more thought: extension would be in
   // perma-broken state after this as the registration wouldn't be stored if
@@ -508,6 +539,14 @@ void ServiceWorkerTaskQueue::OnWorkerStop(
 
   // Stop tracking the worker for extension API purposes.
   const ExtensionId& extension_id = scope.GetHost();
+
+  // Abort the registration phase if one is still in progress for this worker
+  // instance.
+  if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+    event_router->listener_registration_phases().AbortForInstance(
+        extension_id, *browser_context_, service_worker_token);
+  }
+
   ProcessManager::Get(browser_context_)
       ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id,
                                                  service_worker_token);
@@ -576,6 +615,12 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   // (e.g., during rapid component extension reloads). Safely proceed with
   // deactivation instead of crashing.
   DCHECK(worker_state);
+
+  // Abort any started listener registration phase on deactivation.
+  if (EventRouter* event_router = EventRouter::Get(browser_context_)) {
+    event_router->listener_registration_phases().Abort(extension_id,
+                                                       *browser_context_);
+  }
 
   RunAndClearPendingTasksWithNullContext(context_id);
   worker_state_observations_.RemoveObservation(worker_state);

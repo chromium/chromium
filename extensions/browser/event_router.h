@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EVENT_ROUTER_H_
 #define EXTENSIONS_BROWSER_EVENT_ROUTER_H_
 
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -26,6 +27,7 @@
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
+#include "extensions/browser/events/listener_registration_phase_map.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -360,6 +362,13 @@ class EventRouter : public KeyedService,
 
   EventAckData* event_ack_data() { return &event_ack_data_; }
 
+  // Tracks listener registration phases for service workers using
+  // `background.async_listener_registration`. Driven by
+  // ServiceWorkerTaskQueue.
+  ListenerRegistrationPhaseMap& listener_registration_phases() {
+    return listener_registration_phases_;
+  }
+
   // Returns true if there is a registered lazy/non-lazy listener for the given
   // `event_name`.
   bool HasLazyEventListenerForTesting(const std::string& event_name);
@@ -663,6 +672,9 @@ class EventRouter : public KeyedService,
       std::map<int /*worker_thread_id*/,
                mojo::AssociatedRemote<mojom::EventDispatcher>>;
   std::map<content::RenderProcessHost*, DispatcherMap> rph_dispatcher_map_;
+
+  // Listener registration phases for service worker instances.
+  ListenerRegistrationPhaseMap listener_registration_phases_;
 
   // All the Mojo receivers for the EventRouter. Keeps track of the render
   // process id.
