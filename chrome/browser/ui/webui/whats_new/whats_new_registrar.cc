@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -31,7 +30,7 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
                                           BrowserCommand::kOpenSplitView));
 
   // M147
-  registry->RegisterModule(WhatsNewModule(tabs::kVerticalTabsLaunch,
+  registry->RegisterModule(WhatsNewModule("VerticalTabsLaunch",
                                           "charlesmeng@google.com",
                                           BrowserCommand::kEnableVerticalTabs));
 }

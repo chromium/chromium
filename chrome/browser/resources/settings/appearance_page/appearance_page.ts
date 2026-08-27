@@ -167,7 +167,6 @@ export class SettingsAppearancePageElement extends
       showManagedThemeDialog_: {type: Boolean},
       glassEffectOptions_: {type: Array},
       tabStripOptions_: {type: Array},
-      showVerticalTabsEnabled_: {type: Boolean},
       showGlassEffectEnabled_: {type: Boolean},
       ntpSimplificationBookmarksBarEnabled_: {type: Boolean},
       bookmarksBarOptions_: {type: Array},
@@ -295,8 +294,6 @@ export class SettingsAppearancePageElement extends
   protected accessor showHoverCardImagesOption_: boolean =
       loadTimeData.getBoolean('showHoverCardImagesOption');
   protected accessor showManagedThemeDialog_: boolean = false;
-  protected accessor showVerticalTabsEnabled_: boolean =
-      loadTimeData.getBoolean('showVerticalTabsEnabled');
   protected accessor showGlassEffectEnabled_: boolean =
       loadTimeData.getBoolean('showGlassEffectEnabled');
   protected accessor ntpSimplificationBookmarksBarEnabled_: boolean =

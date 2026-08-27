@@ -132,7 +132,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -1075,90 +1074,86 @@ void BrowserActions::InitializeChromeMenuActions() {
                   actions::ActionPinnableState::kNotPinnable))
           .Build());
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ToggleVerticalTabs(bwi);
-                },
-                bwi))
-            .SetActionId(kActionToggleVerticalTabs)
-            .SetText(l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
-            .SetTooltipText(
-                l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kDockToRightIcon
-                                                  : kDockToLeftOldIcon))
-            .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ToggleVerticalTabs(bwi);
+              },
+              bwi))
+          .SetActionId(kActionToggleVerticalTabs)
+          .SetText(l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kDockToRightIcon
+                                                : kDockToLeftOldIcon))
+          .Build());
 
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ToggleVerticalTabsExpandOnHover(bwi);
-                },
-                bwi))
-            .SetActionId(kActionToggleVerticalTabsExpandOnHover)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER))
-            .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ToggleVerticalTabsExpandOnHover(bwi);
+              },
+              bwi))
+          .SetActionId(kActionToggleVerticalTabsExpandOnHover)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER))
+          .Build());
 
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  auto* controller =
-                      tabs::VerticalTabStripStateController::From(bwi);
-                  bool collapse =
-                      controller->GetCollapseState() ==
-                      tabs::VerticalTabStripCollapseState::kExpanded;
-                  controller->RequestCollapse(collapse);
-                  if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
-                      chrome::ActionInvocationSource::kKeyboardShortcut) {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse ? "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleCollapsed"
-                                 : "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleUncollapsed"));
-                  } else {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse
-                            ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
-                            : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
-                  }
-                },
-                bwi))
-            .SetActionId(kActionToggleCollapseVertical)
-            .SetAccelerator(ui::Accelerator(
-                ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
-            .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* controller =
+                    tabs::VerticalTabStripStateController::From(bwi);
+                bool collapse = controller->GetCollapseState() ==
+                                tabs::VerticalTabStripCollapseState::kExpanded;
+                controller->RequestCollapse(collapse);
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kKeyboardShortcut) {
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse ? "VerticalTabs_TabStrip_"
+                                 "KeyboardShortcutToggleCollapsed"
+                               : "VerticalTabs_TabStrip_"
+                                 "KeyboardShortcutToggleUncollapsed"));
+                } else {
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse
+                          ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
+                          : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
+                }
+              },
+              bwi))
+          .SetActionId(kActionToggleCollapseVertical)
+          .SetAccelerator(ui::Accelerator(
+              ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
+          .Build());
 
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ShowFeedbackPage(
-                      bwi, feedback::kFeedbackSourceVerticalTabs,
-                      /*description_template=*/"",
-                      /*description_placeholder_text=*/"",
-                      /*category_tag=*/"vertical_tabs",
-                      /*extra_diagnostics=*/"");
-                },
-                bwi))
-            .SetActionId(kActionVerticalTabsSendFeedback)
-            .SetText(l10n_util::GetStringUTF16(IDS_VERTICAL_TABS_SEND_FEEDBACK))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? vector_icons::kFeedbackIcon
-                    : vector_icons::kFeedbackOldIcon,
-                ui::kColorIcon))
-            .Build());
-  }
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowFeedbackPage(bwi,
+                                         feedback::kFeedbackSourceVerticalTabs,
+                                         /*description_template=*/"",
+                                         /*description_placeholder_text=*/"",
+                                         /*category_tag=*/"vertical_tabs",
+                                         /*extra_diagnostics=*/"");
+              },
+              bwi))
+          .SetActionId(kActionVerticalTabsSendFeedback)
+          .SetText(l10n_util::GetStringUTF16(IDS_VERTICAL_TABS_SEND_FEEDBACK))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kFeedbackIcon
+                  : vector_icons::kFeedbackOldIcon,
+              ui::kColorIcon))
+          .Build());
 
   if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
     root_action_item_->AddChild(

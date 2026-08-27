@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1297,23 +1296,21 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     params.creation_source =
         BrowserWindowCreateParams::CreationSource::kSessionRestore;
 
-    if (tabs::IsVerticalTabsFeatureEnabled()) {
-      if (extra_data.contains(
-              tabs::VerticalTabStripStateController::kCollapsedKey)) {
-        params.vertical_tab_strip_collapsed =
-            extra_data.at(
-                tabs::VerticalTabStripStateController::kCollapsedKey) == "true";
-      }
+    if (extra_data.contains(
+            tabs::VerticalTabStripStateController::kCollapsedKey)) {
+      params.vertical_tab_strip_collapsed =
+          extra_data.at(tabs::VerticalTabStripStateController::kCollapsedKey) ==
+          "true";
+    }
 
-      if (extra_data.contains(
-              tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
-        int uncollapsed_width = 0;
-        if (base::StringToInt(
-                extra_data.at(tabs::VerticalTabStripStateController::
-                                  kUncollapsedWidthKey),
-                &uncollapsed_width)) {
-          params.vertical_tab_strip_uncollapsed_width = uncollapsed_width;
-        }
+    if (extra_data.contains(
+            tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
+      int uncollapsed_width = 0;
+      if (base::StringToInt(
+              extra_data.at(
+                  tabs::VerticalTabStripStateController::kUncollapsedWidthKey),
+              &uncollapsed_width)) {
+        params.vertical_tab_strip_uncollapsed_width = uncollapsed_width;
       }
     }
 

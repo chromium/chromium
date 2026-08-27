@@ -308,7 +308,7 @@ class TabViewTabMutingEnabledTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}}, {media::kEnableTabMuting, {}}};
+    return {{media::kEnableTabMuting, {}}};
   }
 };
 
@@ -750,8 +750,7 @@ class TabViewDataSharingEnabledTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}},
-            {data_sharing::features::kDataSharingFeature, {}}};
+    return {{data_sharing::features::kDataSharingFeature, {}}};
   }
 
  private:

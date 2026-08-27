@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -3619,18 +3618,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
 class VerticalTabsFullscreenDragTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  VerticalTabsFullscreenDragTest() {
-    vertical_tabs_feature_.InitAndEnableFeature(tabs::kVerticalTabs);
-  }
+  VerticalTabsFullscreenDragTest() = default;
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
                                                     true);
   }
-
- private:
-  base::test::ScopedFeatureList vertical_tabs_feature_;
 };
 
 // Verify that dragging the single tab in VT fullscreen exits fullscreen.

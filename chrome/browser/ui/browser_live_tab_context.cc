@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -489,23 +488,21 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->initial_workspace = workspace;
   create_params->user_title = user_title;
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    if (extra_data.contains(
-            tabs::VerticalTabStripStateController::kCollapsedKey)) {
-      create_params->vertical_tab_strip_collapsed =
-          extra_data.at(tabs::VerticalTabStripStateController::kCollapsedKey) ==
-          "true";
-    }
+  if (extra_data.contains(
+          tabs::VerticalTabStripStateController::kCollapsedKey)) {
+    create_params->vertical_tab_strip_collapsed =
+        extra_data.at(tabs::VerticalTabStripStateController::kCollapsedKey) ==
+        "true";
+  }
 
-    if (extra_data.contains(
-            tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
-      int uncollapsed_width = 0;
-      if (base::StringToInt(
-              extra_data.at(
-                  tabs::VerticalTabStripStateController::kUncollapsedWidthKey),
-              &uncollapsed_width)) {
-        create_params->vertical_tab_strip_uncollapsed_width = uncollapsed_width;
-      }
+  if (extra_data.contains(
+          tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
+    int uncollapsed_width = 0;
+    if (base::StringToInt(
+            extra_data.at(
+                tabs::VerticalTabStripStateController::kUncollapsedWidthKey),
+            &uncollapsed_width)) {
+      create_params->vertical_tab_strip_uncollapsed_width = uncollapsed_width;
     }
   }
 

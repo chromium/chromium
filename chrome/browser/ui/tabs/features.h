@@ -28,17 +28,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectAccess);
 // Enables CJK word boundary detection in Tab Search.
 BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
 
-// This feature will be used for the LE rollout of Vertical Tabs. It will have
-// an earlier min version than kVerticalTabsLaunch.
-BASE_DECLARE_FEATURE(kVerticalTabs);
-
-// This will be used for the full launch of Vertical Tabs with an updated min
-// version.
-BASE_DECLARE_FEATURE(kVerticalTabsLaunch);
-BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsToggleInTabContextMenu);
-
-BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
-
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
@@ -90,8 +79,6 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 BASE_DECLARE_FEATURE(kTabStripUnification);
 
 bool IsSplitViewHorizontalIndirectAccessEnabled();
-
-bool IsVerticalTabsFeatureEnabled();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 

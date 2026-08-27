@@ -3827,10 +3827,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
 class TabRestoreVerticalTabsTest : public TabRestoreTest {
  public:
-  TabRestoreVerticalTabsTest() {
-    scoped_feature_list.InitAndEnableFeature(tabs::kVerticalTabs);
-  }
-
+  TabRestoreVerticalTabsTest() = default;
   TabRestoreVerticalTabsTest(const TabRestoreVerticalTabsTest&) = delete;
   TabRestoreVerticalTabsTest& operator=(const TabRestoreVerticalTabsTest&) =
       delete;
@@ -3844,8 +3841,6 @@ class TabRestoreVerticalTabsTest : public TabRestoreTest {
  protected:
   const bool kIsCollapsed = true;
   const int kUncollapsedWidth = 200;
-
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,

@@ -178,7 +178,7 @@ void VerticalTabStripStateController::SetDelegate(Delegate* delegate) {
 }
 
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
-  return IsVerticalTabsFeatureEnabled() && is_vertical_tabs_enabled_;
+  return is_vertical_tabs_enabled_;
 }
 
 void VerticalTabStripStateController::SetVerticalTabsEnabled(bool enabled) {

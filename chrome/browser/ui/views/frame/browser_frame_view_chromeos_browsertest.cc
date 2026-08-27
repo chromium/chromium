@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1788,9 +1787,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
  public:
-  BrowserFrameViewAshAvatarTest() {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-  }
+  BrowserFrameViewAshAvatarTest() = default;
 
   static constexpr inline auto kPrimaryAccountId =
       AccountId::Literal::FromUserEmailGaiaId("primary@test",
@@ -1831,7 +1828,6 @@ class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   ash::DeviceStateMixin device_state_{
       &mixin_host_,

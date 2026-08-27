@@ -2578,13 +2578,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in the contextual menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      tabs::kVerticalTabsPreviewBadge,
-      user_education::Metadata(146, "stluong@chromium.org",
-                               "Show the preview badge in the system context "
-                               "menu to toggle the horizontal tab strip "
-                               "to be a vertical tab strip")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       tabs::kVerticalTabsNewBadge,
       user_education::Metadata(147, "stluong@chromium.org",
                                "Show the new badge in the system context menu "

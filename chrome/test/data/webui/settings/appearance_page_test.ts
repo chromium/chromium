@@ -703,10 +703,6 @@ suite('TabStripPositionSettings', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.overrideValues({
-      showVerticalTabsEnabled: true,
-    });
-
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
 
@@ -777,7 +773,6 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      showVerticalTabsEnabled: true,
       showVerticalTabsExpandOnHoverEnabled: true,
     });
 
@@ -847,7 +842,6 @@ suite('TabScrollButtonsSettings', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      showVerticalTabsEnabled: true,
       tabStripUnificationEnabled: true,
     });
 

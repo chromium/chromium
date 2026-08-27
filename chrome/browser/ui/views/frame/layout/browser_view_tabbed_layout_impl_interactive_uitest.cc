@@ -80,8 +80,7 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSidePanelTestElement);
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, features::kSidePanelFlyoverAnimation}, {});
+    feature_list_.InitAndEnableFeature(features::kSidePanelFlyoverAnimation);
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }
@@ -967,8 +966,7 @@ class BrowserViewHorizontalTabStripOldLayoutUiTest
   void SetUp() override {
     test_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSidePanelFlyoverAnimation},
-        /*disabled_features=*/{tabs::kTabStripUnification,
-                               tabs::kVerticalTabs});
+        /*disabled_features=*/{tabs::kTabStripUnification});
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
   }

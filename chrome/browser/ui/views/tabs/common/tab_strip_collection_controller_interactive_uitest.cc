@@ -500,7 +500,7 @@ class TabStripCollectionControllerTabGroupFocusingInteractiveUiTest
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}}, {features::kTabGroupsFocusing, {}}};
+    return {{features::kTabGroupsFocusing, {}}};
   }
 
   bool CheckBrowserHasColorOverride() {

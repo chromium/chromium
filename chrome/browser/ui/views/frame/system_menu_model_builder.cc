@@ -223,19 +223,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  switch_to_vertical_id);
-      const bool use_preview_badge =
-          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
-      const ui::NewBadgeType badge_type = use_preview_badge
-                                              ? ui::NewBadgeType::kPreview
-                                              : ui::NewBadgeType::kNew;
       const user_education::DisplayNewBadge show_badge =
-          UserEducationService::MaybeShowNewBadge(
-              browser()->GetProfile(), use_preview_badge
-                                           ? tabs::kVerticalTabsPreviewBadge
-                                           : tabs::kVerticalTabsNewBadge);
+          UserEducationService::MaybeShowNewBadge(browser()->GetProfile(),
+                                                  tabs::kVerticalTabsNewBadge);
       model->SetIsNewFeatureAt(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
-          show_badge, badge_type);
+          show_badge, ui::NewBadgeType::kNew);
     }
     model->SetElementIdentifierAt(
         model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),

@@ -24,10 +24,7 @@ class OrganizerPanelStateControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   OrganizerPanelStateControllerInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(/* enabled_features */
-                                          {tabs::kVerticalTabs,
-                                           organizer_panel::kOrganizerPanel},
-                                          /* disabled_features */ {});
+    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
     OrganizerPanelView::disable_animations_for_testing();
   }
   ~OrganizerPanelStateControllerInteractiveUiTest() override = default;

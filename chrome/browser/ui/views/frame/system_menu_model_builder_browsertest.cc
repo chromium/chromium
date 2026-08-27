@@ -225,10 +225,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
 class SystemMenuModelBuilderVerticalTabsTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {tabs::kVerticalTabs,
-                                tabs::kVerticalTabsExpandOnHover},
-        /* disabled_features */ {});
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabsExpandOnHover);
     InProcessBrowserTest::SetUp();
   }
 

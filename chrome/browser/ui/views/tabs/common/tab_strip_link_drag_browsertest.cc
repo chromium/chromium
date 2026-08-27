@@ -42,8 +42,7 @@ class TabStripLinkDragTest
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}},
-            {tabs::kVerticalTabsExpandOnHover, {}},
+    return {{tabs::kVerticalTabsExpandOnHover, {}},
             {tabs::kTabStripUnification, {}}};
   }
 

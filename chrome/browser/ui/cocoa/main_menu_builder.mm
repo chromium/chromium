@@ -16,7 +16,6 @@
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -326,12 +325,10 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
               Item(IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS)
                   .command_id(IDC_SHOW_SEARCH_TOOLS),
                Item(IDS_SWITCH_TO_VERTICAL_TAB_MAC)
-                   .command_id(IDC_TOGGLE_VERTICAL_TABS)
-                   .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
+                   .command_id(IDC_TOGGLE_VERTICAL_TABS),
               Item(IDS_VERTICAL_TABS_VIEW_MENU_TOGGLE_COLLAPSE)
                   .command_id(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE)
-                  .key_equivalent(@"L", NSEventModifierFlagCommand)
-                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
+                  .key_equivalent(@"L", NSEventModifierFlagCommand),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
                   .tag(IDC_CUSTOMIZE_TOUCH_BAR)
                   .action(@selector(toggleTouchBarCustomizationPalette:))

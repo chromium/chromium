@@ -17,7 +17,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -64,8 +63,7 @@ class FakeThemeService : public ThemeService {
 class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
  public:
   GlassFrameServiceInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlassFrame, tabs::kVerticalTabs}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kGlassFrame);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

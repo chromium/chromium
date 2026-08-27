@@ -9,7 +9,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -38,7 +37,7 @@ class TabStripComboButtonInteractiveUiTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}}, {organizer_panel::kOrganizerPanel, {}}};
+    return {{organizer_panel::kOrganizerPanel, {}}};
   }
 
   auto SetPinned(const char* pref, bool pinned) {
@@ -222,7 +221,7 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}}};
+    return {};
   }
 
   const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {

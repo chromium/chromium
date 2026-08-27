@@ -5,9 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -30,7 +28,6 @@ class TabMetricsProviderTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     ASSERT_TRUE(testing_profile_manager_.SetUp());
-    feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
   }
 
   ProfileManager* profile_manager() {
@@ -42,7 +39,6 @@ class TabMetricsProviderTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
 };

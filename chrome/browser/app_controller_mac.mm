@@ -106,7 +106,6 @@
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/url_util.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -1139,24 +1138,19 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     }
     _tabMenuBridge->SetTabStripModel(browser->GetTabStripModel());
 
-    if (tabs::IsVerticalTabsFeatureEnabled()) {
-      if (auto* vertical_tab_strip_state_controller =
-              tabs::VerticalTabStripStateController::From(browser)) {
-        _verticalTabSubscription =
-            vertical_tab_strip_state_controller->RegisterOnModeChanged(
-                base::BindRepeating(
-                    [](AppController* controller,
-                       tabs::VerticalTabStripStateController*
-                           state_controller) {
-                      [controller
-                          onVerticalTabStripModeChanged:state_controller];
-                    },
-                    self));
-        // If the browser begins in VT mode, we want to ensure that we have the
-        // correct text.
-        [self
-            onVerticalTabStripModeChanged:vertical_tab_strip_state_controller];
-      }
+    if (auto* vertical_tab_strip_state_controller =
+            tabs::VerticalTabStripStateController::From(browser)) {
+      _verticalTabSubscription =
+          vertical_tab_strip_state_controller->RegisterOnModeChanged(
+              base::BindRepeating(
+                  [](AppController* controller,
+                     tabs::VerticalTabStripStateController* state_controller) {
+                    [controller onVerticalTabStripModeChanged:state_controller];
+                  },
+                  self));
+      // If the browser begins in VT mode, we want to ensure that we have the
+      // correct text.
+      [self onVerticalTabStripModeChanged:vertical_tab_strip_state_controller];
     }
   } else if (_tabMenuBridge) {
     _tabMenuBridge->SetTabStripModel(nullptr);

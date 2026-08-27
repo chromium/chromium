@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -254,9 +253,7 @@ class InteractionTestUtilBrowserSelectTabTest
       public testing::WithParamInterface<
           ui::test::InteractionTestUtil::InputType> {
  public:
-  InteractionTestUtilBrowserSelectTabTest() {
-    feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-  }
+  InteractionTestUtilBrowserSelectTabTest() = default;
   ~InteractionTestUtilBrowserSelectTabTest() override = default;
 
   void SetVerticalTabsEnabled(bool enabled) {
@@ -264,9 +261,6 @@ class InteractionTestUtilBrowserSelectTabTest
         ->SetVerticalTabsEnabled(enabled);
     RunScheduledLayouts();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest,

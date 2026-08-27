@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -399,8 +398,7 @@ class BrowserNativeWidgetMacVerticalTabsGlassTest
     : public InProcessBrowserTest {
  public:
   BrowserNativeWidgetMacVerticalTabsGlassTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlassFrame, tabs::kVerticalTabs}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kGlassFrame);
   }
 
   void SetUpOnMainThread() override {

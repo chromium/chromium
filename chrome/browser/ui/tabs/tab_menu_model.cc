@@ -566,7 +566,7 @@ void TabMenuModel::Build(int index) {
     }
   }
 
-  if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {
+  if (controller) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     const int switch_to_horizontal_id =
 #if BUILDFLAG(IS_MAC)
@@ -587,13 +587,9 @@ void TabMenuModel::Build(int index) {
     } else {
       AddItemWithStringId(TabStripModel::CommandToggleVertical,
                           switch_to_vertical_id);
-      const bool use_preview_badge =
-          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const user_education::DisplayNewBadge show_badge =
-          UserEducationService::MaybeShowNewBadge(
-              tab_strip_->profile(), use_preview_badge
-                                         ? tabs::kVerticalTabsPreviewBadge
-                                         : tabs::kVerticalTabsNewBadge);
+          UserEducationService::MaybeShowNewBadge(tab_strip_->profile(),
+                                                  tabs::kVerticalTabsNewBadge);
       SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
     }
   }

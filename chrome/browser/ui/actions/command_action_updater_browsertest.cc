@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -32,8 +31,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int, kTestPropertyKey, -1)
 class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
  public:
   CommandActionUpdaterBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kUseActionsForBrowserCommands, tabs::kVerticalTabs}, {});
+    feature_list_.InitAndEnableFeature(features::kUseActionsForBrowserCommands);
   }
 
   void SetUpOnMainThread() override {

@@ -161,53 +161,51 @@ export function getHtml(this: SettingsAppearancePageElement) {
     </if>
 
 
-    ${this.showVerticalTabsEnabled_ ? html`
-      <div class="cr-row">
-        <div class="flex cr-padded-text" aria-hidden="true">
-          $i18n{tabStripPosition}
-        </div>
-        <settings-dropdown-menu id="tabStripPosition"
-            label="$i18n{tabStripPosition}"
-            pref-key="vertical_tabs.enabled"
-            .menuOptions="${this.tabStripOptions_}"
-            @settings-control-change="${this.onTabStripPositionSettingsControlChange_}">
-        </settings-dropdown-menu>
+    <div class="cr-row">
+      <div class="flex cr-padded-text" aria-hidden="true">
+        $i18n{tabStripPosition}
       </div>
-      <div class="list-frame indented-toggles"
-          ?hidden="${!this.verticalTabsEnabledPref_?.value}">
-        ${this.showVerticalTabsExpandOnHoverSetting_() ? html`
-          <settings-toggle-button
-              id="showVerticalTabsExpandOnHover"
-              pref-key="vertical_tabs.expand_on_hover"
-              label="$i18n{showVerticalTabsExpandOnHover}">
-          </settings-toggle-button>
-        ` : ''}
-
-        ${this.showOrganizerPanelEnabled_ ? html`
-          <settings-toggle-button id="showOrganizerPanelButton"
-            pref-key="organizer_panel.pinned_to_tabstrip"
-            label="$i18n{showOrganizerPanelButton}"
-            @change="${this.onShowOrganizerPanelButtonChange_}">
-          </settings-toggle-button>
-        ` : ''}
-
-        ${this.showEverythingMenuToggle_() ? html`
-          <settings-toggle-button id="showEverythingMenuButton"
-              pref-key="everything_menu.pinned_to_tabstrip"
-              label="$i18n{showEverythingMenuButton}"
-              @change="${this.onShowEverythingMenuButtonChange_}">
-          </settings-toggle-button>
-        ` : ''}
-      </div>
-      ${this.tabStripUnificationEnabled_ ? html`
-        <div class="list-frame indented-toggles"
-            ?hidden="${!!this.verticalTabsEnabledPref_?.value}">
-          <settings-toggle-button id="tabScrollAutoShowOnOverflow"
-              pref-key="tab_scroll_buttons.pinned_to_tabstrip"
-              label="$i18n{tabScrollAutoShowOnOverflow}">
-          </settings-toggle-button>
-        </div>
+      <settings-dropdown-menu id="tabStripPosition"
+          label="$i18n{tabStripPosition}"
+          pref-key="vertical_tabs.enabled"
+          .menuOptions="${this.tabStripOptions_}"
+          @settings-control-change="${this.onTabStripPositionSettingsControlChange_}">
+      </settings-dropdown-menu>
+    </div>
+    <div class="list-frame indented-toggles"
+        ?hidden="${!this.verticalTabsEnabledPref_?.value}">
+      ${this.showVerticalTabsExpandOnHoverSetting_() ? html`
+        <settings-toggle-button
+            id="showVerticalTabsExpandOnHover"
+            pref-key="vertical_tabs.expand_on_hover"
+            label="$i18n{showVerticalTabsExpandOnHover}">
+        </settings-toggle-button>
       ` : ''}
+
+      ${this.showOrganizerPanelEnabled_ ? html`
+        <settings-toggle-button id="showOrganizerPanelButton"
+          pref-key="organizer_panel.pinned_to_tabstrip"
+          label="$i18n{showOrganizerPanelButton}"
+          @change="${this.onShowOrganizerPanelButtonChange_}">
+        </settings-toggle-button>
+      ` : ''}
+
+      ${this.showEverythingMenuToggle_() ? html`
+        <settings-toggle-button id="showEverythingMenuButton"
+            pref-key="everything_menu.pinned_to_tabstrip"
+            label="$i18n{showEverythingMenuButton}"
+            @change="${this.onShowEverythingMenuButtonChange_}">
+        </settings-toggle-button>
+      ` : ''}
+    </div>
+    ${this.tabStripUnificationEnabled_ ? html`
+      <div class="list-frame indented-toggles"
+          ?hidden="${!!this.verticalTabsEnabledPref_?.value}">
+        <settings-toggle-button id="tabScrollAutoShowOnOverflow"
+            pref-key="tab_scroll_buttons.pinned_to_tabstrip"
+            label="$i18n{tabScrollAutoShowOnOverflow}">
+        </settings-toggle-button>
+      </div>
     ` : ''}
 
     <settings-toggle-button id="showTabSearchButton" class="hr"

@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -52,10 +51,6 @@ VerticalTabsState TabMetricsProvider::GetVerticalTabsState() {
 
 void TabMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  if (!tabs::IsVerticalTabsFeatureEnabled()) {
-    return;
-  }
-
   base::UmaHistogramEnumeration("Tabs.VerticalTabs.State",
                                 GetVerticalTabsState());
 }

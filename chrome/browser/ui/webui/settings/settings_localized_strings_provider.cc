@@ -672,8 +672,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "showHoverCardImagesOption",
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
-  html_source->AddBoolean("showVerticalTabsEnabled",
-                          tabs::IsVerticalTabsFeatureEnabled());
   html_source->AddBoolean("showGlassEffectEnabled",
                           features::IsGlassFrameEnabled());
   html_source->AddBoolean("showVerticalTabsExpandOnHoverEnabled",

@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -626,32 +625,29 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               *browser, browser, browser_actions_->root_action_item());
     }
 
-    if (tabs::IsVerticalTabsFeatureEnabled()) {
-      std::optional<bool> restored_state_collapsed =
-          BrowserInitState::From(browser)
-              ->is_vertical_tabs_initially_collapsed();
-      std::optional<int> restored_state_uncollapsed_width =
-          BrowserInitState::From(browser)
-              ->get_vertical_tabs_initial_uncollapsed_width();
+    std::optional<bool> restored_state_collapsed =
+        BrowserInitState::From(browser)->is_vertical_tabs_initially_collapsed();
+    std::optional<int> restored_state_uncollapsed_width =
+        BrowserInitState::From(browser)
+            ->get_vertical_tabs_initial_uncollapsed_width();
 
-      if (!restored_state_collapsed.has_value() &&
-          !restored_state_uncollapsed_width.has_value() &&
-          !browser->CreatedBySessionRestore()) {
-        restored_state_collapsed =
-            profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsCollapsedState);
-        restored_state_uncollapsed_width = profile->GetPrefs()->GetInteger(
-            prefs::kVerticalTabsUncollapsedWidth);
-      }
-
-      vertical_tab_strip_state_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<tabs::VerticalTabStripStateController>(
-                  *browser, browser, profile->GetPrefs(),
-                  browser_actions_->root_action_item(),
-                  SessionServiceFactory::GetForProfile(browser_->GetProfile()),
-                  browser_->GetSessionID(), restored_state_collapsed,
-                  restored_state_uncollapsed_width);
+    if (!restored_state_collapsed.has_value() &&
+        !restored_state_uncollapsed_width.has_value() &&
+        !browser->CreatedBySessionRestore()) {
+      restored_state_collapsed =
+          profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsCollapsedState);
+      restored_state_uncollapsed_width =
+          profile->GetPrefs()->GetInteger(prefs::kVerticalTabsUncollapsedWidth);
     }
+
+    vertical_tab_strip_state_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<tabs::VerticalTabStripStateController>(
+                *browser, browser, profile->GetPrefs(),
+                browser_actions_->root_action_item(),
+                SessionServiceFactory::GetForProfile(browser_->GetProfile()),
+                browser_->GetSessionID(), restored_state_collapsed,
+                restored_state_uncollapsed_width);
   }
 
   // Constructed last, out of alphabetical order:

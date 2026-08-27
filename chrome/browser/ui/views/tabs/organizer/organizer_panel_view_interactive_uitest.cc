@@ -43,8 +43,7 @@ namespace base::test {
 class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   OrganizerPanelInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, organizer_panel::kOrganizerPanel}, {});
+    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
     OrganizerPanelView::disable_animations_for_testing();
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
