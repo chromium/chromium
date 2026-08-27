@@ -970,7 +970,10 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   if (!self.isViewLoaded) {
     return;
   }
-  if (_active) {
+  // The _active flag is only used when NextIA is enabled. When it is disabled,
+  // the location bar should always be treated as active for layout guides.
+  BOOL isActive = _active || !IsChromeNextIaEnabled();
+  if (isActive) {
     if (self.readerModeChipView) {
       [self.layoutGuideCenter referenceView:self.readerModeChipView
                                   underName:kReaderModeOptionsEntrypointGuide];

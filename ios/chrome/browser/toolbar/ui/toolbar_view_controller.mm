@@ -501,6 +501,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   if (self.isViewLoaded) {
     [self updateButtons:@[ _assistantButton ]
         forFullscreenProgress:_fullscreenProgress];
+    [self updateLayoutGuides];
   }
 }
 
@@ -2073,6 +2074,15 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
            withView:_forwardButton
                hide:hideToolbar];
   [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideToolbar];
+
+  // The assistant button is hidden in non Regular-Regular size classes, but the
+  // toolbar button's visibility handler may run after this, so
+  // `_assistantButton.hidden` is not yet accurate.
+  BOOL hideAssistant = hideToolbar || !IsRegularXRegularSizeClass(self) ||
+                       _assistantButton.forceHidden;
+  [self updateGuide:kAppBarAssistantButtonGuide
+           withView:_assistantButton
+               hide:hideAssistant];
 
   [self updateTabSwitcherGuide];
 }

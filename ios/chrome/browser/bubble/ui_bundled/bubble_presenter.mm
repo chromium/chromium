@@ -834,38 +834,66 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 }
 
 - (void)presentPageActionMenuBubbleForFeature:(const base::Feature&)feature {
-  if (IsChromeNextIaEnabled()) {
-    return;
-  }
-
   if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
     return;
   }
 
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (currentWebState && IsUrlNtp(currentWebState->GetVisibleURL())) {
-    return;
+  BOOL nextIAEnabled = IsChromeNextIaEnabled();
+
+  GuideName* anchorGuide;
+  BubbleArrowDirection arrowDirection;
+  BubbleAlignment alignment = BubbleAlignmentTopOrLeading;
+
+  if (nextIAEnabled) {
+    // In Next IA, the Assistant button is located in the App Bar.
+    anchorGuide = kAppBarAssistantButtonGuide;
+    switch (_layoutState.appBarPosition) {
+      case AppBarPosition::kLeft:
+        // AppBar position is actual left/right, not leading/trailing, so RTL
+        // must be handled specially.
+        arrowDirection = UseRTLLayout() ? BubbleArrowDirectionTrailing
+                                        : BubbleArrowDirectionLeading;
+        break;
+      case AppBarPosition::kRight:
+        // AppBar position is actual left/right, not leading/trailing, so RTL
+        // must be handled specially.
+        arrowDirection = UseRTLLayout() ? BubbleArrowDirectionLeading
+                                        : BubbleArrowDirectionTrailing;
+        break;
+      case AppBarPosition::kBottom:
+        arrowDirection = BubbleArrowDirectionDown;
+        break;
+      case AppBarPosition::kNone:
+        // No App Bar position means the app is on iPad, where the Assistant
+        // Button is in the toolbar.
+        arrowDirection = BubbleArrowDirectionUp;
+        alignment = BubbleAlignmentBottomOrTrailing;
+        break;
+    }
+  } else {
+    anchorGuide = kPageActionMenuEntrypointGuide;
+    arrowDirection = [self isGuideAtBottom:anchorGuide]
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
   }
 
-  BubbleArrowDirection arrowDirection =
-      [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
-          ? BubbleArrowDirectionDown
-          : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_BWG_IPH_TEXT);
+  UIView* anchorView = [_layoutGuideCenter referencedViewUnderName:anchorGuide];
+  CGRect anchorFrameInWindow = [anchorView convertRect:anchorView.bounds
+                                                toView:nil];
+  CGPoint anchorPointInWindow =
+      bubble_util::AnchorPoint(anchorFrameInWindow, arrowDirection);
 
-  CGPoint pageActionMenuEntrypointAnchor =
-      [self anchorPointToGuide:kPageActionMenuEntrypointGuide
-                     direction:arrowDirection];
+  NSString* text = l10n_util::GetNSString(IDS_IOS_BWG_IPH_TEXT);
 
   __weak __typeof(self) weakSelf = self;
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature
       direction:arrowDirection
-      alignment:BubbleAlignmentTopOrLeading
+      alignment:alignment
       text:text
       voiceOverAnnouncement:text
-      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x,
-                          pageActionMenuEntrypointAnchor.y)
+      anchorPoint:anchorPointInWindow
+      anchorViewFrame:anchorFrameInWindow
       presentAction:^{
         [weakSelf.pageActionMenuEntryPointHandler
             toggleEntryPointHighlight:YES];
@@ -874,7 +902,8 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
         [weakSelf.pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
       }];
 
-  if (presenter) {
+  if (presenter &&
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
     _pageActionMenuBubblePresenter = presenter;
   }
 }
@@ -957,14 +986,24 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 
   BOOL nextIAEnabled = IsChromeNextIaEnabled();
   BubbleArrowDirection arrowDirection;
+  BubbleAlignment alignment = BubbleAlignmentTopOrLeading;
   if (nextIAEnabled) {
-    AppBarPosition position = _layoutState.appBarPosition;
-    if (position == AppBarPosition::kLeft) {
-      arrowDirection = BubbleArrowDirectionLeading;
-    } else if (position == AppBarPosition::kRight) {
-      arrowDirection = BubbleArrowDirectionTrailing;
-    } else {
-      arrowDirection = BubbleArrowDirectionDown;
+    switch (_layoutState.appBarPosition) {
+      case AppBarPosition::kLeft:
+        arrowDirection = BubbleArrowDirectionLeading;
+        break;
+      case AppBarPosition::kRight:
+        arrowDirection = BubbleArrowDirectionTrailing;
+        break;
+      case AppBarPosition::kBottom:
+        arrowDirection = BubbleArrowDirectionDown;
+        break;
+      case AppBarPosition::kNone:
+        // No App Bar position means the app is on iPad, where the Assistant
+        // Button is in the toolbar.
+        arrowDirection = BubbleArrowDirectionUp;
+        alignment = BubbleAlignmentBottomOrTrailing;
+        break;
     }
   } else {
     arrowDirection = [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
@@ -983,7 +1022,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHiOSGeminiImageRemixFeature
       direction:arrowDirection
-      alignment:BubbleAlignmentTopOrLeading
+      alignment:alignment
       text:text
       voiceOverAnnouncement:text
       anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x,
@@ -1548,6 +1587,13 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 // inform the FET of dismissal in this case. The client is responsible for
 // informing the FET.
 - (BOOL)shouldForcePresentBubbleForFeature:(const base::Feature&)feature {
+  // When Level Up is enabled, the Page Action Menu bubble is triggered
+  // on-demand when the user selects the Gemini task, bypassing standard FET
+  // engagement limits.
+  if (IsLevelUpEnabled() &&
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+    return YES;
+  }
   // The background customization feature bubble is tied in with other IPH, so
   // the feature engagement tracker is checked externally to this class.
   if (feature.name ==

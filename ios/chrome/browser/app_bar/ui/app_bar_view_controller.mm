@@ -244,6 +244,7 @@ UIColor* AssistantHighlightBackgroundColor() {
         updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
   }
   [self updateTabSwitcherGuide];
+  [self updateAssistantButtonGuide];
   if (appBarPosition != AppBarPosition::kBottom) {
     _backgroundView.cornerRadius = kAppBarCornerRadius;
   }
@@ -532,8 +533,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   ]];
 
   [self.layoutGuideCenter referenceView:_stackView underName:kAppBarGuide];
-  [self.layoutGuideCenter referenceView:_assistantButton
-                              underName:kAppBarAssistantButtonGuide];
+  [self updateAssistantButtonGuide];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -662,6 +662,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)appBarViewDidMoveToWindow:(AppBarView*)view {
   [self updateTabSwitcherGuide];
+  [self updateAssistantButtonGuide];
 }
 
 #pragma mark - FullscreenUIElement
@@ -755,6 +756,25 @@ UIColor* AssistantHighlightBackgroundColor() {
   } else {
     [self.layoutGuideCenter referenceView:_tabGridButton
                                 underName:kTabSwitcherGuide];
+  }
+}
+
+// Conditionally registers the Assistant Button layout guide.
+// It should only be registered to the App Bar if the App Bar is visible.
+- (void)updateAssistantButtonGuide {
+  if (!self.view.window) {
+    return;
+  }
+  if (self.layoutState.appBarPosition == AppBarPosition::kNone) {
+    if ([self.layoutGuideCenter
+            referencedViewUnderName:kAppBarAssistantButtonGuide] ==
+        _assistantButton) {
+      [self.layoutGuideCenter referenceView:nil
+                                  underName:kAppBarAssistantButtonGuide];
+    }
+  } else {
+    [self.layoutGuideCenter referenceView:_assistantButton
+                                underName:kAppBarAssistantButtonGuide];
   }
 }
 
