@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -130,6 +131,31 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR
     })
     public void testResultFilterWithGlicEnabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(List.of(mActorTask));
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
+        assertTopResult(
+                /* segmentationResults= */ List.of(
+                        AdaptiveToolbarButtonVariant.SHARE, AdaptiveToolbarButtonVariant.GLIC),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.GLIC);
+    }
+
+    @Test
+    @Config(qualifiers = "w390dp-h820dp")
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
+    public void testResultFilterWithGlicEnabled_Incognito() {
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModel.getProfile()).thenReturn(incognitoProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(incognitoProfile))).thenReturn(false);
         when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);

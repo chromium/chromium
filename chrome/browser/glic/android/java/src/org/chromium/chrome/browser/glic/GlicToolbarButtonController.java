@@ -167,7 +167,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                 mActivity, profile.getOriginalProfile())) {
             return false;
         }
-        mStateController.updateObservations(profile);
+        mStateController.updateObservations(profile.getOriginalProfile());
         List<ActorTask> activeTasks = mStateController.getActiveTasks();
         return mStateController.isPanelOpen() || (activeTasks != null && !activeTasks.isEmpty());
     }

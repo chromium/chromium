@@ -558,6 +558,7 @@ public class GlicToolbarButtonControllerTest {
     public void testShouldForciblyShowGlicButton_IncognitoProfile() {
         Profile incognitoProfile = mock(Profile.class);
         when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mGlicEnablingJniMock.isEnabledForProfile(incognitoProfile)).thenReturn(false);
         when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(true);
         when(mActorService.getActiveTasks())
