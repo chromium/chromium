@@ -16,6 +16,7 @@
 # Top-level GN build file for chromium-bidi
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/args.gni")
 import("//testing/test.gni")
 
 if (is_mac) {
@@ -95,7 +96,12 @@ script_test("webdriver_bidi_e2e_tests") {
     "package.json",
   ]
 
-  data_deps = [
-    "src:all",
-  ]
+  data_deps = [ "src:all" ]
+  if (!is_ios && !is_android && !is_castos && !is_fuchsia &&
+      !is_chromeos_device) {
+    data_deps += [
+      "//chrome",
+      "//chrome/test/chromedriver:chromedriver_server",
+    ]
+  }
 }

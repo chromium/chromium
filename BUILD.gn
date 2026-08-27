@@ -154,6 +154,12 @@ group("gn_all") {
           "//chrome/browser/ui/color:dump_colors",
           "//chrome/test:browser_tests",
         ]
+        if (!is_chromeos_device) {
+          deps += [
+            "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
+            "//third_party/chromium-bidi:webdriver_bidi_unittests",
+          ]
+        }
       }
       deps += [
         "//components/subresource_filter/tools:subresource_filter_tools",
