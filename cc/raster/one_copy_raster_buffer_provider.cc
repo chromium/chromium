@@ -203,7 +203,8 @@ uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(
 
   uint64_t callback_id = gpu::ClientSharedImage::SignalLatestSyncToken(
       std::move(shared_images), std::move(sync_tokens), std::move(callback),
-      compositor_context_provider_->ContextSupport(), pending_callback_id);
+      compositor_context_provider_->SharedImageInterface(),
+      pending_callback_id);
   return callback_id;
 }
 

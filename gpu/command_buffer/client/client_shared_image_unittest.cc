@@ -7,7 +7,10 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -598,6 +601,121 @@ TEST(ClientSharedImageTest, AutomaticSyncTokenManagement_SyncTokenUpdate) {
   SyncToken expected_token = token2;
   expected_token.SetVerifyFlush();
   EXPECT_TRUE(export_result.IsEqualForTesting(expected_token));
+}
+
+TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUseAutomaticSyncTokenManagement);
+  base::test::SingleThreadTaskEnvironment task_environment;
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id = CommandBufferId::FromUnsafeValue(42);
+  SyncToken token(ns, cmd_id, /*release_count=*/100);
+
+  // 1. Invalid sync token (release_count == 0): callback runs immediately.
+  bool callback_called = false;
+  uint64_t callback_id = ClientSharedImage::SignalLatestSyncToken(
+      {client_si}, {SyncToken()},
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      sii.get(), /*pending_callback_id=*/0);
+  EXPECT_EQ(callback_id, 0u);
+  EXPECT_TRUE(callback_called);
+
+  // 2. Redundant callback (callback_id == pending_callback_id): callback not
+  // run.
+  callback_called = false;
+  callback_id = ClientSharedImage::SignalLatestSyncToken(
+      {client_si}, {token},
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      sii.get(), /*pending_callback_id=*/100);
+  EXPECT_EQ(callback_id, 100u);
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(callback_called);
+
+  // 3. New callback (callback_id != pending_callback_id): callback runs via
+  // SII.
+  callback_called = false;
+  callback_id = ClientSharedImage::SignalLatestSyncToken(
+      {client_si}, {token},
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      sii.get(), /*pending_callback_id=*/0);
+  EXPECT_EQ(callback_id, 100u);
+  EXPECT_FALSE(callback_called);
+  base::RunLoop run_loop2;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
+  run_loop2.Run();
+  EXPECT_TRUE(callback_called);
+}
+
+TEST(ClientSharedImageTest,
+     SignalLatestSyncToken_WithCallbackId_AutomaticSyncTokenManagement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id = CommandBufferId::FromUnsafeValue(42);
+  SyncToken token(ns, cmd_id, /*release_count=*/250);
+  client_si->EndExport(SharedImageExportResult::CreateForTesting(token));
+
+  bool callback_called = false;
+  uint64_t callback_id = ClientSharedImage::SignalLatestSyncToken(
+      {client_si}, /*sync_tokens=*/{},
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      sii.get(), /*pending_callback_id=*/0);
+  EXPECT_EQ(callback_id, 250u);
+  EXPECT_FALSE(callback_called);
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+}
+
+TEST(ClientSharedImageTest,
+     SignalLatestSyncToken_Batch_AutomaticSyncTokenManagement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si1 =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+  auto client_si2 =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id1 = CommandBufferId::FromUnsafeValue(10);
+  CommandBufferId cmd_id2 = CommandBufferId::FromUnsafeValue(20);
+  SyncToken token1(ns, cmd_id1, /*release_count=*/100);
+  SyncToken token2(ns, cmd_id2, /*release_count=*/200);
+
+  client_si1->EndExport(SharedImageExportResult::CreateForTesting(token1));
+  client_si2->EndExport(SharedImageExportResult::CreateForTesting(token2));
+
+  bool callback_called = false;
+  ClientSharedImage::SignalLatestSyncToken(
+      {client_si1, client_si2}, /*sync_tokens=*/{},
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called),
+      sii.get());
+  EXPECT_FALSE(callback_called);
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace gpu

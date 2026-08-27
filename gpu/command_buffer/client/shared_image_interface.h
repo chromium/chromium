@@ -326,6 +326,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   // previous commands which will be sent to server on the next flush().
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
 
+  // Asynchronously waits until all `sync_tokens` are signaled, then runs
+  // `callback` on the calling thread.
+  virtual void SignalSyncToken(std::vector<SyncToken> sync_tokens,
+                               base::OnceClosure callback);
+
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(

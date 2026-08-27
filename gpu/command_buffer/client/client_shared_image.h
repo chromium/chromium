@@ -290,8 +290,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       std::vector<scoped_refptr<ClientSharedImage>> shared_images,
       std::vector<SyncToken> sync_tokens,
       base::OnceClosure callback,
-      ContextSupport* context_support,
+      SharedImageInterface* sii,
       uint64_t pending_callback_id);
+
+  static void SignalLatestSyncToken(
+      std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+      std::vector<SyncToken> sync_tokens,
+      base::OnceClosure callback,
+      SharedImageInterface* sii);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;

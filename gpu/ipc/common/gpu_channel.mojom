@@ -215,6 +215,9 @@ interface GpuChannel {
   CopyNativeGmbToSharedMemoryAsync(gfx.mojom.GpuMemoryBufferHandle
       buffer_handle, mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
                      => (bool success);
+
+  // Signals the completion of an asynchronous wait for `sync_tokens`.
+  SignalSyncToken(array<SyncToken> sync_tokens) => ();
 };
 
 // Interface used to issue commands to a specific CommandBuffer instance in the

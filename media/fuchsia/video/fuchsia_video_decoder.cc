@@ -218,8 +218,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
         std::vector<gpu::SyncToken>{release_sync_token_},
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnSyncTokenSignaled, weak_factory_.GetWeakPtr())),
-        raster_context_provider_->ContextSupport(),
-        /*pending_callback_id=*/0);
+        raster_context_provider_->SharedImageInterface());
   }
 
   void OnSyncTokenSignaled() {

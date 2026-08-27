@@ -269,6 +269,13 @@ void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+void GpuChannelHost::SignalSyncToken(std::vector<SyncToken> sync_tokens,
+                                     base::OnceClosure callback) {
+  AutoLock lock(deferred_message_lock_);
+  InternalFlush(UINT32_MAX);
+  GetGpuChannel().SignalSyncToken(std::move(sync_tokens), std::move(callback));
+}
+
 void GpuChannelHost::DelayedEnsureFlush(uint32_t deferred_message_id) {
   AutoLock lock(deferred_message_lock_);
   if (delayed_flush_deferred_message_id_) {

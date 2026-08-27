@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -398,6 +399,13 @@ void TestSharedImageInterface::VerifySyncToken(SyncToken& sync_token) {
 
 void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
+}
+
+void TestSharedImageInterface::SignalSyncToken(
+    std::vector<SyncToken> sync_tokens,
+    base::OnceClosure callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(callback));
 }
 
 bool TestSharedImageInterface::CanVerifySyncToken(

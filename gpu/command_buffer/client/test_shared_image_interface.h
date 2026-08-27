@@ -119,6 +119,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   SyncToken GenUnverifiedSyncToken() override;
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
+  void SignalSyncToken(std::vector<SyncToken> sync_tokens,
+                       base::OnceClosure callback) override;
   bool CanVerifySyncToken(const gpu::SyncToken& sync_token) override;
   void VerifyFlush() override;
 

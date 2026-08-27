@@ -185,6 +185,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       base::UnsafeSharedMemoryRegion shared_memory,
       CopyNativeGmbToSharedMemoryAsyncCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  void SignalSyncToken(const std::vector<gpu::SyncToken>& sync_tokens,
+                       SignalSyncTokenCallback callback) override;
   void WaitForTokenInRange(int32_t routing_id,
                            int32_t start,
                            int32_t end,
@@ -634,6 +636,32 @@ void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
                                                 std::move(shared_memory)));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
+void GpuChannelMessageFilter::SignalSyncToken(
+    const std::vector<gpu::SyncToken>& sync_tokens,
+    SignalSyncTokenCallback callback) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run();
+    std::visit([](auto& receiver) { receiver.reset(); }, receiver_);
+    return;
+  }
+  int32_t routing_id =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
+  auto it = route_sequences_.find(routing_id);
+  if (it == route_sequences_.end()) {
+    LOG(ERROR) << "Could not find SharedImageInterface route id!";
+    std::move(callback).Run();
+    return;
+  }
+
+  auto run_on_main = base::BindOnce(
+      [](SignalSyncTokenCallback callback) { std::move(callback).Run(); },
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback)));
+  scheduler_->ScheduleTask(Scheduler::Task(it->second, std::move(run_on_main),
+                                           sync_tokens, SyncToken()));
+}
 
 void GpuChannelMessageFilter::WaitForTokenInRange(
     int32_t routing_id,

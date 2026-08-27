@@ -74,6 +74,8 @@ class MockGpuChannel : public mojom::GpuChannel {
                     base::UnsafeSharedMemoryRegion,
                     CopyNativeGmbToSharedMemoryAsyncCallback));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD2(SignalSyncToken,
+               void(const std::vector<SyncToken>&, SignalSyncTokenCallback));
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
   MOCK_METHOD5(WaitForGetOffsetInRange,

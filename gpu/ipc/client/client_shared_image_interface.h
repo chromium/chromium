@@ -129,6 +129,9 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
   bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
   void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
 
+  void SignalSyncToken(std::vector<SyncToken> sync_tokens,
+                       base::OnceClosure callback) override;
+
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
 
  protected:

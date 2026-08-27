@@ -542,12 +542,29 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
     std::vector<scoped_refptr<ClientSharedImage>> shared_images,
     std::vector<SyncToken> sync_tokens,
     base::OnceClosure callback,
-    ContextSupport* context_support,
+    SharedImageInterface* sii,
     uint64_t pending_callback_id) {
+  CHECK(sii);
   gpu::SyncToken latest_sync_token;
-  for (auto& sync_token : sync_tokens) {
-    if (sync_token.release_count() > latest_sync_token.release_count()) {
-      latest_sync_token = sync_token;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    for (const auto& shared_image : shared_images) {
+      if (!shared_image) {
+        continue;
+      }
+      base::AutoLock auto_lock(shared_image->lock_);
+      CHECK_LE(shared_image->sync_token_map_.size(), 1u);
+      for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
+        if (sync_token.release_count() > latest_sync_token.release_count()) {
+          latest_sync_token = sync_token;
+        }
+      }
+    }
+  } else {
+    for (const auto& sync_token : sync_tokens) {
+      if (sync_token.release_count() > latest_sync_token.release_count()) {
+        latest_sync_token = sync_token;
+      }
     }
   }
   uint64_t callback_id = latest_sync_token.release_count();
@@ -558,10 +575,48 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
     // If the callback is different from the one the caller is already waiting
     // on, pass the callback through to SignalSyncToken. Otherwise the request
     // is redundant.
-    context_support->SignalSyncToken(latest_sync_token, std::move(callback));
+    sii->SignalSyncToken({latest_sync_token}, std::move(callback));
   }
 
   return callback_id;
+}
+
+void ClientSharedImage::SignalLatestSyncToken(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    base::OnceClosure callback,
+    SharedImageInterface* sii) {
+  CHECK(sii);
+  bool has_valid_token = false;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    sync_tokens.clear();
+    for (const auto& shared_image : shared_images) {
+      if (!shared_image) {
+        continue;
+      }
+      base::AutoLock auto_lock(shared_image->lock_);
+      for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
+        if (sync_token.HasData()) {
+          sync_tokens.push_back(sync_token);
+        }
+      }
+    }
+    has_valid_token = !sync_tokens.empty();
+  } else {
+    for (const auto& sync_token : sync_tokens) {
+      if (sync_token.HasData()) {
+        has_valid_token = true;
+        break;
+      }
+    }
+  }
+
+  if (!has_valid_token) {
+    std::move(callback).Run();
+  } else {
+    sii->SignalSyncToken(std::move(sync_tokens), std::move(callback));
+  }
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
