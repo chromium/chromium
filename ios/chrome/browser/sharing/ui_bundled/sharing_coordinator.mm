@@ -304,6 +304,13 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   }
 }
 
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  if (_webStateListObserverBridge) {
+    webStateList->RemoveObserver(_webStateListObserverBridge.get());
+    _webStateListObserverBridge.reset();
+  }
+}
+
 #pragma mark - QRGenerationCommands
 
 - (void)showQRCode:(GenerateQRCodeCommand*)command {

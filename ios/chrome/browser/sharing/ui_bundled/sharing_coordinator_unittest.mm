@@ -603,3 +603,27 @@ TEST_F(SharingCoordinatorTest, StopBeforeDirectoryCreated_NoLeakAndNoDownload) {
 
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
 }
+
+// Test that destroying the WebStateList while the SharingCoordinator is active
+// does not cause a crash.
+TEST_F(SharingCoordinatorTest, WebStateListDestroyed) {
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
+
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
+
+  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                          params:params
+                      sourceItem:fake_origin_view_];
+
+  [coordinator start];
+
+  // Destroy the WebStateList by deleting the browser.
+  browser_.reset();
+
+  // Stopping or deallocating the coordinator should not crash.
+  [coordinator stop];
+}
