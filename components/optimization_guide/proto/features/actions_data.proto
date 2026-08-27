@@ -465,9 +465,21 @@ message LoadAndExtractContentAction {
   repeated string urls = 1;
 }
 
+// Translates the page in a tab.
+// Note: This action is not currently used by Gemini in Chrome (GiC).
+// Next ID: 3
+message TranslatePageAction {
+  // The BCP-47 language tag of the language to translate to. If empty or
+  // not set, the default translation target language is used.
+  string target_language = 1 [features = { field_presence: EXPLICIT }];
+
+  // The id of the tab to translate.
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 25
+// Next ID: 26
 message Action {
 
   oneof action {
@@ -518,6 +530,8 @@ message Action {
     LoadAndExtractContentAction load_and_extract_content = 23;
 
     AttemptOtpFillingAction attempt_otp_filling = 24;
+
+    TranslatePageAction translate_page = 25;
   }
 }
 

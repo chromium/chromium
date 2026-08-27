@@ -244,6 +244,9 @@ ExperimentalActorPerformActionsFunction::Run() {
         ConvertActionTabId(action.mutable_attempt_otp_filling(),
                            browser_context());
         break;
+      case optimization_guide::proto::Action::kTranslatePage:
+        ConvertActionTabId(action.mutable_translate_page(), browser_context());
+        break;
       case optimization_guide::proto::Action::kWait:
       case optimization_guide::proto::Action::kCreateTab:
       case optimization_guide::proto::Action::kCreateWindow:

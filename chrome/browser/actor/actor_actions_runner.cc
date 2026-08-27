@@ -116,6 +116,11 @@ void SetTabIdIfMissing(optimization_guide::proto::Action& action,
         action.mutable_media_control()->set_tab_id(tab_id);
       }
       break;
+    case optimization_guide::proto::Action::kTranslatePage:
+      if (!action.translate_page().has_tab_id()) {
+        action.mutable_translate_page()->set_tab_id(tab_id);
+      }
+      break;
     case optimization_guide::proto::Action::kLoadAndExtractContent:
     case optimization_guide::proto::Action::kWait:
     case optimization_guide::proto::Action::kCreateTab:

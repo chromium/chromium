@@ -1225,7 +1225,7 @@ message TabGroup {
   string group_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 6
+// Next ID: 7
 message Tab {
   // A unique identifier for the tab.
   int64 tab_id = 1 [features = { field_presence: EXPLICIT }];
@@ -1241,6 +1241,10 @@ message Tab {
 
   // Timestamp of when the tab was last active (in milliseconds since epoch).
   int64 last_active_timestamp_ms = 5 [features = { field_presence: EXPLICIT }];
+
+  // Duration in milliseconds the tab spent in the foreground.
+  int64 last_foreground_duration_ms = 6
+      [features = { field_presence: EXPLICIT }];
 }
 
 // The site engagement information for a single site.

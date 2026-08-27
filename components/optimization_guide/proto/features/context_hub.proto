@@ -226,6 +226,8 @@ message BrowserBasedTodosResponse {
     GROUP_TYPE_NUDGE_TO_CLOSE = 2;
 
     GROUP_TYPE_UNFINISHED = 3;
+
+    GROUP_TYPE_SHOPPING_CART = 4;
   }
 }
 
