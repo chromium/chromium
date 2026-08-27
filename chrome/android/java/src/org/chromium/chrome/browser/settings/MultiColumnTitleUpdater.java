@@ -113,6 +113,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
     private boolean mMainMenuShown;
     private boolean mHasBackButton;
+    private boolean mHasSearchButton;
 
     /**
      * The index of the first title to show. Used to skip displaying the titles preceding {@code
@@ -187,8 +188,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                                 title.setLayoutParams(params);
                             }
                         }
-                    } else {
-                        // note: we cannot traverse in the reverse order here unlike above,
+                    } else if (!mHasSearchButton) {
+                        // When mHasSearchButton is true, the title view must keep weight=1f to
+                        // keep the search button right-justified. Otherwise, reset weight to 0f
+                        // and width to WRAP_CONTENT when not overflowing.
+                        // Note: we cannot traverse in the reverse order here unlike above,
                         // because a new view may be just added and so even if weight=0 view
                         // is found, there may be weight!=0 views in leading components.
                         for (int i = 0; i < mContainer.getChildCount(); ++i) {
@@ -401,13 +405,19 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             lastTitleView = view;
         }
 
+        mHasSearchButton = false;
         if (SettingsInTab.isEnabled() && lastTitleView != null) {
             Fragment detailFragment =
                     mMultiColumnSettings
                             .getChildFragmentManager()
                             .findFragmentById(R.id.preferences_detail);
             if (detailFragment instanceof SearchViewProvider searchViewProvider) {
+                mHasSearchButton = true;
                 final DetailedTitle titleView = lastTitleView;
+                var titleParams = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f);
+                titleParams.gravity = Gravity.CENTER_VERTICAL;
+                titleView.setLayoutParams(titleParams);
+
                 var searchButton = new ChromeImageButton(mContext);
                 searchButton.setImageResource(R.drawable.ic_search_24dp);
                 searchButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -420,7 +430,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 searchButton.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
 
                 var searchView = new SearchView(mContext);
-                searchView.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+                var searchViewParams = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f);
+                searchViewParams.gravity = Gravity.CENTER_VERTICAL;
+                searchView.setLayoutParams(searchViewParams);
+                searchView.setMaxWidth(Integer.MAX_VALUE);
                 searchView.setVisibility(View.GONE);
                 searchViewProvider.initSearchView(searchView);
 
@@ -446,7 +459,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             }
         }
 
-        maybeUpdateStartMargin();
+        maybeUpdateMargins();
 
         // Make the last-added/tapped one visible after adding titles.
         if (mContainer.getParent() instanceof HorizontalScrollView scrollView) {
@@ -527,19 +540,19 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         // Enable detailed page title.
         mContainer.setVisibility(View.VISIBLE);
 
-        maybeUpdateStartMargin();
+        maybeUpdateMargins();
     }
 
     @Override
     public void onDetailLayoutUpdated() {
-        maybeUpdateStartMargin();
+        maybeUpdateMargins();
     }
 
     /**
-     * Updates the start margin of the title scroll view. This method has extra null checks so it
-     * can be calling before the layout is fully inflated and in unit tests.
+     * Updates the start and end margins of the title scroll view. This method has extra null checks
+     * so it can be called before the layout is fully inflated and in unit tests.
      */
-    private void maybeUpdateStartMargin() {
+    private void maybeUpdateMargins() {
         View detailView = mMultiColumnSettings.getDetailView();
         if (detailView == null) return;
         // Check detailView width because recyclerView might not have completed layout during
@@ -567,11 +580,32 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             backButtonOffsetPx = (minTouchTargetPx - iconWidthPx) / 2;
         }
 
+        // Shift titleScrollView right when the search button is shown so that the extra space
+        // for the button's material design ripple background fits inside titleScrollView without
+        // being clipped on the right edge.
+        int searchButtonOffsetPx = 0;
+        if (mHasSearchButton) {
+            int minTouchTargetPx = getDimenPx(R.dimen.min_touch_target_size);
+            int iconWidthPx = minTouchTargetPx / 2;
+            for (int i = 0; i < mContainer.getChildCount(); ++i) {
+                View child = mContainer.getChildAt(i);
+                if (child instanceof ChromeImageButton button
+                        && button.getId() != R.id.back_button) {
+                    if (button.getDrawable() != null) {
+                        iconWidthPx = button.getDrawable().getIntrinsicWidth();
+                    }
+                    break;
+                }
+            }
+            searchButtonOffsetPx = (minTouchTargetPx - iconWidthPx) / 2;
+        }
+
         View titleScrollView = (View) mContainer.getParent();
         if (titleScrollView == null) return;
         var params = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
         if (params == null) return;
         params.setMarginStart(startMargin + offsetX - backButtonOffsetPx);
+        params.setMarginEnd(startMargin + offsetX - searchButtonOffsetPx);
         titleScrollView.setLayoutParams(params);
     }
 

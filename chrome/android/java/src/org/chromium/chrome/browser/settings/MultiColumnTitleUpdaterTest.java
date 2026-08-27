@@ -392,6 +392,8 @@ public class MultiColumnTitleUpdaterTest {
         // mContainer.
         assertEquals(3, mContainer.getChildCount());
         assertNotNull(selectLanguageFragment.getSearchView());
+        var titleParams = (LinearLayout.LayoutParams) mContainer.getChildAt(0).getLayoutParams();
+        assertEquals(1f, titleParams.weight, 0.01f);
     }
 
     @Test
@@ -418,11 +420,13 @@ public class MultiColumnTitleUpdaterTest {
         // mContainer.
         assertEquals(3, mContainer.getChildCount());
         assertNotNull(searchViewProviderFragment.getSearchView());
+        var titleParams = (LinearLayout.LayoutParams) mContainer.getChildAt(0).getLayoutParams();
+        assertEquals(1f, titleParams.weight, 0.01f);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testMaybeUpdateStartMargin_accountsForBackButtonOffset() {
+    public void testMaybeUpdateMargins_accountsForBackButtonOffset() {
         FrameLayout detailView = new FrameLayout(mActivity);
         detailView.layout(0, 0, 1000, 100);
         View recyclerView = new View(mActivity);
@@ -468,10 +472,63 @@ public class MultiColumnTitleUpdaterTest {
         assertEquals(marginWithoutBack - expectedOffset, marginWithBack);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testMaybeUpdateMargins_accountsForSearchButtonOffset() {
+        FrameLayout detailView = new FrameLayout(mActivity);
+        detailView.layout(0, 0, 1000, 100);
+        View recyclerView = new View(mActivity);
+        recyclerView.setId(R.id.recycler_view);
+        recyclerView.layout(0, 0, 1000, 100);
+        detailView.addView(recyclerView);
+        mMultiColumnSettings.setDetailView(detailView);
+
+        RelativeLayout rootLayout = new RelativeLayout(mActivity);
+        HorizontalScrollView titleScrollView = new HorizontalScrollView(mActivity);
+        RelativeLayout.LayoutParams scrollParams =
+                new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rootLayout.addView(titleScrollView, scrollParams);
+        titleScrollView.addView(mContainer);
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        updater.onTitleUpdated();
+
+        var paramsWithoutSearch = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
+        int marginEndWithoutSearch = paramsWithoutSearch.getMarginEnd();
+
+        TestSearchViewProviderFragment searchViewProviderFragment =
+                new TestSearchViewProviderFragment();
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, searchViewProviderFragment)
+                .commitNow();
+        updater.onTitleUpdated();
+
+        var paramsWithSearch = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
+        int marginEndWithSearch = paramsWithSearch.getMarginEnd();
+
+        int minTouchTargetPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
+        int iconWidthPx = searchButton.getDrawable().getIntrinsicWidth();
+        int expectedOffset = (minTouchTargetPx - iconWidthPx) / 2;
+
+        // Verify that the title scroll view end margin is shifted right by expectedOffset when the
+        // search button is shown.
+        assertEquals(marginEndWithoutSearch - expectedOffset, marginEndWithSearch);
+    }
+
     /** Regression test for incorrect title layout after display rotation. crbug.com/541103334 */
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testMaybeUpdateStartMargin_usesDetailViewWidthWhenRecyclerViewNotLaidOut() {
+    public void testMaybeUpdateMargins_usesDetailViewWidthWhenRecyclerViewNotLaidOut() {
         FrameLayout detailView = new FrameLayout(mActivity);
         detailView.layout(0, 0, 1000, 100);
         // Add a recycler view that has width = 0 (not laid out yet).
