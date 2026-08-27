@@ -48,11 +48,12 @@ scoped_refptr<DecodedAudioSegment> AudioSegmentQueue::Pop() {
   if (current_popped >= queue_.size()) {
     return nullptr;
   }
-  // We move the segment pointer out of the deque instead of calling
-  // pop_front() to prevent invoking the deque's internal reclamation logic,
-  // which could trigger free() calls on the real-time thread.
-  scoped_refptr<DecodedAudioSegment> segment =
-      std::move(queue_[current_popped]);
+  // We copy the segment pointer instead of moving it or calling
+  // pop_front(). This ensures the deque retains a reference to the
+  // segment, delaying destruction until ReclaimPoppedSlots() runs
+  // on a non-real-time thread, preventing priority inversion on the audio
+  // thread.
+  scoped_refptr<DecodedAudioSegment> segment = queue_[current_popped];
   if (segment) {
     buffered_duration_us_.fetch_sub(segment->duration().InMicroseconds(),
                                     std::memory_order_relaxed);
@@ -62,18 +63,27 @@ scoped_refptr<DecodedAudioSegment> AudioSegmentQueue::Pop() {
 }
 
 void AudioSegmentQueue::ReclaimPoppedSlots() {
-  const size_t count = popped_count_.load();
-  if (count == 0) {
+  base::AutoLock auto_lock(lock_);
+  const size_t count = popped_count_.load(std::memory_order_relaxed);
+  // We intentionally lag reclamation by 1 element.
+  // This guarantees that the deque always retains a reference to the segment
+  // currently being processed by the audio thread. If we reclaimed all popped
+  // slots, the deque could drop its reference while the audio thread is still
+  // holding the segment, which would cause the audio thread to drop the final
+  // reference and trigger deallocation on the real-time thread.
+  if (count <= 1) {
     return;
   }
-  base::AutoLock auto_lock(lock_);
-  // Remove the null-ed out slots from the front of the queue. Since we are
-  // on a non-real-time thread, deallocations here are safe. We only reclaim
-  // up to `count` elements that were popped prior to lock acquisition.
-  for (size_t i = 0; i < count; ++i) {
+
+  size_t to_reclaim = count - 1;
+  to_reclaim = std::min(to_reclaim, queue_.size());
+
+  // Remove the popped slots from the front of the queue. Since we are on a
+  // non-real-time thread, deallocations here are safe.
+  for (size_t i = 0; i < to_reclaim; ++i) {
     queue_.pop_front();
   }
-  popped_count_.fetch_sub(count, std::memory_order_relaxed);
+  popped_count_.fetch_sub(to_reclaim, std::memory_order_relaxed);
 }
 
 base::TimeDelta AudioSegmentQueue::GetBufferedDuration() const {
@@ -92,9 +102,18 @@ void AudioSegmentQueue::ClearForTesting(base::PassKey<AudioSegmentQueueTest>) {
 
 void AudioSegmentQueue::ClearInternal() {
   base::circular_deque<scoped_refptr<DecodedAudioSegment>> local_queue;
+  scoped_refptr<DecodedAudioSegment> old_active_segment;
   local_queue.reserve(kDefaultQueueCapacity);
   {
     base::AutoLock auto_lock(lock_);
+
+    size_t popped = popped_count_.load(std::memory_order_relaxed);
+    if (popped > 0 && popped <= queue_.size()) {
+      old_active_segment = std::exchange(active_segment_, queue_[popped - 1]);
+    } else {
+      old_active_segment = std::exchange(active_segment_, nullptr);
+    }
+
     // Swap the queue to pre-allocated local containers under lock. This
     // delegates the actual deallocation of the old elements and their internal
     // storage buffers to the local variable, which will execute outside the

@@ -89,6 +89,10 @@ class AudioSegmentQueue final {
   mutable base::Lock lock_;
   base::circular_deque<scoped_refptr<DecodedAudioSegment>> queue_
       GUARDED_BY(lock_);
+  // Retains a reference to the currently playing segment when the queue is
+  // cleared. This prevents the real-time audio thread from holding the final
+  // reference, which would trigger deallocation on the audio thread.
+  scoped_refptr<DecodedAudioSegment> active_segment_ GUARDED_BY(lock_);
   std::atomic<size_t> popped_count_{0};
   std::atomic<int64_t> buffered_duration_us_{0};
 };

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -147,10 +148,13 @@ TEST_F(AudioSegmentQueueTest, PushAndPopBasic) {
   EXPECT_EQ(2u, queue_.size());
 
   // Push dummy to trigger reclaim.
+  // Because of lag-by-one, it will reclaim popped1 (since popped_count_ was 2)
+  // leaving popped2 in the queue along with the newly pushed dummy.
   auto dummy =
       base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
   EXPECT_TRUE(queue_.Push(dummy));
-  EXPECT_EQ(1u, queue_.size());
+  // size is 2 (popped2 + dummy)
+  EXPECT_EQ(queue_.size(), 2u);
 }
 
 TEST_F(AudioSegmentQueueTest, RejectInvalidSegments) {
@@ -240,10 +244,11 @@ TEST_F(AudioSegmentQueueTest, MultiThreadedProducerConsumerStressTest) {
   EXPECT_EQ(base::TimeDelta(), queue_.GetBufferedDuration());
 
   // Push dummy to trigger reclaim.
+  // The lag-by-one keeps the very last popped item in the queue.
   auto dummy =
       base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
   EXPECT_TRUE(queue_.Push(dummy));
-  EXPECT_EQ(1u, queue_.size());
+  EXPECT_EQ(2u, queue_.size());
   EXPECT_EQ(base::Milliseconds(10), queue_.GetBufferedDuration());
 }
 
@@ -271,8 +276,8 @@ TEST_F(AudioSegmentQueueTest, DeferredPopSpaceReclamation) {
       base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
   EXPECT_TRUE(queue_.Push(dummy));
 
-  // Size of queue_ should now be 10 - 5 (popped) + 1 (dummy) = 6.
-  EXPECT_EQ(6u, queue_.size());
+  // Size of queue_ should now be 10 - 4 (popped reclaimed) + 1 (dummy) = 7.
+  EXPECT_EQ(7u, queue_.size());
 }
 
 TEST_F(AudioSegmentQueueTest, PushQueueOverflowHandling) {
@@ -290,17 +295,23 @@ TEST_F(AudioSegmentQueueTest, PushQueueOverflowHandling) {
   EXPECT_FALSE(queue_.Push(overflow_segment));
   EXPECT_EQ(kCapacity, queue_.size());
 
-  // Pop one element.
+  // Pop two elements. The lag-by-one fix means popping 1 element leaves it in
+  // the queue, preventing Push() from succeeding. Popping 2 elements allows
+  // ReclaimPoppedSlots() to reclaim the first one, freeing up 1 slot!
   scoped_refptr<DecodedAudioSegment> popped = queue_.Pop();
   ASSERT_TRUE(popped);
+  scoped_refptr<DecodedAudioSegment> popped_two = queue_.Pop();
+  ASSERT_TRUE(popped_two);
 
   // Since pops are deferred, queue_.size() is still at capacity.
   EXPECT_EQ(kCapacity, queue_.size());
 
-  // Pushing now should succeed because Push() auto-reclaims.
+  // Pushing now should succeed because Push() auto-reclaims the first popped
+  // element.
   auto post_pop_segment =
       base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
   EXPECT_TRUE(queue_.Push(post_pop_segment));
+  // The queue size should remain at capacity.
   EXPECT_EQ(kCapacity, queue_.size());
 }
 
@@ -339,6 +350,144 @@ TEST_F(AudioSegmentQueueTest, ClearDuringPopDoesNotCorruptDuration) {
 
     queue_.ClearForTesting(GetPassKey());
   }
+}
+
+namespace {
+class ThreadTrackingAudioSegment : public DecodedAudioSegment {
+ public:
+  ThreadTrackingAudioSegment(base::TimeDelta duration,
+                             base::PlatformThreadId* destruction_thread_id)
+      : DecodedAudioSegment(duration),
+        destruction_thread_id_(destruction_thread_id) {}
+
+ protected:
+  ~ThreadTrackingAudioSegment() override {
+    if (destruction_thread_id_) {
+      *destruction_thread_id_ = base::PlatformThread::CurrentId();
+    }
+  }
+
+ private:
+  raw_ptr<base::PlatformThreadId> destruction_thread_id_;
+};
+
+class AudioThreadSimulator : public base::SimpleThread {
+ public:
+  explicit AudioThreadSimulator(AudioSegmentQueue& queue,
+                                base::WaitableEvent* pop_event)
+      : base::SimpleThread("AudioThreadSimulator"),
+        queue_(queue),
+        pop_event_(pop_event) {}
+
+  void Run() override {
+    audio_thread_id_ = base::PlatformThread::CurrentId();
+    // Simulate audio thread pop and use.
+    scoped_refptr<DecodedAudioSegment> segment = queue_.get().Pop();
+    EXPECT_TRUE(segment);
+    // Release our reference (as the audio thread would do after its Render
+    // loop)
+    segment.reset();
+    pop_event_->Signal();
+  }
+
+  base::PlatformThreadId audio_thread_id() const { return audio_thread_id_; }
+
+ private:
+  const raw_ref<AudioSegmentQueue> queue_;
+  raw_ptr<base::WaitableEvent> pop_event_;
+  base::PlatformThreadId audio_thread_id_ = base::kInvalidThreadId;
+};
+}  // namespace
+
+TEST_F(AudioSegmentQueueTest, SegmentsHeldByAudioThreadAreNotDiscarded) {
+  auto segment1 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
+  auto segment2 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
+  auto segment3 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
+
+  EXPECT_TRUE(queue_.Push(segment1));
+  EXPECT_EQ(1u, queue_.size());
+
+  // Simulate audio thread popping the first segment.
+  // The queue should now have popped_count_ = 1.
+  scoped_refptr<DecodedAudioSegment> popped1 = queue_.Pop();
+  EXPECT_TRUE(popped1);
+  EXPECT_EQ(1u, queue_.size());
+
+  // Push the second segment. This triggers ReclaimPoppedSlots().
+  // Because of the lag-by-one fix, popped_count_ = 1 will not cause a
+  // reclamation. The queue should NOT discard segment1 while the audio thread
+  // might still be using it.
+  EXPECT_TRUE(queue_.Push(segment2));
+
+  // The queue size should be 2, containing both segment1 and segment2.
+  // (If it had incorrectly reclaimed segment1, the size would be 1).
+  EXPECT_EQ(2u, queue_.size());
+
+  // Simulate audio thread popping the second segment.
+  // popped_count_ becomes 2.
+  scoped_refptr<DecodedAudioSegment> popped2 = queue_.Pop();
+  EXPECT_TRUE(popped2);
+  EXPECT_EQ(2u, queue_.size());
+
+  // Push the third segment. This triggers ReclaimPoppedSlots().
+  // popped_count_ = 2, so it will now reclaim 1 element (segment1).
+  EXPECT_TRUE(queue_.Push(segment3));
+
+  // The queue size should remain 2 (segment2 and segment3 are in the queue,
+  // segment1 is finally gone).
+  EXPECT_EQ(2u, queue_.size());
+}
+
+TEST_F(AudioSegmentQueueTest, DeallocationDoesNotHappenInAudioThread) {
+  base::PlatformThreadId destruction_thread_id = base::kInvalidThreadId;
+  base::WaitableEvent pop_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  auto segment = base::MakeRefCounted<ThreadTrackingAudioSegment>(
+      base::Milliseconds(10), &destruction_thread_id);
+
+  EXPECT_TRUE(queue_.Push(segment));
+  segment.reset();  // main thread drops reference
+
+  AudioThreadSimulator audio_thread(queue_, &pop_event);
+  audio_thread.Start();
+  pop_event.Wait();
+
+  // Audio thread has popped the segment and dropped its reference.
+  // Thanks to the lag-by-one fix, the queue should still hold a reference.
+  // Therefore, destruction_thread_id should still be kInvalidThreadId.
+  EXPECT_EQ(base::kInvalidThreadId, destruction_thread_id);
+
+  // Push a dummy segment. popped_count_ = 1, so it reclaims nothing.
+  auto dummy1 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
+  EXPECT_TRUE(queue_.Push(dummy1));
+
+  // The segment should still be alive in the queue.
+  EXPECT_EQ(base::kInvalidThreadId, destruction_thread_id);
+
+  // Pop the dummy segment to increment popped_count_ to 2.
+  // This simulates the audio thread moving on to the next segment.
+  (void)queue_.Pop();
+
+  // Push a second dummy segment. This triggers ReclaimPoppedSlots() with
+  // popped_count_ = 2. It will reclaim 1 element (the original segment).
+  // Because no one else holds it, it will be destroyed right here on the main
+  // thread!
+  auto dummy2 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Milliseconds(10));
+  EXPECT_TRUE(queue_.Push(dummy2));
+
+  audio_thread.Join();
+
+  // Destruction should have occurred naturally on the main thread during
+  // Push().
+  EXPECT_EQ(base::PlatformThread::CurrentId(), destruction_thread_id);
+  EXPECT_NE(audio_thread.audio_thread_id(), destruction_thread_id);
 }
 
 }  // namespace readaloud
