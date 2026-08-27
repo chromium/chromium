@@ -405,6 +405,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     private void reset() {
         dropFocus();
+        mSelectionMenuCachedResult = null;
         mContext = null;
         mWindowAndroid = null;
     }
@@ -971,6 +972,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
+        mSelectionMenuCachedResult = null;
         if (newWindowAndroid == null) {
             reset();
             return;

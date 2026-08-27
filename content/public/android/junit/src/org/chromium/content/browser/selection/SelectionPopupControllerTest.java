@@ -921,6 +921,22 @@ public class SelectionPopupControllerTest {
 
     @Test
     @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testMenuCacheClearedOnWindowAndroidChanged() {
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+
+        mController.onWindowAndroidChanged(Mockito.mock(WindowAndroid.class));
+
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testSelectionHandlesCleared_clearsClassificationResult() {
         when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
         mTestSelectionClient.setResult(resultForNoChange());
