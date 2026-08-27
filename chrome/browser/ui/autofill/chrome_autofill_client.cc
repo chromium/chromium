@@ -1456,13 +1456,9 @@ FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
 
 one_time_tokens::OneTimeTokenService*
 ChromeAutofillClient::GetOneTimeTokenService() const {
-#if BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return OneTimeTokenServiceFactory::GetForProfile(profile);
-#else
-  return nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutofillClient::set_test_addresses(

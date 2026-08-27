@@ -129,6 +129,18 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
     ASSERT_TRUE(embedded_https_test_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Allow no-op calls to Subscribe for SMS from Autofill OtpManager.
+    EXPECT_CALL(
+        GetMockOtpService(),
+        Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _, _, _))
+        .WillRepeatedly(
+            [](one_time_tokens::OneTimeTokenSource source,
+               base::Time expiration,
+               one_time_tokens::OneTimeTokenService::Callback callback,
+               base::OnceClosure expiration_callback) {
+              return one_time_tokens::ExpiringSubscription();
+            });
   }
 
   void TearDownOnMainThread() override {
