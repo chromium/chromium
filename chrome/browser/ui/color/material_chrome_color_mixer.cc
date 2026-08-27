@@ -186,6 +186,20 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuPromoButtonsBackground] = {
       ui::kColorSysTonalContainer};
 
+  // App Menu colors.
+  mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuToolsAndActionsBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};
+  mixer[kColorAppMenuBlockButtonBackgroundHovered] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuBlockButtonBorder] = {ui::kColorSysInversePrimary};
+  mixer[kColorAppMenuBlockButtonForeground] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonForeground] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonForegroundHovered] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonBackgroundHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
+
   // Signin bubble colors. Main background color uses the same color as the
   // profle menu background.
   mixer[kColorChromeSigninBubbleBackground] = {kColorProfileMenuBackground};
@@ -372,18 +386,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnTonalContainer};
   mixer[kColorAppMenuChipInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorAppMenuChipInkDropRipple] = {ui::kColorSysStateRipplePrimary};
-  mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysTonalContainer};
-  mixer[kColorAppMenuToolsAndActionsBackground] = {
-      ui::kColorSysNeutralContainer};
-  mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};
-  mixer[kColorAppMenuBlockButtonBackgroundHovered] = {
-      ui::kColorSysTonalContainer};
-  mixer[kColorAppMenuBlockButtonBorder] = {ui::kColorSysInversePrimary};
-  mixer[kColorAppMenuBlockButtonForeground] = {ui::kColorSysPrimary};
-  mixer[kColorAppMenuFooterButtonForeground] = {ui::kColorSysPrimary};
-  mixer[kColorAppMenuFooterButtonForegroundHovered] = {ui::kColorSysPrimary};
-  mixer[kColorAppMenuFooterButtonBackgroundHovered] = {
-      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorAvatarButtonHighlightSyncPaused] = {
       kColorAvatarButtonHighlightDefault};
   mixer[kColorAvatarButtonHighlightPasskeysLocked] = {

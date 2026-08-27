@@ -327,6 +327,18 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuHighlightPrimary] = {ui::kColorButtonBackgroundProminent};
   mixer[kColorAppMenuExpandedForegroundPrimary] = {
       ui::kColorButtonForegroundProminent};
+  mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuToolsAndActionsBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};
+  mixer[kColorAppMenuBlockButtonBackgroundHovered] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuBlockButtonBorder] = {ui::kColorSysInversePrimary};
+  mixer[kColorAppMenuBlockButtonForeground] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonForeground] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonForegroundHovered] = {ui::kColorSysPrimary};
+  mixer[kColorAppMenuFooterButtonBackgroundHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorAvatarButtonHighlightDefault] =
       AdjustHighlightColorForContrast(ui::kColorAccent, kColorToolbar);
   mixer[kColorAvatarButtonHighlightSyncError] = AdjustHighlightColorForContrast(

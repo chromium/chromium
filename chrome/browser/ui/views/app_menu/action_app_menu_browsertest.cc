@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -14,8 +16,10 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
@@ -66,6 +70,39 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
   // Check if the menu items have background styling
   EXPECT_TRUE(password_item->GetMenuItemBackground().has_value());
   EXPECT_TRUE(print_item->GetMenuItemBackground().has_value());
+
+  menu_button->CloseMenu();
+  EXPECT_FALSE(menu_button->IsMenuShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenuDarkMode) {
+  ThemeServiceFactory::GetForProfile(browser()->GetProfile())
+      ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+
+  BrowserAppMenuButton* menu_button = GetMenuButton();
+  ASSERT_TRUE(menu_button);
+
+  menu_button->ShowMenu(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_button->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ASSERT_TRUE(action_menu);
+
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+  views::SubmenuView* submenu = root->GetSubmenu();
+  const ui::ColorProvider* color_provider = submenu->GetColorProvider();
+  ASSERT_TRUE(color_provider);
+
+  for (views::MenuItemView* child : submenu->GetMenuItems()) {
+    if (child->GetMenuItemBackground().has_value()) {
+      ui::ColorId bg_id = child->GetMenuItemBackground()->background_color_id;
+      SkColor bg_color = color_provider->GetColor(bg_id);
+      EXPECT_NE(bg_color, gfx::kPlaceholderColor)
+          << "Item with id " << child->GetCommand()
+          << " has placeholder color red background!";
+    }
+  }
 
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());

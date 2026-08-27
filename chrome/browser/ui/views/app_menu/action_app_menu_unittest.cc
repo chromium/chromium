@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -234,6 +235,39 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
       .Times(1);
   plus_action->InvokeAction();
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+}
+
+TEST_F(ActionAppMenuTest, ColorTokensValidInDarkMode) {
+  widget_->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->HasSubmenu());
+
+  const ui::ColorProvider* color_provider =
+      root->GetSubmenu()->GetColorProvider();
+  ASSERT_TRUE(color_provider);
+
+  views::MenuItemView* password_item =
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
+  ASSERT_TRUE(password_item);
+  ASSERT_TRUE(password_item->GetMenuItemBackground().has_value());
+  EXPECT_NE(color_provider->GetColor(
+                password_item->GetMenuItemBackground()->background_color_id),
+            gfx::kPlaceholderColor);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  ASSERT_TRUE(print_item->GetMenuItemBackground().has_value());
+  EXPECT_NE(color_provider->GetColor(
+                print_item->GetMenuItemBackground()->background_color_id),
+            gfx::kPlaceholderColor);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
