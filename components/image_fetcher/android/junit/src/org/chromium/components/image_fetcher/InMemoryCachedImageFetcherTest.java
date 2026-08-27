@@ -60,8 +60,6 @@ public class InMemoryCachedImageFetcherTest {
     @Mock private ImageFetcherBridge mBridge;
     @Mock private CachedImageFetcher mMockImageFetcher;
     @Mock private Callback<Bitmap> mCallback;
-    @Captor private ArgumentCaptor<Integer> mWidthCaptor;
-    @Captor private ArgumentCaptor<Integer> mHeightCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
 
     @Before

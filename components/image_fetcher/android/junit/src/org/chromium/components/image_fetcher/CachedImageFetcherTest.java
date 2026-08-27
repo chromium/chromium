@@ -56,7 +56,6 @@ public class CachedImageFetcherTest {
 
     CachedImageFetcher mCachedImageFetcher;
     Bitmap mBitmap;
-    ImageFetchResult mImageFetchResult;
     byte[] mTestGifData;
     ImageDataFetchResult mImageDataFetchResult;
 
