@@ -283,4 +283,8 @@ const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist{
 };
 const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount{
     &kGlicMarketingAutoOpen, "max_impressions", 1};
+
+BASE_FEATURE(kGlicActionFirstFRE,
+             "GlicActionFirstFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
