@@ -2228,7 +2228,6 @@ export const ComposeboxEmbedderMixin =
           // Autocomplete sends updates once it is stopped. Invalidate those
           // results by setting `activeQueryId` to -1.
           this.activeQueryId = -1;
-          this.lastQueriedInput = '';
         }
 
         /**
