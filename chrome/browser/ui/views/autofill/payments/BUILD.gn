@@ -27,6 +27,7 @@ source_set("payments_view_util") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
     "//components/autofill/core/common",
     "//components/resources:components_scaled_resources",
     "//components/vector_icons",

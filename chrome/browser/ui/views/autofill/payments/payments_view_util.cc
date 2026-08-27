@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -328,26 +329,8 @@ std::unique_ptr<views::View> CreateLegalMessageView(
     const std::u16string& user_email,
     const ui::ImageModel& user_avatar,
     base::RepeatingCallback<void(const GURL&)> callback) {
-  auto result = views::Builder<views::BoxLayoutView>()
-                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                    .SetBetweenChildSpacing(
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_RELATED_CONTROL_VERTICAL_SMALL))
-                    .Build();
-  for (const LegalMessageLine& line : legal_message_lines) {
-    auto label = views::Builder<views::StyledLabel>()
-                     .SetText(line.text())
-                     .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                     .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
-                     .Build();
-    for (const LegalMessageLine::Link& link : line.links()) {
-      label->AddStyleRange(link.range,
-                           views::StyledLabel::RangeStyleInfo::CreateForLink(
-                               base::BindRepeating(callback, link.url)));
-    }
-    result->AddChildView(std::move(label));
-  }
-
+  auto result =
+      CreateLegalMessageView(legal_message_lines, std::move(callback));
   if (user_email.empty() || user_avatar.IsEmpty()) {
     return result;
   }

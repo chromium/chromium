@@ -50,8 +50,12 @@ source_set("autofill_location_bar_bubble") {
 source_set("autofill_bubble_utils") {
   public = [ "autofill_bubble_utils.h" ]
   sources = [ "autofill_bubble_utils.cc" ]
-  public_deps = [ "//ui/views" ]
+  public_deps = [
+    "//components/autofill/core/browser:legal_message_line",
+    "//ui/views",
+  ]
   deps = [
+    "//chrome/browser/ui/views:layout_provider",
     "//components/strings:components_strings",
     "//components/vector_icons",
     "//ui/base",
