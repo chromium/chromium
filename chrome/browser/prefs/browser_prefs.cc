@@ -227,6 +227,7 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "ui/accessibility/accessibility_prefs.h"
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -1783,6 +1784,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   TRACE_EVENT0("browser", "chrome::RegisterProfilePrefs");
   // User prefs. Please keep this list alphabetized.
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
+  registry->RegisterBooleanPref(prefs::kRendererAccessibilityEnabled, true);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);

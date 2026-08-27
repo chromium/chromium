@@ -10,7 +10,8 @@
 #include "build/build_config.h"
 
 namespace prefs {
-// Local state prefs.
+// Profile and local state prefs.
+AX_BASE_EXPORT extern const char kRendererAccessibilityEnabled[];
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether different accessibility filtering modes for performance are allowed.

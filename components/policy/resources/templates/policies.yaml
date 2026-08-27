@@ -1480,6 +1480,7 @@ policies:
   1479: ""
   1480: ""
   1481: DeviceOsMigrationTargetDate
+  1482: RendererAccessibilityEnabled
 
 atomic_groups:
   1: Homepage

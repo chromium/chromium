@@ -2529,6 +2529,7 @@ chromium-metrics-reviews@google.com.
   <int value="1476" label="EnterprisePublishedSkills"/>
   <int value="1477" label="OnDataCopiedEnterpriseConnector"/>
   <int value="1481" label="DeviceOsMigrationTargetDate"/>
+  <int value="1482" label="RendererAccessibilityEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

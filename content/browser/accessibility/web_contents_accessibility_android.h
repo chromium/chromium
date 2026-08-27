@@ -111,6 +111,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // happen multiple times. See WebContentsAccessibilityImpl.java for more info.
   void ConnectInstanceToRootManager(JNIEnv* env);
   bool IsRootManagerConnected(JNIEnv* env);
+  bool IsAXModeChangeAllowed(JNIEnv* env);
 
   // This method should only be used by the Auto-Disable accessibility feature.
   //

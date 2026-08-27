@@ -23,6 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/buildflags.h"
 #include "components/activity_reporter/activity_reporter.h"
@@ -43,7 +44,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
-#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class BatteryMetrics;
@@ -340,11 +340,9 @@ class BrowserProcessImpl : public BrowserProcess,
   raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_ =
       nullptr;
 
-#if BUILDFLAG(IS_ANDROID)
   // Must be destroyed before |local_state_|.
   std::unique_ptr<accessibility::AccessibilityPrefsController>
       accessibility_prefs_controller_;
-#endif
 
   std::unique_ptr<network::NetworkQualityTracker> network_quality_tracker_;
 

@@ -1,0 +1,30 @@
+caption: Enable renderer accessibility
+default: true
+desc: |-
+  Controls accessibility tree generation in the renderer processes.
+
+  If this policy is set to Enabled or unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> allows accessibility tree generation for web pages.
+
+  If this policy is set to Disabled, renderer accessibility tree will no longer be generated, preventing accessibility features from interacting with the renderer.
+
+  If you set this policy, users cannot change or override it.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable renderer accessibility features
+  value: true
+- caption: Disable renderer accessibility features
+  value: false
+owners:
+- file://ui/accessibility/OWNERS
+- gregoryd@google.com
+schema:
+  type: boolean
+future_on:
+- chrome.*
+- chrome_os
+- android
+tags: []
+type: main

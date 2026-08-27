@@ -640,6 +640,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
+                && WebContentsAccessibilityImplJni.get().isAXModeChangeAllowed(mNativeObj)
                 && (mAccessibilityEnabledOverride
                         // The following two checks are both required. Due to previous experiences
                         // with possible races, either being true should be sufficient for us to
@@ -1477,7 +1478,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     private boolean shouldPreventNativeEngineUse() {
-        return mIsObscuredByAnotherView != null && mIsObscuredByAnotherView;
+        return (mIsObscuredByAnotherView != null && mIsObscuredByAnotherView)
+                || (isNativeInitialized()
+                        && !WebContentsAccessibilityImplJni.get()
+                                .isAXModeChangeAllowed(mNativeObj));
     }
 
     @Override
@@ -2923,6 +2927,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 Runnable onDoneCallback);
 
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
+
+        boolean isAXModeChangeAllowed(long nativeWebContentsAccessibilityAndroid);
 
         void setBrowserAXMode(
                 long nativeWebContentsAccessibilityAndroid,

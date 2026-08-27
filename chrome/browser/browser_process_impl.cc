@@ -533,10 +533,11 @@ void BrowserProcessImpl::Init() {
 #if BUILDFLAG(IS_ANDROID)
   webauthn::WebAuthnClientAndroid::SetClient(
       std::make_unique<ChromeWebAuthnClientAndroid>());
+#endif
+
   accessibility_prefs_controller_ =
       std::make_unique<accessibility::AccessibilityPrefsController>(
           local_state());
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)

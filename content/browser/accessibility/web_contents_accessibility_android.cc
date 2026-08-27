@@ -896,6 +896,10 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
   // is necessary.
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
+  if (!accessibility_state->IsAXModeChangeAllowed()) {
+    scoped_accessibility_mode_.reset();
+    return;
+  }
   ui::AXMode target_mode;
   if (!accessibility_state->IsPerformanceFilteringAllowed()) {
     // Adds kScreenReader to ensure no filtering via the non-screen-reader case.
@@ -922,6 +926,10 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
 
 bool WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
   return !!GetRootBrowserAccessibilityManager();
+}
+
+bool WebContentsAccessibilityAndroid::IsAXModeChangeAllowed(JNIEnv* env) {
+  return BrowserAccessibilityStateImpl::GetInstance()->IsAXModeChangeAllowed();
 }
 
 void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(

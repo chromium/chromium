@@ -218,6 +218,7 @@ source_set("browser_about_handler") {
 
 source_set("browser_process_impl") {
   public = [ "browser_process_impl.h" ]
+  public_deps = [ "//chrome/browser/accessibility/accessibility_prefs" ]
   deps = [
     ":browser_process",
     "//base",
@@ -237,9 +238,6 @@ source_set("browser_process_impl") {
       "//chrome/browser/upgrade_detector",
       "//components/keep_alive_registry",
     ]
-  }
-  if (is_android) {
-    deps += [ "//chrome/browser/accessibility/accessibility_prefs" ]
   }
   if (is_win) {
     deps += [ "//chrome/browser/win/isolated_browser:isolated_browser_support" ]
@@ -1665,7 +1663,6 @@ source_set("core") {
     deps += [
       ":profile_key_startup_accessor",
       "//chrome/android:jni_headers",
-      "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/android",
       "//chrome/browser/autocomplete",
       "//chrome/browser/bookmarks",
@@ -2013,6 +2010,7 @@ source_set("browser") {
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
     ":core",
+    "//chrome/browser/accessibility/accessibility_prefs",
     "//chrome/browser/browsing_data",
     "//chrome/browser/download",
     "//chrome/browser/enterprise/connectors/reporting:impl",

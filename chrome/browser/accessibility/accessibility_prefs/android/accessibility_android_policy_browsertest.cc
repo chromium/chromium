@@ -40,4 +40,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAndroidPolicyTest,
   EXPECT_FALSE(accessibility_state->IsPerformanceFilteringAllowed());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityAndroidPolicyTest,
+                       RendererAccessibilityEnabledNotSet) {
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  EXPECT_TRUE(accessibility_state->IsAXModeChangeAllowed());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAndroidPolicyTest,
+                       RendererAccessibilityDisabled) {
+  PolicyMap policies;
+  policies.Set(key::kRendererAccessibilityEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+               nullptr);
+  UpdateProviderPolicy(policies);
+
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  EXPECT_FALSE(accessibility_state->IsAXModeChangeAllowed());
+}
+
 }  // namespace policy

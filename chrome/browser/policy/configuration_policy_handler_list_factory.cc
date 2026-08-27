@@ -154,12 +154,12 @@
 #include "media/media_buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/accessibility/accessibility_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/first_run/android/first_run_prefs.h"
 #include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/search/contextual_search_policy_handler_android.h"
-#include "ui/accessibility/accessibility_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/default_download_dir_policy_handler.h"
 #include "chrome/browser/download/download_auto_open_policy_handler.h"
@@ -952,6 +952,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     password_manager::prefs::kCredentialsEnablePasskeys,
     base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_ANDROID)
+  { key::kRendererAccessibilityEnabled,
+    prefs::kRendererAccessibilityEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kWebAuthenticationRemoteDesktopAllowedOrigins,
     webauthn::pref_names::kRemoteDesktopAllowedOrigins,
     base::Value::Type::LIST },
