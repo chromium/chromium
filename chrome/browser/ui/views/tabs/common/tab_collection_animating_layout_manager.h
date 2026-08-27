@@ -162,6 +162,11 @@ class TabCollectionAnimatingLayoutManager
   // be mutable.
   views::ProposedLayout InterpolateLayout(double value) const;
 
+  // For horizontal tabs, the positions of adding views shift based on the
+  // surrounding views. Precompute the starting x-position for those views.
+  // Needs to be called after the starting or target layouts change.
+  void CalculateAddingViewsStartX() const;
+
   // For horizontal tabs, the positions of closing views shift based on the
   // surrounding views. Precompute the target x-position for those views. Needs
   // to be called after the starting or target layouts change.
@@ -202,12 +207,15 @@ class TabCollectionAnimatingLayoutManager
   ChildViewLayoutMap start_view_layout_map_;
   ChildViewLayoutMap target_view_layout_map_;
 
+  using ChildViewXMap = base::flat_map<raw_ptr<const views::View>, int>;
+  // Precomputed starting x values for adding tabs. When this is std::nullopt,
+  // it represents an invalidated cache that needs to be recomputed. Only used
+  // when `animation_axis_` is `kHorizontal`.
+  mutable std::optional<ChildViewXMap> adding_views_start_x_ = std::nullopt;
   // Precomputed target x values for closing tabs. When this is std::nullopt, it
   // represents an invalidated cache that needs to be recomputed. Only used when
   // `animation_axis_` is `kHorizontal`.
-  using ChildViewTargetXMap = base::flat_map<raw_ptr<const views::View>, int>;
-  mutable std::optional<ChildViewTargetXMap> closing_views_target_x_ =
-      std::nullopt;
+  mutable std::optional<ChildViewXMap> closing_views_target_x_ = std::nullopt;
 
   // Where in the animation the last layout recalculation happened.
   double starting_offset_ = 0.0;

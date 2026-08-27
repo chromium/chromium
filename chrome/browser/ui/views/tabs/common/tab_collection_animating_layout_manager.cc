@@ -277,6 +277,7 @@ void TabCollectionAnimatingLayoutManager::SetStartingLayout(
   starting_layout_ = starting_layout;
 
   if (animation_axis_ == AnimationAxis::kHorizontal) {
+    adding_views_start_x_ = std::nullopt;
     closing_views_target_x_ = std::nullopt;
   }
 }
@@ -295,6 +296,7 @@ void TabCollectionAnimatingLayoutManager::SetTargetLayout(
   target_layout_ = target_layout;
 
   if (animation_axis_ == AnimationAxis::kHorizontal) {
+    adding_views_start_x_ = std::nullopt;
     closing_views_target_x_ = std::nullopt;
   }
 }
@@ -470,8 +472,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     return IsVerticalOrWrappingVertically() ? bounds.bottom() : bounds.right();
   };
 
-  if (animation_axis_ == AnimationAxis::kHorizontal &&
-      !closing_views_target_x_.has_value()) {
+  if (animation_axis_ == AnimationAxis::kHorizontal) {
+    CalculateAddingViewsStartX();
     CalculateClosingViewsTargetX();
   }
 
@@ -519,6 +521,12 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
           } else {
             initial_bounds.set_width(0);
           }
+          if (animation_axis_ == AnimationAxis::kHorizontal) {
+            if (auto it = adding_views_start_x_->find(child_view);
+                it != adding_views_start_x_->end()) {
+              initial_bounds.set_x(it->second);
+            }
+          }
           interpolated_child.bounds = gfx::Tween::RectValueBetween(
               value, initial_bounds, target_it->second.bounds);
           if (child_view->layer()) {
@@ -559,9 +567,11 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       } else {
         target_bounds.set_width(0);
       }
-      if (animation_axis_ == AnimationAxis::kHorizontal &&
-          closing_views_target_x_->contains(child_view)) {
-        target_bounds.set_x(closing_views_target_x_->at(child_view));
+      if (animation_axis_ == AnimationAxis::kHorizontal) {
+        if (auto it = closing_views_target_x_->find(child_view);
+            it != closing_views_target_x_->end()) {
+          target_bounds.set_x(it->second);
+        }
       }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
           value, start_it->second.bounds, target_bounds);
@@ -644,8 +654,56 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   return result;
 }
 
+void TabCollectionAnimatingLayoutManager::CalculateAddingViewsStartX() const {
+  if (adding_views_start_x_.has_value()) {
+    return;
+  }
+  adding_views_start_x_ = ChildViewXMap();
+  // For each contiguous range of adding views, set the target x of those
+  // adding views based on the bounds of the surrounding non-adding views, if
+  // they exist.
+  std::optional<int> prev_start_bounds_right = std::nullopt;
+  std::vector<std::pair<views::View*, int>> adding_views_x;
+  auto assign_adding_views_start_x = [this, &adding_views_x](int start_x) {
+    for (auto [adding_view, _] : adding_views_x) {
+      adding_views_start_x_->insert_or_assign(adding_view, start_x);
+    }
+    adding_views_x.clear();
+  };
+  for (auto target_layout : target_layout_.child_layouts) {
+    views::View* curr_view = target_layout.child_view;
+    if (start_view_layout_map_.contains(curr_view)) {
+      const int curr_start_bounds_x =
+          start_view_layout_map_.at(curr_view).bounds.x();
+      // When there is a next view in the start layout, use the start x of the
+      // next view. If there is also a previous view, use the midpoint
+      // between the x of the next view and the right of the previous view.
+      assign_adding_views_start_x(
+          prev_start_bounds_right.has_value()
+              ? (prev_start_bounds_right.value() + curr_start_bounds_x) / 2
+              : curr_start_bounds_x);
+
+      prev_start_bounds_right =
+          start_view_layout_map_.at(curr_view).bounds.right();
+    } else {
+      adding_views_x.emplace_back(curr_view, target_layout.bounds.x());
+    }
+  }
+  if (!adding_views_x.empty()) {
+    // When there is no next view in the start layout, use the x of the
+    // first adding view. If there is a previous view, use the previous
+    // view's right.
+    const auto [_, first_adding_view_x] = adding_views_x[0];
+    assign_adding_views_start_x(
+        prev_start_bounds_right.value_or(first_adding_view_x));
+  }
+}
+
 void TabCollectionAnimatingLayoutManager::CalculateClosingViewsTargetX() const {
-  closing_views_target_x_ = ChildViewTargetXMap();
+  if (closing_views_target_x_.has_value()) {
+    return;
+  }
+  closing_views_target_x_ = ChildViewXMap();
   // For each contiguous range of closing views, set the target x of those
   // closing views based on the bounds of the surrounding non-closing views, if
   // they exist.
