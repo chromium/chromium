@@ -23,9 +23,11 @@ static_library("projector_app") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/signin",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
+    "//chromeos/ash/components/signin:identity_manager_provider",
+    "//components/account_id",
     "//components/version_info:channel",
     "//third_party/blink/public/common:headers",
   ]
