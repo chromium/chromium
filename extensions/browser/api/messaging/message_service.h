@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
@@ -120,6 +122,7 @@ class MessageService : public BrowserContextKeyedAPI,
       const ChannelEndpoint& source,
       const PortId& source_port_id,
       const std::string& native_app_name,
+      const SigningCertificates& android_certificates,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);
@@ -198,6 +201,7 @@ class MessageService : public BrowserContextKeyedAPI,
       const ChannelEndpoint& source,
       const PortId& source_port_id,
       const std::string& native_app_name,
+      const SigningCertificates& android_certificates,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);

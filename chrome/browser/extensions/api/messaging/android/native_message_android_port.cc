@@ -24,6 +24,7 @@ std::unique_ptr<NativeMessageAndroidPort> NativeMessageAndroidPort::Create(
     const PortId& port_id,
     const std::string& package_name,
     const ExtensionId& extension_id,
+    const SigningCertificates& android_certificates,
     std::string* error_out) {
   CHECK(error_out);
 

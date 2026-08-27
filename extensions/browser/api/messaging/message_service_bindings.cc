@@ -501,6 +501,7 @@ void MessageService::OpenChannelToNativeApp(
     const ChannelEndpoint& source,
     const PortId& source_port_id,
     const std::string& native_app_name,
+    const SigningCertificates& android_certificates,
     mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
     mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
         port_host) {
@@ -519,7 +520,8 @@ void MessageService::OpenChannelToNativeApp(
   }
 
   OpenChannelToNativeAppImpl(source, source_port_id, native_app_name,
-                             std::move(port), std::move(port_host));
+                             android_certificates, std::move(port),
+                             std::move(port_host));
 }
 
 void MessageService::OpenChannelToTab(

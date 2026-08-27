@@ -16,6 +16,7 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
@@ -44,6 +45,18 @@
 namespace extensions {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+MojomSigningCertificates ConvertCertificatesForMojom(
+    const SigningCertificates& certificates) {
+  MojomSigningCertificates mojo_certificates;
+  mojo_certificates.reserve(certificates.size());
+  for (const auto& cert : certificates) {
+    mojo_certificates.emplace_back(cert.begin(), cert.end());
+  }
+  return mojo_certificates;
+}
+#endif
 
 class MainThreadIPCMessageSender : public IPCMessageSender {
  public:
@@ -254,8 +267,12 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         CHECK_EQ(mojom::ChannelType::kNative, channel_type);
         ExtensionFrameHelper::Get(render_frame)
             ->GetLocalFrameHost()
-            ->OpenChannelToNativeApp(*target.native_application_name, port_id,
-                                     std::move(port), std::move(port_host));
+            ->OpenChannelToNativeApp(
+                *target.native_application_name,
+#if BUILDFLAG(IS_ANDROID)
+                ConvertCertificatesForMojom(target.android_certificates),
+#endif
+                port_id, std::move(port), std::move(port_host));
         break;
     }
   }
@@ -555,8 +572,12 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         CHECK_EQ(mojom::ChannelType::kNative, channel_type);
         WorkerThreadDispatcher::GetServiceWorkerData()
             ->GetServiceWorkerHost()
-            ->OpenChannelToNativeApp(*target.native_application_name, port_id,
-                                     std::move(port), std::move(port_host));
+            ->OpenChannelToNativeApp(
+                *target.native_application_name,
+#if BUILDFLAG(IS_ANDROID)
+                ConvertCertificatesForMojom(target.android_certificates),
+#endif
+                port_id, std::move(port), std::move(port_host));
         break;
     }
   }

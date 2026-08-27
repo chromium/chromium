@@ -294,6 +294,8 @@ static_library("common") {
     "api/messaging/port_context.h",
     "api/messaging/port_id.cc",
     "api/messaging/port_id.h",
+    "api/messaging/signing_certificate.cc",
+    "api/messaging/signing_certificate.h",
     "api/printer_provider/usb_printer_manifest_data.cc",
     "api/printer_provider/usb_printer_manifest_data.h",
     "api/printer_provider/usb_printer_manifest_handler.cc",

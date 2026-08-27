@@ -31,9 +31,12 @@ MessageTarget MessageTarget::ForExtension(const ExtensionId& extension_id) {
   return target;
 }
 
-MessageTarget MessageTarget::ForNativeApp(const std::string& native_app) {
+MessageTarget MessageTarget::ForNativeApp(
+    const std::string& native_app,
+    SigningCertificates android_certificates) {
   MessageTarget target(NATIVE_APP);
   target.native_application_name = native_app;
+  target.android_certificates = std::move(android_certificates);
   return target;
 }
 
@@ -44,6 +47,7 @@ MessageTarget::~MessageTarget() = default;
 bool MessageTarget::operator==(const MessageTarget& other) const {
   return type == other.type && extension_id == other.extension_id &&
          native_application_name == other.native_application_name &&
+         android_certificates == other.android_certificates &&
          tab_id == other.tab_id && frame_id == other.frame_id;
 }
 

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
@@ -63,6 +64,7 @@ class MessagingDelegate {
       const PortId& receiver_port_id,
       const std::string& native_app_name,
       bool allow_user_level,
+      const SigningCertificates& android_certificates,
       std::string* error_out);
 
   // Runs `callback` with true if `url` is allowed to connect to `extension`

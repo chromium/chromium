@@ -14,6 +14,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/extension_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -32,6 +33,7 @@ class NativeMessageAndroidPort : public MessagePort {
       const PortId& port_id,
       const std::string& package_name,
       const ExtensionId& extension_id,
+      const SigningCertificates& android_certificates,
       std::string* error_out);
 
   ~NativeMessageAndroidPort() override;

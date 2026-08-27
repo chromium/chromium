@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MESSAGING_CHROME_MESSAGING_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_CHROME_MESSAGING_DELEGATE_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -40,6 +44,7 @@ class ChromeMessagingDelegate : public MessagingDelegate {
       const PortId& receiver_port_id,
       const std::string& native_app_name,
       bool allow_user_level,
+      const SigningCertificates& android_certificates,
       std::string* error_out) override;
   void QueryIncognitoConnectability(
       content::BrowserContext* context,

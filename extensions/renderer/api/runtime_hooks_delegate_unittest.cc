@@ -4,8 +4,12 @@
 
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 
+#include <array>
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -13,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -50,6 +55,23 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
   EXPECT_TRUE(result.IsEmpty());
   EXPECT_TRUE(try_catch.HasCaught());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kValidSha256Cert1[] =
+    "01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:01:"
+    "01:01:01:01:01:01:01:01";
+constexpr char kValidSha256Cert2[] =
+    "02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-02-"
+    "02-02-02-02-02-02-02-02";
+constexpr char kValidSha256Cert3[] =
+    "0303030303030303030303030303030303030303030303030303030303030303";
+
+SigningCertificate MakeTestCert(uint8_t byte_val) {
+  SigningCertificate cert;
+  cert.fill(byte_val);
+  return cert;
+}
+#endif
 
 }  // namespace
 
@@ -392,7 +414,9 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
   int next_context_port_id = 0;
   auto run_connect_native = [this, context, &next_context_port_id](
                                 const std::string& args,
-                                const std::string& expected_app_name) {
+                                const std::string& expected_app_name,
+                                SigningCertificates expected_android_certs =
+                                    {}) {
     // connectNative() doesn't name channels.
     const std::string kEmptyExpectedChannel;
 
@@ -402,8 +426,8 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
     PortId expected_port_id(script_context()->context_id(),
                             next_context_port_id++, true,
                             mojom::SerializationFormat::kJson);
-    MessageTarget expected_target(
-        MessageTarget::ForNativeApp(expected_app_name));
+    MessageTarget expected_target(MessageTarget::ForNativeApp(
+        expected_app_name, std::move(expected_android_certs)));
     EXPECT_CALL(
         *ipc_message_sender(),
         SendOpenMessageChannel(script_context(), expected_port_id,
@@ -420,15 +444,29 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
 
   run_connect_native("'native_app'", "native_app");
   run_connect_native("{application: 'com.example.app'}", "com.example.app");
+#if BUILDFLAG(IS_ANDROID)
+  SigningCertificates expected_android_certs = {MakeTestCert(1)};
+  run_connect_native(
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s']}",
+          kValidSha256Cert1),
+      "com.example.app", expected_android_certs);
+#else
   run_connect_native(
       "{application: 'com.example.app', androidCertificates: ['cert1']}",
       "com.example.app");
+#endif
 
   auto connect_native_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "connectNative", args);
   };
   connect_native_error("'native_app', {name: 'name'}");
+#if BUILDFLAG(IS_ANDROID)
+  connect_native_error(
+      base::StringPrintf("{androidCertificates: ['%s']}", kValidSha256Cert1));
+#else
   connect_native_error("{androidCertificates: ['cert1']}");
+#endif
   connect_native_error("{application: 123}");
 }
 
@@ -446,10 +484,20 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
       "another_native_app");
   tester.TestSendNativeMessage("{application: 'com.example.app'}, {hi:'bye'}",
                                R"({"hi":"bye"})", "com.example.app");
+#if BUILDFLAG(IS_ANDROID)
+  SigningCertificates expected_android_certs = {MakeTestCert(1)};
+  tester.TestSendNativeMessage(
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s']}, "
+          "{hi:'bye'}",
+          kValidSha256Cert1),
+      R"({"hi":"bye"})", "com.example.app", expected_android_certs);
+#else
   tester.TestSendNativeMessage(
       "{application: 'com.example.app', androidCertificates: ['cert1']}, "
       "{hi:'bye'}",
       R"({"hi":"bye"})", "com.example.app");
+#endif
 
   auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
@@ -458,7 +506,12 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
   send_native_message_error("{data: 'hi'}, function() {}");
   send_native_message_error(
       "'native_app', 'some message', {includeTlsChannelId: true}");
+#if BUILDFLAG(IS_ANDROID)
+  send_native_message_error(base::StringPrintf(
+      "{androidCertificates: ['%s']}, {data: 'hi'}", kValidSha256Cert1));
+#else
   send_native_message_error("{androidCertificates: ['cert1']}, {data: 'hi'}");
+#endif
   send_native_message_error("{application: 123}, {data: 'hi'}");
 }
 
@@ -657,10 +710,20 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
   {
     // Calling sendNativeMessage with object target and callback should result
     // in no value returned.
+#if BUILDFLAG(IS_ANDROID)
+    SigningCertificates expected_certs = {MakeTestCert(1)};
+    v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+        base::StringPrintf(
+            "{application: 'another_app', androidCertificates: ['%s']}, "
+            "{alpha: 2}, function() {}",
+            kValidSha256Cert1),
+        R"({"alpha":2})", "another_app", expected_certs);
+#else
     v8::Local<v8::Value> result = tester.TestSendNativeMessage(
         "{application: 'another_app', androidCertificates: ['cert1']}, "
         "{alpha: 2}, function() {}",
         R"({"alpha":2})", "another_app");
+#endif
     EXPECT_TRUE(result->IsUndefined());
   }
 
@@ -672,7 +735,12 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
   send_native_message_error("{data: 'hi'}, function() {}");
   send_native_message_error(
       "'native_app', 'some message', {includeTlsChannelId: true}");
+#if BUILDFLAG(IS_ANDROID)
+  send_native_message_error(base::StringPrintf(
+      "{androidCertificates: ['%s']}, {data: 'hi'}", kValidSha256Cert1));
+#else
   send_native_message_error("{androidCertificates: ['cert1']}, {data: 'hi'}");
+#endif
   send_native_message_error("{application: 123}, {data: 'hi'}");
 }
 
@@ -698,10 +766,62 @@ TEST_F(RuntimeHooksDelegatePackedNativeMessagingMV3Test, SendNativeMessage) {
   CallAPIAndExpectError(MainContext(), "sendNativeMessage",
                         "'native_app', {hi:'bye'}");
 
-  // Calling with an object should succeed on Android.
+  // Failure when androidCertificates is not specified for packed extension.
+  CallAPIAndExpectError(MainContext(), "sendNativeMessage",
+                        "{application: 'com.example.app'}, {hi:'bye'}");
+
+  // Failure when androidCertificates is empty for packed extension.
+  CallAPIAndExpectError(
+      MainContext(), "sendNativeMessage",
+      "{application: 'com.example.app', androidCertificates: []}, {hi:'bye'}");
+
+  // Failure when androidCertificates is non-array.
+  CallAPIAndExpectError(MainContext(), "sendNativeMessage",
+                        "{application: 'com.example.app', androidCertificates: "
+                        "'not_an_array'}, {hi:'bye'}");
+
+  // Failure when an element in androidCertificates is not a string.
+  CallAPIAndExpectError(
+      MainContext(), "sendNativeMessage",
+      "{application: 'com.example.app', androidCertificates: [123]}, "
+      "{hi:'bye'}");
+
+  // Failure when one certificate is malformed with non-hex character (first
+  // cert fine, second malformed).
+  CallAPIAndExpectError(
+      MainContext(), "sendNativeMessage",
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s', "
+          "'02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:02:"
+          "02:02:02:02:02:02:02:02:02:ZZ']}, {hi:'bye'}",
+          kValidSha256Cert1));
+
+  // Failure when one certificate is malformed because it's not long enough.
+  CallAPIAndExpectError(
+      MainContext(), "sendNativeMessage",
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s', "
+          "'02:02:02:02']}, {hi:'bye'}",
+          kValidSha256Cert1));
+
+  // Failure when one certificate is malformed because it's too long.
+  CallAPIAndExpectError(
+      MainContext(), "sendNativeMessage",
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s', "
+          "'%s:00']}, {hi:'bye'}",
+          kValidSha256Cert1, kValidSha256Cert1));
+
+  // Success when 3 certificates are all valid sha256 (one uses colon, one uses
+  // dash, one has no separator).
+  SigningCertificates expected_certs = {MakeTestCert(1), MakeTestCert(2),
+                                        MakeTestCert(3)};
   v8::Local<v8::Value> result = tester.TestSendNativeMessage(
-      "{application: 'com.example.app'}, {hi:'bye'}", R"({"hi":"bye"})",
-      "com.example.app");
+      base::StringPrintf(
+          "{application: 'com.example.app', androidCertificates: ['%s', '%s', "
+          "'%s']}, {hi:'bye'}",
+          kValidSha256Cert1, kValidSha256Cert2, kValidSha256Cert3),
+      R"({"hi":"bye"})", "com.example.app", expected_certs);
   v8::Local<v8::Promise> promise;
   ASSERT_TRUE(GetValueAs(result, &promise));
   EXPECT_EQ(v8::Promise::kPending, promise->State());

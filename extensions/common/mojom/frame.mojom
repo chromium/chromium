@@ -215,8 +215,13 @@ interface LocalFrameHost {
 
   // Get a port handle to the native application.  The handle can be used for
   // sending messages to the extension.
+  // `android_certificates` specifies the list of expected signing certificates
+  // if `native_app_name` is an external Android app.
   OpenChannelToNativeApp(
-    string native_app_name, extensions.mojom.PortId port_id,
+    string native_app_name,
+    [EnableIf=is_android]
+    array<array<uint8, 32>> android_certificates,
+    extensions.mojom.PortId port_id,
     pending_associated_remote<extensions.mojom.MessagePort> port,
     pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
 

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
+#include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
@@ -78,6 +79,9 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
           port_host) override;
   void OpenChannelToNativeApp(
       const std::string& native_app_name,
+#if BUILDFLAG(IS_ANDROID)
+      const MojomSigningCertificates& android_certificates,
+#endif
       const PortId& port_id,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
