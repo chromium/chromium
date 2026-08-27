@@ -354,3 +354,13 @@ cr-toast-manager {
 :host-context([webui-rounded-icons]) #showLessIcon {
   -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content.svg);
 }
+
+<if expr="is_android">
+/* AL has a narrower minimum window width than desktop Chrome, so the
+ * "Add / Edit shortcut" dialog uses min() to cap at 380px while
+ * shrinking with 16px margins on each side for narrow viewports. */
+#dialog {
+  --cr-dialog-border-radius: 24px;
+  --cr-dialog-width: min(380px, calc(100vw - 32px));
+}
+</if>
