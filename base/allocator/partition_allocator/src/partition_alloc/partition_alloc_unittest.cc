@@ -5026,8 +5026,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr1));
-  PartitionRoot::FreeAfterBRPQuarantine(
-      internal::UntaggedSlotStart(slot_info.slot_start), slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
   uint64_t* ptr3 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
   PA_EXPECT_PTR_EQ(ptr1, ptr3);
@@ -5076,8 +5075,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
 
     auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
         reinterpret_cast<uintptr_t>(ptr1));
-    PartitionRoot::FreeAfterBRPQuarantine(
-        internal::UntaggedSlotStart(slot_info.slot_start), slot_info.size);
+    PartitionRoot::FreeAfterBRPQuarantine(slot_info);
   }
 
   allocator.root()->Free(ptr2);
@@ -5263,7 +5261,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -5365,7 +5363,7 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // Allocate memory, and reference it from 3
@@ -5413,7 +5411,7 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // When 'free' is called, it remain one raw_ptr<> and one
@@ -5452,7 +5450,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // When 'free' is called, it remain one raw_ptr<> and one
@@ -5493,7 +5491,7 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // When 'free' is called, it remains one
@@ -5537,7 +5535,7 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // Same as 'DanglingPtrUsedToAcquireNewRawPtr', but release the
@@ -5580,7 +5578,7 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // Acquire a raw_ptr<T>, and release it before freeing memory. In the
@@ -5620,7 +5618,7 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 }
 
 // Similar to `PartitionAllocTest.DanglingPtr`, but using
@@ -5681,7 +5679,7 @@ TEST_P(PartitionAllocTest, DanglingPtrReleaseToSchedulerLoopQuarantine) {
 
   auto slot_info = partition_alloc::SlotAddressAndSize::FromBRPPool(
       reinterpret_cast<uintptr_t>(ptr));
-  PartitionRoot::FreeAfterBRPQuarantine(slot_info.slot_start, slot_info.size);
+  PartitionRoot::FreeAfterBRPQuarantine(slot_info);
 
   EXPECT_TRUE(branch.IsQuarantined(ptr));
   branch.Purge();

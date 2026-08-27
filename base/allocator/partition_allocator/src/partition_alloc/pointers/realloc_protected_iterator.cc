@@ -58,8 +58,7 @@ void UnwrapBackingSlot(
   PA_BASE_CHECK(metadata->IsAlive());
 
   if (metadata->ReleaseFromUnprotectedPtr()) {
-    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot.slot_start,
-                                                           slot.size);
+    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot);
   }
 #endif
 }

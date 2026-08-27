@@ -39,6 +39,7 @@
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
+#include "partition_alloc/slot_address_and_size.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -762,15 +763,13 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // static
 PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
-    internal::UntaggedSlotStart slot_start,
-    size_t slot_size) {
-  auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(slot_start);
+    SlotAddressAndSize slot_and_size) {
+  auto* slot_span =
+      internal::SlotSpanMetadata::FromSlotStart(slot_and_size.slot_start);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Currently, InSlotMetadata is allocated when BRP is used.
   PA_DCHECK(root->brp_enabled());
-  PA_DCHECK(!internal::InSlotMetadata::From(
-                 {slot_start, slot_span->bucket->slot_size})
-                 ->IsAlive());
+  PA_DCHECK(!internal::InSlotMetadata::From(slot_and_size)->IsAlive());
 
   // Iterating over the entire slot can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
@@ -778,13 +777,13 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
   // If we have a hook the object segment is not necessarily filled
   // with |kQuarantinedByte|.
   if (!hook) [[likely]] {
-    unsigned char* object = slot_start.Tag().ToObject();
+    unsigned char* object = slot_and_size.slot_start.Tag().ToObject();
     for (size_t i = 0; i < root->GetSlotUsableSize(slot_span); ++i) {
       PA_UNSAFE_TODO(PA_DCHECK(object[i] == internal::kQuarantinedByte));
     }
   }
-  internal::DebugMemset(slot_start.Tag().ToObject(), internal::kFreedByte,
-                        slot_span->GetUtilizedSlotSize());
+  internal::DebugMemset(slot_and_size.slot_start.Tag().ToObject(),
+                        internal::kFreedByte, slot_span->GetUtilizedSlotSize());
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
   root->total_size_of_brp_quarantined_bytes.fetch_sub(
@@ -793,20 +792,22 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
       1, std::memory_order_relaxed);
 
   internal::InSlotMetadata* metadata =
-      internal::InSlotMetadata::From({slot_start, slot_size});
+      internal::InSlotMetadata::From(slot_and_size);
   auto size_details = internal::BucketSizeDetails{
       .bucket_index =
-          SizeToBucketIndex(slot_size, root->GetBucketDistribution()),
-      .slot_size = slot_size,
+          SizeToBucketIndex(slot_and_size.size, root->GetBucketDistribution()),
+      .slot_size = slot_and_size.size,
   };
-  PA_DCHECK(slot_size == slot_span->bucket->slot_size);
+  PA_DCHECK(slot_and_size.size == slot_span->bucket->slot_size);
 
   // `FreeFlags::kSchedulerLoopQuarantine` was used for the original `Free()`
   // call. Send the allocation to yet another quarantine.
   if (metadata->PopQuarantineRequest()) {
-    root->SchedulerLoopQuarantine(slot_start.Tag(), slot_span, size_details);
+    root->SchedulerLoopQuarantine(slot_and_size.slot_start.Tag(), slot_span,
+                                  size_details);
   } else {
-    root->RawFreeWithThreadCache(slot_start.Tag(), size_details, slot_span);
+    root->RawFreeWithThreadCache(slot_and_size.slot_start.Tag(), size_details,
+                                 slot_span);
   }
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
