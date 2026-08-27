@@ -153,8 +153,18 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   }
 
   protected onFreClose_() {
-    this.showFreModal_ = false;
-    SearchboxBrowserProxy.getInstance().handler.dismissFre();
+    const freModal = this.shadowRoot.querySelector('fre-modal');
+    if (!freModal) {
+      this.showFreModal_ = false;
+      SearchboxBrowserProxy.getInstance().handler.dismissFre();
+      return;
+    }
+
+    freModal.classList.add('dismissing');
+    freModal.addEventListener('animationend', () => {
+      this.showFreModal_ = false;
+      SearchboxBrowserProxy.getInstance().handler.dismissFre();
+    }, {once: true});
   }
 
   protected onFreAcceptHotkey_() {

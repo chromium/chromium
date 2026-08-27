@@ -124,6 +124,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 #mostVisitedContainer {
   -webkit-app-region: drag;
   align-items: center;
+  animation: fadeInMvt 200ms cubic-bezier(0, 0, 0.2, 1);
   background-clip: padding-box;
   background-color: var(--color-sys-surface-container-high, #fff);
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox and
@@ -173,6 +174,42 @@ cr-most-visited {
 
 fre-modal {
   margin-top: 10px;
+}
+
+fre-modal.dismissing {
+  animation: fadeOutFre 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOutFre {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fadeInMvt {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  fre-modal.dismissing {
+    animation-duration: 0s;
+  }
+  #mostVisitedContainer {
+    animation: none;
+  }
 }
 
 #content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) fre-modal,
