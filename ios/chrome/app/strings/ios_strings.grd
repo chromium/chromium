@@ -3587,6 +3587,24 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_PERMISSION_MICROPHONE_PROMPT_TITLE" desc="Title of the Gemini-specific microphone permission prompt.">
         “Chrome” would like to access your microphone
       </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_PLANNING_FLOATY_TEXT" desc="Text inside the floaty bubble in the Planning carousel slide animation.">
+          Add this to my calendar
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_PLANNING_TAB_TEXT" desc="Text inside the browser tab in the Planning carousel slide animation.">
+          Dan’s Birthday
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_SHOPPING_FLOATY_TEXT" desc="Text inside the floaty bubble in the Shopping carousel slide animation.">
+          Which should I buy?
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_SHOPPING_TAB_TEXT" desc="Text inside the browser tab in the Shopping carousel slide animation.">
+          Headphones
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_FLOATY_TEXT" desc="Text inside the floaty bubble in the Summarize carousel slide animation.">
+          Summarize this article
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_TAB_TEXT" desc="Text inside the browser tab in the Summarize carousel slide animation.">
+          Market Report
+      </message>
       <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY" desc="'Remix an image' body text for the Gemini Promo page.">
         Long press an image on the web to edit with Gemini
       </message>

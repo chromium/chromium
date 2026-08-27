@@ -36,7 +36,9 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
                      animationNameRTL:(NSString*)animationNameRTL
                  darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
                                 title:(NSString*)title
-          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel {
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary {
   self = [super init];
   if (self) {
     CHECK(animationName.length);
@@ -51,6 +53,7 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
     _darkAnimationNameRTL = [darkAnimationNameRTL copy];
     _title = [title copy];
     _animationAccessibilityLabel = [animationAccessibilityLabel copy];
+    _textProviderDictionary = [textProviderDictionary copy];
   }
   return self;
 }
@@ -130,8 +133,16 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   config.shouldLoop = NO;
   id<LottieAnimation> animation =
       ios::provider::GenerateLottieAnimation(config);
+
+  // Replace the Lottie text to enable localization.
+  if (_slide.textProviderDictionary) {
+    [animation setDictionaryTextProvider:_slide.textProviderDictionary];
+  }
+
   animation.animationView.translatesAutoresizingMaskIntoConstraints = NO;
   animation.animationView.contentMode = UIViewContentModeScaleAspectFit;
+  // Hide the text in the lottie as we have custom accesbility labels.
+  animation.animationView.accessibilityElementsHidden = YES;
   return animation;
 }
 

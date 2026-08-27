@@ -27,6 +27,21 @@ const CGFloat kSpacingMedium = 36.0;
 const CGFloat kTopPadding = 42.0;
 // Top spacing padding before the carousel view in compact height mode.
 const CGFloat kCompactTopPadding = 27.0;
+
+// Lottie text layer keys for carousel animation text replacement.
+NSString* const kLottieFloatyTextLayerKey = @"Floaty-text";
+NSString* const kLottieTabTextLayerKey = @"Tab-text";
+
+// Returns a text provider dictionary for a carousel slide given string resource
+// IDs for the floaty and tab text layers.
+NSDictionary<NSString*, NSString*>* CreateCarouselTextProvider(
+    int floaty_string_id,
+    int tab_string_id) {
+  return @{
+    kLottieFloatyTextLayerKey : l10n_util::GetNSString(floaty_string_id),
+    kLottieTabTextLayerKey : l10n_util::GetNSString(tab_string_id),
+  };
+}
 }  // namespace
 
 @interface GeminiVisualRichViewController () <
@@ -193,55 +208,8 @@ const CGFloat kCompactTopPadding = 27.0;
   ]];
 
   // Instantiate carousel view with FRE slides.
-  NSString* suffix =
-      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_CAROUSEL_GEMINI_IN_CHROME);
-  NSString* summarizeTitle = [NSString
-      stringWithFormat:@"%@\n%@",
-                       l10n_util::GetNSString(
-                           IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE),
-                       suffix];
-  NSString* shoppingTitle =
-      [NSString stringWithFormat:@"%@ %@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE),
-                                 suffix];
-  NSString* planningTitle =
-      [NSString stringWithFormat:@"%@ %@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE),
-                                 suffix];
-
-  NSArray<GeminiFirstRunCarouselSlide*>* slides = @[
-    [[GeminiFirstRunCarouselSlide alloc]
-              initWithAnimationName:kLottieAnimationFRESummarizeSlideName
-                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
-                   animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
-                              title:summarizeTitle
-        animationAccessibilityLabel:
-            l10n_util::GetNSString(
-                IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_ANIMATION_ACCESSIBILITY_LABEL)],
-    [[GeminiFirstRunCarouselSlide alloc]
-              initWithAnimationName:kLottieAnimationFREShoppingSlideName
-                  darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
-                   animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
-                              title:shoppingTitle
-        animationAccessibilityLabel:
-            l10n_util::GetNSString(
-                IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_ANIMATION_ACCESSIBILITY_LABEL)],
-    [[GeminiFirstRunCarouselSlide alloc]
-              initWithAnimationName:kLottieAnimationFREPlanningSlideName
-                  darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
-                   animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
-               darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
-                              title:planningTitle
-        animationAccessibilityLabel:
-            l10n_util::GetNSString(
-                IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_ANIMATION_ACCESSIBILITY_LABEL)],
-  ];
-
-  _carouselView = [[GeminiFirstRunCarouselView alloc] initWithSlides:slides];
+  _carouselView =
+      [[GeminiFirstRunCarouselView alloc] initWithSlides:[self carouselSlides]];
   [_carouselView
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
@@ -262,6 +230,69 @@ const CGFloat kCompactTopPadding = 27.0;
     footnoteView.delegate = self;
     [_mainStackView addArrangedSubview:footnoteView];
   }
+}
+
+// Returns the list of configured slides for the visual-rich FRE carousel.
+- (NSArray<GeminiFirstRunCarouselSlide*>*)carouselSlides {
+  NSString* suffix =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_CAROUSEL_GEMINI_IN_CHROME);
+  NSString* summarizeTitle = [NSString
+      stringWithFormat:@"%@\n%@",
+                       l10n_util::GetNSString(
+                           IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE),
+                       suffix];
+  NSString* shoppingTitle =
+      [NSString stringWithFormat:@"%@ %@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE),
+                                 suffix];
+  NSString* planningTitle =
+      [NSString stringWithFormat:@"%@ %@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE),
+                                 suffix];
+
+  return @[
+    [[GeminiFirstRunCarouselSlide alloc]
+              initWithAnimationName:kLottieAnimationFRESummarizeSlideName
+                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
+                   animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
+                              title:summarizeTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_ANIMATION_ACCESSIBILITY_LABEL)
+             textProviderDictionary:
+                 CreateCarouselTextProvider(
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_FLOATY_TEXT,
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SUMMARIZE_TAB_TEXT)],
+    [[GeminiFirstRunCarouselSlide alloc]
+              initWithAnimationName:kLottieAnimationFREShoppingSlideName
+                  darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
+                   animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
+                              title:shoppingTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_ANIMATION_ACCESSIBILITY_LABEL)
+             textProviderDictionary:
+                 CreateCarouselTextProvider(
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SHOPPING_FLOATY_TEXT,
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_SHOPPING_TAB_TEXT)],
+    [[GeminiFirstRunCarouselSlide alloc]
+              initWithAnimationName:kLottieAnimationFREPlanningSlideName
+                  darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
+                   animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
+                              title:planningTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_ANIMATION_ACCESSIBILITY_LABEL)
+             textProviderDictionary:
+                 CreateCarouselTextProvider(
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_PLANNING_FLOATY_TEXT,
+                     IDS_IOS_GEMINI_PROMO_CAROUSEL_PLANNING_TAB_TEXT)],
+  ];
 }
 
 - (void)updateLayoutForCurrentTraitCollection {

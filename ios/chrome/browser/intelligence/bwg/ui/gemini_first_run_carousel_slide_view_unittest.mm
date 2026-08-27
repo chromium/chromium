@@ -20,7 +20,8 @@ class GeminiFirstRunCarouselSlideViewTest : public PlatformTest {
                    animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
                darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
                               title:@"Summarize with Gemini"
-        animationAccessibilityLabel:@"Summarize artwork"];
+        animationAccessibilityLabel:@"Summarize artwork"
+             textProviderDictionary:nil];
   }
 
   GeminiFirstRunCarouselSlide* slide_;

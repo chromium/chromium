@@ -81,6 +81,11 @@ const base::TimeDelta kAutoScrollInterval = base::Seconds(3);
 
 - (void)startAutoScrolling {
   [self playCurrentSlideAnimation];
+  // Don't start auto-scrolling if the user is using VoiceOver or Reduce Motion.
+  if (UIAccessibilityIsVoiceOverRunning() ||
+      UIAccessibilityIsReduceMotionEnabled()) {
+    return;
+  }
   [self stopAutoScrolling];
   __weak __typeof(self) weakSelf = self;
   _autoScrollTimer.Start(FROM_HERE, kAutoScrollInterval, base::BindRepeating(^{

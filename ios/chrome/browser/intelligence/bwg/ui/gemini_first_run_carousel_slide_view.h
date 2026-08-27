@@ -32,15 +32,22 @@
 // The accessibility label for the Lottie animation artwork.
 @property(nonatomic, copy, readonly) NSString* animationAccessibilityLabel;
 
+// The dictionary text provider for localized string replacement in the Lottie
+// animation.
+@property(nonatomic, copy, readonly)
+    NSDictionary<NSString*, NSString*>* textProviderDictionary;
+
 // Initializer with the Lottie animations for light and dark mode, in both LTR
-// and RTL layout directions, along with the title and accessibility label for
-// the animation artwork.
+// and RTL layout directions, along with the title, accessibility label for
+// the animation artwork, and optional text provider dictionary.
 - (instancetype)initWithAnimationName:(NSString*)animationName
                     darkAnimationName:(NSString*)darkAnimationName
                      animationNameRTL:(NSString*)animationNameRTL
                  darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
                                 title:(NSString*)title
           animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
+               textProviderDictionary:
+                   (NSDictionary<NSString*, NSString*>*)textProviderDictionary
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

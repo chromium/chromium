@@ -52,21 +52,24 @@ class GeminiFirstRunCarouselViewTest : public PlatformTest {
                    animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
                darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
                               title:@"Summarize with Gemini"
-        animationAccessibilityLabel:@"Summarize artwork"];
+        animationAccessibilityLabel:@"Summarize artwork"
+             textProviderDictionary:nil];
     slide2_ = [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFREShoppingSlideName
                   darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
                    animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
                darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
                               title:@"Shop with Gemini"
-        animationAccessibilityLabel:@"Shop artwork"];
+        animationAccessibilityLabel:@"Shop artwork"
+             textProviderDictionary:nil];
     slide3_ = [[GeminiFirstRunCarouselSlide alloc]
               initWithAnimationName:kLottieAnimationFREPlanningSlideName
                   darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
                    animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
                darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
                               title:@"Plan with Gemini"
-        animationAccessibilityLabel:@"Plan artwork"];
+        animationAccessibilityLabel:@"Plan artwork"
+             textProviderDictionary:nil];
   }
 
   base::test::TaskEnvironment task_environment_{
