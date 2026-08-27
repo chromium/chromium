@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
@@ -113,6 +114,15 @@ class DictationKeyedService : public KeyedService,
   DictationLogBuffer& log_buffer() { return log_buffer_; }
   const DictationLogBuffer& log_buffer() const { return log_buffer_; }
 
+  // Registers a callback invoked whenever the tab displaying the Dictation
+  // session UI changes. The callback is invoked immediately upon registration
+  // with the current session tab (or nullptr).
+  base::CallbackListSubscription AddDictationTabChangedCallback(
+      base::RepeatingCallback<void(tabs::TabInterface*)> callback);
+
+  // Returns the tab currently displaying the Dictation session UI
+  tabs::TabInterface* GetActiveDictationTab() const;
+
  private:
   // Starts a new session from the given target. It's the caller's
   // responsibility to ensure this never called while an existing session in
@@ -152,6 +162,9 @@ class DictationKeyedService : public KeyedService,
     base::WeakPtr<tabs::TabInterface> tab_;
   };
   std::optional<SessionState> session_;
+
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      dictation_tab_changed_callbacks_;
 };
 
 }  // namespace dictation

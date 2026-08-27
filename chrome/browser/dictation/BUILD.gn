@@ -161,6 +161,8 @@ source_set("browser_tests") {
     ":impl",
     ":metrics",
     ":test_support",
+    "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/glic/browser_ui:glow",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",

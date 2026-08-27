@@ -15,15 +15,22 @@
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/dictation/onboarding_dialog_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -35,6 +42,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -701,6 +709,19 @@ class DictationGlicBrowserTest : public glic::GlicBrowserTest {
     return *DictationKeyedService::Get(GetProfile());
   }
 
+  glic::TabUnderlineView* GetUnderlineView(tabs::TabInterface* tab) {
+    auto* browser_view =
+        BrowserView::GetBrowserViewForBrowser(tab->GetBrowserWindowInterface());
+    auto* tab_view =
+        browser_view->tab_strip_view()->GetTabAnchorView(tab->GetHandle());
+    if (!tab_view) {
+      return nullptr;
+    }
+    views::View* view = tab_view->GetViewByElementId(
+        glic::TabUnderlineView::kGlicTabUnderlineElementId);
+    return views::AsViewClass<glic::TabUnderlineView>(view);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -750,6 +771,58 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
       [&]() { return controller->GetState() == SessionState::kInactive; }));
 
   dictation_service().EndSession();
+}
+
+IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, TabUnderlineVisibility) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  auto* underline = GetUnderlineView(tab);
+  ASSERT_TRUE(underline);
+  EXPECT_FALSE(underline->IsShowing());
+
+  // Start dictation session on the active tab.
+  content::GlobalDOMNodeId target_id(
+      tab->GetContents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(123));
+
+  dictation_service().StartSessionForTesting(
+      *tab, TargetDetails(target_id), DictationSessionEntryPoint::kContextMenu);
+
+  // The underline should become visible.
+  EXPECT_TRUE(underline->IsShowing());
+
+  // End session.
+  dictation_service().EndSession();
+
+  EXPECT_FALSE(underline->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
+                       TabUnderlineHiddenOnNavigation) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  auto* underline = GetUnderlineView(tab);
+  ASSERT_TRUE(underline);
+  EXPECT_FALSE(underline->IsShowing());
+
+  // Start dictation session on the active tab.
+  content::GlobalDOMNodeId target_id(
+      tab->GetContents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(123));
+
+  dictation_service().StartSessionForTesting(
+      *tab, TargetDetails(target_id), DictationSessionEntryPoint::kContextMenu);
+
+  EXPECT_TRUE(underline->IsShowing());
+
+  // Navigate the active tab.
+  ASSERT_TRUE(
+      content::NavigateToURL(tab->GetContents(), GURL("chrome://version")));
+
+  // The underline should become hidden because navigation ends dictation.
+  EXPECT_FALSE(underline->IsShowing());
 }
 
 }  // namespace

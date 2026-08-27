@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -361,11 +362,18 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
 
   BrowserWindowInterface* const browser_window_interface =
       controller_->GetBrowserWindowInterface();
-  if (browser_window_interface &&
-      ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
-        glic::GlicEnabling::IsProfileEligible(
-            browser_window_interface->GetProfile())) ||
-       contextual_tasks::IsContextualTasksUIEnabled())) {
+
+  bool should_create_underline = false;
+  if (browser_window_interface) {
+    Profile* profile = browser_window_interface->GetProfile();
+    should_create_underline =
+        (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+         glic::GlicEnabling::IsProfileEligible(profile)) ||
+        contextual_tasks::IsContextualTasksUIEnabled() ||
+        (dictation::DictationKeyedService::Get(profile));
+  }
+
+  if (should_create_underline) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(
             glic::TabUnderlineView::Factory::Create(

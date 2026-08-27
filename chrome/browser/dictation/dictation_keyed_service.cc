@@ -141,6 +141,17 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
   return std::make_unique<SessionUiImpl>(*tab, controller);
 }
 
+base::CallbackListSubscription
+DictationKeyedService::AddDictationTabChangedCallback(
+    base::RepeatingCallback<void(tabs::TabInterface*)> callback) {
+  callback.Run(GetActiveDictationTab());
+  return dictation_tab_changed_callbacks_.Add(std::move(callback));
+}
+
+tabs::TabInterface* DictationKeyedService::GetActiveDictationTab() const {
+  return session_ ? session_->tab_.get() : nullptr;
+}
+
 void DictationKeyedService::StartSession(
     tabs::TabInterface& tab,
     const TargetDetails& target_details,
@@ -157,6 +168,7 @@ void DictationKeyedService::StartSession(
   RecordDictationSessionStartSource(entry_point);
 
   session_.emplace(*this, tab);
+  dictation_tab_changed_callbacks_.Notify(&tab);
 
   session_->controller_.ResetUi();
 
@@ -184,6 +196,7 @@ void DictationKeyedService::StartSessionForTesting(  // IN-TEST
 
 void DictationKeyedService::EndSession() {
   session_.reset();
+  dictation_tab_changed_callbacks_.Notify(nullptr);
 }
 
 bool DictationKeyedService::ShouldShowContextMenuItem() const {
@@ -214,6 +227,7 @@ void DictationKeyedService::TriggerSession(
       VT_LOG(profile_) << "Moving session to new tab: " << tab;
       session_->tab_ = tab->GetWeakPtr();
       session_->controller_.ResetUi();
+      dictation_tab_changed_callbacks_.Notify(tab);
     }
 
     VT_LOG(profile_) << "Starting in existing session";

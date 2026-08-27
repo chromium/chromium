@@ -78,6 +78,7 @@ source_set("impl") {
 
   deps = [
     "//chrome/browser:primitives",
+    "//chrome/browser/dictation",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui:glow",
     "//chrome/browser/glic/browser_ui:glow_controller",
