@@ -4,6 +4,8 @@
 
 #include "partition_alloc/pointers/realloc_protected_iterator.h"
 
+#include <optional>
+
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -21,15 +23,15 @@
 
 namespace base::internal {
 
-partition_alloc::SlotAddressAndSize WrapBackingSlot(
+std::optional<partition_alloc::SlotAddressAndSize> WrapBackingSlot(
     [[maybe_unused]] const void* p) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (!p) {
-    return {};
+    return std::nullopt;
   }
   const uintptr_t addr = partition_alloc::UntagPtr(p);
   if (!partition_alloc::IsManagedByPartitionAllocBRPPool(addr)) {
-    return {};
+    return std::nullopt;
   }
   const auto slot_and_size =
       partition_alloc::SlotAddressAndSize::FromBRPPool(addr);
@@ -37,17 +39,17 @@ partition_alloc::SlotAddressAndSize WrapBackingSlot(
       ->AcquireFromUnprotectedPtr();
   return slot_and_size;
 #else
-  return {};
+  return std::nullopt;
 #endif
 }
 
 void UnwrapBackingSlot(
-    [[maybe_unused]] partition_alloc::SlotAddressAndSize slot) {
+    [[maybe_unused]] std::optional<partition_alloc::SlotAddressAndSize> slot) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (!slot.slot_start) {
+  if (!slot) {
     return;
   }
-  auto* metadata = partition_alloc::internal::InSlotMetadata::From(slot);
+  auto* metadata = partition_alloc::internal::InSlotMetadata::From(*slot);
 
   // Security check: if the backing was freed while the wrapper held its ref,
   // the slot's "allocated" bit in InSlotMetadata is clear. That means the
@@ -58,7 +60,7 @@ void UnwrapBackingSlot(
   PA_BASE_CHECK(metadata->IsAlive());
 
   if (metadata->ReleaseFromUnprotectedPtr()) {
-    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot);
+    partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(*slot);
   }
 #endif
 }

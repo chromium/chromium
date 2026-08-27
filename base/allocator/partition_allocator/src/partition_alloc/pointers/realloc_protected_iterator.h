@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
@@ -30,14 +31,15 @@ namespace internal {
 // BRP-protected partition, the returned handle is empty (size == 0) and
 // UnwrapBackingSlot is a no-op.
 PA_COMPONENT_EXPORT(RAW_PTR)
-partition_alloc::SlotAddressAndSize WrapBackingSlot(const void* p);
+std::optional<partition_alloc::SlotAddressAndSize> WrapBackingSlot(
+    const void* p);
 
 // Releases a slot previously pinned by WrapBackingSlot. Safe to call with an
 // empty handle. CHECKs if the backing was freed while the wrapper held its
 // ref (a realloc-during-iteration UAF), turning the bug into a fail-fast
 // crash instead of a silent zapped-byte read.
 PA_COMPONENT_EXPORT(RAW_PTR)
-void UnwrapBackingSlot(partition_alloc::SlotAddressAndSize slot);
+void UnwrapBackingSlot(std::optional<partition_alloc::SlotAddressAndSize> slot);
 
 }  // namespace internal
 
@@ -105,8 +107,8 @@ class ReallocProtectedIterator {
   }
 
   ReallocProtectedIterator(ReallocProtectedIterator&& other) noexcept
-      : inner_(other.inner_), slot_(other.slot_) {
-    other.slot_ = {};
+      : inner_(other.inner_) {
+    slot_.swap(other.slot_);
   }
 
   ~ReallocProtectedIterator() { internal::UnwrapBackingSlot(slot_); }
@@ -115,7 +117,7 @@ class ReallocProtectedIterator {
     if (this != &other) {
       internal::UnwrapBackingSlot(slot_);
       inner_ = other.inner_;
-      slot_ = {};
+      slot_.reset();
       Acquire();
     }
     return *this;
@@ -127,7 +129,7 @@ class ReallocProtectedIterator {
       internal::UnwrapBackingSlot(slot_);
       inner_ = other.inner_;
       slot_ = other.slot_;
-      other.slot_ = {};
+      other.slot_.reset();
     }
     return *this;
   }
@@ -272,7 +274,7 @@ class ReallocProtectedIterator {
   }
 
   Inner inner_{};
-  partition_alloc::SlotAddressAndSize slot_{};
+  std::optional<partition_alloc::SlotAddressAndSize> slot_;
 };
 
 // Free helpers for ergonomic opt-in at escape points.
