@@ -12,6 +12,12 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
+#include "components/user_education/product_messaging/product_messaging_types.h"
 #include "ui/actions/action_id.h"
 
 namespace page_actions {
@@ -47,7 +53,9 @@ std::unique_ptr<ChipSelector> CreateChipSelector(
                                  const AnchoredMessageConfig&)>
         show_anchored_message_callback,
     base::RepeatingCallback<void(actions::ActionId)>
-        hide_anchored_message_callback);
+        hide_anchored_message_callback,
+    user_education::ProductMessagingController* product_messaging_controller =
+        nullptr);
 
 namespace internal {
 
@@ -107,6 +115,12 @@ class DefaultChipSelector : public ChipSelector {
 // to suggestion chips if one is already showing
 class PriorityChipSelector : public ChipSelector {
  public:
+  static constexpr base::TimeDelta kPmcTimeout = base::Seconds(10);
+
+  DECLARE_CLASS_PRODUCT_MESSAGE_KEY(
+      kAnchoredMessageId,
+      user_education::ProductMessageType::kAnchoredMessage);
+
   PriorityChipSelector(
       base::RepeatingCallback<void(actions::ActionId,
                                    const SuggestionChipConfig&)>
@@ -116,7 +130,9 @@ class PriorityChipSelector : public ChipSelector {
                                    const AnchoredMessageConfig&)>
           show_anchored_message_callback,
       base::RepeatingCallback<void(actions::ActionId)>
-          hide_anchored_message_callback);
+          hide_anchored_message_callback,
+      user_education::ProductMessagingController* product_messaging_controller =
+          nullptr);
   ~PriorityChipSelector() override;
 
   // ChipSelector:
@@ -129,11 +145,23 @@ class PriorityChipSelector : public ChipSelector {
   void OnTabActiveChanged(bool is_tab_active) override;
 
  private:
+  struct PendingAnchoredMessage;
+
   void HideAllActive();
   void ShowChip(actions::ActionId page_action_id,
                 const SuggestionChipConfig& config);
   void ShowAnchoredMessage(actions::ActionId page_action_id,
                            const AnchoredMessageConfig& config);
+  bool ShouldUsePmc(const AnchoredMessageConfig& config) const;
+  void MaybeShowOrQueueAnchoredMessage(actions::ActionId page_action_id,
+                                       const AnchoredMessageConfig& config);
+  void QueueAnchoredMessage(actions::ActionId page_action_id,
+                            const AnchoredMessageConfig& config);
+  void CancelPendingAnchoredMessage();
+  void OnPmcPermissionGranted(actions::ActionId page_action_id,
+                              user_education::ProductMessagingHandle handle);
+  void OnPmcTimeout(actions::ActionId page_action_id);
+
   const base::RepeatingCallback<void(actions::ActionId,
                                      const SuggestionChipConfig&)>
       show_chip_callback_;
@@ -144,9 +172,17 @@ class PriorityChipSelector : public ChipSelector {
   const base::RepeatingCallback<void(actions::ActionId)>
       hide_anchored_message_callback_;
   bool is_tab_active_ = true;
+  const raw_ptr<user_education::ProductMessagingController>
+      product_messaging_controller_;
   std::set<actions::ActionId> active_chips_;
   std::optional<actions::ActionId> active_anchored_message_;
   std::optional<PageActionPriorityCategory> active_priority_;
+
+  std::unique_ptr<PendingAnchoredMessage> pending_anchored_message_;
+  base::OneShotTimer pmc_timeout_timer_;
+  user_education::ProductMessagingHandle pmc_handle_;
+
+  base::WeakPtrFactory<PriorityChipSelector> weak_ptr_factory_{this};
 };
 }  // namespace internal
 

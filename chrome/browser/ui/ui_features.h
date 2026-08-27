@@ -305,6 +305,8 @@ BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
 
 BASE_DECLARE_FEATURE(kPageActionsPrioritySelector);
 
+BASE_DECLARE_FEATURE(kPageActionsPrioritySelectorProductMessagingController);
+
 // Enables the elevated capsule toolbar for page actions.
 BASE_DECLARE_FEATURE(kPageActionsElevatedToolbar);
 bool IsPageActionsElevatedToolbarEnabled();
