@@ -183,7 +183,7 @@ void WebContentsViewIOS::Resize(const gfx::Rect& new_bounds) {
 
 gfx::Size WebContentsViewIOS::GetSize() const {
   UIView* view = GetNativeView().Get();
-  CHECK(view, base::NotFatalUntil::M158);
+  DCHECK(view);
   CGRect frame = view.frame;
   return gfx::Size(frame.size.width, frame.size.height);
 }

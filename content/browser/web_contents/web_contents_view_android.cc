@@ -105,11 +105,11 @@ bool IsDragEnabledForDropData(const DropData& drop_data) {
 void SynchronousCompositor::SetClientForWebContents(
     WebContents* contents,
     SynchronousCompositorClient* client) {
-  CHECK(contents, base::NotFatalUntil::M158);
-  CHECK(client, base::NotFatalUntil::M158);
+  DCHECK(contents);
+  DCHECK(client);
   WebContentsViewAndroid* wcva = static_cast<WebContentsViewAndroid*>(
       static_cast<WebContentsImpl*>(contents)->GetView());
-  CHECK(!wcva->synchronous_compositor_client(), base::NotFatalUntil::M158);
+  DCHECK(!wcva->synchronous_compositor_client());
   wcva->set_synchronous_compositor_client(client);
   RenderWidgetHostViewAndroid* rwhv = static_cast<RenderWidgetHostViewAndroid*>(
       contents->GetRenderWidgetHostView());
@@ -291,7 +291,7 @@ RenderWidgetHostViewBase* WebContentsViewAndroid::CreateViewForWidget(
     // this actually is happening (and somebody isn't accidentally creating the
     // view twice), we check for the RVH Factory, which will be set when we're
     // making special ones (which go along with the special views).
-    CHECK(RenderViewHostFactory::has_factory(), base::NotFatalUntil::M158);
+    DCHECK(RenderViewHostFactory::has_factory());
     return static_cast<RenderWidgetHostViewBase*>(
         render_widget_host->GetView());
   }

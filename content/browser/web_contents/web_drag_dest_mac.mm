@@ -328,7 +328,7 @@ void OnWebContentsViewDelegatePerformingDropComplete(
   }
 
   // Filter |dropDataUnfiltered_| by targetRWH to populate |dropDataFiltered_|.
-  CHECK(_dropDataUnfiltered, base::NotFatalUntil::M158);
+  DCHECK(_dropDataUnfiltered);
   std::unique_ptr<DropData> dropData =
       std::make_unique<DropData>(*_dropDataUnfiltered);
   _currentRWHForDrag = targetRWH->GetWeakPtr();
@@ -383,7 +383,7 @@ void OnWebContentsViewDelegatePerformingDropComplete(
     return;
   }
 
-  CHECK(_currentRVH, base::NotFatalUntil::M158);
+  DCHECK(_currentRVH);
   if (_currentRVH != _webContents->GetRenderViewHost()) {
     return;
   }
@@ -773,7 +773,7 @@ void OnWebContentsViewDelegatePerformingDropComplete(
 namespace content {
 
 DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
-  CHECK(pboard, base::NotFatalUntil::M158);
+  DCHECK(pboard);
   DropData drop_data;
 
   // https://crbug.com/40050499#comment22

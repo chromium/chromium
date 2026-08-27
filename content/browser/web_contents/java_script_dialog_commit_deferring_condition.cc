@@ -15,7 +15,7 @@ namespace content {
 std::unique_ptr<CommitDeferringCondition>
 JavaScriptDialogCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request) {
-  CHECK(navigation_request.GetWebContents(), base::NotFatalUntil::M158);
+  DCHECK(navigation_request.GetWebContents());
   auto& web_contents =
       static_cast<WebContentsImpl&>(*navigation_request.GetWebContents());
   if (!web_contents.JavaScriptDialogDefersNavigations())
@@ -71,7 +71,7 @@ JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
   auto* web_contents =
       static_cast<WebContentsImpl*>(GetNavigationHandle().GetWebContents());
-  CHECK(web_contents, base::NotFatalUntil::M158);
+  DCHECK(web_contents);
 
   // It's possible that, depending on the order deferrals are run, the dialog
   // may have been dismissed by the time we run this check. If that's the

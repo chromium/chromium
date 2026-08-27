@@ -190,7 +190,7 @@ void AddTreeLevelDataToViewStructure(
 // static
 WebContents* WebContents::FromJavaWebContents(
     const JavaRef<jobject>& jweb_contents_android) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (jweb_contents_android.is_null())
     return NULL;
 
@@ -248,9 +248,8 @@ WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
 }
 
 WebContentsAndroid::~WebContentsAndroid() {
-  CHECK(GetAllocatedWebContentsAndroids().find(this) !=
-            GetAllocatedWebContentsAndroids().end(),
-        base::NotFatalUntil::M158);
+  DCHECK(GetAllocatedWebContentsAndroids().find(this) !=
+         GetAllocatedWebContentsAndroids().end());
   GetAllocatedWebContentsAndroids().erase(this);
   offset_tag_mediator_ = nullptr;
   for (auto& observer : destruction_observers_)
@@ -604,7 +603,7 @@ void WebContentsAndroid::EvaluateJavaScript(JNIEnv* env,
                                             const JavaRef<jstring>& script,
                                             const JavaRef<jobject>& callback) {
   RenderViewHost* rvh = web_contents_->GetRenderViewHost();
-  CHECK(rvh, base::NotFatalUntil::M158);
+  DCHECK(rvh);
 
   if (!InitializeRenderFrameForJavaScript())
     return;
@@ -631,7 +630,7 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
     const JavaRef<jstring>& script,
     const JavaRef<jobject>& callback) {
   RenderViewHost* rvh = web_contents_->GetRenderViewHost();
-  CHECK(rvh, base::NotFatalUntil::M158);
+  DCHECK(rvh);
 
   if (!InitializeRenderFrameForJavaScript())
     return;
@@ -659,9 +658,8 @@ void WebContentsAndroid::AddMessageToDevToolsConsole(
     JNIEnv* env,
     int32_t level,
     const JavaRef<jstring>& message) {
-  CHECK_GE(level, 0, base::NotFatalUntil::M158);
-  CHECK_LE(level, static_cast<int>(blink::mojom::ConsoleMessageLevel::kError),
-           base::NotFatalUntil::M158);
+  DCHECK_GE(level, 0);
+  DCHECK_LE(level, static_cast<int>(blink::mojom::ConsoleMessageLevel::kError));
 
   web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
       static_cast<blink::mojom::ConsoleMessageLevel>(level),

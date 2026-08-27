@@ -22,7 +22,7 @@ void BroadcastChannelProvider::ConnectToChannel(
     mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient> client,
     mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
         connection) {
-  CHECK(broadcast_channel_service_, base::NotFatalUntil::M158);
+  DCHECK(broadcast_channel_service_);
   broadcast_channel_service_->ConnectToChannel(
       storage_key_, name, std::move(client), std::move(connection));
 }

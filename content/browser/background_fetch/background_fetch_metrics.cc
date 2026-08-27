@@ -26,7 +26,7 @@ void RecordBackgroundFetchUkmEvent(
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
     RenderFrameHostImpl* rfh,
     BackgroundFetchPermission permission) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Only record UKM data if there's an active RenderFrameHost associated.
   if (!rfh || !rfh->IsActive())

@@ -17,14 +17,14 @@ DragSourceMap::~DragSourceMap() = default;
 
 // static
 DragSourceMap* DragSourceMap::Get(BrowserContext* browser_context) {
-  CHECK(browser_context, base::NotFatalUntil::M158);
+  DCHECK(browser_context);
   return static_cast<DragSourceMap*>(
       browser_context->GetUserData(kDragSourceMapUserDataKey));
 }
 
 // static
 DragSourceMap* DragSourceMap::GetOrCreate(BrowserContext* browser_context) {
-  CHECK(browser_context, base::NotFatalUntil::M158);
+  DCHECK(browser_context);
   auto* map = static_cast<DragSourceMap*>(
       browser_context->GetUserData(kDragSourceMapUserDataKey));
   if (!map) {

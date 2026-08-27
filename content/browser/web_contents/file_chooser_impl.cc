@@ -32,7 +32,7 @@ namespace {
 std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
     std::vector<blink::mojom::FileChooserFileInfoPtr> files,
     base::FilePath base_dir) {
-  CHECK(!base_dir.empty(), base::NotFatalUntil::M158);
+  DCHECK(!base_dir.empty());
   auto to_remove = std::ranges::remove_if(
       files,
       [&base_dir](const base::FilePath& file_path) {
