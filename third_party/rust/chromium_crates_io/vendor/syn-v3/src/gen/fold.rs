@@ -5,7 +5,7 @@
 #![allow(
     clippy::match_wildcard_for_single_variants,
     clippy::needless_match,
-    clippy::needless_pass_by_ref_mut
+    clippy::needless_pass_by_ref_mut,
 )]
 #[cfg(any(feature = "derive", feature = "full"))]
 use alloc::boxed::Box;
@@ -84,7 +84,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_bound_lifetimes(&mut self, i: crate::BoundLifetimes) -> crate::BoundLifetimes {
+    fn fold_bound_lifetimes(
+        &mut self,
+        i: crate::BoundLifetimes,
+    ) -> crate::BoundLifetimes {
         fold_bound_lifetimes(self, i)
     }
     #[cfg(feature = "full")]
@@ -249,7 +252,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_expr_method_call(&mut self, i: crate::ExprMethodCall) -> crate::ExprMethodCall {
+    fn fold_expr_method_call(
+        &mut self,
+        i: crate::ExprMethodCall,
+    ) -> crate::ExprMethodCall {
         fold_expr_method_call(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -384,7 +390,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_foreign_item_macro(&mut self, i: crate::ForeignItemMacro) -> crate::ForeignItemMacro {
+    fn fold_foreign_item_macro(
+        &mut self,
+        i: crate::ForeignItemMacro,
+    ) -> crate::ForeignItemMacro {
         fold_foreign_item_macro(self, i)
     }
     #[cfg(feature = "full")]
@@ -397,7 +406,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_foreign_item_type(&mut self, i: crate::ForeignItemType) -> crate::ForeignItemType {
+    fn fold_foreign_item_type(
+        &mut self,
+        i: crate::ForeignItemType,
+    ) -> crate::ForeignItemType {
         fold_foreign_item_type(self, i)
     }
     #[cfg(feature = "full")]
@@ -407,7 +419,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_generic_argument(&mut self, i: crate::GenericArgument) -> crate::GenericArgument {
+    fn fold_generic_argument(
+        &mut self,
+        i: crate::GenericArgument,
+    ) -> crate::GenericArgument {
         fold_generic_argument(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -470,7 +485,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_item_extern_crate(&mut self, i: crate::ItemExternCrate) -> crate::ItemExternCrate {
+    fn fold_item_extern_crate(
+        &mut self,
+        i: crate::ItemExternCrate,
+    ) -> crate::ItemExternCrate {
         fold_item_extern_crate(self, i)
     }
     #[cfg(feature = "full")]
@@ -480,7 +498,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_item_foreign_mod(&mut self, i: crate::ItemForeignMod) -> crate::ItemForeignMod {
+    fn fold_item_foreign_mod(
+        &mut self,
+        i: crate::ItemForeignMod,
+    ) -> crate::ItemForeignMod {
         fold_item_foreign_mod(self, i)
     }
     #[cfg(feature = "full")]
@@ -515,7 +536,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_item_trait_alias(&mut self, i: crate::ItemTraitAlias) -> crate::ItemTraitAlias {
+    fn fold_item_trait_alias(
+        &mut self,
+        i: crate::ItemTraitAlias,
+    ) -> crate::ItemTraitAlias {
         fold_item_trait_alias(self, i)
     }
     #[cfg(feature = "full")]
@@ -590,7 +614,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_macro_delimiter(&mut self, i: crate::MacroDelimiter) -> crate::MacroDelimiter {
+    fn fold_macro_delimiter(
+        &mut self,
+        i: crate::MacroDelimiter,
+    ) -> crate::MacroDelimiter {
         fold_macro_delimiter(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -678,7 +705,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_pat_tuple_struct(&mut self, i: crate::PatTupleStruct) -> crate::PatTupleStruct {
+    fn fold_pat_tuple_struct(
+        &mut self,
+        i: crate::PatTupleStruct,
+    ) -> crate::PatTupleStruct {
         fold_pat_tuple_struct(self, i)
     }
     #[cfg(feature = "full")]
@@ -708,17 +738,26 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_pointer_mutability(&mut self, i: crate::PointerMutability) -> crate::PointerMutability {
+    fn fold_pointer_mutability(
+        &mut self,
+        i: crate::PointerMutability,
+    ) -> crate::PointerMutability {
         fold_pointer_mutability(self, i)
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_precise_capture(&mut self, i: crate::PreciseCapture) -> crate::PreciseCapture {
+    fn fold_precise_capture(
+        &mut self,
+        i: crate::PreciseCapture,
+    ) -> crate::PreciseCapture {
         fold_precise_capture(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_predicate_lifetime(&mut self, i: crate::PredicateLifetime) -> crate::PredicateLifetime {
+    fn fold_predicate_lifetime(
+        &mut self,
+        i: crate::PredicateLifetime,
+    ) -> crate::PredicateLifetime {
         fold_predicate_lifetime(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -763,7 +802,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_static_mutability(&mut self, i: crate::StaticMutability) -> crate::StaticMutability {
+    fn fold_static_mutability(
+        &mut self,
+        i: crate::StaticMutability,
+    ) -> crate::StaticMutability {
         fold_static_mutability(self, i)
     }
     #[cfg(feature = "full")]
@@ -776,7 +818,10 @@ pub trait Fold {
     fn fold_stmt_macro(&mut self, i: crate::StmtMacro) -> crate::StmtMacro {
         fold_stmt_macro(self, i)
     }
-    fn fold_token_stream(&mut self, i: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+    fn fold_token_stream(
+        &mut self,
+        i: proc_macro2::TokenStream,
+    ) -> proc_macro2::TokenStream {
         i
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -791,7 +836,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_trait_item_const(&mut self, i: crate::TraitItemConst) -> crate::TraitItemConst {
+    fn fold_trait_item_const(
+        &mut self,
+        i: crate::TraitItemConst,
+    ) -> crate::TraitItemConst {
         fold_trait_item_const(self, i)
     }
     #[cfg(feature = "full")]
@@ -801,7 +849,10 @@ pub trait Fold {
     }
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    fn fold_trait_item_macro(&mut self, i: crate::TraitItemMacro) -> crate::TraitItemMacro {
+    fn fold_trait_item_macro(
+        &mut self,
+        i: crate::TraitItemMacro,
+    ) -> crate::TraitItemMacro {
         fold_trait_item_macro(self, i)
     }
     #[cfg(feature = "full")]
@@ -856,7 +907,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_type_param_bound(&mut self, i: crate::TypeParamBound) -> crate::TypeParamBound {
+    fn fold_type_param_bound(
+        &mut self,
+        i: crate::TypeParamBound,
+    ) -> crate::TypeParamBound {
         fold_type_param_bound(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -886,7 +940,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_type_trait_object(&mut self, i: crate::TypeTraitObject) -> crate::TypeTraitObject {
+    fn fold_type_trait_object(
+        &mut self,
+        i: crate::TypeTraitObject,
+    ) -> crate::TypeTraitObject {
         fold_type_trait_object(self, i)
     }
     #[cfg(any(feature = "derive", feature = "full"))]
@@ -964,7 +1021,10 @@ pub trait Fold {
     }
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-    fn fold_where_predicate(&mut self, i: crate::WherePredicate) -> crate::WherePredicate {
+    fn fold_where_predicate(
+        &mut self,
+        i: crate::WherePredicate,
+    ) -> crate::WherePredicate {
         fold_where_predicate(self, i)
     }
 }
@@ -974,7 +1034,10 @@ pub fn fold_abi<F>(f: &mut F, node: crate::Abi) -> crate::Abi
 where
     F: Fold + ?Sized,
 {
-    crate::Abi { extern_token: node.extern_token, name: (node.name).map(|it| f.fold_lit_str(it)) }
+    crate::Abi {
+        extern_token: node.extern_token,
+        name: (node.name).map(|it| f.fold_lit_str(it)),
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -1099,11 +1162,17 @@ pub fn fold_block<F>(f: &mut F, node: crate::Block) -> crate::Block
 where
     F: Fold + ?Sized,
 {
-    crate::Block { brace_token: node.brace_token, stmts: fold_vec(node.stmts, f, F::fold_stmt) }
+    crate::Block {
+        brace_token: node.brace_token,
+        stmts: fold_vec(node.stmts, f, F::fold_stmt),
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_bound_lifetimes<F>(f: &mut F, node: crate::BoundLifetimes) -> crate::BoundLifetimes
+pub fn fold_bound_lifetimes<F>(
+    f: &mut F,
+    node: crate::BoundLifetimes,
+) -> crate::BoundLifetimes
 where
     F: Fold + ?Sized,
 {
@@ -1116,7 +1185,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_captured_param<F>(f: &mut F, node: crate::CapturedParam) -> crate::CapturedParam
+pub fn fold_captured_param<F>(
+    f: &mut F,
+    node: crate::CapturedParam,
+) -> crate::CapturedParam
 where
     F: Fold + ?Sized,
 {
@@ -1164,9 +1236,13 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Data::Struct(_binding_0) => crate::Data::Struct(f.fold_data_struct(_binding_0)),
+        crate::Data::Struct(_binding_0) => {
+            crate::Data::Struct(f.fold_data_struct(_binding_0))
+        }
         crate::Data::Enum(_binding_0) => crate::Data::Enum(f.fold_data_enum(_binding_0)),
-        crate::Data::Union(_binding_0) => crate::Data::Union(f.fold_data_union(_binding_0)),
+        crate::Data::Union(_binding_0) => {
+            crate::Data::Union(f.fold_data_union(_binding_0))
+        }
     }
 }
 #[cfg(feature = "derive")]
@@ -1199,7 +1275,10 @@ pub fn fold_data_union<F>(f: &mut F, node: crate::DataUnion) -> crate::DataUnion
 where
     F: Fold + ?Sized,
 {
-    crate::DataUnion { union_token: node.union_token, fields: f.fold_fields_named(node.fields) }
+    crate::DataUnion {
+        union_token: node.union_token,
+        fields: f.fold_fields_named(node.fields),
+    }
 }
 #[cfg(feature = "derive")]
 #[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
@@ -1222,43 +1301,77 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Expr::Array(_binding_0) => crate::Expr::Array(full!(f.fold_expr_array(_binding_0))),
+        crate::Expr::Array(_binding_0) => {
+            crate::Expr::Array(full!(f.fold_expr_array(_binding_0)))
+        }
         crate::Expr::Assign(_binding_0) => {
             crate::Expr::Assign(full!(f.fold_expr_assign(_binding_0)))
         }
-        crate::Expr::Async(_binding_0) => crate::Expr::Async(full!(f.fold_expr_async(_binding_0))),
-        crate::Expr::Await(_binding_0) => crate::Expr::Await(full!(f.fold_expr_await(_binding_0))),
-        crate::Expr::Binary(_binding_0) => crate::Expr::Binary(f.fold_expr_binary(_binding_0)),
-        crate::Expr::Block(_binding_0) => crate::Expr::Block(full!(f.fold_expr_block(_binding_0))),
-        crate::Expr::Break(_binding_0) => crate::Expr::Break(full!(f.fold_expr_break(_binding_0))),
+        crate::Expr::Async(_binding_0) => {
+            crate::Expr::Async(full!(f.fold_expr_async(_binding_0)))
+        }
+        crate::Expr::Await(_binding_0) => {
+            crate::Expr::Await(full!(f.fold_expr_await(_binding_0)))
+        }
+        crate::Expr::Binary(_binding_0) => {
+            crate::Expr::Binary(f.fold_expr_binary(_binding_0))
+        }
+        crate::Expr::Block(_binding_0) => {
+            crate::Expr::Block(full!(f.fold_expr_block(_binding_0)))
+        }
+        crate::Expr::Break(_binding_0) => {
+            crate::Expr::Break(full!(f.fold_expr_break(_binding_0)))
+        }
         crate::Expr::Call(_binding_0) => crate::Expr::Call(f.fold_expr_call(_binding_0)),
         crate::Expr::Cast(_binding_0) => crate::Expr::Cast(f.fold_expr_cast(_binding_0)),
         crate::Expr::Closure(_binding_0) => {
             crate::Expr::Closure(full!(f.fold_expr_closure(_binding_0)))
         }
-        crate::Expr::Const(_binding_0) => crate::Expr::Const(full!(f.fold_expr_const(_binding_0))),
+        crate::Expr::Const(_binding_0) => {
+            crate::Expr::Const(full!(f.fold_expr_const(_binding_0)))
+        }
         crate::Expr::Continue(_binding_0) => {
             crate::Expr::Continue(full!(f.fold_expr_continue(_binding_0)))
         }
-        crate::Expr::Field(_binding_0) => crate::Expr::Field(f.fold_expr_field(_binding_0)),
+        crate::Expr::Field(_binding_0) => {
+            crate::Expr::Field(f.fold_expr_field(_binding_0))
+        }
         crate::Expr::ForLoop(_binding_0) => {
             crate::Expr::ForLoop(full!(f.fold_expr_for_loop(_binding_0)))
         }
-        crate::Expr::Group(_binding_0) => crate::Expr::Group(f.fold_expr_group(_binding_0)),
+        crate::Expr::Group(_binding_0) => {
+            crate::Expr::Group(f.fold_expr_group(_binding_0))
+        }
         crate::Expr::If(_binding_0) => crate::Expr::If(full!(f.fold_expr_if(_binding_0))),
-        crate::Expr::Index(_binding_0) => crate::Expr::Index(f.fold_expr_index(_binding_0)),
-        crate::Expr::Infer(_binding_0) => crate::Expr::Infer(full!(f.fold_expr_infer(_binding_0))),
-        crate::Expr::Let(_binding_0) => crate::Expr::Let(full!(f.fold_expr_let(_binding_0))),
+        crate::Expr::Index(_binding_0) => {
+            crate::Expr::Index(f.fold_expr_index(_binding_0))
+        }
+        crate::Expr::Infer(_binding_0) => {
+            crate::Expr::Infer(full!(f.fold_expr_infer(_binding_0)))
+        }
+        crate::Expr::Let(_binding_0) => {
+            crate::Expr::Let(full!(f.fold_expr_let(_binding_0)))
+        }
         crate::Expr::Lit(_binding_0) => crate::Expr::Lit(f.fold_expr_lit(_binding_0)),
-        crate::Expr::Loop(_binding_0) => crate::Expr::Loop(full!(f.fold_expr_loop(_binding_0))),
-        crate::Expr::Macro(_binding_0) => crate::Expr::Macro(f.fold_expr_macro(_binding_0)),
-        crate::Expr::Match(_binding_0) => crate::Expr::Match(full!(f.fold_expr_match(_binding_0))),
+        crate::Expr::Loop(_binding_0) => {
+            crate::Expr::Loop(full!(f.fold_expr_loop(_binding_0)))
+        }
+        crate::Expr::Macro(_binding_0) => {
+            crate::Expr::Macro(f.fold_expr_macro(_binding_0))
+        }
+        crate::Expr::Match(_binding_0) => {
+            crate::Expr::Match(full!(f.fold_expr_match(_binding_0)))
+        }
         crate::Expr::MethodCall(_binding_0) => {
             crate::Expr::MethodCall(f.fold_expr_method_call(_binding_0))
         }
-        crate::Expr::Paren(_binding_0) => crate::Expr::Paren(f.fold_expr_paren(_binding_0)),
+        crate::Expr::Paren(_binding_0) => {
+            crate::Expr::Paren(f.fold_expr_paren(_binding_0))
+        }
         crate::Expr::Path(_binding_0) => crate::Expr::Path(f.fold_expr_path(_binding_0)),
-        crate::Expr::Range(_binding_0) => crate::Expr::Range(full!(f.fold_expr_range(_binding_0))),
+        crate::Expr::Range(_binding_0) => {
+            crate::Expr::Range(full!(f.fold_expr_range(_binding_0)))
+        }
         crate::Expr::RawAddr(_binding_0) => {
             crate::Expr::RawAddr(full!(f.fold_expr_raw_addr(_binding_0)))
         }
@@ -1271,19 +1384,33 @@ where
         crate::Expr::Return(_binding_0) => {
             crate::Expr::Return(full!(f.fold_expr_return(_binding_0)))
         }
-        crate::Expr::Struct(_binding_0) => crate::Expr::Struct(f.fold_expr_struct(_binding_0)),
-        crate::Expr::Try(_binding_0) => crate::Expr::Try(full!(f.fold_expr_try(_binding_0))),
+        crate::Expr::Struct(_binding_0) => {
+            crate::Expr::Struct(f.fold_expr_struct(_binding_0))
+        }
+        crate::Expr::Try(_binding_0) => {
+            crate::Expr::Try(full!(f.fold_expr_try(_binding_0)))
+        }
         crate::Expr::TryBlock(_binding_0) => {
             crate::Expr::TryBlock(full!(f.fold_expr_try_block(_binding_0)))
         }
-        crate::Expr::Tuple(_binding_0) => crate::Expr::Tuple(f.fold_expr_tuple(_binding_0)),
-        crate::Expr::Unary(_binding_0) => crate::Expr::Unary(f.fold_expr_unary(_binding_0)),
+        crate::Expr::Tuple(_binding_0) => {
+            crate::Expr::Tuple(f.fold_expr_tuple(_binding_0))
+        }
+        crate::Expr::Unary(_binding_0) => {
+            crate::Expr::Unary(f.fold_expr_unary(_binding_0))
+        }
         crate::Expr::Unsafe(_binding_0) => {
             crate::Expr::Unsafe(full!(f.fold_expr_unsafe(_binding_0)))
         }
-        crate::Expr::Verbatim(_binding_0) => crate::Expr::Verbatim(f.fold_token_stream(_binding_0)),
-        crate::Expr::While(_binding_0) => crate::Expr::While(full!(f.fold_expr_while(_binding_0))),
-        crate::Expr::Yield(_binding_0) => crate::Expr::Yield(full!(f.fold_expr_yield(_binding_0))),
+        crate::Expr::Verbatim(_binding_0) => {
+            crate::Expr::Verbatim(f.fold_token_stream(_binding_0))
+        }
+        crate::Expr::While(_binding_0) => {
+            crate::Expr::While(full!(f.fold_expr_while(_binding_0)))
+        }
+        crate::Expr::Yield(_binding_0) => {
+            crate::Expr::Yield(full!(f.fold_expr_yield(_binding_0)))
+        }
     }
 }
 #[cfg(feature = "full")]
@@ -1499,7 +1626,8 @@ where
         if_token: node.if_token,
         cond: Box::new(f.fold_expr(*node.cond)),
         then_branch: f.fold_block(node.then_branch),
-        else_branch: (node.else_branch).map(|it| ((it).0, Box::new(f.fold_expr(*(it).1)))),
+        else_branch: (node.else_branch)
+            .map(|it| ((it).0, Box::new(f.fold_expr(*(it).1)))),
     }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
@@ -1546,7 +1674,10 @@ pub fn fold_expr_lit<F>(f: &mut F, node: crate::ExprLit) -> crate::ExprLit
 where
     F: Fold + ?Sized,
 {
-    crate::ExprLit { attrs: f.fold_attributes(node.attrs), lit: f.fold_lit(node.lit) }
+    crate::ExprLit {
+        attrs: f.fold_attributes(node.attrs),
+        lit: f.fold_lit(node.lit),
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -1567,7 +1698,10 @@ pub fn fold_expr_macro<F>(f: &mut F, node: crate::ExprMacro) -> crate::ExprMacro
 where
     F: Fold + ?Sized,
 {
-    crate::ExprMacro { attrs: f.fold_attributes(node.attrs), mac: f.fold_macro(node.mac) }
+    crate::ExprMacro {
+        attrs: f.fold_attributes(node.attrs),
+        mac: f.fold_macro(node.mac),
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -1585,7 +1719,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_expr_method_call<F>(f: &mut F, node: crate::ExprMethodCall) -> crate::ExprMethodCall
+pub fn fold_expr_method_call<F>(
+    f: &mut F,
+    node: crate::ExprMethodCall,
+) -> crate::ExprMethodCall
 where
     F: Fold + ?Sized,
 {
@@ -1594,7 +1731,8 @@ where
         receiver: Box::new(f.fold_expr(*node.receiver)),
         dot_token: node.dot_token,
         method: f.fold_ident(node.method),
-        turbofish: (node.turbofish).map(|it| f.fold_angle_bracketed_generic_arguments(it)),
+        turbofish: (node.turbofish)
+            .map(|it| f.fold_angle_bracketed_generic_arguments(it)),
         paren_token: node.paren_token,
         args: crate::punctuated::fold(node.args, f, F::fold_expr),
     }
@@ -1652,7 +1790,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_expr_reference<F>(f: &mut F, node: crate::ExprReference) -> crate::ExprReference
+pub fn fold_expr_reference<F>(
+    f: &mut F,
+    node: crate::ExprReference,
+) -> crate::ExprReference
 where
     F: Fold + ?Sized,
 {
@@ -1719,7 +1860,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_expr_try_block<F>(f: &mut F, node: crate::ExprTryBlock) -> crate::ExprTryBlock
+pub fn fold_expr_try_block<F>(
+    f: &mut F,
+    node: crate::ExprTryBlock,
+) -> crate::ExprTryBlock
 where
     F: Fold + ?Sized,
 {
@@ -1841,7 +1985,9 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Fields::Named(_binding_0) => crate::Fields::Named(f.fold_fields_named(_binding_0)),
+        crate::Fields::Named(_binding_0) => {
+            crate::Fields::Named(f.fold_fields_named(_binding_0))
+        }
         crate::Fields::Unnamed(_binding_0) => {
             crate::Fields::Unnamed(f.fold_fields_unnamed(_binding_0))
         }
@@ -1861,7 +2007,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_fields_unnamed<F>(f: &mut F, node: crate::FieldsUnnamed) -> crate::FieldsUnnamed
+pub fn fold_fields_unnamed<F>(
+    f: &mut F,
+    node: crate::FieldsUnnamed,
+) -> crate::FieldsUnnamed
 where
     F: Fold + ?Sized,
 {
@@ -1890,13 +2039,20 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::FnArg::Receiver(_binding_0) => crate::FnArg::Receiver(f.fold_receiver(_binding_0)),
-        crate::FnArg::Typed(_binding_0) => crate::FnArg::Typed(f.fold_pat_type(_binding_0)),
+        crate::FnArg::Receiver(_binding_0) => {
+            crate::FnArg::Receiver(f.fold_receiver(_binding_0))
+        }
+        crate::FnArg::Typed(_binding_0) => {
+            crate::FnArg::Typed(f.fold_pat_type(_binding_0))
+        }
     }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_fn_ptr_variadic<F>(f: &mut F, node: crate::FnPtrVariadic) -> crate::FnPtrVariadic
+pub fn fold_fn_ptr_variadic<F>(
+    f: &mut F,
+    node: crate::FnPtrVariadic,
+) -> crate::FnPtrVariadic
 where
     F: Fold + ?Sized,
 {
@@ -1933,7 +2089,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_foreign_item_fn<F>(f: &mut F, node: crate::ForeignItemFn) -> crate::ForeignItemFn
+pub fn fold_foreign_item_fn<F>(
+    f: &mut F,
+    node: crate::ForeignItemFn,
+) -> crate::ForeignItemFn
 where
     F: Fold + ?Sized,
 {
@@ -1983,7 +2142,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_foreign_item_type<F>(f: &mut F, node: crate::ForeignItemType) -> crate::ForeignItemType
+pub fn fold_foreign_item_type<F>(
+    f: &mut F,
+    node: crate::ForeignItemType,
+) -> crate::ForeignItemType
 where
     F: Fold + ?Sized,
 {
@@ -2007,7 +2169,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_generic_argument<F>(f: &mut F, node: crate::GenericArgument) -> crate::GenericArgument
+pub fn fold_generic_argument<F>(
+    f: &mut F,
+    node: crate::GenericArgument,
+) -> crate::GenericArgument
 where
     F: Fold + ?Sized,
 {
@@ -2079,7 +2244,9 @@ where
         crate::ImplItem::Const(_binding_0) => {
             crate::ImplItem::Const(f.fold_impl_item_const(_binding_0))
         }
-        crate::ImplItem::Fn(_binding_0) => crate::ImplItem::Fn(f.fold_impl_item_fn(_binding_0)),
+        crate::ImplItem::Fn(_binding_0) => {
+            crate::ImplItem::Fn(f.fold_impl_item_fn(_binding_0))
+        }
         crate::ImplItem::Type(_binding_0) => {
             crate::ImplItem::Type(f.fold_impl_item_type(_binding_0))
         }
@@ -2093,7 +2260,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_impl_item_const<F>(f: &mut F, node: crate::ImplItemConst) -> crate::ImplItemConst
+pub fn fold_impl_item_const<F>(
+    f: &mut F,
+    node: crate::ImplItemConst,
+) -> crate::ImplItemConst
 where
     F: Fold + ?Sized,
 {
@@ -2127,7 +2297,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_impl_item_macro<F>(f: &mut F, node: crate::ImplItemMacro) -> crate::ImplItemMacro
+pub fn fold_impl_item_macro<F>(
+    f: &mut F,
+    node: crate::ImplItemMacro,
+) -> crate::ImplItemMacro
 where
     F: Fold + ?Sized,
 {
@@ -2139,7 +2312,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_impl_item_type<F>(f: &mut F, node: crate::ImplItemType) -> crate::ImplItemType
+pub fn fold_impl_item_type<F>(
+    f: &mut F,
+    node: crate::ImplItemType,
+) -> crate::ImplItemType
 where
     F: Fold + ?Sized,
 {
@@ -2161,7 +2337,10 @@ pub fn fold_index<F>(f: &mut F, node: crate::Index) -> crate::Index
 where
     F: Fold + ?Sized,
 {
-    crate::Index { index: node.index, span: node.span }
+    crate::Index {
+        index: node.index,
+        span: node.span,
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -2170,7 +2349,9 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Item::Const(_binding_0) => crate::Item::Const(f.fold_item_const(_binding_0)),
+        crate::Item::Const(_binding_0) => {
+            crate::Item::Const(f.fold_item_const(_binding_0))
+        }
         crate::Item::Enum(_binding_0) => crate::Item::Enum(f.fold_item_enum(_binding_0)),
         crate::Item::ExternCrate(_binding_0) => {
             crate::Item::ExternCrate(f.fold_item_extern_crate(_binding_0))
@@ -2180,18 +2361,30 @@ where
             crate::Item::ForeignMod(f.fold_item_foreign_mod(_binding_0))
         }
         crate::Item::Impl(_binding_0) => crate::Item::Impl(f.fold_item_impl(_binding_0)),
-        crate::Item::Macro(_binding_0) => crate::Item::Macro(f.fold_item_macro(_binding_0)),
+        crate::Item::Macro(_binding_0) => {
+            crate::Item::Macro(f.fold_item_macro(_binding_0))
+        }
         crate::Item::Mod(_binding_0) => crate::Item::Mod(f.fold_item_mod(_binding_0)),
-        crate::Item::Static(_binding_0) => crate::Item::Static(f.fold_item_static(_binding_0)),
-        crate::Item::Struct(_binding_0) => crate::Item::Struct(f.fold_item_struct(_binding_0)),
-        crate::Item::Trait(_binding_0) => crate::Item::Trait(f.fold_item_trait(_binding_0)),
+        crate::Item::Static(_binding_0) => {
+            crate::Item::Static(f.fold_item_static(_binding_0))
+        }
+        crate::Item::Struct(_binding_0) => {
+            crate::Item::Struct(f.fold_item_struct(_binding_0))
+        }
+        crate::Item::Trait(_binding_0) => {
+            crate::Item::Trait(f.fold_item_trait(_binding_0))
+        }
         crate::Item::TraitAlias(_binding_0) => {
             crate::Item::TraitAlias(f.fold_item_trait_alias(_binding_0))
         }
         crate::Item::Type(_binding_0) => crate::Item::Type(f.fold_item_type(_binding_0)),
-        crate::Item::Union(_binding_0) => crate::Item::Union(f.fold_item_union(_binding_0)),
+        crate::Item::Union(_binding_0) => {
+            crate::Item::Union(f.fold_item_union(_binding_0))
+        }
         crate::Item::Use(_binding_0) => crate::Item::Use(f.fold_item_use(_binding_0)),
-        crate::Item::Verbatim(_binding_0) => crate::Item::Verbatim(f.fold_token_stream(_binding_0)),
+        crate::Item::Verbatim(_binding_0) => {
+            crate::Item::Verbatim(f.fold_token_stream(_binding_0))
+        }
     }
 }
 #[cfg(feature = "full")]
@@ -2232,7 +2425,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_item_extern_crate<F>(f: &mut F, node: crate::ItemExternCrate) -> crate::ItemExternCrate
+pub fn fold_item_extern_crate<F>(
+    f: &mut F,
+    node: crate::ItemExternCrate,
+) -> crate::ItemExternCrate
 where
     F: Fold + ?Sized,
 {
@@ -2262,7 +2458,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_item_foreign_mod<F>(f: &mut F, node: crate::ItemForeignMod) -> crate::ItemForeignMod
+pub fn fold_item_foreign_mod<F>(
+    f: &mut F,
+    node: crate::ItemForeignMod,
+) -> crate::ItemForeignMod
 where
     F: Fold + ?Sized,
 {
@@ -2371,14 +2570,21 @@ where
         ident: f.fold_ident(node.ident),
         generics: f.fold_generics(node.generics),
         colon_token: node.colon_token,
-        supertraits: crate::punctuated::fold(node.supertraits, f, F::fold_type_param_bound),
+        supertraits: crate::punctuated::fold(
+            node.supertraits,
+            f,
+            F::fold_type_param_bound,
+        ),
         brace_token: node.brace_token,
         items: fold_vec(node.items, f, F::fold_trait_item),
     }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_item_trait_alias<F>(f: &mut F, node: crate::ItemTraitAlias) -> crate::ItemTraitAlias
+pub fn fold_item_trait_alias<F>(
+    f: &mut F,
+    node: crate::ItemTraitAlias,
+) -> crate::ItemTraitAlias
 where
     F: Fold + ?Sized,
 {
@@ -2409,7 +2615,8 @@ where
         eq_token: node.eq_token,
         ty: Box::new(f.fold_type(*node.ty)),
         semi_token: node.semi_token,
-        where_clause_placement: f.fold_where_clause_placement(node.where_clause_placement),
+        where_clause_placement: f
+            .fold_where_clause_placement(node.where_clause_placement),
     }
 }
 #[cfg(feature = "full")]
@@ -2448,17 +2655,26 @@ pub fn fold_label<F>(f: &mut F, node: crate::Label) -> crate::Label
 where
     F: Fold + ?Sized,
 {
-    crate::Label { name: f.fold_lifetime(node.name), colon_token: node.colon_token }
+    crate::Label {
+        name: f.fold_lifetime(node.name),
+        colon_token: node.colon_token,
+    }
 }
 pub fn fold_lifetime<F>(f: &mut F, node: crate::Lifetime) -> crate::Lifetime
 where
     F: Fold + ?Sized,
 {
-    crate::Lifetime { apostrophe: node.apostrophe, ident: f.fold_ident(node.ident) }
+    crate::Lifetime {
+        apostrophe: node.apostrophe,
+        ident: f.fold_ident(node.ident),
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_lifetime_param<F>(f: &mut F, node: crate::LifetimeParam) -> crate::LifetimeParam
+pub fn fold_lifetime_param<F>(
+    f: &mut F,
+    node: crate::LifetimeParam,
+) -> crate::LifetimeParam
 where
     F: Fold + ?Sized,
 {
@@ -2475,7 +2691,9 @@ where
 {
     match node {
         crate::Lit::Str(_binding_0) => crate::Lit::Str(f.fold_lit_str(_binding_0)),
-        crate::Lit::ByteStr(_binding_0) => crate::Lit::ByteStr(f.fold_lit_byte_str(_binding_0)),
+        crate::Lit::ByteStr(_binding_0) => {
+            crate::Lit::ByteStr(f.fold_lit_byte_str(_binding_0))
+        }
         crate::Lit::CStr(_binding_0) => crate::Lit::CStr(f.fold_lit_cstr(_binding_0)),
         crate::Lit::Byte(_binding_0) => crate::Lit::Byte(f.fold_lit_byte(_binding_0)),
         crate::Lit::Char(_binding_0) => crate::Lit::Char(f.fold_lit_char(_binding_0)),
@@ -2489,7 +2707,10 @@ pub fn fold_lit_bool<F>(f: &mut F, node: crate::LitBool) -> crate::LitBool
 where
     F: Fold + ?Sized,
 {
-    crate::LitBool { value: node.value, span: node.span }
+    crate::LitBool {
+        value: node.value,
+        span: node.span,
+    }
 }
 pub fn fold_lit_byte<F>(f: &mut F, node: crate::LitByte) -> crate::LitByte
 where
@@ -2575,14 +2796,23 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_macro_delimiter<F>(f: &mut F, node: crate::MacroDelimiter) -> crate::MacroDelimiter
+pub fn fold_macro_delimiter<F>(
+    f: &mut F,
+    node: crate::MacroDelimiter,
+) -> crate::MacroDelimiter
 where
     F: Fold + ?Sized,
 {
     match node {
-        crate::MacroDelimiter::Paren(_binding_0) => crate::MacroDelimiter::Paren(_binding_0),
-        crate::MacroDelimiter::Brace(_binding_0) => crate::MacroDelimiter::Brace(_binding_0),
-        crate::MacroDelimiter::Bracket(_binding_0) => crate::MacroDelimiter::Bracket(_binding_0),
+        crate::MacroDelimiter::Paren(_binding_0) => {
+            crate::MacroDelimiter::Paren(_binding_0)
+        }
+        crate::MacroDelimiter::Brace(_binding_0) => {
+            crate::MacroDelimiter::Brace(_binding_0)
+        }
+        crate::MacroDelimiter::Bracket(_binding_0) => {
+            crate::MacroDelimiter::Bracket(_binding_0)
+        }
     }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
@@ -2592,8 +2822,12 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Member::Named(_binding_0) => crate::Member::Named(f.fold_ident(_binding_0)),
-        crate::Member::Unnamed(_binding_0) => crate::Member::Unnamed(f.fold_index(_binding_0)),
+        crate::Member::Named(_binding_0) => {
+            crate::Member::Named(f.fold_ident(_binding_0))
+        }
+        crate::Member::Unnamed(_binding_0) => {
+            crate::Member::Unnamed(f.fold_index(_binding_0))
+        }
     }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
@@ -2624,7 +2858,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_meta_name_value<F>(f: &mut F, node: crate::MetaNameValue) -> crate::MetaNameValue
+pub fn fold_meta_name_value<F>(
+    f: &mut F,
+    node: crate::MetaNameValue,
+) -> crate::MetaNameValue
 where
     F: Fold + ?Sized,
 {
@@ -2682,13 +2919,17 @@ where
         }
         crate::Pat::Rest(_binding_0) => crate::Pat::Rest(f.fold_pat_rest(_binding_0)),
         crate::Pat::Slice(_binding_0) => crate::Pat::Slice(f.fold_pat_slice(_binding_0)),
-        crate::Pat::Struct(_binding_0) => crate::Pat::Struct(f.fold_pat_struct(_binding_0)),
+        crate::Pat::Struct(_binding_0) => {
+            crate::Pat::Struct(f.fold_pat_struct(_binding_0))
+        }
         crate::Pat::Tuple(_binding_0) => crate::Pat::Tuple(f.fold_pat_tuple(_binding_0)),
         crate::Pat::TupleStruct(_binding_0) => {
             crate::Pat::TupleStruct(f.fold_pat_tuple_struct(_binding_0))
         }
         crate::Pat::Type(_binding_0) => crate::Pat::Type(f.fold_pat_type(_binding_0)),
-        crate::Pat::Verbatim(_binding_0) => crate::Pat::Verbatim(f.fold_token_stream(_binding_0)),
+        crate::Pat::Verbatim(_binding_0) => {
+            crate::Pat::Verbatim(f.fold_token_stream(_binding_0))
+        }
         crate::Pat::Wild(_binding_0) => crate::Pat::Wild(f.fold_pat_wild(_binding_0)),
     }
 }
@@ -2762,7 +3003,10 @@ pub fn fold_pat_rest<F>(f: &mut F, node: crate::PatRest) -> crate::PatRest
 where
     F: Fold + ?Sized,
 {
-    crate::PatRest { attrs: f.fold_attributes(node.attrs), dot2_token: node.dot2_token }
+    crate::PatRest {
+        attrs: f.fold_attributes(node.attrs),
+        dot2_token: node.dot2_token,
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -2805,7 +3049,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_pat_tuple_struct<F>(f: &mut F, node: crate::PatTupleStruct) -> crate::PatTupleStruct
+pub fn fold_pat_tuple_struct<F>(
+    f: &mut F,
+    node: crate::PatTupleStruct,
+) -> crate::PatTupleStruct
 where
     F: Fold + ?Sized,
 {
@@ -2836,7 +3083,10 @@ pub fn fold_pat_wild<F>(f: &mut F, node: crate::PatWild) -> crate::PatWild
 where
     F: Fold + ?Sized,
 {
-    crate::PatWild { attrs: f.fold_attributes(node.attrs), underscore_token: node.underscore_token }
+    crate::PatWild {
+        attrs: f.fold_attributes(node.attrs),
+        underscore_token: node.underscore_token,
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -2851,17 +3101,24 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_path_arguments<F>(f: &mut F, node: crate::PathArguments) -> crate::PathArguments
+pub fn fold_path_arguments<F>(
+    f: &mut F,
+    node: crate::PathArguments,
+) -> crate::PathArguments
 where
     F: Fold + ?Sized,
 {
     match node {
         crate::PathArguments::None => crate::PathArguments::None,
-        crate::PathArguments::AngleBracketed(_binding_0) => crate::PathArguments::AngleBracketed(
-            f.fold_angle_bracketed_generic_arguments(_binding_0),
-        ),
+        crate::PathArguments::AngleBracketed(_binding_0) => {
+            crate::PathArguments::AngleBracketed(
+                f.fold_angle_bracketed_generic_arguments(_binding_0),
+            )
+        }
         crate::PathArguments::Parenthesized(_binding_0) => {
-            crate::PathArguments::Parenthesized(f.fold_parenthesized_generic_arguments(_binding_0))
+            crate::PathArguments::Parenthesized(
+                f.fold_parenthesized_generic_arguments(_binding_0),
+            )
         }
     }
 }
@@ -2886,13 +3143,20 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::PointerMutability::Const(_binding_0) => crate::PointerMutability::Const(_binding_0),
-        crate::PointerMutability::Mut(_binding_0) => crate::PointerMutability::Mut(_binding_0),
+        crate::PointerMutability::Const(_binding_0) => {
+            crate::PointerMutability::Const(_binding_0)
+        }
+        crate::PointerMutability::Mut(_binding_0) => {
+            crate::PointerMutability::Mut(_binding_0)
+        }
     }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_precise_capture<F>(f: &mut F, node: crate::PreciseCapture) -> crate::PreciseCapture
+pub fn fold_precise_capture<F>(
+    f: &mut F,
+    node: crate::PreciseCapture,
+) -> crate::PreciseCapture
 where
     F: Fold + ?Sized,
 {
@@ -2921,7 +3185,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_predicate_type<F>(f: &mut F, node: crate::PredicateType) -> crate::PredicateType
+pub fn fold_predicate_type<F>(
+    f: &mut F,
+    node: crate::PredicateType,
+) -> crate::PredicateType
 where
     F: Fold + ?Sized,
 {
@@ -2954,7 +3221,9 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::RangeLimits::HalfOpen(_binding_0) => crate::RangeLimits::HalfOpen(_binding_0),
+        crate::RangeLimits::HalfOpen(_binding_0) => {
+            crate::RangeLimits::HalfOpen(_binding_0)
+        }
         crate::RangeLimits::Closed(_binding_0) => crate::RangeLimits::Closed(_binding_0),
     }
 }
@@ -3046,7 +3315,9 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::StaticMutability::Mut(_binding_0) => crate::StaticMutability::Mut(_binding_0),
+        crate::StaticMutability::Mut(_binding_0) => {
+            crate::StaticMutability::Mut(_binding_0)
+        }
         crate::StaticMutability::None => crate::StaticMutability::None,
     }
 }
@@ -3062,7 +3333,9 @@ where
         crate::Stmt::Expr(_binding_0, _binding_1) => {
             crate::Stmt::Expr(f.fold_expr(_binding_0), _binding_1)
         }
-        crate::Stmt::Macro(_binding_0) => crate::Stmt::Macro(f.fold_stmt_macro(_binding_0)),
+        crate::Stmt::Macro(_binding_0) => {
+            crate::Stmt::Macro(f.fold_stmt_macro(_binding_0))
+        }
     }
 }
 #[cfg(feature = "full")]
@@ -3101,7 +3374,9 @@ where
         crate::TraitItem::Const(_binding_0) => {
             crate::TraitItem::Const(f.fold_trait_item_const(_binding_0))
         }
-        crate::TraitItem::Fn(_binding_0) => crate::TraitItem::Fn(f.fold_trait_item_fn(_binding_0)),
+        crate::TraitItem::Fn(_binding_0) => {
+            crate::TraitItem::Fn(f.fold_trait_item_fn(_binding_0))
+        }
         crate::TraitItem::Type(_binding_0) => {
             crate::TraitItem::Type(f.fold_trait_item_type(_binding_0))
         }
@@ -3115,7 +3390,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_trait_item_const<F>(f: &mut F, node: crate::TraitItemConst) -> crate::TraitItemConst
+pub fn fold_trait_item_const<F>(
+    f: &mut F,
+    node: crate::TraitItemConst,
+) -> crate::TraitItemConst
 where
     F: Fold + ?Sized,
 {
@@ -3147,7 +3425,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_trait_item_macro<F>(f: &mut F, node: crate::TraitItemMacro) -> crate::TraitItemMacro
+pub fn fold_trait_item_macro<F>(
+    f: &mut F,
+    node: crate::TraitItemMacro,
+) -> crate::TraitItemMacro
 where
     F: Fold + ?Sized,
 {
@@ -3159,7 +3440,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn fold_trait_item_type<F>(f: &mut F, node: crate::TraitItemType) -> crate::TraitItemType
+pub fn fold_trait_item_type<F>(
+    f: &mut F,
+    node: crate::TraitItemType,
+) -> crate::TraitItemType
 where
     F: Fold + ?Sized,
 {
@@ -3182,27 +3466,47 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::Type::Array(_binding_0) => crate::Type::Array(f.fold_type_array(_binding_0)),
-        crate::Type::FnPtr(_binding_0) => crate::Type::FnPtr(f.fold_type_fn_ptr(_binding_0)),
-        crate::Type::Group(_binding_0) => crate::Type::Group(f.fold_type_group(_binding_0)),
+        crate::Type::Array(_binding_0) => {
+            crate::Type::Array(f.fold_type_array(_binding_0))
+        }
+        crate::Type::FnPtr(_binding_0) => {
+            crate::Type::FnPtr(f.fold_type_fn_ptr(_binding_0))
+        }
+        crate::Type::Group(_binding_0) => {
+            crate::Type::Group(f.fold_type_group(_binding_0))
+        }
         crate::Type::ImplTrait(_binding_0) => {
             crate::Type::ImplTrait(f.fold_type_impl_trait(_binding_0))
         }
-        crate::Type::Infer(_binding_0) => crate::Type::Infer(f.fold_type_infer(_binding_0)),
-        crate::Type::Macro(_binding_0) => crate::Type::Macro(f.fold_type_macro(_binding_0)),
-        crate::Type::Never(_binding_0) => crate::Type::Never(f.fold_type_never(_binding_0)),
-        crate::Type::Paren(_binding_0) => crate::Type::Paren(f.fold_type_paren(_binding_0)),
+        crate::Type::Infer(_binding_0) => {
+            crate::Type::Infer(f.fold_type_infer(_binding_0))
+        }
+        crate::Type::Macro(_binding_0) => {
+            crate::Type::Macro(f.fold_type_macro(_binding_0))
+        }
+        crate::Type::Never(_binding_0) => {
+            crate::Type::Never(f.fold_type_never(_binding_0))
+        }
+        crate::Type::Paren(_binding_0) => {
+            crate::Type::Paren(f.fold_type_paren(_binding_0))
+        }
         crate::Type::Path(_binding_0) => crate::Type::Path(f.fold_type_path(_binding_0)),
         crate::Type::Ptr(_binding_0) => crate::Type::Ptr(f.fold_type_ptr(_binding_0)),
         crate::Type::Reference(_binding_0) => {
             crate::Type::Reference(f.fold_type_reference(_binding_0))
         }
-        crate::Type::Slice(_binding_0) => crate::Type::Slice(f.fold_type_slice(_binding_0)),
+        crate::Type::Slice(_binding_0) => {
+            crate::Type::Slice(f.fold_type_slice(_binding_0))
+        }
         crate::Type::TraitObject(_binding_0) => {
             crate::Type::TraitObject(f.fold_type_trait_object(_binding_0))
         }
-        crate::Type::Tuple(_binding_0) => crate::Type::Tuple(f.fold_type_tuple(_binding_0)),
-        crate::Type::Verbatim(_binding_0) => crate::Type::Verbatim(f.fold_token_stream(_binding_0)),
+        crate::Type::Tuple(_binding_0) => {
+            crate::Type::Tuple(f.fold_type_tuple(_binding_0))
+        }
+        crate::Type::Verbatim(_binding_0) => {
+            crate::Type::Verbatim(f.fold_token_stream(_binding_0))
+        }
     }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
@@ -3251,7 +3555,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_type_impl_trait<F>(f: &mut F, node: crate::TypeImplTrait) -> crate::TypeImplTrait
+pub fn fold_type_impl_trait<F>(
+    f: &mut F,
+    node: crate::TypeImplTrait,
+) -> crate::TypeImplTrait
 where
     F: Fold + ?Sized,
 {
@@ -3278,7 +3585,10 @@ pub fn fold_type_macro<F>(f: &mut F, node: crate::TypeMacro) -> crate::TypeMacro
 where
     F: Fold + ?Sized,
 {
-    crate::TypeMacro { attrs: f.fold_attributes(node.attrs), mac: f.fold_macro(node.mac) }
+    crate::TypeMacro {
+        attrs: f.fold_attributes(node.attrs),
+        mac: f.fold_macro(node.mac),
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -3286,7 +3596,10 @@ pub fn fold_type_never<F>(f: &mut F, node: crate::TypeNever) -> crate::TypeNever
 where
     F: Fold + ?Sized,
 {
-    crate::TypeNever { attrs: f.fold_attributes(node.attrs), bang_token: node.bang_token }
+    crate::TypeNever {
+        attrs: f.fold_attributes(node.attrs),
+        bang_token: node.bang_token,
+    }
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -3304,7 +3617,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_type_param_bound<F>(f: &mut F, node: crate::TypeParamBound) -> crate::TypeParamBound
+pub fn fold_type_param_bound<F>(
+    f: &mut F,
+    node: crate::TypeParamBound,
+) -> crate::TypeParamBound
 where
     F: Fold + ?Sized,
 {
@@ -3316,7 +3632,9 @@ where
             crate::TypeParamBound::Lifetime(f.fold_lifetime(_binding_0))
         }
         crate::TypeParamBound::PreciseCapture(_binding_0) => {
-            crate::TypeParamBound::PreciseCapture(full!(f.fold_precise_capture(_binding_0)))
+            crate::TypeParamBound::PreciseCapture(
+                full!(f.fold_precise_capture(_binding_0)),
+            )
         }
         crate::TypeParamBound::Verbatim(_binding_0) => {
             crate::TypeParamBound::Verbatim(f.fold_token_stream(_binding_0))
@@ -3362,7 +3680,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_type_reference<F>(f: &mut F, node: crate::TypeReference) -> crate::TypeReference
+pub fn fold_type_reference<F>(
+    f: &mut F,
+    node: crate::TypeReference,
+) -> crate::TypeReference
 where
     F: Fold + ?Sized,
 {
@@ -3388,7 +3709,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_type_trait_object<F>(f: &mut F, node: crate::TypeTraitObject) -> crate::TypeTraitObject
+pub fn fold_type_trait_object<F>(
+    f: &mut F,
+    node: crate::TypeTraitObject,
+) -> crate::TypeTraitObject
 where
     F: Fold + ?Sized,
 {
@@ -3428,7 +3752,9 @@ pub fn fold_use_glob<F>(f: &mut F, node: crate::UseGlob) -> crate::UseGlob
 where
     F: Fold + ?Sized,
 {
-    crate::UseGlob { star_token: node.star_token }
+    crate::UseGlob {
+        star_token: node.star_token,
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -3447,7 +3773,9 @@ pub fn fold_use_name<F>(f: &mut F, node: crate::UseName) -> crate::UseName
 where
     F: Fold + ?Sized,
 {
-    crate::UseName { ident: f.fold_ident(node.ident) }
+    crate::UseName {
+        ident: f.fold_ident(node.ident),
+    }
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
@@ -3480,11 +3808,21 @@ where
     F: Fold + ?Sized,
 {
     match node {
-        crate::UseTree::Path(_binding_0) => crate::UseTree::Path(f.fold_use_path(_binding_0)),
-        crate::UseTree::Name(_binding_0) => crate::UseTree::Name(f.fold_use_name(_binding_0)),
-        crate::UseTree::Rename(_binding_0) => crate::UseTree::Rename(f.fold_use_rename(_binding_0)),
-        crate::UseTree::Glob(_binding_0) => crate::UseTree::Glob(f.fold_use_glob(_binding_0)),
-        crate::UseTree::Group(_binding_0) => crate::UseTree::Group(f.fold_use_group(_binding_0)),
+        crate::UseTree::Path(_binding_0) => {
+            crate::UseTree::Path(f.fold_use_path(_binding_0))
+        }
+        crate::UseTree::Name(_binding_0) => {
+            crate::UseTree::Name(f.fold_use_name(_binding_0))
+        }
+        crate::UseTree::Rename(_binding_0) => {
+            crate::UseTree::Rename(f.fold_use_rename(_binding_0))
+        }
+        crate::UseTree::Glob(_binding_0) => {
+            crate::UseTree::Glob(f.fold_use_glob(_binding_0))
+        }
+        crate::UseTree::Group(_binding_0) => {
+            crate::UseTree::Group(f.fold_use_group(_binding_0))
+        }
     }
 }
 #[cfg(feature = "full")]
@@ -3515,7 +3853,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_vis_restricted<F>(f: &mut F, node: crate::VisRestricted) -> crate::VisRestricted
+pub fn fold_vis_restricted<F>(
+    f: &mut F,
+    node: crate::VisRestricted,
+) -> crate::VisRestricted
 where
     F: Fold + ?Sized,
 {
@@ -3567,7 +3908,10 @@ where
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
-pub fn fold_where_predicate<F>(f: &mut F, node: crate::WherePredicate) -> crate::WherePredicate
+pub fn fold_where_predicate<F>(
+    f: &mut F,
+    node: crate::WherePredicate,
+) -> crate::WherePredicate
 where
     F: Fold + ?Sized,
 {

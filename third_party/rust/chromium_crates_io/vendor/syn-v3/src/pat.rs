@@ -426,7 +426,11 @@ pub(crate) mod parsing {
                 let pat = Pat::parse_single(input)?;
                 cases.push_value(pat);
             }
-            pat = Pat::Or(PatOr { attrs: Vec::new(), leading_vert, cases });
+            pat = Pat::Or(PatOr {
+                attrs: Vec::new(),
+                leading_vert,
+                cases,
+            });
         }
         if allow_guard && input.peek(Token![if]) {
             let if_token: Token![if] = input.parse()?;
@@ -454,7 +458,12 @@ pub(crate) mod parsing {
             let (delimiter, tokens) = mac::parse_delimiter(input)?;
             return Ok(Pat::Macro(ExprMacro {
                 attrs: Vec::new(),
-                mac: Macro { path, bang_token, delimiter, tokens },
+                mac: Macro {
+                    path,
+                    bang_token,
+                    delimiter,
+                    tokens,
+                },
             }));
         }
 
@@ -465,12 +474,19 @@ pub(crate) mod parsing {
         } else if input.peek(Token![..]) {
             pat_range(input, qself, path)
         } else {
-            Ok(Pat::Path(ExprPath { attrs: Vec::new(), qself, path }))
+            Ok(Pat::Path(ExprPath {
+                attrs: Vec::new(),
+                qself,
+                path,
+            }))
         }
     }
 
     fn pat_wild(input: ParseStream) -> Result<PatWild> {
-        Ok(PatWild { attrs: Vec::new(), underscore_token: input.parse()? })
+        Ok(PatWild {
+            attrs: Vec::new(),
+            underscore_token: input.parse()?,
+        })
     }
 
     fn pat_box(begin: Cursor, input: ParseStream) -> Result<Pat> {
@@ -522,7 +538,13 @@ pub(crate) mod parsing {
             elems.push_punct(punct);
         }
 
-        Ok(PatTupleStruct { attrs: Vec::new(), qself, path, paren_token, elems })
+        Ok(PatTupleStruct {
+            attrs: Vec::new(),
+            qself,
+            path,
+            paren_token,
+            elems,
+        })
     }
 
     fn pat_struct(input: ParseStream, qself: Option<QSelf>, path: Path) -> Result<PatStruct> {
@@ -534,7 +556,10 @@ pub(crate) mod parsing {
         while !content.is_empty() {
             let attrs = content.call(Attribute::parse_outer)?;
             if content.peek(Token![..]) {
-                rest = Some(PatRest { attrs, dot2_token: content.parse()? });
+                rest = Some(PatRest {
+                    attrs,
+                    dot2_token: content.parse()?,
+                });
                 break;
             }
             let mut value = content.call(field_pat)?;
@@ -547,7 +572,14 @@ pub(crate) mod parsing {
             fields.push_punct(punct);
         }
 
-        Ok(PatStruct { attrs: Vec::new(), qself, path, brace_token, fields, rest })
+        Ok(PatStruct {
+            attrs: Vec::new(),
+            qself,
+            path,
+            brace_token,
+            fields,
+            rest,
+        })
     }
 
     fn field_pat(input: ParseStream) -> Result<FieldPat> {
@@ -606,7 +638,11 @@ pub(crate) mod parsing {
         }
         Ok(Pat::Range(ExprRange {
             attrs: Vec::new(),
-            start: Some(Box::new(Expr::Path(ExprPath { attrs: Vec::new(), qself, path }))),
+            start: Some(Box::new(Expr::Path(ExprPath {
+                attrs: Vec::new(),
+                qself,
+                path,
+            }))),
             limits,
             end: end.map(PatRangeBound::into_expr),
         }))
@@ -624,9 +660,10 @@ pub(crate) mod parsing {
             }))
         } else {
             match limits {
-                RangeLimits::HalfOpen(dot2_token) => {
-                    Ok(Pat::Rest(PatRest { attrs: Vec::new(), dot2_token }))
-                }
+                RangeLimits::HalfOpen(dot2_token) => Ok(Pat::Rest(PatRest {
+                    attrs: Vec::new(),
+                    dot2_token,
+                })),
                 RangeLimits::Closed(_) => Err(input.error("expected range upper bound")),
             }
         }
@@ -655,7 +692,11 @@ pub(crate) mod parsing {
             elems.push_punct(punct);
         }
 
-        Ok(Pat::Tuple(PatTuple { attrs: Vec::new(), paren_token, elems }))
+        Ok(Pat::Tuple(PatTuple {
+            attrs: Vec::new(),
+            paren_token,
+            elems,
+        }))
     }
 
     fn pat_reference(input: ParseStream) -> Result<PatReference> {
@@ -772,7 +813,11 @@ pub(crate) mod parsing {
             elems.push_punct(punct);
         }
 
-        Ok(PatSlice { attrs: Vec::new(), bracket_token, elems })
+        Ok(PatSlice {
+            attrs: Vec::new(),
+            bracket_token,
+            elems,
+        })
     }
 
     fn pat_const(input: ParseStream) -> Result<TokenStream> {

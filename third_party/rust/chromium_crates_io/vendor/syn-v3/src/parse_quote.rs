@@ -207,7 +207,15 @@ impl ParseQuote for Field {
             None
         };
 
-        Ok(Field { attrs, vis, modifiers: FieldModifiers {}, ident, colon_token, ty, default })
+        Ok(Field {
+            attrs,
+            vis,
+            modifiers: FieldModifiers {},
+            ident,
+            colon_token,
+            ty,
+            default,
+        })
     }
 }
 

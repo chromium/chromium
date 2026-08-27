@@ -141,7 +141,12 @@ impl LitStr {
     pub fn new(value: &str, span: Span) -> Self {
         let mut token = Literal::string(value);
         token.set_span(span);
-        LitStr { repr: Box::new(LitRepr { token, suffix: Box::<str>::default() }) }
+        LitStr {
+            repr: Box::new(LitRepr {
+                token,
+                suffix: Box::<str>::default(),
+            }),
+        }
     }
 
     pub fn value(&self) -> String {
@@ -278,7 +283,12 @@ impl LitByteStr {
     pub fn new(value: &[u8], span: Span) -> Self {
         let mut token = Literal::byte_string(value);
         token.set_span(span);
-        LitByteStr { repr: Box::new(LitRepr { token, suffix: Box::<str>::default() }) }
+        LitByteStr {
+            repr: Box::new(LitRepr {
+                token,
+                suffix: Box::<str>::default(),
+            }),
+        }
     }
 
     pub fn value(&self) -> Vec<u8> {
@@ -308,7 +318,12 @@ impl LitCStr {
     pub fn new(value: &CStr, span: Span) -> Self {
         let mut token = Literal::c_string(value);
         token.set_span(span);
-        LitCStr { repr: Box::new(LitRepr { token, suffix: Box::<str>::default() }) }
+        LitCStr {
+            repr: Box::new(LitRepr {
+                token,
+                suffix: Box::<str>::default(),
+            }),
+        }
     }
 
     pub fn value(&self) -> CString {
@@ -338,7 +353,12 @@ impl LitByte {
     pub fn new(value: u8, span: Span) -> Self {
         let mut token = Literal::byte_character(value);
         token.set_span(span);
-        LitByte { repr: Box::new(LitRepr { token, suffix: Box::<str>::default() }) }
+        LitByte {
+            repr: Box::new(LitRepr {
+                token,
+                suffix: Box::<str>::default(),
+            }),
+        }
     }
 
     pub fn value(&self) -> u8 {
@@ -368,7 +388,12 @@ impl LitChar {
     pub fn new(value: char, span: Span) -> Self {
         let mut token = Literal::character(value);
         token.set_span(span);
-        LitChar { repr: Box::new(LitRepr { token, suffix: Box::<str>::default() }) }
+        LitChar {
+            repr: Box::new(LitRepr {
+                token,
+                suffix: Box::<str>::default(),
+            }),
+        }
     }
 
     pub fn value(&self) -> char {
@@ -404,7 +429,13 @@ impl LitInt {
 
         let mut token: Literal = repr.parse().unwrap();
         token.set_span(span);
-        LitInt { repr: Box::new(LitIntRepr { token, digits, suffix }) }
+        LitInt {
+            repr: Box::new(LitIntRepr {
+                token,
+                digits,
+                suffix,
+            }),
+        }
     }
 
     pub fn base10_digits(&self) -> &str {
@@ -438,7 +469,9 @@ impl LitInt {
         N: FromStr,
         N::Err: Display,
     {
-        self.base10_digits().parse().map_err(|err| Error::new(self.span(), err))
+        self.base10_digits()
+            .parse()
+            .map_err(|err| Error::new(self.span(), err))
     }
 
     pub fn suffix(&self) -> &str {
@@ -474,7 +507,13 @@ impl LitFloat {
 
         let mut token: Literal = repr.parse().unwrap();
         token.set_span(span);
-        LitFloat { repr: Box::new(LitFloatRepr { token, digits, suffix }) }
+        LitFloat {
+            repr: Box::new(LitFloatRepr {
+                token,
+                digits,
+                suffix,
+            }),
+        }
     }
 
     pub fn base10_digits(&self) -> &str {
@@ -486,7 +525,9 @@ impl LitFloat {
         N: FromStr,
         N::Err: Display,
     {
-        self.base10_digits().parse().map_err(|err| Error::new(self.span(), err))
+        self.base10_digits()
+            .parse()
+            .map_err(|err| Error::new(self.span(), err))
     }
 
     pub fn suffix(&self) -> &str {
@@ -661,7 +702,10 @@ mod debug_impls {
 
     impl LitBool {
         pub(crate) fn debug(&self, formatter: &mut fmt::Formatter, name: &str) -> fmt::Result {
-            formatter.debug_struct(name).field("value", &self.value).finish()
+            formatter
+                .debug_struct(name)
+                .field("value", &self.value)
+                .finish()
         }
     }
 }
@@ -670,7 +714,10 @@ mod debug_impls {
 #[cfg_attr(docsrs, doc(cfg(feature = "clone-impls")))]
 impl Clone for LitRepr {
     fn clone(&self) -> Self {
-        LitRepr { token: self.token.clone(), suffix: self.suffix.clone() }
+        LitRepr {
+            token: self.token.clone(),
+            suffix: self.suffix.clone(),
+        }
     }
 }
 
@@ -704,7 +751,9 @@ macro_rules! lit_extra_traits {
         #[cfg_attr(docsrs, doc(cfg(feature = "clone-impls")))]
         impl Clone for $ty {
             fn clone(&self) -> Self {
-                $ty { repr: self.repr.clone() }
+                $ty {
+                    repr: self.repr.clone(),
+                }
             }
         }
 
@@ -791,7 +840,10 @@ pub(crate) mod parsing {
                 if let Some((ident, rest)) = cursor.ident() {
                     let value = ident == "true";
                     if value || ident == "false" {
-                        let lit_bool = LitBool { value, span: ident.span() };
+                        let lit_bool = LitBool {
+                            value,
+                            span: ident.span(),
+                        };
                         return Ok((Lit::Bool(lit_bool), rest));
                     }
                 }
@@ -822,7 +874,13 @@ pub(crate) mod parsing {
             let mut token: Literal = repr.parse().unwrap();
             token.set_span(span);
             return Some((
-                Lit::Int(LitInt { repr: Box::new(LitIntRepr { token, digits, suffix }) }),
+                Lit::Int(LitInt {
+                    repr: Box::new(LitIntRepr {
+                        token,
+                        digits,
+                        suffix,
+                    }),
+                }),
                 rest,
             ));
         }
@@ -831,7 +889,13 @@ pub(crate) mod parsing {
         let mut token: Literal = repr.parse().unwrap();
         token.set_span(span);
         Some((
-            Lit::Float(LitFloat { repr: Box::new(LitFloatRepr { token, digits, suffix }) }),
+            Lit::Float(LitFloat {
+                repr: Box::new(LitFloatRepr {
+                    token,
+                    digits,
+                    suffix,
+                }),
+            }),
             rest,
         ))
     }
@@ -1058,7 +1122,9 @@ mod value {
                 // "...", r"...", r#"..."#
                 b'"' | b'r' => {
                     if let Some((_, suffix)) = parse_lit_str(repr) {
-                        return Lit::Str(LitStr { repr: Box::new(LitRepr { token, suffix }) });
+                        return Lit::Str(LitStr {
+                            repr: Box::new(LitRepr { token, suffix }),
+                        });
                     }
                 }
                 b'b' => match byte(repr, 1) {
@@ -1094,26 +1160,39 @@ mod value {
                 // '...'
                 b'\'' => {
                     if let Some((_, suffix)) = parse_lit_char(repr) {
-                        return Lit::Char(LitChar { repr: Box::new(LitRepr { token, suffix }) });
+                        return Lit::Char(LitChar {
+                            repr: Box::new(LitRepr { token, suffix }),
+                        });
                     }
                 }
                 b'0'..=b'9' | b'-' => {
                     // 0, 123, 0xFF, 0o77, 0b11
                     if let Some((digits, suffix)) = parse_lit_int(repr) {
                         return Lit::Int(LitInt {
-                            repr: Box::new(LitIntRepr { token, digits, suffix }),
+                            repr: Box::new(LitIntRepr {
+                                token,
+                                digits,
+                                suffix,
+                            }),
                         });
                     }
                     // 1.0, 1e-1, 1e+1
                     if let Some((digits, suffix)) = parse_lit_float(repr) {
                         return Lit::Float(LitFloat {
-                            repr: Box::new(LitFloatRepr { token, digits, suffix }),
+                            repr: Box::new(LitFloatRepr {
+                                token,
+                                digits,
+                                suffix,
+                            }),
                         });
                     }
                 }
                 // true, false
                 b't' | b'f' if repr == "true" || repr == "false" => {
-                    return Lit::Bool(LitBool { value: repr == "true", span: token.span() });
+                    return Lit::Bool(LitBool {
+                        value: repr == "true",
+                        span: token.span(),
+                    });
                 }
                 b'(' if repr == "(/*ERROR*/)" => return Lit::Verbatim(token),
                 _ => {}
@@ -1748,7 +1827,11 @@ mod value {
                     bytes[write] = b'.';
                 }
                 b'e' | b'E' => {
-                    match bytes[read + 1..].iter().find(|b| **b != b'_').unwrap_or(&b'\0') {
+                    match bytes[read + 1..]
+                        .iter()
+                        .find(|b| **b != b'_')
+                        .unwrap_or(&b'\0')
+                    {
                         b'-' | b'+' | b'0'..=b'9' => {}
                         _ => break,
                     }

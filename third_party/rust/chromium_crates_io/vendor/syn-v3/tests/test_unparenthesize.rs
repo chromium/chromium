@@ -2,6 +2,7 @@
 #![recursion_limit = "1024"]
 #![feature(rustc_private)]
 #![allow(
+    clippy::assert_is_empty,
     clippy::elidable_lifetime_names,
     clippy::manual_assert,
     clippy::match_like_matches_macro,

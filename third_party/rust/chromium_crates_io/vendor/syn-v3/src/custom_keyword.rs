@@ -100,13 +100,17 @@ macro_rules! custom_keyword {
         pub fn $ident<__S: $crate::__private::IntoSpans<$crate::__private::Span>>(
             span: __S,
         ) -> $ident {
-            $ident { span: $crate::__private::IntoSpans::into_spans(span) }
+            $ident {
+                span: $crate::__private::IntoSpans::into_spans(span),
+            }
         }
 
         const _: () = {
             impl $crate::__private::Default for $ident {
                 fn default() -> Self {
-                    $ident { span: $crate::__private::Span::call_site() }
+                    $ident {
+                        span: $crate::__private::Span::call_site(),
+                    }
                 }
             }
 

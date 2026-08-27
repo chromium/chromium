@@ -9,11 +9,15 @@ pub struct FlattenParens {
 
 impl FlattenParens {
     pub fn discard_attrs() -> Self {
-        FlattenParens { discard_paren_attrs: true }
+        FlattenParens {
+            discard_paren_attrs: true,
+        }
     }
 
     pub fn combine_attrs() -> Self {
-        FlattenParens { discard_paren_attrs: false }
+        FlattenParens {
+            discard_paren_attrs: false,
+        }
     }
 
     pub fn visit_token_stream_mut(tokens: &mut TokenStream) {

@@ -735,7 +735,11 @@ pub(crate) mod parsing {
 
     fn parse_meta_list_after_path(path: Path, input: ParseStream) -> Result<MetaList> {
         let (delimiter, tokens) = mac::parse_delimiter(input)?;
-        Ok(MetaList { path, delimiter, tokens })
+        Ok(MetaList {
+            path,
+            delimiter,
+            tokens,
+        })
     }
 
     fn parse_meta_name_value_after_path(path: Path, input: ParseStream) -> Result<MetaNameValue> {
@@ -744,13 +748,20 @@ pub(crate) mod parsing {
         let lit: Option<Lit> = ahead.parse()?;
         let value = if let (Some(lit), true) = (lit, ahead.is_empty()) {
             input.advance_to(&ahead);
-            Expr::Lit(ExprLit { attrs: Vec::new(), lit })
+            Expr::Lit(ExprLit {
+                attrs: Vec::new(),
+                lit,
+            })
         } else if input.peek(Token![#]) && input.peek2(token::Bracket) {
             return Err(input.error("unexpected attribute inside of attribute"));
         } else {
             input.parse()?
         };
-        Ok(MetaNameValue { path, eq_token, value })
+        Ok(MetaNameValue {
+            path,
+            eq_token,
+            value,
+        })
     }
 
     pub(super) struct DisplayAttrStyle<'a>(pub &'a AttrStyle);

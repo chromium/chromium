@@ -283,7 +283,10 @@ ast_struct! {
 
 impl Default for ImplModifiers {
     fn default() -> Self {
-        ImplModifiers { defaultness: None, polarity: None }
+        ImplModifiers {
+            defaultness: None,
+            polarity: None,
+        }
     }
 }
 
@@ -610,7 +613,10 @@ impl From<ItemUnion> for DeriveInput {
             vis: input.vis,
             ident: input.ident,
             generics: input.generics,
-            data: Data::Union(DataUnion { union_token: input.union_token, fields: input.fields }),
+            data: Data::Union(DataUnion {
+                union_token: input.union_token,
+                fields: input.fields,
+            }),
         }
     }
 }
@@ -1527,12 +1533,20 @@ pub(crate) mod parsing {
                 input.parse()
             }?;
             let (delimiter, tokens) = input.call(mac::parse_delimiter)?;
-            let semi_token: Option<Token![;]> =
-                if !delimiter.is_brace() { Some(input.parse()?) } else { None };
+            let semi_token: Option<Token![;]> = if !delimiter.is_brace() {
+                Some(input.parse()?)
+            } else {
+                None
+            };
             Ok(ItemMacro {
                 attrs,
                 ident,
-                mac: Macro { path, bang_token, delimiter, tokens },
+                mac: Macro {
+                    path,
+                    bang_token,
+                    delimiter,
+                    tokens,
+                },
                 semi_token,
             })
         }
@@ -1618,7 +1632,14 @@ pub(crate) mod parsing {
             None => return Ok(None),
         };
 
-        Ok(Some(ItemUse { attrs, vis, use_token, leading_colon, tree, semi_token }))
+        Ok(Some(ItemUse {
+            attrs,
+            vis,
+            use_token,
+            leading_colon,
+            tree,
+            semi_token,
+        }))
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
@@ -1665,7 +1686,9 @@ pub(crate) mod parsing {
                 Ok(Some(UseTree::Name(UseName { ident })))
             }
         } else if lookahead.peek(Token![*]) {
-            Ok(Some(UseTree::Glob(UseGlob { star_token: input.parse()? })))
+            Ok(Some(UseTree::Glob(UseGlob {
+                star_token: input.parse()?,
+            })))
         } else if lookahead.peek(token::Brace) {
             let content;
             let brace_token = braced!(content in input);
@@ -1961,7 +1984,11 @@ pub(crate) mod parsing {
 
     fn parse_receiver_begin(
         input: ParseStream,
-    ) -> Result<(Option<(Token![&], Option<Lifetime>)>, Option<Token![mut]>, Token![self])> {
+    ) -> Result<(
+        Option<(Token![&], Option<Lifetime>)>,
+        Option<Token![mut]>,
+        Token![self],
+    )> {
         let reference = if input.peek(Token![&]) {
             let ampersand: Token![&] = input.parse()?;
             let lifetime = Lifetime::parse_optional_any(input);
@@ -1983,8 +2010,11 @@ pub(crate) mod parsing {
         self_token: Token![self],
         input: ParseStream,
     ) -> Result<Receiver> {
-        let colon_token: Option<Token![:]> =
-            if reference.is_some() { None } else { input.parse()? };
+        let colon_token: Option<Token![:]> = if reference.is_some() {
+            None
+        } else {
+            input.parse()?
+        };
         let kind = if let Some(colon_token) = colon_token {
             let ty: Type = input.parse()?;
             ReceiverKind::Typed(colon_token, Box::new(ty))
@@ -1993,7 +2023,12 @@ pub(crate) mod parsing {
         } else {
             ReceiverKind::Value
         };
-        Ok(Receiver { attrs: Vec::new(), mutability, self_token, kind })
+        Ok(Receiver {
+            attrs: Vec::new(),
+            mutability,
+            self_token,
+            kind,
+        })
     }
 
     fn parse_fn_args(
@@ -2011,7 +2046,11 @@ pub(crate) mod parsing {
                     attrs,
                     pat: None,
                     dots,
-                    comma: if input.is_empty() { None } else { Some(input.parse()?) },
+                    comma: if input.is_empty() {
+                        None
+                    } else {
+                        Some(input.parse()?)
+                    },
                 });
                 break;
             }
@@ -2021,7 +2060,11 @@ pub(crate) mod parsing {
                 FnArgOrVariadic::FnArg(arg) => arg,
                 FnArgOrVariadic::Variadic(arg) => {
                     variadic = Some(Variadic {
-                        comma: if input.is_empty() { None } else { Some(input.parse()?) },
+                        comma: if input.is_empty() {
+                            None
+                        } else {
+                            Some(input.parse()?)
+                        },
                         ..arg
                     });
                     break;
@@ -2036,7 +2079,10 @@ pub(crate) mod parsing {
                     ));
                 }
                 FnArg::Receiver(receiver) if !args.is_empty() => {
-                    return Err(Error::new(receiver.self_token.span, "unexpected method receiver"));
+                    return Err(Error::new(
+                        receiver.self_token.span,
+                        "unexpected method receiver",
+                    ));
                 }
                 FnArg::Receiver(_) => has_receiver = true,
                 FnArg::Typed(_) => {}
@@ -2061,8 +2107,11 @@ pub(crate) mod parsing {
             let vis: Visibility = input.parse()?;
             let unsafety: Option<Token![unsafe]> = input.parse()?;
             let mod_token: Token![mod] = input.parse()?;
-            let ident: Ident =
-                if input.peek(Token![try]) { input.call(Ident::parse_any) } else { input.parse() }?;
+            let ident: Ident = if input.peek(Token![try]) {
+                input.call(Ident::parse_any)
+            } else {
+                input.parse()
+            }?;
 
             let lookahead = input.lookahead1();
             if lookahead.peek(Token![;]) {
@@ -2115,7 +2164,13 @@ pub(crate) mod parsing {
                 items.push(content.parse()?);
             }
 
-            Ok(ItemForeignMod { attrs, unsafety, abi, brace_token, items })
+            Ok(ItemForeignMod {
+                attrs,
+                unsafety,
+                abi,
+                brace_token,
+                items,
+            })
         }
     }
 
@@ -2143,7 +2198,10 @@ pub(crate) mod parsing {
                     Some(input.parse()?)
                 };
                 if has_body {
-                    Ok(ForeignItem::Verbatim(verbatim::between(begin, input.cursor())))
+                    Ok(ForeignItem::Verbatim(verbatim::between(
+                        begin,
+                        input.cursor(),
+                    )))
                 } else {
                     Ok(ForeignItem::Fn(ForeignItemFn {
                         attrs: Vec::new(),
@@ -2171,7 +2229,10 @@ pub(crate) mod parsing {
                 }
                 let semi_token: Token![;] = input.parse()?;
                 if has_value {
-                    Ok(ForeignItem::Verbatim(verbatim::between(begin, input.cursor())))
+                    Ok(ForeignItem::Verbatim(verbatim::between(
+                        begin,
+                        input.cursor(),
+                    )))
                 } else {
                     Ok(ForeignItem::Static(ForeignItemStatic {
                         attrs: Vec::new(),
@@ -2218,7 +2279,8 @@ pub(crate) mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let attrs = input.call(Attribute::parse_outer)?;
             let vis: Visibility = input.parse()?;
-            let sig: Signature = input.parse()?;
+            let allow_safe = true;
+            let sig = parse_signature(input, allow_safe)?;
             let semi_token: Token![;] = input.parse()?;
             Ok(ForeignItemFn {
                 attrs,
@@ -2285,7 +2347,10 @@ pub(crate) mod parsing {
         )?;
 
         if colon_token.is_some() || ty.is_some() {
-            Ok(ForeignItem::Verbatim(verbatim::between(begin, input.cursor())))
+            Ok(ForeignItem::Verbatim(verbatim::between(
+                begin,
+                input.cursor(),
+            )))
         } else {
             Ok(ForeignItem::Type(ForeignItemType {
                 attrs: Vec::new(),
@@ -2304,9 +2369,16 @@ pub(crate) mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let attrs = input.call(Attribute::parse_outer)?;
             let mac: Macro = input.parse()?;
-            let semi_token: Option<Token![;]> =
-                if mac.delimiter.is_brace() { None } else { Some(input.parse()?) };
-            Ok(ForeignItemMacro { attrs, mac, semi_token })
+            let semi_token: Option<Token![;]> = if mac.delimiter.is_brace() {
+                None
+            } else {
+                Some(input.parse()?)
+            };
+            Ok(ForeignItemMacro {
+                attrs,
+                mac,
+                semi_token,
+            })
         }
     }
 
@@ -2399,7 +2471,10 @@ pub(crate) mod parsing {
                 vis,
                 struct_token,
                 ident,
-                generics: Generics { where_clause, ..generics },
+                generics: Generics {
+                    where_clause,
+                    ..generics
+                },
                 fields,
                 semi_token,
             })
@@ -2420,7 +2495,10 @@ pub(crate) mod parsing {
                 vis,
                 enum_token,
                 ident,
-                generics: Generics { where_clause, ..generics },
+                generics: Generics {
+                    where_clause,
+                    ..generics
+                },
                 brace_token,
                 variants,
             })
@@ -2441,7 +2519,10 @@ pub(crate) mod parsing {
                 vis,
                 union_token,
                 ident,
-                generics: Generics { where_clause, ..generics },
+                generics: Generics {
+                    where_clause,
+                    ..generics
+                },
                 fields,
             })
         }
@@ -2659,7 +2740,10 @@ pub(crate) mod parsing {
                             semi_token,
                         }))
                     } else {
-                        return Ok(TraitItem::Verbatim(verbatim::between(begin, input.cursor())));
+                        return Ok(TraitItem::Verbatim(verbatim::between(
+                            begin,
+                            input.cursor(),
+                        )));
                     }
                 } else if lookahead.peek(Token![async])
                     || lookahead.peek(Token![unsafe])
@@ -2687,7 +2771,12 @@ pub(crate) mod parsing {
 
             match (vis, defaultness) {
                 (Visibility::Inherited, None) => {}
-                _ => return Ok(TraitItem::Verbatim(verbatim::between(begin, input.cursor()))),
+                _ => {
+                    return Ok(TraitItem::Verbatim(verbatim::between(
+                        begin,
+                        input.cursor(),
+                    )))
+                }
             }
 
             let item_attrs = match &mut item {
@@ -2815,7 +2904,10 @@ pub(crate) mod parsing {
         )?;
 
         if vis.is_some() {
-            Ok(TraitItem::Verbatim(verbatim::between(begin, input.cursor())))
+            Ok(TraitItem::Verbatim(verbatim::between(
+                begin,
+                input.cursor(),
+            )))
         } else {
             Ok(TraitItem::Type(TraitItemType {
                 attrs: Vec::new(),
@@ -2836,9 +2928,16 @@ pub(crate) mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let attrs = input.call(Attribute::parse_outer)?;
             let mac: Macro = input.parse()?;
-            let semi_token: Option<Token![;]> =
-                if mac.delimiter.is_brace() { None } else { Some(input.parse()?) };
-            Ok(TraitItemMacro { attrs, mac, semi_token })
+            let semi_token: Option<Token![;]> = if mac.delimiter.is_brace() {
+                None
+            } else {
+                Some(input.parse()?)
+            };
+            Ok(TraitItemMacro {
+                attrs,
+                mac,
+                semi_token,
+            })
         }
     }
 
@@ -2851,8 +2950,15 @@ pub(crate) mod parsing {
             let unsafety: Option<Token![unsafe]> = input.parse()?;
 
             let allow_verbatim_impl = false;
-            parse_impl(input, attrs, defaultness, constness, unsafety, allow_verbatim_impl)
-                .map(Option::unwrap)
+            parse_impl(
+                input,
+                attrs,
+                defaultness,
+                constness,
+                unsafety,
+                allow_verbatim_impl,
+            )
+            .map(Option::unwrap)
         }
     }
 
@@ -2867,8 +2973,11 @@ pub(crate) mod parsing {
         let impl_token: Token![impl] = input.parse()?;
 
         let has_generics = generics::parsing::choose_generics_over_qpath(input);
-        let mut generics: Generics =
-            if has_generics { input.parse()? } else { Generics::default() };
+        let mut generics: Generics = if has_generics {
+            input.parse()?
+        } else {
+            Generics::default()
+        };
 
         let polarity = if input.peek(Token![!]) && !input.peek2(token::Brace) {
             Some(input.parse::<Token![!]>()?)
@@ -2889,23 +2998,39 @@ pub(crate) mod parsing {
             while let Type::Group(ty) = first_ty_ref {
                 first_ty_ref = &ty.elem;
             }
-            if let Type::Path(TypePath { attrs: _, qself: None, .. }) = first_ty_ref {
+            if let Type::Path(TypePath {
+                attrs: _,
+                qself: None,
+                ..
+            }) = first_ty_ref
+            {
                 while let Type::Group(ty) = first_ty {
                     first_ty = *ty.elem;
                 }
-                if let Type::Path(TypePath { attrs: _, qself: None, path }) = first_ty {
+                if let Type::Path(TypePath {
+                    attrs: _,
+                    qself: None,
+                    path,
+                }) = first_ty
+                {
                     trait_ = Some((path, for_token));
                 } else {
                     unreachable!();
                 }
             } else if !allow_verbatim_impl {
-                return Err(Error::new_range(first_ty_begin..first_ty_end, "expected trait path"));
+                return Err(Error::new_range(
+                    first_ty_begin..first_ty_end,
+                    "expected trait path",
+                ));
             } else {
                 trait_ = None;
             }
             self_ty = input.parse()?;
         } else if let Some(polarity) = polarity {
-            return Err(Error::new(polarity.span, "inherent impls cannot be negative"));
+            return Err(Error::new(
+                polarity.span,
+                "inherent impls cannot be negative",
+            ));
         } else {
             trait_ = None;
             self_ty = first_ty;
@@ -2927,7 +3052,10 @@ pub(crate) mod parsing {
         } else {
             Ok(Some(ItemImpl {
                 attrs,
-                modifiers: ImplModifiers { defaultness, polarity },
+                modifiers: ImplModifiers {
+                    defaultness,
+                    polarity,
+                },
                 unsafety,
                 impl_token,
                 generics,
@@ -3099,9 +3227,18 @@ pub(crate) mod parsing {
         let content;
         let brace_token = braced!(content in input);
         attrs.extend(content.call(Attribute::parse_inner)?);
-        let block = Block { brace_token, stmts: content.call(Block::parse_within)? };
+        let block = Block {
+            brace_token,
+            stmts: content.call(Block::parse_within)?,
+        };
 
-        Ok(Some(ImplItemFn { attrs, vis, modifiers: FnModifiers { defaultness }, sig, block }))
+        Ok(Some(ImplItemFn {
+            attrs,
+            vis,
+            modifiers: FnModifiers { defaultness },
+            sig,
+            block,
+        }))
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
@@ -3168,9 +3305,16 @@ pub(crate) mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let attrs = input.call(Attribute::parse_outer)?;
             let mac: Macro = input.parse()?;
-            let semi_token: Option<Token![;]> =
-                if mac.delimiter.is_brace() { None } else { Some(input.parse()?) };
-            Ok(ImplItemMacro { attrs, mac, semi_token })
+            let semi_token: Option<Token![;]> = if mac.delimiter.is_brace() {
+                None
+            } else {
+                Some(input.parse()?)
+            };
+            Ok(ImplItemMacro {
+                attrs,
+                mac,
+                semi_token,
+            })
         }
     }
 

@@ -252,7 +252,10 @@ impl<'a> Iterator for Members<'a> {
                 let span = crate::spanned::Spanned::span(&field.ty);
                 #[cfg(not(all(feature = "parsing", feature = "printing")))]
                 let span = proc_macro2::Span::call_site();
-                Member::Unnamed(Index { index: self.index, span })
+                Member::Unnamed(Index {
+                    index: self.index,
+                    span,
+                })
             }
         };
         self.index += 1;
@@ -262,7 +265,10 @@ impl<'a> Iterator for Members<'a> {
 
 impl<'a> Clone for Members<'a> {
     fn clone(&self) -> Self {
-        Members { fields: self.fields.clone(), index: self.index }
+        Members {
+            fields: self.fields.clone(),
+            index: self.index,
+        }
     }
 }
 
@@ -317,7 +323,12 @@ pub(crate) mod parsing {
             } else {
                 None
             };
-            Ok(Variant { attrs, ident, fields, discriminant })
+            Ok(Variant {
+                attrs,
+                ident,
+                fields,
+                discriminant,
+            })
         }
     }
 
@@ -351,7 +362,11 @@ pub(crate) mod parsing {
             let vis: Visibility = input.parse()?;
 
             let unnamed_field = cfg!(feature = "full") && input.peek(Token![_]);
-            let ident = if unnamed_field { input.call(Ident::parse_any) } else { input.parse() }?;
+            let ident = if unnamed_field {
+                input.call(Ident::parse_any)
+            } else {
+                input.parse()
+            }?;
 
             let colon_token: Token![:] = input.parse()?;
 

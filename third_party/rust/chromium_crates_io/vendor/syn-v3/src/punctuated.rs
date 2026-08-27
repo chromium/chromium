@@ -55,7 +55,10 @@ pub struct Punctuated<T, P> {
 impl<T, P> Punctuated<T, P> {
     /// Creates an empty punctuated sequence.
     pub const fn new() -> Self {
-        Punctuated { inner: Vec::new(), last: None }
+        Punctuated {
+            inner: Vec::new(),
+            last: None,
+        }
     }
 
     /// Determines whether this punctuated sequence is empty, meaning it
@@ -139,7 +142,10 @@ impl<T, P> Punctuated<T, P> {
     /// Returns an iterator over the contents of this sequence as borrowed
     /// punctuated pairs.
     pub fn pairs(&self) -> Pairs<T, P> {
-        Pairs { inner: self.inner.iter(), last: self.last.as_ref().map(Box::as_ref).into_iter() }
+        Pairs {
+            inner: self.inner.iter(),
+            last: self.last.as_ref().map(Box::as_ref).into_iter(),
+        }
     }
 
     /// Returns an iterator over the contents of this sequence as mutably
@@ -154,7 +160,10 @@ impl<T, P> Punctuated<T, P> {
     /// Returns an iterator over the contents of this sequence as owned
     /// punctuated pairs.
     pub fn into_pairs(self) -> IntoPairs<T, P> {
-        IntoPairs { inner: self.inner.into_iter(), last: self.last.map(|t| *t).into_iter() }
+        IntoPairs {
+            inner: self.inner.into_iter(),
+            last: self.last.map(|t| *t).into_iter(),
+        }
     }
 
     /// Appends a syntax tree node onto the end of this punctuated sequence. The
@@ -266,7 +275,10 @@ impl<T, P> Punctuated<T, P> {
     where
         P: Default,
     {
-        assert!(index <= self.len(), "Punctuated::insert: index out of range",);
+        assert!(
+            index <= self.len(),
+            "Punctuated::insert: index out of range",
+        );
 
         if index == self.len() {
             self.push(value);
@@ -389,7 +401,10 @@ where
     P: Clone,
 {
     fn clone(&self) -> Self {
-        Punctuated { inner: self.inner.clone(), last: self.last.clone() }
+        Punctuated {
+            inner: self.inner.clone(),
+            last: self.last.clone(),
+        }
     }
 
     fn clone_from(&mut self, other: &Self) {
@@ -525,7 +540,9 @@ impl<T, P> IntoIterator for Punctuated<T, P> {
             elements.push(*t);
         }
 
-        IntoIter { inner: elements.into_iter() }
+        IntoIter {
+            inner: elements.into_iter(),
+        }
     }
 }
 
@@ -596,7 +613,10 @@ impl<'a, T, P> ExactSizeIterator for Pairs<'a, T, P> {
 // No Clone bound on T or P.
 impl<'a, T, P> Clone for Pairs<'a, T, P> {
     fn clone(&self) -> Self {
-        Pairs { inner: self.inner.clone(), last: self.last.clone() }
+        Pairs {
+            inner: self.inner.clone(),
+            last: self.last.clone(),
+        }
     }
 }
 
@@ -686,7 +706,10 @@ where
     P: Clone,
 {
     fn clone(&self) -> Self {
-        IntoPairs { inner: self.inner.clone(), last: self.last.clone() }
+        IntoPairs {
+            inner: self.inner.clone(),
+            last: self.last.clone(),
+        }
     }
 }
 
@@ -728,7 +751,9 @@ where
     T: Clone,
 {
     fn clone(&self) -> Self {
-        IntoIter { inner: self.inner.clone() }
+        IntoIter {
+            inner: self.inner.clone(),
+        }
     }
 }
 
@@ -759,13 +784,17 @@ where
 
 #[cfg(any(feature = "full", feature = "derive"))]
 pub(crate) fn empty_punctuated_iter<'a, T>() -> Iter<'a, T> {
-    Iter { inner: Box::new(NoDrop::new(iter::empty())) }
+    Iter {
+        inner: Box::new(NoDrop::new(iter::empty())),
+    }
 }
 
 // No Clone bound on T.
 impl<'a, T> Clone for Iter<'a, T> {
     fn clone(&self) -> Self {
-        Iter { inner: self.inner.clone_box() }
+        Iter {
+            inner: self.inner.clone_box(),
+        }
     }
 }
 
@@ -797,13 +826,18 @@ impl<'a, T, P> Iterator for PrivateIter<'a, T, P> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| &pair.0).or_else(|| self.last.next())
+        self.inner
+            .next()
+            .map(|pair| &pair.0)
+            .or_else(|| self.last.next())
     }
 }
 
 impl<'a, T, P> DoubleEndedIterator for PrivateIter<'a, T, P> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.last.next().or_else(|| self.inner.next_back().map(|pair| &pair.0))
+        self.last
+            .next()
+            .or_else(|| self.inner.next_back().map(|pair| &pair.0))
     }
 }
 
@@ -816,7 +850,10 @@ impl<'a, T, P> ExactSizeIterator for PrivateIter<'a, T, P> {
 // No Clone bound on T or P.
 impl<'a, T, P> Clone for PrivateIter<'a, T, P> {
     fn clone(&self) -> Self {
-        PrivateIter { inner: self.inner.clone(), last: self.last.clone() }
+        PrivateIter {
+            inner: self.inner.clone(),
+            last: self.last.clone(),
+        }
     }
 }
 
@@ -862,7 +899,9 @@ where
 
 #[cfg(any(feature = "full", feature = "derive"))]
 pub(crate) fn empty_punctuated_iter_mut<'a, T>() -> IterMut<'a, T> {
-    IterMut { inner: Box::new(NoDrop::new(iter::empty())) }
+    IterMut {
+        inner: Box::new(NoDrop::new(iter::empty())),
+    }
 }
 
 impl<'a, T> Iterator for IterMut<'a, T> {
@@ -893,13 +932,18 @@ impl<'a, T, P> Iterator for PrivateIterMut<'a, T, P> {
     type Item = &'a mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next().map(|pair| &mut pair.0).or_else(|| self.last.next())
+        self.inner
+            .next()
+            .map(|pair| &mut pair.0)
+            .or_else(|| self.last.next())
     }
 }
 
 impl<'a, T, P> DoubleEndedIterator for PrivateIterMut<'a, T, P> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.last.next().or_else(|| self.inner.next_back().map(|pair| &mut pair.0))
+        self.last
+            .next()
+            .or_else(|| self.inner.next_back().map(|pair| &mut pair.0))
     }
 }
 

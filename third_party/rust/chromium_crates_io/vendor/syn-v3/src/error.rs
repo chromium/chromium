@@ -168,7 +168,10 @@ impl Error {
         fn new(span: Span, message: String) -> Error {
             Error {
                 messages: vec![ErrorMessage {
-                    span: ThreadBound::new(SpanRange { start: span, end: span }),
+                    span: ThreadBound::new(SpanRange {
+                        start: span,
+                        end: span,
+                    }),
                     message,
                 }],
             }
@@ -362,13 +365,33 @@ impl ErrorMessage {
         };
 
         // ::core::compile_error!($message)
-        tokens.append(TokenTree::Punct(Punct::new_spanned(':', Spacing::Joint, start)));
-        tokens.append(TokenTree::Punct(Punct::new_spanned(':', Spacing::Alone, start)));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Joint,
+            start,
+        )));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Alone,
+            start,
+        )));
         tokens.append(TokenTree::Ident(Ident::new("core", start)));
-        tokens.append(TokenTree::Punct(Punct::new_spanned(':', Spacing::Joint, start)));
-        tokens.append(TokenTree::Punct(Punct::new_spanned(':', Spacing::Alone, start)));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Joint,
+            start,
+        )));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            ':',
+            Spacing::Alone,
+            start,
+        )));
         tokens.append(TokenTree::Ident(Ident::new("compile_error", start)));
-        tokens.append(TokenTree::Punct(Punct::new_spanned('!', Spacing::Alone, start)));
+        tokens.append(TokenTree::Punct(Punct::new_spanned(
+            '!',
+            Spacing::Alone,
+            start,
+        )));
         tokens.append(TokenTree::Group({
             let mut group = Group::new(
                 Delimiter::Brace,
@@ -411,9 +434,15 @@ pub(crate) fn new2<T: Display>(start: Span, end: Span, message: T) -> Error {
 impl Debug for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         if self.messages.len() == 1 {
-            formatter.debug_tuple("Error").field(&self.messages[0]).finish()
+            formatter
+                .debug_tuple("Error")
+                .field(&self.messages[0])
+                .finish()
         } else {
-            formatter.debug_tuple("Error").field(&self.messages).finish()
+            formatter
+                .debug_tuple("Error")
+                .field(&self.messages)
+                .finish()
         }
     }
 }
@@ -432,13 +461,18 @@ impl Display for Error {
 
 impl Clone for Error {
     fn clone(&self) -> Self {
-        Error { messages: self.messages.clone() }
+        Error {
+            messages: self.messages.clone(),
+        }
     }
 }
 
 impl Clone for ErrorMessage {
     fn clone(&self) -> Self {
-        ErrorMessage { span: self.span, message: self.message.clone() }
+        ErrorMessage {
+            span: self.span,
+            message: self.message.clone(),
+        }
     }
 }
 
@@ -464,7 +498,9 @@ impl IntoIterator for Error {
     type IntoIter = IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter { messages: self.messages.into_iter() }
+        IntoIter {
+            messages: self.messages.into_iter(),
+        }
     }
 }
 
@@ -476,7 +512,9 @@ impl Iterator for IntoIter {
     type Item = Error;
 
     fn next(&mut self) -> Option<Self::Item> {
-        Some(Error { messages: vec![self.messages.next()?] })
+        Some(Error {
+            messages: vec![self.messages.next()?],
+        })
     }
 }
 
@@ -485,7 +523,9 @@ impl<'a> IntoIterator for &'a Error {
     type IntoIter = Iter<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        Iter { messages: self.messages.iter() }
+        Iter {
+            messages: self.messages.iter(),
+        }
     }
 }
 
@@ -497,7 +537,9 @@ impl<'a> Iterator for Iter<'a> {
     type Item = Error;
 
     fn next(&mut self) -> Option<Self::Item> {
-        Some(Error { messages: vec![self.messages.next()?.clone()] })
+        Some(Error {
+            messages: vec![self.messages.next()?.clone()],
+        })
     }
 }
 

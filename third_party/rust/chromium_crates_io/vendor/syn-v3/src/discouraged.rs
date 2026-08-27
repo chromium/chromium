@@ -186,7 +186,8 @@ impl<'a> Speculative for ParseBuffer<'a> {
                     // propagate up the chain by replacing the root `unexpected`
                     // pointer, only 'unexpected' tokens from existing group
                     // parsers should propagate.
-                    fork.unexpected.set(Some(Rc::new(Cell::new(Unexpected::None))));
+                    fork.unexpected
+                        .set(Some(Rc::new(Cell::new(Unexpected::None))));
                 }
                 // Unexpected has been set on `self`. No changes needed.
                 (_, Some(_)) => {}
@@ -194,7 +195,8 @@ impl<'a> Speculative for ParseBuffer<'a> {
         }
 
         // See comment on `cell` in the struct definition.
-        self.cell.set(unsafe { mem::transmute::<Cursor, Cursor<'static>>(fork.cursor()) });
+        self.cell
+            .set(unsafe { mem::transmute::<Cursor, Cursor<'static>>(fork.cursor()) });
     }
 }
 

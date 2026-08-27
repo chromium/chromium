@@ -18,8 +18,7 @@
 ///
 /// - Construction from a [`Span`] — `let lrarrow = LeftRightArrow(sp)`
 ///
-/// - Construction from multiple [`Span`] — `let lrarrow = LeftRightArrow([sp,
-///   sp, sp])`
+/// - Construction from multiple [`Span`] — `let lrarrow = LeftRightArrow([sp, sp, sp])`
 ///
 /// - Field access to its spans — `let spans = lrarrow.spans`
 ///

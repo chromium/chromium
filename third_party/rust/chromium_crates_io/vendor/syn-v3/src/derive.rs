@@ -93,8 +93,15 @@ pub(crate) mod parsing {
                     attrs,
                     vis,
                     ident,
-                    generics: Generics { where_clause, ..generics },
-                    data: Data::Struct(DataStruct { struct_token, fields, semi_token: semi }),
+                    generics: Generics {
+                        where_clause,
+                        ..generics
+                    },
+                    data: Data::Struct(DataStruct {
+                        struct_token,
+                        fields,
+                        semi_token: semi,
+                    }),
                 })
             } else if lookahead.peek(Token![enum]) {
                 let enum_token = input.parse::<Token![enum]>()?;
@@ -105,8 +112,15 @@ pub(crate) mod parsing {
                     attrs,
                     vis,
                     ident,
-                    generics: Generics { where_clause, ..generics },
-                    data: Data::Enum(DataEnum { enum_token, brace_token: brace, variants }),
+                    generics: Generics {
+                        where_clause,
+                        ..generics
+                    },
+                    data: Data::Enum(DataEnum {
+                        enum_token,
+                        brace_token: brace,
+                        variants,
+                    }),
                 })
             } else if lookahead.peek(Token![union]) {
                 let union_token = input.parse::<Token![union]>()?;
@@ -117,8 +131,14 @@ pub(crate) mod parsing {
                     attrs,
                     vis,
                     ident,
-                    generics: Generics { where_clause, ..generics },
-                    data: Data::Union(DataUnion { union_token, fields }),
+                    generics: Generics {
+                        where_clause,
+                        ..generics
+                    },
+                    data: Data::Union(DataUnion {
+                        union_token,
+                        fields,
+                    }),
                 })
             } else {
                 Err(lookahead.error())
@@ -164,7 +184,11 @@ pub(crate) mod parsing {
 
     pub(crate) fn data_enum(
         input: ParseStream,
-    ) -> Result<(Option<WhereClause>, token::Brace, Punctuated<Variant, Token![,]>)> {
+    ) -> Result<(
+        Option<WhereClause>,
+        token::Brace,
+        Punctuated<Variant, Token![,]>,
+    )> {
         let where_clause = input.parse()?;
 
         let content;

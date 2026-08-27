@@ -40,9 +40,10 @@ impl Lifetime {
     pub fn new(symbol: &str, span: Span) -> Self {
         let ident = match symbol.strip_prefix('\'') {
             Some(ident) => ident,
-            None => {
-                panic!("lifetime name must start with apostrophe as in \"'a\", got {:?}", symbol,)
-            }
+            None => panic!(
+                "lifetime name must start with apostrophe as in \"'a\", got {:?}",
+                symbol,
+            ),
         };
 
         let unraw = ident.strip_prefix("r#");
@@ -64,7 +65,9 @@ impl Lifetime {
     }
 
     pub fn span(&self) -> Span {
-        self.apostrophe.join(self.ident.span()).unwrap_or(self.apostrophe)
+        self.apostrophe
+            .join(self.ident.span())
+            .unwrap_or(self.apostrophe)
     }
 
     pub fn set_span(&mut self, span: Span) {
@@ -91,7 +94,10 @@ impl Display for Lifetime {
 
 impl Clone for Lifetime {
     fn clone(&self) -> Self {
-        Lifetime { apostrophe: self.apostrophe, ident: self.ident.clone() }
+        Lifetime {
+            apostrophe: self.apostrophe,
+            ident: self.ident.clone(),
+        }
     }
 }
 

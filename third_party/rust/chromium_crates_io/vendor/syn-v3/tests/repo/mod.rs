@@ -631,7 +631,10 @@ pub fn for_each_rust_file(for_each: impl Fn(&Path) + Sync + Send) {
     let mut rs_files = BTreeSet::new();
 
     let repo_dir = Path::new("tests/rust");
-    for entry in WalkDir::new(repo_dir).into_iter().filter_entry(base_dir_filter) {
+    for entry in WalkDir::new(repo_dir)
+        .into_iter()
+        .filter_entry(base_dir_filter)
+    {
         let entry = entry.unwrap();
         if !entry.file_type().is_dir() {
             rs_files.insert(entry.into_path());
@@ -702,9 +705,12 @@ pub fn abort_after() -> usize {
 pub fn rayon_init() {
     let stack_size = match env::var("RUST_MIN_STACK") {
         Ok(s) => s.parse().expect("failed to parse RUST_MIN_STACK"),
-        Err(_) => 1024 * 1024 * if cfg!(debug_assertions) { 40 } else { 20 },
+        Err(_) => 1024 * 1024 * if cfg!(debug_assertions) { 50 } else { 30 },
     };
-    ThreadPoolBuilder::new().stack_size(stack_size).build_global().unwrap();
+    ThreadPoolBuilder::new()
+        .stack_size(stack_size)
+        .build_global()
+        .unwrap();
 }
 
 pub fn clone_rust() {

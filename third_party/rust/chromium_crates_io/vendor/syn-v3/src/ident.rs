@@ -81,8 +81,10 @@ pub(crate) mod parsing {
                     if accept_as_ident(&ident.to_string()) {
                         Ok((ident, rest))
                     } else {
-                        Err(cursor
-                            .error(format_args!("expected identifier, found keyword `{}`", ident,)))
+                        Err(cursor.error(format_args!(
+                            "expected identifier, found keyword `{}`",
+                            ident,
+                        )))
                     }
                 } else {
                     Err(cursor.error("expected identifier"))

@@ -203,8 +203,7 @@ impl Hash for crate::BlockModifiers {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -241,8 +240,7 @@ impl Hash for crate::ClosureModifiers {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -1038,8 +1036,7 @@ impl Hash for crate::FieldModifiers {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -1254,8 +1251,7 @@ impl Hash for crate::Frontmatter {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -1829,8 +1825,7 @@ impl Hash for crate::LocalModifiers {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -2451,8 +2446,7 @@ impl Hash for crate::TraitBoundModifiers {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
@@ -2866,8 +2860,7 @@ impl Hash for crate::UseGlob {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]

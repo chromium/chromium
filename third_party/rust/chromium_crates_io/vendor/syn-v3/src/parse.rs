@@ -630,7 +630,11 @@ impl<'a> ParseBuffer<'a> {
     /// Looks at the third-next token in the parse stream.
     pub fn peek3<T: Peek>(&self, token: T) -> bool {
         fn peek3(buffer: &ParseBuffer, peek: fn(Cursor) -> bool) -> bool {
-            buffer.cursor().skip().and_then(Cursor::skip).is_some_and(peek)
+            buffer
+                .cursor()
+                .skip()
+                .and_then(Cursor::skip)
+                .is_some_and(peek)
         }
 
         let _ = token;
@@ -749,8 +753,7 @@ impl<'a> ParseBuffer<'a> {
     /// outermost parsing entry point.
     ///
     /// This is equivalent to
-    /// <code>.<a href="#method.peek">peek</a>(<a
-    /// href="struct.End.html">syn::parse::End</a>)</code>.
+    /// <code>.<a href="#method.peek">peek</a>(<a href="struct.End.html">syn::parse::End</a>)</code>.
     /// Use `.peek2(End)` or `.peek3(End)` to look for the end of a parse stream
     /// further ahead than the current position.
     ///

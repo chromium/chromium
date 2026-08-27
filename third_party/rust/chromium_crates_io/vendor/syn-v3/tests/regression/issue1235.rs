@@ -13,14 +13,19 @@ fn main() {
     println!("{:#?}", file);
 
     // Okay.
-    let inner =
-        Group::new(Delimiter::None, quote!(static FOO: usize = 0; pub static BAR: usize = 0));
+    let inner = Group::new(
+        Delimiter::None,
+        quote!(static FOO: usize = 0; pub static BAR: usize = 0),
+    );
     let tokens = quote!(pub #inner;);
     let file = syn::parse2::<syn::File>(tokens).unwrap();
     println!("{:#?}", file);
 
     // Formerly parser crash.
-    let inner = Group::new(Delimiter::None, quote!(static FOO: usize; pub static BAR: usize));
+    let inner = Group::new(
+        Delimiter::None,
+        quote!(static FOO: usize; pub static BAR: usize),
+    );
     let tokens = quote!(pub #inner;);
     let file = syn::parse2::<syn::File>(tokens).unwrap();
     println!("{:#?}", file);

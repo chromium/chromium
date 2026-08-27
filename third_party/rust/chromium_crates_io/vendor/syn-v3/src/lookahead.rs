@@ -69,7 +69,11 @@ pub struct Lookahead1<'a> {
 }
 
 pub(crate) fn new(scope: Span, cursor: Cursor) -> Lookahead1 {
-    Lookahead1 { scope, cursor, comparisons: RefCell::new(Vec::new()) }
+    Lookahead1 {
+        scope,
+        cursor,
+        comparisons: RefCell::new(Vec::new()),
+    }
 }
 
 fn peek_impl(
@@ -325,8 +329,7 @@ impl CustomToken for End {
     }
 
     fn display() -> &'static str {
-        "`)`" // Lookahead1 error message will fill in the expected close
-              // delimiter
+        "`)`" // Lookahead1 error message will fill in the expected close delimiter
     }
 }
 

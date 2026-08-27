@@ -978,7 +978,8 @@ where
 pub fn visit_angle_bracketed_generic_arguments_mut<V>(
     v: &mut V,
     node: &mut crate::AngleBracketedGenericArguments,
-) where
+)
+where
     V: VisitMut + ?Sized,
 {
     skip!(node.colon2_token);
@@ -2102,8 +2103,7 @@ where
 pub fn visit_frontmatter_mut<V>(v: &mut V, node: &mut crate::Frontmatter)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
 pub fn visit_generic_argument_mut<V>(v: &mut V, node: &mut crate::GenericArgument)
@@ -2168,8 +2168,7 @@ where
 pub fn visit_ident_mut<V>(v: &mut V, node: &mut proc_macro2::Ident)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
 pub fn visit_impl_item_mut<V>(v: &mut V, node: &mut crate::ImplItem)
@@ -2636,38 +2635,31 @@ where
 pub fn visit_lit_byte_mut<V>(v: &mut V, node: &mut crate::LitByte)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_byte_str_mut<V>(v: &mut V, node: &mut crate::LitByteStr)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_cstr_mut<V>(v: &mut V, node: &mut crate::LitCStr)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_char_mut<V>(v: &mut V, node: &mut crate::LitChar)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_float_mut<V>(v: &mut V, node: &mut crate::LitFloat)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_int_mut<V>(v: &mut V, node: &mut crate::LitInt)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 pub fn visit_lit_str_mut<V>(v: &mut V, node: &mut crate::LitStr)
 where
     V: VisitMut + ?Sized,
-{
-}
+{}
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
 pub fn visit_local_mut<V>(v: &mut V, node: &mut crate::Local)
@@ -2796,7 +2788,8 @@ where
 pub fn visit_parenthesized_generic_arguments_mut<V>(
     v: &mut V,
     node: &mut crate::ParenthesizedGenericArguments,
-) where
+)
+where
     V: VisitMut + ?Sized,
 {
     skip!(node.paren_token);
@@ -3802,7 +3795,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn visit_where_clause_placement_mut<V>(v: &mut V, node: &mut crate::WhereClausePlacement)
+pub fn visit_where_clause_placement_mut<V>(
+    v: &mut V,
+    node: &mut crate::WhereClausePlacement,
+)
 where
     V: VisitMut + ?Sized,
 {

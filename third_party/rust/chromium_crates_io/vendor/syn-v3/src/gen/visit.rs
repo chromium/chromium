@@ -968,7 +968,8 @@ where
 pub fn visit_angle_bracketed_generic_arguments<'ast, V>(
     v: &mut V,
     node: &'ast crate::AngleBracketedGenericArguments,
-) where
+)
+where
     V: Visit<'ast> + ?Sized,
 {
     skip!(node.colon2_token);
@@ -2157,7 +2158,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn visit_foreign_item_static<'ast, V>(v: &mut V, node: &'ast crate::ForeignItemStatic)
+pub fn visit_foreign_item_static<'ast, V>(
+    v: &mut V,
+    node: &'ast crate::ForeignItemStatic,
+)
 where
     V: Visit<'ast> + ?Sized,
 {
@@ -2194,8 +2198,7 @@ where
 pub fn visit_frontmatter<'ast, V>(v: &mut V, node: &'ast crate::Frontmatter)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
 pub fn visit_generic_argument<'ast, V>(v: &mut V, node: &'ast crate::GenericArgument)
@@ -2260,8 +2263,7 @@ where
 pub fn visit_ident<'ast, V>(v: &mut V, node: &'ast proc_macro2::Ident)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
 pub fn visit_impl_item<'ast, V>(v: &mut V, node: &'ast crate::ImplItem)
@@ -2768,38 +2770,31 @@ where
 pub fn visit_lit_byte<'ast, V>(v: &mut V, node: &'ast crate::LitByte)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_byte_str<'ast, V>(v: &mut V, node: &'ast crate::LitByteStr)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_cstr<'ast, V>(v: &mut V, node: &'ast crate::LitCStr)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_char<'ast, V>(v: &mut V, node: &'ast crate::LitChar)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_float<'ast, V>(v: &mut V, node: &'ast crate::LitFloat)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_int<'ast, V>(v: &mut V, node: &'ast crate::LitInt)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 pub fn visit_lit_str<'ast, V>(v: &mut V, node: &'ast crate::LitStr)
 where
     V: Visit<'ast> + ?Sized,
-{
-}
+{}
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
 pub fn visit_local<'ast, V>(v: &mut V, node: &'ast crate::Local)
@@ -2932,7 +2927,8 @@ where
 pub fn visit_parenthesized_generic_arguments<'ast, V>(
     v: &mut V,
     node: &'ast crate::ParenthesizedGenericArguments,
-) where
+)
+where
     V: Visit<'ast> + ?Sized,
 {
     skip!(node.paren_token);
@@ -4012,7 +4008,10 @@ where
 }
 #[cfg(feature = "full")]
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-pub fn visit_where_clause_placement<'ast, V>(v: &mut V, node: &'ast crate::WhereClausePlacement)
+pub fn visit_where_clause_placement<'ast, V>(
+    v: &mut V,
+    node: &'ast crate::WhereClausePlacement,
+)
 where
     V: Visit<'ast> + ?Sized,
 {

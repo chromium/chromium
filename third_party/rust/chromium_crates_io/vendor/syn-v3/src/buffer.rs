@@ -51,7 +51,10 @@ impl TokenBuffer {
                     Self::recursive_new(entries, group.stream());
                     let group_end_index = entries.len();
                     let group_offset = group_end_index - group_start_index;
-                    entries.push(Entry::End(-(group_end_index as isize), -(group_offset as isize)));
+                    entries.push(Entry::End(
+                        -(group_end_index as isize),
+                        -(group_offset as isize),
+                    ));
                     entries[group_start_index] = Entry::Group(group, group_offset);
                 }
             }
@@ -72,7 +75,9 @@ impl TokenBuffer {
         let mut entries = Vec::new();
         Self::recursive_new(&mut entries, stream);
         entries.push(Entry::End(-(entries.len() as isize), 0));
-        Self { entries: entries.into_boxed_slice() }
+        Self {
+            entries: entries.into_boxed_slice(),
+        }
     }
 
     /// Creates a cursor referencing the first token in the buffer and able to
@@ -116,7 +121,11 @@ impl<'a> Cursor<'a> {
         unsafe impl Sync for UnsafeSyncEntry {}
         static EMPTY_ENTRY: UnsafeSyncEntry = UnsafeSyncEntry(Entry::End(0, 0));
 
-        Cursor { ptr: &EMPTY_ENTRY.0, scope: &EMPTY_ENTRY.0, marker: PhantomData }
+        Cursor {
+            ptr: &EMPTY_ENTRY.0,
+            scope: &EMPTY_ENTRY.0,
+            marker: PhantomData,
+        }
     }
 
     /// This create method intelligently exits non-explicitly-entered
@@ -134,7 +143,11 @@ impl<'a> Cursor<'a> {
             ptr = unsafe { ptr.add(1) };
         }
 
-        Cursor { ptr, scope, marker: PhantomData }
+        Cursor {
+            ptr,
+            scope,
+            marker: PhantomData,
+        }
     }
 
     /// Get the current entry.
@@ -240,7 +253,10 @@ impl<'a> Cursor<'a> {
             Entry::Punct(punct) if punct.as_char() == '\'' && punct.spacing() == Spacing::Joint => {
                 let next = unsafe { self.bump_ignore_group() };
                 let (ident, rest) = next.ident()?;
-                let lifetime = Lifetime { apostrophe: punct.span(), ident };
+                let lifetime = Lifetime {
+                    apostrophe: punct.span(),
+                    ident,
+                };
                 Some((lifetime, rest))
             }
             _ => None,

@@ -94,7 +94,12 @@ ast_struct! {
 
 impl Default for Generics {
     fn default() -> Self {
-        Generics { lt_token: None, params: Punctuated::new(), gt_token: None, where_clause: None }
+        Generics {
+            lt_token: None,
+            params: Punctuated::new(),
+            gt_token: None,
+            where_clause: None,
+        }
     }
 }
 
@@ -170,7 +175,11 @@ impl Generics {
     #[cfg(feature = "printing")]
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     pub fn split_for_impl(&self) -> (ImplGenerics, TypeGenerics, Option<&WhereClause>) {
-        (ImplGenerics(self), TypeGenerics(self), self.where_clause.as_ref())
+        (
+            ImplGenerics(self),
+            TypeGenerics(self),
+            self.where_clause.as_ref(),
+        )
     }
 }
 
@@ -260,17 +269,26 @@ impl<'a> Iterator for ConstParamsMut<'a> {
 
 /// Returned by `Generics::split_for_impl`.
 #[cfg(feature = "printing")]
-#[cfg_attr(docsrs, doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing"))))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing")))
+)]
 pub struct ImplGenerics<'a>(&'a Generics);
 
 /// Returned by `Generics::split_for_impl`.
 #[cfg(feature = "printing")]
-#[cfg_attr(docsrs, doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing"))))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing")))
+)]
 pub struct TypeGenerics<'a>(&'a Generics);
 
 /// Returned by `TypeGenerics::as_turbofish`.
 #[cfg(feature = "printing")]
-#[cfg_attr(docsrs, doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing"))))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(any(feature = "full", feature = "derive"), feature = "printing")))
+)]
 pub struct Turbofish<'a>(&'a Generics);
 
 #[cfg(feature = "printing")]
@@ -288,7 +306,10 @@ macro_rules! generics_wrapper_impls {
         #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
         impl<'a> Debug for $ty<'a> {
             fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.debug_tuple(stringify!($ty)).field(self.0).finish()
+                formatter
+                    .debug_tuple(stringify!($ty))
+                    .field(self.0)
+                    .finish()
             }
         }
 
@@ -353,7 +374,12 @@ impl Default for BoundLifetimes {
 
 impl LifetimeParam {
     pub fn new(lifetime: Lifetime) -> Self {
-        LifetimeParam { attrs: Vec::new(), lifetime, colon_token: None, bounds: Punctuated::new() }
+        LifetimeParam {
+            attrs: Vec::new(),
+            lifetime,
+            colon_token: None,
+            bounds: Punctuated::new(),
+        }
     }
 }
 
@@ -563,9 +589,15 @@ pub(crate) mod parsing {
                         ..input.parse()?
                     }));
                 } else if lookahead.peek(Ident) {
-                    params.push_value(GenericParam::Type(TypeParam { attrs, ..input.parse()? }));
+                    params.push_value(GenericParam::Type(TypeParam {
+                        attrs,
+                        ..input.parse()?
+                    }));
                 } else if lookahead.peek(Token![const]) {
-                    params.push_value(GenericParam::Const(ConstParam { attrs, ..input.parse()? }));
+                    params.push_value(GenericParam::Const(ConstParam {
+                        attrs,
+                        ..input.parse()?
+                    }));
                 } else if input.peek(Token![_]) {
                     params.push_value(GenericParam::Type(TypeParam {
                         attrs,
@@ -603,11 +635,20 @@ pub(crate) mod parsing {
 
             let lookahead = input.lookahead1();
             if lookahead.peek(Ident) {
-                Ok(GenericParam::Type(TypeParam { attrs, ..input.parse()? }))
+                Ok(GenericParam::Type(TypeParam {
+                    attrs,
+                    ..input.parse()?
+                }))
             } else if lookahead.peek(Lifetime) {
-                Ok(GenericParam::Lifetime(LifetimeParam { attrs, ..input.parse()? }))
+                Ok(GenericParam::Lifetime(LifetimeParam {
+                    attrs,
+                    ..input.parse()?
+                }))
             } else if lookahead.peek(Token![const]) {
-                Ok(GenericParam::Const(ConstParam { attrs, ..input.parse()? }))
+                Ok(GenericParam::Const(ConstParam {
+                    attrs,
+                    ..input.parse()?
+                }))
             } else {
                 Err(lookahead.error())
             }
@@ -721,7 +762,13 @@ pub(crate) mod parsing {
                 None
             };
 
-            Ok(TypeParam { attrs, ident, colon_token, bounds, default })
+            Ok(TypeParam {
+                attrs,
+                ident,
+                colon_token,
+                bounds,
+                default,
+            })
         }
     }
 
@@ -771,7 +818,10 @@ pub(crate) mod parsing {
                 bound.paren_token = paren_token;
                 Ok(TypeParamBound::Trait(bound))
             } else {
-                Ok(TypeParamBound::Verbatim(verbatim::between(begin, input.cursor())))
+                Ok(TypeParamBound::Verbatim(verbatim::between(
+                    begin,
+                    input.cursor(),
+                )))
             }
         }
 
@@ -1041,7 +1091,12 @@ pub(crate) mod parsing {
                 });
             }
             let gt_token: Token![>] = input.parse()?;
-            Ok(PreciseCapture { use_token, lt_token, params, gt_token })
+            Ok(PreciseCapture {
+                use_token,
+                lt_token,
+                params,
+                gt_token,
+            })
         }
     }
 

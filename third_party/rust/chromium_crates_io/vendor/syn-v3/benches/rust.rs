@@ -1,8 +1,7 @@
 // $ cargo bench --features full,test --bench rust
 //
 // Syn only, useful for profiling:
-// $ RUSTFLAGS='--cfg syn_only' cargo build --release --features full,test
-// --bench rust
+// $ RUSTFLAGS='--cfg syn_only' cargo build --release --features full,test --bench rust
 
 #![cfg_attr(not(syn_only), feature(rustc_private))]
 #![recursion_limit = "1024"]
@@ -119,7 +118,11 @@ fn exec(mut codepath: impl FnMut(&Path, &str) -> Result<(), ()>) -> Duration {
 
     ["tests/rust/compiler", "tests/rust/library"]
         .iter()
-        .flat_map(|dir| walkdir::WalkDir::new(dir).into_iter().filter_entry(repo::base_dir_filter))
+        .flat_map(|dir| {
+            walkdir::WalkDir::new(dir)
+                .into_iter()
+                .filter_entry(repo::base_dir_filter)
+        })
         .for_each(|entry| {
             let entry = entry.unwrap();
             let path = entry.path();
@@ -176,7 +179,11 @@ fn main() {
     ) {
         eprint!("{:20}", format!("{}:", name));
         let elapsed = exec(f);
-        eprintln!("elapsed={}.{:03}s", elapsed.as_secs(), elapsed.subsec_millis(),);
+        eprintln!(
+            "elapsed={}.{:03}s",
+            elapsed.as_secs(),
+            elapsed.subsec_millis(),
+        );
     }
     eprintln!();
 }

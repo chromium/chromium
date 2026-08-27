@@ -2486,8 +2486,12 @@ impl Debug for crate::PathArguments {
         formatter.write_str("PathArguments::")?;
         match self {
             crate::PathArguments::None => formatter.write_str("None"),
-            crate::PathArguments::AngleBracketed(v0) => v0.debug(formatter, "AngleBracketed"),
-            crate::PathArguments::Parenthesized(v0) => v0.debug(formatter, "Parenthesized"),
+            crate::PathArguments::AngleBracketed(v0) => {
+                v0.debug(formatter, "AngleBracketed")
+            }
+            crate::PathArguments::Parenthesized(v0) => {
+                v0.debug(formatter, "Parenthesized")
+            }
         }
     }
 }

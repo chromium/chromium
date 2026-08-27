@@ -17,6 +17,7 @@
 #![recursion_limit = "1024"]
 #![feature(rustc_private)]
 #![allow(
+    clippy::assert_is_empty,
     clippy::blocks_in_conditions,
     clippy::doc_markdown,
     clippy::elidable_lifetime_names,
@@ -80,7 +81,12 @@ fn test_rustc_precedence() {
                 let edition = repo::edition(path).parse().unwrap();
                 let exprs = collect_exprs(file);
                 let (l_passed, l_failed) = test_expressions(path, edition, exprs);
-                errorf!("=== {}: {} passed | {} failed\n", path.display(), l_passed, l_failed,);
+                errorf!(
+                    "=== {}: {} passed | {} failed\n",
+                    path.display(),
+                    l_passed,
+                    l_failed,
+                );
                 (l_passed, l_failed)
             }
             Err(msg) => {
@@ -120,7 +126,10 @@ fn test_expressions(path: &Path, edition: Edition, exprs: Vec<syn::Expr>) -> (us
                 e
             } else {
                 failed += 1;
-                errorf!("\nFAIL {} - librustc failed to parse original\n", path.display(),);
+                errorf!(
+                    "\nFAIL {} - librustc failed to parse original\n",
+                    path.display(),
+                );
                 continue;
             };
 
@@ -130,7 +139,10 @@ fn test_expressions(path: &Path, edition: Edition, exprs: Vec<syn::Expr>) -> (us
                 e
             } else {
                 failed += 1;
-                errorf!("\nFAIL {} - librustc failed to parse parenthesized\n", path.display(),);
+                errorf!(
+                    "\nFAIL {} - librustc failed to parse parenthesized\n",
+                    path.display(),
+                );
                 continue;
             };
 
@@ -169,7 +181,11 @@ fn test_expressions(path: &Path, edition: Edition, exprs: Vec<syn::Expr>) -> (us
 
             if scan_expr::scan_expr.parse2(expr_tokens).is_err() {
                 failed += 1;
-                errorf!("\nFAIL {} - failed to scan expr\n{}\n", path.display(), source_code,);
+                errorf!(
+                    "\nFAIL {} - failed to scan expr\n{}\n",
+                    path.display(),
+                    source_code,
+                );
                 continue;
             }
 
@@ -241,7 +257,12 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
         match &mut e.kind {
             ExprKind::Become(..) => {}
             ExprKind::Struct(expr) => {
-                let StructExpr { qself, path, fields, rest } = expr.deref_mut();
+                let StructExpr {
+                    qself,
+                    path,
+                    fields,
+                    rest,
+                } = expr.deref_mut();
                 if let Some(qself) = qself {
                     vis.visit_qself(qself);
                 }
@@ -290,7 +311,11 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
         fn visit_param_bound(&mut self, bound: &mut GenericBound, _ctxt: BoundKind) {
             match bound {
                 GenericBound::Trait(PolyTraitRef {
-                    modifiers: TraitBoundModifiers { constness: BoundConstness::Maybe(_), .. },
+                    modifiers:
+                        TraitBoundModifiers {
+                            constness: BoundConstness::Maybe(_),
+                            ..
+                        },
                     ..
                 })
                 | GenericBound::Outlives(..)
@@ -301,7 +326,9 @@ fn librustc_parenthesize(mut librustc_expr: Box<ast::Expr>) -> Box<ast::Expr> {
 
         fn visit_block(&mut self, block: &mut Block) {
             self.visit_id(&mut block.id);
-            block.stmts.flat_map_in_place(|stmt| flat_map_stmt(stmt, self));
+            block
+                .stmts
+                .flat_map_in_place(|stmt| flat_map_stmt(stmt, self));
             self.visit_span(&mut block.span);
         }
 

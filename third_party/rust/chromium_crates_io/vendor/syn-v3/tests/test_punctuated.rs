@@ -43,7 +43,10 @@ fn pairs() {
     let mut p: Punctuated<_, Token![,]> = punctuated!(2, 3, 4);
 
     assert_eq!(p.pairs().next_back().map(Pair::into_value), Some(&4));
-    assert_eq!(p.pairs_mut().next_back().map(Pair::into_value), Some(&mut 4));
+    assert_eq!(
+        p.pairs_mut().next_back().map(Pair::into_value),
+        Some(&mut 4)
+    );
     assert_eq!(p.into_pairs().next_back().map(Pair::into_value), Some(4));
 }
 

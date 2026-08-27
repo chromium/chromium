@@ -19,7 +19,10 @@ unsafe impl<T: Copy> Send for ThreadBound<T> {}
 
 impl<T> ThreadBound<T> {
     pub(crate) fn new(value: T) -> Self {
-        ThreadBound { value, thread_id: thread::current().id() }
+        ThreadBound {
+            value,
+            thread_id: thread::current().id(),
+        }
     }
 
     pub(crate) fn get(&self) -> Option<&T> {

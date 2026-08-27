@@ -307,7 +307,16 @@ pub(crate) mod parsing {
         let (delimiter, tokens) = mac::parse_delimiter(input)?;
         let semi_token: Option<Token![;]> = input.parse()?;
 
-        Ok(StmtMacro { attrs, mac: Macro { path, bang_token, delimiter, tokens }, semi_token })
+        Ok(StmtMacro {
+            attrs,
+            mac: Macro {
+                path,
+                bang_token,
+                delimiter,
+                tokens,
+            },
+            semi_token,
+        })
     }
 
     fn stmt_local(input: ParseStream, attrs: Vec<Attribute>) -> Result<Local> {
@@ -331,20 +340,35 @@ pub(crate) mod parsing {
 
             let diverge = if !classify::expr_trailing_brace(&expr) && input.peek(Token![else]) {
                 let else_token: Token![else] = input.parse()?;
-                let diverge = ExprBlock { attrs: Vec::new(), label: None, block: input.parse()? };
+                let diverge = ExprBlock {
+                    attrs: Vec::new(),
+                    label: None,
+                    block: input.parse()?,
+                };
                 Some((else_token, Box::new(Expr::Block(diverge))))
             } else {
                 None
             };
 
-            Some(LocalInit { eq_token, expr: Box::new(expr), diverge })
+            Some(LocalInit {
+                eq_token,
+                expr: Box::new(expr),
+                diverge,
+            })
         } else {
             None
         };
 
         let semi_token: Token![;] = input.parse()?;
 
-        Ok(Local { attrs, let_token, modifiers: LocalModifiers {}, pat, init, semi_token })
+        Ok(Local {
+            attrs,
+            let_token,
+            modifiers: LocalModifiers {},
+            pat,
+            init,
+            semi_token,
+        })
     }
 
     fn stmt_expr(
@@ -420,7 +444,11 @@ pub(crate) mod parsing {
             Expr::Macro(ExprMacro { attrs, mac })
                 if semi_token.is_some() || mac.delimiter.is_brace() =>
             {
-                return Ok(Stmt::Macro(StmtMacro { attrs, mac, semi_token }));
+                return Ok(Stmt::Macro(StmtMacro {
+                    attrs,
+                    mac,
+                    semi_token,
+                }));
             }
             _ => {}
         }

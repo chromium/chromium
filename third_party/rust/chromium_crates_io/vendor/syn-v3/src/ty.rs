@@ -470,15 +470,17 @@ pub(crate) mod parsing {
             if allow_plus && input.peek(Token![+]) {
                 loop {
                     let first = match first {
-                        Type::Path(TypePath { attrs: _, qself: None, path }) => {
-                            TypeParamBound::Trait(TraitBound {
-                                paren_token: Some(paren_token),
-                                lifetimes: None,
-                                modifiers: TraitBoundModifiers {},
-                                maybe: None,
-                                path,
-                            })
-                        }
+                        Type::Path(TypePath {
+                            attrs: _,
+                            qself: None,
+                            path,
+                        }) => TypeParamBound::Trait(TraitBound {
+                            paren_token: Some(paren_token),
+                            lifetimes: None,
+                            modifiers: TraitBoundModifiers {},
+                            maybe: None,
+                            path,
+                        }),
                         Type::TraitObject(TypeTraitObject {
                             attrs: _,
                             dyn_token: None,
@@ -529,7 +531,11 @@ pub(crate) mod parsing {
                     }));
                 }
             }
-            Ok(Type::Paren(TypeParen { attrs: Vec::new(), paren_token, elem: Box::new(first) }))
+            Ok(Type::Paren(TypeParen {
+                attrs: Vec::new(),
+                paren_token,
+                elem: Box::new(first),
+            }))
         } else if lookahead.peek(Token![unsafe]) && input.peek2(Token![<]) {
             input.parse::<Token![unsafe]>()?;
             input.parse::<Token![<]>()?;
@@ -579,7 +585,12 @@ pub(crate) mod parsing {
                 let (delimiter, tokens) = mac::parse_delimiter(input)?;
                 return Ok(Type::Macro(TypeMacro {
                     attrs: Vec::new(),
-                    mac: Macro { path: ty.path, bang_token, delimiter, tokens },
+                    mac: Macro {
+                        path: ty.path,
+                        bang_token,
+                        delimiter,
+                        tokens,
+                    },
                 }));
             }
 
@@ -771,14 +782,20 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for TypeNever {
         fn parse(input: ParseStream) -> Result<Self> {
-            Ok(TypeNever { attrs: Vec::new(), bang_token: input.parse()? })
+            Ok(TypeNever {
+                attrs: Vec::new(),
+                bang_token: input.parse()?,
+            })
         }
     }
 
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for TypeInfer {
         fn parse(input: ParseStream) -> Result<Self> {
-            Ok(TypeInfer { attrs: Vec::new(), underscore_token: input.parse()? })
+            Ok(TypeInfer {
+                attrs: Vec::new(),
+                underscore_token: input.parse()?,
+            })
         }
     }
 
@@ -789,7 +806,11 @@ pub(crate) mod parsing {
             let paren_token = parenthesized!(content in input);
 
             if content.is_empty() {
-                return Ok(TypeTuple { attrs: Vec::new(), paren_token, elems: Punctuated::new() });
+                return Ok(TypeTuple {
+                    attrs: Vec::new(),
+                    paren_token,
+                    elems: Punctuated::new(),
+                });
             }
 
             let first: Type = content.parse()?;
@@ -816,7 +837,10 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for TypeMacro {
         fn parse(input: ParseStream) -> Result<Self> {
-            Ok(TypeMacro { attrs: Vec::new(), mac: input.parse()? })
+            Ok(TypeMacro {
+                attrs: Vec::new(),
+                mac: input.parse()?,
+            })
         }
     }
 
@@ -825,7 +849,11 @@ pub(crate) mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let expr_style = false;
             let (qself, path) = path::parsing::qpath(input, expr_style)?;
-            Ok(TypePath { attrs: Vec::new(), qself, path })
+            Ok(TypePath {
+                attrs: Vec::new(),
+                qself,
+                path,
+            })
         }
     }
 
@@ -876,7 +904,11 @@ pub(crate) mod parsing {
             let dyn_begin = input.cursor();
             let dyn_token: Option<Token![dyn]> = input.parse()?;
             let bounds = Self::parse_bounds(dyn_begin, input, allow_plus)?;
-            Ok(TypeTraitObject { attrs: Vec::new(), dyn_token, bounds })
+            Ok(TypeTraitObject {
+                attrs: Vec::new(),
+                dyn_token,
+                bounds,
+            })
         }
 
         fn parse_bounds(
@@ -959,7 +991,11 @@ pub(crate) mod parsing {
                 let msg = "at least one trait must be specified";
                 return Err(Error::new_range(impl_begin..input.cursor(), msg));
             }
-            Ok(TypeImplTrait { attrs: Vec::new(), impl_token, bounds })
+            Ok(TypeImplTrait {
+                attrs: Vec::new(),
+                impl_token,
+                bounds,
+            })
         }
     }
 
@@ -1071,7 +1107,10 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for Abi {
         fn parse(input: ParseStream) -> Result<Self> {
-            Ok(Abi { extern_token: input.parse()?, name: input.parse()? })
+            Ok(Abi {
+                extern_token: input.parse()?,
+                name: input.parse()?,
+            })
         }
     }
 

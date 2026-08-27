@@ -3,6 +3,7 @@
 #![recursion_limit = "1024"]
 #![feature(rustc_private)]
 #![allow(
+    clippy::assert_is_empty,
     clippy::blocks_in_conditions,
     clippy::elidable_lifetime_names,
     clippy::manual_assert,
@@ -213,7 +214,8 @@ fn normalize(krate: &mut Crate) {
                     Group::TypesAndConsts
                 }
             });
-            e.params.flat_map_in_place(|param| self.flat_map_generic_param(param));
+            e.params
+                .flat_map_in_place(|param| self.flat_map_generic_param(param));
             if e.where_clause.predicates.is_empty() {
                 e.where_clause.has_where_token = false;
             }

@@ -44,28 +44,36 @@ pub struct Group<'a> {
 // Not public API.
 #[doc(hidden)]
 pub fn parse_parens<'a>(input: &ParseBuffer<'a>) -> Result<Parens<'a>> {
-    parse_delimited(input, Delimiter::Parenthesis)
-        .map(|(span, content)| Parens { token: token::Paren(span), content })
+    parse_delimited(input, Delimiter::Parenthesis).map(|(span, content)| Parens {
+        token: token::Paren(span),
+        content,
+    })
 }
 
 // Not public API.
 #[doc(hidden)]
 pub fn parse_braces<'a>(input: &ParseBuffer<'a>) -> Result<Braces<'a>> {
-    parse_delimited(input, Delimiter::Brace)
-        .map(|(span, content)| Braces { token: token::Brace(span), content })
+    parse_delimited(input, Delimiter::Brace).map(|(span, content)| Braces {
+        token: token::Brace(span),
+        content,
+    })
 }
 
 // Not public API.
 #[doc(hidden)]
 pub fn parse_brackets<'a>(input: &ParseBuffer<'a>) -> Result<Brackets<'a>> {
-    parse_delimited(input, Delimiter::Bracket)
-        .map(|(span, content)| Brackets { token: token::Bracket(span), content })
+    parse_delimited(input, Delimiter::Bracket).map(|(span, content)| Brackets {
+        token: token::Bracket(span),
+        content,
+    })
 }
 
 #[cfg(any(feature = "full", feature = "derive"))]
 pub(crate) fn parse_group<'a>(input: &ParseBuffer<'a>) -> Result<Group<'a>> {
-    parse_delimited(input, Delimiter::None)
-        .map(|(span, content)| Group { token: token::Group(span.join()), content })
+    parse_delimited(input, Delimiter::None).map(|(span, content)| Group {
+        token: token::Group(span.join()),
+        content,
+    })
 }
 
 fn parse_delimited<'a>(

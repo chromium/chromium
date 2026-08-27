@@ -23,6 +23,7 @@ pub(crate) struct FixupContext {
     //     (match x {}) - 1;  // match needs parens when LHS of binary operator
     //
     //     match x {};  // not when its own statement
+    //
     #[cfg(feature = "full")]
     stmt: bool,
 
@@ -70,6 +71,7 @@ pub(crate) struct FixupContext {
     //     match () {
     //         _ => m! {} - 1,  // binary subtraction operator
     //     }
+    //
     #[cfg(feature = "full")]
     match_arm: bool,
 
@@ -85,6 +87,7 @@ pub(crate) struct FixupContext {
     //     match () {
     //         _ => m! {} - 1,  // no parens
     //     }
+    //
     #[cfg(feature = "full")]
     leftmost_subexpression_in_match_arm: bool,
 
@@ -95,6 +98,7 @@ pub(crate) struct FixupContext {
     //     match () {
     //         () if let _ = Struct {} => {}  // no parens
     //     }
+    //
     #[cfg(feature = "full")]
     condition: bool,
 
@@ -103,6 +107,7 @@ pub(crate) struct FixupContext {
     //     if break Struct {} == (break) {}  // needs parens
     //
     //     if break break == Struct {} {}  // no parens
+    //
     #[cfg(feature = "full")]
     rightmost_subexpression_in_condition: bool,
 
@@ -111,6 +116,7 @@ pub(crate) struct FixupContext {
     //     if break ({ x }).field + 1 {}  needs parens
     //
     //     if break 1 + { x }.field {}  // no parens
+    //
     #[cfg(feature = "full")]
     leftmost_subexpression_in_optional_operand: bool,
 
@@ -119,6 +125,7 @@ pub(crate) struct FixupContext {
     //     let _ = (return) - 1;  // without paren, this would return -1
     //
     //     let _ = return + 1;  // no paren because '+' cannot begin expr
+    //
     #[cfg(feature = "full")]
     next_operator_can_begin_expr: bool,
 
@@ -127,6 +134,7 @@ pub(crate) struct FixupContext {
     //     let _ = 1 + return 1;  // no parens if rightmost subexpression
     //
     //     let _ = 1 + (return 1) + 1;  // needs parens
+    //
     #[cfg(feature = "full")]
     next_operator_can_continue_expr: bool,
 
@@ -173,14 +181,20 @@ impl FixupContext {
     /// position.
     #[cfg(feature = "full")]
     pub fn new_stmt() -> Self {
-        FixupContext { stmt: true, ..FixupContext::NONE }
+        FixupContext {
+            stmt: true,
+            ..FixupContext::NONE
+        }
     }
 
     /// Create the initial fixup for printing an expression as the right-hand
     /// side of a match arm.
     #[cfg(feature = "full")]
     pub fn new_match_arm() -> Self {
-        FixupContext { match_arm: true, ..FixupContext::NONE }
+        FixupContext {
+            match_arm: true,
+            ..FixupContext::NONE
+        }
     }
 
     /// Create the initial fixup for printing an expression as the "condition"
@@ -696,7 +710,11 @@ fn scan_right(
                 right_fixup,
                 Precedence::Let,
                 1,
-                if fixup.next_operator < Precedence::Let { 0 } else { 1 },
+                if fixup.next_operator < Precedence::Let {
+                    0
+                } else {
+                    1
+                },
             );
             match scan {
                 Scan::Fail | Scan::Bailout if fixup.next_operator < Precedence::Let => {
