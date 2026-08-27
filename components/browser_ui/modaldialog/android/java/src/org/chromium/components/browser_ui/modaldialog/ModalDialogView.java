@@ -139,8 +139,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         int verticalMargin = mVerticalMargin;
         // On large form factors (tablets/desktops), enforce minimum external margins
         // (16dp horizontal, 24dp vertical) to prevent dialogs from touching the window
-        // boundaries on narrow or short window configurations (e.g. desktop windowing / split
-        // screen).
+        // boundaries or adjacent side UI (e.g. Vertical Tabs / Side Panel) on narrow or short
+        // window configurations (e.g. desktop windowing / split screen).
         if (isLargeFormFactorUiEnabled) {
             int minHorizontalMargin =
                     getContext()
@@ -156,9 +156,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         if (horizontalMargin > 0) {
             int dialogWidth = MeasureSpec.getSize(widthMeasureSpec);
-            int maxWidth = metrics.widthPixels - 2 * horizontalMargin;
+            int availableWidth = isLargeFormFactorUiEnabled ? dialogWidth : metrics.widthPixels;
+            int maxWidth = Math.max(0, availableWidth - 2 * horizontalMargin);
             // On large form factors, cap dialog width at 480dp, but allow it to shrink
-            // further if the window width minus horizontal margins is narrower than 480dp.
+            // further if the container width minus horizontal margins is narrower than 480dp.
             if (isLargeFormFactorUiEnabled) {
                 int maxWidthLargeFormFactor =
                         getContext()
@@ -172,7 +173,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         if (verticalMargin > 0) {
             int dialogHeight = MeasureSpec.getSize(heightMeasureSpec);
-            int maxHeight = metrics.heightPixels - 2 * verticalMargin;
+            int availableHeight = isLargeFormFactorUiEnabled ? dialogHeight : metrics.heightPixels;
+            int maxHeight = Math.max(0, availableHeight - 2 * verticalMargin);
             int height = Math.min(dialogHeight, maxHeight);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
         }

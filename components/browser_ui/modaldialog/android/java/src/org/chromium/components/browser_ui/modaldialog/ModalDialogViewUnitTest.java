@@ -460,19 +460,17 @@ public class ModalDialogViewUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void measure_LargeFormFactorUi_NarrowWindow_Maintains16dpHorizontalMargin() {
-        // Narrow tablet window (400dp wide < 480dp).
-        var windowWidth = 400;
-        mDisplayMetrics.widthPixels = windowWidth;
-        mDisplayMetrics.heightPixels = 800;
+        // Narrow container (400dp wide < 480dp).
+        var containerWidth = 400;
 
         createModel(mModelBuilder, 600, MIN_DIALOG_HEIGHT);
 
-        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(600, MeasureSpec.AT_MOST);
+        var widthMeasureSpec = MeasureSpec.makeMeasureSpec(containerWidth, MeasureSpec.AT_MOST);
         var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
         mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
 
-        // Expected width = windowWidth - 2 * 16dp = 400 - 32 = 368dp.
-        int expectedWidth = windowWidth - 2 * 16;
+        // Expected width = containerWidth - 2 * 16dp = 400 - 32 = 368dp.
+        int expectedWidth = containerWidth - 2 * 16;
         assertEquals(
                 "Width should maintain at least 16dp horizontal margin.",
                 expectedWidth,
@@ -482,22 +480,46 @@ public class ModalDialogViewUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
+    public void
+            measure_LargeFormFactorUi_SideUiConstrainedContainer_Maintains16dpHorizontalMargin() {
+        // Wide window (1000dp), but side UI insets constrain the container to 360dp.
+        mDisplayMetrics.widthPixels = 1000;
+        mDisplayMetrics.heightPixels = 800;
+
+        int constrainedContainerWidth = 360;
+        createModel(mModelBuilder, 600, MIN_DIALOG_HEIGHT);
+
+        var widthMeasureSpec =
+                MeasureSpec.makeMeasureSpec(constrainedContainerWidth, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+
+        // Expected width = constrainedContainerWidth - 2 * 16dp = 360 - 32 = 328dp.
+        int expectedWidth = constrainedContainerWidth - 2 * 16;
+        assertEquals(
+                "Width should maintain 16dp horizontal margin when container is constrained by side"
+                        + " UI.",
+                expectedWidth,
+                mDialogView.getMeasuredWidth());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
     public void measure_LargeFormFactorUi_ShortWindow_Maintains24dpVerticalMargin() {
-        // Short window (500dp tall).
-        var windowHeight = 500;
-        mDisplayMetrics.widthPixels = 800;
-        mDisplayMetrics.heightPixels = windowHeight;
+        // Short container (500dp tall).
+        var containerHeight = 500;
 
         // Content requests 600dp height.
         createModel(mModelBuilder, MAX_DIALOG_WIDTH_LFF, 600);
 
         var widthMeasureSpec =
                 MeasureSpec.makeMeasureSpec(MAX_DIALOG_WIDTH_LFF, MeasureSpec.AT_MOST);
-        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(600, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(containerHeight, MeasureSpec.AT_MOST);
         mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
 
-        // Expected height = windowHeight - 2 * 24dp = 500 - 48 = 452dp.
-        int expectedHeight = windowHeight - 2 * 24;
+        // Expected height = containerHeight - 2 * 24dp = 500 - 48 = 452dp.
+        int expectedHeight = containerHeight - 2 * 24;
         assertEquals(
                 "Height should maintain at least 24dp vertical margin.",
                 expectedHeight,

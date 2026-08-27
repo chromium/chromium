@@ -405,6 +405,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private @Nullable ViewMarginAdjusterForSideUi mSecondaryUiContainerMarginAdjuster;
+    private @Nullable ViewMarginAdjusterForSideUi mSheetContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
@@ -2403,6 +2404,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
+
+        View sheetContainer = mActivity.findViewById(R.id.sheet_container);
+        if (sheetContainer != null) {
+            mSheetContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(sheetContainer);
+            mSideUiCoordinator.addObserver(mSheetContainerMarginAdjuster);
+        }
     }
 
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
@@ -2619,6 +2626,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mSideUiCoordinator != null) {
             if (mSecondaryUiContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
+            }
+            if (mSheetContainerMarginAdjuster != null) {
+                mSideUiCoordinator.removeObserver(mSheetContainerMarginAdjuster);
             }
             mSideUiCoordinator.destroy();
             mSideUiCoordinator = null;
