@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -212,10 +213,8 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
-        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, true);
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE,
-                OmniboxFeatures.sShowModelPicker.getValue());
+        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE, false);
 
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
@@ -1080,6 +1079,9 @@ import java.util.function.Supplier;
                             /* hasColor= */ true));
         }
 
+        boolean showTools = !toolButtons.isEmpty();
+        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, showTools);
+        mModel.set(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtons);
     }
 
@@ -1349,6 +1351,11 @@ import java.util.function.Supplier;
                             hasColor));
         }
 
+        boolean showTools = !toolButtonDataList.isEmpty();
+        mModel.set(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE, showTools);
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE,
+                showTools && !TextUtils.isEmpty(inputState.getToolsSectionConfig().getHeader()));
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtonDataList);
 
         // The InputState is always targeting an AI Mode request and what would be possible, but the

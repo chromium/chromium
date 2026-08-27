@@ -1439,6 +1439,58 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testToolVisibility_hidesIfNoTools_inputStateMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        recreateMediator();
+
+        InputState state0 = new InputState.Builder().build();
+        mInputStateSupplier.set(state0);
+        mMediator.onPlusButtonClicked();
+        assertEquals(0, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+
+        ToolConfig toolConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .setMenuLabel("Create")
+                        .build();
+        SectionConfig sectionConfig = SectionConfig.newBuilder().setHeader("Tools").build();
+        InputState state1 =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
+                        .withToolsSectionConfig(sectionConfig.toByteArray())
+                        .build();
+        mInputStateSupplier.set(state1);
+        assertEquals(1, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+        assertEquals("Tools", mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_TEXT));
+    }
+
+    @Test
+    public void testToolVisibility_hidesIfNoTools_clientControlledMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(false);
+        recreateMediator();
+
+        mMediator.onPlusButtonClicked();
+        assertEquals(0, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+
+        when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+        assertEquals(1, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
+    }
+
+    @Test
     public void onRequestTypeButtonClicked_fromDeepSearch_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
         mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
