@@ -40,7 +40,6 @@ class WebsitePreference extends ChromeImageViewPreference {
     protected final SiteSettingsDelegate mSiteSettingsDelegate;
     protected final Website mSite;
     protected final SiteSettingsCategory mCategory;
-    private @Nullable Runnable mRefreshZoomsListFunction;
 
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
@@ -72,10 +71,6 @@ class WebsitePreference extends ChromeImageViewPreference {
         setIcon(new ColorDrawable(Color.TRANSPARENT));
 
         refresh();
-    }
-
-    public void setRefreshZoomsListFunction(Runnable refreshZoomsListCallback) {
-        mRefreshZoomsListFunction = refreshZoomsListCallback;
     }
 
     public void setStorageAccessSettingsPageListener(
@@ -215,7 +210,6 @@ class WebsitePreference extends ChromeImageViewPreference {
                             view -> {
                                 SiteSettingsUtil.resetZoomLevel(
                                         mSite, mSiteSettingsDelegate.getBrowserContextHandle());
-                                assumeNonNull(mRefreshZoomsListFunction).run();
                             });
             setImageViewEnabled(true);
             setImagePadding(25, 0, 0, 0);

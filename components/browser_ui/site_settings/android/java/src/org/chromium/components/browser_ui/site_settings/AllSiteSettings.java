@@ -52,6 +52,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
+import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -110,9 +111,13 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     private @Nullable Set<String> mSelectedDomains;
 
+    private static final long NO_ZOOM_OBSERVER_REGISTERED = 0;
+
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private @MonotonicNonNull SearchViewProvider.Observer mSearchViewObserver;
+    private long mZoomObserverSubscriptionKey = NO_ZOOM_OBSERVER_REGISTERED;
+    private boolean mIsBulkClearingZooms;
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         @Override
@@ -186,6 +191,16 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             mEmptyView = view.findViewById(R.id.site_settings_zoom_empty_zoom_levels_message_text);
             mClearButton = view.findViewById(R.id.site_settings_zoom_clear_all_zoom_levels_button);
             mClearButton.setOnClickListener(this::handleZoomClearAll);
+            if (mZoomObserverSubscriptionKey == NO_ZOOM_OBSERVER_REGISTERED) {
+                mZoomObserverSubscriptionKey =
+                        HostZoomMap.addZoomLevelObserver(
+                                browserContextHandle,
+                                (SiteZoomInfo siteZoomInfo) -> {
+                                    if (!mIsBulkClearingZooms) {
+                                        getInfoForOrigins();
+                                    }
+                                });
+            }
         }
 
         mListView = getListView();
@@ -233,12 +248,17 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().getBrowserContextHandle();
         double defaultZoomFactor =
                 PageZoomUtils.getDefaultZoomLevelAsZoomFactor(browserContextHandle);
-        for (WebsitePreference preference : mWebsites) {
-            // Propagate the change through HostZoomMap.
-            HostZoomMap.setZoomLevelForHost(
-                    browserContextHandle,
-                    assumeNonNull(preference.site().getAddress().getHost()),
-                    defaultZoomFactor);
+        mIsBulkClearingZooms = true;
+        try {
+            for (WebsitePreference preference : mWebsites) {
+                // Propagate the change through HostZoomMap.
+                HostZoomMap.setZoomLevelForHost(
+                        browserContextHandle,
+                        assumeNonNull(preference.site().getAddress().getHost()),
+                        defaultZoomFactor);
+            }
+        } finally {
+            mIsBulkClearingZooms = false;
         }
         // Refresh this fragment to trigger UI change.
         getInfoForOrigins();
@@ -547,7 +567,6 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                     WebsitePreference preference =
                             new WebsitePreference(
                                     getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
-                    preference.setRefreshZoomsListFunction(this::getInfoForOrigins);
                     websites.add(preference);
                 }
             }
@@ -580,6 +599,21 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
+    }
+
+    private void removeZoomObserver() {
+        if (mZoomObserverSubscriptionKey != NO_ZOOM_OBSERVER_REGISTERED) {
+            HostZoomMap.removeZoomLevelObserver(
+                    getSiteSettingsDelegate().getBrowserContextHandle(),
+                    mZoomObserverSubscriptionKey);
+            mZoomObserverSubscriptionKey = NO_ZOOM_OBSERVER_REGISTERED;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        removeZoomObserver();
+        super.onDestroyView();
     }
 
     @Override
