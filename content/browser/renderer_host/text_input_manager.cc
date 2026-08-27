@@ -158,7 +158,9 @@ std::optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
 
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
     RenderWidgetHostViewBase* view) const {
-  CHECK(!view || IsRegistered(view), base::NotFatalUntil::M153);
+  // TODO(crbug.com/552952740): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!view || IsRegistered(view));
   if (!view)
     view = active_view_;
   return view ? &selection_region_map_.at(view) : nullptr;
