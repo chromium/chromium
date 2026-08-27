@@ -61,14 +61,14 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="OneTimeTokens.Actor.AttemptOtpFilling.VerifyIsActorLoginFlow"
-    enum="VerifyIsActorLoginFlowEvent" expires_after="2027-06-30">
+    enum="ActorLoginFlowVerificationResult" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
     Records whether the OTP frame matches a previous actor login flow. Recorded
-    at the start of VerifyOtpFrameOriginMatch invocations, and when matching
-    outcomes (e.g. same origin without checker, exact or affiliated matches,
-    allowed/disallowed PSL matches, or origin mismatches) are determined.
+    when matching outcomes (e.g. same origin without checker, exact or
+    affiliated matches, allowed/disallowed PSL matches, or origin mismatches)
+    are determined.
   </summary>
 </histogram>
 

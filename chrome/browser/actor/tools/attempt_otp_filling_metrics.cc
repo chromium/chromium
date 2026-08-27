@@ -26,9 +26,9 @@ void RecordGmailOtpConfirmationDialogInteraction(
                                 interaction);
 }
 
-void RecordActorLoginFlowVerification(VerifyIsActorLoginFlowEvent event) {
+void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result) {
   base::UmaHistogramEnumeration(kActorOtpVerifyIsActorLoginFlowHistogram,
-                                event);
+                                result);
 }
 
 void RecordPredictedOtpTypeMetrics(

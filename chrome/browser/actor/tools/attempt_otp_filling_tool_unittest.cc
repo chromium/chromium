@@ -130,7 +130,7 @@ class MockActorLoginFlowVerifier : public ActorLoginFlowVerifier {
                bool should_use_strong_matching,
                base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
                    consume_context_callback,
-               base::OnceCallback<void(bool)> callback),
+               base::OnceCallback<void(Result)> callback),
               (override));
 };
 
@@ -793,16 +793,19 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
              bool should_use_strong_matching,
              base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
                  consume_context_callback,
-             base::OnceCallback<void(bool)> callback) {
+             base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                 callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](base::OnceCallback<
                            std::optional<autofill::ActorLoginContext>()>
                            consume_context_callback,
-                       base::OnceCallback<void(bool)> callback) {
+                       base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                           callback) {
                       std::move(consume_context_callback).Run();
-                      std::move(callback).Run(false);
+                      std::move(callback).Run(
+                          ActorLoginFlowVerifier::Result::kNoMatch);
                     },
                     std::move(consume_context_callback), std::move(callback)));
           });
@@ -826,6 +829,9 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   histogram_tester_.ExpectBucketCount(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      ActorLoginFlowVerifier::Result::kNoMatch,
+                                      1);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -852,16 +858,19 @@ TEST_F(AttemptOtpFillingToolTest,
              bool should_use_strong_matching,
              base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
                  consume_context_callback,
-             base::OnceCallback<void(bool)> callback) {
+             base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                 callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](base::OnceCallback<
                            std::optional<autofill::ActorLoginContext>()>
                            consume_context_callback,
-                       base::OnceCallback<void(bool)> callback) {
+                       base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                           callback) {
                       std::move(consume_context_callback).Run();
-                      std::move(callback).Run(false);
+                      std::move(callback).Run(
+                          ActorLoginFlowVerifier::Result::kNoMatch);
                     },
                     std::move(consume_context_callback), std::move(callback)));
           });
@@ -878,6 +887,9 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      ActorLoginFlowVerifier::Result::kNoMatch,
+                                      1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
@@ -1061,18 +1073,21 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
               bool should_use_strong_matching,
               base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
                   consume_context_callback,
-              base::OnceCallback<void(bool)> callback) {
+              base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                  callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](base::OnceCallback<
                            std::optional<autofill::ActorLoginContext>()>
                            consume_context_callback,
-                       base::OnceCallback<void(bool)> callback,
+                       base::OnceCallback<void(ActorLoginFlowVerifier::Result)>
+                           callback,
                        base::OnceClosure simulate_tab_gone) {
                       std::move(consume_context_callback).Run();
                       std::move(simulate_tab_gone).Run();
-                      std::move(callback).Run(false);
+                      std::move(callback).Run(
+                          ActorLoginFlowVerifier::Result::kNoMatch);
                     },
                     std::move(consume_context_callback), std::move(callback),
                     base::BindOnce(

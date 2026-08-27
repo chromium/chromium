@@ -8,6 +8,24 @@ found in the LICENSE file.
 
 <enums>
 
+<!-- LINT.IfChange(ActorLoginFlowVerificationResult) -->
+
+<enum name="ActorLoginFlowVerificationResult">
+  <int value="0" label="(Obsolete) Start"/>
+  <int value="1" label="NoActorLoginContext"/>
+  <int value="2" label="FrameNotInLoginContext"/>
+  <int value="3" label="AllFramesHaveTooManyNavigations"/>
+  <int value="4" label="NoMatch"/>
+  <int value="5" label="PslMatchAllowed"/>
+  <int value="6" label="PslMatchDisallowed"/>
+  <int value="7" label="GroupedOrOtherMismatch"/>
+  <int value="8" label="ExactMatchAllowed"/>
+  <int value="9" label="AffiliatedMatchAllowed"/>
+  <int value="10" label="MainFrameOriginMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/actor_login_flow_verifier.h:ActorLoginFlowVerificationResult) -->
+
 <!-- LINT.IfChange(ActorOneTimeTokenFillingServiceFillOtpEvent) -->
 
 <enum name="ActorOneTimeTokenFillingServiceFillOtpEvent">
@@ -138,24 +156,6 @@ found in the LICENSE file.
 </enum>
 
 <!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_retriever.h:GmailOtpSenderDomainMatchRejectionReason) -->
-
-<!-- LINT.IfChange(VerifyIsActorLoginFlowEvent) -->
-
-<enum name="VerifyIsActorLoginFlowEvent">
-  <int value="0" label="Start"/>
-  <int value="1" label="NoActorLoginContext"/>
-  <int value="2" label="FrameNotInLoginContext"/>
-  <int value="3" label="AllFramesHaveTooManyNavigations"/>
-  <int value="4" label="NoMatch"/>
-  <int value="5" label="PslMatchAllowed"/>
-  <int value="6" label="PslMatchDisallowed"/>
-  <int value="7" label="GroupedOrOtherMismatch"/>
-  <int value="8" label="ExactMatchAllowed"/>
-  <int value="9" label="AffiliatedMatchAllowed"/>
-  <int value="10" label="MainFrameOriginMismatch"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:VerifyIsActorLoginFlowEvent) -->
 
 </enums>
 

@@ -7,31 +7,11 @@
 
 #include <string_view>
 
+#include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
-
-// LINT.IfChange(VerifyIsActorLoginFlowEvent)
-
-// Events recorded during ActorLoginFlowVerifier::VerifyIsActorLoginFlow.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class VerifyIsActorLoginFlowEvent {
-  kStart = 0,
-  kNoActorLoginContext = 1,
-  kFrameNotInLoginContext = 2,
-  kAllFramesHaveTooManyNavigations = 3,
-  kNoMatch = 4,
-  kPslMatchAllowed = 5,
-  kPslMatchDisallowed = 6,
-  kGroupedOrOtherMismatch = 7,
-  kExactMatchAllowed = 8,
-  kAffiliatedMatchAllowed = 9,
-  kMainFrameOriginMismatch = 10,
-  kMaxValue = kMainFrameOriginMismatch
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:VerifyIsActorLoginFlowEvent)
 
 // LINT.IfChange(AttemptOtpFillingEvent)
 
@@ -119,8 +99,8 @@ void RecordGmailOtpOptInCardInteraction(
 void RecordGmailOtpConfirmationDialogInteraction(
     GmailOtpConfirmationDialogInteraction interaction);
 
-// Records events during VerifyIsActorLoginFlow.
-void RecordActorLoginFlowVerification(VerifyIsActorLoginFlowEvent event);
+// Records the result of VerifyIsActorLoginFlow.
+void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result);
 
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,

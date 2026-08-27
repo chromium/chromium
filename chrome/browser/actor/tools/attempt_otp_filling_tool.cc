@@ -344,6 +344,15 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           ? web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()
           : url::Origin();
 
+  LogJournalEvent(
+      "AttemptOtpFillingTool::Invoke",
+      JournalDetailsBuilder()
+          .Add("otp_frame_id", otp_frame->GetFrameTreeNodeId())
+          .Add("otp_frame_origin", otp_frame->GetLastCommittedOrigin())
+          .Add("main_frame_origin", main_frame_origin)
+          .Add("should_use_strong_matching", should_use_strong_matching)
+          .Build());
+
   actor_login_flow_verifier_->VerifyIsActorLoginFlow(
       otp_frame->GetFrameTreeNodeId(), otp_frame->GetLastCommittedOrigin(),
       main_frame_origin, context_origin, should_use_strong_matching,
@@ -357,17 +366,21 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
-                                                    bool is_actor_login) {
+void AttemptOtpFillingTool::OnActorLoginFlowChecked(
+    ToolCallback callback,
+    ActorLoginFlowVerifier::Result result) {
+  RecordActorLoginFlowVerification(result);
+
+  bool is_actor_login = ActorLoginFlowVerifier::IsSuccess(result);
   bool bypass_login_check =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAttemptOtpFillingBypassLoginCheck);
-  LogJournalEvent(
-      "AttemptOtpFillingTool::OnActorLoginFlowChecked",
-      JournalDetailsBuilder()
-          .Add("is_actor_login", is_actor_login)
-          .Add("bypass_login_check", bypass_login_check)
-          .Build());
+  LogJournalEvent("AttemptOtpFillingTool::OnActorLoginFlowChecked",
+                  JournalDetailsBuilder()
+                      .Add("result", result)
+                      .Add("is_actor_login", is_actor_login)
+                      .Add("bypass_login_check", bypass_login_check)
+                      .Build());
 
   requires_confirmation_ = !is_actor_login && !bypass_login_check;
 

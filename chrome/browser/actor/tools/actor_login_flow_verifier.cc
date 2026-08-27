@@ -5,12 +5,13 @@
 #include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
@@ -21,20 +22,38 @@ namespace actor {
 
 namespace {
 
-using enum VerifyIsActorLoginFlowEvent;
+using Result = ActorLoginFlowVerifier::Result;
 
-VerifyIsActorLoginFlowEvent GetWeakMatchVerificationResult(
-    bool is_psl,
+Result GetAffiliationMatchVerificationResult(
+    affiliations::MatchType affiliations_match_type,
     bool should_use_strong_matching) {
-  if (!is_psl) {
-    return kGroupedOrOtherMismatch;
+  // Exact or affiliated matches are always allowed.
+  bool is_exact_match =
+      affiliations_match_type == affiliations::MatchType::kExact;
+
+  bool is_affiliated_match =
+      static_cast<int>(affiliations_match_type) &
+      static_cast<int>(affiliations::MatchType::kAffiliated);
+
+  bool is_psl_match = static_cast<int>(affiliations_match_type) &
+                      static_cast<int>(affiliations::MatchType::kPSL);
+
+  if (is_exact_match) {
+    return Result::kExactMatchAllowed;
   }
 
-  if (should_use_strong_matching) {
-    return kPslMatchDisallowed;
+  if (is_affiliated_match) {
+    return Result::kAffiliatedMatchAllowed;
   }
 
-  return kPslMatchAllowed;
+  if (is_psl_match) {
+    if (should_use_strong_matching) {
+      return Result::kPslMatchDisallowed;
+    }
+    return Result::kPslMatchAllowed;
+  }
+
+  return Result::kGroupedOrOtherMismatch;
 }
 
 }  // namespace
@@ -53,12 +72,11 @@ void ActorLoginFlowVerifier::VerifyIsActorLoginFlow(
     bool should_use_strong_matching,
     base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
         consume_context_callback,
-    base::OnceCallback<void(bool)> callback) {
-  RecordActorLoginFlowVerification(kStart);
+    base::OnceCallback<void(Result)> callback) {
   if (!context_origin.has_value()) {
-    RecordActorLoginFlowVerification(kNoActorLoginContext);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), Result::kNoActorLoginContext));
     return;
   }
 
@@ -82,11 +100,10 @@ void ActorLoginFlowVerifier::OnMainFrameOriginMatchEvaluated(
     bool should_use_strong_matching,
     base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
         consume_context_callback,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(Result)> callback,
     std::optional<affiliations::MatchType> match_type) {
   if (!match_type.has_value()) {
-    RecordActorLoginFlowVerification(kMainFrameOriginMismatch);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kMainFrameOriginMismatch);
     return;
   }
 
@@ -96,8 +113,7 @@ void ActorLoginFlowVerifier::OnMainFrameOriginMatchEvaluated(
       static_cast<int>(*match_type) &
       static_cast<int>(affiliations::MatchType::kAffiliated);
   if (!is_exact_match && !is_affiliated_match) {
-    RecordActorLoginFlowVerification(kMainFrameOriginMismatch);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kMainFrameOriginMismatch);
     return;
   }
 
@@ -125,37 +141,18 @@ void ActorLoginFlowVerifier::OnOtpFrameOriginMatchEvaluated(
     bool should_use_strong_matching,
     base::OnceCallback<std::optional<autofill::ActorLoginContext>()>
         consume_context_callback,
-    base::OnceCallback<void(bool)> callback,
-    std::optional<affiliations::MatchType> match_type) {
-  if (!match_type.has_value()) {
-    RecordActorLoginFlowVerification(kNoMatch);
-    std::move(callback).Run(false);
+    base::OnceCallback<void(Result)> callback,
+    std::optional<affiliations::MatchType> affiliations_match_type) {
+  if (!affiliations_match_type.has_value()) {
+    std::move(callback).Run(Result::kNoMatch);
     return;
   }
 
-  // Exact or affiliated matches are always allowed.
-  bool is_exact_match = *match_type == affiliations::MatchType::kExact;
-  bool is_affiliated_match =
-      static_cast<int>(*match_type) &
-      static_cast<int>(affiliations::MatchType::kAffiliated);
+  Result match_result = GetAffiliationMatchVerificationResult(
+      *affiliations_match_type, should_use_strong_matching);
 
-  bool match_allowed = false;
-  if (is_exact_match || is_affiliated_match) {
-    RecordActorLoginFlowVerification(is_exact_match ? kExactMatchAllowed
-                                                    : kAffiliatedMatchAllowed);
-    match_allowed = true;
-  } else {
-    // PSL match is only allowed when `should_use_strong_matching` is false.
-    bool is_psl_match = static_cast<int>(*match_type) &
-                        static_cast<int>(affiliations::MatchType::kPSL);
-
-    RecordActorLoginFlowVerification(GetWeakMatchVerificationResult(
-        is_psl_match, should_use_strong_matching));
-    match_allowed = is_psl_match && !should_use_strong_matching;
-  }
-
-  if (!match_allowed) {
-    std::move(callback).Run(false);
+  if (!ActorLoginFlowVerifier::IsSuccess(match_result)) {
+    std::move(callback).Run(match_result);
     return;
   }
 
@@ -164,14 +161,12 @@ void ActorLoginFlowVerifier::OnOtpFrameOriginMatchEvaluated(
   std::optional<autofill::ActorLoginContext> context =
       std::move(consume_context_callback).Run();
   if (!context.has_value()) {
-    RecordActorLoginFlowVerification(kNoActorLoginContext);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kNoActorLoginContext);
     return;
   }
 
   if (!context->navigations_per_frame.contains(otp_frame_id)) {
-    RecordActorLoginFlowVerification(kFrameNotInLoginContext);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kFrameNotInLoginContext);
     return;
   }
 
@@ -185,12 +180,38 @@ void ActorLoginFlowVerifier::OnOtpFrameOriginMatchEvaluated(
       std::ranges::all_of(context->navigations_per_frame,
                           [](const auto& entry) { return entry.second < 2; });
   if (!navigations_ok) {
-    RecordActorLoginFlowVerification(kAllFramesHaveTooManyNavigations);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kAllFramesHaveTooManyNavigations);
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(match_result);
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         ActorLoginFlowVerifier::Result result) {
+  switch (result) {
+    case Result::kExactMatchAllowed:
+      return os << "ExactMatchAllowed";
+    case Result::kAffiliatedMatchAllowed:
+      return os << "AffiliatedMatchAllowed";
+    case Result::kPslMatchAllowed:
+      return os << "PslMatchAllowed";
+    case Result::kNoActorLoginContext:
+      return os << "NoActorLoginContext";
+    case Result::kFrameNotInLoginContext:
+      return os << "FrameNotInLoginContext";
+    case Result::kAllFramesHaveTooManyNavigations:
+      return os << "AllFramesHaveTooManyNavigations";
+    case Result::kNoMatch:
+      return os << "NoMatch";
+    case Result::kPslMatchDisallowed:
+      return os << "PslMatchDisallowed";
+    case Result::kGroupedOrOtherMismatch:
+      return os << "GroupedOrOtherMismatch";
+    case Result::kMainFrameOriginMismatch:
+      return os << "MainFrameOriginMismatch";
+  }
+  NOTREACHED();
 }
 
 }  // namespace actor
