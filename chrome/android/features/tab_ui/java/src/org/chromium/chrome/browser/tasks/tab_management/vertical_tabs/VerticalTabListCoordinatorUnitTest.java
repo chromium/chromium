@@ -238,6 +238,7 @@ public class VerticalTabListCoordinatorUnitTest {
     private static final GURL MOCK_URL = new GURL("https://google.com");
     private static final int TEST_CONTAINER_WIDTH_PX = 800;
     private static final int TEST_CONTAINER_HEIGHT_PX = 1000;
+    private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
@@ -700,9 +701,8 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu() {
-        Token tabGroupId = new Token(1L, 2L);
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
-        when(mMockTab1.getTabGroupId()).thenReturn(tabGroupId);
+        when(mMockTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
         assertNull(mCoordinator.getTabGroupContextMenuCoordinatorForTesting());
 
@@ -713,7 +713,7 @@ public class VerticalTabListCoordinatorUnitTest {
         SimpleRecyclerViewAdapter adapter =
                 (SimpleRecyclerViewAdapter) recyclerViewSpy.getAdapter();
         PropertyModel groupPropertyModel = adapter.getModelList().get(0).model;
-        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
 
         assertEquals(
                 "The adapter lookup should resolve this list item row layout as a TAB_GROUP type.",
@@ -732,7 +732,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 handled);
 
         ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
-        verify(mTabGroupContextMenuCoordinator).showMenu(rectCaptor.capture(), eq(tabGroupId));
+        verify(mTabGroupContextMenuCoordinator).showMenu(rectCaptor.capture(), eq(TAB_GROUP_ID));
 
         Rect descriptiveBoundRect = rectCaptor.getValue().getRect();
         assertEquals("Width must be exactly 1 pixel.", 1, descriptiveBoundRect.width());
@@ -740,6 +740,44 @@ public class VerticalTabListCoordinatorUnitTest {
 
         if (mCoordinator.getTabGroupContextMenuCoordinatorForTesting() != null) {
             // Dismiss/destroy the instantiated context menu tracker to satisfy LifetimeAssert.
+            mCoordinator.getTabGroupContextMenuCoordinatorForTesting().destroy();
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTabGroupHeaderContextMenuForGroupId_Success() {
+        Tab tab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(tab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab));
+        when(mTabModel.iterator()).thenReturn(List.of(tab).iterator());
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(tab);
+        when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(tab));
+
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        RecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        PropertyModel groupPropertyModel = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        groupPropertyModel.set(CardProperties.CARD_TYPE, CardProperties.ModelType.TAB_GROUP);
+        adapter.getModelList()
+                .add(0, new MVCListAdapter.ListItem(UiType.TAB_GROUP, groupPropertyModel));
+        measureAndLayoutContainer();
+
+        mCoordinator.showTabGroupHeaderContextMenuForGroupIdForTesting(TAB_GROUP_ID);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(RectProvider.class), eq(TAB_GROUP_ID));
+
+        if (mCoordinator.getTabGroupContextMenuCoordinatorForTesting() != null) {
             mCoordinator.getTabGroupContextMenuCoordinatorForTesting().destroy();
         }
     }

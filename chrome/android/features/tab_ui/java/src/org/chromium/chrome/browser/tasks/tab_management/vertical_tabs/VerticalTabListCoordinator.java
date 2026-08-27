@@ -1871,13 +1871,36 @@ public class VerticalTabListCoordinator {
      * group creation callback.
      */
     private void showTabGroupHeaderContextMenuForGroupId(Token tabGroupId) {
-        int index = mModelList.indexFromTabGroupId(tabGroupId);
-        if (index == TabModel.INVALID_TAB_INDEX) return;
+        mRecyclerView.post(
+                () -> {
+                    TabModel currentModel = mTabModelSelector.getCurrentModel();
+                    if (currentModel == null || !currentModel.tabGroupExists(tabGroupId)) {
+                        return;
+                    }
 
-        RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(index);
-        if (holder == null) return;
+                    int index = mModelList.indexFromTabGroupId(tabGroupId);
+                    if (index == TabModel.INVALID_TAB_INDEX) return;
 
-        showTabGroupHeaderContextMenu(getItemViewAnchorRectProvider(holder.itemView), tabGroupId);
+                    RecyclerView.ViewHolder holder =
+                            mRecyclerView.findViewHolderForAdapterPosition(index);
+                    if (holder == null) {
+                        mRecyclerView.scrollToPosition(index);
+                        mRecyclerView.post(
+                                () -> {
+                                    RecyclerView.ViewHolder retryHolder =
+                                            mRecyclerView.findViewHolderForAdapterPosition(index);
+                                    if (retryHolder != null) {
+                                        showTabGroupHeaderContextMenu(
+                                                getItemViewAnchorRectProvider(retryHolder.itemView),
+                                                tabGroupId);
+                                    }
+                                });
+                        return;
+                    }
+
+                    showTabGroupHeaderContextMenu(
+                            getItemViewAnchorRectProvider(holder.itemView), tabGroupId);
+                });
     }
 
     private void showTabGroupHeaderContextMenu(RectProvider rectProvider, Token tabGroupId) {
@@ -2235,6 +2258,10 @@ public class VerticalTabListCoordinator {
     boolean handleContextMenuInteractionForTesting(
             Activity activity, RecyclerView recyclerView, float localX, float localY) {
         return handleContextMenuInteraction(activity, recyclerView, localX, localY);
+    }
+
+    void showTabGroupHeaderContextMenuForGroupIdForTesting(Token tabGroupId) {
+        showTabGroupHeaderContextMenuForGroupId(tabGroupId);
     }
 
     GridLayoutManager getPinnedLayoutManagerForTesting() {
