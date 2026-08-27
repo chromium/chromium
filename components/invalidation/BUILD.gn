@@ -39,8 +39,6 @@ static_library("legacy_topics_cleanup") {
     "impl/profile_identity_provider.h",
     "impl/status.cc",
     "impl/status.h",
-    "legacy_topics_cleaner.cc",
-    "legacy_topics_cleaner.h",
     "public/identity_provider.cc",
     "public/identity_provider.h",
     "public/invalidation_util.cc",
