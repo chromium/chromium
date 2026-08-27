@@ -41,8 +41,6 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.PER_CLASS)
 public class AwNetLogServiceTest {
     private static final String TAG = "AwNetLogServiceTest";
-    private static final String JSON_TAG = ".json";
-    private static final String MOCK_PID = "1234_";
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
 

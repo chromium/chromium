@@ -91,7 +91,6 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
     private static final String SCRIPT_LOADED = "Loaded";
     private static final String SCRIPT_NOT_LOADED = "Not loaded";
     private static final String SCRIPT_JS = "script_was_loaded = true;";
-    private static final String SIMPLE_HTML = "<html><body></body></html>";
 
     private String getScriptFileTestPageHtml(final String scriptUrl) {
         return "<html>"

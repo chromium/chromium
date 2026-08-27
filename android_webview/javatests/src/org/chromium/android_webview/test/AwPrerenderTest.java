@@ -74,8 +74,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
         JAVASCRIPT,
     }
 
-    private static final String TAG = "AwPrerenderTest";
-
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Rule public AwActivityTestRule mActivityTestRule;

@@ -34,11 +34,9 @@ import org.chromium.net.test.ServerCertificate;
 @Batch(Batch.PER_CLASS)
 public class TrafficStatsTest extends AwParameterizedTest {
 
-    private static final String TAG = "TrafficStatsTest";
     private static final int TRAFFIC_TAG = 12345678;
 
     private AwContents mAwContents;
-    private AwTestContainerView mTestContainer;
     private TestAwContentsClient mContentsClient;
     private EmbeddedTestServer mTestServer;
 

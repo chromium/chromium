@@ -69,7 +69,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     private static final String DATA_URL = "data:text/html,<div/>";
     private static final String REDIRECT_TARGET_PATH = "/redirect_target.html";
     private static final String TITLE = "TITLE";
-    private static final String TAG = "AwContentsClientShouldOverrideUrlLoadingTest";
     private static final String sEnterpriseAuthAppLinkPolicy =
             "com.android.browser:EnterpriseAuthenticationAppLinkPolicy";
 
