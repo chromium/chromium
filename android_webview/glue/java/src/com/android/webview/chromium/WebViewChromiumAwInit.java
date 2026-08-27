@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.app.compat.CompatChanges;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
@@ -13,7 +12,6 @@ import android.os.SystemClock;
 import android.webkit.CookieManager;
 import android.webkit.SelectionActionMenuClient;
 import android.webkit.WebIconDatabase;
-import android.webkit.WebSettings;
 import android.webkit.WebViewDatabase;
 
 import androidx.annotation.GuardedBy;
@@ -148,17 +146,6 @@ public class WebViewChromiumAwInit {
                 @Override
                 public long getDrawSWFunctionTable() {
                     return GraphicsUtils.getDrawSWFunctionTable();
-                }
-
-                @Override
-                public boolean isSimplifiedDarkModeEnabled() {
-                    int targetSdkVersion =
-                            ContextUtils.getApplicationContext()
-                                    .getApplicationInfo()
-                                    .targetSdkVersion;
-                    return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                            ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
-                            : targetSdkVersion >= Build.VERSION_CODES.TIRAMISU;
                 }
 
                 @Override

@@ -9,7 +9,6 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.webkit.WebSettings;
@@ -433,8 +432,7 @@ public class AwSettings {
             mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
 
             mAllowFileUrlAccess =
-                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                            < Build.VERSION_CODES.R;
+                    CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT);
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
             mSpeculativeLoadingAllowedFlags =
                     SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;
@@ -843,8 +841,7 @@ public class AwSettings {
     @CalledByNative
     private static boolean getAllowSniffingFileUrls() {
         // Don't allow sniffing file:// URLs for MIME type if the application targets P or later.
-        return ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                < Build.VERSION_CODES.P;
+        return CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS);
     }
 
     /** See {@link android.webkit.WebSettings#setUserAgentString}. */

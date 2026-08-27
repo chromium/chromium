@@ -5,7 +5,6 @@
 package org.chromium.android_webview;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Process;
 import android.system.ErrnoException;
 import android.system.Os;
@@ -251,10 +250,10 @@ public abstract class AwDataDirLock {
             // Make it fatal for apps that target P or higher
             @Nullable ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
             String error = getLockFailureReason(holder);
-            if (appContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
-                throw new RuntimeException(error);
-            } else {
+            if (CompatQuirks.isEnabled(CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY)) {
                 Log.w(TAG, error);
+            } else {
+                throw new RuntimeException(error);
             }
         }
     }

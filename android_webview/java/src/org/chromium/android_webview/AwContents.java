@@ -2558,10 +2558,8 @@ public class AwContents implements SmartClipProvider {
     public void loadData(String data, String mimeType, String encoding) {
         if (TRACE) Log.i(TAG, "%s loadData", this);
         if (isDestroyed(WARN)) return;
-        if (data != null && data.contains("#")) {
-            if (ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                            < Build.VERSION_CODES.Q
-                    && !isBase64Encoded(encoding)) {
+        if (data != null && data.contains("#") && !isBase64Encoded(encoding)) {
+            if (CompatQuirks.isEnabled(CompatQuirks.Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA)) {
                 // As of Chromium M72, data URI parsing strictly enforces encoding of '#'. To
                 // support WebView applications which were not expecting this change, we do it for
                 // them.

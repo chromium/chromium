@@ -58,6 +58,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.CompatQuirks;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.StartupCallSite;
@@ -478,6 +479,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
             ContextUtils.initApplicationContext(ctx);
+            CompatQuirks.setDelegate(WebViewChromiumFactoryProvider::isQuirkEnabled);
 
             // Ensuring we set this before we might read it in any future calls to ApkInfo.
             // ApkInfo requires ContextUtils' application context, so this has to happen after.
@@ -1140,5 +1142,25 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             mDestroyedAwContents.destroy();
         }
         return mDestroyedAwContents;
+    }
+
+    private static boolean isQuirkEnabled(@CompatQuirks.Quirk int quirk) {
+        int targetSdkVersion =
+                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+        return switch (quirk) {
+            case CompatQuirks.Quirk.LEGACY_DARK_MODE ->
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                            ? targetSdkVersion < Build.VERSION_CODES.TIRAMISU
+                            : !CompatChanges.isChangeEnabled(
+                                    WebSettings.ENABLE_SIMPLIFIED_DARK_MODE);
+            case CompatQuirks.Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA ->
+                    targetSdkVersion < Build.VERSION_CODES.Q;
+            case CompatQuirks.Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT ->
+                    targetSdkVersion < Build.VERSION_CODES.R;
+            case CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS,
+                    CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY ->
+                    targetSdkVersion < Build.VERSION_CODES.P;
+            default -> false;
+        };
     }
 }

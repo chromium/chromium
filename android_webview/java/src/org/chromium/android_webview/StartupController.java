@@ -45,11 +45,6 @@ public class StartupController {
         /** Returns the function table pointer for software drawing. */
         long getDrawSWFunctionTable();
 
-        // TODO(elabadysayed): Centralize target SDK gated features in a single place and
-        // allow overriding them for testing instead of checking them across glue and Aw layers.
-        /** Returns whether simplified dark mode is enabled. */
-        boolean isSimplifiedDarkModeEnabled();
-
         /** Initializes thread-unsafe singletons in the glue layer. */
         void initThreadUnsafeSingletons();
 
@@ -178,7 +173,7 @@ public class StartupController {
             AwDevToolsServer.setRemoteDebuggingEnabled(true);
         }
 
-        if (mDelegate.isSimplifiedDarkModeEnabled()) {
+        if (!CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE)) {
             AwDarkMode.enableSimplifiedDarkMode();
         }
 
