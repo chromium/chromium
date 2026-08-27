@@ -215,12 +215,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return personalDataManager.isAutofillCreditCardManaged();
                     }
-
-                    @Override
-                    public boolean isPreferenceClickDisabled(Preference preference) {
-                        return personalDataManager.isAutofillCreditCardManaged()
-                                && !personalDataManager.isAutofillPaymentMethodsEnabled();
-                    }
                 });
         getPreferenceScreen().addPreference(autofillSwitch);
 
