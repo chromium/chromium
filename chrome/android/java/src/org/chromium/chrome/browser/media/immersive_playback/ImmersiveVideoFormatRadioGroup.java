@@ -94,8 +94,7 @@ public class ImmersiveVideoFormatRadioGroup extends FrameLayout {
     }
 
     public void setSelectionCallback(Callback<@Nullable FormatOption> callback) {
-        mLayout.setOnCheckedChangeListener(
-                (group, checkedId) -> callback.onResult(getSelectedOption()));
+        mLayout.setOnCheckedChangeListener((_, _) -> callback.onResult(getSelectedOption()));
     }
 
     /**

@@ -24,7 +24,7 @@ class TabSharingToolbarViewBinder {
         } else if (TabSharingToolbarProperties.STOP_SHARING_CLICK_LISTENER == propertyKey) {
             View stopButton = view.findViewById(R.id.tab_sharing_stop_button);
             Runnable listener = model.get(TabSharingToolbarProperties.STOP_SHARING_CLICK_LISTENER);
-            stopButton.setOnClickListener(listener == null ? null : v -> listener.run());
+            stopButton.setOnClickListener(listener == null ? null : _ -> listener.run());
         } else if (TabSharingToolbarProperties.SHARE_INSTEAD_BUTTON_VISIBLE == propertyKey) {
             View shareInsteadButton = view.findViewById(R.id.tab_sharing_share_instead_button);
             shareInsteadButton.setVisibility(
@@ -34,7 +34,7 @@ class TabSharingToolbarViewBinder {
         } else if (TabSharingToolbarProperties.SHARE_INSTEAD_CLICK_LISTENER == propertyKey) {
             View shareInsteadButton = view.findViewById(R.id.tab_sharing_share_instead_button);
             Runnable listener = model.get(TabSharingToolbarProperties.SHARE_INSTEAD_CLICK_LISTENER);
-            shareInsteadButton.setOnClickListener(listener == null ? null : v -> listener.run());
+            shareInsteadButton.setOnClickListener(listener == null ? null : _ -> listener.run());
         }
     }
 }

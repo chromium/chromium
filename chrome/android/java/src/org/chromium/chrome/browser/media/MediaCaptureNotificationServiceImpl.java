@@ -185,7 +185,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         if (hasNewMediaTypesToUpdate) {
             createNotification(notificationId, mediaTypes, url, isIncognito);
         }
-        if (mNotificationsType.size() == 0) {
+        if (mNotificationsType.isEmpty()) {
             getService().stopSelf(startId);
         }
     }

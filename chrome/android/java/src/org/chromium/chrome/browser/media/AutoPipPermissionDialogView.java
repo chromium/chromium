@@ -45,9 +45,7 @@ public class AutoPipPermissionDialogView extends LinearLayout {
         int BLOCK = 2;
     }
 
-    private final ImageView mIconView;
     private final TextView mTitle;
-    private final LinearLayout mButtonContainer;
 
     /**
      * Constructs a new AutoPipPermissionDialogView.
@@ -91,30 +89,30 @@ public class AutoPipPermissionDialogView extends LinearLayout {
         LayoutInflater.from(contextThemeWrapper)
                 .inflate(R.layout.auto_pip_permission_dialog, this, true);
 
-        mIconView = findViewById(R.id.auto_pip_permission_dialog_icon);
-        mIconView.setImageResource(R.drawable.picture_in_picture_24px);
+        ImageView iconView = findViewById(R.id.auto_pip_permission_dialog_icon);
+        iconView.setImageResource(R.drawable.picture_in_picture_24px);
         mTitle = findViewById(R.id.auto_pip_permission_dialog_title);
-        mButtonContainer = findViewById(R.id.auto_pip_button_container);
+        LinearLayout buttonContainer = findViewById(R.id.auto_pip_button_container);
 
         // Create and add buttons programmatically to apply the correct styles.
         ButtonCompat allowEveryVisitButton =
                 new ButtonCompat(context, R.style.FilledButton_Tonal_ThemeOverlay_TopButton);
         allowEveryVisitButton.setText(allowEveryVisitText);
         allowEveryVisitButton.setOnClickListener(
-                (v) -> resultCb.onResult(UiResult.ALLOW_ON_EVERY_VISIT));
-        mButtonContainer.addView(allowEveryVisitButton);
+                _ -> resultCb.onResult(UiResult.ALLOW_ON_EVERY_VISIT));
+        buttonContainer.addView(allowEveryVisitButton);
 
         ButtonCompat allowOnceButton =
                 new ButtonCompat(context, R.style.FilledButton_Tonal_ThemeOverlay_MiddleButton);
         allowOnceButton.setText(allowOnceText);
-        allowOnceButton.setOnClickListener((v) -> resultCb.onResult(UiResult.ALLOW_ONCE));
-        mButtonContainer.addView(allowOnceButton);
+        allowOnceButton.setOnClickListener(_ -> resultCb.onResult(UiResult.ALLOW_ONCE));
+        buttonContainer.addView(allowOnceButton);
 
         ButtonCompat blockButton =
                 new ButtonCompat(context, R.style.FilledButton_Tonal_ThemeOverlay_BottomButton);
         blockButton.setText(blockText);
-        blockButton.setOnClickListener((v) -> resultCb.onResult(UiResult.BLOCK));
-        mButtonContainer.addView(blockButton);
+        blockButton.setOnClickListener(_ -> resultCb.onResult(UiResult.BLOCK));
+        buttonContainer.addView(blockButton);
     }
 
     /**

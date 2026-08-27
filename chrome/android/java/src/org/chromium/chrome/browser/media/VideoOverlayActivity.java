@@ -140,7 +140,6 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
 
         if (isInitiatorTabDestroyed()) {
             finishOverlay(/* closeByNative= */ false);
-            return;
         }
     }
 

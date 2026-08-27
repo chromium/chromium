@@ -18,7 +18,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class TabSharingToolbarCoordinator {
     private final View mView;
-    private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final TabSharingToolbarMediator mMediator;
 
@@ -33,12 +32,13 @@ public class TabSharingToolbarCoordinator {
             Context context, TabSharingUIBridge bridge, ActivityTabProvider tabProvider) {
         mView = LayoutInflater.from(context).inflate(R.layout.tab_sharing_toolbar, null);
 
-        mModel = new PropertyModel.Builder(TabSharingToolbarProperties.ALL_KEYS).build();
+        PropertyModel model =
+                new PropertyModel.Builder(TabSharingToolbarProperties.ALL_KEYS).build();
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mView, TabSharingToolbarViewBinder::bind);
+                        model, mView, TabSharingToolbarViewBinder::bind);
 
-        mMediator = new TabSharingToolbarMediator(context, mModel, bridge, tabProvider);
+        mMediator = new TabSharingToolbarMediator(context, model, bridge, tabProvider);
     }
 
     public void destroy() {

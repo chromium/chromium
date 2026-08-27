@@ -27,7 +27,6 @@ import android.os.Looper;
 import android.util.Rational;
 import android.util.Size;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -632,31 +631,19 @@ public class PictureInPictureActivity extends VideoOverlayActivity {
         compositorView
                 .getView()
                 .addOnLayoutChangeListener(
-                        new OnLayoutChangeListener() {
-                            @Override
-                            public void onLayoutChange(
-                                    View v,
-                                    int left,
-                                    int top,
-                                    int right,
-                                    int bottom,
-                                    int oldLeft,
-                                    int oldTop,
-                                    int oldRight,
-                                    int oldBottom) {
-                                if (!isNativeHandleInitialized()) return;
-                                // We sometimes get an initial update of zero before getting
-                                // something reasonable.
-                                if (top == bottom || left == right) return;
+                        (_, left, top, right, bottom, _, _, _, _) -> {
+                            if (!isNativeHandleInitialized()) return;
+                            // We sometimes get an initial update of zero before getting
+                            // something reasonable.
+                            if (top == bottom || left == right) return;
 
-                                // On close, sometimes we get a size update that's almost the entire
-                                // display width.
-                                // Pip window's can't be that big, so ignore it.
-                                final int width = right - left;
-                                if (width > mMaxWidth) return;
+                            // On close, sometimes we get a size update that's almost the entire
+                            // display width.
+                            // Pip window's can't be that big, so ignore it.
+                            final int width = right - left;
+                            if (width > mMaxWidth) return;
 
-                                onViewSizeChanged(width, bottom - top);
-                            }
+                            onViewSizeChanged(width, bottom - top);
                         });
 
         setCompositorView(compositorView);

@@ -617,7 +617,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
      * <p>This requires that the parent WebContents is still valid, we are not recreating the
      * activity, and the API level is 30 or higher (required for {@code getCurrentWindowMetrics()}).
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void saveBoundsToCache() {
         if (mParentWebContents != null
                 && !mParentWebContents.isDestroyed()

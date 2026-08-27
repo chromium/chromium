@@ -22,9 +22,6 @@ public class ChromeMediaNotificationManager {
         MediaNotificationManager.setMultipleMediaNotificationsEnabled(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS));
         MediaNotificationManager.show(
-                notificationInfo,
-                (uniqueId, mediaTypeId) -> {
-                    return new ChromeMediaNotificationControllerDelegate(uniqueId, mediaTypeId);
-                });
+                notificationInfo, ChromeMediaNotificationControllerDelegate::new);
     }
 }

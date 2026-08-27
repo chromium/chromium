@@ -19,7 +19,7 @@ public final class StartupLatencyInjector {
 
     public StartupLatencyInjector() {
         mBusyWaitDurationMillis =
-                Long.valueOf(ChromeFeatureList.sClankStartupLatencyInjectionAmountMs.getValue());
+                (long) ChromeFeatureList.sClankStartupLatencyInjectionAmountMs.getValue();
     }
 
     private boolean isEnabled() {

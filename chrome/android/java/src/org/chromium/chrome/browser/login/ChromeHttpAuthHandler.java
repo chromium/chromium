@@ -132,7 +132,6 @@ public class ChromeHttpAuthHandler implements TabObserver, LoginPrompt.Observer 
             mLoginPrompt.show();
         } catch (WindowManager.BadTokenException ex) {
             cancel();
-            return;
         }
     }
 

@@ -91,14 +91,11 @@ public class ResumableDelayedTaskRunner {
 
         long delayMs = Math.max(mScheduledTime - SystemClock.elapsedRealtime(), 0);
         mHandlerRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        assumeNonNull(mRunnable);
-                        mRunnable.run();
-                        mRunnable = null;
-                        mHandlerRunnable = null;
-                    }
+                () -> {
+                    assumeNonNull(mRunnable);
+                    mRunnable.run();
+                    mRunnable = null;
+                    mHandlerRunnable = null;
                 };
         mHandler.postDelayed(mHandlerRunnable, delayMs);
     }

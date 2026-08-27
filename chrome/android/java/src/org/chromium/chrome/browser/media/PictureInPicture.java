@@ -39,7 +39,7 @@ public abstract class PictureInPicture {
                 .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             return false;
         }
-        try (TraceEvent e = TraceEvent.scoped("PictureInPicture::isEnabled")) {
+        try (TraceEvent _ = TraceEvent.scoped("PictureInPicture::isEnabled")) {
             final AppOpsManager appOpsManager =
                     (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
             final int status =

@@ -285,7 +285,6 @@ public class FullscreenVideoPictureInPictureController {
             if (!mActivity.enterPictureInPictureMode(builder.build())) return;
         } catch (IllegalStateException | IllegalArgumentException e) {
             Log.e(TAG, "Error entering PiP with bounds %s", bounds, e);
-            return;
         }
     }
 
