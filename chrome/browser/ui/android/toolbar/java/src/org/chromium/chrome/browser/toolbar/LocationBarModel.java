@@ -861,6 +861,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // SSL state is resolved for HTTP/HTTPS URLs if the toolbar refactor is enabled.
         // Non-HTTP(S) schemes (e.g. chrome://, file://) never transition to SECURE and
         // should show their neutral icon immediately.
+        // TODO(crbug.com/553488661): We are now doing suppression by default in
+        // LocationBarMediator#updateLocationBarIcon. See about removing suppression here then.
         if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                 && securityLevel == ConnectionSecurityLevel.NONE
                 && isLoading()

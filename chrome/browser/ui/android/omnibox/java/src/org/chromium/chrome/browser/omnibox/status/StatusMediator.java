@@ -640,7 +640,10 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (getPendingEntry() != null) {
+        } else if (hasPendingHttpOrHttpsNavigation()) {
+            // Prevent jank due to the info (i) icon appearing during page navigation. But if the
+            // destination page isn't http, then it's fine to show the info icon, because that's
+            // what it'll end up being anyway.
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             showBlankIcon = true;
         } else if (maybeUpdateStatusIconForSearchEngineIcon()) {
@@ -777,6 +780,13 @@ public class StatusMediator
         if (pendingEntry == null) return false;
 
         return !UrlUtilities.isNtpUrl(pendingEntry.getUrl());
+    }
+
+    private boolean hasPendingHttpOrHttpsNavigation() {
+        NavigationEntry pendingEntry = getPendingEntry();
+        if (pendingEntry == null || pendingEntry.getUrl() == null) return false;
+
+        return UrlUtilities.isHttpOrHttps(pendingEntry.getUrl());
     }
 
     /** Returns status icon resource for the user-selected default search engine. */

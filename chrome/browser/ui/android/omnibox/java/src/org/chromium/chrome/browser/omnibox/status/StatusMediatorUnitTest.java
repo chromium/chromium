@@ -222,6 +222,10 @@ public final class StatusMediatorUnitTest {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes();
     }
 
+    private void assertModelIconResId(int resId) {
+        assertEquals(resId, mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+    }
+
     @Test
     @SmallTest
     public void testPermissionIconShown() {
@@ -1416,21 +1420,40 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void statusIcon_blankWhenPendingNavigation() {
+    public void statusIcon_blankWhenPendingHttpNavigation() {
         mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
-        assertEquals(
-                R.drawable.ic_settings_tune_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+
+        assertModelIconResId(R.drawable.ic_settings_tune_24dp);
 
         doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mNavigationEntry).getUrl();
         mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
         doReturn(null).when(mNavigationController).getPendingEntry();
         mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
-        assertEquals(
-                R.drawable.ic_info_24dp,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+
+        assertModelIconResId(R.drawable.ic_info_24dp);
+    }
+
+    @Test
+    @SmallTest
+    public void statusIcon_infoIconWhenPendingNonHttpNavigation() {
+        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+
+        assertModelIconResId(R.drawable.ic_settings_tune_24dp);
+
+        doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
+        doReturn(JUnitTestGURLs.CHROME_ABOUT).when(mNavigationEntry).getUrl();
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+
+        assertModelIconResId(R.drawable.ic_info_24dp);
+
+        doReturn(null).when(mNavigationController).getPendingEntry();
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+
+        assertModelIconResId(R.drawable.ic_info_24dp);
     }
 
     private void setDisplayState(@DisplayState int state) {
