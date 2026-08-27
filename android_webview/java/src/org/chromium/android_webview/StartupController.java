@@ -173,8 +173,8 @@ public class StartupController {
             AwDevToolsServer.setRemoteDebuggingEnabled(true);
         }
 
-        if (!CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE)) {
-            AwDarkMode.enableSimplifiedDarkMode();
+        if (CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE)) {
+            AwDarkMode.enableLegacyDarkMode();
         }
 
         AwBrowserProcess.maybeEnableSafeBrowsingFromGms();

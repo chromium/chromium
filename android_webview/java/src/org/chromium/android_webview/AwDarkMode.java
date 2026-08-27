@@ -20,11 +20,20 @@ import org.chromium.content_public.browser.WebContents;
 public class AwDarkMode {
     private long mNativeAwDarkMode;
 
-    private static boolean sEnableSimplifiedDarkMode;
+    private static boolean sEnableLegacyDarkMode;
 
-    public static void enableSimplifiedDarkMode() {
-        sEnableSimplifiedDarkMode = true;
-        AwDarkModeJni.get().enableSimplifiedDarkMode();
+    public static void enableLegacyDarkMode() {
+        sEnableLegacyDarkMode = true;
+        AwDarkModeJni.get().enableLegacyDarkMode();
+    }
+
+    public static boolean isLegacyDarkModeEnabled() {
+        return sEnableLegacyDarkMode;
+    }
+
+    public static void resetForTesting() {
+        sEnableLegacyDarkMode = false;
+        AwDarkModeJni.get().resetForTesting();
     }
 
     private final AwContents mAwContents;
@@ -41,10 +50,6 @@ public class AwDarkMode {
         if (webContents != null) {
             mNativeAwDarkMode = AwDarkModeJni.get().init(this, webContents);
         }
-    }
-
-    public static boolean isSimplifiedDarkModeEnabled() {
-        return sEnableSimplifiedDarkMode;
     }
 
     public void destroy() {
@@ -69,7 +74,9 @@ public class AwDarkMode {
 
     @NativeMethods
     interface Natives {
-        void enableSimplifiedDarkMode();
+        void enableLegacyDarkMode();
+
+        void resetForTesting();
 
         long init(AwDarkMode self, WebContents webContents);
 

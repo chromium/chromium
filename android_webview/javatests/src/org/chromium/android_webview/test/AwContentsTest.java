@@ -51,6 +51,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwViewAndroidDelegate;
@@ -383,31 +384,36 @@ public class AwContentsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testBackgroundColorInDarkMode() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AwContents awContents =
-                            mActivityTestRule
-                                    .createAwTestContainerView(mContentsClient)
-                                    .getAwContents();
-                    AwSettings awSettings = awContents.getSettings();
+        AwDarkMode.enableLegacyDarkMode();
+        try {
+            mActivityTestRule.startBrowserProcess();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        AwContents awContents =
+                                mActivityTestRule
+                                        .createAwTestContainerView(mContentsClient)
+                                        .getAwContents();
+                        AwSettings awSettings = awContents.getSettings();
 
-                    Assert.assertEquals(
-                            Color.WHITE, awContents.getEffectiveBackgroundColorForTesting());
+                        Assert.assertEquals(
+                                Color.WHITE, awContents.getEffectiveBackgroundColorForTesting());
 
-                    awSettings.setForceDarkMode(AwSettings.FORCE_DARK_ON);
-                    Assert.assertTrue(awSettings.isForceDarkApplied());
-                    Assert.assertEquals(
-                            Color.BLACK, awContents.getEffectiveBackgroundColorForTesting());
+                        awSettings.setForceDarkMode(AwSettings.FORCE_DARK_ON);
+                        Assert.assertTrue(awSettings.isForceDarkApplied());
+                        Assert.assertEquals(
+                                Color.BLACK, awContents.getEffectiveBackgroundColorForTesting());
 
-                    awContents.setBackgroundColor(Color.RED);
-                    Assert.assertEquals(
-                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
+                        awContents.setBackgroundColor(Color.RED);
+                        Assert.assertEquals(
+                                Color.RED, awContents.getEffectiveBackgroundColorForTesting());
 
-                    awContents.destroy();
-                    Assert.assertEquals(
-                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
-                });
+                        awContents.destroy();
+                        Assert.assertEquals(
+                                Color.RED, awContents.getEffectiveBackgroundColorForTesting());
+                    });
+        } finally {
+            AwDarkMode.resetForTesting();
+        }
     }
 
     private int callDocumentHasImagesSync(final AwContents awContents)

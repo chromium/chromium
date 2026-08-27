@@ -1135,7 +1135,7 @@ public class ContentSettingsAdapter extends WebSettings {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_FORCE_DARK,
                     ApiCallUserAction.WEB_SETTINGS_SET_FORCE_DARK);
-            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (!AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
                 return;
             }
@@ -1164,7 +1164,7 @@ public class ContentSettingsAdapter extends WebSettings {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_FORCE_DARK,
                     ApiCallUserAction.WEB_SETTINGS_GET_FORCE_DARK);
-            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (!AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
                 return WebSettings.FORCE_DARK_AUTO;
             }
@@ -1191,7 +1191,7 @@ public class ContentSettingsAdapter extends WebSettings {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED,
                     ApiCallUserAction.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
-            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(
                         TAG,
                         "setAlgorithmicDarkeningAllowed() is a no-op in an app with "
@@ -1213,7 +1213,7 @@ public class ContentSettingsAdapter extends WebSettings {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED,
                     ApiCallUserAction.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
-            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(
                         TAG,
                         "isAlgorithmicDarkeningAllowed() is a no-op in an app with "

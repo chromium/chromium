@@ -34,9 +34,10 @@ class AwDarkMode : public content::WebContentsObserver,
   bool prefers_dark_from_theme() const { return prefers_dark_from_theme_; }
 
  private:
-  void PopulateWebPreferencesForPreT(blink::web_pref::WebPreferences* web_prefs,
-                                     int force_dark_mode,
-                                     int force_dark_behavior);
+  void PopulateWebPreferencesForLegacy(
+      blink::web_pref::WebPreferences* web_prefs,
+      int force_dark_mode,
+      int force_dark_behavior);
 
   bool IsAppUsingDarkTheme();
 

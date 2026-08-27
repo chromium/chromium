@@ -67,6 +67,7 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @After
     public void tearDown() {
         mWebServer.shutdown();
+        AwDarkMode.resetForTesting();
     }
 
     @Test
@@ -111,7 +112,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testAlgorithmicDarkeningAllowedOnAndroidT() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
-        AwDarkMode.enableSimplifiedDarkMode();
 
         // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
@@ -130,7 +130,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testAlgorithmicDarkeningAllowedWithLightThemeOnAndroidT() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
-        AwDarkMode.enableSimplifiedDarkMode();
 
         // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
@@ -151,7 +150,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testAlgorithmicDarkeningDisallowedByDefaultOnAndroidT() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
-        AwDarkMode.enableSimplifiedDarkMode();
 
         // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned on.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_ON);
@@ -167,7 +165,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testPrefersColorSchemeDarkOnAndroidT() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
-        AwDarkMode.enableSimplifiedDarkMode();
 
         // Check setForceDarkMode has noops, otherwise, prefers-color-scheme will be set to light.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
@@ -184,7 +181,6 @@ public class AwDarkModeTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testPrefersColorSchemeLightOnAndroidT() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
-        AwDarkMode.enableSimplifiedDarkMode();
 
         // Check setForceDarkMode has noops, otherwise, prefers-color-scheme will be set to dark.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
@@ -194,6 +190,21 @@ public class AwDarkModeTest extends AwParameterizedTest {
         // Verify prefers-color-scheme matches isLightTheme.
         assertEquals("false", getPrefersColorSchemeDark());
         assertFalse(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLegacyDarkModeForceDarkOn() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        AwDarkMode.enableLegacyDarkMode();
+
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_ON);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        assertEquals("true", getPrefersColorSchemeDark());
+        assertTrue(isForceDarkening());
     }
 
     private void loadUrlSync(String url) throws Exception {

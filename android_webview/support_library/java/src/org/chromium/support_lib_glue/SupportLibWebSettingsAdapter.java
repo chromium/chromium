@@ -115,7 +115,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setForceDark(int forceDarkMode) {
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+        if (!AwDarkMode.isLegacyDarkModeEnabled()) {
             Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
             return;
         }
@@ -131,7 +131,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
-            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (!AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
                 return WebSettings.FORCE_DARK_AUTO;
             }
@@ -145,7 +145,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR);
-            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (!AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(TAG, "setForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
                 return;
             }
@@ -169,7 +169,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR);
-            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (!AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(TAG, "getForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
                 return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
             }
@@ -191,7 +191,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
-            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(
                         TAG,
                         "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
@@ -208,7 +208,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
-            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            if (AwDarkMode.isLegacyDarkModeEnabled()) {
                 Log.w(
                         TAG,
                         "isAlgorithmicDarkeningAllowed() is a no-op in an app with "
