@@ -455,7 +455,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5649156266046089790">Dengan profil Chrome, anda dapat mengasingkan semua bahan Chrome anda. Buat profil untuk rakan dan keluarga atau asingkan pekerjaan daripada keseronokan.</translation>
 <translation id="5655063652337498476">Temukan produk dengan kamera anda, jejaki penurunan harga dan pelbagai lagi semasa dalam perjalanan dengan Chrome pada iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, jadi Chrome telah menyekat fail itu.</translation>
-<translation id="566040795510471729">Sesuaikan Chrome Anda</translation>
 <translation id="566568153320186256">Chrome menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Kosongkan data Chrome dalam akaun anda</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini}=1{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
@@ -682,7 +681,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="778331955594035129">Chrome memerlukan kebenaran lokasi untuk laman ini</translation>
 <translation id="7787950393032327779">Nampaknya profil digunakan oleh proses Google Chrome lain (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chrome telah mengunci profil supaya profil tidak rosak. Jika anda pasti tiada proses lain yang menggunakan profil ini, anda boleh membuka profil dan melancarkan semula Chrome.</translation>
-<translation id="7792336732117553384">&amp;Urus Profil Chrome</translation>
 <translation id="7801699035218095297">Google Chrome cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="7804364787702057554">Akaun anda dalam Chrome</translation>
 <translation id="7804947029129221742">Enjin carian anda telah ditukar dari luar Chrome. Untuk melindungi anda, Chrome telah menetapkan semula tetapan tersebut kepada enjin carian lalai asal. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="8370748943308169953">Kod QR untuk log masuk ke Chrome sebagai <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Togol Gemini dalam Chrome Canary</translation>
+<translation id="8380754585531979907">Gunakan papan kekunci anda untuk menavigasi antara Gemini dalam Chrome dengan tab anda yang terbuka.</translation>
 <translation id="8387459386171870978">Terus menggunakan Chrome</translation>
 <translation id="8394720698884623075">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chrome</translation>
 <translation id="8403038600646341038">Logo Chrome dalam skrin komputer.</translation>

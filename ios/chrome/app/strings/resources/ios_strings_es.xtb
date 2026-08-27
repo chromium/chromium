@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1095093219235104018">Buscar y rellenar con Gemini</translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 contraseña verificada al instante}other{# contraseñas verificadas al instante}}</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquear con Face ID</translation>
 <translation id="1111776967764068277">¿Te has cansado de copiar enlaces?</translation>
@@ -1986,7 +1985,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7464143666517313304">Se eliminarán las direcciones guardadas en este dispositivo.</translation>
 <translation id="7468373585447318060">Mantente al día de las bajadas de precio de todos los productos que sigues.</translation>
 <translation id="746872191028309255">Compra lo que ves con tu cámara o galería de fotos.</translation>
-<translation id="7469215556134875318">desde que usas Revisión de contraseñas</translation>
 <translation id="7471557245617580330">Crear nueva pestaña</translation>
 <translation id="7473555040328423550">Añadir pestaña</translation>
 <translation id="7476548258282096076">En esta tarjeta se muestran los sitios que más visitas.</translation>

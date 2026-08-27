@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Új! A képernyőn megjelenő szöveget és képeket is lefordíthatja.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1388276868779258475">A Chromium app használatával útközben is böngészhet</translation>
-<translation id="1397530502368084401">&amp;Chromium-profilok kezelése</translation>
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1465192221147974788">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="1478370723027452770">Segítség kérése a Chrome for Testing verzióval kapcsolatban</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ha szeretné elkülöníteni böngészési tevékenységeit, a Chromium saját profilt hozhat létre Önnek.</translation>
 <translation id="3909353120217047026">Ez a bővítmény sérti a Chrome Webáruház irányelveit, és előfordulhat, hogy nem biztonságos. Távolítsa el a Chromiumból, így a továbbiakban már nem láthatja és módosíthatja az Ön felkeresett webhelyekkel kapcsolatos adatait, beleértve a személyes adatokat is.</translation>
-<translation id="3937491663738985329">A Chromium s&amp;zemélyre szabása</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="3945058413678539331">A Chromium megpróbálkozik a jelszavak másolásával. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="3954172517175569325">A Google-fiókjába mentett jelszavai, fizetési módjai és címei el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chromiumban, jelentkezzen be újra.</translation>
@@ -767,6 +765,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8980139959902937527">A Chromium alkalmazással a Google által nyújtott biztonságot is magával viheti <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="8981150672034878610">Nem indítható el a Chromium, mert hiba történt a profilja megnyitása során. Próbálkozzon a Chromium újraindításával.</translation>
 <translation id="8988036198400390003">Chromium-profilok kezelése</translation>
+<translation id="8993855408334954620">A billentyűzet segítségével válthat a Gemini a Chromiumban és a megnyitott lap között.</translation>
 <translation id="9018218886431812662">A telepítés befejeződött</translation>
 <translation id="9019929317751753759">A Chromium biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>

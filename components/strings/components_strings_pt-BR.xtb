@@ -239,7 +239,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="139305205187523129">Nenhum dado foi enviado por <ph name="HOST_NAME" /></translation>
 <translation id="1393071644879491291">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Os sites adicionados aqui não serão usados como referência para respostas, mesmo que a guia esteja aberta. Se você adicionar um site que está sendo usado em uma conversa, pode levar até 30 minutos para que a conversa pare de fazer referência a ele.</translation>
-<translation id="1402151528875251561">Mostrar histórico no painel lateral</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1406370515365284486">Suas formas de pagamento ainda vão ficar salvas</translation>
 <translation id="1406500794671479665">Verificando...</translation>
@@ -844,7 +843,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2400263725572336749">Adicionar passaporte</translation>
 <translation id="2400271059665846158">Gerencie seus cartões fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
-<translation id="2403474027143565107">Exato</translation>
+<translation id="2403474027143565107">Preciso</translation>
 <translation id="240450251994300576">Logotipo secundário do cabeçalho</translation>
 <translation id="2404715426538856682">Crédito e débito · IBANs · Fidelidade</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
@@ -1008,7 +1007,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679216653373462289">Usar sensores de movimento e luz</translation>
 <translation id="2679659833697380">Suas informações são salvas no dispositivo</translation>
-<translation id="2680837394649649718">Enviado para o Chrome no seu <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Enviar feedback para a opção "Me ajude a escrever".</translation>
 <translation id="2687555958734450033">Melhor ajuste</translation>
@@ -1615,7 +1613,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3752181611900535304">Salvar endereço na conta?</translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair do modo picture-in-picture</translation>
-<translation id="3754664361823138853">&amp;Abrir página de histórico</translation>
 <translation id="3757511311058373406">Filtros da navegação automática</translation>
 <translation id="3759461132968374835">Você não relatou falhas recentemente. As falhas que ocorreram quando o relatório de erros estava desativado não aparecerão aqui.</translation>
 <translation id="3760561303380396507">Usar o Windows Hello em vez do CVC?</translation>
@@ -2059,7 +2056,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /> para ter o nível mais alto de segurança do Chrome</translation>
 <translation id="4475299370877036544">Esta ação pode violar as políticas da sua organização</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6998512609912910179">Preencha formulários mais rápido</translation>
 <translation id="7000094925113284872">Mapeie o ciclo de vida de uma estrela</translation>
 <translation id="7002897669829306463">Endereço residencial, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7004562620237466965">Somente decodificação</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7009364359744329733">Este card não está disponível no momento. Tente novamente mais tarde.</translation>
@@ -4354,6 +4349,7 @@ Mais detalhes:
 <translation id="8410956920192583322">Mensal ou em 4 parcelas</translation>
 <translation id="8412145213513410671">Falhas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Você deve inserir a mesma senha duas vezes.</translation>
+<translation id="8413126021676339697">Ver histórico completo</translation>
 <translation id="8414322570408428950">Ocorre um evento de extensão</translation>
 <translation id="8416694386774425977">A configuração de rede é inválida e não pôde ser importada.
 Mais detalhes:
@@ -4490,7 +4486,7 @@ Mais detalhes:
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
 <translation id="8694684557210599098">Adicionar veículo</translation>
-<translation id="8696297579102085705">Enviar para seu dispositivo</translation>
+<translation id="8696297579102085705">Enviar ao dispositivo</translation>
 <translation id="8698428283892912525">O Chrome tem recursos de segurança integrados para proteger você, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou softwares nocivos recentemente<ph name="END_LINK" /> no site que você tentou acessar.</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
@@ -4661,7 +4657,6 @@ Mais detalhes:
 <translation id="8988966534058783995">Usar sensores de movimento?</translation>
 <translation id="899688752321268742"><ph name="URL" /> quer saber quando você está usando ativamente este dispositivo</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente usando a política de Transparência dos certificados. Esse é um requisito para alguns certificados, a fim de garantir que eles sejam confiáveis e protejam você contra invasores.</translation>
-<translation id="9000145382638074673">Seus dispositivos</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
 <translation id="9001963517402879850">Pule!</translation>
 <translation id="9003263770394939629">Sugerido pelo Gemini. Gerencie o preenchimento automático aprimorado nas configurações.</translation>

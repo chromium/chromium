@@ -41,7 +41,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1356661055722410047">Mpya! Unaweza kutafsiri maandishi na picha kwenye skrini yako</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1388276868779258475">Tumia programu ya Chromium ili uendelee kuvinjari popote ulipo</translation>
-<translation id="1397530502368084401">&amp;Dhibiti Wasifu wa Chromium</translation>
 <translation id="141901961143729572">Eleza mawazo yako</translation>
 <translation id="1465192221147974788">Ili uonyeshe dirisha lako, washa kinasa skrini katika Chromium kwenye Mipangilio ya Mfumo.</translation>
 <translation id="1478370723027452770">Pata usaidizi kuhusu Chrome ya Majaribio</translation>
@@ -271,7 +270,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="390528597099634151">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu kwenye Chromium. Ili utenganishe shughuli zako za kuvinjari, Chromium inaweza kukutengenezea wasifu wako mwenyewe.</translation>
 <translation id="3909353120217047026">Kiendelezi hiki kinakiuka sera ya Duka la Chrome kwenye Wavuti na huenda kisiwe salama. Kiondoe kwenye Chromium ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
-<translation id="3937491663738985329">Badilisha Chromium Upendavyo</translation>
 <translation id="3941890832296813527">Hitilafu ya kusakinisha: Jina la faili ya kisakinishaji si sahihi au haliwezi kutumika.</translation>
 <translation id="3945058413678539331">Chromium inajaribu kunakili manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="3954172517175569325">Manenosiri, njia za kulipa na anwani ulizohifadhi katika Akaunti yako ya Google zitaondolewa kwenye kifaa hiki. Ili uzitumie tena katika Chromium, ingia katika akaunti.</translation>
@@ -771,6 +769,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8980139959902937527">Pata usalama wa Google popote ulipo ukitumia programu ya Chromium kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="8981150672034878610">Imeshindwa kuwasha Chromium kwa sababu hitilafu fulani imetokea wakati wa kufungua wasifu wako. Jaribu kuzima kisha uwashe Chromium.</translation>
 <translation id="8988036198400390003">Dhibiti wasifu wa Chromium</translation>
+<translation id="8993855408334954620">Tumia kibodi yako kusogeza kati ya Gemini kwenye Chromium na kichupo ulichofungua.</translation>
 <translation id="9018218886431812662">Imemaliza kusakinisha</translation>
 <translation id="9019929317751753759">Ili kufanya Chromium salama zaidi, tumezima kiendelezi kinachofuata ambacho hakijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na huenda kimeongezwa bila ridhaa yako.</translation>
 <translation id="9022552996538154597">Ingia kwenye Chromium</translation>

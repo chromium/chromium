@@ -239,7 +239,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nenosūtīja nekādus datus.</translation>
 <translation id="1393071644879491291">Vietnē, kuru mēģinājāt apmeklēt, uzbrucēji var jūs maldināt, lai pamudinātu instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroles, tālruņa numuru vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk par šo brīdinājumu.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Šeit pievienotās vietnes netiks izmantotas atbilžu sniegšanai, pat ja cilne būs atvērta. Ja pavedienā pašlaik tiek izmantota jūsu pievienotā vietne, var paiet līdz 30 minūtēm, līdz pavedienā vairs netiks izmantota atsauce uz šo vietni.</translation>
-<translation id="1402151528875251561">Rādīt vēsturi sānu panelī</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1406370515365284486">Jūsu maksājuma veidi joprojām tiks saglabāti</translation>
 <translation id="1406500794671479665">Notiek verificēšana...</translation>
@@ -1008,7 +1007,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2679216653373462289">Izmantot kustību un gaismas sensorus</translation>
 <translation id="2679659833697380">Jūsu informācija tiek saglabāta jūsu ierīcē.</translation>
-<translation id="2680837394649649718">Nosūtīta uz pārlūku Chrome jūsu ierīcē (<ph name="DEVICE_NAME" />).</translation>
 <translation id="2683195745483370038">Citi atrastie rezultāti</translation>
 <translation id="2686919536310834199">Sūtiet atsauksmes par funkciju “Palīdzība rakstīšanā”.</translation>
 <translation id="2687555958734450033">Optimāla ietilpināšana</translation>
@@ -1614,7 +1612,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Vai saglabāt adresi kontā?</translation>
 <translation id="3752543821772132562">Ignorēta, jo nav iestatīta politika <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Iziet no režīma “Attēls attēlā”</translation>
-<translation id="3754664361823138853">&amp;Atvērt lapu Vēsture</translation>
 <translation id="3757511311058373406">Automātiskās pārlūkošanas filtri</translation>
 <translation id="3759461132968374835">Pēdējā laikā neesat ziņojis par avārijām. Šeit nebūs redzamas avārijas, kas radās laikā, kad avāriju pārskatu izveide bija atspējota.</translation>
 <translation id="3760561303380396507">Vai vēlaties izmantot Windows Hello, nevis CVC?</translation>
@@ -2057,7 +2054,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ieslēdziet uzlaboto aizsardzību<ph name="END_ENHANCED_PROTECTION_LINK" />, lai saņemtu Chrome augstāko drošības līmeni</translation>
 <translation id="4475299370877036544">Ar šo darbību, iespējams, tiktu pārkāptas jūsu organizācijas politikas.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Šī veidlapa nav droša. Automātiskā aizpilde ir izslēgta.</translation>
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="4489023393592172404">Aploksne Kaku 4</translation>
@@ -3527,7 +3523,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6998512609912910179">Ātrāka veidlapu aizpildīšana</translation>
 <translation id="7000094925113284872">Izveido zvaigznes dzīves cikla karti</translation>
 <translation id="7002897669829306463">Mājas adrese, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
 <translation id="7004562620237466965">Tikai atšifrēt</translation>
 <translation id="7006930604109697472">Tomēr sūtīt</translation>
 <translation id="7009364359744329733">Šī karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
@@ -4352,6 +4347,7 @@ Papildu informācija:
 <translation id="8410956920192583322">Ikmēneša vai četri nomaksas maksājumi</translation>
 <translation id="8412145213513410671">Avārijas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Viena un tā pati ieejas frāze jāievada divreiz.</translation>
+<translation id="8413126021676339697">Rādīt pilnu vēsturi</translation>
 <translation id="8414322570408428950">Rodas ar paplašinājumu saistīts notikums</translation>
 <translation id="8416694386774425977">Tīkla konfigurācija nav derīga, un to nevarēja importēt.
 Papildu informācija:
@@ -4659,7 +4655,6 @@ Papildu informācija:
 <translation id="8988966534058783995">Vai izmantot kustību sensorus?</translation>
 <translation id="899688752321268742">Vietne <ph name="URL" /> vēlas zināt, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="8997023839087525404">Serveris uzrādīja sertifikātu, kas netika publiski atklāts, izmantojot sertifikāta pārredzamības politiku. Šī ir prasība noteiktiem sertifikātiem, lai nodrošinātu to uzticamību un aizsardzību pret uzbrucējiem.</translation>
-<translation id="9000145382638074673">Jūsu ierīces</translation>
 <translation id="9001074447101275817">Starpniekserveris <ph name="DOMAIN" /> pieprasa lietotājvārdu un paroli.</translation>
 <translation id="9001963517402879850">Leciet!</translation>
 <translation id="9003263770394939629">Gemini ieteikums. Pārvaldiet uzlaboto automātisko aizpildi iestatījumos.</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Skjermbilde</translation>
 <translation id="1108214977745280468">Se sidestatistikk</translation>
 <translation id="1108938384783527433">Loggsynkronisering</translation>
+<translation id="1109663842695712985">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, slettes dataene som ikke er lagret.</translation>
 <translation id="1111673857033749125">Bokmerker som er lagret på de andre enhetene dine, vises her.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, bilde-i-bilde-fane</translation>
 <translation id="1126696498560056882">Administrer kontoer på denne enheten</translation>
@@ -811,6 +812,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4285846616383034558">Informasjonskapsler, buffer og andre nettstedsdata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Slå på skjermlås i Android-innstillingene<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">telefonen din</translation>
+<translation id="4295640788982898778">Utvidelsene dine er lagret i Google-kontoen din, men eventuelle data de har lagret bare på denne enheten, kan bli slettet</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, flere inkognitofaner er valgt</translation>
 <translation id="4298388696830689168">Tilknyttede nettsteder</translation>
@@ -834,6 +836,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4358630185957185589">Åpne Google Lens</translation>
 <translation id="435863252455918214">Administrer utvidelsene dine på hovedmenyen i Chrome</translation>
 <translation id="4359809482106103048">Kort fortalt om sikkerhet</translation>
+<translation id="4374192654218566997">\n\nDu kan også fjerne disse dataene fra denne enheten:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="4384468725000734951">Bruker Sogou til å søke</translation>
@@ -1835,6 +1838,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8223642481677794647">Feedkortmeny</translation>
 <translation id="82296173028782770">Endre søket: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Legg til i bokmerker</translation>
+<translation id="8236917170563564587">Del denne fanen i stedet</translation>
 <translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
 <translation id="8244387390464017490">Tilpass Ny fane-siden</translation>
 <translation id="8244444485683708655">Legg ved et bilde fra kameraet</translation>

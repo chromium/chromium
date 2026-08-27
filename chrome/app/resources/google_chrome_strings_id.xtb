@@ -455,7 +455,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5649156266046089790">Dengan profil Chrome, Anda dapat memisahkan semua data Chrome Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="5655063652337498476">Temukan produk dengan kamera Anda, pantau penurunan harga, dan lainnya kapan saja di mana saja dengan Chrome di iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, sehingga Chrome memblokirnya.</translation>
-<translation id="566040795510471729">S&amp;esuaikan Chrome Anda</translation>
 <translation id="566568153320186256">Chrome akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Energi<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Hapus data Chrome di akun Anda</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini}=1{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
@@ -682,7 +681,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7777080907402804672">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="778331955594035129">Chrome memerlukan izin akses lokasi untuk situs ini</translation>
 <translation id="7787950393032327779">Profil tersebut mungkin digunakan untuk proses Google Chrome lainnya (<ph name="PROCESS_ID" />) di komputer lain (<ph name="HOST_NAME" />). Chrome telah mengunci profil tersebut agar tidak rusak. Jika yakin tidak ada proses lain yang menggunakan profil ini, Anda dapat membuka profil dan meluncurkan Chrome kembali.</translation>
-<translation id="7792336732117553384">&amp;Kelola Profil Chrome</translation>
 <translation id="7801699035218095297">Google Chrome mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="7804364787702057554">Akun Anda di Chrome</translation>
 <translation id="7804947029129221742">Mesin telusur Anda diubah dari luar Chrome. Untuk melindungi Anda, Chrome meresetnya ke setelan default aslinya. <ph name="LEARN_MORE_LINK" /></translation>
@@ -752,6 +750,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="8370748943308169953">Kode QR untuk login ke Chrome sebagai <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Aktifkan/nonaktifkan Gemini di Chrome Canary</translation>
+<translation id="8380754585531979907">Gunakan keyboard untuk beralih antara Gemini di Chrome dan tab yang terbuka.</translation>
 <translation id="8387459386171870978">Terus gunakan Chrome</translation>
 <translation id="8394720698884623075">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome</translation>
 <translation id="8403038600646341038">Logo Chrome di dalam layar komputer.</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Capture d'écran</translation>
 <translation id="1108214977745280468">Afficher les statistiques au sujet de la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
+<translation id="1109663842695712985">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, les données non enregistrées seront supprimées.</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, onglet en mode Incrustation d'image</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
@@ -157,6 +158,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1598163867407640634">Utiliser <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, onglet épinglé avec enregistrement en cours</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, onglet avec partage en cours</translation>
+<translation id="1601378265092360672">Les données de navigation comprennent votre historique de navigation, les témoins et autres données relatives aux sites, les images et fichiers mis en cache, ainsi que les onglets ouverts</translation>
 <translation id="160275202205869636">Activée : utilisez et enregistrez des données dans votre compte Google. Désactivée : les données sont enregistrées uniquement sur cet appareil.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -810,6 +812,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4285846616383034558">Témoins, cache et autres données relatives aux sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage d'écran dans les paramètres Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">votre téléphone</translation>
+<translation id="4295640788982898778">Vos extensions sont enregistrées dans votre compte Google, mais les données qu'elles ont enregistrées uniquement sur cet appareil pourraient être supprimées</translation>
 <translation id="4296252229500326964">Nouvel onglet navig. privée</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, onglet de navigation privée multiséléctionné</translation>
 <translation id="4298388696830689168">Sites associés</translation>
@@ -833,6 +836,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4358630185957185589">Ouvrir Lentille Google</translation>
 <translation id="435863252455918214">Gérez vos extensions dans le menu principal de Chrome</translation>
 <translation id="4359809482106103048">Aperçu de la sécurité</translation>
+<translation id="4374192654218566997">\n\nVous pouvez également retirer ces données de cet appareil :</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4380055775103003110">Si ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
@@ -977,6 +981,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4913169188695071480">Arrêter l'actualisation</translation>
 <translation id="4921224083091001889">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Le téléchargement n'est pas recommandé par votre organisation</translation>
+<translation id="4924398189611529766">Lorsque vous utilisez le mode Navigation privée, les autres utilisateurs de cet appareil ne verront pas votre activité. Vous pourrez donc naviguer de manière plus privée. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Vous pouvez enregistrer des images et des fichiers pour les afficher hors ligne ou les partager dans d'autres applications</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}one{# favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}other{# favoris et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
@@ -1541,6 +1546,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7117485132243600300">Gérez le contenu que vous suivez ainsi que les recherches et les sujets suggérés</translation>
 <translation id="7119984597597798764">Fermer <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Connexion à Chrome</translation>
+<translation id="7130633106249192408">Supprimer les données de navigation de cet appareil</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour # site}other{Autorisations examinées pour # sites}}</translation>
 <translation id="7138678301420049075">Autre</translation>
@@ -1833,6 +1839,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
 <translation id="82296173028782770">Modifier la requête de recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
+<translation id="8236917170563564587">Partager cet onglet à la place</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
 <translation id="8244387390464017490">Personn. page Nouvel onglet</translation>
 <translation id="8244444485683708655">Joindre une photo de l'appareil photo</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1108214977745280468">Ver estadísticas de la pág.</translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
+<translation id="1109663842695712985">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google. Espera unos minutos antes de salir. Si sales ahora, se borrarán los datos no guardados.</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
@@ -157,6 +158,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, pestaña con grabación fijada</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestaña con uso compartido</translation>
+<translation id="1601378265092360672">Los datos de navegación incluyen tu historial de navegación, pestañas abiertas, cookies y otros datos de sitios, e imágenes y archivos almacenados en caché</translation>
 <translation id="160275202205869636">Si activas esta opción, los datos se usan y guardan en tu Cuenta de Google. Si desactivas esta opción, los datos se guardan solo en este dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -810,6 +812,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en la configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4293154608148215505">tu teléfono</translation>
+<translation id="4295640788982898778">Tus extensiones se guardan en tu Cuenta de Google, pero es posible que se borren los datos que solo se guardaron en este dispositivo</translation>
 <translation id="4296252229500326964">Nueva pestaña de incógnito</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, pestaña de incógnito con selección múltiple</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
@@ -833,6 +836,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4358630185957185589">Abrir Google Lens</translation>
 <translation id="435863252455918214">Administra tus extensiones en el menú principal de Chrome</translation>
 <translation id="4359809482106103048">Seguridad de un vistazo</translation>
+<translation id="4374192654218566997">\n\nTambién puedes quitar estos datos de este dispositivo:</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Si el problema persiste, prueba otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Se usa Sogou para la búsqueda</translation>
@@ -1541,6 +1545,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7117485132243600300">Administra el contenido que sigues y los temas y las búsquedas sugeridos</translation>
 <translation id="7119984597597798764">Cerrar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Acceder a Chrome</translation>
+<translation id="7130633106249192408">Borrar datos de navegación de este dispositivo</translation>
 <translation id="7136694880210472378">Configurar como predeterminado</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Se revisaron los permisos de 1 sitio}other{Se revisaron los permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Otros</translation>
@@ -1833,6 +1838,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8223642481677794647">Menú de la tarjeta de feed</translation>
 <translation id="82296173028782770">Editar la búsqueda: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Agregar a favoritos</translation>
+<translation id="8236917170563564587">Compartir esta pestaña</translation>
 <translation id="8243077599929149377">Agrega tu nombre de usuario</translation>
 <translation id="8244387390464017490">Personalizar nueva pestaña</translation>
 <translation id="8244444485683708655">Adjuntar imagen de la cámara</translation>

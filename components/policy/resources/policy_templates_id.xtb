@@ -1520,24 +1520,6 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 <translation id="1962273523772270623">Mengizinkan pengumpulan log aktivitas WebRTC dari layanan Google</translation>
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
 <translation id="1963986268950915756">Aktifkan Penginstalan Aplikasi Web Pengguna dari Browser</translation>
-<translation id="1964128875283181035">Daftar Pola URL. Permintaan yang dimulai dari situs yang disajikan dengan pencocokan origin tidak tunduk pada pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke perangkat lokal dan endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="1964191545419036999">Galeri (didukung sejak versi 117)</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
 <translation id="1964985353230379667">Menentukan konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
@@ -4394,7 +4376,6 @@ Nilai defaultnya di desktop adalah: opasitas isian 4, opasitas garis tepi 6, dan
           </translation>
 <translation id="3677660004554019617">Jangan izinkan Latar Belakang VC AI Generatif</translation>
 <translation id="3678069907945250643">Izinkan akses Google Foto dari aplikasi personalisasi</translation>
-<translation id="3682200407044593844">Mengganti pemetaan ruang alamat IP di perangkat</translation>
 <translation id="3685979383016152590">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> yang akan tersedia bagi pengguna.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (nilai 0) menggunakan <ph name="PRINTERS_BULK_BLOCKLIST" /> untuk membatasi akses ke printer yang ditentukan
@@ -4799,23 +4780,6 @@ Di platform desktop, download model juga dapat dinonaktifkan dengan menyetel <ph
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin hanya diminta saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3947897854999940598">Menentukan template URI resolver DNS-over-HTTPS yang diinginkan dengan informasi identitas</translation>
-<translation id="394949637082417941">Kebijakan ini dapat digunakan untuk memperlakukan rentang alamat IP internal tertentu sebagai "publik" di seluruh perangkat sehingga tidak melalui pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />. Sebaliknya, kebijakan ini dapat digunakan untuk memperlakukan rentang alamat IP publik tertentu yang mungkin digunakan secara internal sebagai "lokal" sehingga dilindungi dengan pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Penggantian ruang alamat IP memiliki dua bentuk:
-
-[cidr]=[public|local|loopback]
-
-dengan [cidr] adalah rentang alamat IP dalam notasi CIDR (lihat bagian 3.1 dari https://tools.ietf.org/html/rfc4632 untuk IPv4 dan bagian 2.3 dari https://tools.ietf.org/html/rfc4291 untuk IPv6). Alamat IPv6 harus ditentukan dalam format yang aman untuk URL (dalam tanda kurung). Penggantian CIDR berlaku untuk semua port.
-
-atau
-
-[ip-address]:[port]=[public|local|loopback]
-
-Untuk mengetahui informasi selengkapnya tentang <ph name="LOCAL_NETWORK_ACCESS" />, kunjungi https://wicg.github.io/local-network-access/ dan https://developer.chrome.com/blog/local-network-access.
-
-Penggantian dari kebijakan LocalNetworkAccessIpAddressSpaceOverrides lebih diprioritaskan daripada penggantian yang ditetapkan oleh kebijakan ini.
-
-Penggantian yang berasal dari switch command line --ip-address-space-overrides lebih diprioritaskan daripada penggantian yang ditetapkan oleh kebijakan.</translation>
 <translation id="3949642828552641632">Izinkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="GOOGLE_DRIVE_NAME" /> dan <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
@@ -5265,24 +5229,6 @@ Domain dengan format yang salah akan diabaikan.</translation>
 <translation id="4238777612788632629">Meluncurkan kembali dengan cepat jika sudah usang</translation>
 <translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna menginstal aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
 <translation id="4239949495354048254">Mengizinkan upload file ke Gemini di Chrome.</translation>
-<translation id="424049794524032498">Daftar Pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin akan diblokir untuk mengajukan permintaan <ph name="LOCAL_NETWORK_ACCESS" /> di semua sesi di perangkat.
-
-Untuk origin yang tidak tercakup oleh pola yang ditentukan di sini, konfigurasi sesi atau profil akan berlaku.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke perangkat lokal dan endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="4242583077375244471">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" />
 akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan
 dengan Chrome Root Store sebagai sumber tepercaya publik.
@@ -5477,6 +5423,20 @@ Jika kebijakan ini disetel ke aktif, sintaksis lama yang sudah tidak digunakan l
 Jika kebijakan ini disetel ke nonaktif, sintaksis lama yang sudah tidak digunakan lagi akan dinonaktifkan.
 
 Jika kebijakan ini tidak disetel, sintaksis lama yang sudah tidak digunakan lagi akan dinonaktifkan.</translation>
+<translation id="4400152722459197056">Daftar pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin ke endpoint jaringan lokal tidak tunduk pada pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
+
+Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="4401196752827224189">Mulai M110, WebSQL dalam konteks yang tidak aman akan dihapus. Kebijakan ini akan mengaktifkan kembali API tersebut.
           Jika kebijakan ini disetel ke benar (true), WebSQL dalam konteks yang tidak aman akan tersedia.
           Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.
@@ -7322,23 +7282,6 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="5457065417344056871">Mengaktifkan mode tamu dalam browser</translation>
-<translation id="5457999916455787365">Kebijakan ini dapat digunakan untuk memperlakukan rentang alamat IP internal tertentu sebagai "publik" sehingga tidak melalui pemeriksaan <ph name="LOCAL_NETWORK_ACCES" />. Sebaliknya, kebijakan ini dapat digunakan untuk memperlakukan rentang alamat IP publik tertentu yang mungkin digunakan secara internal sebagai "lokal" sehingga dilindungi dengan pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Penggantian ruang alamat IP memiliki dua bentuk:
-
-[cidr]=[public|local|loopback]
-
-dengan [cidr] adalah rentang alamat IP dalam notasi CIDR (lihat bagian 3.1 dari https://tools.ietf.org/html/rfc4632 untuk IPv4 dan bagian 2.3 dari https://tools.ietf.org/html/rfc4291 untuk IPv6). Alamat IPv6 harus ditentukan dalam format yang aman untuk URL (dalam tanda kurung). Penggantian CIDR berlaku untuk semua port.
-
-atau
-
-[ip-address]:[port]=[public|local|loopback]
-
-Untuk mengetahui informasi selengkapnya tentang <ph name="LOCAL_NETWORK_ACCESS" />, kunjungi https://wicg.github.io/local-network-access/ dan https://developer.chrome.com/blog/local-network-access.
-
-Penggantian dari kebijakan ini lebih diprioritaskan daripada penggantian yang ditetapkan oleh DeviceLocalNetworkAccessIpAddressSpaceOverrides.
-
-Penggantian yang berasal dari switch command line --ip-address-space-overrides lebih diprioritaskan daripada penggantian yang ditetapkan oleh kebijakan.</translation>
 <translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5462898272514237681">Mengontrol akses <ph name="PRODUCT_OS_NAME" /> ke layanan lokasi Google</translation>
@@ -7424,22 +7367,6 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu SharePoint dan One
 <translation id="5519619299971727565">Nonaktifkan pelaporan penggunaan aplikasi Linux</translation>
 <translation id="5521035900165046997">Aktifkan pelaporan info Bluetooth perangkat</translation>
 <translation id="5521875416764302911">Cegah pengguna login ke <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">Daftar Pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin ke endpoint jaringan lokal tidak tunduk pada pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="552607466422196365">Nonaktifkan <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Izinkan kueri ke Server Quirk dan file konfigurasi khusus hardware yang mungkin didownload</translation>
 <translation id="5526701598901867718">Semua (tidak aman)</translation>
@@ -8119,6 +8046,23 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Pengisian daya baterai adaptif berdasarkan pola penggunaan baterai.</translation>
+<translation id="5913506885872855604">Kebijakan ini dapat digunakan untuk memperlakukan rentang alamat internal tertentu sebagai "publik" sehingga tidak melalui pemeriksaan <ph name="LOCAL_NETWORK_ACCES" />. Sebaliknya, kebijakan ini dapat digunakan untuk memperlakukan rentang alamat publik tertentu yang mungkin digunakan secara internal sebagai "lokal" sehingga dilindungi dengan pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Penggantian ruang alamat IP memiliki dua bentuk:
+
+[cidr]=[public|local|loopback]
+
+dengan [cidr] adalah rentang alamat IP dalam notasi CIDR (lihat bagian 3.1 dari https://tools.ietf.org/html/rfc4632 untuk IPv4 dan bagian 2.3 dari https://tools.ietf.org/html/rfc4291 untuk IPv6). Alamat IPv6 harus ditentukan dalam format yang aman untuk URL (dalam tanda kurung). Penggantian CIDR berlaku untuk semua port.
+
+atau
+
+[ip-address]:[port]=[public|local|loopback]
+
+Untuk mengetahui informasi selengkapnya tentang <ph name="LOCAL_NETWORK_ACCESS" />, lihat https://wicg.github.io/local-network-access/ dan https://developer.chrome.com/blog/local-network-access.
+
+Kebijakan ini tidak mendukung pemuatan ulang dinamis.
+
+Penggantian yang berasal dari switch command line --ip-address-space-overrides lebih diprioritaskan daripada penggantian yang ditetapkan oleh kebijakan ini.</translation>
 <translation id="5915023683182228340">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan protokol QUIC di <ph name="PRODUCT_NAME" /> akan diizinkan.
 
       Jika kebijakan disetel ke Nonaktif, penggunaan protokol QUIC tidak akan diizinkan.</translation>
@@ -8292,24 +8236,6 @@ Jika kebijakan ini disetel ke salah (false), atribusi terhadap ekstensi tidak ak
 Jika nilai disetel ke benar (true) atau tidak disetel, pengajar dapat menggunakan daftar nama siswa di kelas Google Classroom.
 
 Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</translation>
-<translation id="606337187257433827">Daftar Pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin akan diblokir untuk mengajukan permintaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke perangkat lokal dan endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6066761914755798079">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> akan menentukan URL mesin telusur untuk menyediakan saran penelusuran. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8781,22 +8707,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 
       Catatan: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
 <translation id="6315039134652691025">Pengguna tidak dapat menambahkan data penjelajahan yang sudah ada ke profil terkelola mereka</translation>
-<translation id="6316247387848694915">Daftar Pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin ke endpoint jaringan lokal akan diblokir untuk mengajukan permintaan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="6316678265585263617">Izinkan <ph name="PRODUCT_NAME" /> menentukan pendekatan mana yang akan digunakan</translation>
 <translation id="6316885783540658874">Kebijakan ini mengontrol apakah implementasi <ph name="AES_KL_NAME" /> akan diaktifkan untuk enkripsi penyimpanan pengguna bagi halaman beranda pengguna <ph name="DM_CRYPT" /> di ChromeOS, jika didukung.
 
@@ -10064,7 +9974,6 @@ pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="7030205756530739128">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu mulai pengisian daya baterai, berdasarkan persentase pengisian daya baterai. Nilai harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai standar.</translation>
-<translation id="7030213287413687536">Mengizinkan situs membuat permintaan jaringan ke perangkat lokal dan endpoint jaringan lokal di perangkat</translation>
 <translation id="7030407698292813622">Mengizinkan kueri DNS untuk jenis data DNS tambahan</translation>
 <translation id="7030632236140191991">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat data dimasukkan ke Chrome dari papan klip atau dengan menarik lalu melepas konten web.
 
@@ -11061,6 +10970,20 @@ Kebijakan ini terbatas untuk 1.000 entri.</translation>
           Jika kebijakan ini disetel ke salah (false) atau tidak disetel, fitur kirim otomatis PIN tidak akan tersedia untuk pengguna di layar kunci dan layar login.
 
           Jika kebijakan ini disetel, pengguna tidak akan memiliki opsi untuk mengaktifkan fitur tersebut.</translation>
+<translation id="7609566862616914296">Daftar pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin ke endpoint jaringan lokal akan diblokir untuk mengajukan permintaan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Untuk origin yang tidak dicakup oleh pola yang ditentukan di sini, konfigurasi pribadi pengguna akan berlaku.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
+
+Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
+
+  - LocalNetworkBlockedForUrls
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="7612030083959326401">Mengonfigurasi daftar domain yang akan menonaktifkan <ph name="PASSWORD_MANAGER_NAME" /> (Simpan dan Isi Otomatis)</translation>
 <translation id="7612059745454194563">Jangan izinkan promo Ekstensi Penyedia Kredensial ditampilkan</translation>
 <translation id="7612157962821894603">Tanda di seluruh sistem yang akan diterapkan pada waktu mulai <ph name="PRODUCT_NAME" /></translation>
@@ -11302,22 +11225,6 @@ Catatan: Kebijakan ini hanya berlaku untuk platform yang mendukung ekstensi.</tr
       Kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> lebih diutamakan daripada kebijakan ini dan dapat mengaktifkan kembali mode Samaran untuk URL tertentu. Jika mode Samaran dinonaktifkan oleh kebijakan ini saat daftar yang diizinkan diberikan, mode Samaran hanya tersedia untuk URL yang cocok dengan daftar yang diizinkan, sedangkan semua halaman lainnya diblokir.
 
       Catatan: Di iOS, jika kebijakan diubah selama sesi, perubahan hanya akan diterapkan saat peluncuran ulang.</translation>
-<translation id="7753487237310360952">Daftar Pola URL. Permintaan jaringan yang dimulai dari situs yang disajikan dengan pencocokan origin tidak tunduk pada pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" /> di semua sesi di perangkat.
-
-Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, kunjungi https://chromeenterprise.google/policies/url-patterns/.
-
-Kunjungi https://wicg.github.io/local-network-access/ untuk mengetahui batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke perangkat lokal dan endpoint jaringan lokal. Jika origin cocok dengan lebih dari satu kebijakan berikut, kebijakan akan diprioritaskan dalam urutan berikut:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LoopbackNetworkBlockedForUrls
-  - LoopbackNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls</translation>
 <translation id="7753678409577376761">Nonaktifkan entrypoint toolbar fitur eksperimental browser</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
 <translation id="7754893969683595513">Jika kebijakan disetel, periode dalam milidetik akan ditentukan guna mengkueri layanan pengelolaan perangkat untuk informasi kebijakan pengguna. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
@@ -13145,7 +13052,6 @@ Kebijakan ini hanya mengontrol <ph name="ARC_VM" /> di <ph name="PRODUCT_OS_FLEX
       Jika kebijakan ditetapkan ke false atau tidak ditetapkan, status tampilan dan grafis
       tidak akan dilaporkan. Jika ditetapkan ke true, status tampilan dan grafis
       akan dilaporkan.</translation>
-<translation id="8912595396523313912">Memblokir situs agar tidak membuat permintaan jaringan ke perangkat lokal dan endpoint jaringan lokal di perangkat</translation>
 <translation id="891435090623616439">dienkode sebagai string JSON, untuk detailnya lihat <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">Jangan hapus window.name saat navigasi berada di tingkat atas, lintas situs, dan mengganti BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Izinkan pengguna mengelola sertifikat CA yang terinstal.</translation>
@@ -13417,19 +13323,6 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
       Jika disetel ke benar (true), peristiwa login/logout di perangkat akan dilaporkan.</translation>
-<translation id="9087577919890548366">Jika kebijakan ini disetel ke Aktif, permintaan <ph name="LOCAL_NETWORK_ACCESS" />
-hanya akan menampilkan peringatan di <ph name="CHROME_DEVTOOLS_NAME" /> karena pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" /> gagal.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, permintaan <ph name="LOCAL_NETWORK_ACCESS" /> akan menggunakan
-penanganan default untuk permintaan ini.
-
-Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Kebijakan perusahaan ini bersifat sementara, dan akan dihapus setelah M156.
-
-Dalam jangka panjang, kebijakan <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
-dapat digunakan untuk memasukkan pola URL ke daftar yang diizinkan yang harus otomatis diberikan
-izin <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>

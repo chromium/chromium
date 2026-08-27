@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Snímky obrazovky</translation>
 <translation id="1108214977745280468">Zobrazit statistiky stránky</translation>
 <translation id="1108938384783527433">Synchronizace historie</translation>
+<translation id="1109663842695712985">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, neuložená data se smažou.</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, karta s obrazem v obraze</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
@@ -157,6 +158,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1598163867407640634">Používejte web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, připnutá nahrávající karta</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, sdílející karta</translation>
+<translation id="1601378265092360672">Údaje o prohlížení zahrnují historii prohlížení, soubory cookie a další data webů, obrázky a soubory v mezipaměti a otevřené karty</translation>
 <translation id="160275202205869636">Když je tato možnost zapnutá, používají a ukládají se data ve vašem účtu Google. Když je vypnutá, ukládají se data pouze do tohoto zařízení.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranit jednu vybranou položku}few{Odstranit # vybrané položky}many{Odstranit # vybrané položky}other{Odstranit # vybraných položek}}</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -810,6 +812,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4285846616383034558">Soubory cookie, mezipaměť a další data webů</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapněte v nastavení systému Android zámek obrazovky<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">váš telefon</translation>
+<translation id="4295640788982898778">Vaše rozšíření jsou uložena ve vašem účtu Google, ale veškerá jejich data uložená na tomto zařízení, mohou být smazána.</translation>
 <translation id="4296252229500326964">Nová anonymní karta</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, jedna z několika vybraných anonymních karet</translation>
 <translation id="4298388696830689168">Propojené weby</translation>
@@ -833,6 +836,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4358630185957185589">Otevřít Google Lens</translation>
 <translation id="435863252455918214">Spravovat rozšíření v hlavní nabídce Chromu</translation>
 <translation id="4359809482106103048">Bezpečnost na první pohled</translation>
+<translation id="4374192654218566997">\n\nZ tohoto zařízení můžete odstranit také tato data:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Pokud tento problém přetrvává, můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="4384468725000734951">K vyhledávání se používá služba Sogou</translation>
@@ -1541,6 +1545,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7117485132243600300">Spravujte obsah, který sledujete, a navrhovaná témata a vyhledávání</translation>
 <translation id="7119984597597798764">Zavřít <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Přihlásit se do Chromu</translation>
+<translation id="7130633106249192408">Vymazat z tohoto zařízení údaje o prohlížení</translation>
 <translation id="7136694880210472378">Nastavit jako výchozí</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
@@ -1833,6 +1838,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
 <translation id="82296173028782770">Upravit vyhledávací dotaz <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Přidat do záložek</translation>
+<translation id="8236917170563564587">Sdílet namísto toho tuto kartu</translation>
 <translation id="8243077599929149377">Přidejte své uživatelské jméno</translation>
 <translation id="8244387390464017490">Upravit stránku nová karta</translation>
 <translation id="8244444485683708655">Připojit snímek z fotoaparátu</translation>

@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
 <translation id="1393071644879491291">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">여기에 추가한 사이트는 탭이 열려 있어도 대답의 참조로 사용되지 않습니다. 추가한 사이트가 현재 대화목록에서 사용 중인 경우 대화목록에서 해당 사이트를 참조하지 않게 되는 데 최대 30분이 걸릴 수 있습니다.</translation>
-<translation id="1402151528875251561">측면 패널에 방문 기록 표시</translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1406370515365284486">결제 수단은 그대로 저장됩니다.</translation>
 <translation id="1406500794671479665">확인 중...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2679216653373462289">움직임 감지 센서 및 조도 센서 사용</translation>
 <translation id="2679659833697380">정보가 기기에 저장됩니다.</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" />의 Chrome으로 전송되었습니다.</translation>
 <translation id="2683195745483370038">다른 검색 결과가 표시됨</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
@@ -1615,7 +1613,6 @@
 <translation id="3752181611900535304">계정에 주소를 저장하시겠습니까?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
-<translation id="3754664361823138853">방문 기록 페이지 열기(&amp;O)</translation>
 <translation id="3757511311058373406">자동 탐색 필터</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
 <translation id="3760561303380396507">CVC 대신 Windows Hello를 사용하시겠습니까?</translation>
@@ -2059,7 +2056,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하여 Chrome의 가장 강력한 보안을 활용하세요.</translation>
 <translation id="4475299370877036544">이 작업은 조직의 정책을 위반할 수 있습니다.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
 <translation id="4480760608050410381">MP4 동영상</translation>
 <translation id="4489023393592172404">봉투 Kaku 4</translation>
@@ -3529,7 +3525,6 @@
 <translation id="6998512609912910179">양식을 더 빠르게 작성하세요</translation>
 <translation id="7000094925113284872">별의 수명 주기를 상세하게 보여 줘</translation>
 <translation id="7002897669829306463">집 주소, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">최근 탭</translation>
 <translation id="7004562620237466965">해독 전용</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
 <translation id="7009364359744329733">현재 이 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
@@ -4353,6 +4348,7 @@
 <translation id="8410956920192583322">월별 또는 4회 할부</translation>
 <translation id="8412145213513410671">비정상 종료(<ph name="CRASH_COUNT" />회)</translation>
 <translation id="8412392972487953978">동일한 암호를 두 번 입력해야 합니다.</translation>
+<translation id="8413126021676339697">방문 기록 전체 보기</translation>
 <translation id="8414322570408428950">확장 프로그램 이벤트 발생</translation>
 <translation id="8416694386774425977">네트워크 설정이 잘못되어 가져올 수 없습니다.
 추가 세부정보:
@@ -4659,7 +4655,6 @@
 <translation id="8988966534058783995">움직임 감지 센서를 사용하시겠습니까?</translation>
 <translation id="899688752321268742">사용자가 현재 기기를 사용 중인지 <ph name="URL" />에서 알고자 합니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
-<translation id="9000145382638074673">내 기기</translation>
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>
 <translation id="9001963517402879850">점프하세요</translation>
 <translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>

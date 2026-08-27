@@ -455,7 +455,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5649156266046089790">Els perfils de Chrome et permeten separar tot el teu contingut de Chrome. Crea perfils per a amics i familiars, o separa la feina de la diversió.</translation>
 <translation id="5655063652337498476">Mentre et desplaces, descobreix productes amb la càmera, fes un seguiment de les baixades de preu i més amb Chrome a iOS.</translation>
 <translation id="565744775970812598">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
-<translation id="566040795510471729">P&amp;ersonalitza Chrome</translation>
 <translation id="566568153320186256">Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
 <translation id="567202749201779594">Esborra les dades de Chrome del teu compte</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització}=1{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
@@ -682,7 +681,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7777080907402804672">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="778331955594035129">Chrome necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="7787950393032327779">Sembla que un altre procés de Google Chrome (<ph name="PROCESS_ID" />) està fent servir el perfil en un altre ordinador (<ph name="HOST_NAME" />). Chrome ha bloquejat el perfil perquè no es malmeti. Si esteu segur que no hi ha cap altre procés que utilitzi el perfil, podeu desbloquejar-lo i tornar a iniciar Chrome.</translation>
-<translation id="7792336732117553384">&amp;Gestiona els perfils de Chrome</translation>
 <translation id="7801699035218095297">Google Chrome està provant de copiar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="7804364787702057554">El teu compte a Chrome</translation>
 <translation id="7804947029129221742">El motor de cerca s'ha canviat des de fora de Chrome. Per protegir-te, Chrome l'ha restablert a la configuració predeterminada original. <ph name="LEARN_MORE_LINK" /></translation>
@@ -753,6 +751,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8370748943308169953">Codi QR per iniciar la sessió a Chrome com a <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Commuta Gemini a Chrome Canary</translation>
+<translation id="8380754585531979907">Utilitza el teclat per navegar entre Gemini a Chrome i la pestanya oberta.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
 <translation id="8394720698884623075">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome</translation>
 <translation id="8403038600646341038">Logotip de Chrome a l'interior d'una pantalla d'ordinador.</translation>

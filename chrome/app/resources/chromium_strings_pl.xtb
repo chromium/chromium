@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1388276868779258475">Używaj aplikacji Chromium, aby przeglądać internet, gdziekolwiek jesteś</translation>
-<translation id="1397530502368084401">Zarządzaj profila&amp;mi Chromium</translation>
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1465192221147974788">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
@@ -266,7 +265,6 @@
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="390528597099634151">W tym profilu Chromium jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chromium może utworzyć dla Ciebie nowy profil.</translation>
 <translation id="3909353120217047026">To rozszerzenie narusza zasady Chrome Web Store i może być niebezpieczne. Usuń je z Chromium, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też Twoich danych osobowych.</translation>
-<translation id="3937491663738985329">Spersonaliz&amp;uj Chromium</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
 <translation id="3945058413678539331">Chromium próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="3954172517175569325">Hasła, formy płatności i adresy zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chromium, zaloguj się ponownie.</translation>
@@ -766,6 +764,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8980139959902937527">Zabierz ze sobą funkcje bezpieczeństwa Google dzięki aplikacji Chromium na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Nie można uruchomić Chromium – coś poszło nie tak podczas otwierania Twojego profilu. Spróbuj jeszcze raz uruchomić Chromium.</translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>
+<translation id="8993855408334954620">Używaj klawiatury, aby przechodzić między Gemini w Chromium a otwartą kartą.</translation>
 <translation id="9018218886431812662">Instalacja ukończona</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>

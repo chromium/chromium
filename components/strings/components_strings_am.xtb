@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ምንም ውሂብ አልላከም።</translation>
 <translation id="1393071644879491291">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃሎች፣ ስልክ ወይም የክሬዲት ካርድ ቁጥሮች ያሉ ነገሮችን እንዲገልፁ ሊያታልሉዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">እዚህ የሚያክሏቸው ጣቢያዎች ትሩ ክፍት ቢሆንም እንኳን ለምላሾች ዋቢ አይደረጉም። የሚያክሉት ጣቢያ በአሁኑ ጊዜ ተከታታይ ውስጥ ጥቅም ላይ እየዋለ ከሆነ ተከታታዩ ዋቢ ማድረጉን ለማቆም እስከ 30 ደቂቃዎች ሊወስድ ይችላል።</translation>
-<translation id="1402151528875251561">ታሪክን በጎን ፓነል ውስጥ አሳይ</translation>
 <translation id="1405567553485452995">ፈካ ያለ አረንጓዴ</translation>
 <translation id="1406370515365284486">የመክፈያ ዘዴዎችዎ አሁንም ይቀመጣሉ</translation>
 <translation id="1406500794671479665">በማረጋገጥ ላይ...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2679216653373462289">የእርስዎን የእንቅስቃሴ እና የብርሃን ዳሳሾች ይጠቀሙ</translation>
 <translation id="2679659833697380">መረጃዎ በመሣሪያዎ ላይ ተቀምጧል</translation>
-<translation id="2680837394649649718">በእርስዎ <ph name="DEVICE_NAME" /> ላይ ወደ Chrome ተልኳል።</translation>
 <translation id="2683195745483370038">ሌሎች ውጤቶች ተገኝተዋል</translation>
 <translation id="2686919536310834199">ለእንድጽፍ እርዳኝ ግብረመልስ ይላኩ።</translation>
 <translation id="2687555958734450033">ምርጥ መገጣጠም</translation>
@@ -1614,7 +1612,6 @@
 <translation id="3752181611900535304">አድራሻ በመለያ ውስጥ ይቀመጥ?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ስላልተቀናበረ ችላ ተብሏል።</translation>
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
-<translation id="3754664361823138853">&amp;የታሪክ ገጽን ክፈት</translation>
 <translation id="3757511311058373406">ራስ-ሰር ማሰስ ማጣሪያዎች</translation>
 <translation id="3759461132968374835">በቅርብ ጊዜ ሪፖርት የተደረጉ ብልሽቶች የለዎትም።  የብልሽት ሪፖርት ማድረግ ተሰናክሎ ሳለ የተከሰቱ ብልሽቶች እዚህ አይታዩም።</translation>
 <translation id="3760561303380396507">ከCVC ይልቅ Windows Helloን ይጠቀሙ?</translation>
@@ -2058,7 +2055,6 @@
 <translation id="4473643328224505070">የChrome ከፍተኛ ደረጃ ጥበቃን ለማግኘት <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />የላቀ ጥበቃን ያብሩ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">ይህ ድርጊት የድርጅታችሁን መመሪያዎች የሚጥስ ሊሆን ይችላል</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />። <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">ይህ ቅጽ ደህንነቱ የተጠበቀ አይደለም። ራስ-ሙላ ጠፍቷል።</translation>
 <translation id="4477350412780666475">ቀጣይ ትራክ</translation>
 <translation id="4480760608050410381">MP4 ቪድዮ</translation>
 <translation id="4489023393592172404">ካኩ 4 ፖስታ</translation>
@@ -3528,7 +3524,6 @@
 <translation id="6998512609912910179">ቅጾችን በበለጠ ፍጥነት ይሙሉ</translation>
 <translation id="7000094925113284872">የኮከብ የሕይወት ዑደትን ዘርዝር</translation>
 <translation id="7002897669829306463">የቤት አድራሻ፣ <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">የቅርብ ጊዜ ትሮች</translation>
 <translation id="7004562620237466965">ለመፍታት ብቻ</translation>
 <translation id="7006930604109697472">ለማንኛውም ላክ</translation>
 <translation id="7009364359744329733">ይህ ካርድ አሁን አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
@@ -4353,6 +4348,7 @@
 <translation id="8410956920192583322">ወርሃዊ ወይም 4 ተከታታዮች</translation>
 <translation id="8412145213513410671">ብልሽቶች (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ተመሳሳዩ የይለፍ ሐረጉን ሁለት ጊዜ ማስገባት አለብዎት።</translation>
+<translation id="8413126021676339697">ሙሉ ታሪክ አሳይ</translation>
 <translation id="8414322570408428950">የቅጥያ ክስተት ተከስቷል</translation>
 <translation id="8416694386774425977">የአውታረ መረቡ ውቅረት ልክ ያልሆነ እና ሊመጣ የማይችል ነው።
 ተጨማሪ ዝርዝሮች፦
@@ -4660,7 +4656,6 @@
 <translation id="8988966534058783995">የእንቅስቃሴ ዳሳሾችን ይጠቀሙ?</translation>
 <translation id="899688752321268742">እርስዎ ይህን መሣሪያ መቼ በንቃት እየተጠቀሙ እንደሆነ <ph name="URL" /> ማወቅ ይፈልጋል</translation>
 <translation id="8997023839087525404">አገልጋዩ የእውቅና ማረጋገጫ ግልጽነት መመሪያውን በመጠቀም በይፋ ያልተገለጸ የእውቅና ማረጋገጫን አቅርቧል። ይህ ለአንዳንድ የእውቅና ማረጋገጫዎች ሊታመኑ የሚችሉ መሆናቸውን ለማረጋገጥ እና ከአጥቂዎች ጥበቃ ለማድረግ እንዲቻል አስፈላጊ ነው።</translation>
-<translation id="9000145382638074673">የእርስዎ መሣሪያዎች</translation>
 <translation id="9001074447101275817">ተኪ <ph name="DOMAIN" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
 <translation id="9001963517402879850">ዝለል!</translation>
 <translation id="9003263770394939629">በGemini የተጠቆመ። በቅንብሮች ውስጥ የተሻሻለ ራስ-ሙላን ያስተዳድሩ።</translation>

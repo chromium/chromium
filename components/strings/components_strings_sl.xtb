@@ -239,7 +239,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="139305205187523129">Spletno mesto <ph name="HOST_NAME" /> ni poslalo nobenih podatkov.</translation>
 <translation id="1393071644879491291">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so gesla, telefonske številke ali številke kreditnih kartic. Chrome močno priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Tukaj dodana spletna mesta ne bodo upoštevana pri odgovorih, tudi če je zavihek odprt. Če se spletno mesto, ki ga dodate, trenutno uporablja v niti, lahko traja do 30 minut, da se nit neha sklicevati nanj.</translation>
-<translation id="1402151528875251561">Prikaži zgodovino v stranskem podoknu</translation>
 <translation id="1405567553485452995">Svetlo zelena</translation>
 <translation id="1406370515365284486">Plačilna sredstva bodo še vedno shranjena</translation>
 <translation id="1406500794671479665">Preverjanje ...</translation>
@@ -1008,7 +1007,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2679216653373462289">Uporaba tipal gibanja in svetlobe</translation>
 <translation id="2679659833697380">Vaši podatki so shranjeni v napravi</translation>
-<translation id="2680837394649649718">Poslano v Chrome v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Najdeni so bili drugi rezultati</translation>
 <translation id="2686919536310834199">Pošlji povratne informacije za funkcijo »Pomoč pri pisanju«.</translation>
 <translation id="2687555958734450033">Najustreznejše</translation>
@@ -1615,7 +1613,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3752181611900535304">Želite shraniti naslov v račun?</translation>
 <translation id="3752543821772132562">Prezrto, ker pravilnik <ph name="POLICY_NAME" /> ni nastavljen.</translation>
 <translation id="3754210790023674521">Zapri način slike v sliki</translation>
-<translation id="3754664361823138853">&amp;Odpri stran z zgodovino</translation>
 <translation id="3757511311058373406">Filtri za samodejno brskanje</translation>
 <translation id="3759461132968374835">Nimate nedavnih poročil o zrušitvah. Zrušitve, do katerih je prišlo, ko je bilo poročanje onemogočeno, ne bodo prikazane zukaj.</translation>
 <translation id="3760561303380396507">Želite namesto kode CVC uporabiti Hello?</translation>
@@ -2059,7 +2056,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Vklopite izboljšano zaščito<ph name="END_ENHANCED_PROTECTION_LINK" />, če si želite zagotoviti Chromovo najvišjo raven varnosti</translation>
 <translation id="4475299370877036544">To dejanje morda krši pravilnike vaše organizacije</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ta obrazec ni varen. Samodejno izpolnjevanje je izklopljeno.</translation>
 <translation id="4477350412780666475">Naslednja skladba</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Kuverta Kaku 4</translation>
@@ -3529,7 +3525,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6998512609912910179">Hitrejše izpolnjevanje obrazcev</translation>
 <translation id="7000094925113284872">Opiši življenjski cikel zvezde</translation>
 <translation id="7002897669829306463">Domači naslov, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Nedavni zavihki</translation>
 <translation id="7004562620237466965">Samo dešifiranje</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7009364359744329733">Ta kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
@@ -4354,6 +4349,7 @@ Dodatne podrobnosti:
 <translation id="8410956920192583322">Mesečno ali v 4 obrokih</translation>
 <translation id="8412145213513410671">Zrušitve (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Dvakrat morate vnesti isto geslo.</translation>
+<translation id="8413126021676339697">Prikaži celotno zgodovino</translation>
 <translation id="8414322570408428950">Dogodek razširitve se zgodi</translation>
 <translation id="8416694386774425977">Omrežna konfiguracija je neveljavna in je ni mogoče uvoziti.
 Dodatne podrobnosti:
@@ -4660,7 +4656,6 @@ Dodatne podrobnosti:
 <translation id="8988966534058783995">Uporaba tipal gibanja?</translation>
 <translation id="899688752321268742"><ph name="URL" /> želi vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="8997023839087525404">Strežnik je posredoval potrdilo, ki ni bilo javno razkrito na podlagi pravilnika o preglednosti potrdila. To je obvezno za nekatera potrdila zaradi zagotavljanja, da so zaupanja vredna in ščitijo pred napadalci.</translation>
-<translation id="9000145382638074673">Vaše naprave</translation>
 <translation id="9001074447101275817">Strežnik proxy <ph name="DOMAIN" /> zahteva uporabniško ime in geslo.</translation>
 <translation id="9001963517402879850">Skočite!</translation>
 <translation id="9003263770394939629">Predlagal Gemini. Izboljšano samodejno izpolnjevanje lahko upravljate v nastavitvah.</translation>

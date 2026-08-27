@@ -41,7 +41,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1356661055722410047">Yenilik! Həm ekrandakı mətni, həm də təsvirləri tərcümə edə bilərsiniz</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1388276868779258475">İstənilən vaxt, istənilən yerdə axtarış etmək üçün Chromium tətbiqindən istifadə edin</translation>
-<translation id="1397530502368084401">&amp;Chromium Profillərini idarə edin</translation>
 <translation id="141901961143729572">Fikirlərinizi paylaşın</translation>
 <translation id="1465192221147974788">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chromium üzrə ekranın qeydə alınmasına icazə verin.</translation>
 <translation id="1478370723027452770">Sınaq üçün Chrome ilə bağlı kömək alın</translation>
@@ -269,7 +268,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> artıq bu Chromium profilinə daxil olub. Baxışınızı ayrı saxlamaq üçün Chromium sizin üçün öz profilinizi yarada bilər.</translation>
 <translation id="3909353120217047026">Bu artırma Chrome Veb Dükanı siyasətini pozur və təhlükəli ola bilər. Onu Chromium-dan silin ki, daxil olduğunuz saytlardakı dataya, o cümlədən şəxsi məlumatlara baxa və onları dəyişə bilməsin.</translation>
-<translation id="3937491663738985329">Chromium-u fərdiləşdirin</translation>
 <translation id="3941890832296813527">Quraşdırma xətası: Quraşdırıcı fayl adı yanlışdır və ya dəstəklənmir.</translation>
 <translation id="3945058413678539331">Chromium parolları kopyalamağa çalışır. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="3954172517175569325">Google Hesabınızda saxladığınız parollarınız, ödəniş metodlarınız və ünvanlarınız bu cihazdan silinəcək. Onları Chromium-da yenidən istifadə etmək üçün təkrar daxil olun.</translation>
@@ -767,6 +765,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> cihazındakı Chromium tətbiqi ilə Google-un təhlükəsizlik imkanlarından istənilən vaxt, istənilən yerdə istifadə edin</translation>
 <translation id="8981150672034878610">Profilinizi açarkən xəta baş verdiyinə görə Chromium-u işə salmaq olmur. Chromium-u yenidən başladın.</translation>
 <translation id="8988036198400390003">Chromium profillərini idarə edin</translation>
+<translation id="8993855408334954620">Chromium-da Gemini və açıq tab arasında hərəkət etmək üçün klaviaturadan istifadə edin.</translation>
 <translation id="9018218886431812662">Quraşdırma tamamlandı</translation>
 <translation id="9019929317751753759">Chromium'u təhlükəsiz etmək üçün, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> siyahısında olmayan və xəbəriniz olmadan əlavə edilən artırmanı deaktiv etdik.</translation>
 <translation id="9022552996538154597">Chromium'a daxil olun</translation>

@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1388276868779258475">Usa l'app Chromium per continuare a navigare ovunque ti trovi</translation>
-<translation id="1397530502368084401">&amp;Gestisci i profili Chromium</translation>
 <translation id="141901961143729572">Condividi le tue opinioni</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Per tenere separata la tua navigazione, Chromium può creare per te il tuo profilo personale.</translation>
 <translation id="3909353120217047026">Questa estensione viola le norme del Chrome Web Store e potrebbe non essere sicura. Rimuovila da Chromium in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
-<translation id="3937491663738985329">Personalizza Chromium</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="3945058413678539331">Chromium sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
 <translation id="3954172517175569325">Le password, i metodi di pagamento e gli indirizzi che hai salvato nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chromium, accedi nuovamente.</translation>
@@ -767,6 +765,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8980139959902937527">Porta con te la sicurezza di Google ovunque ti trovi con l'app Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Impossibile avviare Chromium perché si è verificato un problema durante l'apertura del tuo profilo. Prova a riavviare Chromium.</translation>
 <translation id="8988036198400390003">Gestisci i profili Chromium</translation>
+<translation id="8993855408334954620">Usa la tastiera per spostarti tra Gemini in Chromium e la scheda aperta.</translation>
 <translation id="9018218886431812662">Installazione completata</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>

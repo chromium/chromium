@@ -239,7 +239,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
 <translation id="1393071644879491291">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók ráveszik Önt valamilyen szoftver telepítésére, illetve olyan adatok megadására, mint a jelszavai, a telefonszámai vagy a bankkártyaszámai. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1398743098754840707">Az itt hozzáadott webhelyekre nem hivatkozik majd a rendszer a válaszokban, még akkor sem, ha a lap meg van nyitva. Ha egy hozzáadott webhely jelenleg használatban van egy üzenetszálban, akár 30 perc is eltelhet, mire az üzenetszál befejezi a rá való hivatkozást.</translation>
-<translation id="1402151528875251561">Előzmények megjelenítése az oldalsó panelen</translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406370515365284486">A fizetési módjai továbbra is mentve lesznek</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
@@ -1008,7 +1007,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2679216653373462289">Mozgás- és fényérzékelők használata</translation>
 <translation id="2679659833697380">Adatait az eszközre menti a rendszer</translation>
-<translation id="2680837394649649718">Elküldve a Chrome-ba a(z) <ph name="DEVICE_NAME" /> eszközön.</translation>
 <translation id="2683195745483370038">További találatok vannak</translation>
 <translation id="2686919536310834199">Visszajelzés küldése a Segítség az íráshoz funkcióval kapcsolatban.</translation>
 <translation id="2687555958734450033">Legjobb illeszkedés</translation>
@@ -1613,7 +1611,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Menti a címet a fiókba?</translation>
 <translation id="3752543821772132562">Figyelmen kívül hagyva, mert a következő házirend nincs beállítva: <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Kilépés a kép a képben módból</translation>
-<translation id="3754664361823138853">Előzmények oldal &amp;megnyitása</translation>
 <translation id="3757511311058373406">Automatikus böngészési szűrők</translation>
 <translation id="3759461132968374835">Nincs a közelmúltban bejelentett rendszerösszeomlás. A kikapcsolt jelentésküldés során történt összeomlások nem jelennek meg itt.</translation>
 <translation id="3760561303380396507">A Windows Hello szolgáltatást szeretné használni a CVC helyett?</translation>
@@ -2056,7 +2053,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Kapcsolja be a Speciális védelmet<ph name="END_ENHANCED_PROTECTION_LINK" />, hogy a Chrome a legmagasabb szintű biztonságot nyújthassa</translation>
 <translation id="4475299370877036544">Ez a művelet sértheti a szervezete irányelveit</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ez az űrlap nem biztonságos. Az automatikus kitöltés funkciót a rendszer kikapcsolta.</translation>
 <translation id="4477350412780666475">Következő szám</translation>
 <translation id="4480760608050410381">MP4-videó</translation>
 <translation id="4489023393592172404">Kaku 4 boríték</translation>
@@ -3526,7 +3522,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6998512609912910179">Gyorsabban töltheti ki az űrlapokat</translation>
 <translation id="7000094925113284872">Térképezd fel egy csillag életciklusát</translation>
 <translation id="7002897669829306463">Otthoni cím, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Nemrég megnyitott lapok</translation>
 <translation id="7004562620237466965">Csak megfejtő</translation>
 <translation id="7006930604109697472">Küldés mégis</translation>
 <translation id="7009364359744329733">Ez a kártya jelenleg nem áll rendelkezésre. Próbálja újra később.</translation>
@@ -4351,6 +4346,7 @@ További részletek:
 <translation id="8410956920192583322">Havonta vagy 4 részletben</translation>
 <translation id="8412145213513410671">Rendszerösszeomlások ( <ph name="CRASH_COUNT" /> )</translation>
 <translation id="8412392972487953978">Mindkét alkalommal ugyanazt az összetett jelszót kell megadnia.</translation>
+<translation id="8413126021676339697">Az összes előzmény</translation>
 <translation id="8414322570408428950">Bővítményhez kapcsolódó esemény történik</translation>
 <translation id="8416694386774425977">A hálózati konfiguráció érvénytelen és nem importálható.
 További részletek:
@@ -4658,7 +4654,6 @@ További részletek:
 <translation id="8988966534058783995">Engedélyezi a mozgásérzékelőket?</translation>
 <translation id="899688752321268742">A(z) <ph name="URL" /> tudni szeretné, hogy Ön mikor használja aktívan ezt az eszközt</translation>
 <translation id="8997023839087525404">A szerver olyan tanúsítványt mutatott be, amelyet nem A tanúsítványok átláthatósága keretrendszer segítségével hoztak nyilvánosságra. Ez egyes tanúsítványoknál követelmény annak biztosítása érdekében, hogy az adott tanúsítványok megbízhatók, és védelmet nyújtanak a támadók ellen.</translation>
-<translation id="9000145382638074673">Saját eszközök</translation>
 <translation id="9001074447101275817">A(z) <ph name="DOMAIN" /> proxy felhasználónevet és jelszót kér.</translation>
 <translation id="9001963517402879850">Ugrás!</translation>
 <translation id="9003263770394939629">A Gemini javaslata. A továbbfejlesztett automatikus kitöltést a beállításokban kezelheti.</translation>

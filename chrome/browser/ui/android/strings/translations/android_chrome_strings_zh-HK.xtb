@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
 <translation id="1108214977745280468">查看網頁分析資料</translation>
 <translation id="1108938384783527433">同步處理記錄</translation>
+<translation id="1109663842695712985">部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，未儲存的資料將會刪除。</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />，畫中畫分頁</translation>
 <translation id="1126696498560056882">管理此裝置上的帳戶</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634">透過 <ph name="SITE_ETLD_PLUS_ONE" /> 支付 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />，錄緊媒體嘅固定分頁</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />，分享緊內容嘅分頁</translation>
+<translation id="1601378265092360672">瀏覽資料包括瀏覽記錄、Cookie 和其他網站資料、快取圖片和檔案，以及已開啟的分頁</translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存至此裝置。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 設定中開啟螢幕鎖定<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">你的手機</translation>
+<translation id="4295640788982898778">擴充程式會儲存在你的 Google 帳戶中，但其只儲存在此裝置上的資料可能會刪除</translation>
 <translation id="4296252229500326964">新無痕式分頁</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />，複選嘅無痕式分頁</translation>
 <translation id="4298388696830689168">已連結的網站</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">開啟「Google 智能鏡頭」</translation>
 <translation id="435863252455918214">在 Chrome 主選單管理擴充程式</translation>
 <translation id="4359809482106103048">安全資訊一覽</translation>
+<translation id="4374192654218566997">\n\n你也可以從此裝置移除資料：</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="4380055775103003110">如果此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">管理你追蹤的內容以及建議的主題和搜尋</translation>
 <translation id="7119984597597798764">閂<ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">登入 Chrome</translation>
+<translation id="7130633106249192408">刪除此裝置的瀏覽資料</translation>
 <translation id="7136694880210472378">設定為預設</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 # 個網站的權限}}</translation>
 <translation id="7138678301420049075">其他</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">資訊提供卡選單</translation>
 <translation id="82296173028782770">編輯搜尋查詢：<ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">加入書籤</translation>
+<translation id="8236917170563564587">改為分享此分頁</translation>
 <translation id="8243077599929149377">新增你的使用者名稱</translation>
 <translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8244444485683708655">附加相機相片</translation>

@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> දත්ත කිසිවක් නොඑවන ලදී.</translation>
 <translation id="1393071644879491291">ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියට ප්‍රහාරකයින් විසින් මෘදුකාංග ස්ථාපනය කිරීමට හෝ ඔබේ මුරපද, දුරකථනය, හෝ ණය කාඩ්පත් අංක වැනි දේවල් හෙළි කර ගැනීමට ඔබව රැවටිය හැක. සුරක්ෂිතව ආපසු යාමට Chrome දැඩි ලෙස නිර්දේශ කරයි. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">පටිත්ත විවෘතව තිබුණත්, ඔබ මෙහි එක් කරන වෙබ් අඩවි ප්‍රතිචාර සඳහා යොමු කරනු නොලැබේ. ඔබ එක් කරන අඩවියක් දැනට පොටක භාවිත කරන්නේ නම්, පොට එය යොමු කිරීම නැවැත්වීමට මිනිත්තු 30ක් දක්වා ගත විය හැක.</translation>
-<translation id="1402151528875251561">පැති පැනලයේ ඉතිහාසය පෙන්වන්න</translation>
 <translation id="1405567553485452995">ලා කොළ</translation>
 <translation id="1406370515365284486">ඔබේ ගෙවීමේ ක්‍රම තවමත් සුරැකෙනු ඇත</translation>
 <translation id="1406500794671479665">තහවුරු කෙරෙමින්...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">හැර යන්න</translation>
 <translation id="2679216653373462289">ඔබේ චලන සහ ආලෝක සංවේදක භාවිත කරන්න</translation>
 <translation id="2679659833697380">ඔබේ තතු ඔබේ උපාංගයට සුරකින ලදි</translation>
-<translation id="2680837394649649718">ඔබේ <ph name="DEVICE_NAME" /> හි Chrome වෙත යවන ලදි.</translation>
 <translation id="2683195745483370038">වෙනත් ප්‍රතිඵල හමු විය</translation>
 <translation id="2686919536310834199">මට ලිවීමට උදවු කිරීම සඳහා ප්‍රතිපෝෂණය යවන්න.</translation>
 <translation id="2687555958734450033">හොඳින්ම ගැළපේ</translation>
@@ -1615,7 +1613,6 @@
 <translation id="3752181611900535304">ගිණුමේ ලිපිනය සුරකින්න ද?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> සකසා නැති නිසා නොසලකා හැර ඇත.</translation>
 <translation id="3754210790023674521">පින්තූරය-තුළ-පින්තූරයෙන් පිටවන්න</translation>
-<translation id="3754664361823138853">&amp;ඉතිහාස පිටුව විවෘත කරන්න</translation>
 <translation id="3757511311058373406">ස්වයං බ්‍රවුස් කිරීමේ පෙරහන්</translation>
 <translation id="3759461132968374835">ඔබට මෑතකදී වාර්තා කළ පිපුරුම් නැත.  පිපිරීම් වාර්තා කරන විට හටගත් පිපිරුම් අක්‍රිය කරන ලද අතර නැවත දිස් නොවනු ඇත.</translation>
 <translation id="3760561303380396507">CVC වෙනුවට Windows Hello භාවිත කරන්නද?</translation>
@@ -2059,7 +2056,6 @@
 <translation id="4473643328224505070">Chrome හි ඉහළම මට්ටමේ ආරක්ෂාව ලබා ගැනීමට <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ඉහළ නැංවූ ආරක්ෂාව ක්‍රියාත්මක කරන්න<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">මෙම ක්‍රියාව ඔබේ සංවිධානයේ ප්‍රතිපත්ති උල්ලංඝනය කළ හැක</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">මෙම පෝරමය ආරක්ෂිත නොවේ. ස්වයං පිරවුම ක්‍රියාවිරහිත කර ඇත.</translation>
 <translation id="4477350412780666475">ඊළඟ ඛණ්ඩය</translation>
 <translation id="4480760608050410381">MP4 වීඩියෝ</translation>
 <translation id="4489023393592172404">ලියුම් කවරය කකු 4</translation>
@@ -3529,7 +3525,6 @@
 <translation id="6998512609912910179">පෝරම වේගයෙන් පුරවන්න</translation>
 <translation id="7000094925113284872">තරුවක ජීවන චක්‍රය සිතියම්ගත කරන්න</translation>
 <translation id="7002897669829306463">නිවෙස් ලිපිනය, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">මෑතකාලීන ටැබ</translation>
 <translation id="7004562620237466965">කියවා තේරුම් ගැනීමට පමණි</translation>
 <translation id="7006930604109697472">කෙසේ වුවත් යවන්න</translation>
 <translation id="7009364359744329733">මෙම කාඩ්පත දැන් ලබා ගත නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -4353,6 +4348,7 @@
 <translation id="8410956920192583322">මාසිකව හෝ වාරික 4කින්</translation>
 <translation id="8412145213513410671">පිපුරුම් (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ඔබ එකම රහස් පදය දෙවරක් ඇතුළු කළ යුතුය.</translation>
+<translation id="8413126021676339697">සම්පූර්ණ ඉතිහාසය පෙන්වන්න</translation>
 <translation id="8414322570408428950">දිගු සිදුවීම සිදු වේ</translation>
 <translation id="8416694386774425977">ජාල වින්‍යාසය වලංගු නොවන අතර, ආයාත කළ නොහැක.
 අමතර විස්තර:
@@ -4659,7 +4655,6 @@
 <translation id="8988966534058783995">චලන සංවේදක භාවිත කරන්න ද?</translation>
 <translation id="899688752321268742"><ph name="URL" /> හට ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව දැන ගැනීමට අවශ්‍යයි</translation>
 <translation id="8997023839087525404">සේවාදායකය සහතික පාරදෘශ්‍යතා ප්‍රතිපත්තිය භාවිතයෙන් ප්‍රසිද්ධියේ අනාවරණය නොකරන ලද සහතිකයක් ඉදිරිපත් කළේය. මෙය සමහර සහතිකවලට, ඒවා විශ්වාසදායී බව සහ ප්‍රහාරකයන්ට එරෙහිව ආරක්ෂාව සහතික කිරීමට අවශ්‍යතාවකි.</translation>
-<translation id="9000145382638074673">ඔබේ උපාංග</translation>
 <translation id="9001074447101275817">සේවාදායකය <ph name="DOMAIN" /> ට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
 <translation id="9001963517402879850">පනින්න!</translation>
 <translation id="9003263770394939629">Gemini විසින් යෝජනා කරන ලදි. සැකසීම් තුළ ඉහළ නැංවූ ස්වයං පිරවුම කළමනාකරණය කරන්න.</translation>

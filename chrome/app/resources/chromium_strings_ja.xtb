@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1388276868779258475">Chromium アプリで、ブラウジングを外出先でも続けられます</translation>
-<translation id="1397530502368084401">Chromium プロフィールを管理(&amp;M)</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />さんはこの Chromium プロファイルにすでにログインしています。ブラウジング環境を分ける場合は、Chromium で自分用のプロファイルを作成できます。</translation>
 <translation id="3909353120217047026">この拡張機能は Chrome ウェブストアのポリシーに違反しており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
-<translation id="3937491663738985329">Chromium をカスタマイズ(&amp;U)</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
 <translation id="3945058413678539331">Chromium がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="3954172517175569325">Google アカウントに保存したパスワード、お支払い方法、住所は、このデバイスから削除されます。Chromium でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
@@ -766,6 +764,7 @@
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> の Chromium アプリで、Google の安全機能を外出先でも利用できます</translation>
 <translation id="8981150672034878610">プロファイルを開く際にエラーが発生したため、Chromium を起動できません。Chromium を再起動してみてください。</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
+<translation id="8993855408334954620">キーボードを使用して、Gemini in Chromium と開いているタブを切り替えます。</translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>

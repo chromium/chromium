@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Acquisizione schermo</translation>
 <translation id="1108214977745280468">Mostra statistiche pagine</translation>
 <translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
+<translation id="1109663842695712985">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, i dati non salvati verranno eliminati.</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, scheda Picture in picture</translation>
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
@@ -157,6 +158,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1598163867407640634">Utilizza <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, scheda con registrazione fissata</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, scheda condivisa</translation>
+<translation id="1601378265092360672">I dati di navigazione includono la cronologia di navigazione, i cookie e altri dati dei siti, le immagini e i file memorizzati nella cache e le schede aperte</translation>
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Rimuovi 1 elemento selezionato}other{Rimuovi # elementi selezionati}}</translation>
 <translation id="1639239467298939599">Caricamento</translation>
@@ -658,7 +660,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 preferito è stato salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{# preferiti sono stati salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>
-<translation id="3699022356773522638">Vuoi scaricare il file?</translation>
+<translation id="3699022356773522638">Scaricare il file?</translation>
 <translation id="3701515417135397388">Ricevi un avviso se una password è stata compromessa a causa di una violazione dei dati</translation>
 <translation id="3703166520839776970">Se il problema persiste, scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3708100450779900829">Quando il dispositivo è chiuso, puoi scegliere un'opzione o toccare e tenere premuta la barra degli indirizzi per cambiare la posizione</translation>
@@ -810,6 +812,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4285846616383034558">Cookie, cache e altri dati dei siti</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">tuo smartphone</translation>
+<translation id="4295640788982898778">Le tue estensioni sono salvate nel tuo Account Google, ma i dati che hanno salvato solo su questo dispositivo potrebbero essere eliminati</translation>
 <translation id="4296252229500326964">Nuova scheda Incognito</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, schede Incognito selezionate</translation>
 <translation id="4298388696830689168">Siti collegati</translation>
@@ -833,6 +836,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4358630185957185589">Apri Google Lens</translation>
 <translation id="435863252455918214">Gestisci le tue estensioni nel menu principale di Chrome</translation>
 <translation id="4359809482106103048">Riepilogo sulla sicurezza</translation>
+<translation id="4374192654218566997">\n\nPuoi anche rimuovere questi dati dal dispositivo:</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4380055775103003110">Se il problema persiste, puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou in uso per la ricerca</translation>
@@ -977,6 +981,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
 <translation id="4921224083091001889">Accedi a Chrome per avere le tue password e altri dati su tutti i tuoi dispositivi <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Download sconsigliato dalla tua organizzazione</translation>
+<translation id="4924398189611529766">Quando navighi in Incognito, la tua attività non sarà visibile alle altre persone che usano questo dispositivo: così potrai navigare con maggiore riservatezza. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Puoi salvare immagini e file per visualizzarli offline o condividerli in altre app</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 preferito e altri elementi sono stati salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}other{# preferiti e altri elementi sono stati salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
@@ -1541,6 +1546,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7117485132243600300">Gestisci i contenuti che segui e gli argomenti e le ricerche suggeriti</translation>
 <translation id="7119984597597798764">Chiudi <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Accedi a Chrome</translation>
+<translation id="7130633106249192408">Elimina i dati di navigazione da questo dispositivo</translation>
 <translation id="7136694880210472378">Imposta come predefinito</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
@@ -1833,6 +1839,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8223642481677794647">Menu scheda feed</translation>
 <translation id="82296173028782770">Modifica query di ricerca: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Aggiungi ai preferiti</translation>
+<translation id="8236917170563564587">Condividi invece questa scheda</translation>
 <translation id="8243077599929149377">Aggiungi il tuo nome utente</translation>
 <translation id="8244387390464017490">Personalizza Nuova scheda</translation>
 <translation id="8244444485683708655">Allega immagine della fotocamera</translation>

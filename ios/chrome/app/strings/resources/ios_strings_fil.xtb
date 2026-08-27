@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1095093219235104018">Hanapin at punan gamit ang Gemini</translation>
 <translation id="1096992026380844478">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. <ph name="BEGIN_LINK" />Tingnan kung ano ang puwede mong i-sync<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 password ang na-verify kaagad}one{# password ang na-verify kaagad}other{# na password ang na-verify kaagad}}</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">I-unlock gamit ang Face ID</translation>
 <translation id="1111776967764068277">Pagod nang kumopya ng mga link?</translation>
@@ -1986,7 +1985,6 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7464143666517313304">Dine-delete nito ang mga address na naka-save sa device na ito.</translation>
 <translation id="7468373585447318060">Maging updated sa mga pagbaba ng presyo sa lahat ng produktong sinusubaybayan mo.</translation>
 <translation id="746872191028309255">Bilhin ang nakikita mo sa iyong camera o gallery ng larawan.</translation>
-<translation id="7469215556134875318">mula nang gumamit ng Password checkup</translation>
 <translation id="7471557245617580330">Gumawa ng bagong tab</translation>
 <translation id="7473555040328423550">Magdagdag ng tab</translation>
 <translation id="7476548258282096076">Ipinapakita ng card na ito ang mga site na pinakamadalas mong bisitahin.</translation>

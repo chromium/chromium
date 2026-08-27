@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1388276868779258475">Use a app Chromium para continuar a navegar em qualquer lugar</translation>
-<translation id="1397530502368084401">&amp;Gerir perfis do Chromium</translation>
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chromium. Para manter a sua navegação separada, o Chromium pode criar-lhe o seu próprio perfil.</translation>
 <translation id="3909353120217047026">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
-<translation id="3937491663738985329">P&amp;ersonalizar o Chromium</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome de ficheiro do instalador é inválido ou não é suportado.</translation>
 <translation id="3945058413678539331">O Chromium está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="3954172517175569325">As suas palavras-passe, métodos de pagamento e moradas guardadas na sua Conta Google vão ser removidas deste dispositivo. Para os usar novamente no Chromium, volte a iniciar sessão.</translation>
@@ -769,6 +767,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8980139959902937527">Beneficie da segurança da Google em qualquer lugar com a app Chromium no <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Não é possível iniciar o Chromium porque algo correu mal ao abrir o seu perfil. Experimente reiniciar o Chromium.</translation>
 <translation id="8988036198400390003">Gerir perfis do Chromium</translation>
+<translation id="8993855408334954620">Use o teclado para navegar entre o Gemini no Chromium e o separador aberto.</translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativámos a seguinte extensão, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>

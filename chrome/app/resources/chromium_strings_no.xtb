@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1388276868779258475">Bruk Chromium-appen for å surfe uansett hvor du er</translation>
-<translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">Kopier teksten</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. For å holde surfingen din atskilt kan Chromium opprette en egen profil til deg.</translation>
 <translation id="3909353120217047026">Denne utvidelsen er i strid med retningslinjene for Chrome Nettmarked og kan være utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
-<translation id="3937491663738985329">Tilpass Chromium</translation>
 <translation id="3941890832296813527">Installasjonsfeil: Navnet på installasjonsprogrammet er ugyldig eller støttes ikke.</translation>
 <translation id="3945058413678539331">Chromium prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="3954172517175569325">Passordene, betalingsmåtene og adressene du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
@@ -769,6 +767,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8980139959902937527">Ta med deg sikkerheten til Google på farten med Chromium-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium kunne ikke starte, fordi det oppsto en feil ved åpning av profilen din. Prøv å starte Chromium på nytt.</translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
+<translation id="8993855408334954620">Bruk tastaturet til å navigere mellom Gemini i Chromium og den åpne fanen.</translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>

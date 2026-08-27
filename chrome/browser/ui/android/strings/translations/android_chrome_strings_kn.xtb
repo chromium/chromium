@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="1108214977745280468">ಪುಟದ ಒಳನೋಟಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1108938384783527433">ಇತಿಹಾಸ ಸಿಂಕ್</translation>
+<translation id="1109663842695712985">ನಿಮ್ಮ ಕೆಲವು Chrome ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಇನ್ನೂ ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ. ಸೈನ್ ಔಟ್ ಮಾಡುವ ಮೊದಲು ಕೆಲವು ನಿಮಿಷ ಕಾಯಲು ಪ್ರಯತ್ನಿಸಿ. ನೀವು ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿದರೆ, ಸೇವ್ ಮಾಡದ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ಟ್ಯಾಬ್</translation>
 <translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> ಅನ್ನು <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆ ಬಳಸಿ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿದ ರೆಕಾರ್ಡಿಂಗ್ ಟ್ಯಾಬ್</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಟ್ಯಾಬ್</translation>
+<translation id="1601378265092360672">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾ, ಕ್ಯಾಷ್ ಮಾಡಿದ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ</translation>
 <translation id="160275202205869636">ಆನ್ ಆಗಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಡೇಟಾವನ್ನು ಬಳಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ. ಆಫ್ ಆಗಿರುವಾಗ, ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ಆಯ್ಕೆಮಾಡಲಾದ 1 ಐಟಂ ತೆಗೆದುಹಾಕಿ}one{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">ಕುಕೀಸ್, ಕ್ಯಾಷ್, ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ನಿಮ್ಮ ಫೋನ್</translation>
+<translation id="4295640788982898778">ನಿಮ್ಮ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಆದರೆ ಅವು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಿರುವ ಯಾವುದೇ ಡೇಟಾವನ್ನು ಅಳಿಸಬಹುದು</translation>
 <translation id="4296252229500326964">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="4298388696830689168">ಲಿಂಕ್ ಮಾಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="435863252455918214">Chrome ಮುಖ್ಯ ಮೆನುವಿನಲ್ಲಿ ನಿಮ್ಮ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4359809482106103048">ಸುರಕ್ಷತೆ ಕುರಿತು ಇಣುಕು ನೋಟ</translation>
+<translation id="4374192654218566997">\n\nನೀವು ಈ ಸಾಧನದಿಂದ ಈ ಡೇಟಾವನ್ನು ಸಹ ತೆಗೆದುಹಾಕಬಹುದು:</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4380055775103003110">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="4384468725000734951">ಹುಡುಕಲು Sogou ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
@@ -1540,6 +1544,7 @@
 <translation id="7117485132243600300">ನೀವು ಫಾಲೋ ಮಾಡುವ ಕಂಟೆಂಟ್‌ ಮತ್ತು ಸೂಚಿಸಲಾದ ವಿಷಯಗಳು ಹಾಗೂ ಹುಡುಕಾಟಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7121179479711575744">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="7130633106249192408">ಈ ಸಾಧನದಿಂದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="7136694880210472378">ಡಿಫಾಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="7138678301420049075">ಇತರೆ</translation>
@@ -1832,6 +1837,7 @@
 <translation id="8223642481677794647">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು</translation>
 <translation id="82296173028782770">ಹುಡುಕಾಟ ಪ್ರಶ್ನೆಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
+<translation id="8236917170563564587">ಬದಲಾಗಿ ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8243077599929149377">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8244387390464017490">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="8244444485683708655">ಕ್ಯಾಮರಾ ಚಿತ್ರವನ್ನು ಲಗತ್ತಿಸಿ</translation>

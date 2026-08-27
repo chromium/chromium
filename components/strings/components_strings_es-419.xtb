@@ -239,7 +239,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="139305205187523129"><ph name="HOST_NAME" /> no envió ningún dato.</translation>
 <translation id="1393071644879491291">Los atacantes del sitio que intentaste visitar podrían engañarte para que instales software o reveles información como tus contraseñas, teléfono o números de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">No se hará referencia a los sitios que agregues aquí para las respuestas, incluso si la pestaña está abierta. Si un sitio que agregas se está usando en un hilo, es posible que el hilo tarde hasta 30 minutos en dejar de hacer referencia a él.</translation>
-<translation id="1402151528875251561">Mostrar el historial en el panel lateral</translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406370515365284486">Tus formas de pago seguirán guardadas</translation>
 <translation id="1406500794671479665">Verificando...</translation>
@@ -841,7 +840,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2396249848217231973">&amp;Deshacer Eliminar</translation>
 <translation id="2399344929880464793">Este IBAN se guarda en tu Cuenta de Google para que puedas usarlo en todos los servicios de Google.</translation>
 <translation id="2399868464369312507">Google Chrome está intentando editar formas de pago.</translation>
-<translation id="2400263725572336749">Agrega un pasaporte</translation>
+<translation id="2400263725572336749">Agregar un pasaporte</translation>
 <translation id="2400271059665846158">Administra tus tarjetas de lealtad en la Billetera de Google</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos en serie</translation>
 <translation id="2403474027143565107">Precisa</translation>
@@ -1008,7 +1007,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2679216653373462289">Usar los sensores de movimiento y de luz</translation>
 <translation id="2679659833697380">Tu información se guarda en tu dispositivo</translation>
-<translation id="2680837394649649718">Se envió a Chrome en tu <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Se encontraron otros resultados</translation>
 <translation id="2686919536310834199">Envía comentarios sobre Ayúdame a escribir.</translation>
 <translation id="2687555958734450033">Ajustar tamaño</translation>
@@ -1196,7 +1194,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3041176923638368519">Ver condiciones de los beneficios de la tarjeta</translation>
 <translation id="3041584414879052436">Se cerró la lista de emisores de Compra ahora y paga después.</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
-<translation id="3047054686095898948">Guarda tu información en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />administrar tu información<ph name="END_LINK" /> en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
+<translation id="3047054686095898948">Guarda tu información en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y finaliza tareas más rápido, como completar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />administrar tu información<ph name="END_LINK" /> en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3052868890529250114">Por lo general, te conectas a sitios de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
@@ -1616,7 +1614,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3752181611900535304">¿Quieres guardar la dirección en la cuenta?</translation>
 <translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
-<translation id="3754664361823138853">&amp;Abrir la página del historial</translation>
 <translation id="3757511311058373406">Filtros de navegación automática</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
 <translation id="3760561303380396507">¿Deseas usar Windows Hello en lugar de CVC?</translation>
@@ -2060,7 +2057,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" /> para obtener el nivel más alto de seguridad de Chrome</translation>
 <translation id="4475299370877036544">Es posible que esta acción incumpla las políticas de tu organización</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
 <translation id="4477350412780666475">Siguiente pista</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Sobre Kaku n.º 4</translation>
@@ -3530,7 +3526,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6998512609912910179">Completa formularios más rápido</translation>
 <translation id="7000094925113284872">Diseña el ciclo de vida de una estrella</translation>
 <translation id="7002897669829306463">Dirección de casa: <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7004562620237466965">Solo descifrar</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7009364359744329733">Esta tarjeta no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
@@ -4355,12 +4350,13 @@ Detalles adicionales:
 <translation id="8410956920192583322">Mensual o en 4 cuotas</translation>
 <translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>
+<translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8414322570408428950">Se produce un evento de extensión</translation>
 <translation id="8416694386774425977">La configuración de red no es válida y no se pudo importar.
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
-<translation id="8421746712901926961">Guarda tu información en la <ph name="GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en la <ph name="GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" />.</translation>
+<translation id="8421746712901926961">Guarda tu información en la <ph name="GOOGLE_WALLET_TITLE_1" /> y finaliza tareas más rápido, como completar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en la <ph name="GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Quieres permitir la anulación del teclado?</translation>
@@ -4551,7 +4547,7 @@ Detalles adicionales:
 <translation id="8781233757384402598">Cuando envías una solicitud a la función de autocompletar mejorado, tus datos de uso, solicitudes y detalles de la página se comparten con Google para mejorar la experiencia de la función</translation>
 <translation id="8781278378794969337">Botón Traducir página: actívalo para traducir esta página con Google Traductor</translation>
 <translation id="8790007591277257123">&amp;Rehacer Eliminar</translation>
-<translation id="8790668801880409584">Guardar y completar la información de viaje</translation>
+<translation id="8790668801880409584">Guardar y completar información de viajes</translation>
 <translation id="8792272652220298572">Plástico (brillante)</translation>
 <translation id="8792621596287649091">Es posible que hayas perdido el acceso a tu cuenta de <ph name="ORG_NAME" /> o sufrido un robo de identidad. Chromium te recomienda que cambies la contraseña ahora.</translation>
 <translation id="8792626944327216835">micrófono</translation>
@@ -4662,7 +4658,6 @@ Detalles adicionales:
 <translation id="8988966534058783995">¿Puede usar los sensores de movimiento?</translation>
 <translation id="899688752321268742"><ph name="URL" /> quiere saber en qué momento estás usando activamente este dispositivo</translation>
 <translation id="8997023839087525404">El servidor presentó un certificado que no se divulgó de forma pública con la política Certificado de transparencia. Este es un requisito para algunos certificados que permite garantizar su confiabilidad y protegerte de atacantes.</translation>
-<translation id="9000145382638074673">Tus dispositivos</translation>
 <translation id="9001074447101275817">El proxy <ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="9001963517402879850">¡Salta!</translation>
 <translation id="9003263770394939629">Sugerido por Gemini. Administra la función de autocompletado mejorado en la configuración.</translation>

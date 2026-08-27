@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
 <translation id="1393071644879491291">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">ระบบจะไม่นำเว็บไซต์ที่คุณเพิ่มไว้ที่นี่มาอ้างอิงสำหรับคำตอบ แม้ว่าแท็บจะเปิดอยู่ก็ตาม หากเว็บไซต์ที่คุณเพิ่มมีการใช้งานอยู่ในชุดข้อความ ระบบอาจใช้เวลาสูงสุด 30 นาทีในการหยุดอ้างอิงเว็บไซต์ดังกล่าวในชุดข้อความ</translation>
-<translation id="1402151528875251561">แสดงประวัติการเข้าชมในแผงด้านข้าง</translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
 <translation id="1406370515365284486">ระบบจะยังคงบันทึกวิธีการชำระเงินของคุณไว้</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2679216653373462289">ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและเซ็นเซอร์แสง</translation>
 <translation id="2679659833697380">ระบบจะบันทึกข้อมูลของคุณลงในอุปกรณ์</translation>
-<translation id="2680837394649649718">ส่งไปยัง Chrome ใน <ph name="DEVICE_NAME" /> แล้ว</translation>
 <translation id="2683195745483370038">พบผลการค้นหาอื่นๆ</translation>
 <translation id="2686919536310834199">ส่งความคิดเห็นเกี่ยวกับฟีเจอร์ "ช่วยฉันเขียน"</translation>
 <translation id="2687555958734450033">ปรับพอดี</translation>
@@ -1614,7 +1612,6 @@
 <translation id="3752181611900535304">บันทึกที่อยู่ในบัญชีไหม</translation>
 <translation id="3752543821772132562">ไม่สนใจเนื่องจากไม่ได้ตั้งค่า <ph name="POLICY_NAME" /></translation>
 <translation id="3754210790023674521">ออกจากการแสดงภาพซ้อนภาพ</translation>
-<translation id="3754664361823138853">&amp;เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="3757511311058373406">ตัวกรองการท่องเว็บอัตโนมัติ</translation>
 <translation id="3759461132968374835">คุณไม่ได้รายงานข้อขัดข้องเมื่อเร็วๆ นี้ ข้อขัดข้องที่เกิดขึ้นเมื่อปิดใช้งานการรายงานข้อขัดข้อง จะไม่ปรากฏที่นี่</translation>
 <translation id="3760561303380396507">ใช้ Windows Hello แทน CVC ไหม</translation>
@@ -2058,7 +2055,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดใช้การปกป้องที่ดียิ่งขึ้น<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อรับการรักษาความปลอดภัยระดับสูงสุดของ Chrome</translation>
 <translation id="4475299370877036544">การดําเนินการนี้อาจละเมิดนโยบายขององค์กร</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" /> <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">ฟอร์มนี้ไม่ปลอดภัย ปิดการป้อนข้อความอัตโนมัติแล้ว</translation>
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="4480760608050410381">วิดีโอ MP4</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3528,7 +3524,6 @@
 <translation id="6998512609912910179">กรอกแบบฟอร์มได้เร็วขึ้น</translation>
 <translation id="7000094925113284872">เขียนแผนภาพวงจรชีวิตของดาว</translation>
 <translation id="7002897669829306463">ที่อยู่บ้าน <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">แท็บล่าสุด</translation>
 <translation id="7004562620237466965">ถอดรหัสเท่านั้น</translation>
 <translation id="7006930604109697472">ส่งเลย</translation>
 <translation id="7009364359744329733">บัตรใบนี้ใช้งานไม่ได้ในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -4353,6 +4348,7 @@
 <translation id="8410956920192583322">รายเดือนหรือผ่อนชำระ 4 งวด</translation>
 <translation id="8412145213513410671">ข้อขัดข้อง (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">คุณต้องป้อนพาสเฟรสเดียวกัน 2 ครั้ง</translation>
+<translation id="8413126021676339697">แสดงประวัติการเข้าชมทั้งหมด</translation>
 <translation id="8414322570408428950">เกิดเหตุการณ์ของส่วนขยาย</translation>
 <translation id="8416694386774425977">การกำหนดค่าเครือข่ายไม่ถูกต้องและนำเข้าไม่ได้
 รายละเอียดเพิ่มเติม:
@@ -4377,7 +4373,7 @@
 <translation id="8449155699563577224">17 x 24 นิ้ว</translation>
 <translation id="8449513475775663994">นำอีเมลที่ยืนยันแล้วออกใช่ไหม</translation>
 <translation id="8449836157089738489">เปิดทั้งหมดในกลุ่มแท็บใหม่</translation>
-<translation id="8451518040456311377">บันทึกและกรอกเอกสาร</translation>
+<translation id="8451518040456311377">บันทึกและกรอกเอกสารระบุตัวตน</translation>
 <translation id="84561192812921051">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Bottom Sheet ปิดอยู่</translation>
 <translation id="8456775115498700722">ตอนนี้คุณสามารถป้อนข้อมูลบัตร <ph name="CARD_ISSUER_NAME" /> โดยอัตโนมัติได้เนื่องจากบัญชี <ph name="CARD_ISSUER_NAME" /> ของคุณลิงก์กับ Google Pay แล้ว</translation>
@@ -4491,7 +4487,7 @@
 <translation id="8694684557210599098">เพิ่มยานพาหนะ</translation>
 <translation id="8696297579102085705">ส่งไปที่อุปกรณ์</translation>
 <translation id="8698428283892912525">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบซอฟต์แวร์ที่เป็นอันตราย<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้</translation>
-<translation id="869891660844655955">วันหมดอายุ</translation>
+<translation id="869891660844655955">วันที่หมดอายุ</translation>
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">เทปสําหรับติดยึด</translation>
@@ -4660,7 +4656,6 @@
 <translation id="8988966534058783995">ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวไหม</translation>
 <translation id="899688752321268742"><ph name="URL" /> ต้องการทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="8997023839087525404">เซิร์ฟเวอร์แสดงใบรับรองที่ไม่มีการเปิดเผยต่อสาธารณะโดยใช้นโยบายความโปร่งใสของใบรับรอง ซึ่งเป็นข้อกำหนดสำหรับใบรับรองบางรายการ เพื่อยืนยันว่าเชื่อถือได้และป้องกันการจู่โจม</translation>
-<translation id="9000145382638074673">อุปกรณ์ของคุณ</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> ของพร็อกซีต้องใช้ชื่อผู้ใช้และรหัสผ่าน</translation>
 <translation id="9001963517402879850">กระโดด</translation>
 <translation id="9003263770394939629">แนะนำโดย Gemini จัดการการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นในการตั้งค่า</translation>

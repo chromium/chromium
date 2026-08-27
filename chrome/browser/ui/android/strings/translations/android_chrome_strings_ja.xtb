@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">スクリーン キャプチャ</translation>
 <translation id="1108214977745280468">ページの関連情報を表示</translation>
 <translation id="1108938384783527433">履歴の同期</translation>
+<translation id="1109663842695712985">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、保存されていないデータは削除されます。</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />、ピクチャー イン ピクチャーのタブ</translation>
 <translation id="1126696498560056882">このデバイスのアカウントを管理</translation>
@@ -157,6 +158,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />、録画中の固定のタブ</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />、共有タブ</translation>
+<translation id="1601378265092360672">閲覧データには、閲覧履歴、Cookie やその他のサイトデータ、キャッシュされた画像とファイル、開いているタブが含まれます</translation>
 <translation id="160275202205869636">オンにすると、Google アカウントのデータが使用、保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
@@ -418,7 +420,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2656405586795711023">ウェブアプリ</translation>
 <translation id="2664252182805397291">サイトを表示</translation>
 <translation id="2666092431469916601">上部</translation>
-<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
+<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスのすべてのユーザーが確認できます</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2687009626279857299">このデバイスでは動作を停止しました</translation>
 <translation id="2693387519545954740"><ph name="TAB_TITLE" />、音声ありのタブ</translation>
@@ -810,6 +812,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4285846616383034558">Cookie、キャッシュ、その他のサイトデータ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android の設定で画面ロックをオンにする<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">スマートフォン</translation>
+<translation id="4295640788982898778">拡張機能は Google アカウントに保存されていますが、このデバイスにのみ保存されているデータは削除される可能性があります</translation>
 <translation id="4296252229500326964">新しいシークレット タブ</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />、複数選択されたシークレット タブ</translation>
 <translation id="4298388696830689168">リンク済みのサイト</translation>
@@ -833,6 +836,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4358630185957185589">Google レンズを開く</translation>
 <translation id="435863252455918214">Chrome メインメニューで拡張機能を管理</translation>
 <translation id="4359809482106103048">安全に関する概要</translation>
+<translation id="4374192654218566997">\n\nこのデバイスから次のデータも削除できます。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
@@ -1541,6 +1545,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7117485132243600300">フォローしているコンテンツ、おすすめのトピックと検索候補を管理します</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> を閉じる</translation>
 <translation id="7121179479711575744">Chrome にログイン</translation>
+<translation id="7130633106249192408">このデバイスから閲覧データを削除する</translation>
 <translation id="7136694880210472378">デフォルトに設定</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 件のサイトの権限を確認しました}other{# 件のサイトの権限を確認しました}}</translation>
 <translation id="7138678301420049075">その他</translation>
@@ -1833,6 +1838,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="82296173028782770">検索語句「<ph name="SEARCH_QUERY" />」を編集します</translation>
 <translation id="8236097722223016103">ブックマークに追加</translation>
+<translation id="8236917170563564587">代わりにこのタブを共有</translation>
 <translation id="8243077599929149377">ユーザー名を追加</translation>
 <translation id="8244387390464017490">新しいタブページを編集</translation>
 <translation id="8244444485683708655">カメラの写真を添付</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">স্ক্রিন ক্যাপচার</translation>
 <translation id="1108214977745280468">পৃষ্ঠার ইনসাইট দেখুন</translation>
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
+<translation id="1109663842695712985">আপনার Chrome ডেটার কিছুটা অংশ এখনও Google অ্যাকাউন্টে সেভ হয়নি। সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখন সাইন-আউট করলে, সেভ না করা ডেটা মুছে যাবে।</translation>
 <translation id="1111673857033749125">আপনার অন্যান্য ডিভাইসে সেভ করা বুকমার্কগুলি এখানে দেখা যাবে।</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ছবির-মধ্যে-ছবি ট্যাব</translation>
 <translation id="1126696498560056882">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করুন</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, পিন করা রেকর্ডিং ট্যাব</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, শেয়ারিং ট্যাব</translation>
+<translation id="1601378265092360672">ব্রাউজ করা ডেটার মধ্যে অন্তর্ভুক্ত হল, আপনার ব্রাউজিং ইতিহাস, কুকি ও অন্যান্য সাইট ডেটা, ক্যাশে সেভ করা ছবি ও ফাইল এবং খোলা ট্যাব</translation>
 <translation id="160275202205869636">এটি চালু হলে, আপনার Google অ্যাকাউন্টে ডেটা ব্যবহার করে সেভ করুন। বন্ধ থাকলে, শুধুমাত্র এই ডিভাইসে ডেটা সেভ হয়।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{১ টি নির্বাচিত আইটেম সরান}one{#টি নির্বাচিত আইটেম সরান}other{#টি নির্বাচিত আইটেম সরান}}</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">কুকি, ক্যাশে ও অন্যান্য সাইট ডেটা</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">আপনার ফোন</translation>
+<translation id="4295640788982898778">আপনার Google অ্যাকাউন্টে এক্সটেনশন সেভ করা আছে, তবে শুধুমাত্র এই ডিভাইসে সেভ করা কোনও ডেটা মুছে ফেলা হতে পারে</translation>
 <translation id="4296252229500326964">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া ছদ্মবেশী ট্যাব</translation>
 <translation id="4298388696830689168">লিঙ্ক করা সাইট</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens খুলুন</translation>
 <translation id="435863252455918214">Chrome-এর মূল মেনু থেকে আপনার এক্সটেনশন ম্যানেজ করুন</translation>
 <translation id="4359809482106103048">সুরক্ষা সম্পর্কিত তথ্য এক ঝলকে</translation>
+<translation id="4374192654218566997">\n\nএছাড়াও, আপনি এই ডিভাইস থেকে এই ডেটা সরাতে পারবেন:</translation>
 <translation id="4378154925671717803">ফোন</translation>
 <translation id="4380055775103003110">এই সমস্যা থেকে গেলে, আপনি <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="4384468725000734951">সার্চের জন্য Sogou কে ব্যবহার করছে</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">আপনার অনুসরণ করা কন্টেন্টের সাথে সাজেস্ট করা বিষয় এবং সার্চ ম্যানেজ করুন</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ করুন</translation>
 <translation id="7121179479711575744">Chrome-এ সাইন-ইন করুন</translation>
+<translation id="7130633106249192408">এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="7136694880210472378">ডিফল্ট করুন</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}one{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}other{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">ফিড কার্ডের মেনু</translation>
 <translation id="82296173028782770">সার্চ কোয়েরি এডিট করুন: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">বুকমার্কে যোগ করুন</translation>
+<translation id="8236917170563564587">পরিবর্তে এই ট্যাব শেয়ার করুন</translation>
 <translation id="8243077599929149377">আপনার ইউজারনেম যোগ করুন</translation>
 <translation id="8244387390464017490">'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করুন</translation>
 <translation id="8244444485683708655">ক্যামেরার ছবি অ্যাটাচ করুন</translation>

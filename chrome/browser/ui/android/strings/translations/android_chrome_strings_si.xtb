@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">තිර ග්‍රහණය</translation>
 <translation id="1108214977745280468">පිටු ඇතුළාන්තයන් බලන්න</translation>
 <translation id="1108938384783527433">ඉතිහාසය සමමුහුර්ත කිරීම</translation>
+<translation id="1109663842695712985">ඔබේ Chrome දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත. වරන්නට පෙර විනාඩි කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් වරන්නේ නම්, නොසුරැකි දත්ත මකනු ලැබේ.</translation>
 <translation id="1111673857033749125">ඔබගේ අනෙකුත් උපාංගවල සුරැකි පිටුසන් මෙහි දිස් වනු ඇත.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, පින්තූරය තුළ පින්තූර පටිත්ත</translation>
 <translation id="1126696498560056882">මෙම උපාංගය මත ගිණුම් කළමනා කරන්න</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග <ph name="SITE_ETLD_PLUS_ONE" /> භාවිතා කරන්න</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, අමුණන ලද පටිගත කිරීමේ පටිත්ත</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, බෙදා ගැනීමේ පටිත්ත</translation>
+<translation id="1601378265092360672">බ්‍රවුස් කිරීමේ දත්ත වලට ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකීස් සහ අනෙකුත් අඩවි දත්ත, කෑෂ් කළ රූප සහ ගොනු, සහ විවෘත පටිති ඇතුළත් වේ</translation>
 <translation id="160275202205869636">ක්‍රියාත්මක විට, ඔබේ Google ගිණුමේ දත්ත භාවිත කර සුරකින්න. ක්‍රියාවිරහිත වූ විට, දත්ත සුරැකෙන්නේ මෙම උපාංගයට පමණි.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{තෝරාගත් අයිතම 1ක් ඉවත් කරන්න}one{තෝරාගත් අයිතම #ක් ඉවත් කරන්න}other{තෝරාගත් අයිතම #ක් ඉවත් කරන්න}}</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">කුකීස්, කෑෂය, සහ අනෙකුත් අඩවි දත්ත</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ඔබේ දුරකථනය</translation>
+<translation id="4295640788982898778">ඔබේ දිගු ඔබේ Google ගිණුමේ සුරකින නමුත්, මෙම උපාංගයේ පමණක් සුරකින ලද ඕනෑම දත්තයක් මකා දැමිය හැක</translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, බහු-තේරූ අප්‍රකට පටිත්ත</translation>
 <translation id="4298388696830689168">සබැඳි කළ වෙබ් අඩවි</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens විවෘත කරන්න</translation>
 <translation id="435863252455918214">Chrome ප්‍රධාන මෙනුව තුළ ඔබේ දිගු කළමනාකරණය කරන්න</translation>
 <translation id="4359809482106103048">බැලූ බැල්මට සුරක්ෂිතභාවය</translation>
+<translation id="4374192654218566997">\n\nඔබට මෙම උපාංගයෙන් මෙම දත්ත ඉවත් කිරීමට ද හැක:</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
 <translation id="4380055775103003110">මෙම ගැටලුව දිගටම සිදු වන්නේ නම්, <ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ඔබට වෙනත් ක්‍රම උත්සාහ කළ හැක.</translation>
 <translation id="4384468725000734951">සෙවීම සඳහා Sogou භාවිත කරමින්</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">ඔබ අනුගමනය කරන අන්තර්ගතය සහ යෝජිත මාතෘකා සහ සෙවීම් කළමනාකරණය කරන්න</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> වසන්න</translation>
 <translation id="7121179479711575744">Chrome වෙත පුරනය වන්න</translation>
+<translation id="7130633106249192408">මෙම උපාංගයෙන් බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
 <translation id="7136694880210472378">පෙරනිමි කරන්න</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 අඩවියක් සඳහා අවසර සමාලෝචනය කරන ලදි}one{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}other{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}}</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">සංග්‍රහ කාඩ්පත් මෙනුව</translation>
 <translation id="82296173028782770">සෙවීම් විමසුම සංස්කරණය කරන්න: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">පිටුසන් වෙත එක් කරන්න</translation>
+<translation id="8236917170563564587">ඒ වෙනුවට මෙම පටිත්ත බෙදා ගන්න</translation>
 <translation id="8243077599929149377">ඔබේ පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="8244387390464017490">නව පටිති පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="8244444485683708655">කැමරා පින්තූරය අමුණන්න</translation>

@@ -239,7 +239,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="139305205187523129"><ph name="HOST_NAME" /> heeft geen gegevens verzonden.</translation>
 <translation id="1393071644879491291">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoorden, telefoonnummers of creditcardnummers openbaar maakt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Sites die je hier toevoegt, worden niet gebruikt als referentie voor reacties, zelfs niet als het tabblad geopend is. Als een site die je toevoegt op dit moment in een gesprek wordt gebruikt, kan het tot 30 minuten duren voordat het gesprek er niet meer naar verwijst.</translation>
-<translation id="1402151528875251561">Geschiedenis tonen in zijvenster</translation>
 <translation id="1405567553485452995">Lichtgroen</translation>
 <translation id="1406370515365284486">Je betaalmethoden blijven opgeslagen</translation>
 <translation id="1406500794671479665">Verifiëren...</translation>
@@ -1008,7 +1007,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2679216653373462289">Je bewegings- en lichtsensoren gebruiken</translation>
 <translation id="2679659833697380">Je informatie wordt opgeslagen op je apparaat</translation>
-<translation id="2680837394649649718">Verstuurd naar Chrome op je <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Andere resultaten gevonden</translation>
 <translation id="2686919536310834199">Stuur feedback voor Help me met schrijven.</translation>
 <translation id="2687555958734450033">Best passend</translation>
@@ -1610,7 +1608,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3752181611900535304">Adres opslaan in account?</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
-<translation id="3754664361823138853">Geschiedenispagina &amp;openen</translation>
 <translation id="3757511311058373406">Filters voor automatisch browsen</translation>
 <translation id="3759461132968374835">Je hebt geen onlangs gemelde crashes. Crashes die zich voordeden toen de crashrapportage was uitgezet, worden hier niet weergegeven.</translation>
 <translation id="3760561303380396507">Windows Hello gebruiken in plaats van CVC?</translation>
@@ -2053,7 +2050,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zet Geoptimaliseerde beveiliging aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te krijgen</translation>
 <translation id="4475299370877036544">Deze actie schendt misschien het beleid van je organisatie</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
-<translation id="4476953670630786061">Dit formulier is niet beveiligd. Automatisch invullen is uitgezet.</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Envelop Kaku 4</translation>
@@ -3522,7 +3518,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6998512609912910179">Formulieren sneller invullen</translation>
 <translation id="7000094925113284872">Breng de levenscyclus van een ster in kaart</translation>
 <translation id="7002897669829306463">Woonadres, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Recente tabbladen</translation>
 <translation id="7004562620237466965">Alleen decoderen</translation>
 <translation id="7006930604109697472">Toch sturen</translation>
 <translation id="7009364359744329733">Deze kaart is op dit moment niet beschikbaar. Probeer het later opnieuw.</translation>
@@ -4347,6 +4342,7 @@ Aanvullende informatie:
 <translation id="8410956920192583322">Maandelijks of in 4 termijnen</translation>
 <translation id="8412145213513410671">Crashes (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Je moet twee keer dezelfde wachtwoordzin opgeven.</translation>
+<translation id="8413126021676339697">Hele geschiedenis bekijken</translation>
 <translation id="8414322570408428950">Extensiegebeurtenis vindt plaats</translation>
 <translation id="8416694386774425977">De netwerkconfiguratie is ongeldig en kan niet worden geïmporteerd.
 Aanvullende informatie:
@@ -4653,7 +4649,6 @@ Aanvullende informatie:
 <translation id="8988966534058783995">Bewegingssensoren gebruiken?</translation>
 <translation id="899688752321268742"><ph name="URL" /> wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="8997023839087525404">De server heeft een certificaat gepresenteerd dat niet openbaar bekend is gemaakt via het beleid voor Certificaattransparantie. Dit is voor bepaalde certificaten een vereiste om er zeker van te zijn dat ze betrouwbaar zijn en bescherming bieden tegen aanvallers.</translation>
-<translation id="9000145382638074673">Je apparaten</translation>
 <translation id="9001074447101275817">Voor de proxy <ph name="DOMAIN" /> zijn een gebruikersnaam en wachtwoord vereist.</translation>
 <translation id="9001963517402879850">Spring!</translation>
 <translation id="9003263770394939629">Voorgesteld door Gemini. Beheer verbeterd automatisch invullen in de instellingen.</translation>

@@ -239,7 +239,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ei lähettänyt tietoja.</translation>
 <translation id="1393071644879491291">Hyökkääjät sivustolla, jolle yritit siirtyä, voivat yrittää huijata sinua asentamaan ohjelmistoja tai paljastamaan esimerkiksi salasanojasi, puhelinnumeroitasi tai credit-korttisi numeroita. Chrome suosittelee, että siirryt takaisin turvalliselle sivustolle. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Tänne lisäämiäsi sivustoja ei käytetä vastauksissa, vaikka välilehti olisi auki. Jos lisäämäsi sivusto on tällä hetkellä käytössä keskusteluketjussa, voi kulua 30 minuuttia ennen kuin ketju lopettaa siihen viittaamisen.</translation>
-<translation id="1402151528875251561">Näytä historia sivupaneelissa</translation>
 <translation id="1405567553485452995">Vaaleanvihreä</translation>
 <translation id="1406370515365284486">Maksutavat pysyvät tallennettuina</translation>
 <translation id="1406500794671479665">Vahvistetaan...</translation>
@@ -1008,7 +1007,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2679216653373462289">Käytä liike- ja valoantureita</translation>
 <translation id="2679659833697380">Tiedot tallennetaan laitteelle</translation>
-<translation id="2680837394649649718">Lähetetty Chromelle laitteella <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Muita tuloksia löytyi</translation>
 <translation id="2686919536310834199">Lähetä palautetta Auta minua kirjoittamaan ‐ominaisuudesta.</translation>
 <translation id="2687555958734450033">Sopivin koko</translation>
@@ -1616,7 +1614,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Tallennetaanko osoite tilille?</translation>
 <translation id="3752543821772132562">Ohitettu, koska <ph name="POLICY_NAME" /> on määrittämättä.</translation>
 <translation id="3754210790023674521">Sulje kuva kuvassa ‑tila</translation>
-<translation id="3754664361823138853">Avaa Historia-sivu</translation>
 <translation id="3757511311058373406">Automaattiselaussuodattimet</translation>
 <translation id="3759461132968374835">Ei viimeaikaisia kaatumisilmoituksia. Jos selain kaatui kaatumisilmoitusten ollessa pois käytöstä, ilmoituksia ei näytetä täällä.</translation>
 <translation id="3760561303380396507">Käytetäänkö Windows Hellota CVC:n sijaan?</translation>
@@ -2060,7 +2057,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Laita parannettu suojaus päälle<ph name="END_ENHANCED_PROTECTION_LINK" />, niin saat Chromen korkeimman suojaustason</translation>
 <translation id="4475299370877036544">Toiminto saattaa olla organisaation käytäntöjen vastainen</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Tämä lomake ei ole suojattu. Automaattinen täyttö on laitettu pois päältä.</translation>
 <translation id="4477350412780666475">Seuraava kappale</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Kirjekuori Kaku 4</translation>
@@ -3530,7 +3526,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6998512609912910179">Täytä lomakkeet nopeammin</translation>
 <translation id="7000094925113284872">Kartoita tähden elinkaari</translation>
 <translation id="7002897669829306463">Kotiosoite, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
 <translation id="7004562620237466965">Vain tulkinta</translation>
 <translation id="7006930604109697472">Lähetä silti</translation>
 <translation id="7009364359744329733">Virtuaalinen kortti ei ole juuri nyt käytettävissä. Yritä myöhemmin uudelleen.</translation>
@@ -4355,6 +4350,7 @@ Lisätietoja:
 <translation id="8410956920192583322">Kuukausittain tai neljässä erässä</translation>
 <translation id="8412145213513410671">Kaatumiset (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Kirjoita sama tunnuslause kahdesti.</translation>
+<translation id="8413126021676339697">Näytä koko selaushistoria</translation>
 <translation id="8414322570408428950">Laajennustapahtuma tapahtuu</translation>
 <translation id="8416694386774425977">Verkkoasetukset ovat virheelliset eikä niitä voi tuoda.
 Lisätietoja:
@@ -4662,7 +4658,6 @@ Lisätietoja:
 <translation id="8988966534058783995">Käytetäänkö liiketunnistimia?</translation>
 <translation id="899688752321268742"><ph name="URL" /> haluaa tietää, kun käytät tätä laitetta aktiivisesti</translation>
 <translation id="8997023839087525404">Palvelimen lähettämän varmenteen tietoja ei ole annettu yleiseen käyttöön Certificate Transparency ‑käytännön mukaisesti. Tietojen antamista edellytetään joiltakin varmenteilta, jotta niiden luotettavuus voidaan varmistaa ja käyttäjiä suojella hyökkääjiltä.</translation>
-<translation id="9000145382638074673">Laitteesi</translation>
 <translation id="9001074447101275817">Välityspalvelin <ph name="DOMAIN" /> vaatii käyttäjänimen ja salasanan.</translation>
 <translation id="9001963517402879850">Hyppää!</translation>
 <translation id="9003263770394939629">Geminin ehdotus. Muuta parannettua automaattista täyttöä asetuksista.</translation>

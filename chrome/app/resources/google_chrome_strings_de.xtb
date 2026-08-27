@@ -454,7 +454,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5649156266046089790">Mit Chrome-Profilen kannst du Chrome-Inhalte voneinander trennen. Du kannst Profile für Freunde und Familie erstellen oder Inhalte in Arbeit und Freizeit einteilen.</translation>
 <translation id="5655063652337498476">Mit Chrome für iOS kannst du unterwegs Produkte mit deiner Kamera entdecken, Preissenkungen im Blick behalten und vieles mehr.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
-<translation id="566040795510471729">Chrome a&amp;npassen</translation>
 <translation id="566568153320186256">In Chrome wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Chrome-Daten in deinem Konto löschen</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen}=1{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
@@ -681,7 +680,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
-<translation id="7792336732117553384">Chrome-Profile &amp;verwalten</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
@@ -753,6 +751,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8370748943308169953">QR-Code, um dich als <ph name="USER_NAME" /> in Chrome anzumelden</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary aktivieren / deaktivieren</translation>
+<translation id="8380754585531979907">Du kannst mit der Tastatur zwischen Gemini in Chrome und deinem geöffneten Tab wechseln.</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>
 <translation id="8394720698884623075">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert ist</translation>
 <translation id="8403038600646341038">Chrome-Logo auf einem Computerbildschirm.</translation>

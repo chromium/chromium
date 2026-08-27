@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Bildschirmaufnahme</translation>
 <translation id="1108214977745280468">Seitenstatistiken ansehen</translation>
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
+<translation id="1109663842695712985">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden die nicht gespeicherten Daten gelöscht.</translation>
 <translation id="1111673857033749125">Hier werden die Lesezeichen angezeigt, die auf deinen anderen Geräten gespeichert sind.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Tab im Bild-im-Bild-Modus</translation>
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
@@ -157,6 +158,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, angepinnter Tab zum Aufzeichnen</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Tab für die Freigabe</translation>
+<translation id="1601378265092360672">Zu den Browserdaten gehören dein Browserverlauf, Cookies und andere Websitedaten, im Cache gespeicherte Bilder und Dateien sowie geöffnete Tabs</translation>
 <translation id="160275202205869636">Bei aktivierten Optionen kannst du die entsprechenden Daten in deinem Google-Konto nutzen und speichern. Bei Deaktivierung werden sie nur auf diesem Gerät gespeichert.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
@@ -810,6 +812,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4285846616383034558">Cookies, Cache und andere Websitedaten</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Displaysperre in den Android-Einstellungen aktivieren<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">deinem Smartphone</translation>
+<translation id="4295640788982898778">Deine Erweiterungen werden in deinem Google-Konto gespeichert, aber alle Daten, die darüber nur auf diesem Gerät gespeichert wurden, können gelöscht werden</translation>
 <translation id="4296252229500326964">Neuer Inkognitotab</translation>
 <translation id="4298161202289999785">„<ph name="TAB_TITLE" />“, mehrfach ausgewählter Inkognitotab</translation>
 <translation id="4298388696830689168">Verknüpfte Websites</translation>
@@ -833,6 +836,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4358630185957185589">Google Lens öffnen</translation>
 <translation id="435863252455918214">Du kannst deine Erweiterungen im Chrome-Hauptmenü verwalten</translation>
 <translation id="4359809482106103048">Sicherheit auf einen Blick</translation>
+<translation id="4374192654218566997">\n\nDu kannst diese Daten auch von diesem Gerät entfernen:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Wenn das Problem weiterhin auftritt, kannst du andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
 <translation id="4384468725000734951">Suche erfolgt mit Sogou</translation>
@@ -1541,6 +1545,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7117485132243600300">Inhalte, denen du folgst, sowie vorgeschlagene Themen und Suchanfragen verwalten</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> schließen</translation>
 <translation id="7121179479711575744">In Chrome anmelden</translation>
+<translation id="7130633106249192408">Browserdaten von diesem Gerät löschen</translation>
 <translation id="7136694880210472378">Als Standard festlegen</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Berechtigungen für 1 Website überprüft}other{Berechtigungen für # Websites überprüft}}</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
@@ -1833,6 +1838,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8223642481677794647">Feedkartenmenü</translation>
 <translation id="82296173028782770">Suchanfrage bearbeiten: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Zu Lesezeichen hinzufügen</translation>
+<translation id="8236917170563564587">Stattdessen diesen Tab teilen</translation>
 <translation id="8243077599929149377">Nutzername hinzufügen</translation>
 <translation id="8244387390464017490">„Neuer Tab“ anpassen</translation>
 <translation id="8244444485683708655">Kamerabild anhängen</translation>

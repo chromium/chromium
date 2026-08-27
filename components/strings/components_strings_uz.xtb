@@ -239,7 +239,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hech qanday ma’lumot yubormadi.</translation>
 <translation id="1393071644879491291">Siz ochayotgan saytda firibgarlar sizni aldab, parollaringiz, telefon yoki kredit karta raqamlaringizni oʻgʻirlashi yoki oʻchirishi mumkin zararli dasurni oʻrnatishi mumkin. Chrome xavfsizlik maqsadida zudlik bilan joriy sahifadan ortga qaytishni tavsiya qiladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Varaq ochiq boʻlsa ham, bu yerga kiritilgan saytlar javoblar uchun havola qilinmaydi. Kiritilgan sayt ayni damda yozishmada ishlatilayotgan boʻlsa, tizim undan foydalanishni toʻxtatishi uchun 30 daqiqagacha vaqt ketishi mumkin.</translation>
-<translation id="1402151528875251561">Tarixni yon panelda chiqarish</translation>
 <translation id="1405567553485452995">Och yashil</translation>
 <translation id="1406370515365284486">Toʻlov usulingiz baribir saqlanadi</translation>
 <translation id="1406500794671479665">Tekshirilmoqda...</translation>
@@ -1007,7 +1006,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2679216653373462289">Harakat va yorugʻlik sensorlaridan foydalaning</translation>
 <translation id="2679659833697380">Maʼlumotlaringiz qurilmangizga saqlandi</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> qurilmasidagi Chrome brauzeriga yuborildi.</translation>
 <translation id="2683195745483370038">Boshqa natijalar topildi</translation>
 <translation id="2686919536310834199">Yozishda yordam yuzasidan fikr-mulohaza yuborish.</translation>
 <translation id="2687555958734450033">Eng mos</translation>
@@ -1610,7 +1608,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3752181611900535304">Manzil hisobda saqlansinmi?</translation>
 <translation id="3752543821772132562">Rad etildi, chunki <ph name="POLICY_NAME" /> sozlanmagan.</translation>
 <translation id="3754210790023674521">Tasvir ustida tasvir rejimidan chiqish</translation>
-<translation id="3754664361823138853">Tarix sahifasini &amp;ochish</translation>
 <translation id="3757511311058373406">Avtomatik kezish filtrlari</translation>
 <translation id="3759461132968374835">Yaqinda yuz bergan ishdan chiqishlar haqidagi yozuvlar yo‘q. Ishdan chiqishlar jurnali o‘chiqligida yuz bergan ishdan chiqishlar bu yerda ko‘rsatilmaydi.</translation>
 <translation id="3760561303380396507">CVC oʻrniga Windows Hello ishlatilsinmi?</translation>
@@ -2054,7 +2051,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4473643328224505070">Chromeda yuqori darajali himoyalanish uchun <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />kengaytirilgan himoyani yoqing<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">Bu amal tashkilotingiz siyosatlarini buzishi mumkin</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Bu shakl xavfsiz emas. Avtomatik kiritish faolsizlantirildi.</translation>
 <translation id="4477350412780666475">Keyingi trek</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3523,7 +3519,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6998512609912910179">Shakllarni tezroq toʻldiring</translation>
 <translation id="7000094925113284872">Yulduzning hayot davrini bosqichma-bosqich koʻrsatib ber</translation>
 <translation id="7002897669829306463">Uy manzili, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7004562620237466965">Faqat shifrni yechish</translation>
 <translation id="7006930604109697472">Baribir yuborilsin</translation>
 <translation id="7009364359744329733">Hozirda karta ishlamayapti. Keyinroq qayta urining.</translation>
@@ -4347,6 +4342,7 @@ Batafsil axborot:
 <translation id="8410956920192583322">Oylik yoki 4 muddatli toʻlov</translation>
 <translation id="8412145213513410671">Ishdan chiqishlar (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Siz kodli iborani ikki marta bir xil kiritishingiz kerak.</translation>
+<translation id="8413126021676339697">Barcha tarixni ko‘rsatish</translation>
 <translation id="8414322570408428950">Kengaytma hodisasi yuz berdi</translation>
 <translation id="8416694386774425977">Tarmoq sozlamasi noto‘g‘ri, uni import qilib bo‘lmadi.
 Batafsil axborot:
@@ -4653,7 +4649,6 @@ Batafsil axborot:
 <translation id="8988966534058783995">Harakat sensorlaridan foydalanilsinmi?</translation>
 <translation id="899688752321268742"><ph name="URL" /> qurilmadan foydalanish axborotiga kirmoqchi</translation>
 <translation id="8997023839087525404">Sertifikatning ishonchlilik belgilari haqidagi ma’lumot server tomonidan taqdim etildi lekin rasmiy qoida asosida tekshirilmadi. Bu ba’zi sertifikatlar uchun ularning ishonchliligini tasdiqlash va hujumlardan himoyalash maqsadlarida talab qilinadi.</translation>
-<translation id="9000145382638074673">Qurilmalaringiz</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi-serveri foydalanuvchi nomi va parolni talab qiladi.</translation>
 <translation id="9001963517402879850">Sakrang!</translation>
 <translation id="9003263770394939629">Gemini taklif qilgan. Sozlamalar orqali yaxshilangan avtomatik kiritishni boshqaring.</translation>

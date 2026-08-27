@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">ميزة جديدة: يمكنك ترجمة كل من النص والصور على شاشتك</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1388276868779258475">‏يمكنك استخدام تطبيق Chromium لمواصلة التصفّح أثناء التنقل</translation>
-<translation id="1397530502368084401">‏&amp;إدارة الملفات الشخصية على Chromium</translation>
 <translation id="141901961143729572">شارِك أفكارك</translation>
 <translation id="1465192221147974788">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="1478370723027452770">‏الحصول على مساعدة بشأن Chrome for Testing</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="390528597099634151">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chromium. لتوفير تجربة تصفّح منفصلة دائمًا، يمكن لمتصفِّح Chromium إنشاء ملف شخصي خاص بك.</translation>
 <translation id="3909353120217047026">‏تنتهك هذه الإضافة "سياسة سوق Chrome الإلكتروني"، وقد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
-<translation id="3937491663738985329">‏تخصيص Chromium</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="3945058413678539331">‏يحاول Chromium نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="3954172517175569325">‏ستتم إزالة كلمات المرور وطرق الدفع والعناوين التي حفظتها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chromium، عليك تسجيل الدخول مجددًا.</translation>

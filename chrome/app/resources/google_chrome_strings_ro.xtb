@@ -455,7 +455,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5649156266046089790">Cu ajutorul profilurilor Chrome, poți separa toate informațiile din Chrome. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
 <translation id="5655063652337498476">Descoperă produse cu camera foto, urmărește scăderile de prețuri și multe altele din mers cu Chrome pe iOS.</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
-<translation id="566040795510471729">P&amp;ersonalizează Chrome</translation>
 <translation id="566568153320186256">Chrome economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Șterge datele Chrome din cont</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
@@ -682,7 +681,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="778331955594035129">Chrome necesită permisiuni pentru locație pentru acest site</translation>
 <translation id="7787950393032327779">Profilul pare să fie utilizat de alt proces Google Chrome (<ph name="PROCESS_ID" />), pe alt computer (<ph name="HOST_NAME" />). Chrome a blocat profilul pentru a nu se deteriora. Dacă aveți certitudinea că profilul nu este utilizat de alte procese, puteți să îl deblocați și să relansați Chrome.</translation>
-<translation id="7792336732117553384">&amp;Gestionează profilurile Chrome</translation>
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7804364787702057554">Contul tău în Chrome</translation>
 <translation id="7804947029129221742">Motorul de căutare a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8370748943308169953">Cod QR pentru conectarea la Chrome ca <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Activează / dezactivează Gemini în Chrome Canary</translation>
+<translation id="8380754585531979907">Folosește tastatura pentru a naviga între Gemini în Chrome și fila deschisă.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
 <translation id="8394720698884623075">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome</translation>
 <translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>

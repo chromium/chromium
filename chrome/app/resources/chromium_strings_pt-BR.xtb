@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Novidade! Agora é possível traduzir textos e imagens na tela.</translation>
 <translation id="1383876407941801731">Pesquise</translation>
 <translation id="1388276868779258475">Use o app Chromium para continuar navegando em qualquer lugar</translation>
-<translation id="1397530502368084401">&amp;Gerenciar perfis do Chromium</translation>
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1465192221147974788">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
@@ -267,7 +266,6 @@
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="390528597099634151">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chromium. Para manter sua navegação separada, o Chromium pode criar um perfil só para você.</translation>
 <translation id="3909353120217047026">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chromium para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
-<translation id="3937491663738985329">Personalizar o Chromium</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="3945058413678539331">O Chromium está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="3954172517175569325">As senhas, as formas de pagamento e os endereços salvos na sua Conta do Google serão removidos deste dispositivo. Para usá-los de novo no Chromium, faça login novamente.</translation>

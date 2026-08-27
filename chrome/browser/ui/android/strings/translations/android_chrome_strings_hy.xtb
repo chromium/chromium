@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Էկրանի լուսանկարում</translation>
 <translation id="1108214977745280468">Դիտել էջի վիճակագրությունը</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
+<translation id="1109663842695712985">Chrome-ի որոշ տվյալներ դեռ չեն պահվել Google հաշվում։ Նախքան դուրս գալը մի քանի րոպե սպասեք։ Եթե դուրս գաք հիմա, չպահված տվյալները կջնջվեն։</translation>
 <translation id="1111673857033749125">Ձեր մյուս սարքերում պահված էջանիշները կտեսնեք այստեղ:</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, «Նկար նկարի մեջ» ներդիր</translation>
 <translation id="1126696498560056882">Հաշիվների կառավարում այս սարքում</translation>
@@ -78,6 +79,7 @@
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1269129608791067105">Պատմությունը կգտնեք այստեղ</translation>
 <translation id="1280921956537356716">Միացնել խորհուրդներով ծանուցումները</translation>
+<translation id="1287449971634955609">Հեռացնել ընդլայնումները և ջնջել այն տվյալները, որոնք պահված են այս սարքում</translation>
 <translation id="1289129165308566697">Դիտեք ձեր պատմությունն այլ սարքերում</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
@@ -156,6 +158,7 @@
 <translation id="1598163867407640634">Օգտագործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, ամրացված ներդիր, որում տեսագրում է արվում</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ներդիր, որը հասանելի է այլ օգտատերերի</translation>
+<translation id="1601378265092360672">Այցելությունների պատմությունը ներառում է ձեր այցելած կայքերի պատմությունը, քուքիները և կայքերի այլ տվյալներ, քեշում պահված պատկերներն ու ֆայլերը, ինչպես նաև բացված ներդիրները</translation>
 <translation id="160275202205869636">Երբ պարամետրը միացված է, կարող եք օգտագործել և պահել տվյալները ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
@@ -561,6 +564,7 @@
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> տիրույթի բոլոր էջերը</translation>
 <translation id="3268048651973962414">Քաշեք վերև՝ որոնման արդյունքներ տեսնելու համար</translation>
+<translation id="3268205181992599708">Միացրեք խոսափողը՝ ձայնային կառավարումն օգտագործելու համար</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="3280562213547448728">Ձայնային որոնում</translation>
 <translation id="3282801380074962248">Ծավալել բաժինը</translation>
@@ -788,6 +792,7 @@
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Օգտագործել եք այս կայքում</translation>
 <translation id="4214315110991671325">Եթե դուք թույլատրում եք քուքիների օգտագործումը, Chrome-ը կարող է դրանք օգտագործել նախաբեռնման համար։</translation>
 <translation id="421517251707893998">Հպեք «Ամրացնել այս դյուրանցումը»</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">Հնչեցնել այս էջը</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, ընտրված և ամրացված ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="4225895483398857530">Գործիքագոտու դյուրանցում</translation>
@@ -807,6 +812,7 @@
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ձեր հեռախոսում</translation>
+<translation id="4295640788982898778">Ձեր ընդլայնումները պահված են ձեր Google հաշվում, սակայն միայն այս սարքում պահված բոլոր տվյալները կարող են ջնջվել</translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4298161202289999785">«<ph name="TAB_TITLE" />» ինկոգնիտո ներդիր, ընտրվածներից մեկը</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
@@ -830,6 +836,7 @@
 <translation id="4358630185957185589">Բացել Google Տեսապակին</translation>
 <translation id="435863252455918214">Կառավարեք ձեր ընդլայնումները Chrome-ի հիմնական ընտրացանկում</translation>
 <translation id="4359809482106103048">Ընդհանուր տեղեկություններ անվտանգության մասին</translation>
+<translation id="4374192654218566997">\n\nԴուք նաև կարող եք այս տվյալները հեռացնել սարքից՝</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4380055775103003110">Եթե խնդիրը չվերանա, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
@@ -974,6 +981,7 @@
 <translation id="4913169188695071480">Դադարեցնել թարմացումը</translation>
 <translation id="4921224083091001889">Գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome որպես <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Ձեր կազմակերպությունը չի խորհուրդ տալիս ներբեռնել այս հավելվածը</translation>
+<translation id="4924398189611529766">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին, այնպես որ կարող եք ավելի ապահով դիտարկել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Սքրինշոթ՝ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Դուք կարող եք պահել պատկերներն ու ֆայլերը՝ անցանց դիտելու կամ այլ հավելվածներում բացելու համար</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 էջանիշ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}one{# էջանիշ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}other{# էջանիշ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}}</translation>
@@ -984,6 +992,7 @@
 <translation id="4961107849584082341">Թարգմանել կայքը</translation>
 <translation id="4964614743143953889">Chrome-ը զգուշացնում է ձեզ վտանգավոր կայքերի և ներբեռնումների մասին</translation>
 <translation id="496607651705915226">Ձեր Google հաշվում նոր գաղտնաբառեր պահելու և դրանք օգտագործելու համար թարմացրեք Google Play ծառայությունները։</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – <ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">Փորձեք փոփոխել որոնման հարցումը կամ բացել Chrome-ի ամբողջական պատմությունը՝ այլ արդյունքներ տեսնելու համար։</translation>
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="497983151715419057">Այստեղ կգտնեք ձեր ոչ ակտիվ ներդիրներն ու դրանց խմբերը</translation>
@@ -1537,6 +1546,7 @@
 <translation id="7117485132243600300">Կառավարեք բովանդակության բաժանորդագրությունները, առաջարկվող թեմաները և որոնման առաջարկները</translation>
 <translation id="7119984597597798764">Փակել <ph name="INSTANCE_TITLE" />ը</translation>
 <translation id="7121179479711575744">Մուտք գործել Chrome</translation>
+<translation id="7130633106249192408">Ջնջել այցելությունների պատմությունն այս սարքից</translation>
 <translation id="7136694880210472378">Դարձնել կանխադրված</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 կայքի թույլտվությունները ստուգվել են}one{# կայքի թույլտվությունները ստուգվել են}other{# կայքի թույլտվությունները ստուգվել են}}</translation>
 <translation id="7138678301420049075">Այլ</translation>
@@ -1829,6 +1839,7 @@
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
 <translation id="82296173028782770">Փոփոխել որոնման «<ph name="SEARCH_QUERY" />» հարցումը</translation>
 <translation id="8236097722223016103">Ավելացնել էջանիշներում</translation>
+<translation id="8236917170563564587">Փոխարենը կիսվեք այս ներդիրով</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
 <translation id="8244387390464017490">Անհատականացրեք նոր ներդիրի էջը</translation>
 <translation id="8244444485683708655">Կցել տեսախցիկի նկարը</translation>

@@ -239,7 +239,6 @@
 <translation id="139305205187523129">لم يرسل <ph name="HOST_NAME" /> أي بيانات.</translation>
 <translation id="1393071644879491291">‏يتضمّن هذا الموقع الإلكتروني مهاجمِين قد يتمكّنون من خداعك لتثبيت برامج معيَّنة أو الكشف عن بيانات، مثل كلمات المرور أو رقم الهاتف أو أرقام بطاقات الائتمان. وينصح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">إنّ المواقع الإلكترونية المُضافة هنا لن تتم الإشارة إليها في الردود، حتى إذا كانت علامة التبويب مفتوحة. وإذا كان الموقع الإلكتروني المضاف مستخدَمًا حاليًا في سلسلة محادثات، قد يستغرق الأمر ما يصل إلى 30 دقيقة حتى تتوقف سلسلة المحادثات عن الإشارة إليه.</translation>
-<translation id="1402151528875251561">عرض السجلّ في اللوحة الجانبية</translation>
 <translation id="1405567553485452995">أخضر فاتح</translation>
 <translation id="1406370515365284486">ستظل طرق الدفع محفوظة</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2679216653373462289">استخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="2679659833697380">يتم حفظ معلوماتك على جهازك</translation>
-<translation id="2680837394649649718">‏تم إرسال علامة التبويب إلى Chrome على جهاز "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2683195745483370038">النتائج الأخرى التي تم العثور عليها</translation>
 <translation id="2686919536310834199">يمكنك إرسال ملاحظات حول ميزة "مساعدة في الكتابة".</translation>
 <translation id="2687555958734450033">أفضل حجم</translation>
@@ -1615,7 +1613,6 @@
 <translation id="3752181611900535304">هل تريد حفظ العنوان في الحساب؟</translation>
 <translation id="3752543821772132562">تم تجاهل السياسة بسبب عدم ضبط <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
-<translation id="3754664361823138853">&amp;فتح صفحة السجلّ</translation>
 <translation id="3757511311058373406">فلاتر التصفّح التلقائي</translation>
 <translation id="3759461132968374835">ليس لديك أي أعطال تم الإبلاغ عنها مؤخرًا. الأعطال التي حدثت عندما تم إيقاف الإبلاغ عن الأعطال لن تظهر هنا.</translation>
 <translation id="3760561303380396507">‏هل تريد استخدام Windows Hello بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
@@ -2059,7 +2056,6 @@
 <translation id="4473643328224505070">‏<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />يمكنك تفعيل ميزة "الحماية المحسَّنة"<ph name="END_ENHANCED_PROTECTION_LINK" /> للحصول على أعلى مستويات الأمان في Chrome.</translation>
 <translation id="4475299370877036544">قد ينتهك هذا الإجراء سياسات مؤسستك.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">هذا النموذج غير آمن. تمّ إيقاف ميزة "الملء التلقائي".</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
 <translation id="4480760608050410381">‏فيديو MP4</translation>
 <translation id="4489023393592172404">‏ظرف Kaku 4</translation>
@@ -3327,7 +3323,7 @@
 <translation id="6652101503459149953">‏استخدام Windows Hello</translation>
 <translation id="6654244995031366386">زجاج (مزخرف)</translation>
 <translation id="6655085656059574817">يساعد إبقاء حسابك مرتبطًا على إجراء عمليات الدفع بسرعة أكبر باستخدام "<ph name="BNPL_ISSUER_NAME" />"، ويمكنك إلغاء ربطه من خلال الانتقال إلى <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
-<translation id="6656935431494847393">يتم تضمين معلومات مثل حجوزات الطيران ومعلومات المركبة</translation>
+<translation id="6656935431494847393">يتم تضمين معلومات مثل حجوزات الطيران ومعلومات المركبات</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659246032834639189">هذا السعر منخفض</translation>
 <translation id="6660413144148052430">الموقع الجغرافي</translation>
@@ -3529,7 +3525,6 @@
 <translation id="6998512609912910179">ملء النماذج بشكل أسرع</translation>
 <translation id="7000094925113284872">أريد تحديد مراحل حياة النجم</translation>
 <translation id="7002897669829306463">عنوان المنزل: <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7004562620237466965">حل الشفرة فقط</translation>
 <translation id="7006930604109697472">إرسال على أيّ حال</translation>
 <translation id="7009364359744329733">هذه البطاقة غير متوفّرة حاليًا. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -4356,6 +4351,7 @@
 <translation id="8410956920192583322">يمكنك الدفع شهريًا أو على 4 أقساط</translation>
 <translation id="8412145213513410671">الأعطال (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">يجب إدخال عبارة المرور نفسها مرتين.</translation>
+<translation id="8413126021676339697">عرض السجلّ بكامله</translation>
 <translation id="8414322570408428950">يقع حدث الإضافة</translation>
 <translation id="8416694386774425977">إعداد الشبكة غير صالحة ويتعذّر استيرادها.
 التفاصيل الإضافية:
@@ -4663,7 +4659,6 @@
 <translation id="8988966534058783995">استخدام أدوات استشعار الحركة؟</translation>
 <translation id="899688752321268742">يريد الموقع الإلكتروني <ph name="URL" /> رصد استخدامك النشط لهذا الجهاز.</translation>
 <translation id="8997023839087525404">قدم الخادم شهادة لم يتم الكشف عنها علنًا باستخدام سياسة شهادة الشفافية. وهذا ضروري لبعض الشهادات، لضمان أنها جديرة بالثقة ومحمية من المهاجمين.</translation>
-<translation id="9000145382638074673">أجهزتك</translation>
 <translation id="9001074447101275817">يتطلب الخادم الوكيل <ph name="DOMAIN" /> اسم مستخدم وكلمة مرور.</translation>
 <translation id="9001963517402879850">اقفز.</translation>
 <translation id="9003263770394939629">‏من اقتراح Gemini. يمكنك إدارة ميزة "الملء التلقائي المحسّن" في الإعدادات.</translation>

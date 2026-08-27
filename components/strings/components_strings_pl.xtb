@@ -239,7 +239,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="139305205187523129">Serwer <ph name="HOST_NAME" /> nie wysłał żadnych danych.</translation>
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Witryny dodane tutaj nie będą używane jako odniesienie w odpowiedziach, nawet wtedy, gdy karta będzie otwarta. Jeśli dodana witryna jest obecnie używana w wątku, może minąć do 30 minut, zanim wątek przestanie się do niej odwoływać.</translation>
-<translation id="1402151528875251561">Pokaż historię w panelu bocznym</translation>
 <translation id="1405567553485452995">Jasnozielony</translation>
 <translation id="1406370515365284486">Twoje formy płatności nadal będą zapisane</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
@@ -1008,7 +1007,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2679216653373462289">Używaj czujników ruchu i światła</translation>
 <translation id="2679659833697380">Twoje informacje są zapisywane na urządzeniu</translation>
-<translation id="2680837394649649718">Wysłano do Chrome na urządzeniu <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Znaleziono inne wyniki</translation>
 <translation id="2686919536310834199">Prześlij opinię na temat opcji Pomóż mi napisać.</translation>
 <translation id="2687555958734450033">Najlepsze dopasowanie</translation>
@@ -1615,7 +1613,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3752181611900535304">Zapisać adres na koncie?</translation>
 <translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
-<translation id="3754664361823138853">&amp;Otwórz stronę historii</translation>
 <translation id="3757511311058373406">Filtry automatycznego przeglądania</translation>
 <translation id="3759461132968374835">Brak ostatnio zgłoszonych awarii. Awarie, które nastąpiły wówczas, gdy funkcja zgłaszania awarii była wyłączona, nie są tutaj wymienione.</translation>
 <translation id="3760561303380396507">Używać Windows Hello zamiast kodu CVC?</translation>
@@ -2059,7 +2056,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" />, aby korzystać z najwyższego poziomu zabezpieczeń Chrome</translation>
 <translation id="4475299370877036544">To działanie może naruszać zasady Twojej organizacji</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ten formularz nie jest bezpieczny. Autouzupełnianie zostało wyłączone.</translation>
 <translation id="4477350412780666475">Następny utwór</translation>
 <translation id="4480760608050410381">Film MP4</translation>
 <translation id="4489023393592172404">Koperta Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6998512609912910179">Szybciej wypełniaj formularze</translation>
 <translation id="7000094925113284872">Opisz etapy życia gwiazdy</translation>
 <translation id="7002897669829306463">Adres domowy, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Ostatnie karty</translation>
 <translation id="7004562620237466965">Tylko odszyfrowywanie</translation>
 <translation id="7006930604109697472">Wyślij mimo wszystko</translation>
 <translation id="7009364359744329733">Karta jest teraz niedostępna. Spróbuj ponownie później.</translation>
@@ -4354,6 +4349,7 @@ Dodatkowe informacje:
 <translation id="8410956920192583322">Miesięcznie lub w 4 ratach</translation>
 <translation id="8412145213513410671">Awarie (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Musisz dwukrotnie wpisać to samo hasło wielowyrazowe.</translation>
+<translation id="8413126021676339697">Wyświetl całą historię</translation>
 <translation id="8414322570408428950">Wystąpiło zdarzenie rozszerzenia</translation>
 <translation id="8416694386774425977">Konfiguracja sieci jest nieprawidłowa i nie można jej zaimportować.
 Dodatkowe informacje:
@@ -4660,7 +4656,6 @@ Dodatkowe informacje:
 <translation id="8988966534058783995">Użyć czujników ruchu?</translation>
 <translation id="899688752321268742"><ph name="URL" /> chce wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="8997023839087525404">Certyfikat przesłany przez serwer nie został publicznie ujawniony przez protokół Certificate Transparency. Jest to wymagane w przypadku niektórych certyfikatów jako potwierdzenie, że są one zaufane i zabezpieczone przed atakami.</translation>
-<translation id="9000145382638074673">Twoje urządzenia</translation>
 <translation id="9001074447101275817">Serwer proxy <ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="9001963517402879850">Skacz!</translation>
 <translation id="9003263770394939629">Sugerowane przez Gemini. Zarządzaj ulepszonym autouzupełnianiem w ustawieniach.</translation>

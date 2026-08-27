@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1095093219235104018">Cerca i emplena amb Gemini</translation>
 <translation id="1096992026380844478">La configuració de sincronització es restaurarà a partir de la darrera còpia de seguretat. <ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{S'ha verificat 1 contrasenya a l'instant}other{S'han verificat # contrasenyes a l'instant}}</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloqueja amb Face ID</translation>
 <translation id="1111776967764068277">T'has cansat de copiar enllaços?</translation>
@@ -1983,7 +1982,6 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7464143666517313304">Se suprimiran les adreces desades en aquest dispositiu.</translation>
 <translation id="7468373585447318060">Estigues al corrent de les baixades de preu en tots els productes que segueixes.</translation>
 <translation id="746872191028309255">Compra el que veus amb la càmera o la galeria de fotos.</translation>
-<translation id="7469215556134875318">des que utilitzes Comprovació de contrasenya</translation>
 <translation id="7471557245617580330">Crea una pestanya nova</translation>
 <translation id="7473555040328423550">Afegeix una pestanya</translation>
 <translation id="7476548258282096076">Aquesta targeta mostra els llocs web que visites més sovint.</translation>

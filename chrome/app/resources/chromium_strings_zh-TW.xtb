@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">新功能！你可以翻譯畫面上的文字和圖片</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1388276868779258475">使用 Chromium 應用程式，隨時隨地接續瀏覽</translation>
-<translation id="1397530502368084401">管理 Chromium 設定檔(&amp;M)</translation>
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1465192221147974788">如要分享視窗內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入這個 Chromium 設定檔。如要分開保存你的瀏覽資料，建議在 Chromium 中建立專屬設定檔。</translation>
 <translation id="3909353120217047026">這項擴充功能違反 Chrome 線上應用程式商店政策，可能不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
-<translation id="3937491663738985329">自訂 Chromium(&amp;U)</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不受支援。</translation>
 <translation id="3945058413678539331">Chromium 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="3954172517175569325">你儲存在 Google 帳戶中的密碼、付款方式和地址將從這部裝置中移除。如要在 Chromium 中再次使用這些資料，請重新登入。</translation>
@@ -766,6 +764,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8980139959902937527">在 <ph name="DEVICE_TYPE" /> 上使用 Chromium 應用程式，隨時隨地享有 Google 的安全防護</translation>
 <translation id="8981150672034878610">開啟設定檔時發生錯誤，無法啟動 Chromium。請試著重新啟動 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
+<translation id="8993855408334954620">使用鍵盤在 Chromium 內建 Gemini 和開啟的分頁之間切換。</translation>
 <translation id="9018218886431812662">安裝完成</translation>
 <translation id="9019929317751753759">為了讓 Chromium 的安全性更有保障，我們停用了以下這個未列在「<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />」中的擴充功能 (它可能是在您不知情的情況下加入瀏覽器)。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>

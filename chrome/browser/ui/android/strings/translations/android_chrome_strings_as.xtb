@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">স্ক্ৰীন কেপচাৰ</translation>
 <translation id="1108214977745280468">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি চাওক</translation>
 <translation id="1108938384783527433">ইতিহাস ছিংক কৰক</translation>
+<translation id="1109663842695712985">আপোনাৰ কিছুমান Chromeৰ ডেটা এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই। ছাইন আউট কৰাৰ আগতে কেইমিনিটমান অপেক্ষা কৰি চাওক। আপুনি এতিয়াই ছাইন আউট কৰিলে ছেভ নকৰা ডেটা মচি পেলোৱা হ’ব।</translation>
 <translation id="1111673857033749125">আপোনাৰ ডিভাইচত ছেভ কৰা বুকমাৰ্কবোৰ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Picture-in-Picture টেব</translation>
 <translation id="1126696498560056882">এই ডিভাইচটোত একাউণ্টসমূহ পৰিচালনা কৰক</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যৱহাৰ কৰক</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, পিন কৰি থোৱা ৰেকৰ্ডিং টেব</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, শ্বেয়াৰ কৰা টেব</translation>
+<translation id="1601378265092360672">ব্ৰাউজিঙৰ ডেটাত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, কুকি আৰু ছাইটৰ অন্য ডেটা, কেশ্ব কৰা প্ৰতিচ্ছবি আৰু ফাইল আৰু খোলা টেবসমূহ অন্তৰ্ভুক্ত</translation>
 <translation id="160275202205869636">অন কৰা থাকিলে, আপোনাৰ Google একাউণ্টত ডেটা ব্যৱহাৰ আৰু ছেভ কৰক। অফ থাকিলে, ডেটা কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{বাছনি কৰা ১টা বস্তু আঁতৰাওক}one{বাছনি কৰা #টা বস্তু আঁতৰাওক}other{বাছনি কৰা #টা বস্তু আঁতৰাওক}}</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">কুকি, কেশ্ব আৰু ছাইটৰ অন্য ডেটা</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ছেটিঙত স্ক্ৰীন লক অন কৰক<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">আপোনাৰ ফ’ন</translation>
+<translation id="4295640788982898778">আপোনাৰ এক্সটেনশ্বনসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হয়, কিন্তু সেইসমূহে কেৱল এই ডিভাইচটোত ছেভ কৰা ডেটা মচা যাব পাৰে</translation>
 <translation id="4296252229500326964">নতুন ইনক’গনিট’ টেব</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, একাধিক বাছনিযুক্ত ইনক’গ্নিট’ টেব</translation>
 <translation id="4298388696830689168">লিংক হৈ থকা ছাইটবোৰ</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens খোলক</translation>
 <translation id="435863252455918214">Chromeৰ মুখ্য মেনুত আপোনাৰ এক্সটেনশ্বনসমূহ পৰিচালনা কৰক</translation>
 <translation id="4359809482106103048">এক দৃষ্টিত সুৰক্ষা</translation>
+<translation id="4374192654218566997">\n\nআপুনি এই ডিভাইচটোৰ পৰা এই ডেটাও আঁতৰাব পাৰে:</translation>
 <translation id="4378154925671717803">ফ'ন</translation>
 <translation id="4380055775103003110">যদি এই সমস্যাটো হৈ থাকে, তেন্তে আপুনি <ph name="SITE_ETLD_PLUS_ONE" />ত অব্যাহত ৰাখিবলৈ আন উপায় চেষ্টা কৰিব পাৰে।</translation>
 <translation id="4384468725000734951">সন্ধান কৰিবলৈ Sogou ব্যৱহাৰ কৰি থকা হৈছে</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">আপুনি ফ’ল’ কৰা সমল আৰু পৰামৰ্শিত বিষয়বস্তু আৰু সন্ধানসমূহ পৰিচালনা কৰক</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ কৰক</translation>
 <translation id="7121179479711575744">Chromeত ছাইন-ইন কৰক</translation>
+<translation id="7130633106249192408">এই ডিভাইচটোৰ পৰা ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="7136694880210472378">ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১ টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}one{# টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}other{# টা ছাইটৰ বাবে অনুমতি পৰ্যালোচনা কৰা হৈছে}}</translation>
 <translation id="7138678301420049075">অন্য</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">ফীড কাৰ্ড মেনু</translation>
 <translation id="82296173028782770">সন্ধানৰ কুৱেৰী সম্পাদনা কৰক: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">বুকমাৰ্কত যোগ দিয়ক</translation>
+<translation id="8236917170563564587">তাৰ পৰিৱৰ্তে এই টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="8243077599929149377">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম যোগ দিয়ক</translation>
 <translation id="8244387390464017490">নতুন টেবৰ পৃষ্ঠা কাষ্টমাইজ কৰক</translation>
 <translation id="8244444485683708655">কেমেৰাৰ পৰা চিত্ৰ সংলগ্ন কৰক</translation>

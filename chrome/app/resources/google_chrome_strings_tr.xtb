@@ -456,7 +456,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5649156266046089790">Chrome profilleri ile tüm Chrome öğelerinizi ayırabilirsiniz. Arkadaşlar ve aile için profil oluşturun veya iş ile eğlenceyi ayırın.</translation>
 <translation id="5655063652337498476">iOS'te Chrome ile hareket halindeyken kameranızla ürünleri keşfedin, fiyat düşüşlerini takip edin ve daha fazlasını yapın.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> tehlikeli olabileceği için Chrome tarafından engellendi.</translation>
-<translation id="566040795510471729">&amp;Chrome'unuzu Özelleştirin</translation>
 <translation id="566568153320186256">Chrome, arka plan etkinliğini ve görsel efektleri (ör. kolay kaydırma ve video kare hızı) sınırlandırarak pil gücünden tasarruf eder. <ph name="BEGIN_LINK" />Enerji Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="567202749201779594">Hesabınızdaki Chrome verilerini temizleyin</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor}=1{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
@@ -683,7 +682,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>
 <translation id="778331955594035129">Bu site için Chrome'un konum iznine ihtiyacı var</translation>
 <translation id="7787950393032327779">Profilin başka bir bilgisayarda (<ph name="HOST_NAME" />) başka bir Google Chrome işlemi (<ph name="PROCESS_ID" />) tarafından kullanıldığı anlaşılıyor. Chrome, profili bozulmaması için kilitledi. Bu profili kullanan başka bir işlem olmadığından eminseniz profilin kilidini açabilir ve Chrome'u tekrar başlatabilirsiniz.</translation>
-<translation id="7792336732117553384">Chrome Profillerini &amp;Yönetin</translation>
 <translation id="7801699035218095297">Google Chrome şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="7804364787702057554">Chrome'daki hesabınız</translation>
 <translation id="7804947029129221742">Arama motorunuz Chrome dışından değiştirildi. Chrome, sizi korumak için bu işlemi geri alarak orijinal varsayılan ayara getirdi. <ph name="LEARN_MORE_LINK" /></translation>
@@ -755,6 +753,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="8370748943308169953">Chrome'da <ph name="USER_NAME" /> olarak oturum açmak için QR kodu</translation>
 <translation id="8377158135256176353">Chrome Canary'de Gemini'ı aç/kapat</translation>
+<translation id="8380754585531979907">Chrome'da Gemini ile açık sekmeniz arasında gezinmek için klavyenizi kullanın.</translation>
 <translation id="8387459386171870978">Chrome'u kullanmaya devam et</translation>
 <translation id="8394720698884623075">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder</translation>
 <translation id="8403038600646341038">Bilgisayar ekranındaki Chrome logosu.</translation>

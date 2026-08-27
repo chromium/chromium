@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Piga Picha ya Skrini</translation>
 <translation id="1108214977745280468">Angalia maarifa ya ukurasa</translation>
 <translation id="1108938384783527433">Usawazishaji wa historia</translation>
+<translation id="1109663842695712985">Baadhi ya data yako ya Chrome bado haijahifadhiwa kwenye Akaunti yako ya Google. Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data ambayo haijahifadhiwa itafutwa.</translation>
 <translation id="1111673857033749125">Alamisho zilizohifadhiwa katika vifaa vyako vingine zitaonekana hapa.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Kichupo cha Kupachika Picha Ndani ya Picha Nyingine</translation>
 <translation id="1126696498560056882">Dhibiti akaunti kwenye kifaa hiki</translation>
@@ -157,6 +158,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1598163867407640634">Tumia <ph name="SITE_ETLD_PLUS_ONE" /> ukiwa na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Umebandika Kichupo Kinachorekodi</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Kichupo Kinachowasilisha</translation>
+<translation id="1601378265092360672">Data ya kuvinjari inajumuisha historia yako ya kuvinjari, vidakuzi na data nyingine ya tovuti, faili na picha zilizowekwa kwenye akiba na vichupo vilivyofunguliwa</translation>
 <translation id="160275202205869636">Ukiwasha, tumia na uhifadhi data kwenye Akaunti yako ya Google. Ukizima, data inahifadhiwa kwenye kifaa hiki tu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ondoa kipengee 1 kilichochaguliwa}other{Ondoa vipengee # vilivyochaguliwa}}</translation>
 <translation id="1639239467298939599">Inapakia</translation>
@@ -810,6 +812,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4285846616383034558">Vidakuzi, akiba na data nyingine ya tovuti</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Washa kipengele cha kufunga skrini katika mipangilio ya Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">simu yako</translation>
+<translation id="4295640788982898778">Viendelezi vyako vimehifadhiwa kwenye Akaunti yako ya Google, lakini data yoyote vilivyohifadhi katika kifaa hiki pekee ndiyo inaweza kufutwa</translation>
 <translation id="4296252229500326964">Kichupo fiche kipya</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, Kichupo cha Faragha Kilichochaguliwa Mara Nyingi</translation>
 <translation id="4298388696830689168">Tovuti ambazo zimeunganishwa</translation>
@@ -833,6 +836,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4358630185957185589">Fungua Lenzi ya Google</translation>
 <translation id="435863252455918214">Dhibiti viendelezi vyako kwenye menyu kuu ya Chrome</translation>
 <translation id="4359809482106103048">Usalama kwa muhtasari</translation>
+<translation id="4374192654218566997">\n\nUnaweza pia kuondoa data hii kwenye kifaa hiki:</translation>
 <translation id="4378154925671717803">Simu</translation>
 <translation id="4380055775103003110">Iwapo hitilafu hii itaendelea kutokea, unaweza kujaribu njia nyingine ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Unatumia Sogou kutafuta</translation>
@@ -1541,6 +1545,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7117485132243600300">Dhibiti maudhui unayofuatilia, utafutaji na mada unazopendekezewa</translation>
 <translation id="7119984597597798764">Funga <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Ingia katika Chrome</translation>
+<translation id="7130633106249192408">Futa data ya kuvinjari kwenye kifaa hiki</translation>
 <translation id="7136694880210472378">Fanya iwe chaguomsingi</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Imekagua ruhusa katika tovuti 1}other{Imekagua ruhusa katika tovuti #}}</translation>
 <translation id="7138678301420049075">Nyingine</translation>
@@ -1833,6 +1838,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8223642481677794647">Menyu ya kadi ya mipasho</translation>
 <translation id="82296173028782770">Badilisha hoja ya utafutaji: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Weka kwenye alamisho</translation>
+<translation id="8236917170563564587">Shiriki kichupo hiki badala yake</translation>
 <translation id="8243077599929149377">Weka jina lako la mtumiaji</translation>
 <translation id="8244387390464017490">Badilisha upendavyo ukurasa mpya wa kichupo</translation>
 <translation id="8244444485683708655">Ambatisha picha ya kamera</translation>

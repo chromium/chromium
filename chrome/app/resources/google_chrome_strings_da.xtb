@@ -455,7 +455,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5649156266046089790">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="5655063652337498476">Find produkter med dit kamera, hold øje med prisfald m.m. på farten med Chrome i iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
-<translation id="566040795510471729">T&amp;ilpas Chrome</translation>
 <translation id="566568153320186256">Chrome sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Ryd Chrome-dataene på din konto</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering}=1{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
@@ -682,7 +681,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7777080907402804672">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="778331955594035129">Chrome skal have lokationstilladelse for at bruge dette website</translation>
 <translation id="7787950393032327779">Profilen ser ud til at være i brug i en anden Google Chrome-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chrome har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du låse profilen op og genstarte Chrome.</translation>
-<translation id="7792336732117553384">&amp;Administrer Chrome-profiler</translation>
 <translation id="7801699035218095297">Google Chrome forsøger at kopiere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="7804364787702057554">Din konto i Chrome</translation>
 <translation id="7804947029129221742">Din søgemaskine blev ændret uden for Chrome. Chrome har nulstillet den til den oprindelige standard for at beskytte dig. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8370748943308169953">QR-kode til at logge ind i Chrome som <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Slå Gemini i Chrome Canary til/fra</translation>
+<translation id="8380754585531979907">Brug dit tastatur til at navigere mellem Gemini i Chrome og din åbne fane.</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>
 <translation id="8394720698884623075">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chrome</translation>
 <translation id="8403038600646341038">Chrome-logo på en computerskærm.</translation>

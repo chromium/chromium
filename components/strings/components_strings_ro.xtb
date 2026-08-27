@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nu a trimis date.</translation>
 <translation id="1393071644879491291">Atacatorii de pe site-ul pe care ai încercat să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parolele, numărul de telefon sau numerele de carduri de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Site-urile pe care le adaugi aici nu vor fi folosite ca referință pentru răspunsuri, chiar dacă fila este deschisă. Dacă un site pe care îl adaugi este folosit într-un fir, poate dura până la 30 de minute pentru ca firul să nu mai facă referire la acesta.</translation>
-<translation id="1402151528875251561">Afișează istoricul în panoul lateral</translation>
 <translation id="1405567553485452995">Verde deschis</translation>
 <translation id="1406370515365284486">Metodele tale de plată se vor salva în continuare</translation>
 <translation id="1406500794671479665">Se verifică...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2679216653373462289">Folosește senzorii de mișcare și de lumină</translation>
 <translation id="2679659833697380">Informațiile tale sunt salvate pe dispozitiv</translation>
-<translation id="2680837394649649718">Trimis la Chrome pe <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Alte rezultate găsite</translation>
 <translation id="2686919536310834199">Trimite feedback pentru funcția Ajută-mă să scriu.</translation>
 <translation id="2687555958734450033">Potrivire optimă</translation>
@@ -1615,7 +1613,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3752181611900535304">Salvezi adresa în cont?</translation>
 <translation id="3752543821772132562">S-a ignorat deoarece <ph name="POLICY_NAME" /> nu este setat.</translation>
 <translation id="3754210790023674521">Ieși din modul picture-in-picture</translation>
-<translation id="3754664361823138853">&amp;Deschide pagina Istoric</translation>
 <translation id="3757511311058373406">Filtre de navigare automată</translation>
 <translation id="3759461132968374835">Nu există blocări raportate recent. Blocările care au avut loc când raportarea blocărilor era dezactivată nu vor apărea aici.</translation>
 <translation id="3760561303380396507">Folosești Windows Hello în loc de CVC?</translation>
@@ -2059,7 +2056,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activează Protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" /> pentru a beneficia de cel mai înalt nivel de securitate oferit de Chrome</translation>
 <translation id="4475299370877036544">Este posibil ca această acțiune să încalce politicile organizației tale</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Acest formular nu este sigur. Completarea automată a fost dezactivată.</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4480760608050410381">Videoclip MP4</translation>
 <translation id="4489023393592172404">Plic Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6998512609912910179">Completează mai rapid formularele</translation>
 <translation id="7000094925113284872">Reprezintă ciclul de viață al unei stele</translation>
 <translation id="7002897669829306463">Adresa de acasă, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">File recente</translation>
 <translation id="7004562620237466965">Numai descifrare</translation>
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7009364359744329733">Momentan, cardul nu este disponibil. Încearcă din nou mai târziu.</translation>
@@ -4354,6 +4349,7 @@ Detalii suplimentare:
 <translation id="8410956920192583322">Lunar sau în 4 rate</translation>
 <translation id="8412145213513410671">Blocări (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Trebuie să introduci aceeași expresie de acces de două ori.</translation>
+<translation id="8413126021676339697">Afișează întregul istoric</translation>
 <translation id="8414322570408428950">Are loc un eveniment legat de extensie</translation>
 <translation id="8416694386774425977">Configurația rețelei este nevalidă și nu a putut fi importată.
 Detalii suplimentare:
@@ -4661,7 +4657,6 @@ Detalii suplimentare:
 <translation id="8988966534058783995">Folosești senzorii de mișcare?</translation>
 <translation id="899688752321268742"><ph name="URL" /> vrea să afle când folosești activ dispozitivul</translation>
 <translation id="8997023839087525404">Serverul a prezentat un certificat care nu a fost dezvăluit public folosind politica privind Transparența certificatului. Aceasta este o cerință pentru anumite certificate, pentru a se asigura că sunt de încredere și pentru protecție împotriva atacatorilor.</translation>
-<translation id="9000145382638074673">Dispozitivele tale</translation>
 <translation id="9001074447101275817">Pentru a accesa proxy-ul <ph name="DOMAIN" />, trebuie să introduci un nume de utilizator și o parolă.</translation>
 <translation id="9001963517402879850">Sări!</translation>
 <translation id="9003263770394939629">Sugestie de la Gemini. Gestionează completarea automată îmbunătățită în setări.</translation>

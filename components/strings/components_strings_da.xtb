@@ -239,7 +239,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="139305205187523129"><ph name="HOST_NAME" /> har ikke sendt nogen data.</translation>
 <translation id="1393071644879491291">Hackere på det website, du har forsøgt at besøge, kan narre dig til at installere software eller afsløre data som f.eks. dine adgangskoder, dit telefonnummer eller dine kreditkortnumre. Chrome anbefaler på det kraftigste, at du går tilbage til Sikkerhed. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Der henvises ikke til websites, du tilføjer her, i svar, selvom fanen er åben. Hvis et website, du tilføjer, i øjeblikket bruges i en tråd, kan det tage op til 30 minutter, før tråden stopper med at henvise til det.</translation>
-<translation id="1402151528875251561">Vis historik i sidepanelet</translation>
 <translation id="1405567553485452995">Lysegrøn</translation>
 <translation id="1406370515365284486">Dine betalingsmetoder gemmes stadig</translation>
 <translation id="1406500794671479665">Verificerer...</translation>
@@ -1008,7 +1007,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2679216653373462289">Brug dine bevægelses- og lyssensorer</translation>
 <translation id="2679659833697380">Dine oplysninger gemmes på din enhed</translation>
-<translation id="2680837394649649718">Sendt til Chrome på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Andre resultater blev fundet</translation>
 <translation id="2686919536310834199">Send feedback om Hjælp mig med at skrive.</translation>
 <translation id="2687555958734450033">Bedste format</translation>
@@ -1615,7 +1613,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3752181611900535304">Vil du gemme adressen på kontoen?</translation>
 <translation id="3752543821772132562">Ignoreret, fordi <ph name="POLICY_NAME" /> ikke er angivet.</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
-<translation id="3754664361823138853">Åbn siden Historik</translation>
 <translation id="3757511311058373406">Filtre for automatisk browsing</translation>
 <translation id="3759461132968374835">Du har ingen nyligt rapporterede nedbrud. Nedbrud, der opstod, mens rapportering om nedbrud var deaktiveret, vises ikke her.</translation>
 <translation id="3760561303380396507">Vil du bruge Windows Hello i stedet for CVC?</translation>
@@ -2059,7 +2056,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivér forbedret beskyttelse<ph name="END_ENHANCED_PROTECTION_LINK" /> for at få Chromes højeste sikkerhedsniveau</translation>
 <translation id="4475299370877036544">Denne handling overtræder muligvis din organisations politikker</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Denne formular er ikke sikker. Autofyld er blevet deaktiveret.</translation>
 <translation id="4477350412780666475">Næste nummer</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Konvolut Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6998512609912910179">Udfyld formularer hurtigere</translation>
 <translation id="7000094925113284872">Kortlæg en stjernes livscyklus</translation>
 <translation id="7002897669829306463">Hjemmeadresse: <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Seneste faner</translation>
 <translation id="7004562620237466965">Kun dekryptering</translation>
 <translation id="7006930604109697472">Send alligevel</translation>
 <translation id="7009364359744329733">Dette kort er ikke tilgængeligt lige nu. Prøv igen senere.</translation>
@@ -4354,6 +4349,7 @@ Yderligere oplysninger:
 <translation id="8410956920192583322">Månedligt eller i 4 rater</translation>
 <translation id="8412145213513410671">Nedbrud (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du skal angive den samme adgangssætning to gange.</translation>
+<translation id="8413126021676339697">Vis hele historikken</translation>
 <translation id="8414322570408428950">En udvidelseshændelse udføres</translation>
 <translation id="8416694386774425977">Netværkskonfigurationen er ugyldig og kunne ikke importeres.
 Yderligere oplysninger:
@@ -4661,7 +4657,6 @@ Yderligere oplysninger:
 <translation id="8988966534058783995">Vil du bruge bevægelsessensorer?</translation>
 <translation id="899688752321268742"><ph name="URL" /> vil gerne vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="8997023839087525404">Serveren viste et certifikat, der ikke blev fremvist offentligt ved hjælp af politikken for Certifikatsgennemsigtighed. Dette påkræves for nogle certifikater for at sikre, at de er troværdige, og beskytter mod hackere.</translation>
-<translation id="9000145382638074673">Dine enheder</translation>
 <translation id="9001074447101275817">Proxyserveren <ph name="DOMAIN" /> kræver et brugernavn og en adgangskode.</translation>
 <translation id="9001963517402879850">Hop!</translation>
 <translation id="9003263770394939629">Foreslået af Gemini. Administrer forbedret autofyld i indstillingerne.</translation>

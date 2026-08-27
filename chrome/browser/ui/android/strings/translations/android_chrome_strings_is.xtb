@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Skjámyndataka</translation>
 <translation id="1108214977745280468">Skoða upplýsingar um síðu</translation>
 <translation id="1108938384783527433">Samstilla feril</translation>
+<translation id="1109663842695712985">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður óvistuðum gögnum eytt.</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, mynd-í-mynd-flipi</translation>
 <translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
@@ -811,6 +812,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4285846616383034558">Fótspor, skyndiminni og önnur vefsvæðagögn</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Kveiktu á skjálás í stillingum Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">síminn þinn</translation>
+<translation id="4295640788982898778">Viðbæturnar þínar eru vistaðar á Google-reikningnum þínum en öllum gögnum sem þær hafa aðeins vistað í þessu tæki kann að verða eytt</translation>
 <translation id="4296252229500326964">Nýr huliðsflipi</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, margvalinn huliðsflipi</translation>
 <translation id="4298388696830689168">Tengd vefsvæði</translation>
@@ -834,6 +836,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4358630185957185589">Opna Google-linsu</translation>
 <translation id="435863252455918214">Stjórnaðu viðbótunum þínum í aðalvalmynd Chrome</translation>
 <translation id="4359809482106103048">Öryggi í fljótu bragði</translation>
+<translation id="4374192654218566997">\n\nÞú getur einnig fjarlægt þessi gögn úr þessu tæki:</translation>
 <translation id="4378154925671717803">Sími</translation>
 <translation id="4380055775103003110">Ef þetta vandamál heldur áfram að koma upp geturðu prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Notar Sogou fyrir leit</translation>
@@ -1835,6 +1838,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8223642481677794647">Valmynd á straumspjaldi</translation>
 <translation id="82296173028782770">Breyta leitarfyrirspurninni: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Bæta við bókamerki</translation>
+<translation id="8236917170563564587">Deila þessum flipa í staðinn</translation>
 <translation id="8243077599929149377">Bættu notandanafninu þínu við</translation>
 <translation id="8244387390464017490">Sérsníða síðu nýrra flipa</translation>
 <translation id="8244444485683708655">Hengja mynd úr myndavél við</translation>

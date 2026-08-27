@@ -454,7 +454,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5649156266046089790">你可以用 Chrome 設定檔分隔各種 Chrome 資料，例如建立親朋好友的專屬設定檔，或依工作和娛樂分設不同設定檔。</translation>
 <translation id="5655063652337498476">在 iOS 使用 Chrome，隨時隨地都能透過相機探索產品、追蹤降價資訊，並享受更多便利功能。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>
-<translation id="566040795510471729">自訂 Chrome(&amp;U)</translation>
 <translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">清除帳戶中的 Chrome 資料</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用這項更新}=1{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
@@ -681,7 +680,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="7787950393032327779">另一台電腦 (<ph name="HOST_NAME" />) 的 Google Chrome 處理程序 (<ph name="PROCESS_ID" />) 正在使用這個設定檔。Chrome 已鎖定此設定檔，確保其不致受損。如果你確定其他處理程序目前未使用此設定檔，請予以解除鎖定，然後重新啟動 Chrome。</translation>
-<translation id="7792336732117553384">管理 Chrome 設定檔(&amp;M)</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="7804364787702057554">你在 Chrome 中的帳戶</translation>
 <translation id="7804947029129221742">搜尋引擎被 Chrome 以外的程式變更。Chrome 已將這項設定重設為原始預設值，保護你的安全。<ph name="LEARN_MORE_LINK" /></translation>
@@ -753,6 +751,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8370748943308169953">此 QR code 是用於以「<ph name="USER_NAME" />」登入 Chrome</translation>
 <translation id="8377158135256176353">開啟/關閉 Chrome Canary 內建的 Gemini</translation>
+<translation id="8380754585531979907">使用鍵盤在 Chrome 內建 Gemini 和開啟的分頁之間切換。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
 <translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>
 <translation id="8403038600646341038">電腦螢幕畫面中的 Chrome 標誌。</translation>

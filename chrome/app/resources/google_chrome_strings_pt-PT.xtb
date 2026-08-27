@@ -455,7 +455,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5649156266046089790">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="5655063652337498476">Descubra produtos com a câmara, acompanhe as quedas de preços e muito mais em qualquer lugar com o Chrome no iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
-<translation id="566040795510471729">P&amp;ersonalizar o seu Chrome</translation>
 <translation id="566568153320186256">O Chrome poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Limpar os dados do Chrome na sua conta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
@@ -682,7 +681,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>
 <translation id="778331955594035129">O Chrome necessita da autorização de acesso à localização para este site</translation>
 <translation id="7787950393032327779">O perfil parece estar a ser usado por outro processo do Google Chrome (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a usar este perfil, pode desbloqueá-lo e reiniciar o Chrome.</translation>
-<translation id="7792336732117553384">&amp;Gerir perfis do Chrome</translation>
 <translation id="7801699035218095297">O Google Chrome está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="7804364787702057554">A sua conta no Chrome</translation>
 <translation id="7804947029129221742">O seu motor de pesquisa foi alterado fora do Chrome. Para sua proteção, o Chrome repôs a predefinição original. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8370748943308169953">Código QR para iniciar sessão no Chrome como <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Ative/desative o Gemini no Chrome Canary</translation>
+<translation id="8380754585531979907">Use o teclado para navegar entre o Gemini no Chrome e o separador aberto.</translation>
 <translation id="8387459386171870978">Continuar a usar o Chrome</translation>
 <translation id="8394720698884623075">Verifica os URLs com listas de sites inseguros armazenados no Chrome</translation>
 <translation id="8403038600646341038">Logótipo do Chrome num ecrã de computador.</translation>

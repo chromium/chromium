@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> नी कोणताही डेटा पाठविला नाही.</translation>
 <translation id="1393071644879491291">तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवरील हल्लेखोर तुम्हाला सॉफ्टवेअर इंस्टॉल करण्यासाठी किंवा तुमचा पासवर्ड, फोन अथवा क्रेडिट कार्ड नंबर यांसारख्या गोष्टी उघड करून फसवण्याचा प्रयत्न करू शकतात. Chrome हे सुरक्षिततेकडे परतण्याची आवर्जून शिफारस करते. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">तुम्ही इथे जोडलेल्या साइटचा टॅब उघडा असला, तरीही प्रतिसादांसाठी संदर्भ दिला जाणार नाही. तुम्ही जोडलेली साइट सध्या थ्रेडमध्ये वापरली जात असल्यास, थ्रेडने तिचा संदर्भ देणे थांबवण्यासाठी ३० मिनिटे लागू शकतात.</translation>
-<translation id="1402151528875251561">साइड पॅनलमध्ये इतिहास दाखवा</translation>
 <translation id="1405567553485452995">फिकट हिरवा</translation>
 <translation id="1406370515365284486">तुमची पेमेंट पद्धत तरीही सेव्ह केली जाईल</translation>
 <translation id="1406500794671479665">सत्यापित करत आहे...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2679216653373462289">तुमचे मोशन आणि लाइट सेन्सर वापरा</translation>
 <translation id="2679659833697380">तुमची माहिती तुमच्या डिव्हाइसवर सेव्ह केली जाते</translation>
-<translation id="2680837394649649718">तुमच्या <ph name="DEVICE_NAME" /> वरील Chrome वर पाठवला आहे.</translation>
 <translation id="2683195745483370038">इतर परिणाम सापडले आहेत</translation>
 <translation id="2686919536310834199">मला लिहिण्यात मदत करा यासाठी फीडबॅक पाठवा.</translation>
 <translation id="2687555958734450033">सर्वोत्तम फिट</translation>
@@ -1614,7 +1612,6 @@
 <translation id="3752181611900535304">खात्यामध्ये पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> सेट केले नसल्याने दुर्लक्ष केले.</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
-<translation id="3754664361823138853">&amp;इतिहास पेज उघडा</translation>
 <translation id="3757511311058373406">ऑटोमॅटिक ब्राउझिंग फिल्टर</translation>
 <translation id="3759461132968374835">तुम्ही अलीकडे कोणतेही क्रॅश नोंदवले नाहीत. क्रॅश नोंदवणे अक्षम असताना झालेले क्रॅश येथे दिसून येणार नाहीत.</translation>
 <translation id="3760561303380396507">CVC ऐवजी Windows Hello वापरायचे का?</translation>
@@ -2058,7 +2055,6 @@
 <translation id="4473643328224505070">Chrome ची सर्वोच्च सुरक्षा पातळी मिळवण्यासाठी<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />वर्धित संरक्षण सुरू करा<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">ही कृती तुमच्या संस्थेच्या धोरणांचे उल्लंघन करू शकते</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">हा फॉर्म सुरक्षित नाही. ऑटोफिल बंद केले आहे.</translation>
 <translation id="4477350412780666475">पुढील ट्रॅक</translation>
 <translation id="4480760608050410381">MP4 व्हिडिओ</translation>
 <translation id="4489023393592172404">एन्व्हलप काकू ४</translation>
@@ -3529,7 +3525,6 @@
 <translation id="6998512609912910179">फॉर्म जलद भरा</translation>
 <translation id="7000094925113284872">ताऱ्याच्या जीवनचक्राचा आराखडा तयार कर</translation>
 <translation id="7002897669829306463">घराचा पत्ता, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">अलीकडील टॅब</translation>
 <translation id="7004562620237466965">केवळ अर्थ लावा</translation>
 <translation id="7006930604109697472">तरीही पाठवा</translation>
 <translation id="7009364359744329733">हे कार्ड सध्या उपलब्ध नाही. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
@@ -4354,6 +4349,7 @@
 <translation id="8410956920192583322">मासिक किंवा ४ हप्त्यांमध्ये</translation>
 <translation id="8412145213513410671">क्रॅश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे.</translation>
+<translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
 <translation id="8414322570408428950">एक्स्टेंशनसंबंधित इव्‍हेंट आढळला आहे</translation>
 <translation id="8416694386774425977">नेटवर्क कॉन्फिगरेशन चुकीचे आहे आणि इंपोर्ट केले जाऊ शकत नाही.
 अतिरिक्त तपशील:
@@ -4660,7 +4656,6 @@
 <translation id="8988966534058783995">मोशन सेन्सर वापरायचे आहेत का?</translation>
 <translation id="899688752321268742">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे <ph name="URL" /> ला जाणून घ्यायचे आहे</translation>
 <translation id="8997023839087525404">सर्व्हरने सर्टिफिकेट पारदर्शकता धोरणाचा वापर करून सार्वजनिकरत्या उघड न केलेले एक सर्टिफिकेट सादर केले. काही सर्टिफिकेट विश्वसनीय आहेत आणि हल्लेखोरांविरूद्ध संरक्षण करतात याची खात्री करण्‍यासाठी त्यांच्यासाठी ही एक आवश्यकता आहे.</translation>
-<translation id="9000145382638074673">तुमची डिव्हाइस</translation>
 <translation id="9001074447101275817">प्रॉक्सी <ph name="DOMAIN" /> ला वापरकर्ता नाव आणि पासवर्ड आवश्यक आहेत.</translation>
 <translation id="9001963517402879850">उडी मारा!</translation>
 <translation id="9003263770394939629">Gemini द्वारे सुचवलेले. सेटिंग्जमध्ये वर्धित ऑटोफिल व्यवस्थापित करा.</translation>

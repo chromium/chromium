@@ -239,7 +239,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="139305205187523129">Web <ph name="HOST_NAME" /> neodeslal žádná data.</translation>
 <translation id="1393071644879491291">Útočníci na webu, který jste se pokusili navštívit, by vás mohli přimět k instalaci softwaru nebo prozrazení věcí, jako jsou vaše hesla, telefon nebo čísla kreditních karet. Chrome důrazně doporučuje vrátit se do bezpečí. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Weby přidané sem se nebudou používat pro referenci při generování odpovědí, ani když budou otevřené na kartách. Pokud se web, který přidáte, právě používá ve vlákně, může trvat až 30 minut, než na něj vlákno přestane odkazovat.</translation>
-<translation id="1402151528875251561">Zobrazit historii na bočním panelu</translation>
 <translation id="1405567553485452995">Světle zelená</translation>
 <translation id="1406370515365284486">Vaše platební metody zůstanou uložené</translation>
 <translation id="1406500794671479665">Ověřování...</translation>
@@ -1008,7 +1007,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2679216653373462289">Používat senzory pohybu a světla</translation>
 <translation id="2679659833697380">Vaše informace se ukládají do zařízení</translation>
-<translation id="2680837394649649718">Odesláno do Chromu na zařízení <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Byly nalezeny další výsledky</translation>
 <translation id="2686919536310834199">Zpětná vazba k funkci Pomozte mi s psaním.</translation>
 <translation id="2687555958734450033">Přizpůsobit</translation>
@@ -1611,7 +1609,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3752181611900535304">Uložit adresu do účtu?</translation>
 <translation id="3752543821772132562">Ignorováno, protože není nastavena zásada <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Ukončit režim obrazu v obraze</translation>
-<translation id="3754664361823138853">&amp;Otevřít stránku Historie</translation>
 <translation id="3757511311058373406">Filtry automatického procházení</translation>
 <translation id="3759461132968374835">Nemáte žádná nedávno hlášená selhání. Selhání, ke kterým došlo, když byla služba hlášení o selháních vypnutá, se zde nezobrazují.</translation>
 <translation id="3760561303380396507">Použít Windows Hello namísto CVC?</translation>
@@ -2055,7 +2052,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zapněte rozšířenou ochranu<ph name="END_ENHANCED_PROTECTION_LINK" /> a získejte nejvyšší úroveň zabezpečení Chromu</translation>
 <translation id="4475299370877036544">Tato akce může být v rozporu se zásadami vaší organizace</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Tento formulář není zabezpečený. Automatické vyplňování bylo vypnuto.</translation>
 <translation id="4477350412780666475">Další skladba</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Obálka Kaku 4</translation>
@@ -3524,7 +3520,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6998512609912910179">Vyplňujte formuláře rychleji</translation>
 <translation id="7000094925113284872">Zmapuj životní cyklus hvězdy</translation>
 <translation id="7002897669829306463">Adresa domů, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Nedávno použité karty</translation>
 <translation id="7004562620237466965">Pouze dešifrovat</translation>
 <translation id="7006930604109697472">Přesto odeslat</translation>
 <translation id="7009364359744329733">Tato karta aktuálně není k dispozici. Zkuste to znovu později.</translation>
@@ -4348,6 +4343,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8410956920192583322">Měsíčně nebo ve 4 splátkách</translation>
 <translation id="8412145213513410671">Selhání (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Stejnou heslovou frázi musíte zadat dvakrát.</translation>
+<translation id="8413126021676339697">Zobrazit celou historii</translation>
 <translation id="8414322570408428950">Dojde k události rozšíření</translation>
 <translation id="8416694386774425977">Konfigurace sítě je neplatná a nelze ji importovat.
 Další podrobnosti:
@@ -4655,7 +4651,6 @@ Další podrobnosti:
 <translation id="8988966534058783995">Používat senzory pohybu?</translation>
 <translation id="899688752321268742">Web <ph name="URL" /> chce zjišťovat, kdy aktivně používáte toto zařízení</translation>
 <translation id="8997023839087525404">Server předložil certifikát, který nebyl zveřejněn v souladu se zásadou Certificate Transparency. U některých certifikátů je to z důvodu kontroly důvěryhodnosti a ochrany před útočníky vyžadováno.</translation>
-<translation id="9000145382638074673">Vaše zařízení</translation>
 <translation id="9001074447101275817">Proxy <ph name="DOMAIN" /> vyžaduje uživatelské jméno a heslo.</translation>
 <translation id="9001963517402879850">Vyskočte!</translation>
 <translation id="9003263770394939629">Návrh od Gemini. Vylepšené automatické vyplňování můžete spravovat v nastavení.</translation>

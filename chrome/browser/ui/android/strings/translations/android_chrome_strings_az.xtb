@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Ekranın Ani Çəkimi</translation>
 <translation id="1108214977745280468">Səhifə statistikasına baxın</translation>
 <translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
+<translation id="1109663842695712985">Müəyyən Chrome datası Google Hesabınızda yadda saxlanılmayıb. Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, yadda saxlanılmamış data silinəcək.</translation>
 <translation id="1111673857033749125">Digər cihazlarınızda yadda saxlanmış əlfəcinlər burada görünəcək.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Şəkildə şəkil tabı</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
@@ -157,6 +158,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə <ph name="SITE_ETLD_PLUS_ONE" /> istifadə edin</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Bərkidilmiş qeydəalma tabı</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Paylaşım tabı</translation>
+<translation id="1601378265092360672">Baxış datasına baxış tarixçəsi, kukilər və digər sayt datası, keşlənmiş şəkil və fayllar, həmçinin açıq tablar daxildir</translation>
 <translation id="160275202205869636">Aktiv olduqda datanı Google Hesabında istifadə edə və yadda saxlaya bilərsiniz. Deaktiv olduqda data yalnız bu cihazda yadda saxlanır.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Seçilmiş 1 elementi silin}other{Seçilmiş # elementi silin}}</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
@@ -810,6 +812,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4285846616383034558">Kukilər, keş və digər sayt datası</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ayarlarında ekran kilidini aktiv edin<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">telefonunuz</translation>
+<translation id="4295640788982898778">Artırmalarınız Google Hesabınızda yadda saxlanılıb, lakin onların yalnız bu cihazda yadda saxladığı istənilən data silinə bilər</translation>
 <translation id="4296252229500326964">Yeni Incognito tabı</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, Çoxseçimli anonim tab</translation>
 <translation id="4298388696830689168">Əlaqədar saytlar</translation>
@@ -833,6 +836,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4358630185957185589">Google Linzanı açın</translation>
 <translation id="435863252455918214">Chrome-un əsas menyusunda artırmaları idarə edin</translation>
 <translation id="4359809482106103048">Güvənliyə ötəri nəzər</translation>
+<translation id="4374192654218566997">\n\nDatanı bu cihazdan da silə bilərsiniz:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Bu problem davam etsə, <ph name="SITE_ETLD_PLUS_ONE" /> saytında davam etmək üçün başqa yolları sınaya bilərsiniz.</translation>
 <translation id="4384468725000734951">Axtarış üçün Sogou istifadə edilir</translation>
@@ -977,6 +981,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4913169188695071480">Yeniləməni dayandırın</translation>
 <translation id="4921224083091001889">Parolları və digər məlumatları bütün cihazlarınızda əldə etmək üçün Chrome-a <ph name="EMAIL" /> kimi daxil olun</translation>
 <translation id="4923173329789776645">Təşkilatınız tərəfindən endirmək tövsiyə edilmir</translation>
+<translation id="4924398189611529766">Anonim rejimdə axtarış etdiyiniz zaman bu cihazdan istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Beləliklə, daha məxfi şəkildə axtarış edə bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Skrinşot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Oflayn baxmaq və ya digər tətbiqlərdə paylaşmaq üçün şəkil və faylları yadda saxlaya bilərsiniz</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 əlfəcin və digər elementlər yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{# əlfəcin və digər elementlər yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
@@ -1539,6 +1544,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7117485132243600300">İzlədiyiniz kontenti, təklif olunan mövzuları və axtarışları idarə edin</translation>
 <translation id="7119984597597798764">Bağlayın: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Chrome-a daxil olun</translation>
+<translation id="7130633106249192408">Baxış datası bu cihazdan silinsin</translation>
 <translation id="7136694880210472378">Defolt edin</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 sayt üçün icazələr nəzərdən keçirilib}other{# sayt üçün icazələr nəzərdən keçirilib}}</translation>
 <translation id="7138678301420049075">Digər</translation>
@@ -1831,6 +1837,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8223642481677794647">Lent kartı menyusu</translation>
 <translation id="82296173028782770">Axtarış sorğusunu redaktə edin: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Əlfəcinlərə əlavə edin</translation>
+<translation id="8236917170563564587">Əvəzinə bu tabı paylaşın</translation>
 <translation id="8243077599929149377">İstifadəçi adınızı əlavə edin</translation>
 <translation id="8244387390464017490">Yeni tab səhifəsini fərdiləşdirin</translation>
 <translation id="8244444485683708655">Kamera şəkli əlavə edin</translation>

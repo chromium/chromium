@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
 <translation id="1096992026380844478">Suas configurações de sincronização serão restauradas com base no seu último backup. <ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 senha verificada instantaneamente}one{# senha verificada instantaneamente}other{# senhas verificadas instantaneamente}}</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquear com o Face ID</translation>
 <translation id="1111776967764068277">Cansou de copiar links?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3038136505713492417">Confirme sua identidade para usar suas chaves de acesso neste dispositivo</translation>
 <translation id="3039671569659952257">Excluir pasta</translation>
+<translation id="3041835740069544003">Agora, o Chrome pode detectar e preencher mais formulários com o preenchimento inteligente de formulários. Para isso, o conteúdo e os URLs das páginas podem ser processados em um espaço privado na nuvem. Você pode gerenciá-lo em Configurações.</translation>
 <translation id="3050988301648974170">Abrir o Check-up de senha</translation>
 <translation id="3053332585453689122">Envia os URLs que você visita e uma pequena amostra do conteúdo da página, dos downloads, da atividade da extensão e das informações do sistema para a Navegação segura do Google a fim de verificar se são nocivos.</translation>
 <translation id="3055102495753300780">Armazenamento de informações</translation>
@@ -1986,7 +1986,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="7464143666517313304">Essa ação exclui os endereços salvos neste dispositivo.</translation>
 <translation id="7468373585447318060">Acompanhe reduções nos preços de todos os produtos que você monitora.</translation>
 <translation id="746872191028309255">Compre o que está ao seu redor usando a câmera ou a galeria de fotos.</translation>
-<translation id="7469215556134875318">desde que você começou a usar o Check-up de Senha</translation>
 <translation id="7471557245617580330">Criar nova guia</translation>
 <translation id="7473555040328423550">Adicionar guia</translation>
 <translation id="7476548258282096076">Este card mostra os sites que você mais visita.</translation>

@@ -455,7 +455,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5649156266046089790">Com os perfis do Chrome, tudo fica bem separado e organizado. Crie perfis diferentes para amigos, familiares, trabalho e lazer.</translation>
 <translation id="5655063652337498476">Use a câmera para pesquisar produtos, ficar por dentro de descontos e muito mais com o Chrome no iOS.</translation>
 <translation id="565744775970812598">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Por isso, ele foi bloqueado pelo Chrome.</translation>
-<translation id="566040795510471729">&amp;Personalizar o Chrome</translation>
 <translation id="566568153320186256">O Chrome economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Limpar os dados do Chrome da sua conta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita.}=1{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador pede que você reinicie o Chrome para que esta atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
@@ -682,7 +681,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="778331955594035129">O Chrome precisa da permissão de localização para este site</translation>
 <translation id="7787950393032327779">O perfil parece estar em uso por outro processo do Google Chrome (<ph name="PROCESS_ID" />) em outro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que ele não seja corrompido. Se você tiver certeza de que nenhum outro processo está usando este perfil, pode desbloquear o perfil e reiniciar o Chrome.</translation>
-<translation id="7792336732117553384">&amp;Gerenciar perfis do Chrome</translation>
 <translation id="7801699035218095297">O Google Chrome está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="7804364787702057554">Sua conta no Chrome</translation>
 <translation id="7804947029129221742">Seu mecanismo de pesquisa foi alterado fora do Chrome. Para sua segurança, o Chrome redefiniu essa configuração para o padrão original. <ph name="LEARN_MORE_LINK" /></translation>

@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1388276868779258475">Hareket halindeyken göz atmaya devam etmek için Chromium uygulamasını kullanın</translation>
-<translation id="1397530502368084401">&amp;Chromium Profillerini Yönetin</translation>
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1465192221147974788">Pencerenizi paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
@@ -266,7 +265,6 @@
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chromium profilinde açık. Göz atma işlemlerinizi ayrı tutmak isterseniz Chromium, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="3909353120217047026">Bu uzantı Chrome Web Mağazası politikasını ihlal ettiği için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
-<translation id="3937491663738985329">Chromi&amp;um'unuzu Özelleştirin</translation>
 <translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="3945058413678539331">Chromium şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="3954172517175569325">Google Hesabınızda kaydettiğiniz şifreler, ödeme yöntemleri ve adresler bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
@@ -766,6 +764,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> cihazınızda Chromium uygulamasıyla hareket halindeyken Google'ın güvenliğinden yararlanın</translation>
 <translation id="8981150672034878610">Profiliniz açılırken bir hata oluştuğundan Chromium başlatılamıyor. Chromium'u yeniden başlatmayı deneyin.</translation>
 <translation id="8988036198400390003">Chromium profillerini yönetin</translation>
+<translation id="8993855408334954620">Chromium'da Gemini ile açık sekmeniz arasında gezinmek için klavyenizi kullanın.</translation>
 <translation id="9018218886431812662">Yükleme tamamlandı</translation>
 <translation id="9019929317751753759">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek aşağıdaki uzantıyı devre dışı bıraktık.</translation>
 <translation id="9022552996538154597">Chromium'da oturum aç</translation>

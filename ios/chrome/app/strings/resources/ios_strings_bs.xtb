@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Pretraži putem Google Objektiva</translation>
 <translation id="1095093219235104018">Pronađi i popuni uz Gemini</translation>
 <translation id="1096992026380844478">Postavke sinhronizacije će se vratiti na osnovu posljednje sigurnosne kopije. <ph name="BEGIN_LINK" />Pogledajte šta možete sinhronizirati<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{U trenu je potvrđena 1 lozinka}one{U trenu je potvrđena # lozinka}few{U trenu su potvrđene # lozinke}other{U trenu je potvrđeno # lozinki}}</translation>
 <translation id="1103523840287552314">Uvijek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Otključajte putem Face ID-a</translation>
 <translation id="1111776967764068277">Dosadilo vam je kopiranje linkova?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3038136505713492417">Potvrdite identitet da koristite pristupne ključeve na uređaju</translation>
 <translation id="3039671569659952257">Izbriši mapu</translation>
+<translation id="3041835740069544003">Chrome sada može otkriti i popuniti više obrazaca uz pametnije razumijevanje obrazaca. U tu se svrhu sadržaj i URL-ovi stranica mogu obraditi u privatnom prostoru u oblaku. Upravljajte u postavkama.</translation>
 <translation id="3050988301648974170">Otvorite Provjeru lozinke</translation>
 <translation id="3053332585453689122">Šalje URL-ove koje posjetite i mali uzorak sadržaja stranice, preuzimanja, aktivnosti ekstenzija i sistemskih informacija Sigurnom pregledanju na Googleu radi provjere jesu li štetni.</translation>
 <translation id="3055102495753300780">Pohrana informacija</translation>
@@ -1986,7 +1986,6 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="7464143666517313304">Ovo briše adrese sačuvane na ovom uređaju.</translation>
 <translation id="7468373585447318060">Pratite pad cijena za sve proizvode koje pratite.</translation>
 <translation id="746872191028309255">Kupite ono što vidite putem kamere ili galerije fotografija.</translation>
-<translation id="7469215556134875318">otkako koristite Provjeru lozinke</translation>
 <translation id="7471557245617580330">Napravi novu karticu</translation>
 <translation id="7473555040328423550">Dodaj karticu</translation>
 <translation id="7476548258282096076">Kartica pokazuje web lokacije koje ste najviše posjećivali.</translation>

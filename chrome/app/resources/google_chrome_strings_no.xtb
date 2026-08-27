@@ -455,7 +455,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5649156266046089790">Med Chrome-profiler kan du holde alle Chrome-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom jobb og fritid.</translation>
 <translation id="5655063652337498476">Oppdag produkter med kameraet, spor prisfall og enda mer når du er på farten med Chrome på iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være farlig, så Chrome har blokkert den.</translation>
-<translation id="566040795510471729">T&amp;ilpass Chrome</translation>
 <translation id="566568153320186256">Chrome sparer batteri ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer. <ph name="BEGIN_LINK" />Finn ut mer om strømsparing<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Slett Chrome-dataene i kontoen din</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
@@ -682,7 +681,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="778331955594035129">Chrome trenger posisjonstillatelse for dette nettstedet</translation>
 <translation id="7787950393032327779">Profilen ser ut til å være i bruk av en annen Google Chrome-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chrome har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chrome på nytt.</translation>
-<translation id="7792336732117553384">&amp;Administrer Chrome-profiler</translation>
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7804364787702057554">Kontoen din i Chrome</translation>
 <translation id="7804947029129221742">Søkemotoren er endret utenfor Chrome. For å beskytte deg har Chrome tilbakestilt den til den opprinnelige standardinnstillingen. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="8370748943308169953">QR-kode for å logge på Chrome som <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Slå av/på Gemini i Chrome Canary</translation>
+<translation id="8380754585531979907">Bruk tastaturet til å navigere mellom Gemini i Chrome og den åpne fanen.</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>
 <translation id="8394720698884623075">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder</translation>
 <translation id="8403038600646341038">Chrome-logo på en dataskjerm.</translation>

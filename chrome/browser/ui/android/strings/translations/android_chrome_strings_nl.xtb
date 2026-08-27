@@ -158,6 +158,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> gebruiken met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, vastgezet tabblad voor opname</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tabblad voor content delen</translation>
+<translation id="1601378265092360672">Browsegegevens omvatten je browsegeschiedenis, cookies en andere sitegegevens, gecachete afbeeldingen en bestanden, en geopende tabbladen</translation>
 <translation id="160275202205869636">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
 <translation id="1639239467298939599">Laden</translation>
@@ -1544,6 +1545,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7117485132243600300">Beheer content die je volgt en voorgestelde onderwerpen en zoekopdrachten</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> sluiten</translation>
 <translation id="7121179479711575744">Inloggen bij Chrome</translation>
+<translation id="7130633106249192408">Browsegegevens van dit apparaat verwijderen</translation>
 <translation id="7136694880210472378">Instellen als standaard</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor # sites}}</translation>
 <translation id="7138678301420049075">Overige</translation>
@@ -1836,6 +1838,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8223642481677794647">Feedkaartmenu</translation>
 <translation id="82296173028782770">Zoekopdracht bewerken: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Toevoegen aan bookmarks</translation>
+<translation id="8236917170563564587">In plaats daarvan dit tabblad delen</translation>
 <translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
 <translation id="8244387390464017490">Pagina Nieuw tabblad aanpassen</translation>
 <translation id="8244444485683708655">Camerafoto toevoegen</translation>

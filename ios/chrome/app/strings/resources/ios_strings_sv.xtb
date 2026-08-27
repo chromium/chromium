@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1095093219235104018">Hitta och fyll i med Gemini</translation>
 <translation id="1096992026380844478">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 lösenord har verifierats direkt}other{# lösenord har verifierats direkt}}</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Lås upp med Face ID</translation>
 <translation id="1111776967764068277">Är du trött på att kopiera länkar?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3038136505713492417">Verifiera din identitet om du vill använda dina nycklar på den här enheten</translation>
 <translation id="3039671569659952257">Radera mappen</translation>
+<translation id="3041835740069544003">Chrome kan nu identifiera och fylla i fler formulär med Smartare formulärförståelse. För att göra detta kan sidinnehåll och webbadresser behandlas i ett privat utrymme i molnet. Du hanterar detta i inställningarna.</translation>
 <translation id="3050988301648974170">Öppna Lösenordskontroll</translation>
 <translation id="3053332585453689122">Webbadresser som du besöker och ett litet urval av sidans innehåll, nedladdningar, tilläggsaktivitet och systeminformation skickas till Google Säker webbsökning, som kontrollerar om webbadresserna är skadliga.</translation>
 <translation id="3055102495753300780">Informationslagring</translation>
@@ -1986,7 +1986,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7464143666517313304">Detta raderar adresser som har sparats på den här enheten.</translation>
 <translation id="7468373585447318060">Håll koll på prissänkningar för alla produkter du bevakar.</translation>
 <translation id="746872191028309255">Köp det du ser med kameran eller fotogalleriet.</translation>
-<translation id="7469215556134875318">sedan du började använda Lösenordskontroll</translation>
 <translation id="7471557245617580330">Skapa ny flik</translation>
 <translation id="7473555040328423550">Lägg till flik</translation>
 <translation id="7476548258282096076">På det här kortet visas dina mest besökta webbplatser.</translation>

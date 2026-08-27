@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Google Lens orqali qidirish</translation>
 <translation id="1095093219235104018">Gemini yordamida toping va kiriting</translation>
 <translation id="1096992026380844478">Sinxronizatsiya sozlamalari oxirgi zaxiraviy fayl asosida tiklanadi. <ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 ta parol darhol tasdiqlandi}other{# ta parol darhol tasdiqlandi}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="1110772719190051587">Face ID bilan qulfni ochish</translation>
 <translation id="1111776967764068277">Havolalarni nusxalashdan charchadingizmi?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3038136505713492417">Bu qurilmada kirish kalitlaridan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="3039671569659952257">Jildni o‘chirish</translation>
+<translation id="3041835740069544003">Chrome endi shakllarni aqlli aniqlash funksiyasi yordamida shakllarni yanada yaxshi taniydi va ularni toʻldirishga yordam beradi. Buning uchun sahifa tarkibi va URL manzillari bulutdagi xavfsiz va maxfiy makonda qayta ishlanishi mumkin. Buni sozlamalar orqali boshqarish mumkin.</translation>
 <translation id="3050988301648974170">Parol tekshiruvini ochish</translation>
 <translation id="3053332585453689122">Siz tashrif buyurgan URL manzillar va sahifa kontenti, yuklab olishlar, kengaytmalar faoliyati va tizim maʼlumotlarining kichik namunasini ular zararli yoki yoʻqligini tekshirish uchun Google Saytlarni xavfsiz kezish xizmatiga yuboradi.</translation>
 <translation id="3055102495753300780">Axborot hajmi</translation>
@@ -1986,7 +1986,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7464143666517313304">Bunda mazkur qurilmada saqlangan manzillar oʻchib ketadi.</translation>
 <translation id="7468373585447318060">Qiziqarli mahsulotlar narxi tushganda xabar oling.</translation>
 <translation id="746872191028309255">Kamera yoki galereya orqali tegishli mahsulotlarni xarid qiling</translation>
-<translation id="7469215556134875318">Parol tekshiruvi ishlatilganidan beri</translation>
 <translation id="7471557245617580330">Yangi tab ochish</translation>
 <translation id="7473555040328423550">Varaq kiritish</translation>
 <translation id="7476548258282096076">Bu panelda eng koʻp ochiladigan saytlar chiqadi.</translation>

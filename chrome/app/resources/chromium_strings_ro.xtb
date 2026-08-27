@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Nou! Poți traduce atât textul, cât și imaginile de pe ecran</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1388276868779258475">Folosește aplicația Chromium pentru a continua navigarea din mers</translation>
-<translation id="1397530502368084401">&amp;Gestionează profilurile Chromium</translation>
 <translation id="141901961143729572">Spune-ți părerea</translation>
 <translation id="1465192221147974788">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
 <translation id="1478370723027452770">Primește ajutor pentru Chrome for Testing</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chromium. Ca să separi navigarea, poți crea propriul profil în Chromium.</translation>
 <translation id="3909353120217047026">Această extensie încalcă politica Magazinului web Chrome și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
-<translation id="3937491663738985329">P&amp;ersonalizează Chromium</translation>
 <translation id="3941890832296813527">Eroare la instalare: numele de fișier al programului de instalare nu este valid sau acceptat.</translation>
 <translation id="3945058413678539331">Chromium încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="3954172517175569325">Parolele, metodele de plată și adresele pe care le-ai salvat în Contul Google vor fi eliminate de pe acest dispozitiv. Pentru a le folosi din nou în Chromium, conectează-te din nou.</translation>
@@ -769,6 +767,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8980139959902937527">Profită de siguranța oferită de Google din mers, cu aplicația Chromium pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Nu se poate porni Chromium, deoarece a apărut o eroare la deschiderea profilului. Repornește Chromium.</translation>
 <translation id="8988036198400390003">Gestionează profilurile Chromium</translation>
+<translation id="8993855408334954620">Folosește tastatura pentru a naviga între Gemini în Chromium și fila deschisă.</translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
 <translation id="9019929317751753759">Pentru mai multă siguranță în Chromium, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>

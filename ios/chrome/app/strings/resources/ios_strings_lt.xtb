@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1095093219235104018">Raskite ir užpildykite naudodami „Gemini“</translation>
 <translation id="1096992026380844478">Sinchronizavimo nustatymai bus atkurti pagal paskutinę atsarginę kopiją. <ph name="BEGIN_LINK" />Žr., ką galite sinchronizuoti<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 slaptažodis patvirtintas iš karto}one{# slaptažodis patvirtintas iš karto}few{# slaptažodžiai patvirtinti iš karto}many{# slaptažodžio patvirtinta iš karto}other{# slaptažodžių patvirtinta iš karto}}</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Atrakinkite naudodami „Face ID“</translation>
 <translation id="1111776967764068277">Pavargote kopijuoti nuorodas?</translation>
@@ -1986,7 +1985,6 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="7464143666517313304">Bus ištrinti šiame įrenginyje išsaugoti adresai.</translation>
 <translation id="7468373585447318060">Sužinokite apie sumažintą stebimų produktų kainą.</translation>
 <translation id="746872191028309255">Pirkite tai, ką matote, naudodami fotoaparatą arba nuotraukų galeriją.</translation>
-<translation id="7469215556134875318">nuo slaptažodžio tikrinimo naudojimo pradžios</translation>
 <translation id="7471557245617580330">Kurti naują skirtuką</translation>
 <translation id="7473555040328423550">Pridėti skirtuką</translation>
 <translation id="7476548258282096076">Šioje kortelėje rodomi dažniausiai lankomos svetainės.</translation>

@@ -454,7 +454,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5649156266046089790">Dzięki profilom Chrome wszystkie swoje dane z tej przeglądarki możesz przechowywać osobno. Utwórz profile dla znajomych i rodziny albo oddziel pracę od rozrywki.</translation>
 <translation id="5655063652337498476">Odkrywaj produkty za pomocą aparatu, śledź obniżki cen i korzystaj z innych funkcji w Chrome na iOS.</translation>
 <translation id="565744775970812598">Plik <ph name="FILE_NAME" /> może być niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
-<translation id="566040795510471729">Spersonaliz&amp;uj Chrome</translation>
 <translation id="566568153320186256">Chrome oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu energii<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Wyczyść dane Chrome na swoim koncie</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację}=1{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. Okno incognito nie otworzy się ponownie.}few{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okna incognito nie otworzą się ponownie.}many{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okien incognito nie otworzy się ponownie.}other{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
@@ -681,7 +680,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7777080907402804672">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>
 <translation id="778331955594035129">Ta strona musi mieć w Chrome dostęp do lokalizacji</translation>
 <translation id="7787950393032327779">Wygląda na to, że profil jest używany przez inny proces Google Chrome (<ph name="PROCESS_ID" />) na innym komputerze (<ph name="HOST_NAME" />). Chrome zablokował profil, by zapobiec jego uszkodzeniu. Jeśli masz pewność, że żadne inne procesy nie używają tego profilu, możesz go odblokować i ponownie uruchomić Chrome.</translation>
-<translation id="7792336732117553384">Za&amp;rządzaj profilami Chrome</translation>
 <translation id="7801699035218095297">Google Chrome próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="7804364787702057554">Twoje konto w Chrome</translation>
 <translation id="7804947029129221742">Twoja wyszukiwarka została zmieniona poza Chrome. Aby Cię chronić, przeglądarka Chrome zresetowała to ustawienie do pierwotnej wartości domyślnej. <ph name="LEARN_MORE_LINK" /></translation>
@@ -753,6 +751,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8370748943308169953">Kod QR do logowania się w Chrome jako <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Włącz lub wyłącz Gemini w Chrome Canary</translation>
+<translation id="8380754585531979907">Używaj klawiatury, aby przechodzić między Gemini w Chrome a otwartą kartą.</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>
 <translation id="8394720698884623075">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome.</translation>
 <translation id="8403038600646341038">Logo Chrome na ekranie komputera.</translation>

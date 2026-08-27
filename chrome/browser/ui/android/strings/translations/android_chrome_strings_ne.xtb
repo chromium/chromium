@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
 <translation id="1108214977745280468">यो पेजको विश्लेषणात्मक डेटा हेर्नुहोस्</translation>
 <translation id="1108938384783527433">ब्राउजिङ इतिहास सिंक गर्नुहोस्</translation>
+<translation id="1109663842695712985">तपाईंको Chrome का केही डेटा अहिलेसम्म तपाईंको Google खातामा सेभ गरिएका छैनन्। साइन आउट गर्नुअघि केही मिनेट पर्खी हेर्नुहोस्। तपाईंले अहिले नै साइन आउट गर्नुभयो भने सेभ नगरिएको डेटा मेटाइने छ।</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Picture-in-Picture ट्याब</translation>
 <translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -157,6 +158,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, पिन गरिएको रेकर्डिङ ट्याब</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, सेयरिङ ट्याब</translation>
+<translation id="1601378265092360672">ब्राउजिङ डेटामा तपाईंको ब्राउजिङ हिस्ट्री, कुकी तथा अन्य साइट डेटा, क्यास गरिएका फोटो तथा फाइल र खुला ट्याबहरू समावेश हुन्छन्</translation>
 <translation id="160275202205869636">यो सुविधा अन हुँदा आफ्नो Google खातामा डेटा प्रयोग र सेभ गर्नुहोस्। यो सुविधा अफ हुँदा उक्त डेटा यो डिभाइसमा मात्र सेभ गरिन्छ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु हटाउनुहोस्}other{चयन गरिएका # वस्तुहरू हटाउनुहोस्}}</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -810,6 +812,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4285846616383034558">कुकी, क्यास र अन्य साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android का सेटिङमा गई स्क्रिन लक अन गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">तपाईंको फोन</translation>
+<translation id="4295640788982898778">तपाईंका एक्स्टेन्सनहरू तपाईंको Google खातामा सेभ गरिन्छन् तर ती एक्स्टेन्सनले यो डिभाइसमा मात्र सेभ गरेका सबै डेटा मेटाइन सक्छ</translation>
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
@@ -833,6 +836,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4358630185957185589">Google लेन्स खोल्नुहोस्</translation>
 <translation id="435863252455918214">Chrome को मुख्य मेनुमा गई आफ्ना एक्स्टेन्सनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4359809482106103048">सुरक्षाको छोटो विवरण</translation>
+<translation id="4374192654218566997">\n\nतपाईं यस डिभाइसबाट यो डेटा हटाउन पनि सक्नुहुन्छ:</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4380055775103003110">यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
@@ -1540,6 +1544,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7117485132243600300">आफूले फलो गर्ने सामग्री र सिफारिस गरिएका विषय तथा खोजहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="7121179479711575744">Chrome मा साइन इन गर्नुहोस्</translation>
+<translation id="7130633106249192408">यो डिभाइसबाट ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7136694880210472378">डिफल्ट बनाउनुहोस्</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमतिको समीक्षा गरिएको छ}other{# वटा साइटलाई दिइएका अनुमतिको समीक्षा गरिएको छ}}</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -1832,6 +1837,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8223642481677794647">फिड कार्ड मेनु</translation>
 <translation id="82296173028782770">किवर्ड सम्पादन गर्नुहोस्: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">बुकमार्कहरूमा हाल्नुहोस्</translation>
+<translation id="8236917170563564587">बरु यो ट्याब सेयर गर्नुहोस्</translation>
 <translation id="8243077599929149377">आफ्नो युजरनेम हाल्नुहोस्</translation>
 <translation id="8244387390464017490">नयाँ ट्याब पेज कस्टमाइज गर्नुहोस्</translation>
 <translation id="8244444485683708655">क्यामेराले खिचेको फोटो एट्याच गर्नुहोस्</translation>

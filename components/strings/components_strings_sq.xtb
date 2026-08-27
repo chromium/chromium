@@ -239,7 +239,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nuk dërgoi asnjë të dhënë.</translation>
 <translation id="1393071644879491291">Sulmuesit në sajtin që u përpoqe të vizitoje mund të të mashtrojnë që të instalosh një softuer ose të zbulosh gjëra të tilla si fjalëkalimet, numrat e telefonit ose të kartave të kreditit. Chrome rekomandon shumë të kthehesh aty ku je i sigurt. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Sajtet që shton këtu nuk do të referohen për përgjigje, edhe nëse skeda është e hapur. Nëse një sajt që shton po përdoret aktualisht në një bashkëbisedim, mund të duhen deri në 30 minuta që bashkëbisedimi të mos e referojë më.</translation>
-<translation id="1402151528875251561">Shfaq "Historikun" në "Panelin anësor"</translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
 <translation id="1406370515365284486">Mënyrat e tua të pagesës do të ruhen përsëri</translation>
 <translation id="1406500794671479665">Po verifikon...</translation>
@@ -1008,7 +1007,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2679216653373462289">Përdor sensorët e lëvizjes dhe të dritës</translation>
 <translation id="2679659833697380">Informacionet e tua ruhen në pajisjen tënde</translation>
-<translation id="2680837394649649718">U dërgua te Chrome në <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Rezultate të tjera të gjetura</translation>
 <translation id="2686919536310834199">Dërgo komente për "Më ndihmo të shkruaj".</translation>
 <translation id="2687555958734450033">Përshtatja më e mirë</translation>
@@ -1615,7 +1613,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3752181611900535304">Të ruhet adresa te llogaria?</translation>
 <translation id="3752543821772132562">Shpërfillur sepse politika (<ph name="POLICY_NAME" />) nuk është caktuar.</translation>
 <translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
-<translation id="3754664361823138853">&amp;Hap faqen e "Historikut"</translation>
 <translation id="3757511311058373406">Filtrat e shfletimit automatik</translation>
 <translation id="3759461132968374835">Nuk ke ndërprerje aksidentale të raportuara së fundi. Ndërprerjet aksidentale që kanë ndodhur kur raportimi i tyre ka qenë i çaktivizuar, nuk do të shfaqen këtu.</translation>
 <translation id="3760561303380396507">Të përdoret Windows Hello në vend të CVC?</translation>
@@ -2059,7 +2056,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivizo mbrojtjen e përmirësuar<ph name="END_ENHANCED_PROTECTION_LINK" /> për të marrë nivelin më të lartë të sigurisë të Chrome</translation>
 <translation id="4475299370877036544">Ky veprim mund të shkelë politikat e organizatës sate</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ky formular nuk është i sigurt. Plotësimi automatik është çaktivizuar.</translation>
 <translation id="4477350412780666475">Kënga tjetër</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Zarf Kaku 4</translation>
@@ -3528,7 +3524,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6998512609912910179">Plotësoji formularët më shpejt</translation>
 <translation id="7000094925113284872">Harto ciklin e jetës së një ylli</translation>
 <translation id="7002897669829306463">Adresa e shtëpisë, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7004562620237466965">Deshifro më shumë</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
 <translation id="7009364359744329733">Kjo kartë nuk ofrohet për momentin. Provo përsëri më vonë.</translation>
@@ -4352,6 +4347,7 @@ Detaje shtesë:
 <translation id="8410956920192583322">Çdo muaj ose me 4 këste</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
+<translation id="8413126021676339697">Shfaq historikun e plotë</translation>
 <translation id="8414322570408428950">Ndodh ngjarja e shtesës</translation>
 <translation id="8416694386774425977">Konfigurimi i rrjetit është i pavlefshëm dhe nuk mund të importohej.
 Detaje shtesë:
@@ -4658,7 +4654,6 @@ Detaje shtesë:
 <translation id="8988966534058783995">Të përdoren sensorët e lëvizjes?</translation>
 <translation id="899688752321268742"><ph name="URL" /> dëshiron të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="8997023839087525404">Serveri paraqiti një certifikatë që nuk ishte zbuluar publikisht duke përdorur politikën e "Transparencës së certifikatës". Kjo është e detyrueshme për disa certifikata, për të siguruar besueshmërinë e tyre dhe për t'u mbrojtur kundër sulmuesve.</translation>
-<translation id="9000145382638074673">Pajisjet e tua</translation>
 <translation id="9001074447101275817">Përfaqësuesi <ph name="DOMAIN" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
 <translation id="9001963517402879850">Kërce!</translation>
 <translation id="9003263770394939629">Sugjeruar nga Gemini. Menaxho plotësimin automatik të përmirësuar te cilësimet.</translation>

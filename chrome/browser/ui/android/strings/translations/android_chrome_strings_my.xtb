@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">ဖန်သားပြင် ပုံဖမ်းခြင်း</translation>
 <translation id="1108214977745280468">စာမျက်နှာ၏သိကောင်းစရာ ကြည့်ရန်</translation>
 <translation id="1108938384783527433">မှတ်တမ်းစင့်ခ်လုပ်ခြင်း</translation>
+<translation id="1109663842695712985">သင်၏ Chrome ဒေတာအချို့ကို သင်၏ Google Account တွင် မသိမ်းရသေးပါ။ မထွက်မီ မိနစ်အနည်းငယ် စောင့်ပေးပါ။ ယခုထွက်လိုက်ပါက မသိမ်းရသေးသော ဒေတာကို ဖျက်ပါမည်။</translation>
 <translation id="1111673857033749125">သင်၏ အခြားစက်ပစ္စည်းများပေါ်တွင် သိမ်းဆည်းထားသည့် ဝဘ်လိပ်စာများ ဤနေရာတွင် ပေါ်ပါမည်။</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း တဘ်</translation>
 <translation id="1126696498560056882">ဤစက်ပေါ်ရှိ အကောင့်များကို စီမံခန့်ခွဲခြင်း</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို အသုံးပြုပါ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />၊ မျှဝေနေသောတဘ်</translation>
+<translation id="1601378265092360672">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာတွင် သင်၏ ကြည့်ရှုမှုမှတ်တမ်း၊ ကွတ်ကီးနှင့် အခြားဝဘ်ဆိုက် ဒေတာ၊ ကက်ရှ်သိမ်းထားသော ပုံနှင့် ဖိုင်များ၊ ဖွင့်ထားသောတဘ်များ ပါဝင်သည်</translation>
 <translation id="160275202205869636">ဖွင့်ထားချိန်၌ ဒေတာကို သင့် Google Account တွင် သုံးပြီး သိမ်းပါသည်။ ပိတ်ထားချိန်၌ ဒေတာကို ဤစက်တွင်သာ သိမ်းပါသည်။</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို ဖယ်ရှားရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို ဖယ်ရှားရန်}}</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">ကွတ်ကီး၊ ကက်ရှ်နှင့် အခြား ဝဘ်ဆိုက်ဒေတာများ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ဆက်တင်များတွင် ဖန်သားပြင်လော့ခ်ဖွင့်ရန်<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">သင့်ဖုန်း</translation>
+<translation id="4295640788982898778">နောက်ဆက်တွဲများကို သင်၏ Google Account တွင် သိမ်းထားသော်လည်း ဤစက်တစ်ခုတည်း၌သာ သိမ်းထားသော ဒေတာများ ပျက်သွားနိုင်သည်</translation>
 <translation id="4296252229500326964">ရုပ်ဖျက်တဘ် အသစ်</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် ရုပ်ဖျက်တဘ်</translation>
 <translation id="4298388696830689168">လင့်ခ်ချိတ်ထားသော ဝဘ်ဆိုက်များ</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens ဖွင့်ရန်</translation>
 <translation id="435863252455918214">Chrome ပင်မမီနူးတွင် သင့်နောက်ဆက်တွဲများကို စီမံရန်</translation>
 <translation id="4359809482106103048">လုံခြုံမှု အကျဉ်းချုပ်</translation>
+<translation id="4374192654218566997">\n\nဤဒေတာကိုလည်း ဤစက်မှ ဖယ်ရှားနိုင်သည်-</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4380055775103003110">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
@@ -1540,6 +1544,7 @@
 <translation id="7117485132243600300">သင်လိုက်ကြည့်သော အချက်အလက်၊ အကြံပြုထားသော အကြောင်းအရာနှင့် ရှာဖွေမှုများကို စီမံနိုင်သည်</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ကို ပိတ်ရန်</translation>
 <translation id="7121179479711575744">Chrome သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="7130633106249192408">ဤစက်မှ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ရန်</translation>
 <translation id="7136694880210472378">ပုံသေ လုပ်ရန်</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ဝဘ်ဆိုက် ၁ ခုအတွက် ခွင့်ပြုချက်များကို စိစစ်ထားသည်}other{ဝဘ်ဆိုက် # ခုအတွက် ခွင့်ပြုချက်များကို စိစစ်ထားသည်}}</translation>
 <translation id="7138678301420049075">အခြား</translation>
@@ -1832,6 +1837,7 @@
 <translation id="8223642481677794647">ဖိဒ်ကတ်မီနူး</translation>
 <translation id="82296173028782770">ရှာဖွေစာလုံး ပြင်ရန်- <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">လိပ်စာများသို့ ထည့်ရန်</translation>
+<translation id="8236917170563564587">၎င်းအစား ဤတဘ်ကို မျှဝေရန်</translation>
 <translation id="8243077599929149377">သင့်အသုံးပြုသူအမည်ကို ထည့်ခြင်း</translation>
 <translation id="8244387390464017490">တဘ်အသစ်စာမျက်နှာ စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="8244444485683708655">ကင်မရာဓာတ်ပုံ ပူးတွဲရန်</translation>

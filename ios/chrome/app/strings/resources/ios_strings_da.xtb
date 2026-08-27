@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1095093219235104018">Find og udfyld med Gemini</translation>
 <translation id="1096992026380844478">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. <ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 adgangskode er verificeret med det samme}one{# adgangskode er verificeret med det samme}other{# adgangskoder er verificeret med det samme}}</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Lås op med Face ID</translation>
 <translation id="1111776967764068277">Er du træt af at kopiere links?</translation>
@@ -1986,7 +1985,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7464143666517313304">Denne handling sletter adresser, der er gemt på denne enhed.</translation>
 <translation id="7468373585447318060">Hold dig opdateret om prisfald på alle de produkter, du holder øje med.</translation>
 <translation id="746872191028309255">Køb det, du ser, ved hjælp af dit kamera eller billedgalleri.</translation>
-<translation id="7469215556134875318">siden anvendelsen af Adgangskodetjek</translation>
 <translation id="7471557245617580330">Opret ny fane</translation>
 <translation id="7473555040328423550">Tilføj fane</translation>
 <translation id="7476548258282096076">Dette kort viser de websites, du besøger oftest.</translation>

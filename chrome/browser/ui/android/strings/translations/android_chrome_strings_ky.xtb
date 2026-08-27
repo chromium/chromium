@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Экранды тартып алуу</translation>
 <translation id="1108214977745280468">Барак статистикасын көрүү</translation>
 <translation id="1108938384783527433">Таржымалды шайкештирүү</translation>
+<translation id="1109663842695712985">Chrome'догу айрым маалымат Google аккаунтуңузга сактала элек. Аккаунттан чыгуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр чыгып кетсеңиз, сакталбаган маалымат өчүрүлөт.</translation>
 <translation id="1111673857033749125">Башка түзмөктөрүңүздө сакталган кыстармалар ушул жерден көрүнөт.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Сүрөттөгү сүрөт өтмөгү</translation>
 <translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
@@ -157,6 +158,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> сайтын <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен колдонуңуз</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, кадалган өтмөктө медиа жаздырылууда</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" /> өтмөгүндө контент бөлүшүлүүдө</translation>
+<translation id="1601378265092360672">Серептөө маалыматына көрүлгөн вебсайттар, cookie файлдары жана сайттагы башка маалымат, кештелген сүрөттөр жана файлдар жана ачык өтмөктөр кирет</translation>
 <translation id="160275202205869636">Параметр күйүп турганда, маалыматты колдонуп, Google аккаунтуңузга сактоого болот. Параметр өчүп турганда, маалымат ушул түзмөккө гана сакталат.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Тандалган 1 нерсени алып салуу}other{Тандалган # нерсени алып салуу}}</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
@@ -810,6 +812,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4285846616383034558">Cookie файлдары, кештер жана сайттагы маалымат</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android'дин параметрлеринен экранды кулпулоону күйгүзүңүз<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">телефонуңуз</translation>
+<translation id="4295640788982898778">Кеңейтүүлөрүңүз Google аккаунтуңузда сакталат, бирок бул түзмөктө гана сакталган бардык дайындар жок кылынышы мүмкүн</translation>
 <translation id="4296252229500326964">Жаңы жашыруун өтмөк</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, Көп жолу тандалган жашыруун өтмөк</translation>
 <translation id="4298388696830689168">Байланышкан сайттар</translation>
@@ -833,6 +836,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4358630185957185589">Google Lens'ти ачуу</translation>
 <translation id="435863252455918214">Кеңейтүүлөрүңүздү Chrome'дун негизги менюсунан тескеңиз</translation>
 <translation id="4359809482106103048">Коопсуздук тууралуу жалпы маалымат</translation>
+<translation id="4374192654218566997">\n\nОшондой эле бул маалыматты ушул түзмөктөн өчүрө аласыз:</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4380055775103003110">Эгер бул маселе кайталана берсе, <ph name="SITE_ETLD_PLUS_ONE" /> аркылуу башка жолдор менен улантып көрүңүз.</translation>
 <translation id="4384468725000734951">Издөө үчүн Sogou колдонулууда</translation>
@@ -1541,6 +1545,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7117485132243600300">Катталган контентти жана сунушталган темалар менен издөөнү тескөө</translation>
 <translation id="7119984597597798764">Жабуу: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Chrome'го кирүү</translation>
+<translation id="7130633106249192408">Бул түзмөктөн серептөө дайындарын өчүрүү</translation>
 <translation id="7136694880210472378">Демейки кылуу</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{# сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="7138678301420049075">Башка</translation>
@@ -1833,6 +1838,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8223642481677794647">Түрмөктөгү меню</translation>
 <translation id="82296173028782770">Изделген суроону түзөтүү: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Кыстармаларга кошуу</translation>
+<translation id="8236917170563564587">Анын ордуна бул өтмөктү бөлүшүңүз</translation>
 <translation id="8243077599929149377">Колдонуучу атыңызды кошуңуз</translation>
 <translation id="8244387390464017490">Жаңы өтмөктү тууралоо бети</translation>
 <translation id="8244444485683708655">Камера менен тартылган сүрөттү тиркөө</translation>

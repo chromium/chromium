@@ -41,7 +41,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1356661055722410047">Novo. Možete da prevodite i tekst i slike na ekranu</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1388276868779258475">Nastavite sa pregledanjem u pokretu uz aplikaciju Chromium</translation>
-<translation id="1397530502368084401">&amp;Upravljajte Chromium profilima</translation>
 <translation id="141901961143729572">Delite razmišljanja</translation>
 <translation id="1465192221147974788">Da biste delili prozor, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za verziju Chrome for Testing</translation>
@@ -271,7 +270,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="390528597099634151">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chromium profil. Da bi vam pregledanje bilo razdvojeno, Chromium može da napravi zaseban profil za vas.</translation>
 <translation id="3909353120217047026">Ovaj dodatak krši smernice Chrome veb-prodavnice i možda nije bezbedan. Uklonite ga iz Chromium-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
-<translation id="3937491663738985329">P&amp;rilagodite Chromium</translation>
 <translation id="3941890832296813527">Greška pri instalaciji: Naziv fajla programa za instalaciju je nevažeći ili nije podržan.</translation>
 <translation id="3945058413678539331">Chromium pokušava da kopira lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="3954172517175569325">Lozinke, načini plaćanja i adrese koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chromium-u, ponovo se prijavite.</translation>
@@ -771,6 +769,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8980139959902937527">Koristite bezbednost koju Google nudi u pokretu uz aplikaciju Chromium na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Ne možete da pokrenete Chromium jer je došlo do greške pri otvaranju profila. Probajte da restartujete Chromium.</translation>
 <translation id="8988036198400390003">Upravljaj Chromium profilima</translation>
+<translation id="8993855408334954620">Koristite tastaturu za kretanje između Gemini-ja u Chromium-u i otvorene kartice.</translation>
 <translation id="9018218886431812662">Instalacija je završena</translation>
 <translation id="9019929317751753759">Da bismo učinili Chromium bezbednijim, onemogućili smo sledeći dodatak koji <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi i koji je možda dodat bez vašeg znanja.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>

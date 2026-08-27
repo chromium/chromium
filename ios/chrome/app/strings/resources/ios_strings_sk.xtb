@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
 <translation id="1095093219235104018">Nájsť a vyplniť pomocou Gemini</translation>
 <translation id="1096992026380844478">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. <ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 heslo bolo okamžite overené}few{# heslá boli okamžite overené}many{# passwords instantly verified}other{# hesiel bolo okamžite overených}}</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odomknite pomocou funkcie Face ID</translation>
 <translation id="1111776967764068277">Už vás nebaví kopírovať odkazy?</translation>
@@ -1986,7 +1985,6 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="7464143666517313304">Týmto odstránite adresy uložené v tomto zariadení.</translation>
 <translation id="7468373585447318060">Majte prehľad o poklesoch cien všetkých výrobkov, ktoré sledujete.</translation>
 <translation id="746872191028309255">Nakupujte, čo vidíte, pomocou kamery alebo fotogalérie.</translation>
-<translation id="7469215556134875318">od začiatku používania kontroly hesiel</translation>
 <translation id="7471557245617580330">Vytvoriť novú kartu</translation>
 <translation id="7473555040328423550">Pridanie karty</translation>
 <translation id="7476548258282096076">Táto karta zobrazuje vaše najnavštevovanejšie weby.</translation>

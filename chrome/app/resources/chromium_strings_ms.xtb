@@ -39,7 +39,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1356661055722410047">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda</translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1388276868779258475">Gunakan apl Chromium untuk terus menyemak imbas semasa dalam perjalanan</translation>
-<translation id="1397530502368084401">&amp;Urus Profil Chromium</translation>
 <translation id="141901961143729572">Kongsi pendapat anda</translation>
 <translation id="1465192221147974788">Untuk berkongsi tetingkap anda, benarkan rakaman skrin untuk Chromium dalam Tetapan Sistem.</translation>
 <translation id="1478370723027452770">Dapatkan bantuan tentang Chrome for Testing</translation>
@@ -269,7 +268,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chromium ini. Untuk menjadikan penyemakan imbas anda terpisah, Chromium boleh membuat profil anda sendiri untuk anda.</translation>
 <translation id="3909353120217047026">Sambungan ini melanggar dasar Gedung Web Chrome dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
-<translation id="3937491663738985329">Sesuaikan Chromium Anda</translation>
 <translation id="3941890832296813527">Ralat pemasangan: Nama fail pemasang tidak sah atau tidak disokong.</translation>
 <translation id="3945058413678539331">Chromium cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="3954172517175569325">Kata laluan, kaedah pembayaran dan alamat anda yang anda simpan dalam Google Account anda akan dialih keluar daripada peranti ini. Untuk menggunakan maklumat itu semula dalam Chromium, log masuk semula.</translation>
@@ -769,6 +767,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8980139959902937527">Manfaatkan keselamatan Google semasa dalam perjalanan dengan apl Chromium pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8981150672034878610">Tidak dapat memulakan Chromium kerana terdapat masalah semasa membuka profil anda. Cuba mulakan semula Chromium.</translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>
+<translation id="8993855408334954620">Gunakan papan kekunci anda untuk menavigasi antara Gemini dalam Chromium dengan tab terbuka anda.</translation>
 <translation id="9018218886431812662">Pemasangan selesai</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>

@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1095093219235104018">Cerca e compila con Gemini</translation>
 <translation id="1096992026380844478">Le impostazioni di sincronizzazione verranno ripristinate in base all'ultimo backup. <ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 password verificata immediatamente}other{# password verificate immediatamente}}</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Sblocca con Face ID</translation>
 <translation id="1111776967764068277">Vorresti evitare di dover copiare i link?</translation>
@@ -1577,7 +1576,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6152340033632117531">Inattive</translation>
 <translation id="6152406514676263192">Sincronizza i contenuti più pertinenti in base ai tuoi interessi.</translation>
 <translation id="6159839020698489198">facoltativo</translation>
-<translation id="6160780110287872296">Vuoi scaricare il file?</translation>
+<translation id="6160780110287872296">Scaricare il file?</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6168647875670665004">Suggerimenti di articoli</translation>
 <translation id="6169031022444660352">Per eliminare tutte le credenziali salvate, devi prima configurare un passcode sul dispositivo.</translation>
@@ -1986,7 +1985,6 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7464143666517313304">Questa azione elimina gli indirizzi salvati su questo dispositivo.</translation>
 <translation id="7468373585447318060">Tieni sotto controllo i cali di prezzo di tutti i prodotti che monitori.</translation>
 <translation id="746872191028309255">Acquista ciò che vedi con la fotocamera o la galleria fotografica.</translation>
-<translation id="7469215556134875318">da quando utilizzi Controllo password</translation>
 <translation id="7471557245617580330">Crea nuova scheda</translation>
 <translation id="7473555040328423550">Aggiungi scheda</translation>
 <translation id="7476548258282096076">Questa scheda mostra i siti che visiti di più.</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1108214977745280468">Se sideindsigt</translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
+<translation id="1109663842695712985">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de data, der ikke er gemt.</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, fane i tilstanden integreret billede</translation>
 <translation id="1126696498560056882">Administrer konti på denne enhed</translation>
@@ -157,6 +158,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1598163867407640634">Brug <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, fastgjort fane, der optager</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, fane, der deler indhold</translation>
+<translation id="1601378265092360672">Browserdata omfatter din browserhistorik, cookies og andre websitedata, cachelagrede billeder og filer samt åbne faner</translation>
 <translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}one{Fjern # valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1639239467298939599">Indlæser</translation>
@@ -810,6 +812,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">din telefon</translation>
+<translation id="4295640788982898778">Dine udvidelser er gemt på din Google-konto, men eventuelle data, som udvidelserne har gemt på denne enhed, slettes muligvis</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, inkognitofane med multivalg</translation>
 <translation id="4298388696830689168">Tilknyttede websites</translation>
@@ -833,6 +836,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4358630185957185589">Åbn Google Lens</translation>
 <translation id="435863252455918214">Administrer dine udvidelser i Chrome-hovedmenuen</translation>
 <translation id="4359809482106103048">Sikkerhedsoverblik</translation>
+<translation id="4374192654218566997">\n\nDu kan også fjerne disse data fra denne enhed:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet fortsætter, kan du prøve at fortsætte på andre måder på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Søgning via Sogou</translation>
@@ -1541,6 +1545,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7117485132243600300">Administrer indhold, du følger, og forslag til emner og søgninger</translation>
 <translation id="7119984597597798764">Luk <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Log ind i Chrome</translation>
+<translation id="7130633106249192408">Slet browserdata fra denne enhed</translation>
 <translation id="7136694880210472378">Gør til standard</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for # website}other{Tilladelserne er gennemgået for # websites}}</translation>
 <translation id="7138678301420049075">Andet</translation>
@@ -1833,6 +1838,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8223642481677794647">Feedkortmenu</translation>
 <translation id="82296173028782770">Rediger søgeforespørgsel: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Føj til bogmærker</translation>
+<translation id="8236917170563564587">Del denne fane i stedet</translation>
 <translation id="8243077599929149377">Tilføj dit brugernavn</translation>
 <translation id="8244387390464017490">Tilpas siden Ny fane</translation>
 <translation id="8244444485683708655">Vedhæft kamerabillede</translation>

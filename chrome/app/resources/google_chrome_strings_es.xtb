@@ -463,7 +463,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5649156266046089790">Con los perfiles de Chrome, puedes separar todos tus elementos de Chrome. Crea perfiles para amigos y familiares, o un perfil de trabajo y otro de ocio.</translation>
 <translation id="5655063652337498476">Descubre productos con tu cámara, monitoriza las bajadas de precio y disfruta de otras ventajas en cualquier lugar con Chrome en iOS.</translation>
 <translation id="565744775970812598">Es posible que <ph name="FILE_NAME" /> sea peligroso, por lo que Chrome lo ha bloqueado.</translation>
-<translation id="566040795510471729">Personalizar Chrome a t&amp;u gusto</translation>
 <translation id="566568153320186256">Chrome ahorra batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos. <ph name="BEGIN_LINK" />Más información sobre Ahorro de energía<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Borra los datos de Chrome de tu cuenta</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar esta actualización}=1{Tu administrador pide que reinicies Chrome para aplicar esta actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar esta actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="778331955594035129">Chrome necesita el permiso de ubicación para este sitio</translation>
 <translation id="7787950393032327779">Parece que otro proceso de Google Chrome (<ph name="PROCESS_ID" />) está utilizando el perfil en otro ordenador (<ph name="HOST_NAME" />). Chrome ha bloqueado el perfil para que no se dañe. Si tienes la certeza de que ningún otro proceso está utilizando este perfil, puedes desbloquearlo y volver a iniciar Chrome.</translation>
-<translation id="7792336732117553384">&amp;Gestionar perfiles de Chrome</translation>
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="7804364787702057554">Tu cuenta en Chrome</translation>
 <translation id="7804947029129221742">Tu buscador se ha cambiado desde fuera de Chrome. Para protegerte, Chrome lo ha restablecido a su valor predeterminado original. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8370748943308169953">Código QR para iniciar sesión en Chrome como <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Activar o desactivar Gemini en Chrome Canary</translation>
+<translation id="8380754585531979907">Usa el teclado para desplazarte entre Gemini en Chrome y tu pestaña abierta.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8394720698884623075">Comprueba URLs con una lista de sitios no seguros guardada en Chrome.</translation>
 <translation id="8403038600646341038">Logotipo de Chrome dentro de una pantalla de ordenador.</translation>

@@ -463,7 +463,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5649156266046089790">S profili v Chromu lahko ločite vse stvari v Chromu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
 <translation id="5655063652337498476">Z aplikacijo Chrome v sistemu iOS odkrivajte izdelke s fotoaparatom, spremljajte znižanja cen in več tudi na poti.</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
-<translation id="566040795510471729">P&amp;rilagodite Chrome</translation>
 <translation id="566568153320186256">Chrome varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več o varčevanju z energijo<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Izbris podatkov iz Chroma v računu</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7777080907402804672">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="778331955594035129">Chrome potrebuje dovoljenje za lokacijo za to spletno mesto.</translation>
 <translation id="7787950393032327779">Videti je, da profil uporablja drug proces brskalnika Google Chrome (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chrome je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chrome.</translation>
-<translation id="7792336732117553384">&amp;Upravljanje profilov v Chromu</translation>
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7804364787702057554">Vaš račun v Chromu</translation>
 <translation id="7804947029129221742">Iskalnik je bil spremenjen zunaj Chroma. Chrome ga je ponastavil na prvotno privzeto vrednost zaradi vaše zaščite. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8370748943308169953">Koda QR za prijavo v Chrome kot <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Preklop Geminija v Chromu Canary</translation>
+<translation id="8380754585531979907">S tipkovnico se pomikajte med Geminijem v Chromu in odprtim zavihkom.</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>
 <translation id="8394720698884623075">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu.</translation>
 <translation id="8403038600646341038">Chromov logotip na zaslonu računalnika.</translation>

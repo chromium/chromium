@@ -41,7 +41,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1356661055722410047">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1388276868779258475">Notaðu Chromium-forritið til að halda áfram að vafra á ferðinni</translation>
-<translation id="1397530502368084401">&amp;Stjórna Chromium-prófílum</translation>
 <translation id="141901961143729572">Segðu skoðun þína</translation>
 <translation id="1465192221147974788">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
@@ -271,7 +270,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chromium prófíl. Chromium getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="3909353120217047026">Þessi viðbót brýtur gegn reglum Vefverslunar Chrome og kann að vera óörugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
-<translation id="3937491663738985329">Sérsníddu Chromium-vafrann þinn</translation>
 <translation id="3941890832296813527">Uppsetningarvilla: Skráarheiti uppsetningarforrits er ógilt eða ekki stutt.</translation>
 <translation id="3945058413678539331">Chromium er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="3954172517175569325">Aðgangsorðin þín, greiðslumátar og heimilisföng sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chromium skaltu skrá þig aftur inn.</translation>
@@ -770,6 +768,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8980139959902937527">Nýttu þér öryggi Google á ferðinni með Chromium-forritinu í <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Gat ekki ræst Chromium þar sem eitthvað fór úrskeiðis við að opna prófílinn þinn Prófaðu að endurræsa Chromium.</translation>
 <translation id="8988036198400390003">Stjórna Chromium-prófílum</translation>
+<translation id="8993855408334954620">Notaðu lyklaborðið til að fletta á milli Gemini í Chromium og opna flipans.</translation>
 <translation id="9018218886431812662">Uppsetningu lokið</translation>
 <translation id="9019929317751753759">Til að gera Chromium öruggara höfum við slökkt á eftirfarandi viðbót sem ekki er á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>

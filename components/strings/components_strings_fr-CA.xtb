@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que vos mots de passe ou vos numéros de téléphone ou de cartes de crédit. Chrome vous recommande fortement de revenir à une page sûre. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Les sites que vous ajoutez ici ne seront pas utilisés comme référence pour les réponses, même si l'onglet est ouvert. Si un site que vous ajoutez est actuellement utilisé dans un fil, il peut s'écouler jusqu'à 30 minutes avant que le fil cesse d'y faire référence.</translation>
-<translation id="1402151528875251561">Afficher l'historique dans le panneau latéral</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2679216653373462289">Utiliser vos capteurs de mouvement et de luminosité</translation>
 <translation id="2679659833697380">Vos informations sont enregistrées sur votre appareil</translation>
-<translation id="2680837394649649718">Envoyé à Chrome sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Autres résultats trouvés</translation>
 <translation id="2686919536310834199">Envoyez des commentaires pour l'Aide à la rédaction.</translation>
 <translation id="2687555958734450033">Ajustement optimal</translation>
@@ -1615,7 +1613,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Enregistrer l'adresse dans le compte?</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
-<translation id="3754664361823138853">&amp;Ouvrir la page de l'historique</translation>
 <translation id="3757511311058373406">Filtres de navigation automatique</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
 <translation id="3760561303380396507">Utiliser Windows Hello au lieu du code CVC?</translation>
@@ -2059,7 +2056,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" /> pour profiter du niveau de sécurité le plus élevé de Chrome</translation>
 <translation id="4475299370877036544">Cette action pourrait enfreindre les politiques de votre organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ce formulaire n'est pas sécurisé. Le remplissage automatique a été désactivé.</translation>
 <translation id="4477350412780666475">Chanson suivante</translation>
 <translation id="4480760608050410381">Vidéo MP4</translation>
 <translation id="4489023393592172404">Enveloppe Kaku nᵒ 4</translation>
@@ -3529,7 +3525,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6998512609912910179">Remplir des formulaires plus rapidement</translation>
 <translation id="7000094925113284872">Trace le cycle de vie d'une étoile</translation>
 <translation id="7002897669829306463">Adresse personnelle, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7004562620237466965">Déchiffrer seulement</translation>
 <translation id="7006930604109697472">Envoyer quand même</translation>
 <translation id="7009364359744329733">Cette carte n'est pas accessible pour le moment. Veuillez réessayer plus tard.</translation>
@@ -4353,6 +4348,7 @@ Détails supplémentaires :
 <translation id="8410956920192583322">Mensuel ou en quatre versements</translation>
 <translation id="8412145213513410671">Plantages (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez entrer deux fois la même phrase de passe.</translation>
+<translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8414322570408428950">L'événement de l'extension se produit</translation>
 <translation id="8416694386774425977">La configuration du réseau n'est pas valide et ne peut être importée.
 Détails supplémentaires :
@@ -4659,7 +4655,6 @@ Détails supplémentaires :
 <translation id="8988966534058783995">Utiliser les capteurs de mouvement?</translation>
 <translation id="899688752321268742"><ph name="URL" /> veut savoir si vous êtes en train d'utiliser cet appareil</translation>
 <translation id="8997023839087525404">Le serveur a présenté un certificat qui n'a pas été divulgué publiquement par l'intermédiaire de la politique Certificate Transparency. Il s'agit d'une exigence pour certains certificats, afin d'assurer qu'ils sont dignes de confiance et qu'ils offrent une protection contre les attaques.</translation>
-<translation id="9000145382638074673">Vos appareils</translation>
 <translation id="9001074447101275817">Le mandataire <ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="9001963517402879850">Sautez!</translation>
 <translation id="9003263770394939629">Suggéré par Gemini. Gérez le remplissage automatique amélioré dans les paramètres.</translation>

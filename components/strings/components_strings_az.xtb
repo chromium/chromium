@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hər hansı data göndərməyib.</translation>
 <translation id="1393071644879491291">Daxil olmağa cəhd etdiyiniz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parollar, telefon və ya kredit kartı nömrələri kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Tab açıq olsa belə, cavablar üçün burada əlavə etdiyiniz saytlara istinad edilməyəcək. Əlavə etdiyiniz sayt hazırda mövzuda istifadə olunursa, mövzunun ona istinad etməyi dayandırması 30 dəqiqəyə qədər çəkə bilər.</translation>
-<translation id="1402151528875251561">Tarixçəni Yan paneldə göstərin</translation>
 <translation id="1405567553485452995">Açıq-yaşıl</translation>
 <translation id="1406370515365284486">Ödəniş metodlarınız yenə də yadda saxlanılacaq</translation>
 <translation id="1406500794671479665">Təsdiqlənir...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2679216653373462289">Hərəkət və işıq sensorlarından istifadə edin</translation>
 <translation id="2679659833697380">Məlumatınız cihazda yadda saxlanılır</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> cihazındakı Chrome-a göndərildi.</translation>
 <translation id="2683195745483370038">Digər nəticələr tapıldı</translation>
 <translation id="2686919536310834199">"Yazmağa kömək et" ilə bağlı rəy göndərin.</translation>
 <translation id="2687555958734450033">Ən uyğun</translation>
@@ -1611,7 +1609,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3752181611900535304">Ünvan hesabda yadda saxlanılsın?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ayarlanmadığına görə nəzərə alınmayıb.</translation>
 <translation id="3754210790023674521">Şəkildə şəkil rejimindən çıxın</translation>
-<translation id="3754664361823138853">&amp;Tarixçə səhifəsini açın</translation>
 <translation id="3757511311058373406">Avtonaviqasiya filtrləri</translation>
 <translation id="3759461132968374835">Xəbər verdiyiniz qəza yoxdur. Qəza haqqında hesabat deaktiv edildikdə baş verən qəzalar burada görünmür.</translation>
 <translation id="3760561303380396507">CVC əvəzinə Windows Hello istifadə edilsin?</translation>
@@ -2055,7 +2052,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4473643328224505070">Chrome-un yüksək təhlükəsizlik səviyyəsi üçün <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />təkmil qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">Bu əməliyyat təşkilatın siyasətini poza bilər</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Bu forma güvənli deyil. Avto doldurma deaktiv edilib.</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="4489023393592172404">Zərf Kaku 4</translation>
@@ -3525,7 +3521,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6998512609912910179">Formaları daha tez doldurun</translation>
 <translation id="7000094925113284872">Ulduzun həyat dövrünü xəritələndir</translation>
 <translation id="7002897669829306463">Ev ünvanı, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Son Tablar</translation>
 <translation id="7004562620237466965">Yalnız oxumaq</translation>
 <translation id="7006930604109697472">İstənilən halda göndərin</translation>
 <translation id="7009364359744329733">Bu kart hazırda əlçatan deyil. Sonra yenidən cəhd edin.</translation>
@@ -4349,6 +4344,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8410956920192583322">Aylıq və ya 4 taksit</translation>
 <translation id="8412145213513410671">Qəzalar (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Eyni parolunu iki dəfə daxil etməlisiniz.</translation>
+<translation id="8413126021676339697">Tam tarixçəni göstərin</translation>
 <translation id="8414322570408428950">Artırma ilə bağlı hadisə baş verib</translation>
 <translation id="8416694386774425977">Şəbəkə konfiqurasiyası yanlışdır və import edilə bilməz.
 Əlavə məlumat:
@@ -4655,7 +4651,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8988966534058783995">Hərəkət sensorlarından istifadə edilsin?</translation>
 <translation id="899688752321268742"><ph name="URL" /> bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədyir</translation>
 <translation id="8997023839087525404">Server, Sertifikat Şəffaflığı siyasəti istifadə edilərək aşkarlanmamış sertifikatı təqdim etdi. Bu, sertifikatların etibarlı və hücum edənlərə qarşı qorunduğuna əmin olmaq üçün tələb olunur.</translation>
-<translation id="9000145382638074673">Cihazlar</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksisi istifadəçi adı və parol tələb edir.</translation>
 <translation id="9001963517402879850">Tullanın!</translation>
 <translation id="9003263770394939629">Gemini tərəfindən təklif edildi. Ayarlarda təkmilləşdirilmiş avtodoldurmanı idarə edin.</translation>

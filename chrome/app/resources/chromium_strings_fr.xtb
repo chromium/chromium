@@ -39,7 +39,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1356661055722410047">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1388276868779258475">Utilisez l'appli Chromium pour continuer à naviguer où que vous soyez</translation>
-<translation id="1397530502368084401">&amp;Gérer les profils Chromium</translation>
 <translation id="141901961143729572">Donnez-nous votre avis</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide concernant Chrome for Testing</translation>
@@ -269,7 +268,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="390528597099634151">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chromium. Chromium peut vous créer un profil de navigation individuel.</translation>
 <translation id="3909353120217047026">Cette extension ne respecte pas les règles du Chrome Web Store et peut présenter des risques. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
-<translation id="3937491663738985329">P&amp;ersonnaliser Chromium</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom de fichier du programme d'installation est incorrect ou non compatible.</translation>
 <translation id="3945058413678539331">Chromium tente de copier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
 <translation id="3954172517175569325">Les mots de passe, modes de paiement et adresses que vous avez enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chromium, reconnectez-vous.</translation>
@@ -769,6 +767,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8980139959902937527">Profitez de la sécurité de Google où que vous soyez avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Impossible de démarrer Chromium, car un problème est survenu lors de l'ouverture de votre profil. Essayez de redémarrer Chromium.</translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
+<translation id="8993855408334954620">Utilisez votre clavier pour naviguer entre Gemini dans Chromium et votre onglet ouvert.</translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>

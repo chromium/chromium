@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1108214977745280468">Lihat insight halaman</translation>
 <translation id="1108938384783527433">Sinkronisasi histori</translation>
+<translation id="1109663842695712985">Beberapa data Chrome Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data yang belum disimpan akan dihapus.</translation>
 <translation id="1111673857033749125">Bookmark yang tersimpan di perangkat lainnya akan muncul di sini.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Tab Picture-in-Picture</translation>
 <translation id="1126696498560056882">Kelola akun di perangkat ini</translation>
@@ -157,6 +158,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Tab yang Sedang Merekam dan Disematkan</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Tab yang Sedang Berbagi</translation>
+<translation id="1601378265092360672">Data penjelajahan mencakup histori penjelajahan, cookie dan data situs lainnya, gambar dan file dalam cache, serta tab terbuka</translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1639239467298939599">Memuat</translation>
@@ -810,6 +812,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4285846616383034558">Cookie, cache, dan data situs lainnya</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktifkan kunci layar di setelan Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ponsel Anda</translation>
+<translation id="4295640788982898778">Ekstensi Anda disimpan di Akun Google Anda, tetapi data apa pun yang disimpan ekstensi hanya di perangkat ini mungkin akan dihapus</translation>
 <translation id="4296252229500326964">Tab Samaran baru</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, Tab Samaran yang Dipilih Beberapa Kali</translation>
 <translation id="4298388696830689168">Situs tertaut</translation>
@@ -833,6 +836,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4358630185957185589">Buka Google Lens</translation>
 <translation id="435863252455918214">Kelola ekstensi Anda di menu utama Chrome</translation>
 <translation id="4359809482106103048">Sekilas tentang keamanan</translation>
+<translation id="4374192654218566997">\n\nAnda juga dapat menghapus data ini dari perangkat ini:</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4380055775103003110">Jika masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk penelusuran</translation>
@@ -1541,6 +1545,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7117485132243600300">Kelola konten yang Anda ikuti serta topik dan penelusuran yang disarankan</translation>
 <translation id="7119984597597798764">Tutup <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Login ke Chrome</translation>
+<translation id="7130633106249192408">Hapus data penjelajahan dari perangkat ini</translation>
 <translation id="7136694880210472378">Jadikan default</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Izin ditinjau untuk 1 situs}other{Izin ditinjau untuk # situs}}</translation>
 <translation id="7138678301420049075">Lainnya</translation>
@@ -1833,6 +1838,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8223642481677794647">Menu kartu feed</translation>
 <translation id="82296173028782770">Edit kueri penelusuran: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Tambahkan ke bookmark</translation>
+<translation id="8236917170563564587">Bagikan tab ini saja</translation>
 <translation id="8243077599929149377">Tambahkan nama pengguna Anda</translation>
 <translation id="8244387390464017490">Sesuaikan halaman tab baru</translation>
 <translation id="8244444485683708655">Lampirkan gambar kamera</translation>

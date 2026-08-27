@@ -239,7 +239,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="139305205187523129"><ph name="HOST_NAME" /> didn’t send any data.</translation>
 <translation id="1393071644879491291">Attackers on the site that you tried visiting might trick you into installing software or revealing things like your passwords, phone or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Sites that you add here won't be referenced for responses, even if the tab is open. If a site that you add is currently being used in a thread, it can take up to 30 minutes for the thread to stop referencing it.</translation>
-<translation id="1402151528875251561">Show history in side panel</translation>
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1406370515365284486">Your payment methods will still be saved</translation>
 <translation id="1406500794671479665">Verifying...</translation>
@@ -1008,7 +1007,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2679216653373462289">Use your motion and light sensors</translation>
 <translation id="2679659833697380">Your info is saved to your device</translation>
-<translation id="2680837394649649718">Sent to Chrome on your <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Other results found</translation>
 <translation id="2686919536310834199">Send feedback for Help me write.</translation>
 <translation id="2687555958734450033">Best fit</translation>
@@ -1615,7 +1613,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3752181611900535304">Save address in account?</translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
-<translation id="3754664361823138853">&amp;Open history page</translation>
 <translation id="3757511311058373406">Auto browse filters</translation>
 <translation id="3759461132968374835">You have no recently reported crashes.  Crashes that occurred when crash reporting was disabled will not appear here.</translation>
 <translation id="3760561303380396507">Use Windows Hello instead of CVC?</translation>
@@ -2059,7 +2056,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /> to get Chrome's highest level of security</translation>
 <translation id="4475299370877036544">This action might violate your organisation's policies</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4480760608050410381">MP4 video</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3529,7 +3525,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6998512609912910179">Fill forms faster</translation>
 <translation id="7000094925113284872">Map out the lifecycle of a star</translation>
 <translation id="7002897669829306463">Home address, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7004562620237466965">Decipher Only</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7009364359744329733">This card is not available at the moment. Please try again later.</translation>
@@ -4354,6 +4349,7 @@ Additional details:
 <translation id="8410956920192583322">Monthly or 4 instalments</translation>
 <translation id="8412145213513410671">Crashes (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">You must enter the same passphrase twice.</translation>
+<translation id="8413126021676339697">Show full history</translation>
 <translation id="8414322570408428950">Extension event occurs</translation>
 <translation id="8416694386774425977">The network configuration is invalid and couldn't be imported.
 Additional details:
@@ -4660,7 +4656,6 @@ Additional details:
 <translation id="8988966534058783995">Use motion sensors?</translation>
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
-<translation id="9000145382638074673">Your devices</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="9001963517402879850">Jump!</translation>
 <translation id="9003263770394939629">Suggested by Gemini. Manage enhanced autofill in settings.</translation>

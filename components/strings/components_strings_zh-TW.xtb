@@ -216,7 +216,7 @@
 <translation id="1358187717814494928">建立試算表</translation>
 <translation id="1358223345833465883">你在 Chromium 中的搜尋引擎</translation>
 <translation id="1360955481084547712">開啟新的無痕視窗以進行私密瀏覽</translation>
-<translation id="1361528602584216624">每筆 Pix 交易的上限為 R$ <ph name="TRANSACTION_LIMIT" /> 巴西雷亞爾</translation>
+<translation id="1361528602584216624">每筆 Pix 交易的上限為 R$ <ph name="TRANSACTION_LIMIT" /> 巴西黑奧</translation>
 <translation id="1363015776076529485">已完整開啟可供選取的付款方式，以便繼續付款。</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1364822246244961190">這項政策遭到封鎖，系統會忽略其設定值。</translation>
@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未傳送任何資料。</translation>
 <translation id="1393071644879491291">你嘗試前往的網站可能有攻擊者，會誘騙你安裝軟體或提供資訊，例如密碼、電話號碼或信用卡號碼。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">這裡新增的網站即使在分頁中開啟，也不會用來生成回覆。如果你新增的網站目前正用於對話，系統最多需要 30 分鐘才會停止參考該網站。</translation>
-<translation id="1402151528875251561">在側邊面板中顯示歷史記錄</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">系統仍會保留付款方式</translation>
 <translation id="1406500794671479665">驗證中...</translation>
@@ -1007,7 +1006,6 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679216653373462289">使用動作和光度感應器</translation>
 <translation id="2679659833697380">你的資訊會儲存到裝置</translation>
-<translation id="2680837394649649718">已傳送到「<ph name="DEVICE_NAME" />」上的 Chrome。</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適配置</translation>
@@ -1613,7 +1611,6 @@
 <translation id="3752181611900535304">要將地址儲存到帳戶嗎？</translation>
 <translation id="3752543821772132562">忽略的原因：未設定 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">離開子母畫面</translation>
-<translation id="3754664361823138853">開啟歷史記錄頁面</translation>
 <translation id="3757511311058373406">自動瀏覽篩選器</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機回報功能停用時發生的當機不會列在這裡。</translation>
 <translation id="3760561303380396507">要使用 Windows Hello 取代信用卡驗證碼嗎？</translation>
@@ -2057,7 +2054,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />開啟強化防護<ph name="END_ENHANCED_PROTECTION_LINK" />，即可享有 Chrome 最強大的安全防護機制</translation>
 <translation id="4475299370877036544">這項操作可能違反貴機構的政策</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">這個表單不安全，因此系統已停用自動填入功能。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4480760608050410381">MP4 影片</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -2329,7 +2325,7 @@
 <translation id="494701040141924538">我知道了，關閉通知</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙活動</translation>
-<translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會提供給 Google</translation>
+<translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會分享給 Google</translation>
 <translation id="4954891067389874142">儲存卡片可加快付款速度。卡片資料會以加密方式存在 Google 錢包。</translation>
 <translation id="4957080528849277028">「查看 Chrome 歷史記錄」按鈕，啟動後即可在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
@@ -3527,7 +3523,6 @@
 <translation id="6998512609912910179">更快填妥表單</translation>
 <translation id="7000094925113284872">整理恆星的生命週期圖表</translation>
 <translation id="7002897669829306463">住家地址，<ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7004562620237466965">只有 Decipher</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7009364359744329733">目前無法使用這張卡片，請稍後再試。</translation>
@@ -3731,7 +3726,7 @@
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
-<translation id="73750335798090836">安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
+<translation id="73750335798090836">為了安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{未允許任何網站}=1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="7375818412732305729">附加檔案</translation>
 <translation id="7376031331622621328">商務底部功能表</translation>
@@ -4352,6 +4347,7 @@
 <translation id="8410956920192583322">按月付款或分成 4 期</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">你必須輸入兩次相同的通關密語。</translation>
+<translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8414322570408428950">發生擴充功能事件</translation>
 <translation id="8416694386774425977">網路設定無效，無法匯入。
 其他詳細資料：
@@ -4658,7 +4654,6 @@
 <translation id="8988966534058783995">要使用動作感應器嗎？</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想知道你使用這部裝置的時間</translation>
 <translation id="8997023839087525404">該伺服器的憑證並未根據憑證透明化政策對外公開。部分憑證必須符合這項規定，以確保憑證值得信任，不會讓使用者遭到攻擊。</translation>
-<translation id="9000145382638074673">你的裝置</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
 <translation id="9001963517402879850">跳起來！</translation>
 <translation id="9003263770394939629">Gemini 提供的建議。請前往「設定」管理強化版自動填入功能。</translation>

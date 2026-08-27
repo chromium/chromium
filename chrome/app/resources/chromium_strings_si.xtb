@@ -40,7 +40,6 @@
 <translation id="1356661055722410047">අලුත්! ඔබට ඔබේ තිරයේ ඇති පෙළ සහ පින්තූර දෙකම පරිවර්තනය කළ හැක</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1388276868779258475">යන ගමන් බ්‍රවුස් කිරීම තබා ගැනීමට Chromium යෙදුම භාවිතා කරන්න</translation>
-<translation id="1397530502368084401">&amp;Chromium පැතිකඩ කළමනාකරණය කරන්න</translation>
 <translation id="141901961143729572">ඔබේ සිතුවිලි බෙදා ගන්න</translation>
 <translation id="1465192221147974788">ඔබේ කවුළුව බෙදා ගැනීමට, පද්ධති සැකසීම් තුළ Chromium සඳහා තිර පටිගත කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="1478370723027452770">පරීක්ෂා කිරීම සඳහා Chrome සමග උදවු ලබා ගන්න</translation>
@@ -270,7 +269,6 @@
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> දැනටමත් මෙම Chromium පැතිකඩට පුරා ඇත. ඔබගේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, Chromium හට ඔබ සඳහා ඔබගේම පැතිකඩක් තැනිය හැකිය.</translation>
 <translation id="3909353120217047026">මෙම දිගුව Chrome Web Store ප්‍රතිපත්තිය උල්ලංඝනය කරන අතර, අනාරක්ෂිත විය හැක. එයට ඔබේ පුද්ගලික තතු ඇතුළුව, ඔබ පිවිසෙන අඩවිවල ඔබේ දත්ත තවදුරටත් දැකීමට සහ වෙනස් කිරීමට නොහැකි වන පරිදි එය Chromium වෙතින් ඉවත් කරන්න.</translation>
-<translation id="3937491663738985329">ඔබේ Chromium අභිරුචි කරන්න</translation>
 <translation id="3941890832296813527">ස්ථාපන දෝෂය: ස්ථාපක ගොනු නාමය වලංගු නැත හෝ සහාය නොදක්වයි.</translation>
 <translation id="3945058413678539331">Chromium මුරපද පිටපත් කිරීමට උත්සාහ කරයි. මීට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
 <translation id="3954172517175569325">ඔබ ඔබේ Google ගිණුමේ සුරකින ලද ඔබේ මුරපද, ගෙවීම් ක්‍රම, සහ ලිපින මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ. ඒවා නැවත Chromium තුළ භාවිතා කිරීමට, නැවත පුරනය වන්න.</translation>
@@ -769,6 +767,7 @@ Chromium හට ඔබගේ සැකසුම් ප්‍රතිසාධ�
 <translation id="8980139959902937527">ඔබේ <ph name="DEVICE_TYPE" /> මත Chromium යෙදුම සමග යන ගමන් Google හි ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="8981150672034878610">ඔබේ පැතිකඩ විවෘත කරන විට යමක් වැරදී ඇති නිසා Chromium ආරම්භ කළ නොහැක. Chromium යළි ඇරඹීමට උත්සාහ කරන්න.</translation>
 <translation id="8988036198400390003">Chromium පැතිකඩවල් කළමනා කරන්න</translation>
+<translation id="8993855408334954620">Chromium තුළ Gemini සහ ඔබේ විවෘත පටිත්ත අතර සංචාලනය කිරීමට ඔබේ යතුරු පුවරුව භාවිත කරන්න.</translation>
 <translation id="9018218886431812662">ස්ථාපනය සම්පූර්ණයි</translation>
 <translation id="9019929317751753759">Chromium වඩාත් ආරක්ෂිත කිරීම සඳහා, අප විසින් <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ලැයිස්තුගත කර නොමැති හා ඔබේ දැනුමෙන් තොරව එක් කර ඇති ඇතැම් දිගු අබල කර ඇත.</translation>
 <translation id="9022552996538154597">Chromium වෙත පිවිසෙන්න</translation>

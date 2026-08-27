@@ -463,7 +463,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5649156266046089790">Ukitumia wasifu kwenye Chrome, unaweza kutenganisha vitu vyako vyote vya Chrome. Unda wasifu wa marafiki na familia au utenganishe kazi na burudani.</translation>
 <translation id="5655063652337498476">Gundua bidhaa ukitumia kamera yako, fuatilia mapunguzo ya bei na mengineyo popote ulipo ukitumia Chrome kwenye iOS.</translation>
 <translation id="565744775970812598">Huenda <ph name="FILE_NAME" /> ni hatari, kwa hivyo Chromium imeizuia.</translation>
-<translation id="566040795510471729">Badilisha Chrome Yako iwe Upendavyo</translation>
 <translation id="566568153320186256">Chrome huhifadhi chaji ya betri kwa kudhibiti shughuli za chinichini na madoido ya picha kama vile, usogezaji rahisi na kasi za picha za video. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Kiokoa Nishati<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Futa data ya Chrome kwenye akaunti yako</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya madirisha # fiche.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7777080907402804672">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>
 <translation id="778331955594035129">Chrome inahitaji ruhusa ya kufikia maelezo ya mahali kwa ajili ya tovuti hii</translation>
 <translation id="7787950393032327779">Wasifu unaonekana kuwa unatumika na mchakato mwingine wa Google Chrome (<ph name="PROCESS_ID" />) kwenye kompyuta nyingine (<ph name="HOST_NAME" />). Chrome imefunga wasifu huu ili usifisidiwe. Kama una uhakika hakuna michakato mingine inayotumia wasifu huu, unaweza kufungua wasifu na uzindue Chrome tena.</translation>
-<translation id="7792336732117553384">Dhibiti Wasifu Kwenye Chrome</translation>
 <translation id="7801699035218095297">Google Chrome inajaribu kunakili manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
 <translation id="7804364787702057554">Akaunti yako katika Chrome</translation>
 <translation id="7804947029129221742">Mtambo wako wa kutafuta umebadilishiwa nje ya Chrome. Ili kukulinda, Chrome imeubadilisha kuwa mtambo chaguomsingi halisi. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8370517070665726704">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>
 <translation id="8370748943308169953">Msimbo wa QR wa kuingia katika Chrome ukitumia <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Washa au uzime Gemini kwenye Chrome Canary (toleo la jaribio)</translation>
+<translation id="8380754585531979907">Tumia kibodi yako kusogeza kati ya Gemini kwenye Chrome na kichupo chako ulichofungua.</translation>
 <translation id="8387459386171870978">Endelea kutumia Chrome</translation>
 <translation id="8394720698884623075">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chrome</translation>
 <translation id="8403038600646341038">Nembo ya Chrome ndani ya skrini ya kompyuta.</translation>

@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1388276868779258475">使用 Chromium 应用，随时随地接续浏览体验</translation>
-<translation id="1397530502368084401">管理 Chromium 个人资料(&amp;M)</translation>
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1465192221147974788">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登录这份 Chromium 个人资料。Chromium 可为您创建一份专属的个人资料，以将您的浏览数据单独存储。</translation>
 <translation id="3909353120217047026">此扩展程序违反了 Chrome 应用商店政策，可能不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
-<translation id="3937491663738985329">自定义 Chromium(&amp;U)</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="3945058413678539331">Chromium 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="3954172517175569325">您在 Google 账号中保存的密码、支付方式和地址将从此设备中移除。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
@@ -768,6 +766,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8980139959902937527">有了 <ph name="DEVICE_TYPE" /> 版 Chromium 应用，Google 的安全保障随身相伴</translation>
 <translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
+<translation id="8993855408334954620">使用键盘可在 Chromium 中的 Gemini 和打开的标签页之间切换。</translation>
 <translation id="9018218886431812662">安装完成</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>

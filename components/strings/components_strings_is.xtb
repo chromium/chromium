@@ -239,7 +239,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="139305205187523129"><ph name="HOST_NAME" /> sendi engin gögn.</translation>
 <translation id="1393071644879491291">Árásaraðilar á vefsvæðinu sem þú reyndir að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpa atriði á borð við aðgangsorðið þitt, símanúmer eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Ekki verður vísað í vefsvæði sem bætt er við hér í svörum, jafnvel þótt flipinn sé opinn. Ef vefsvæði sem þú bætir við er í notkun í þræði getur það tekið allt að 30 mínútur fyrir þráðinn að hætta að vísa í það.</translation>
-<translation id="1402151528875251561">Sýna feril í hliðarglugga</translation>
 <translation id="1405567553485452995">Ljósgrænn</translation>
 <translation id="1406370515365284486">Greiðslumátarnir þínir verða vistaðir samt sem áður</translation>
 <translation id="1406500794671479665">Staðfestir…</translation>
@@ -1008,7 +1007,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2679216653373462289">Nota hreyfi- og birtuskynjarana</translation>
 <translation id="2679659833697380">Upplýsingarnar þínar eru vistaðar í tækinu þínu</translation>
-<translation id="2680837394649649718">Sent í Chrome í <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Aðrar niðurstöður fundust</translation>
 <translation id="2686919536310834199">Senda ábendingu um rithjálp.</translation>
 <translation id="2687555958734450033">Kjörstærð</translation>
@@ -1615,7 +1613,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3752181611900535304">Vista heimilisfang á reikningi?</translation>
 <translation id="3752543821772132562">Hunsað vegna þess að <ph name="POLICY_NAME" /> er ekki stillt.</translation>
 <translation id="3754210790023674521">Loka mynd í mynd</translation>
-<translation id="3754664361823138853">&amp;Opna ferilssíðu</translation>
 <translation id="3757511311058373406">Síur fyrir sjálfvirka vöfrun</translation>
 <translation id="3759461132968374835">Ekkert hrun hefur verið tilkynnt nýlega. Hrun sem varð á meðan slökkt var á tilkynningum um hrun mun ekki birtast hér.</translation>
 <translation id="3760561303380396507">Viltu nota Windows Hello í stað CVC-númers?</translation>
@@ -2059,7 +2056,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Kveiktu á aukinni vörn<ph name="END_ENHANCED_PROTECTION_LINK" /> til að fá hámarksöryggi Chrome.</translation>
 <translation id="4475299370877036544">Þessi aðgerð gæti falið í sér brot á reglum fyrirtækisins/stofnunarinnar þinnar</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Þetta eyðublað er ekki öruggt. Slökkt var á sjálfvirkri útfyllingu.</translation>
 <translation id="4477350412780666475">Næsta lag</translation>
 <translation id="4480760608050410381">MP4-vídeó</translation>
 <translation id="4489023393592172404">Umslag: kaku 4</translation>
@@ -3529,7 +3525,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6998512609912910179">Fylltu eyðublöð út hraðar</translation>
 <translation id="7000094925113284872">Kortleggðu lífsferil stjörnu</translation>
 <translation id="7002897669829306463">Heimilisfang heimilis: <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Nýlegir flipar</translation>
 <translation id="7004562620237466965">Afkóða aðeins</translation>
 <translation id="7006930604109697472">Senda samt</translation>
 <translation id="7009364359744329733">Þetta kort er ekki tiltækt sem stendur. Reyndu aftur síðar.</translation>
@@ -4353,6 +4348,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8410956920192583322">Mánaðarlegar eða 4 afborganir</translation>
 <translation id="8412145213513410671">Hrun (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Þú verður að slá sama aðgangsorðið inn tvisvar.</translation>
+<translation id="8413126021676339697">Sýna allan feril</translation>
 <translation id="8414322570408428950">Viðbótartilvik á sér stað</translation>
 <translation id="8416694386774425977">Netstillingarnar eru ógildar og ekki var hægt að flytja þær inn.
 Ítarlegar upplýsingar:
@@ -4659,7 +4655,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8988966534058783995">Nota hreyfiskynjara?</translation>
 <translation id="899688752321268742"><ph name="URL" /> vill vita hvenær þú notar þetta tæki</translation>
 <translation id="8997023839087525404">Vefþjónninn birti vottorð sem var ekki opinberlega birt með gagnsæisreglu vottorða. Þess er krafist fyrir sum vottorð, til að tryggja að þeim sé treystandi og til að veita vernd gegn tölvuþrjótum.</translation>
-<translation id="9000145382638074673">Tækin þín</translation>
 <translation id="9001074447101275817">Staðgengilsþjónninn <ph name="DOMAIN" /> krefst notandanafns og aðgangsorðs.</translation>
 <translation id="9001963517402879850">Hoppaðu!</translation>
 <translation id="9003263770394939629">Tillaga frá Gemini. Stjórnaðu ítarlegri sjálfvirkri útfyllingu í stillingum.</translation>

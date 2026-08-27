@@ -41,7 +41,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1388276868779258475">Använd Chromium-appen för att fortsätta surfa var du än är</translation>
-<translation id="1397530502368084401">&amp;Hantera Chromium-profiler</translation>
 <translation id="141901961143729572">Dela dina tankar</translation>
 <translation id="1465192221147974788">För att dela fönstret tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
@@ -271,7 +270,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> är redan inloggad på den här Chromium-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chromium.</translation>
 <translation id="3909353120217047026">Det här tillägget strider mot policyn för Chrome Web Store och kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
-<translation id="3937491663738985329">Anpassa Chromium</translation>
 <translation id="3941890832296813527">Installationsfel: Installationens filnamn är ogiltigt eller stöds inte.</translation>
 <translation id="3945058413678539331">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Chromium kopieras.</translation>
 <translation id="3954172517175569325">Dina sparade lösenord, betalningsmetoder och adresser i Google-kontot tas bort från den här enheten. Logga in på nytt om du vill använda dem igen i Chromium.</translation>
@@ -771,6 +769,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8980139959902937527">Ta med dig Googles säkerhet var du än är med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Det går inte att starta Chromium eftersom något gick fel när profilen öppnades. Testa att starta om Chromium.</translation>
 <translation id="8988036198400390003">Hantera Chromium-profiler</translation>
+<translation id="8993855408334954620">Använd tangentbordet för att navigera mellan Gemini i Chromium och den öppna fliken.</translation>
 <translation id="9018218886431812662">Installationen har slutförts</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>

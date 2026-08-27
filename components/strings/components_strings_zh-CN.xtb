@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">您在此处添加的网站即使已打开标签页，系统也不会将其用作生成回答的参考依据。如果您添加的网站当前正用于某个会话串，该会话串可能需要最多 30 分钟才会停止引用该网站。</translation>
-<translation id="1402151528875251561">在侧边栏中显示历史记录</translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406370515365284486">系统仍会保存您的支付方式</translation>
 <translation id="1406500794671479665">正在验证...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2679216653373462289">使用移动传感器和光传感器</translation>
 <translation id="2679659833697380">您的信息会保存到您的设备上</translation>
-<translation id="2680837394649649718">已发送到<ph name="DEVICE_NAME" />上的 Chrome。</translation>
 <translation id="2683195745483370038">找到其他结果</translation>
 <translation id="2686919536310834199">针对“帮我写”功能发送反馈。</translation>
 <translation id="2687555958734450033">最适合</translation>
@@ -1553,7 +1551,7 @@
 <translation id="3662040827609932717">此 IBAN 已保存到 Google 钱包中，方便您在各项 Google 服务中轻松使用。</translation>
 <translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
-<translation id="3670030362669914947">卡号</translation>
+<translation id="3670030362669914947">号码</translation>
 <translation id="3670159164851218963">AI 模式历史记录</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
@@ -1611,7 +1609,6 @@
 <translation id="3752181611900535304">是否将地址保存到账号？</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
-<translation id="3754664361823138853">打开历史记录页面(&amp;O)</translation>
 <translation id="3757511311058373406">自动浏览过滤条件</translation>
 <translation id="3759461132968374835">您最近未收到崩溃报告。崩溃报告停用时发生的崩溃不会在此处显示。</translation>
 <translation id="3760561303380396507">要改用 Windows Hello 来取代银行卡验证码 (CVC) 吗？</translation>
@@ -2055,7 +2052,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />开启增强型保护<ph name="END_ENHANCED_PROTECTION_LINK" />，获享 Chrome 的最高级别安全防护</translation>
 <translation id="4475299370877036544">此操作可能违反了您的组织政策</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">此表单不安全。因此，系统已关闭自动填充功能。</translation>
 <translation id="4477350412780666475">下一首</translation>
 <translation id="4480760608050410381">MP4 视频</translation>
 <translation id="4489023393592172404">Kaku 4 信封</translation>
@@ -2847,7 +2843,7 @@
 <translation id="5820751560028604030">本地下载已被阻止</translation>
 <translation id="5826507051599432481">公用名 (CN)</translation>
 <translation id="5830698870816298009">使用和移动摄像头</translation>
-<translation id="5831217499016131155">Google 电子钱包</translation>
+<translation id="5831217499016131155">Google 钱包</translation>
 <translation id="5832976493438355584">已锁定</translation>
 <translation id="5837220895135257862">请先释放 <ph name="CLOUD_PROVIDER" /> 中的空间，然后重试</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
@@ -3524,7 +3520,6 @@
 <translation id="6998512609912910179">更快捷地填写表单</translation>
 <translation id="7000094925113284872">绘制恒星的生命周期</translation>
 <translation id="7002897669829306463">住址：<ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">最近打开的标签页</translation>
 <translation id="7004562620237466965">仅用于解密</translation>
 <translation id="7006930604109697472">仍然发送</translation>
 <translation id="7009364359744329733">此卡目前不可用，请稍后再试。</translation>
@@ -3728,7 +3723,7 @@
 <translation id="7372973238305370288">搜索结果</translation>
 <translation id="7374461526650987610">协议处理程序</translation>
 <translation id="7374733840632556089">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chrome 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chrome 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
-<translation id="73750335798090836">为提高安全性，请在使用旅行证件和身份证件等敏感信息时，始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="73750335798090836">为提高安全性，在使用旅行证件和身份证件等敏感信息时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{没有允许任何网站}=1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="7375818412732305729">附加文件</translation>
 <translation id="7376031331622621328">商务底部动作条</translation>
@@ -4349,6 +4344,7 @@
 <translation id="8410956920192583322">按月或分 4 期付款</translation>
 <translation id="8412145213513410671">崩溃次数（<ph name="CRASH_COUNT" /> 次）</translation>
 <translation id="8412392972487953978">您两次输入的密码必须相同。</translation>
+<translation id="8413126021676339697">显示全部历史记录</translation>
 <translation id="8414322570408428950">发生扩展程序事件</translation>
 <translation id="8416694386774425977">网络配置无效，因此无法导入。
 更多详情：
@@ -4373,7 +4369,7 @@
 <translation id="8449155699563577224">17 x 24 英寸</translation>
 <translation id="8449513475775663994">要移除已验证的邮箱吗？</translation>
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
-<translation id="8451518040456311377">保存并自动填充身份证件</translation>
+<translation id="8451518040456311377">保存并自动填充身份文件</translation>
 <translation id="84561192812921051">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">底部动作条已关闭。</translation>
 <translation id="8456775115498700722">您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay，因此您现在可以自动填充 <ph name="CARD_ISSUER_NAME" /> 卡的信息。</translation>
@@ -4545,7 +4541,7 @@
 <translation id="8781233757384402598">当您请求使用增强型自动填充功能时，系统会与 Google 分享您的使用情况数据、请求和页面详细信息，以改进自动填充体验</translation>
 <translation id="8781278378794969337">“翻译网页”按钮，激活它即可使用谷歌翻译来翻译此网页</translation>
 <translation id="8790007591277257123">恢复删除(&amp;R)</translation>
-<translation id="8790668801880409584">保存并填充旅行信息</translation>
+<translation id="8790668801880409584">保存并自动填充旅行信息</translation>
 <translation id="8792272652220298572">塑料（平滑）</translation>
 <translation id="8792621596287649091">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 账号，或者身份信息遭到盗用。Chromium 建议您立即更改密码。</translation>
 <translation id="8792626944327216835">麦克风</translation>
@@ -4656,7 +4652,6 @@
 <translation id="8988966534058783995">使用移动传感器？</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想了解您何时在主动使用此设备</translation>
 <translation id="8997023839087525404">该服务器提供了一个未通过证书透明度政策公开披露的证书。某些证书必须通过证书透明度政策进行公开披露，以确保它们值得信任且能保护用户免遭攻击。</translation>
-<translation id="9000145382638074673">您的设备</translation>
 <translation id="9001074447101275817">代理 (<ph name="DOMAIN" />) 要求提供用户名和密码。</translation>
 <translation id="9001963517402879850">跳！</translation>
 <translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>

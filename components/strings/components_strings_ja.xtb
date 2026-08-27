@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
 <translation id="1393071644879491291">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">タブに表示されている場合でも、ここに追加したサイトは回答で参照されません。現在スレッドで使用されているサイトを追加する場合、スレッドでそのサイトの参照を停止するまで、最大で 30 分ほどかかることがあります。</translation>
-<translation id="1402151528875251561">サイドパネルに履歴を表示</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1406370515365284486">お支払い方法は引き続き保存されます</translation>
 <translation id="1406500794671479665">確認中...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2679216653373462289">モーション センサーと光センサーの使用</translation>
 <translation id="2679659833697380">情報はデバイスに保存されます</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> の Chrome に送信しました。</translation>
 <translation id="2683195745483370038">その他の結果が見つかりました</translation>
 <translation id="2686919536310834199">文書作成サポートのフィードバックを送信します。</translation>
 <translation id="2687555958734450033">最適サイズ</translation>
@@ -1196,7 +1194,7 @@
 <translation id="3041176923638368519">カードの特典の利用規約を表示</translation>
 <translation id="3041584414879052436">後払い決済のカード発行会社のリストが閉じられました。</translation>
 <translation id="3041612393474885105">証明書情報</translation>
-<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> で<ph name="BEGIN_LINK" />情報を管理<ph name="END_LINK" />できます。</translation>
+<translation id="3047054686095898948"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />で<ph name="BEGIN_LINK" />情報を管理<ph name="END_LINK" />できます。</translation>
 <translation id="305162504811187366">Chrome リモート デスクトップの履歴（タイムスタンプ、ホスト、クライアント セッション ID を含む）</translation>
 <translation id="3052868890529250114">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
@@ -1615,7 +1613,6 @@
 <translation id="3752181611900535304">アカウントに住所を保存しますか？</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
-<translation id="3754664361823138853">履歴ページを開く(&amp;O)</translation>
 <translation id="3757511311058373406">自動ブラウジング フィルタ</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
 <translation id="3760561303380396507">CVC の代わりに Windows Hello を使用しますか？</translation>
@@ -2059,7 +2056,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能をオンにする<ph name="END_ENHANCED_PROTECTION_LINK" />と、Chrome の最高レベルのセキュリティで保護できます。</translation>
 <translation id="4475299370877036544">このアクションは組織のポリシーに違反している可能性があります</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">このフォームは安全ではないため、自動入力をオフにしました。</translation>
 <translation id="4477350412780666475">次の曲</translation>
 <translation id="4480760608050410381">MP4 動画</translation>
 <translation id="4489023393592172404">角形 4 号封筒</translation>
@@ -3327,7 +3323,7 @@
 <translation id="6652101503459149953">Windows Hello を使用</translation>
 <translation id="6654244995031366386">ガラス（テクスチャ）</translation>
 <translation id="6655085656059574817">アカウントをリンクしたままにすると、<ph name="BNPL_ISSUER_NAME" /> ですばやくお支払いできます。もしくは、<ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> でリンクを解除できます。</translation>
-<translation id="6656935431494847393">フライトの予約や車両情報などの情報が含められます</translation>
+<translation id="6656935431494847393">フライトの予約や車両情報などの情報が含まれます</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659246032834639189">この価格は低額です</translation>
 <translation id="6660413144148052430">現在地情報</translation>
@@ -3529,7 +3525,6 @@
 <translation id="6998512609912910179">フォームにすばやく入力</translation>
 <translation id="7000094925113284872">星の一生について教えて</translation>
 <translation id="7002897669829306463">自宅の住所、<ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">最近使ったタブ</translation>
 <translation id="7004562620237466965">判読のみ</translation>
 <translation id="7006930604109697472">このまま送信</translation>
 <translation id="7009364359744329733">このカードは現在使用できません。しばらくしてからもう一度お試しください。</translation>
@@ -4354,12 +4349,13 @@
 <translation id="8410956920192583322">月払いまたは 4 回の分割払い</translation>
 <translation id="8412145213513410671">障害数（<ph name="CRASH_COUNT" />）</translation>
 <translation id="8412392972487953978">同じパスフレーズを 2 回入力する必要があります。</translation>
+<translation id="8413126021676339697">全履歴を表示</translation>
 <translation id="8414322570408428950">拡張機能イベントの発生</translation>
 <translation id="8416694386774425977">ネットワーク設定が無効なためインポートできませんでした。
 詳細:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
-<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" /> に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="GOOGLE_WALLET_TITLE_2" /> で<ph name="MANAGE_INFO_LINK" />できます。</translation>
+<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" />に情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="GOOGLE_WALLET_TITLE_2" />で<ph name="MANAGE_INFO_LINK" />できます。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426945547715537628">キーボードのオーバーライドを許可しますか？</translation>
@@ -4661,7 +4657,6 @@
 <translation id="8988966534058783995">モーション センサーを使用しますか？</translation>
 <translation id="899688752321268742"><ph name="URL" /> がこのデバイスのアクティブ状態の検出を求めています</translation>
 <translation id="8997023839087525404">サーバーから提示された証明書は、証明書の透明性ポリシーを介して公開されていません。一部の証明書は、信頼性の確保と攻撃者からの保護のため、証明書の透明性ポリシーを介して公開されることが要件となっています。</translation>
-<translation id="9000145382638074673">お使いのデバイス</translation>
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>
 <translation id="9001963517402879850">ジャンプ！</translation>
 <translation id="9003263770394939629">Gemini による提案。高精度の自動入力は [設定] で管理できます。</translation>

@@ -463,7 +463,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5649156266046089790">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="5655063652337498476">Tuklasin ang mga produkto gamit ang iyong camera, subaybayan ang mga pagbaba ng presyo at higit pa nang on the go gamit ang Chrome sa iOS.</translation>
 <translation id="565744775970812598">Maaaring mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
-<translation id="566040795510471729">I-c&amp;ustomize ang Iyong Chrome</translation>
 <translation id="566568153320186256">Nakakatipid ng baterya ang Chrome sa pamamagitan ng paglimita sa aktibidad sa background at mga visual effect, gaya ng smooth na pag-scroll at mga frame rate ng video. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Energy Saver<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">I-clear ang data sa Chrome sa iyong account</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito}=1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong Incognito window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # Incognito window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chrome para mailapat ang update na ito. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
@@ -690,7 +689,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7777080907402804672">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="778331955594035129">Kailangan ng Chrome ng pahintulot sa lokasyon para sa site na ito</translation>
 <translation id="7787950393032327779">Mukhang ginagamit ang profile ng iba pang proseso ng Google Chrome (<ph name="PROCESS_ID" />) sa iba pang computer (<ph name="HOST_NAME" />).  Ni-lock ng Chrome ang profile upang hindi ito ma-corrupt.  Kung nakakatiyak ka na walang ibang mga proseso ang gumagamit sa profile na ito, maaari mong i-unlock ang profile at ilunsad muli ang Chrome.</translation>
-<translation id="7792336732117553384">&amp;Pamahalaan ang Mga Profile sa Chrome</translation>
 <translation id="7801699035218095297">Sinusubukan ng Google Chrome na kopyahin ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="7804364787702057554">Iyong account sa Chrome</translation>
 <translation id="7804947029129221742">Binago ang iyong search engine mula sa labas ng Chrome. Para protektahan ka, ni-reset ito ng Chrome sa orihinal na default nito. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8370748943308169953">QR code para mag-sign in sa Chrome bilang <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">I-toggle ang Gemini sa Chrome Canary</translation>
+<translation id="8380754585531979907">Gamitin ang iyong keyboard para mag-navigate sa pagitan ng Gemini sa Chrome at ng nakabukas mong tab.</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>
 <translation id="8394720698884623075">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome</translation>
 <translation id="8403038600646341038">Logo ng Chrome sa loob ng screen ng computer.</translation>

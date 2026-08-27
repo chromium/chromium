@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1095093219235104018">Znajdź i wypełnij z Gemini</translation>
 <translation id="1096992026380844478">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{Błyskawicznie zweryfikowano 1 hasło}few{Błyskawicznie zweryfikowano # hasła}many{Błyskawicznie zweryfikowano # haseł}other{Błyskawicznie zweryfikowano # hasła}}</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odblokuj za pomocą Face ID</translation>
 <translation id="1111776967764068277">Masz już dość kopiowania linków?</translation>
@@ -1986,7 +1985,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7464143666517313304">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu.</translation>
 <translation id="7468373585447318060">Bądź na bieżąco z obniżkami cen wszystkich produktów, które śledzisz.</translation>
 <translation id="746872191028309255">Kupuj to, co widzisz na obrazie z aparatu lub w galerii zdjęć.</translation>
-<translation id="7469215556134875318">od kiedy używasz Sprawdzania haseł</translation>
 <translation id="7471557245617580330">Utwórz nową kartę</translation>
 <translation id="7473555040328423550">Dodaj kartę</translation>
 <translation id="7476548258282096076">Ta karta pokazuje strony, które najczęściej odwiedzasz.</translation>

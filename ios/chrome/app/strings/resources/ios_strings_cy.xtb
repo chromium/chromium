@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1095093219235104018">Dod o hyd i wybodaeth a'i llenwi gyda Gemini</translation>
 <translation id="1096992026380844478">Bydd eich gosodiadau cysoni yn cael eu hadfer yn seiliedig ar eich copi wrth gefn diwethaf. <ph name="BEGIN_LINK" />Gweld beth allwch ei gysoni<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 cyfrinair wedi'i ddilysu ar unwaith}zero{# cyfrinair wedi'u dilysu ar unwaith}two{# gyfrinair wedi'u dilysu ar unwaith}few{# chyfrinair wedi'u dilysu ar unwaith}many{# chyfrinair wedi'u dilysu ar unwaith}other{# cyfrinair wedi'u dilysu ar unwaith}}</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="1110772719190051587">Datgloi gyda Face ID</translation>
 <translation id="1111776967764068277">Wedi blino copïo dolenni?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3038136505713492417">Cadarnhewch mai chi sydd yno i ddefnyddio'ch codau pas ar y ddyfais hon</translation>
 <translation id="3039671569659952257">Dileu'r ffolder</translation>
+<translation id="3041835740069544003">Gall Chrome bellach ganfod a llenwi rhagor o ffurflenni gyda gwell dealltwriaeth o ffurflenni. I wneud hyn, gellir prosesu cynnwys tudalennau a chyfeiriadau URL mewn man preifat yn y cwmwl. Rheoli yn y gosodiadau.</translation>
 <translation id="3050988301648974170">Agor Gwiriad Cyfrineiriau</translation>
 <translation id="3053332585453689122">Yn anfon y cyfeiriadau URL rydych yn ymweld â nhw a sampl bach o gynnwys tudalen, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i Bori'n Ddiogel gyda Google i wirio a ydyn nhw'n niweidiol.</translation>
 <translation id="3055102495753300780">Storfa gwybodaeth</translation>
@@ -1986,7 +1986,6 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="7464143666517313304">Mae hyn yn dileu cyfeiriadau sydd wedi'u cadw ar y ddyfais hon.</translation>
 <translation id="7468373585447318060">Cael y diweddaraf am ostyngiadau prisiau ar yr holl gynhyrchion rydych yn eu holrhain.</translation>
 <translation id="746872191028309255">Siopwch yr hyn a welwch gyda'ch camera neu oriel luniau.</translation>
-<translation id="7469215556134875318">ers defnyddio Gwiriad cyfrineiriau</translation>
 <translation id="7471557245617580330">Creu tab newydd</translation>
 <translation id="7473555040328423550">Ychwanegu tab</translation>
 <translation id="7476548258282096076">Mae'r cerdyn hwn yn dangos eich gwefannau yr ymwelwyd â hwy fwyaf.</translation>

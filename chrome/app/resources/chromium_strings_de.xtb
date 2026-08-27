@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1388276868779258475">Mit der Chromium App kannst du unterwegs weiter surfen</translation>
-<translation id="1397530502368084401">&amp;Chromium-Profile verwalten</translation>
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ist bereits in diesem Chromium-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kann Chromium für dich ein eigenes Profil einrichten.</translation>
 <translation id="3909353120217047026">Diese Erweiterung verstößt gegen die Chrome Web Store-Richtlinien und ist möglicherweise nicht sicher. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
-<translation id="3937491663738985329">Chromium a&amp;npassen</translation>
 <translation id="3941890832296813527">Installationsfehler: Der Dateiname des Installationsprogramms ist ungültig oder wird nicht unterstützt.</translation>
 <translation id="3945058413678539331">Chromium versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="3954172517175569325">Deine Passwörter, Zahlungsmethoden und Adressen, die du in deinem Google-Konto gespeichert hast, werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chromium verwenden möchtest, melde dich einfach wieder an.</translation>
@@ -768,6 +766,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8980139959902937527">Mit der Chromium App auf deinem <ph name="DEVICE_TYPE" /> die Sicherheitsfunktionen von Google unterwegs nutzen</translation>
 <translation id="8981150672034878610">Chromium kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chromium neu zu starten.</translation>
 <translation id="8988036198400390003">Chromium-Profile verwalten</translation>
+<translation id="8993855408334954620">Du kannst mit der Tastatur zwischen Gemini in Chromium und deinem geöffneten Tab wechseln.</translation>
 <translation id="9018218886431812662">Installation abgeschlossen</translation>
 <translation id="9019929317751753759">Um Chromium sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne dein Wissen hinzugefügt.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>

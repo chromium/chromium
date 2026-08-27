@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1393071644879491291">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਉਸ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਨੂੰ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਫ਼ੋਨ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰਾਂ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੇ ਹਨ। Chrome ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਨਾ ਜਾਣ ਦੀ ਜ਼ੋਰਦਾਰ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">ਜਵਾਬਾਂ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਥੇ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦਾ ਹਵਾਲਾ ਨਹੀਂ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਭਾਵੇਂ ਟੈਬ ਖੁੱਲ੍ਹੀ ਹੋਵੇ। ਜੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ ਸਾਈਟ ਵਰਤਮਾਨ ਵਿੱਚ ਕਿਸੇ ਥ੍ਰੈੱਡ ਵਿੱਚ ਵਰਤੀ ਜਾ ਰਹੀ ਹੈ, ਤਾਂ ਥ੍ਰੈੱਡ ਨੂੰ ਇਸਦਾ ਹਵਾਲਾ ਦੇਣਾ ਬੰਦ ਕਰਨ ਵਿੱਚ 30 ਮਿੰਟ ਤੱਕ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
-<translation id="1402151528875251561">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
 <translation id="1406370515365284486">ਤੁਹਾਡੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਾਲੇ ਵੀ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ</translation>
 <translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2679216653373462289">ਆਪਣੇ ਮੋਸ਼ਨ ਅਤੇ ਲਾਈਟ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="2679659833697380">ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
-<translation id="2680837394649649718">ਤੁਹਾਡੇ <ph name="DEVICE_NAME" /> 'ਤੇ Chrome ਭੇਜਿਆ ਗਿਆ।</translation>
 <translation id="2683195745483370038">ਹੋਰ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="2686919536310834199">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਲਈ ਵਿਚਾਰ ਭੇਜੋ।</translation>
 <translation id="2687555958734450033">ਪੂਰੀ ਤਰ੍ਹਾਂ ਫਿੱਟ</translation>
@@ -1612,7 +1610,6 @@
 <translation id="3752181611900535304">ਕੀ ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3752543821772132562">ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ ਕਿਉਂਕਿ <ph name="POLICY_NAME" /> ਸੈੱਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3754210790023674521">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
-<translation id="3754664361823138853">&amp;ਇਤਿਹਾਸ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="3757511311058373406">ਆਟੋ ਬ੍ਰਾਊਜ਼ ਫਿਲਟਰ</translation>
 <translation id="3759461132968374835">ਹਾਲ ਹੀ 'ਚ ਤੁਹਾਡੇ ਕੋਲ ਕੋਈ ਵੀ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਨਹੀਂ ਹਨ। ਕ੍ਰੈਸ਼ ਜਿਹੜੇ ਦੁਹਰਾਅ-ਸੰਖਿਆ ਹੋਏ ਸਨ ਜਦੋਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਿੰਗ ਬੰਦ ਸੀ, ਇੱਥੇ ਪ੍ਰਗਟ ਨਹੀਂ ਹੋਣਗੇ।</translation>
 <translation id="3760561303380396507">ਕੀ CVC ਦੀ ਬਜਾਏ Windows Hello ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
@@ -2056,7 +2053,6 @@
 <translation id="4473643328224505070">Chrome ਦੀ ਉੱਚਤਮ ਪੱਧਰ ਦੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕਰੋ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">ਇਹ ਕਾਰਵਾਈ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਦੀ ਉਲੰਘਣਾ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">ਇਹ ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ। ਆਟੋਫਿਲ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4477350412780666475">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="4480760608050410381">MP4 ਵੀਡੀਓ</translation>
 <translation id="4489023393592172404">ਕਾਕੂ 4 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -3525,7 +3521,6 @@
 <translation id="6998512609912910179">ਤੇਜ਼ੀ ਨਾਲ ਫ਼ਾਰਮ ਭਰੋ</translation>
 <translation id="7000094925113284872">ਤਾਰੇ ਦੇ ਜੀਵਨ ਚੱਕਰ ਨੂੰ ਮੈਪ ਕਰੋ</translation>
 <translation id="7002897669829306463">ਘਰ ਦਾ ਪਤਾ, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">ਹਾਲੀਆ ਟੈਬਸ</translation>
 <translation id="7004562620237466965">ਕੇਵਲ ਡੈਸੀਫਰ</translation>
 <translation id="7006930604109697472">ਫੇਰ ਵੀ ਭੇਜੋ</translation>
 <translation id="7009364359744329733">ਫ਼ਿਲਹਾਲ ਇਹ ਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -4349,6 +4344,7 @@
 <translation id="8410956920192583322">ਮਹੀਨਾਵਾਰ ਜਾਂ 4 ਕਿਸ਼ਤਾਂ ਵਿੱਚ</translation>
 <translation id="8412145213513410671">ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ਤੁਹਾਨੂੰ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਰਜ ਕਰਨਾ ਪਵੇਗਾ।</translation>
+<translation id="8413126021676339697">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="8414322570408428950">ਐਕਸਟੈਂਸ਼ਨ ਇਵੈਂਟ ਵਾਪਰਦਾ ਹੈ</translation>
 <translation id="8416694386774425977">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ਅਵੈਧ ਹੋਣ ਕਰਕੇ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।
 ਵਧੀਕ ਵੇਰਵੇ:
@@ -4655,7 +4651,6 @@
 <translation id="8988966534058783995">ਕੀ ਮੋਸ਼ਨ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="899688752321268742"><ph name="URL" /> ਜਾਣਨਾ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਦੋਂ ਕਰਦੇ ਹੋ</translation>
 <translation id="8997023839087525404">ਸਰਵਰ ਨੇ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪੇਸ਼ ਕੀਤਾ ਜਿਸਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪਾਰਦਰਸ਼ਤਾ ਨੀਤੀ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਜਨਤਕ ਤੌਰ 'ਤੇ ਖੁਲਾਸਾ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਸੀ। ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਕੁਝ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਭਰੋਸੇਯੋਗ ਹਨ, ਅਤੇ ਹਮਲਾਵਰਾਂ ਤੋਂ ਬਚਾਉਣ ਲਈ, ਇਹ ਕੁਝ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਵਾਸਤੇ ਇੱਕ ਜ਼ਰੂਰਤ ਹੈ।</translation>
-<translation id="9000145382638074673">ਤੁਹਾਡੇ ਡੀਵਾਈਸ</translation>
 <translation id="9001074447101275817">ਪ੍ਰੌਕਸੀ <ph name="DOMAIN" /> ਨੂੰ ਇੱਕ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="9001963517402879850">ਕੁੱਦੋ!</translation>
 <translation id="9003263770394939629">Gemini ਵੱਲੋਂ ਸੁਝਾਇਆ ਗਿਆ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>

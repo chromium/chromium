@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1095093219235104018">Gemini 智能查找和填充</translation>
 <translation id="1096992026380844478">系统将根据上次备份来恢复您的同步设置。<ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{已即时验证 1 个密码}other{已即时验证 # 个密码}}</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">使用面容 ID 解锁</translation>
 <translation id="1111776967764068277">厌倦了总是复制链接？</translation>
@@ -506,7 +505,7 @@
 <translation id="2584994295315085351">离开 Chrome 4 小时后返回时打开新标签页</translation>
 <translation id="2593272815202181319">等宽</translation>
 <translation id="2601778637777010194">跟踪商品降价情况</translation>
-<translation id="2602372807870028932">此操作会删除保存在此设备上的所选信息</translation>
+<translation id="2602372807870028932">此操作将删除保存在本设备上的所选信息</translation>
 <translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2612676031748830579">卡号</translation>
 <translation id="261305050785128654">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
@@ -809,7 +808,7 @@
 <translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3662966164093827811">{count,plural, =1{已选择 1 个}other{已选择 # 个}}</translation>
 <translation id="3668816008081204991">已隐藏阅读清单</translation>
-<translation id="3670030362669914947">卡号</translation>
+<translation id="3670030362669914947">号码</translation>
 <translation id="3672283986707092811">全选</translation>
 <translation id="3679163990085797665">删除已读项</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
@@ -1477,7 +1476,7 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">正在同步…</translation>
-<translation id="5831217499016131155">Google 电子钱包</translation>
+<translation id="5831217499016131155">Google 钱包</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5838430324585198889">在 iPad 上使用 Google 应用，解锁更多精彩功能</translation>
 <translation id="583923961930319521">在您的所有设备上使用密码</translation>
@@ -1947,7 +1946,7 @@
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
-<translation id="73750335798090836">为提高安全性，请在使用旅行证件和身份证件等敏感信息时，始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="73750335798090836">为提高安全性，在使用旅行证件和身份证件等敏感信息时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
 <translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="7380698179418029202">选择您从 Safari 导出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
@@ -1986,7 +1985,6 @@
 <translation id="7464143666517313304">此操作会删除保存在此设备上的地址。</translation>
 <translation id="7468373585447318060">及时了解您跟踪的所有商品的降价情况。</translation>
 <translation id="746872191028309255">使用相机拍照或从图库中选择照片，从而购买所见内容。</translation>
-<translation id="7469215556134875318">使用密码安全检查功能以来</translation>
 <translation id="7471557245617580330">创建新标签页</translation>
 <translation id="7473555040328423550">添加标签页</translation>
 <translation id="7476548258282096076">此卡片会显示您最常访问的网站。</translation>
@@ -2262,7 +2260,7 @@
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="8325455175867928593">隐藏“根据您的兴趣推荐的评价”</translation>
 <translation id="8333459276976141586">Live 模式会使用麦克风。点按“Live”按钮即可开启麦克风。如要关闭麦克风，请点按“停止”按钮或关闭 Gemini。</translation>
-<translation id="833647236762414178">您可以创建、保存和管理密码和通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="833647236762414178">您可以创建、保存和管理密码与通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8345328955902001853">{count,plural, =1{再完成 1 项任务即可升级}other{再完成 {count} 项任务即可升级}}</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
@@ -2359,7 +2357,7 @@
 <translation id="8633025649649592204">近期活动</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
-<translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{暂无已泄露的密码}=1{{COUNT} 个已泄露的密码}other{{COUNT} 个已泄露的密码}}</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8642417828095157370">系统会共享标签页以提供更相关的回答</translation>
 <translation id="8643403533759285912">删除分组</translation>

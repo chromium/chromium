@@ -239,7 +239,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Les sites que vous ajoutez ici ne seront pas référencés pour les réponses, même si l'onglet est ouvert. Si un site que vous ajoutez est actuellement utilisé dans un fil de discussion, il peut s'écouler jusqu'à 30 minutes avant que le fil de discussion cesse d'y faire référence.</translation>
-<translation id="1402151528875251561">Afficher l'historique dans le panneau latéral</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
@@ -1008,7 +1007,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2679216653373462289">Utiliser vos capteurs de mouvement et de luminosité</translation>
 <translation id="2679659833697380">Vos informations sont enregistrées sur votre appareil</translation>
-<translation id="2680837394649649718">Envoyé à Chrome sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Autres résultats trouvés</translation>
 <translation id="2686919536310834199">Envoyer des commentaires sur Aide-moi à écrire.</translation>
 <translation id="2687555958734450033">Taille optimale</translation>
@@ -1615,7 +1613,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Enregistrer l'adresse dans le compte ?</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode PIP (Picture-in-picture)</translation>
-<translation id="3754664361823138853">&amp;Ouvrir l'historique</translation>
 <translation id="3757511311058373406">Filtres de navigation automatique</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
 <translation id="3760561303380396507">Utiliser Windows Hello au lieu du code CVC ?</translation>
@@ -2059,7 +2056,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" /> pour bénéficier du plus haut niveau de sécurité de Chrome</translation>
 <translation id="4475299370877036544">Cette action pourrait enfreindre les règles de votre organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Ce formulaire n'est pas sécurisé. La saisie automatique a été désactivée.</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
 <translation id="4480760608050410381">Vidéo MP4</translation>
 <translation id="4489023393592172404">Enveloppe Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6998512609912910179">Remplissez les formulaires plus rapidement</translation>
 <translation id="7000094925113284872">Décris le cycle de vie d'une étoile</translation>
 <translation id="7002897669829306463">Adresse du domicile, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7004562620237466965">Déchiffrer uniquement</translation>
 <translation id="7006930604109697472">Envoyer quand même</translation>
 <translation id="7009364359744329733">Cette carte n'est pas disponible pour le moment. Veuillez réessayer plus tard.</translation>
@@ -4355,6 +4350,7 @@ Informations supplémentaires :
 <translation id="8410956920192583322">Mensuel ou en quatre versements</translation>
 <translation id="8412145213513410671">Erreurs (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez saisir deux fois la même phrase secrète.</translation>
+<translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8414322570408428950">Un événement d'extension se produit</translation>
 <translation id="8416694386774425977">Impossible d'importer la configuration du réseau : elle n'est pas valide.
 Informations supplémentaires :
@@ -4661,7 +4657,6 @@ Informations supplémentaires :
 <translation id="8988966534058783995">Utiliser les capteurs de mouvement ?</translation>
 <translation id="899688752321268742"><ph name="URL" /> souhaite savoir quand vous utilisez activement cet appareil</translation>
 <translation id="8997023839087525404">Le certificat présenté par le serveur n'a pas été communiqué au public. Selon les règles de transparence des certificats, certains certificats doivent obligatoirement être communiqués publiquement pour garantir qu'ils sont dignes de confiance et qu'ils protègent contre les individus malveillants.</translation>
-<translation id="9000145382638074673">Vos appareils</translation>
 <translation id="9001074447101275817">Le proxy <ph name="DOMAIN" /> nécessite un nom d'utilisateur et un mot de passe.</translation>
 <translation id="9001963517402879850">Sautez !</translation>
 <translation id="9003263770394939629">Suggéré par Gemini. Gérez la saisie automatique améliorée dans les paramètres.</translation>

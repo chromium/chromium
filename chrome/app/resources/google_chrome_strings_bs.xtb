@@ -463,7 +463,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5649156266046089790">Pomoću Chrome profila možete odvojiti sve svoje sadržaje u Chromeu. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
 <translation id="5655063652337498476">Otkrivajte proizvode kamerom, pratite sniženje cijena i drugo u pokretu uz Chrome u iOS-u.</translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>
-<translation id="566040795510471729">P&amp;rilagodite Chrome</translation>
 <translation id="566568153320186256">Chrome štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o Uštedi energije<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Brisanje podataka Chromea na računu</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja}=1{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7777080907402804672">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa. To možete isključiti u postavkama kad god želite.</translation>
 <translation id="778331955594035129">Chromeu je za ovu web lokaciju potrebno odobrenje za lokaciju</translation>
 <translation id="7787950393032327779">Izgleda da neki drugi Google Chrome proces (<ph name="PROCESS_ID" />) koristi ovaj profil na nekom drugom računaru (<ph name="HOST_NAME" />).  Chrome je zaključao profil kako ne bi došlo do oštećenja.  Ako ste sigurni da nijedan drugi proces ne koristi ovaj profil, možete ga otključati i ponovo pokrenuti Chrome.</translation>
-<translation id="7792336732117553384">&amp;Upravljaj profilima u Chromeu</translation>
 <translation id="7801699035218095297">Google Chrome pokušava kopirati lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="7804364787702057554">Vaš račun u Chromeu</translation>
 <translation id="7804947029129221742">Pretraživač je promijenjen izvan Chromea. Chrome ga je vratio na originalno zadano radi vaše zaštite. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
 <translation id="8370748943308169953">QR kôd za prijavu u Chrome kao <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Uključite/isključite Gemini u Chrome Canaryju</translation>
+<translation id="8380754585531979907">Koristite tastaturu da se krećete između Geminija u Chromeu i otvorene kartice.</translation>
 <translation id="8387459386171870978">Nastavi koristiti Chrome</translation>
 <translation id="8394720698884623075">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu</translation>
 <translation id="8403038600646341038">Logotip Chromea na ekranu računara.</translation>

@@ -462,7 +462,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5649156266046089790">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요</translation>
 <translation id="5655063652337498476">iOS에서 Chrome을 사용해 카메라로 제품을 발견하고, 가격 인하를 모니터링하는 등 다양한 작업을 이동 중에 수행하세요.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
-<translation id="566040795510471729">Chrome 맞춤설정(&amp;U)</translation>
 <translation id="566568153320186256">Chrome은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">계정의 Chrome 데이터 삭제</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
@@ -689,7 +688,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="778331955594035129">Chrome에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="7787950393032327779">다른 컴퓨터(<ph name="HOST_NAME" />)의 다른 Chrome 프로세스(<ph name="PROCESS_ID" />)에서 프로필을 사용 중인 것 같습니다. 프로필이 손상되지 않도록 Chrome에서 잠금 설정했습니다. 다른 프로세스에서 프로필을 사용 중이지 않은 것이 확실한 경우 프로필을 잠금 해제하고 Chrome을 다시 시작하세요.</translation>
-<translation id="7792336732117553384">Chrome 프로필 관리(&amp;M)</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7804364787702057554">Chrome의 내 계정</translation>
 <translation id="7804947029129221742">Chrome 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +759,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> 계정으로 Chrome에 로그인하기 위한 QR 코드</translation>
 <translation id="8377158135256176353">Chrome Canary의 Gemini 전환</translation>
+<translation id="8380754585531979907">키보드를 사용하여 Chrome의 Gemini와 열려 있는 탭 사이를 이동할 수 있습니다.</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>
 <translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="8403038600646341038">컴퓨터 화면에 표시된 Chrome 로고입니다.</translation>

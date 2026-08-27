@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="1108214977745280468">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੇਖੋ</translation>
 <translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
+<translation id="1109663842695712985">ਤੁਹਾਡੇ ਕੁਝ Chrome ਡਾਟੇ ਨੂੰ ਹਾਲੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਾਈਨ-ਆਊਟ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੁਝ ਮਿੰਟਾਂ ਦੀ ਉਡੀਕ ਕਰ ਕੇ ਦੇਖੋ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ ਅਣਰੱਖਿਅਤ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1111673857033749125">ਤੁਹਾਡੀਆਂ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ।</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="1126696498560056882">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਰਿਕਾਰਡਿੰਗ ਵਾਲੀ ਟੈਬ</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ਸਾਂਝਾਕਰਨ ਟੈਬ</translation>
+<translation id="1601378265092360672">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਵਿੱਚ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ, ਕੈਸ਼ੇ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਫ਼ਾਈਲਾਂ ਅਤੇ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="160275202205869636">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਆਪਣੇ Google ਖਾਤੇ ਵਿਚਲੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰੋ ਅਤੇ ਉਸਨੂੰ ਰੱਖਿਅਤ ਕਰੋ। ਬੰਦ ਹੋਣ 'ਤੇ, ਡਾਟਾ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ ਆਈਟਮ ਹਟਾਓ}one{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ}other{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਹਟਾਓ}}</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਲਾਕ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ਤੁਹਾਡਾ ਫ਼ੋਨ</translation>
+<translation id="4295640788982898778">ਤੁਹਾਡੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਹਨ, ਪਰ ਇਨ੍ਹਾਂ ਦੀ ਮਦਦ ਨਾਲ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਡਾਟਾ ਹੀ ਮਿਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="4296252229500326964">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ</translation>
 <translation id="4298388696830689168">ਲਿੰਕ ਕੀਤੀਆਂ ਸਾਈਟਾਂ</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens ਖੋਲ੍ਹੋ</translation>
 <translation id="435863252455918214">Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4359809482106103048">ਸੁਰੱਖਿਆ ਇੱਕ ਨਜ਼ਰ ਵਿੱਚ</translation>
+<translation id="4374192654218566997">\n\nਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਇਸ ਡਾਟੇ ਨੂੰ ਵੀ ਹਟਾ ਸਕਦੇ ਹੋ:</translation>
 <translation id="4378154925671717803">ਫ਼ੋਨ</translation>
 <translation id="4380055775103003110">ਜੇ ਇਹ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੋਰ ਤਰੀਕਿਆਂ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4384468725000734951">ਖੋਜਣ ਲਈ Sogou ਦੀ ਵਰਤੋਂ ਹੋ ਰਹੀ ਹੈ</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਨੁਸਰਣ ਕੀਤੀ ਜਾਂਦੀ ਸਮੱਗਰੀ ਅਤੇ ਸੁਝਾਏ ਗਏ ਵਿਸ਼ਿਆਂ ਅਤੇ ਖੋਜਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7121179479711575744">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="7130633106249192408">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="7136694880210472378">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਣਾਓ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{# ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="7138678301420049075">ਹੋਰ</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ</translation>
 <translation id="82296173028782770">ਖੋਜ ਪੁੱਛਗਿੱਛ ਦਾ ਸੰਪਾਦਨ ਕਰੋ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="8236917170563564587">ਇਸਦੀ ਬਜਾਏ ਇਹ ਟੈਬ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="8243077599929149377">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8244387390464017490">'ਨਵੀਂ ਟੈਬ' ਪੰਨਾ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="8244444485683708655">ਕੈਮਰਾ ਤਸਵੀਰ ਨੱਥੀ ਕਰੋ</translation>

@@ -41,7 +41,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388276868779258475">Use the Chromium app to keep browsing on the go</translation>
-<translation id="1397530502368084401">&amp;Manage Chromium profiles</translation>
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
@@ -271,7 +270,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. To keep your browsing separate, Chromium can create your own profile for you.</translation>
 <translation id="3909353120217047026">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
-<translation id="3937491663738985329">Customise your Chromium</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="3945058413678539331">Chromium is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="3954172517175569325">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
@@ -771,6 +769,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8980139959902937527">Take the safety of Google on the go with the Chromium app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Cannot start Chromium because something went wrong when opening your profile. Try to restart Chromium.</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
+<translation id="8993855408334954620">Use your keyboard to navigate between Gemini in Chromium and your open tab.</translation>
 <translation id="9018218886431812662">Installation complete</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>

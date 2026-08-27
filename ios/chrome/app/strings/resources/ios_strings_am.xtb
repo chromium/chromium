@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1095093219235104018">በGemini ያግኙ እና ይሙሉ</translation>
 <translation id="1096992026380844478">የእርስዎ የማስመር ቅንብሮች በእርስዎ የመጨረሻ ምትኬ ላይ በመመስረት ወደነበሩበት ይመለሳሉ። <ph name="BEGIN_LINK" />ምን ማስመር እንደሚችሉ ይመልከቱ<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 የይለፍ ቃል በቅጽበት ተረጋግጧል}one{# የይለፍ ቃል በቅጽበት ተረጋግጧል}other{# የይለፍ ቃላት በቅጽበት ተረጋግጠዋል}}</translation>
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
 <translation id="1110772719190051587">በመልክ መታወቂያ ይክፈቱ</translation>
 <translation id="1111776967764068277">አገናኞችን መቅዳት ሰልችቶዎታል?</translation>
@@ -1986,7 +1985,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7464143666517313304">ይህ በዚህ መሣሪያ ላይ የተቀመጡ አድራሻዎችን ይሰርዛል።</translation>
 <translation id="7468373585447318060">ሁሉም የሚከታተሏቸው ምርቶች ላይ የዋጋ ቅነሳዎችን ይከታተሉ።</translation>
 <translation id="746872191028309255">በካሜራዎ ወይም በፎቶ ማዕከለ ሥዕላትዎ የሚያዩትን ይግዙ።</translation>
-<translation id="7469215556134875318">የይለፍ ቃል ማረጋገጫን ከተጠቀሙበት ጊዜ ጀምሮ</translation>
 <translation id="7471557245617580330">አዲስ ትር ፍጠር</translation>
 <translation id="7473555040328423550">ትር አክል</translation>
 <translation id="7476548258282096076">ይህ ካርድ የእርስዎን በጣም የተጎበኙ ጣቢያዎች ያሳያል።</translation>

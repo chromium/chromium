@@ -239,7 +239,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="139305205187523129">Hindi nagpadala ng anumang data ang <ph name="HOST_NAME" />.</translation>
 <translation id="1393071644879491291">Posibleng linlangin ka ng mga attacker sa site na sinubukan mong bisitahin na mag-install ng software o magbunyag ng mga bagay na tulad ng iyong mga password, numero ng telepono, o numero ng credit card. Lubos na inirerekomenda ng Chrome na bumalik sa ligtas na lugar. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Hindi gagawing sanggunian ang mga site na idaragdag mo rito para sa mga sagot, kahit na nakabukas ang tab. Kung kasalukuyang ginagamit sa isang thread ang isang site na idaragdag mo, puwedeng abutin ito nang hanggang 30 minuto bago ihinto ng thread ang pag-reference dito.</translation>
-<translation id="1402151528875251561">Ipakita ang History sa Panel sa Gilid</translation>
 <translation id="1405567553485452995">Light Green</translation>
 <translation id="1406370515365284486">Ise-save pa rin ang iyong mga paraan ng pagbabayad</translation>
 <translation id="1406500794671479665">Bine-verify...</translation>
@@ -1008,7 +1007,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2679216653373462289">Gamitin ang iyong mga sensor ng paggalaw at liwanag</translation>
 <translation id="2679659833697380">Sine-save sa iyong device ang impormasyon mo</translation>
-<translation id="2680837394649649718">Ipinadala sa Chrome sa iyong <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Iba pang nahanap na resulta</translation>
 <translation id="2686919536310834199">Magpadala ng feedback para sa Tulungan akong magsulat.</translation>
 <translation id="2687555958734450033">Pinakakasya</translation>
@@ -1615,7 +1613,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3752181611900535304">I-save ang address sa account?</translation>
 <translation id="3752543821772132562">Binalewala dahil hindi nakatakda ang <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Lumabas sa picture-in-picture</translation>
-<translation id="3754664361823138853">&amp;Buksan ang Page ng History</translation>
 <translation id="3757511311058373406">Mga filter ng awtomatikong pag-browse</translation>
 <translation id="3759461132968374835">Wala kang kamakailang iniulat na mga pag-crash. Hindi lilitaw dito ang mga pag-crash na naganap kapag hindi pinagana ang pag-uulat ng pag-crash.</translation>
 <translation id="3760561303380396507">Gamitin ang Windows Hello sa halip na CVC?</translation>
@@ -2059,7 +2056,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />I-on ang pinaigting na proteksyon<ph name="END_ENHANCED_PROTECTION_LINK" /> para makuha ang pinakamataas na level ng seguridad ng Chrome</translation>
 <translation id="4475299370877036544">Posibleng lumabag ang pagkilos na ito sa mga patakaran ng iyong organisasyon</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Hindi secure ang form na ito. Na-off ang autofill.</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4480760608050410381">MP4 na Video</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6998512609912910179">Punan ang mga form nang mas mabilis</translation>
 <translation id="7000094925113284872">Imapa ang lifecycle ng isang bituin</translation>
 <translation id="7002897669829306463">Address ng tahanan, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7004562620237466965">Decipher Lang</translation>
 <translation id="7006930604109697472">Ipadala pa rin</translation>
 <translation id="7009364359744329733">Hindi available ngayon ang card na ito. Pakisubukan ulit sa ibang pagkakataon.</translation>
@@ -4354,6 +4349,7 @@ Mga karagdagang detalye:
 <translation id="8410956920192583322">Buwanan o 4 na installment</translation>
 <translation id="8412145213513410671">Mga Pag-crash (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Dapat mong ilagay ang parehong passphrase nang dalawang beses.</translation>
+<translation id="8413126021676339697">Ipakita ang buong history</translation>
 <translation id="8414322570408428950">Nagkaroon ng event sa extension</translation>
 <translation id="8416694386774425977">Invalid ang configuration ng network at hindi ito ma-import.
 Mga karagdagang detalye:
@@ -4660,7 +4656,6 @@ Mga karagdagang detalye:
 <translation id="8988966534058783995">Gumamit ng mga sensor ng paggalaw?</translation>
 <translation id="899688752321268742">Gustong malaman ng <ph name="URL" /> kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="8997023839087525404">Nagpakita ang server ng certificate na hindi inihayag sa publiko gamit ang patakaran sa Transparency ng Certificate. Kinakailangan ito para sa ilang certificate, upang matiyak na mapagkakatiwalaan ang mga ito at maprotektahan laban sa mga umaatake.</translation>
-<translation id="9000145382638074673">Ang Iyong Mga Device</translation>
 <translation id="9001074447101275817">Nangangailangan ang proxy na <ph name="DOMAIN" /> ng username at password.</translation>
 <translation id="9001963517402879850">Tumalon!</translation>
 <translation id="9003263770394939629">Iminumungkahi ng Gemini. Pamahalaan ang pinahusay na autofill sa mga setting.</translation>

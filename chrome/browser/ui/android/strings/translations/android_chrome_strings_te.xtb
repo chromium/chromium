@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">స్క్రీన్ క్యాప్చర్</translation>
 <translation id="1108214977745280468">పేజీ గణాంకాలను చూడండి</translation>
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
+<translation id="1109663842695712985">మీ Chrome డేటాలో కొంత భాగం ఇంకా మీ Google ఖాతాలో సేవ్ కాలేదు. సైన్ అవుట్ చేయడానికి ముందు, కొన్ని నిమిషాలు వేచి ఉండటానికి ట్రై చేయండి. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, సేవ్ చేయని డేటా తొలగిపోతుంది.</translation>
 <translation id="1111673857033749125">మీ ఇతర పరికరాల్లో సేవ్ చేసిన బుక్‌మార్క్‌లు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, పిక్చర్-ఇన్-పిక్చర్ ట్యాబ్</translation>
 <translation id="1126696498560056882">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను ఉపయోగించండి</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, మీడియాను రికార్డ్ చేసే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, కంటెంట్ షేరింగ్ ట్యాబ్</translation>
+<translation id="1601378265092360672">బ్రౌజింగ్ డేటాలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, ఇతర సైట్ డేటా, కాష్ చేసిన ఇమేజ్‌లు, ఫైల్స్, తెరిచిన ట్యాబ్‌లు ఉంటాయి</translation>
 <translation id="160275202205869636">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటాను ఉపయోగించండి, దానిని సేవ్ చేయండి. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ఎంచుకోబడిన 1 అంశాన్ని తీసివేస్తుంది}other{ఎంచుకోబడిన # అంశాలను తీసివేస్తుంది}}</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">కుక్కీలు, కాష్, ఇతర సైట్ డేటా</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">మీ ఫోన్</translation>
+<translation id="4295640788982898778">మీ ఎక్స్‌టెన్షన్‌లు మీ Google ఖాతాలో సేవ్ అవుతాయి, కానీ అవి ఈ డివైజ్‌లో మాత్రమే సేవ్ చేసిన డేటా తొలగిపోయే అవకాశం ఉంది</translation>
 <translation id="4296252229500326964">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, మల్టీసెలెక్టెడ్ అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lensను తెరవండి</translation>
 <translation id="435863252455918214">Chrome ప్రధాన మెనూలో మీ ఎక్స్‌టెన్షన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="4359809482106103048">సురక్షిత డైనమిక్ డిస్‌ప్లే</translation>
+<translation id="4374192654218566997">\n\nమీరు ఈ డివైజ్ నుండి ఈ డేటాను కూడా తీసివేయవచ్చు:</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4380055775103003110">ఈ సమస్య అలాగే కొనసాగుతూ ఉంటే, మీరు <ph name="SITE_ETLD_PLUS_ONE" />లో కొనసాగించడానికి ఇతర మార్గాలను ట్రై చేయవచ్చు.</translation>
 <translation id="4384468725000734951">శోధన కోసం Sogouను ఉపయోగిస్తుంది</translation>
@@ -1539,6 +1543,7 @@
 <translation id="7117485132243600300">మీరు ఫాలో అయ్యే కంటెంట్‌ను, సూచించిన టాపిక్‌లను, సెర్చ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />‌ను మూసివేయండి</translation>
 <translation id="7121179479711575744">Chromeకు సైన్ ఇన్ చేయండి</translation>
+<translation id="7130633106249192408">ఈ డివైజ్ నుండి బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="7136694880210472378">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయి</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 సైట్ కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}other{# సైట్‌ల కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}}</translation>
 <translation id="7138678301420049075">ఇతరం</translation>
@@ -1831,6 +1836,7 @@
 <translation id="8223642481677794647">ఫీడ్ కార్డ్ మెనూ</translation>
 <translation id="82296173028782770">సెర్చ్ క్వెరీని ఎడిట్ చేయండి: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">బుక్‌మార్క్‌లకు జోడించండి</translation>
+<translation id="8236917170563564587">బదులుగా, ఈ ట్యాబ్‌ను షేర్ చేయి</translation>
 <translation id="8243077599929149377">మీ యూజర్‌నేమ్‌ను జోడించండి</translation>
 <translation id="8244387390464017490">ట్యాబ్ పేజీ అనుకూలీకరించండి</translation>
 <translation id="8244444485683708655">కెమెరా ఫోటోను అటాచ్ చేయండి</translation>

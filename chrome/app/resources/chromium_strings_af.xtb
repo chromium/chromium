@@ -41,7 +41,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1356661055722410047">Nuut! Jy kan sowel teks as prente op jou skerm vertaal</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1388276868779258475">Gebruik die Chromium-app om aan te hou blaai terwyl jy aan die beweeg is</translation>
-<translation id="1397530502368084401">&amp;Bestuur Chromium-profiele</translation>
 <translation id="141901961143729572">Deel jou gedagtes</translation>
 <translation id="1465192221147974788">Om jou venster te deel, moet jy skermopname vir Chromium in Stelselinstellings toelaat.</translation>
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
@@ -271,7 +270,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> is reeds by hierdie Chromium-profiel aangemeld. Chromium kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
 <translation id="3909353120217047026">Hierdie uitbreiding oortree Chrome Webwinkel se beleid, en kan onveilig wees. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
-<translation id="3937491663738985329">P&amp;asmaak jou Chromium</translation>
 <translation id="3941890832296813527">Installeerfout: Die installeerderlêernaam is ongeldig of word nie ondersteun nie.</translation>
 <translation id="3945058413678539331">Chromium probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="3954172517175569325">Jou wagwoorde, betaalmetodes en adresse wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chromium wil gebruik.</translation>
@@ -771,6 +769,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8980139959902937527">Gebruik die Chromium-app op jou <ph name="DEVICE_TYPE" /> om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="8981150672034878610">Kan nie Chromium begin nie omdat iets skeefgeloop het toe jou profiel oopgemaak is. Probeer om Chromium te herbegin.</translation>
 <translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
+<translation id="8993855408334954620">Gebruik jou sleutelbord om tussen Gemini in Chromium en jou oop oortjie te navigeer.</translation>
 <translation id="9018218886431812662">Installering is voltooi</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>

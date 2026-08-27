@@ -239,7 +239,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hat keine Daten gesendet.</translation>
 <translation id="1393071644879491291">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie Passwörtern, deiner Telefonnummer oder Kreditkartennummern verleiten möchten. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Websites, die du hier hinzufügst, werden für Antworten nicht berücksichtigt, auch wenn der Tab geöffnet ist. Wenn eine von dir hinzugefügte Website gerade in einem Thread verwendet wird, kann es bis zu 30 Minuten dauern, bis der Thread nicht mehr darauf verweist.</translation>
-<translation id="1402151528875251561">Verlauf in der Seitenleiste anzeigen</translation>
 <translation id="1405567553485452995">Hellgrün</translation>
 <translation id="1406370515365284486">Deine Zahlungsmethoden bleiben gespeichert</translation>
 <translation id="1406500794671479665">Überprüfung wird durchgeführt...</translation>
@@ -1008,7 +1007,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2679216653373462289">Bewegungs- und Lichtsensoren verwenden</translation>
 <translation id="2679659833697380">Deine Informationen werden auf deinem Gerät gespeichert</translation>
-<translation id="2680837394649649718">An Chrome auf deinem Gerät (<ph name="DEVICE_NAME" />) gesendet.</translation>
 <translation id="2683195745483370038">Andere Ergebnisse für die Suche</translation>
 <translation id="2686919536310834199">Feedback zu „Formuliere für mich“ senden.</translation>
 <translation id="2687555958734450033">Beste Anordnung</translation>
@@ -1613,7 +1611,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3752181611900535304">Adresse im Konto speichern?</translation>
 <translation id="3752543821772132562">Ignoriert, weil <ph name="POLICY_NAME" /> nicht konfiguriert ist.</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
-<translation id="3754664361823138853">&amp;Verlaufsseite öffnen</translation>
 <translation id="3757511311058373406">Filter für automatisches Browsen</translation>
 <translation id="3759461132968374835">Es liegen keine kürzlich gemeldeten Abstürze vor. Abstürze, die bei deaktivierter Absturzberichtsfunktion aufgetreten sind, werden hier nicht angezeigt.</translation>
 <translation id="3760561303380396507">Windows Hello anstelle des CVCs verwenden?</translation>
@@ -2057,7 +2054,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktiviere den erweiterten Schutz<ph name="END_ENHANCED_PROTECTION_LINK" />, um für ein Höchstmaß an Sicherheit zu sorgen</translation>
 <translation id="4475299370877036544">Diese Aktion verstößt möglicherweise gegen die Richtlinien deiner Organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Dieses Formular ist nicht sicher. „Autofill“ wurde deaktiviert.</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4480760608050410381">MP4-Video</translation>
 <translation id="4489023393592172404">Umschlag Kaku 4</translation>
@@ -2788,7 +2784,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5716325061445053985">Tippe hier, um den Tab auf dem Smartphone zu öffnen</translation>
 <translation id="5717281954932320486">Kartendetails werden beim Online-Bezahlvorgang automatisch ausgefüllt. Karten werden sicher in Google Wallet gespeichert.</translation>
 <translation id="5718326209176373202">Anmerkungen hinzufügen</translation>
-<translation id="5718601519531438273">Dazu gehören Informationen wie Reisepässe und Führerscheine</translation>
+<translation id="5718601519531438273">Dazu gehören Informationen aus Reisepässen und Führerscheinen</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="5721147290164931316">Zum Anmelden mit dem Smartphone scannen</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} und 1 weitere}other{{website_1}, {website_2} und {more_count} weitere}}</translation>
@@ -3325,7 +3321,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6652101503459149953">Windows Hello verwenden</translation>
 <translation id="6654244995031366386">Glas (texturiert)</translation>
 <translation id="6655085656059574817">Wenn du dein Konto verknüpft lässt, kannst du schneller mit <ph name="BNPL_ISSUER_NAME" /> bezahlen. Du kannst die Verknüpfung jedoch unter <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> aufheben.</translation>
-<translation id="6656935431494847393">Enthält Informationen wie Flugbuchungen und Fahrzeugdaten</translation>
+<translation id="6656935431494847393">Dazu gehören z. B. Flugbuchungen und Fahrzeugdaten</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659246032834639189">Dieser Preis ist niedrig</translation>
 <translation id="6660413144148052430">Standort</translation>
@@ -3527,7 +3523,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6998512609912910179">Formulare schneller ausfüllen</translation>
 <translation id="7000094925113284872">Beschreibe den Lebenszyklus eines Sterns</translation>
 <translation id="7002897669829306463">Privatadresse, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7004562620237466965">Nur entschlüsseln</translation>
 <translation id="7006930604109697472">Trotzdem senden</translation>
 <translation id="7009364359744329733">Diese Karte ist momentan nicht verfügbar. Bitte versuche es später noch einmal.</translation>
@@ -4352,6 +4347,7 @@ Weitere Details:
 <translation id="8410956920192583322">Monatlich oder in 4 Raten</translation>
 <translation id="8412145213513410671">Abstürze (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du musst zweimal dieselbe Passphrase eingeben.</translation>
+<translation id="8413126021676339697">Gesamtverlauf anzeigen</translation>
 <translation id="8414322570408428950">Erweiterungsereignis tritt auf</translation>
 <translation id="8416694386774425977">Die Netzwerkkonfiguration ist ungültig und konnte nicht importiert werden.
 Weitere Details:
@@ -4376,7 +4372,7 @@ Weitere Details:
 <translation id="8449155699563577224">17 × 24 Zoll</translation>
 <translation id="8449513475775663994">Bestätigte E‑Mail-Adresse entfernen?</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
-<translation id="8451518040456311377">Ausweisdokumente speichern und ausfüllen</translation>
+<translation id="8451518040456311377">Ausweisdokumente für Autofill speichern</translation>
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Die Ansicht am unteren Rand ist geschlossen.</translation>
 <translation id="8456775115498700722">Deine Karteninformationen von <ph name="CARD_ISSUER_NAME" /> können jetzt automatisch eingefügt werden, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist.</translation>
@@ -4548,7 +4544,7 @@ Weitere Details:
 <translation id="8781233757384402598">Wenn du eine Anfrage für das erweiterte Autofill stellst, werden deine Nutzungsdaten, Anfragen und Seitendetails an Google weitergegeben, um das automatische Ausfüllen zu verbessern</translation>
 <translation id="8781278378794969337">Button „Seite übersetzen“ – aktivieren, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>
-<translation id="8790668801880409584">Reiseinformationen speichern und ausfüllen</translation>
+<translation id="8790668801880409584">Reiseinformationen für Autofill speichern</translation>
 <translation id="8792272652220298572">Kunststoff (glänzend)</translation>
 <translation id="8792621596287649091">Du könntest den Zugriff auf dein <ph name="ORG_NAME" />-Konto verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
 <translation id="8792626944327216835">Mikrofon</translation>
@@ -4659,7 +4655,6 @@ Weitere Details:
 <translation id="8988966534058783995">Bewegungssensoren verwenden?</translation>
 <translation id="899688752321268742"><ph name="URL" /> möchte Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="8997023839087525404">Der Server präsentierte ein Zertifikat, das nicht gemäß der Richtlinie zur Zertifikatstransparenz öffentlich offengelegt wurde. Dies ist für einige Zertifikate jedoch eine Voraussetzung, mit der sichergestellt wird, dass sie vertrauenswürdig sind und vor Angriffen schützen.</translation>
-<translation id="9000145382638074673">Meine Geräte</translation>
 <translation id="9001074447101275817">Für den Proxy <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="9001963517402879850">Springen!</translation>
 <translation id="9003263770394939629">Von Gemini vorgeschlagen. Du kannst die Funktion „Erweitertes Autofill“ in den Einstellungen verwalten.</translation>

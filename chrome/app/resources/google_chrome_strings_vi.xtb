@@ -459,7 +459,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5649156266046089790">Với các hồ sơ trên Chrome, bạn có thể tách biệt từng nội dung của mình. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="5655063652337498476">Khám phá sản phẩm bằng camera, theo dõi thông tin giảm giá và thực hiện nhiều việc khác mọi lúc, mọi nơi nhờ Chrome trên iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
-<translation id="566040795510471729">T&amp;uỳ chỉnh Chrome của bạn</translation>
 <translation id="566568153320186256">Chrome sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt mà và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm pin<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Xoá dữ liệu trên Chrome khỏi tài khoản của bạn</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
@@ -686,7 +685,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7777080907402804672">Chrome sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google. Bạn có thể tắt dịch vụ này trong phần cài đặt bất kỳ lúc nào.</translation>
 <translation id="778331955594035129">Chrome cần có quyền truy cập thông tin vị trí đối với trang web này</translation>
 <translation id="7787950393032327779">Dường như cấu hình này đang được quy trình Google Chrome khác (<ph name="PROCESS_ID" />) trên máy tính khác (<ph name="HOST_NAME" />) sử dụng. Chrome đã khóa cấu hình này để cấu hình không bị lỗi. Nếu bạn chắc chắn không có quy trình nào khác đang sử dụng cấu hình này, bạn có thể mở khóa cấu hình và chạy lại Chrome.</translation>
-<translation id="7792336732117553384">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="7801699035218095297">Google Chrome đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
 <translation id="7804947029129221742">Công cụ tìm kiếm của bạn đã bị thay đổi từ bên ngoài Chrome. Để bảo vệ bạn, Chrome đã đặt lại công cụ này về chế độ mặc định ban đầu. <ph name="LEARN_MORE_LINK" /></translation>
@@ -758,6 +756,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="8370748943308169953">Mã QR để đăng nhập vào Chrome bằng <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Bật/tắt Gemini trong Chrome Canary</translation>
+<translation id="8380754585531979907">Dùng bàn phím để di chuyển giữa Gemini trong Chrome và thẻ đang mở.</translation>
 <translation id="8387459386171870978">Tiếp tục sử dụng Chrome</translation>
 <translation id="8394720698884623075">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome</translation>
 <translation id="8403038600646341038">Biểu trưng Chrome trên màn hình máy tính.</translation>

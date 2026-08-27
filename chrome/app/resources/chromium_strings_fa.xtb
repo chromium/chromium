@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1388276868779258475">‏برای ادامه مرور در حرکت، از برنامه Chromium استفاده کنید</translation>
-<translation id="1397530502368084401">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="141901961143729572">افکارتان را هم‌رسانی</translation>
 <translation id="1465192221147974788">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chromium مجاز کنید.</translation>
 <translation id="1478370723027452770">‏دریافت راهنمایی درباره Chrome for Testing</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chromium وارد شده است. برای جدا نگه داشتن مرور، Chromium می‌تواند نمایه مختص خودتان را برایتان ایجاد کند.</translation>
 <translation id="3909353120217047026">‏این افزونه خط‌مشی «نت‌بازار Chrome» را نقض می‌کند و ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
-<translation id="3937491663738985329">‏سفارشی‌سازی Chromium</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="3945058413678539331">‏Chromium می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="3954172517175569325">‏گذرواژه‌ها، روش‌های پرداخت، و نشانی‌هایی که در «حساب Google» خود ذخیره کرده‌اید از این دستگاه برداشته خواهد شد. برای استفاده مجدد از آن‌ها در Chromium، دوباره به سیستم وارد شوید.</translation>
@@ -767,6 +765,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8980139959902937527">‏با برنامه Chromium در <ph name="DEVICE_TYPE" />، ایمنی Google را درحرکت داشته باشید</translation>
 <translation id="8981150672034878610">‏‫Chromium شروع نشد، زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. ‫Chromium را بازراه‌اندازی کنید.</translation>
 <translation id="8988036198400390003">‏مدیریت نمایه‌های Chromium</translation>
+<translation id="8993855408334954620">‏از صفحه‌کلید برای پیمایش بین «Gemini در Chromium» و زبانه باز استفاده کنید.</translation>
 <translation id="9018218886431812662">نصب کامل شد</translation>
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>

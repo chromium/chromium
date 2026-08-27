@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
 <translation id="1095093219235104018">Iskanje in izpolnjevanje z Geminijem</translation>
 <translation id="1096992026380844478">Nastavitve sinhronizacije bodo obnovljene na podlagi zadnjega varnostnega kopiranja. <ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 geslo je bilo takoj preverjeno}one{# geslo je bilo takoj preverjeno}two{# gesli sta bili takoj preverjeni}few{# gesla so bila takoj preverjena}other{# gesel je bilo takoj preverjenih}}</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odkleni s funkcijo Face ID</translation>
 <translation id="1111776967764068277">Ste naveličani kopiranja povezav?</translation>
@@ -1986,7 +1985,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7464143666517313304">S tem izbrišete naslove, shranjene v tej napravi.</translation>
 <translation id="7468373585447318060">Spremljajte znižanja cen za vse izdelke, ki jih spremljate.</translation>
 <translation id="746872191028309255">Nakupujte, kar vidite, s fotoaparatom ali fotogalerijo.</translation>
-<translation id="7469215556134875318">od uporabe pregleda gesel</translation>
 <translation id="7471557245617580330">Create new tab</translation>
 <translation id="7473555040328423550">Dodaj zavihek</translation>
 <translation id="7476548258282096076">Na tej kartici so prikazana spletna mesta, ki ste jih največkrat obiskali.</translation>

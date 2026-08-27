@@ -460,7 +460,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5649156266046089790">Profilmi Chromu môžete oddeliť všetok svoj obsah v Chrome. Vytvorte profily pre rodinu aj priateľov alebo si rozdeľte obsah na prácu a zábavu.</translation>
 <translation id="5655063652337498476">Objavujte výrobky pomocou kamery, sledujte poklesy cien a vykonávajte ďalšie akcie na cestách pomocou Chromu v systéme iOS.</translation>
 <translation id="565744775970812598">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný, a preto ho Chrome zablokoval.</translation>
-<translation id="566040795510471729">P&amp;rispôsobiť Chrome</translation>
 <translation id="566568153320186256">Chrome šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. <ph name="BEGIN_LINK" />Ďalšie informácie o šetriči energie<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">vymažte údaje Chromu vo svojom účte</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Správca vás žiada o nové spustenie Chromu, aby sa použila táto aktualizácia}=1{Správca vás žiada o nové spustenie Chromu, aby sa použila táto aktualizácia. Vaše okno inkognito sa neotvorí.}few{Správca vás žiada o nové spustenie Chromu, aby sa použila táto aktualizácia. Vaše # okná inkognito sa neotvoria.}many{Správca vás žiada o nové spustenie Chromu, aby sa použila táto aktualizácia. Your # Incognito windows won't reopen.}other{Správca vás žiada o nové spustenie Chromu, aby sa použila táto aktualizácia. Vašich # okien inkognito sa neotvorí.}}</translation>
@@ -687,7 +686,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7777080907402804672">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>
 <translation id="778331955594035129">Chrome vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="7787950393032327779">Zdá sa, že profil používa ďalší proces prehliadača Google Chrome (<ph name="PROCESS_ID" />) na inom počítači (<ph name="HOST_NAME" />). Prehliadač Chrome daný profil uzamkol, aby sa nepoškodil. Ak s istotou viete, že tento profil nepoužívajú žiadne iné procesy, môžete ho odomknúť a prehliadač Chrome znova spustiť.</translation>
-<translation id="7792336732117553384">Spravovať profily Chromu</translation>
 <translation id="7801699035218095297">Google Chrome sa pokúša kopírovať heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chrome</translation>
 <translation id="7804947029129221742">Váš vyhľadávač bol zmenený z prostredia mimo Chromu. Chrome ho resetoval na pôvodné predvolené nastavenie, aby vás ochránil. <ph name="LEARN_MORE_LINK" /></translation>
@@ -759,6 +757,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="8370748943308169953">QR kód na prihlásenie do Chromu ako <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Prepnúť Gemini v Chrome Canary</translation>
+<translation id="8380754585531979907">Pomocou klávesnice môžete prechádzať medzi Gemini v Chrome a otvorenou kartou.</translation>
 <translation id="8387459386171870978">Pokračovať v používaní Chromu</translation>
 <translation id="8394720698884623075">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome</translation>
 <translation id="8403038600646341038">Logo Chromu na obrazovke počítača.</translation>

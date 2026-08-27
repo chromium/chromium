@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Snímanie obrazovky</translation>
 <translation id="1108214977745280468">Zobraziť štatistiky stránky</translation>
 <translation id="1108938384783527433">Synchronizácia histórie</translation>
+<translation id="1109663842695712985">Niektoré údaje Chromu zatiaľ neboli vo vašom účte Google uložené. Pred odhlásením skúste počkať niekoľko minút. Ak sa teraz odhlásite, neuložené údaje sa odstránia.</translation>
 <translation id="1111673857033749125">Tu sa zobrazia záložky, ktoré ste uložili na iných zariadeniach.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, karta s obrazom v obraze</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634">Používajte <ph name="SITE_ETLD_PLUS_ONE" /> od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, pripnutá karta s nahrávaním</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, karta na zdieľanie</translation>
+<translation id="1601378265092360672">Dáta prehliadania zahŕňajú históriu prehliadania, súbory cookie a ďalšie dáta webov, obrázky a súbory vo vyrovnávacej pamäti a otvorené karty</translation>
 <translation id="160275202205869636">Keď je toto nastavenie zapnuté, údaje používate a ukladáte vo svojom účte Google. Keď je vypnuté, údaje sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstrániť 1 vybranú položku}few{Odstrániť # vybrané položky}many{Odstrániť # vybranej položky}other{Odstrániť # vybraných položiek}}</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">Súbory cookie, vyrovnávacia pamäť a ďalšie dáta webov</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapnite zámku obrazovky v nastaveniach Androidu<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">váš telefón</translation>
+<translation id="4295640788982898778">Vaše rozšírenia sú uložené vo vašom účte Google, ale všetky údaje, ktoré uložili iba v tomto zariadení, môžu byť odstránené</translation>
 <translation id="4296252229500326964">Nová karta inkognito</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, viackrát vybraná karta inkognito</translation>
 <translation id="4298388696830689168">Prepojené weby</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Otvoriť Google Lens</translation>
 <translation id="435863252455918214">Spravujte svoje rozšírenia v hlavnej ponuke Chromu</translation>
 <translation id="4359809482106103048">Prehľad bezpečnosti</translation>
+<translation id="4374192654218566997">\n\nZ tohto zariadenia môžete odstrániť aj tieto údaje:</translation>
 <translation id="4378154925671717803">Telefón</translation>
 <translation id="4380055775103003110">Ak sa tento problém opakuje, môžete skúsiť ďalšie spôsoby, ako pokračovať na webe <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Na vyhľadávanie sa používa Sogou</translation>
@@ -1541,6 +1545,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7117485132243600300">Spravujte sledovaný obsah a navrhované témy aj vyhľadávania</translation>
 <translation id="7119984597597798764">Zavrieť <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Prihlásiť sa do Chromu</translation>
+<translation id="7130633106249192408">Odstrániť dáta prehliadania z tohto zariadenia</translation>
 <translation id="7136694880210472378">Nastaviť ako predvolený</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Boli skontrolované povolenia pre 1 web}few{Boli skontrolované povolenia pre # weby}many{Permissions reviewed for # sites}other{Boli skontrolované povolenia pre # webov}}</translation>
 <translation id="7138678301420049075">Ostatné</translation>
@@ -1833,6 +1838,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8223642481677794647">Ponuka karty feedu</translation>
 <translation id="82296173028782770">Upraviť vyhľadávací dopyt <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Pridať medzi záložky</translation>
+<translation id="8236917170563564587">Zdieľať radšej túto kartu</translation>
 <translation id="8243077599929149377">Pridajte svoje používateľské meno</translation>
 <translation id="8244387390464017490">Upraviť stránku Nová karta</translation>
 <translation id="8244444485683708655">Priložiť fotku z kamery</translation>

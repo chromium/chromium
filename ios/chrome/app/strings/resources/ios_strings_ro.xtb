@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
 <translation id="1095093219235104018">Găsește și completează cu Gemini</translation>
 <translation id="1096992026380844478">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{O parolă confirmată instantaneu}few{# parole confirmate instantaneu}other{# de parole confirmate instantaneu}}</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Deblochează cu Face ID</translation>
 <translation id="1111776967764068277">Te-ai săturat să copiezi linkuri?</translation>
@@ -1986,7 +1985,6 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7464143666517313304">Astfel, sunt șterse adresele salvate pe acest dispozitiv.</translation>
 <translation id="7468373585447318060">Află despre scăderile de prețuri pentru toate produsele pe care le urmărești.</translation>
 <translation id="746872191028309255">Cumpără ceea ce vezi folosind camera foto sau galeria foto.</translation>
-<translation id="7469215556134875318">de când folosești Verificarea parolei</translation>
 <translation id="7471557245617580330">Creează o nouă filă</translation>
 <translation id="7473555040328423550">Adaugă o filă</translation>
 <translation id="7476548258282096076">Acest card afișează cele mai accesate site-uri.</translation>

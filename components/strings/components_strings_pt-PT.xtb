@@ -239,7 +239,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="139305205187523129"><ph name="HOST_NAME" /> não enviou quaisquer dados.</translation>
 <translation id="1393071644879491291">Os atacantes no site que tentou visitar podem tentar enganar o utilizador para que instale software ou revele informações como as suas palavras-passe, número de telefone ou números de cartões de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Os sites que adicionar aqui não são referenciados para respostas, mesmo que o separador esteja aberto. Se um site que adicionar estiver a ser usado numa conversa, esta pode demorar até 30 minutos a deixar de o referenciar.</translation>
-<translation id="1402151528875251561">Mostrar histórico no painel lateral</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1406370515365284486">Os seus métodos de pagamento continuam guardados</translation>
 <translation id="1406500794671479665">A confirmar...</translation>
@@ -1008,7 +1007,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679216653373462289">Usar os sensores de movimento e de luz</translation>
 <translation id="2679659833697380">As informações são guardadas no seu dispositivo</translation>
-<translation id="2680837394649649718">Enviado para o Chrome no <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Envie feedback sobre a funcionalidade Ajuda-me a escrever.</translation>
 <translation id="2687555958734450033">Tamanho otimizado</translation>
@@ -1615,7 +1613,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3752181611900535304">Guardar morada na conta?</translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair de ecrã no ecrã</translation>
-<translation id="3754664361823138853">&amp;Abrir a página Histórico</translation>
 <translation id="3757511311058373406">Filtros de navegação automática</translation>
 <translation id="3759461132968374835">Não tem comunicado falhas recentemente. As falhas que tenham ocorrido enquanto a criação de relatórios de falha esteve desativada não surgem aqui.</translation>
 <translation id="3760561303380396507">Quer utilizar o Windows Hello em vez do CVC?</translation>
@@ -2059,7 +2056,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Ative a Proteção melhorada<ph name="END_ENHANCED_PROTECTION_LINK" /> para desfrutar do nível de segurança mais elevado do Chrome</translation>
 <translation id="4475299370877036544">Esta ação pode violar as políticas da sua organização</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6998512609912910179">Preencha formulários mais rapidamente</translation>
 <translation id="7000094925113284872">Mapeia o ciclo de vida de uma estrela</translation>
 <translation id="7002897669829306463">Morada de casa, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Separadores recentes</translation>
 <translation id="7004562620237466965">Só decifrar</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7009364359744329733">O cartão não está disponível neste momento. Tente mais tarde.</translation>
@@ -4353,6 +4348,7 @@ Detalhes adicionais:
 <translation id="8410956920192583322">Mensalmente ou em 4 prestações</translation>
 <translation id="8412145213513410671">Falhas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Tem de introduzir a mesma frase de acesso duas vezes.</translation>
+<translation id="8413126021676339697">Mostrar histórico completo</translation>
 <translation id="8414322570408428950">Ocorre um evento de extensão</translation>
 <translation id="8416694386774425977">A configuração de rede é inválida e não foi possível importá-la.
 Detalhes adicionais:
@@ -4660,7 +4656,6 @@ Detalhes adicionais:
 <translation id="8988966534058783995">Usar sensores de movimento?</translation>
 <translation id="899688752321268742"><ph name="URL" /> quer saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente através da política de Transparência de certificados. Trata-se de um requisito para alguns certificados de modo a assegurar que são fidedignos e protegem contra utilizadores mal intencionados.</translation>
-<translation id="9000145382638074673">Os seus dispositivos</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> necessita de um nome de utilizador e de uma palavra-passe.</translation>
 <translation id="9001963517402879850">Salte!</translation>
 <translation id="9003263770394939629">Sugerido pelo Gemini. Faça a gestão do preenchimento automático melhorado nas definições.</translation>

@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1095093219235104018">Buscar e completar información con Gemini</translation>
 <translation id="1096992026380844478">Restaurarase a configuración de sincronización en función da última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 contrasinal verificado ao instante}other{# contrasinais verificados ao instante}}</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquea o dispositivo con Face ID</translation>
 <translation id="1111776967764068277">Cansaches de copiar ligazóns?</translation>
@@ -1986,7 +1985,6 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7464143666517313304">Con esta acción, elimínanse os enderezos gardados neste dispositivo.</translation>
 <translation id="7468373585447318060">Mantente ao tanto das baixadas de prezos de todos os produtos dos que fas un seguimento.</translation>
 <translation id="746872191028309255">Compra o que vexas coa cámara ou na galería de fotos.</translation>
-<translation id="7469215556134875318">desde que usas Revisión de contrasinais</translation>
 <translation id="7471557245617580330">Crear unha pestana nova</translation>
 <translation id="7473555040328423550">Engadir pestana</translation>
 <translation id="7476548258282096076">Esta tarxeta mostra os sitios que máis visitas.</translation>

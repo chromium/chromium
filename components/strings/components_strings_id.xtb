@@ -239,7 +239,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="139305205187523129"><ph name="HOST_NAME" /> tidak mengirimkan data apa pun.</translation>
 <translation id="1393071644879491291">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software atau mengungkapkan hal-hal seperti sandi, nomor telepon, atau nomor kartu kredit Anda. Chrome sangat merekomendasikan untuk kembali agar aman. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Situs yang Anda tambahkan di sini tidak akan digunakan sebagai rujukan untuk respons, meskipun tab terbuka. Jika situs yang Anda tambahkan saat ini digunakan dalam rangkaian pesan, mungkin perlu waktu hingga 30 menit agar rangkaian pesan berhenti merujuk ke situs tersebut.</translation>
-<translation id="1402151528875251561">Tampilkan Histori di Panel Samping</translation>
 <translation id="1405567553485452995">Hijau Muda</translation>
 <translation id="1406370515365284486">Metode pembayaran Anda akan tetap disimpan</translation>
 <translation id="1406500794671479665">Memverifikasi...</translation>
@@ -1009,7 +1008,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2679216653373462289">Gunakan sensor gerakan dan cahaya</translation>
 <translation id="2679659833697380">Info Anda disimpan ke perangkat Anda</translation>
-<translation id="2680837394649649718">Dikirim ke Chrome di <ph name="DEVICE_NAME" /> Anda.</translation>
 <translation id="2683195745483370038">Hasil lain ditemukan</translation>
 <translation id="2686919536310834199">Kirim masukan untuk Bantu tulis.</translation>
 <translation id="2687555958734450033">Paling pas</translation>
@@ -1615,7 +1613,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3752181611900535304">Simpan alamat di akun?</translation>
 <translation id="3752543821772132562">Diabaikan karena <ph name="POLICY_NAME" /> tidak disetel.</translation>
 <translation id="3754210790023674521">Keluar dari mode picture-in-picture</translation>
-<translation id="3754664361823138853">&amp;Buka Halaman Histori</translation>
 <translation id="3757511311058373406">Filter penjelajahan otomatis</translation>
 <translation id="3759461132968374835">Tidak ada laporan kondisi ngadat saat ini. Kondisi ngadat yang terjadi saat pelaporan kondisi ngadat tidak diaktifkan tidak akan tampil di sini.</translation>
 <translation id="3760561303380396507">Gunakan Windows Hello dan bukan CVC?</translation>
@@ -2059,7 +2056,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktifkan perlindungan yang ditingkatkan<ph name="END_ENHANCED_PROTECTION_LINK" /> untuk mendapatkan tingkat keamanan tertinggi Chrome</translation>
 <translation id="4475299370877036544">Tindakan ini mungkin melanggar kebijakan organisasi Anda</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Formulir ini tidak aman. Isi otomatis telah dinonaktifkan.</translation>
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6998512609912910179">Isi formulir dengan lebih cepat</translation>
 <translation id="7000094925113284872">Petakan siklus hidup bintang</translation>
 <translation id="7002897669829306463">Alamat rumah, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Tab Terbaru</translation>
 <translation id="7004562620237466965">Decipher Saja</translation>
 <translation id="7006930604109697472">Tetap kirim</translation>
 <translation id="7009364359744329733">Kartu tidak tersedia untuk saat ini. Coba lagi nanti.</translation>
@@ -4352,6 +4347,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8410956920192583322">Bulanan atau 4 kali cicilan</translation>
 <translation id="8412145213513410671">Ngadat (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda harus memasukkan frasa sandi yang sama dua kali.</translation>
+<translation id="8413126021676339697">Tampilkan histori lengkap</translation>
 <translation id="8414322570408428950">Terjadi peristiwa ekstensi</translation>
 <translation id="8416694386774425977">Konfigurasi jaringan tidak valid dan tidak dapat diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon diizinkan kali ini</translation>
@@ -4656,7 +4652,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8988966534058783995">Gunakan sensor gerakan?</translation>
 <translation id="899688752321268742"><ph name="URL" /> ingin mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="8997023839087525404">Server menampilkan sertifikat yang tidak diungkapkan ke publik melalui kebijakan Transparansi Sertifikat. Ini adalah persyaratan untuk beberapa sertifikat, untuk memastikan bahwa sertifikat dapat dipercaya agar terlindung dari penyerang.</translation>
-<translation id="9000145382638074673">Perangkat Anda</translation>
 <translation id="9001074447101275817">Proxy <ph name="DOMAIN" /> memerlukan nama pengguna dan sandi.</translation>
 <translation id="9001963517402879850">Lompat!</translation>
 <translation id="9003263770394939629">Disarankan oleh Gemini. Kelola isi otomatis yang ditingkatkan di setelan.</translation>

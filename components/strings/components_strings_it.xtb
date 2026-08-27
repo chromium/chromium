@@ -239,7 +239,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non ha inviato dati.</translation>
 <translation id="1393071644879491291">Gli attaccanti sul sito che hai cercato di visitare potrebbero indurti con l'inganno a installare software o a rivelare informazioni come password, numeri di telefono o delle carte di credito. Chrome consiglia vivamente di tornare indietro. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">I siti aggiunti qui non verranno utilizzati come riferimento per le risposte, anche se la scheda è aperta. Se un sito che aggiungi è attualmente utilizzato in una conversazione, potrebbero essere necessari fino a 30 minuti prima che la conversazione smetta di farvi riferimento.</translation>
-<translation id="1402151528875251561">Mostra cronologia nel riquadro laterale</translation>
 <translation id="1405567553485452995">Verde chiaro</translation>
 <translation id="1406370515365284486">I tuoi metodi di pagamento verranno comunque salvati</translation>
 <translation id="1406500794671479665">Verifica in corso...</translation>
@@ -1008,7 +1007,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2679216653373462289">Usare i sensori di movimento e di luce</translation>
 <translation id="2679659833697380">Le tue informazioni sono salvate sul dispositivo</translation>
-<translation id="2680837394649649718">Inviato a Chrome sul tuo <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Altri risultati trovati</translation>
 <translation id="2686919536310834199">Invia feedback per Aiutami a scrivere.</translation>
 <translation id="2687555958734450033">Dimensioni predefinite</translation>
@@ -1612,7 +1610,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3752181611900535304">Salvare l'indirizzo nell'account?</translation>
 <translation id="3752543821772132562">Ignorata perché la policy <ph name="POLICY_NAME" /> non è stata configurata.</translation>
 <translation id="3754210790023674521">Esci da Picture in picture</translation>
-<translation id="3754664361823138853">&amp;Apri la pagina Cronologia</translation>
 <translation id="3757511311058373406">Filtri di navigazione automatica</translation>
 <translation id="3759461132968374835">Non hai segnalato arresti anomali di recente. Quelli che si sono verificati quando la segnalazione degli arresti anomali era disabilitata non verranno visualizzati qui.</translation>
 <translation id="3760561303380396507">Usare Windows Hello anziché CVC?</translation>
@@ -2056,7 +2053,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Attiva la protezione avanzata<ph name="END_ENHANCED_PROTECTION_LINK" /> per ottenere il massimo livello di sicurezza di Chrome</translation>
 <translation id="4475299370877036544">Questa azione potrebbe violare le norme della tua organizzazione</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Questo modulo non è sicuro. La compilazione automatica è stata disattivata.</translation>
 <translation id="4477350412780666475">Traccia successiva</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Busta Kaku 4</translation>
@@ -3525,7 +3521,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6998512609912910179">Compila i moduli più velocemente</translation>
 <translation id="7000094925113284872">Mappa il ciclo di vita di una stella</translation>
 <translation id="7002897669829306463">Indirizzo di casa, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Schede recenti</translation>
 <translation id="7004562620237466965">Solo decrittazione</translation>
 <translation id="7006930604109697472">Invia comunque</translation>
 <translation id="7009364359744329733">La carta non è al momento disponibile. Riprova più tardi.</translation>
@@ -4350,6 +4345,7 @@ Ulteriori dettagli:
 <translation id="8410956920192583322">Mensile o in 4 rate</translation>
 <translation id="8412145213513410671">Arresti anomali (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Devi inserire la stessa passphrase due volte.</translation>
+<translation id="8413126021676339697">Mostra cronologia completa</translation>
 <translation id="8414322570408428950">Si verifica un evento di estensione</translation>
 <translation id="8416694386774425977">La configurazione di rete non è valida e non può essere importata.
 Ulteriori dettagli:
@@ -4656,7 +4652,6 @@ Ulteriori dettagli:
 <translation id="8988966534058783995">Usare i sensori di movimento?</translation>
 <translation id="899688752321268742"><ph name="URL" /> vuole sapere quando usi attivamente questo dispositivo</translation>
 <translation id="8997023839087525404">Il server ha presentato un certificato che non è stato reso pubblico tramite le norme di Certificate Transparency, la cui applicazione costituisce un requisito di alcuni certificati al fine di garantire la loro attendibilità nonché la sicurezza nei confronti degli attaccanti.</translation>
-<translation id="9000145382638074673">I tuoi dispositivi</translation>
 <translation id="9001074447101275817">Il proxy <ph name="DOMAIN" /> richiede un nome utente e una password.</translation>
 <translation id="9001963517402879850">Salta!</translation>
 <translation id="9003263770394939629">Suggerito da Gemini Gestisci la compilazione automatica avanzata nelle impostazioni.</translation>

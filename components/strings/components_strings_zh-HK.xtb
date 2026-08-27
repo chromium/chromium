@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 沒有傳送任何資料。</translation>
 <translation id="1393071644879491291">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">即使分頁已開啟，系統亦不會根據此處新增的網站內容提供答覆。如果訊息串目前在使用你加入的網站，可能需要最多 30 分鐘才會停止參考該網站。</translation>
-<translation id="1402151528875251561">在側面板顯示記錄</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">你的付款方法仍會保存</translation>
 <translation id="1406500794671479665">驗證中…</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679216653373462289">使用動作和光線感應器</translation>
 <translation id="2679659833697380">你的資料會儲存到裝置</translation>
-<translation id="2680837394649649718">已傳送至 <ph name="DEVICE_NAME" /> 上的 Chrome。</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適合</translation>
@@ -1614,7 +1612,6 @@
 <translation id="3752181611900535304">要將地址儲存至帳戶嗎？</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
-<translation id="3754664361823138853">開啟記錄頁面</translation>
 <translation id="3757511311058373406">自動瀏覽篩選器</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機報告功能停用時發生的當機不會在這裡顯示。</translation>
 <translation id="3760561303380396507">要使用 Windows Hello 取代 CVC 嗎？</translation>
@@ -2058,7 +2055,6 @@
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />開啟強化防護<ph name="END_ENHANCED_PROTECTION_LINK" />，即可享有 Chrome 最強大的安全防護</translation>
 <translation id="4475299370877036544">此操作可能違反機構的政策</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">此表格不安全，自動填入功能已關閉。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4480760608050410381">MP4 影片</translation>
 <translation id="4489023393592172404">Kaku 4 信封</translation>
@@ -3528,7 +3524,6 @@
 <translation id="6998512609912910179">填表速度更快</translation>
 <translation id="7000094925113284872">繪製恆星的生命週期</translation>
 <translation id="7002897669829306463">住宅地址，<ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7004562620237466965">只有 Decipher</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7009364359744329733">目前無法使用此付款卡，請稍後再試。</translation>
@@ -4353,6 +4348,7 @@
 <translation id="8410956920192583322">每月或分 4 期付款</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">您必須輸入兩次相同的複雜密碼。</translation>
+<translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8414322570408428950">發生擴充程式事件</translation>
 <translation id="8416694386774425977">網絡設定無效，無法匯入。
 其他詳細資料：
@@ -4659,7 +4655,6 @@
 <translation id="8988966534058783995">要使用動作感應器嗎？</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想知道您是否正在使用此裝置</translation>
 <translation id="8997023839087525404">伺服器的憑證並未根據憑證透明度政策向公眾披露。部分憑證必須符合此規定，以確保憑證可信，並讓使用者免受攻擊。</translation>
-<translation id="9000145382638074673">你的裝置</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
 <translation id="9001963517402879850">跳！</translation>
 <translation id="9003263770394939629">由 Gemini 建議。你可以在設定中管理強化版自動填入功能。</translation>

@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1095093219235104018">Gemini で検索して自動入力する</translation>
 <translation id="1096992026380844478">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 個のパスワードをすばやく確認}other{# 個のパスワードをすばやく確認}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1110772719190051587">Face ID でロック解除</translation>
 <translation id="1111776967764068277">リンクのコピーは面倒ではありませんか？</translation>
@@ -506,7 +505,7 @@
 <translation id="2584994295315085351">4 時間以上空けて Chrome に戻ったときに新しいタブを開く</translation>
 <translation id="2593272815202181319">等幅</translation>
 <translation id="2601778637777010194">商品の値下げを追跡</translation>
-<translation id="2602372807870028932">このデバイスに保存されている情報から選択した情報を削除します</translation>
+<translation id="2602372807870028932">選択した情報をこのデバイスから削除します</translation>
 <translation id="260378315836159338">画面上部の [+] をタップ</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="261305050785128654">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
@@ -528,7 +527,7 @@
 <translation id="2661809266906115479"><ph name="TITLE" />、<ph name="STATE" />、このデバイスのみ、<ph name="URL" /></translation>
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">上部</translation>
-<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
+<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスのすべてのユーザーが確認できます</translation>
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">後払い</translation>
@@ -1986,7 +1985,6 @@
 <translation id="7464143666517313304">このデバイスに保存されている住所が削除されます。</translation>
 <translation id="7468373585447318060">追跡しているすべての商品の値下げ状況を把握できます。</translation>
 <translation id="746872191028309255">カメラで撮影したアイテムやフォト ギャラリーのアイテムを購入できます。</translation>
-<translation id="7469215556134875318">「パスワード チェックアップ」を使用してから</translation>
 <translation id="7471557245617580330">新しいタブを作成</translation>
 <translation id="7473555040328423550">タブを追加</translation>
 <translation id="7476548258282096076">このカードには、よく使用するサイトが表示されます。</translation>
@@ -2164,7 +2162,7 @@
 <translation id="8014007212279733632">機密情報を自動入力する際に本人確認を行う</translation>
 <translation id="8015826420689927262">添付ファイルを削除</translation>
 <translation id="8016869623424294549">プロファイルを切り替えようとしています</translation>
-<translation id="8017015647846870183">対象: Google パスワード マネージャー（パスワードとパスキーを含む）</translation>
+<translation id="8017015647846870183">Google パスワード マネージャー内のデータ（パスワードとパスキーを含む）が対象</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8023170444051056234">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="8023878949384262191">セクションを展開します。</translation>

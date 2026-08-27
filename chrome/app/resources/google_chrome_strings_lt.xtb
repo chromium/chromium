@@ -463,7 +463,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5649156266046089790">Naudodami „Chrome“ profilius galite atskirti visus savo „Chrome“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas.</translation>
 <translation id="5655063652337498476">Atraskite produktus naudodami fotoaparatą, stebėkite kainų sumažėjimus ir kt. keliaudami su „Chrome“ sistemoje „iOS“.</translation>
 <translation id="565744775970812598">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>
-<translation id="566040795510471729">„C&amp;hrome“ tinkinimas</translation>
 <translation id="566568153320186256">„Chrome“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį. <ph name="BEGIN_LINK" />Sužinokite daugiau apie Energijos taupymo priemonę<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Išvalyti „Chrome“ duomenis paskyroje</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį}=1{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. Inkognito langas nebus atidarytas iš naujo.}one{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langas nebus atidarytas iš naujo.}few{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langai nebus atidaryti iš naujo.}many{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito lango nebus atidaryta iš naujo.}other{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langų nebus atidaryta iš naujo.}}</translation>
@@ -690,7 +689,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7777080907402804672">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="778331955594035129">„Chrome“ reikalingas leidimas pasiekti vietovės duomenis šioje svetainėje</translation>
 <translation id="7787950393032327779">Atrodo, kad profilį naudoja kitas „Google Chrome“ procesas (<ph name="PROCESS_ID" />) kitame kompiuteryje (<ph name="HOST_NAME" />). „Chrome“ užrakino profilį, kad jis nebūtų sugadintas. Jei esate tikri, kad jokie kiti procesai nenaudoja šio profilio, galite atrakinti profilį ir iš naujo paleisti „Chrome“.</translation>
-<translation id="7792336732117553384">„Chrome“ profilių &amp;tvarkymas</translation>
 <translation id="7801699035218095297">„Google Chrome“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="7804364787702057554">Jūsų paskyra naršyklėje „Chrome“</translation>
 <translation id="7804947029129221742">Paieškos variklis buvo pakeistas ne naršyklėje „Chrome“. Kad jus apsaugotų, „Chrome“ jį nustatė iš naujo į pradinį numatytąjį nustatymą. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8370748943308169953">QR kodas, skirtas prisijungti prie „Chrome“ kaip <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Perjungti „Gemini“ naršyklėje „Chrome Canary“</translation>
+<translation id="8380754585531979907">Naudodami klaviatūrą naršykite „Gemini“ naršyklėje „Chrome“ ir atidarytą skirtuką.</translation>
 <translation id="8387459386171870978">Toliau naudoti „Chrome“</translation>
 <translation id="8394720698884623075">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“</translation>
 <translation id="8403038600646341038">„Chrome“ logotipas kompiuterio ekrane.</translation>

@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1108214977745280468">Tingnan ang insight ng page</translation>
 <translation id="1108938384783527433">Pag-sync ng history</translation>
+<translation id="1109663842695712985">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang hindi na-save na data.</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Picture-in-Picture na Tab</translation>
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
@@ -811,6 +812,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4285846616383034558">Cookies, cache, at iba pang data ng site</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />I-on ang lock ng screen sa mga setting ng Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">iyong telepono</translation>
+<translation id="4295640788982898778">Sine-save sa iyong Google Account ang mga extension mo, pero posibleng ma-delete ang anumang data na na-save lang ng mga ito sa device na ito</translation>
 <translation id="4296252229500326964">Bagong tab na Incognito</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, Naka-multiselect na Tab na Incognito</translation>
 <translation id="4298388696830689168">Mga naka-link na site</translation>
@@ -834,6 +836,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4358630185957185589">Buksan ang Google Lens</translation>
 <translation id="435863252455918214">Pamahalaan ang iyong mga extension sa pangunahing menu ng Chrome</translation>
 <translation id="4359809482106103048">Kaligtasan sa isang sulyap</translation>
+<translation id="4374192654218566997">\n\nPuwede mo ring alisin ang data na ito sa device na ito:</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4380055775103003110">Kung patuloy na nangyayari ang isyung ito, puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
@@ -1835,6 +1838,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8223642481677794647">Menu ng feed card</translation>
 <translation id="82296173028782770">I-edit ang query sa paghahanap: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Idagdag sa mga bookmark</translation>
+<translation id="8236917170563564587">Sa halip, ibahagi ang tab na ito</translation>
 <translation id="8243077599929149377">Idagdag ang iyong username</translation>
 <translation id="8244387390464017490">I-customize ang bagong tab</translation>
 <translation id="8244444485683708655">Mag-attach ng larawan mula sa camera</translation>

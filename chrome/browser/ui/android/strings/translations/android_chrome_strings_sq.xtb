@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Regjistrimi i ekranit</translation>
 <translation id="1108214977745280468">Shiko statistikat e faqes</translation>
 <translation id="1108938384783527433">Sinkronizimi i historikut</translation>
+<translation id="1109663842695712985">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, të dhënat e paruajtura do të fshihen.</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, skeda e "Figurë brenda figurës"</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
@@ -157,6 +158,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1598163867407640634">Përdor <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, skeda e gozhduar në regjistrim</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, skeda duke ndarë përmbajtjen</translation>
+<translation id="1601378265092360672">Të dhënat e shfletimit përfshijnë historikun e shfletimit, kukit dhe të dhënat e tjera të sajteve, imazhet dhe skedarët e ruajtur në memorien specifike dhe skedat e hapura</translation>
 <translation id="160275202205869636">Kur është aktivizuar, të dhënat përdoren dhe ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hiq 1 artikull të zgjedhur}other{Hiq # artikuj të zgjedhur}}</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
@@ -810,6 +812,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4285846616383034558">Kukit, memoria specifike dhe të dhëna të tjera të sajteve</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivizo kyçjen e ekranit te cilësimet e Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">telefoni yt</translation>
+<translation id="4295640788982898778">Shtesat e tua janë të ruajtura në "Llogarinë tënde të Google", por të gjitha të dhënat që ato kanë ruajtur vetëm në këtë pajisje mund të fshihen</translation>
 <translation id="4296252229500326964">Skedë e re "e fshehtë"</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur me shumë të tjera</translation>
 <translation id="4298388696830689168">Sajtet e lidhura</translation>
@@ -833,6 +836,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4358630185957185589">Hap "Lenten e Google"</translation>
 <translation id="435863252455918214">Menaxho shtesat e tua në menynë kryesore të Chrome</translation>
 <translation id="4359809482106103048">Siguria shkurtimisht</translation>
+<translation id="4374192654218566997">\n\nGjithashtu mund t'i heqësh këto të dhëna nga kjo pajisje:</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4380055775103003110">Nëse ky problem vazhdon të ndodhë, mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
@@ -1541,6 +1545,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7117485132243600300">Menaxho përmbajtjet që ndjek dhe temat e kërkimet e sugjeruara</translation>
 <translation id="7119984597597798764">Mbyll "<ph name="INSTANCE_TITLE" />"</translation>
 <translation id="7121179479711575744">Identifikohu në Chrome</translation>
+<translation id="7130633106249192408">Fshi të dhënat e shfletimit nga kjo pajisje</translation>
 <translation id="7136694880210472378">Bëje të parazgjedhur</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për # sajte}}</translation>
 <translation id="7138678301420049075">Tjetër</translation>
@@ -1833,6 +1838,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8223642481677794647">Menyja e kartave të furnizimit</translation>
 <translation id="82296173028782770">Modifiko përmbajtjen e kërkimit: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Shto te faqeshënuesit</translation>
+<translation id="8236917170563564587">Ndaj këtë skedë më mirë</translation>
 <translation id="8243077599929149377">Shto emrin tënd të përdoruesit</translation>
 <translation id="8244387390464017490">Personalizo faqen e skedës së re</translation>
 <translation id="8244444485683708655">Bashkëngjit fotografinë e kamerës</translation>

@@ -41,7 +41,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1356661055722410047">Novo! Možete prevesti i tekst i slike s ekrana</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1388276868779258475">Koristite aplikaciju Chromium da nastavite pregledati u pokretu</translation>
-<translation id="1397530502368084401">&amp;Upravljajte profilima u Chromiumu</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da podijelite prozor, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
@@ -271,7 +270,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="390528597099634151">Račun <ph name="EXISTING_USER" /> je već prijavljen na ovom Chromium profilu. Da vaše pregledanje ostane odvojeno, Chromium vam može kreirati vaš lični profil.</translation>
 <translation id="3909353120217047026">Ova ekstenzija krši pravila Chrome Web trgovine i može biti nesigurna. Uklonite je s Chromiuma kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
-<translation id="3937491663738985329">P&amp;rilagodite Chromium</translation>
 <translation id="3941890832296813527">Greška prilikom instaliranja: naziv fajla programa za instaliranje nije važeći ili nije podržan.</translation>
 <translation id="3945058413678539331">Chromium pokušava kopirati lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="3954172517175569325">Lozinke, načini plaćanja i adrese koje ste sačuvali na Google računu će se ukloniti s uređaja. Da ih ponovo koristite u Chromiumu, prijavite se ponovo.</translation>
@@ -771,6 +769,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8980139959902937527">Ponesite Googleovu sigurnost sa sobom u pokretu uz aplikaciju Chromium na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Nije moguće otvoriti Chromium jer je došlo do greške prilikom otvaranja profila. Pokušajte ponovo pokrenuti Chromium.</translation>
 <translation id="8988036198400390003">Upravljajte profilima u Chromiumu</translation>
+<translation id="8993855408334954620">Koristite tastaturu da se krećete između Geminija u Chromiumu i otvorene kartice.</translation>
 <translation id="9018218886431812662">Instalacija je završena</translation>
 <translation id="9019929317751753759">Kako bi Chromium bio sigurniji, onemogućili smo sljedeću ekstenziju koja nije navedena na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koja je dodana bez vašeg znanja.</translation>
 <translation id="9022552996538154597">Prijavite se u Chromium</translation>

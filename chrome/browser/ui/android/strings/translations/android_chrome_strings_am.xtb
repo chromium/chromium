@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">የማያ ገፅ ቀረጻ</translation>
 <translation id="1108214977745280468">የገጽ ግንዛቤዎችን ይመልከቱ</translation>
 <translation id="1108938384783527433">ታሪክ አስምር</translation>
+<translation id="1109663842695712985">አንዳንድ የእርስዎ የChrome ውሂብ በGoogle መለያዎ ውስጥ እስካሁን አልተቀመጠም።\nዘግተው ከመውጣትዎ በፊት ጥቂት ደቂቃዎች መጠበቅን ይሞክሩ። አሁን ዘግተው ከወጡ ያልተቀመጠው ውሂብ ይሰረዛል።</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />፣ የሥዕል-ላይ-ሥዕል ትር</translation>
 <translation id="1126696498560056882">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያቀናብሩ</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት <ph name="SITE_ETLD_PLUS_ONE" />ን ይጠቀሙ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />፣ ፒን የተደረገ እየቀዳ ያለ ትር</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />፣ እያጋራ ያለ ትር</translation>
+<translation id="1601378265092360672">የአሰሳ ውሂብ የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች እና ሌሎች የጣቢያ ውሂብ፣ የተሸጎጡ ምስሎች እና ፋይሎች እና ክፍት ትሮችን ያካትታል</translation>
 <translation id="160275202205869636">ሲበራ፣ በGoogle መለያዎ ውስጥ ውሂብ ይጠቀማል እና ያስቀምጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">ኩኪዎች፣ መሸጎጫ እና ሌላ የጣቢያ ውሂብ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገፅ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">የእርስዎ ስልክ</translation>
+<translation id="4295640788982898778">ቅጥያዎችዎ በGoogle መለያዎ ውስጥ ይቀመጣሉ፣ ነገር ግን በዚህ መሣሪያ ላይ ብቻ ያስቀመጡት ማንኛውም ውሂብ ሊሰረዝ ይችላል</translation>
 <translation id="4296252229500326964">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4298388696830689168">የተገናኙ ጣቢያዎች</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google ሌንስ ይክፈቱ</translation>
 <translation id="435863252455918214">ቅጥያዎችዎን በChrome ዋና ምናሌ ውስጥ ያስተዳድሩ</translation>
 <translation id="4359809482106103048">ደህንነት በአፍታ ዕይታ</translation>
+<translation id="4374192654218566997">\n\nእንዲሁም ይህን ውሂብ ከዚህ መሣሪያ ማስወገድ ይችላሉ፦</translation>
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4380055775103003110">ይህ ችግር መከሰቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="4384468725000734951">ለፍለጋ Sogouን መጠቀም</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">የሚከተሉትን ይዘት እና የሚጠቆሙ ርዕሶች እና ፍለጋዎችን ያስተዳድሩ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />ን ዝጋ</translation>
 <translation id="7121179479711575744">Chrome ውስጥ ይግቡ</translation>
+<translation id="7130633106249192408">ከዚህ መሣሪያ የአሰሳ ውሂብን ይሰርዙ</translation>
 <translation id="7136694880210472378">ነባሪ አድርግ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ# ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ# ጣቢያዎች ተገምግመዋል}}</translation>
 <translation id="7138678301420049075">ሌላ</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">የምግብ ካርድ ምናሌ</translation>
 <translation id="82296173028782770">የፍለጋ መጠይቅን ያርትዑ፦ <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">ወደ እልባቶች አክል</translation>
+<translation id="8236917170563564587">በምትኩ ይህን ትር አጋራ</translation>
 <translation id="8243077599929149377">የእርስዎን የተጠቃሚ ስም ያክሉ</translation>
 <translation id="8244387390464017490">አዲስ የትር ገፅ አብጅ</translation>
 <translation id="8244444485683708655">የካሜራ ሥዕል ዓባሪ አድርግ</translation>

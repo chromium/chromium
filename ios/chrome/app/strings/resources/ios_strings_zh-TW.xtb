@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
 <translation id="1095093219235104018">透過 Gemini 尋找並填入資訊</translation>
 <translation id="1096992026380844478">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{已即時驗證 1 組密碼}other{已即時驗證 # 組密碼}}</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">使用 Face ID 解鎖</translation>
 <translation id="1111776967764068277">受夠了複製連結嗎？</translation>
@@ -221,7 +220,7 @@
 <translation id="1654232554734641711">已允許存取麥克風</translation>
 <translation id="16554782717487656">偵測單位</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
-<translation id="1668001730617725852">在新分頁群組中開啟</translation>
+<translation id="1668001730617725852">在新分頁群組開啟</translation>
 <translation id="1670861525135254448">儲存車輛</translation>
 <translation id="1671568970992212376">將相片儲存到 Google 相簿，隨時都能存取。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
@@ -793,7 +792,7 @@
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">貴機構對你能在 Google 帳戶中儲存的內容設有限制。</translation>
-<translation id="3588820906588687999">在新分頁中開啟圖片</translation>
+<translation id="3588820906588687999">在新分頁開啟圖片</translation>
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="3602260545951981695">選擇「強化防護」</translation>
 <translation id="3610041351087301930">隱藏閱讀器模式</translation>
@@ -1947,7 +1946,7 @@
 <translation id="736564850024123010">你可更動網址列位置，讓自己使用更順手。</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>
 <translation id="7367530036083223701">使用「密碼管理工具」在主畫面提供的小工具，就能安全存取密碼。</translation>
-<translation id="73750335798090836">安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
+<translation id="73750335798090836">為了安全起見，使用旅遊及身分文件等敏感資訊時，請務必透過指紋、臉孔或螢幕鎖定進行驗證</translation>
 <translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="7380698179418029202">選取由 Safari 匯出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 檔案</translation>
 <translation id="739101637685146669">要將哪個網址加入書籤？</translation>
@@ -1986,7 +1985,6 @@
 <translation id="7464143666517313304">這樣會刪除這部裝置上儲存的地址。</translation>
 <translation id="7468373585447318060">隨時掌握所有追蹤產品的降價資訊。</translation>
 <translation id="746872191028309255">用相機拍攝或從相片庫上傳相片，就能以圖購物。</translation>
-<translation id="7469215556134875318">使用密碼安全檢查以來</translation>
 <translation id="7471557245617580330">新增分頁</translation>
 <translation id="7473555040328423550">新增分頁</translation>
 <translation id="7476548258282096076">這張資訊卡會顯示你的常用網站。</translation>

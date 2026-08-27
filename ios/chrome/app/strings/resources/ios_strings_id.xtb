@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
 <translation id="1095093219235104018">Temukan dan isi dengan Gemini</translation>
 <translation id="1096992026380844478">Setelan sinkronisasi akan dipulihkan berdasarkan cadangan terakhir Anda. <ph name="BEGIN_LINK" />Lihat apa saja yang dapat Anda sinkronkan<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 sandi langsung diverifikasi}other{# sandi langsung diverifikasi}}</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Buka kunci dengan Face ID</translation>
 <translation id="1111776967764068277">Bosan menyalin link?</translation>
@@ -1986,7 +1985,6 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="7464143666517313304">Tindakan ini akan menghapus alamat yang disimpan di perangkat ini.</translation>
 <translation id="7468373585447318060">Dapatkan info penurunan harga untuk semua produk yang Anda pantau.</translation>
 <translation id="746872191028309255">Belanja hal yang Anda lihat dengan kamera atau galeri foto.</translation>
-<translation id="7469215556134875318">sejak menggunakan Pemeriksaan sandi</translation>
 <translation id="7471557245617580330">Buat tab baru</translation>
 <translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7476548258282096076">Kartu ini menampilkan situs yang paling sering Anda kunjungi.</translation>

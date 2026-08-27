@@ -459,7 +459,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5649156266046089790">Chrome profilləri ilə bütün Chrome elementlərinizi ayıra bilərsiniz. Dostlarınız və ailəniz üçün profillər yaradın, yaxud iş və əyləncə olaraq ayırın.</translation>
 <translation id="5655063652337498476">iOS-da Chrome vasitəsilə istənilən vaxt, istənilən yerdə kamera ilə məhsulları kəşf edin, endirimləri izləyin və daha çox funksiyadan istifadə edin.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> təlükəli ola bilər, bu səbəbdən Chrome onu blok etdi.</translation>
-<translation id="566040795510471729">Chrome-u f&amp;ərdiləşdirin</translation>
 <translation id="566568153320186256">Chrome arxa fon fəaliyyətini, habelə rahat sürüşdürmə və video çərçivə səviyyələri kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Enerjiyə Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Hesabdakı Chrome datasını silin</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir}=1{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
@@ -686,7 +685,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7777080907402804672">Şəklin təsviri faydalı deyilsə, Chrome Sizin üçün təsviri təmin etməyə çalışacaq. Təsvir yaratmaq üçün şəkillər Google'a göndərilir. Bunu istənilən vaxt ayarlardan deaktiv edə bilərsiniz.</translation>
 <translation id="778331955594035129">Chrome bu sayt üçün məkan icazəsi tələb edir</translation>
 <translation id="7787950393032327779">Bu profil digər Google Chrome prosesi (<ph name="PROCESS_ID" />) və ya digər kompüter tərəfindən (<ph name="HOST_NAME" />) istifadə olunana oxşayır.</translation>
-<translation id="7792336732117553384">&amp;Chrome profillərini idarə edin</translation>
 <translation id="7801699035218095297">Google Chrome parolları kopyalamağa çalışır. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="7804364787702057554">Chrome-dakı hesabınız</translation>
 <translation id="7804947029129221742">Axtarış sisteminiz Chrome-dan kənarda dəyişdirildi. Sizi qorumaq üçün Chrome onu orijinal defolta sıfırladı. <ph name="LEARN_MORE_LINK" /></translation>
@@ -758,6 +756,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8370517070665726704">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
 <translation id="8370748943308169953">Chrome-a <ph name="USER_NAME" /> kimi daxil olmaq üçün QR kodu</translation>
 <translation id="8377158135256176353">Chrome Canary-də Gemini-ı yandırın/söndürün</translation>
+<translation id="8380754585531979907">Chrome-da Gemini və açıq tab arasında hərəkət etmək üçün klaviaturadan istifadə edin.</translation>
 <translation id="8387459386171870978">Chrome istifadəsinə davam edin</translation>
 <translation id="8394720698884623075">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır</translation>
 <translation id="8403038600646341038">Kompüter ekranında Chrome loqosu.</translation>

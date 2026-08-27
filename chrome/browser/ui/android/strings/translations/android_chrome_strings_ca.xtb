@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1108214977745280468">Estadístiques de la pàgina</translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
+<translation id="1109663842695712985">Algunes dades de Chrome encara no s\u2019han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, se suprimiran les dades no desades.</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pestanya d'imatge sobre imatge</translation>
 <translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
@@ -157,6 +158,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1598163867407640634">Utilitza <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, pestanya de gravació fixada</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestanya de compartició</translation>
+<translation id="1601378265092360672">Les dades de navegació inclouen l'historial de navegació, les galetes i altres dades de llocs web, les imatges i els fitxers desats a la memòria cau, i les pestanyes obertes</translation>
 <translation id="160275202205869636">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -616,7 +618,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3513704683820682405">Realitat augmentada</translation>
 <translation id="3516053221628030540">Ves a Google Play</translation>
 <translation id="3518985090088779359">Accepta i continua</translation>
-<translation id="3519014757432845220">Ajuda a millorar la protecció contra el contingut brossa compartint amb Google el contingut de les notificacions i l'URL del lloc web. És possible que un equip de persones revisi el contingut.</translation>
+<translation id="3519014757432845220">Ajuda a millorar la protecció contra brossa compartint amb Google el contingut de les notificacions i l'URL del lloc web. És possible que un equip de persones revisi el contingut.</translation>
 <translation id="3521388823983121502">No pots continuar amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Hi ha una actualització disponible. Més opcions</translation>
 <translation id="3523789730715594198">Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -809,6 +811,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4285846616383034558">Galetes, memòria cau i altres dades dels llocs web</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueig de pantalla a la configuració d'Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">del teu telèfon</translation>
+<translation id="4295640788982898778">Les extensions estan desades al teu Compte de Google, però les dades que han desat només en aquest dispositiu es poden suprimir</translation>
 <translation id="4296252229500326964">Pestanya d'incògnit nova</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, pestanya d'incògnit multiseleccionada</translation>
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
@@ -832,6 +835,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4358630185957185589">Obre Google Lens</translation>
 <translation id="435863252455918214">Gestiona les extensions al menú principal de Chrome</translation>
 <translation id="4359809482106103048">Seguretat d'una ullada</translation>
+<translation id="4374192654218566997">\n\nTambé pots suprimir aquestes dades d'aquest dispositiu:</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4380055775103003110">Si el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">S'utilitza Sogou per a la cerca</translation>
@@ -1540,6 +1544,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7117485132243600300">Gestiona el contingut que segueixes i els temes i les cerques suggerits</translation>
 <translation id="7119984597597798764">Tanca <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Inicia la sessió a Chrome</translation>
+<translation id="7130633106249192408">Suprimeix les dades de navegació d'aquest dispositiu</translation>
 <translation id="7136694880210472378">Estableix com a predeterminat</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos per a 1 lloc web}other{S'han revisat els permisos per a # llocs web}}</translation>
 <translation id="7138678301420049075">Altres</translation>
@@ -1832,6 +1837,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8223642481677794647">Menú de la targeta del tauler</translation>
 <translation id="82296173028782770">Edita la consulta de cerca: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Afegeix a les adreces d'interès</translation>
+<translation id="8236917170563564587">Comparteix aquesta pestanya</translation>
 <translation id="8243077599929149377">Afegeix el teu nom d'usuari</translation>
 <translation id="8244387390464017490">Personalitza la pàgina Pestanya nova</translation>
 <translation id="8244444485683708655">Adjunta una foto de la càmera</translation>

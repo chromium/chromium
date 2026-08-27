@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
 <translation id="1096992026380844478">As definições de sincronização vão ser restauradas com base na última cópia de segurança. <ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 palavra-passe validada instantaneamente}other{# palavras-passe validadas instantaneamente}}</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloqueie com o Face ID</translation>
 <translation id="1111776967764068277">Cansou-se de copiar links?</translation>
@@ -1986,7 +1985,6 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7464143666517313304">Esta ação elimina as moradas guardadas neste dispositivo.</translation>
 <translation id="7468373585447318060">Mantenha-se a par das descidas de preços de todos os produtos que acompanha.</translation>
 <translation id="746872191028309255">Compre o que vê com a câmara ou a galeria de fotos.</translation>
-<translation id="7469215556134875318">desde que usa a Verificação de Palavra-passe</translation>
 <translation id="7471557245617580330">Criar novo separador</translation>
 <translation id="7473555040328423550">Adicionar separador</translation>
 <translation id="7476548258282096076">Este cartão mostra os sites mais visitados.</translation>

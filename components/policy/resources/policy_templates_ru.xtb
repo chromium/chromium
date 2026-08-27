@@ -1472,24 +1472,6 @@ URL должен иметь стандартный вид (например, htt
 <translation id="1962273523772270623">Разрешить сбор журналов событий WebRTC из сервисов Google</translation>
 <translation id="1962864958436828230">Установить минимально допустимый объем данных для ограничения CLIPBOARD, связанного с предотвращением утечки данных</translation>
 <translation id="1963986268950915756">Включить установку веб-приложений пользователями из браузера</translation>
-<translation id="1964128875283181035">Список шаблонов URL. Сетевые запросы с сайтов, источники которых совпадают с указанными шаблонами, не должны проходить проверки типа "<ph name="LOCAL_NETWORK_ACCESS" />".
-
-Для источников, которые не совпадают с указанными шаблонами, применяются пользовательские настройки.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к локальному устройству и конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  - LocalNetworkBlockedForUrls;
-  - LocalNetworkAllowedForUrls;
-  - LoopbackNetworkBlockedForUrls;
-  - LoopbackNetworkAllowedForUrls;
-  - LocalNetworkAccessBlockedForUrls;
-  - LocalNetworkAccessAllowedForUrls;
-  - DeviceLocalNetworkAccessBlockedForUrls;
-  - DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="1964191545419036999">Галерея (поддерживается с версии 117)</translation>
 <translation id="1964634611280150550">Режим инкогнито отключен</translation>
 <translation id="1964985353230379667">Определяет предлагаемую конфигурацию <ph name="KRB5_CONFIG" /> для новых билетов, созданных вручную.
@@ -4230,7 +4212,6 @@ URL ярлыков должны быть уникальными.
           </translation>
 <translation id="3677660004554019617">Не разрешать использовать фоны для камеры, созданные с помощью генеративного ИИ</translation>
 <translation id="3678069907945250643">Разрешить приложению для персонализации доступ к Google Фото</translation>
-<translation id="3682200407044593844">Переопределять сопоставления пространства IP-адресов на устройстве</translation>
 <translation id="3685979383016152590">Позволяет управлять доступом пользователей к принтерам, указанным в настройках правила <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />. Определяет, какие правила доступа применяются при работе с общей конфигурацией для нескольких принтеров.
 
       – Параметр <ph name="PRINTERS_BLOCKLIST" /> (значение "0") использует данные, указанные для правила <ph name="PRINTERS_BULK_BLOCKLIST" />, чтобы запретить доступ к определенным принтерам.
@@ -4633,21 +4614,6 @@ URL ярлыков должны быть уникальными.
       Если правило включено, пользователю предлагается выбрать один из сертификатов клиента, соответствующих правилу автоматического выбора.
       Если правило отключено или не настроено, пользователю предлагается указать сертификат, только когда нет сертификатов, соответствующих правилу автоматического выбора.</translation>
 <translation id="3947897854999940598">Указать шаблон URI нужного преобразователя DNS-over-HTTPS с поддержкой персональной информации</translation>
-<translation id="394949637082417941">Позволяет рассматривать определенные диапазоны внутренних адресов как общедоступные на уровне устройства, чтобы к ним не применялись проверки типа "<ph name="LOCAL_NETWORK_ACCESS" />". Также позволяет рассматривать определенные диапазоны общедоступных адресов, которые могут использоваться внутри компании, как локальные, чтобы они защищались проверками типа "<ph name="LOCAL_NETWORK_ACCESS" />".
-
-Переопределение пространства IP-адресов может быть двух видов:
-
-[cidr]=[public|local|loopback]
-
-Где [cidr] — диапазон IP-адресов в нотации CIDR (подробные сведения можно найти в разделе 3.1 на странице https://tools.ietf.org/html/rfc4632 для IPv4 и разделе 2.3 на странице https://tools.ietf.org/html/rfc4291 для IPv6). Адреса IPv6 должны быть указаны в безопасном для URL формате (в скобках). Переопределения CIDR применяются ко всем портам.
-
-[ip-адрес]:[порт]=[public|local|loopback]
-
-Узнать больше о проверке типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно на страницах https://wicg.github.io/local-network-access/ и https://developer.chrome.com/blog/local-network-access.
-
-Переопределения, заданные правилом LocalNetworkAccessIpAddressSpaceOverrides, имеют приоритет над заданными этим правилом.
-
-Переопределения, установленные с помощью параметра командной строки --ip-address-space-overrides, имеют приоритет над заданными правилами.</translation>
 <translation id="3949642828552641632">Разрешить функцию "<ph name="CLOUD_UPLOAD_NAME" />" для <ph name="GOOGLE_WORKSPACE_NAME" /> и сервиса "<ph name="GOOGLE_DRIVE_NAME" />"</translation>
 <translation id="3950110092991281616">Включить пассивную аутентификацию только для обычных сеансов</translation>
 <translation id="3950239119790560549">Правило ограничивает время поиска обновлений</translation>
@@ -5088,24 +5054,6 @@ URL ярлыков должны быть уникальными.
 <translation id="4238777612788632629">Быстрый перезапуск для установки обновлений</translation>
 <translation id="4239720644496144453">Кеш для приложений Android не используется. Если несколько пользователей устанавливают одно и то же приложение Android, для каждого из них оно скачивается заново.</translation>
 <translation id="4239949495354048254">Разрешить загрузку файлов в Gemini в Chrome</translation>
-<translation id="424049794524032498">Список шаблонов URL. Запрещает сетевые запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" с сайтов, источники которых совпадают с указанными шаблонами, во всех сеансах на устройстве.
-
-Для источников, которые не соответствуют указанным шаблонам, будут применяться настройки сеанса или профиля.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к локальному устройству и конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  – LocalNetworkBlockedForUrls;
-  – LocalNetworkAllowedForUrls;
-  – LoopbackNetworkBlockedForUrls;
-  – LoopbackNetworkAllowedForUrls;
-  – LocalNetworkAccessBlockedForUrls;
-  – LocalNetworkAccessAllowedForUrls;
-  – DeviceLocalNetworkAccessBlockedForUrls;
-  – DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="4242583077375244471">Если правило включено, <ph name="PRODUCT_NAME" /> будет проверять сертификаты серверов при помощи встроенного инструмента, в котором Chrome Root Store используется как источник данных о надежных сертификатах.
 
 Если правило отключено, <ph name="PRODUCT_NAME" /> будет использовать системный инструмент верификации сертификатов и системные корневые сертификаты.
@@ -5287,6 +5235,20 @@ URL ярлыков должны быть уникальными.
 Если правило отключено, использование старого неподдерживаемого синтаксиса запрещено.
 
 Если правило не настроено, использование старого неподдерживаемого синтаксиса запрещено.</translation>
+<translation id="4400152722459197056">Список шаблонов URL. Сетевые запросы, отправляемые конечным точкам локальной сети с сайтов, источники которых совпадают с указанными шаблонами, не должны проходить проверки типа "<ph name="LOCAL_NETWORK_ACCESS" />".
+
+Для источников, не совпадающих с этими шаблонами, действуют пользовательские настройки.
+
+Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
+
+Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
+
+Есть несколько правил со списками источников, которые влияют на запросы к конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
+
+  - LocalNetworkBlockedForUrls;
+  - LocalNetworkAllowedForUrls;
+  - LocalNetworkAccessBlockedForUrls;
+  - LocalNetworkAccessAllowedForUrls.</translation>
 <translation id="4401196752827224189">WebSQL в небезопасных контекстах будет удален в версии M110. Правило позволяет снова использовать этот API.
           Если установлено значение True, WebSQL в небезопасных контекстах будет доступен.
           Если правило не настроено или для него задано значение False, WebSQL в небезопасных контекстах можно использовать в версиях до M109. Начиная с версии M110 он недоступен.
@@ -7058,21 +7020,6 @@ https://drafts.csswg.org/css-viewport/#zoom-property
 
       Значение для правила указывается в днях.</translation>
 <translation id="5457065417344056871">Включает гостевой режим в браузере</translation>
-<translation id="5457999916455787365">Позволяет отметить определенные диапазоны внутренних адресов как общедоступные, чтобы к ним не применялись проверки типа "<ph name="LOCAL_NETWORK_ACCES" />". Также позволяет рассматривать определенные диапазоны общедоступных адресов, которые могут использоваться внутри компании, как локальные, чтобы они защищались проверками типа "<ph name="LOCAL_NETWORK_ACCESS" />".
-
-Переопределение пространства IP-адресов может быть двух видов:
-
-[cidr]=[public|local|loopback]
-
-Где [cidr] — диапазон IP-адресов в нотации CIDR (подробные сведения можно найти в разделе 3.1 на странице https://tools.ietf.org/html/rfc4632 для IPv4 и разделе 2.3 на странице https://tools.ietf.org/html/rfc4291 для IPv6). Адреса IPv6 должны быть указаны в безопасном для URL формате (в скобках). Переопределения CIDR применяются ко всем портам.
-
-[ip-адрес]:[порт]=[public|local|loopback]
-
-Узнать больше о проверке типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно на страницах https://wicg.github.io/local-network-access/ и https://developer.chrome.com/blog/local-network-access.
-
-Переопределения, заданные этим правилом, имеют приоритет над переопределениями, заданными правилом DeviceLocalNetworkAccessIpAddressSpaceOverrides.
-
-Переопределения, установленные с помощью параметра командной строки --ip-address-space-overrides, имеют приоритет над заданными правилами.</translation>
 <translation id="545817252640069915">Включить перехват входа</translation>
 <translation id="5460797984317417682">Включить предупреждение о выходе из полноэкранного режима</translation>
 <translation id="5462898272514237681">Управление доступом <ph name="PRODUCT_OS_NAME" /> к геолокации Google</translation>
@@ -7158,22 +7105,6 @@ https://drafts.csswg.org/css-viewport/#zoom-property
 <translation id="5519619299971727565">Отключить создание отчетов об использовании приложений для Linux</translation>
 <translation id="5521035900165046997">Включить отправку данных о Bluetooth на устройстве</translation>
 <translation id="5521875416764302911">Запретить пользователям входить в <ph name="PRODUCT_NAME" /></translation>
-<translation id="5523077138980091816">Список шаблонов URL. Сетевые запросы, отправляемые конечным точкам локальной сети с сайтов, источники которых совпадают с указанными шаблонами, не должны проходить проверки типа "<ph name="LOCAL_NETWORK_ACCESS" />".
-
-Для источников, которые не совпадают с указанными шаблонами, применяются пользовательские настройки.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="552607466422196365">Отключить <ph name="DBSC_FEATURE_NAME" /></translation>
 <translation id="5526184558582921522">Разрешить отправку запросов на Quirks Server и скачивание файлов конфигурации для аппаратного обеспечения</translation>
 <translation id="5526701598901867718">Все (небезопасно)</translation>
@@ -7842,6 +7773,21 @@ https://chromeenterprise.google/policies/url-patterns. Поддерживает�
 
       Это правило больше не поддерживается. Используйте вместо него правило <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Адаптивный режим зарядки батареи на основе данных о расходе заряда батареи</translation>
+<translation id="5913506885872855604">Позволяет отметить определенные диапазоны внутренних адресов как общедоступные, чтобы к ним не применялись проверки типа "<ph name="LOCAL_NETWORK_ACCES" />". Также позволяет отметить определенные диапазоны общедоступных адресов, которые могут использоваться внутри компании, как локальные, чтобы они защищались проверками типа "<ph name="LOCAL_NETWORK_ACCESS" />".
+
+Переопределение адресного пространства IP-адресов может быть двух видов:
+
+[cidr]=[public|local|loopback]
+
+Где [cidr] – диапазон IP-адресов в нотации CIDR (подробные сведения можно найти в разделе 3.1 на странице https://tools.ietf.org/html/rfc4632 для IPv4 и разделе 2.3 на странице https://tools.ietf.org/html/rfc4291 для IPv6). IP-адреса IPv6 должны быть указаны в безопасном для URL формате (в скобках). Переопределения CIDR применяются ко всем портам.
+
+[ip-адрес]:[порт]=[public|local|loopback]
+
+Узнать больше о проверке типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно на страницах https://wicg.github.io/local-network-access/ и https://developer.chrome.com/blog/local-network-access.
+
+Это правило не поддерживает динамическое обновление.
+
+Переопределения, установленные с помощью параметра командной строки --ip-address-space-overrides, имеют приоритет над заданными этим правилом.</translation>
 <translation id="5915023683182228340">Если правило включено или не настроено, в <ph name="PRODUCT_NAME" /> разрешено использование протокола QUIC.
 
       Если правило отключено, использование протокола QUIC запрещено.</translation>
@@ -8010,24 +7956,6 @@ https://chromeenterprise.google/policies/url-patterns. Поддерживает�
 Если правило не настроено или задано значение True, преподаватели могут использовать список учащихся в Google Классе.
 
 Если указано значение False, функция недоступна.</translation>
-<translation id="606337187257433827">Список шаблонов URL. Правило запрещает сетевые запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" с сайтов, источники которых совпадают с указанными шаблонами.
-
-Для источников, которые не совпадают с указанными шаблонами, применяются пользовательские настройки.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к локальному устройству и конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  - LocalNetworkBlockedForUrls;
-  - LocalNetworkAllowedForUrls;
-  - LoopbackNetworkBlockedForUrls;
-  - LoopbackNetworkAllowedForUrls;
-  - LocalNetworkAccessBlockedForUrls;
-  - LocalNetworkAccessAllowedForUrls;
-  - DeviceLocalNetworkAccessBlockedForUrls;
-  - DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="6066761914755798079">Если правило <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> включено, то параметр <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> задает URL поисковой системы, используемой для предоставления подсказок. В URL должна быть строка <ph name="SEARCH_TERM_MARKER" />, которая во время отправки запроса заменяется на текст пользователя.
 
       URL поисковой системы Google можно указать так: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8460,22 +8388,6 @@ HTTP-заголовок Origin-Agent-Cluster определяет, изолир�
 
       Примечание. Если настроено правило <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />, его значение будет иметь приоритет над этим правилом.</translation>
 <translation id="6315039134652691025">Пользователи не могут перенести данные о работе в браузере в управляемый профиль</translation>
-<translation id="6316247387848694915">Список шаблонов URL. Правило запрещает отправлять конечным точкам локальной сети сетевые запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" с сайтов, источники которых совпадают с указанными шаблонами.
-
-Для источников, которые не совпадают с указанными шаблонами, применяются пользовательские настройки.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  - LocalNetworkBlockedForUrls
-  - LocalNetworkAllowedForUrls
-  - LocalNetworkAccessBlockedForUrls
-  - LocalNetworkAccessAllowedForUrls
-  - DeviceLocalNetworkAccessBlockedForUrls
-  - DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="6316678265585263617">Позволяет выбрать способ запуска хостов в <ph name="PRODUCT_NAME" /></translation>
 <translation id="6316885783540658874">Это правило определяет, использовать ли в Chrome OS алгоритм <ph name="AES_KL_NAME" /> для шифрования пользовательских данных в домах с системой <ph name="DM_CRYPT" />, если он поддерживается.
 
@@ -9667,7 +9579,6 @@ HTTP-заголовок Origin-Agent-Cluster определяет, изолир�
 <translation id="7030205756530739128">Если для правила <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> задано значение "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />", то правило <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> позволяет определить условия для начала зарядки с учетом уровня заряда. Значение должно быть как минимум на 5 процентных пунктов меньше значения, указанного для правила <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Если правило не настроено, применяется стандартный режим зарядки батареи.</translation>
-<translation id="7030213287413687536">Разрешить сайтам отправлять сетевые запросы локальным устройствам и конечным точкам локальной сети на устройстве</translation>
 <translation id="7030407698292813622">Разрешить DNS-запросы для дополнительных типов записей DNS</translation>
 <translation id="7030632236140191991">Список настроек, применяемых к коннектору <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> для Chrome Enterprise. Коннектор запускается, когда в Chrome вставляются данные из буфера обмена или перетаскивается веб-контент.
 
@@ -10620,6 +10531,20 @@ Gemini доступен не во всех странах и не на всех 
           Если правило не настроено или для него задано значение False, автоматическая отправка PIN-кода на заблокированном экране и экране входа отключена.
 
           Если правило настроено, пользователи не смогут включить эту функцию.</translation>
+<translation id="7609566862616914296">Список шаблонов URL. Правило запрещает отправлять конечным точкам локальной сети сетевые запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" с сайтов, источники которых совпадают с указанными шаблонами.
+
+Для источников, не совпадающих с этими шаблонами, действуют пользовательские настройки.
+
+Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
+
+Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
+
+Есть несколько правил со списками источников, которые влияют на запросы к конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
+
+  - LocalNetworkBlockedForUrls;
+  - LocalNetworkAllowedForUrls;
+  - LocalNetworkAccessBlockedForUrls;
+  - LocalNetworkAccessAllowedForUrls.</translation>
 <translation id="7612030083959326401">Список доменов, при обращении к которым <ph name="PASSWORD_MANAGER_NAME" /> (с функциями сохранения и автозаполнения) будет отключен</translation>
 <translation id="7612059745454194563">Запретить показ рекламного сообщения о расширении поставщика учетных данных</translation>
 <translation id="7612157962821894603">Системные настройки, действующие при запуске <ph name="PRODUCT_NAME" /></translation>
@@ -10861,22 +10786,6 @@ Gemini доступен не во всех странах и не на всех 
       <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> имеет приоритет над этим правилом и может снова включить режим инкогнито для определенных URL. Если режим инкогнито отключен текущим правилом и предоставлен белый список, этот режим доступен только для URL из списка, а все остальные страницы заблокированы.
 
       Примечание. Изменения в правиле на устройствах iOS во время сеанса браузера начнут действовать, только когда он будет перезагружен.</translation>
-<translation id="7753487237310360952">Список шаблонов URL. Сетевые запросы с сайтов, источники которых совпадают с указанными шаблонами, не должны проходить проверки типа "<ph name="LOCAL_NETWORK_ACCESS" />" во всех сеансах на устройстве.
-
-Подробнее о допустимых шаблонах URL: https://chromeenterprise.google/policies/url-patterns/.
-
-Дополнительные сведения об ограничениях типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Есть несколько правил со списками источников, которые влияют на запросы к локальному устройству и конечным точкам локальной сети. Если источник соответствует шаблонам из нескольких перечисленных ниже правил, эти правила применяются в следующем порядке:
-
-  – LocalNetworkBlockedForUrls;
-  – LocalNetworkAllowedForUrls;
-  – LoopbackNetworkBlockedForUrls;
-  – LoopbackNetworkAllowedForUrls;
-  – LocalNetworkAccessBlockedForUrls;
-  – LocalNetworkAccessAllowedForUrls;
-  – DeviceLocalNetworkAccessBlockedForUrls;
-  – DeviceLocalNetworkAccessAllowedForUrls.</translation>
 <translation id="7753678409577376761">Включить точку входа на панели инструментов для экспериментальных функций браузера</translation>
 <translation id="7754704193130578113">Перед скачиванием спрашивать, где сохранить файл</translation>
 <translation id="7754893969683595513">Задает периодичность (в миллисекундах), с которой в службу управления устройством направляются запросы о правилах для пользователей. Можно выбрать значение от 1 800 000 (30 минут) до 86 400 000 (1 сутки). Если указано число, не входящее в диапазон, будет использоваться ближайшее предельное значение.
@@ -12637,7 +12546,6 @@ Gemini доступен не во всех странах и не на всех 
       Если правило не настроено или задано значение False, статусы экрана и видеокарты
       не передаются. Если установлено значение True, статусы экрана и видеокарты
       передаются.</translation>
-<translation id="8912595396523313912">Запретить сайтам отправлять сетевые запросы локальным устройствам и конечным точкам локальной сети на устройстве</translation>
 <translation id="891435090623616439">кодируется в виде строки JSON, подробнее см. на странице <ph name="COMPLEX_POLICIES_URL" /></translation>
 <translation id="8916106787085606382">Не очищать window.name после межсайтовой навигации верхнего уровня, в результате которой меняется группа контекста браузера</translation>
 <translation id="8917070657147922192">Разрешить пользователям управлять установленными сертификатами ЦС</translation>
@@ -12909,15 +12817,6 @@ Gemini доступен не во всех странах и не на всех 
 
       Если правило не настроено или задано значение False, эти сведения отправляться не будут.
       Если задано значение True, эта информация будет отправляться.</translation>
-<translation id="9087577919890548366">Если правило включено, в ответ на запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" показываются только предупреждения в инструменте <ph name="CHROME_DEVTOOLS_NAME" />, так как запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" не проходят проверку.
-
-Когда правило отключено или не настроено, запросы типа "<ph name="LOCAL_NETWORK_ACCESS" />" обрабатываются по умолчанию.
-
-Дополнительные сведения об ограничениях запросов типа "<ph name="LOCAL_NETWORK_ACCESS" />" можно найти на странице https://wicg.github.io/local-network-access/.
-
-Это корпоративное правило введено на время и будет удалено после выхода версии M156.
-
-В долгосрочной перспективе <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> может использоваться для включения в белый список шаблонов URL, которым будет автоматически предоставляться разрешение <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Настройки коннектора OnFileTransfer Chrome Enterprise</translation>
 <translation id="9088433379343318874">Открыть доступ к поставщику контента для контролируемых профилей</translation>
 <translation id="9088444059179765143">Определять часовой пояс автоматически</translation>

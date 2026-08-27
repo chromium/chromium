@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏ההמלצה של Chrome היא להשהות את הכרטיסייה שמאטה את הדפדפן}one{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}two{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}other{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="1832046143430087831">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות. ההגדרה הזו מושבתת.</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
+<translation id="1842869163383855194">‏גישה נוחה לחיפוש ב-Chrome מכל מקום במכשיר, גם אם Chrome ממוזער.</translation>
 <translation id="1843347690926158494">‏חיפוש הכרטיסייה הזו באמצעות Google Lens</translation>
 <translation id="1849248141818021764">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן אצלה. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">‏עם אפליקציית Chrome אפשר להמשיך לגלוש תוך כדי תנועה</translation>
@@ -325,6 +326,7 @@
 <translation id="4173512894976930765">‏סביר להניח שאתרים יפעלו כצפוי. אם סוגרים את כל החלונות של Chrome, מתבצעת יציאה מהחשבון ברוב האתרים, חוץ מחשבון Google אם הוא מחובר ל-Chrome.</translation>
 <translation id="4175922240926474352">‏ההורדה הזו נחסמה על ידי Chrome כי האתר לא משתמש בחיבור מאובטח ויכול להיות שבוצעו שינויים לא מורשים בקובץ</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏צריך להפעיל מחדש את Chrome תוך יום אחד}one{‏צריך להפעיל מחדש את Chrome תוך # ימים}two{‏צריך להפעיל מחדש את Chrome תוך # ימים}other{‏צריך להפעיל מחדש את Chrome תוך # ימים}}</translation>
+<translation id="4222394563269716113">‏פתיחת החיפוש ב-Chrome באמצעות מקש קיצור.</translation>
 <translation id="4222932583846282852">מבטל…</translation>
 <translation id="4224210481850767180">ההתקנה בוטלה.</translation>
 <translation id="4242034826641750751">‏נדרשות הרשאות גישה למצלמה ולמיקרופון ב-Chrome עבור האתר הזה</translation>
@@ -350,6 +352,7 @@
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4434353761996769206">שגיאת מנהל התקנה: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">‏כדי לקבל סקירה כללית זריזה ולשאול שאלות המשך, אפשר לשתף את המסמך הזה עם Gemini ב-Chrome</translation>
+<translation id="4447327682081576371">‏הצגת החיפוש ב-Chrome בסרגל התפריטים של Mac והפעלת מקש קיצור</translation>
 <translation id="4450664632294415862">‏Chrome – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏מתבצעת כרגע פעולה אחרת ב-Google Chrome. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4493028449971051158">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כאדמין.</translation>
@@ -435,6 +438,7 @@
 <translation id="5402307365844630024">‏הפעלה או השבתה של Gemini ב-Chrome בטא</translation>
 <translation id="541844421954567481">‏כשאפליקציית Chrome מותקנת אצלך ב<ph name="DEVICE_TYPE" /> הסיסמאות, הכרטיסיות ועוד הולכים איתך לכל מקום</translation>
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
+<translation id="545114101312117217">‏גישה נוחה לקיצורי הדרך באמצעות החיפוש ב-Chrome</translation>
 <translation id="5465210843490471889">‏בחירת פרופיל ב-Chrome לשימוש עם <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">‏‫Chrome מופעל עכשיו יחד עם Windows, כך שאפשר להתחיל לגלוש מיד. ניתן להשבית זאת בהגדרות.</translation>
 <translation id="5486346529181556467">‏כדי לשפר את הבטיחות באינטרנט לכולם, אפשר לדווח על אתר שלדעתך עשוי לגרום נזק. מידע נוסף על <ph name="BEGIN_LINK" />המדיניות של Google בנושא אתרים לא בטוחים<ph name="END_LINK" /></translation>
@@ -451,7 +455,6 @@
 <translation id="5649156266046089790">‏פרופילים ב-Chrome עוזרים להפריד בין פריטי המידע ששומרים ב-Chrome. אפשר ליצור פרופילים שמיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
 <translation id="5655063652337498476">‏עם Chrome ב-iOS אפשר לגלות מוצרים בעזרת המצלמה, לעקוב אחרי ירידות במחירים ועוד, מכל מקום.</translation>
 <translation id="565744775970812598">‏<ph name="FILE_NAME" /> עלול להיות מסוכן, ולכן Chrome חסם אותו.</translation>
-<translation id="566040795510471729">‏&amp;התאמה אישית של Chrome</translation>
 <translation id="566568153320186256">‏‫Chrome חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏צריך למחוק את נתוני Chrome בחשבון</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
@@ -678,7 +681,6 @@
 <translation id="7777080907402804672">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google. אפשר להשבית את האפשרות הזו בכל זמן דרך ההגדרות.</translation>
 <translation id="778331955594035129">‏נדרשת הרשאת מיקום ב-Chrome עבור האתר הזה</translation>
 <translation id="7787950393032327779">‏נראה שהפרופיל נמצא בשימוש על ידי תהליך אחר של Google Chrome‏ (<ph name="PROCESS_ID" />) במחשב אחר (<ph name="HOST_NAME" />)‏. Chrome נעל את הפרופיל כדי שלא ייפגם. אם ברור לך שאף תהליך אחר אינו משתמש בפרופיל זה, באפשרותך לבטל את נעילת הפרופיל ולהפעיל את Chrome מחדש.</translation>
-<translation id="7792336732117553384">‏&amp;ניהול הפרופילים ב-Chrome</translation>
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7804364787702057554">‏החשבון שלך ב-Chrome</translation>
 <translation id="7804947029129221742">‏בוצע שינוי מחוץ ל-Chrome במנוע החיפוש שמוגדר כברירת המחדל. כדי להגן עליך, Chrome איפס את ההגדרה לערך ברירת המחדל המקורי. <ph name="LEARN_MORE_LINK" /></translation>
@@ -720,6 +722,7 @@
 <translation id="8074398340364918139">‏כדי לחפש תכונה או תוסף ספציפיים של Chrome, אפשר להקליד את השם המקוצר שלהם בסרגל הכתובות ולאחר מכן ללחוץ על מקש המקלדת שנבחר</translation>
 <translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
+<translation id="8093772166980702367">‏הצגת החיפוש ב-Chrome במגש המערכת והפעלת מקש קיצור</translation>
 <translation id="8110438089258398864">‏כדי לשאול שאלות תוך כדי גלישה, אפשר לפתוח מחדש את מצב AI בחיפוש Google</translation>
 <translation id="8113883687556086139">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
 <translation id="8115695070094288807">‏‫Chrome מבצע התאמה אישית…</translation>
@@ -749,6 +752,7 @@
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="8370748943308169953">‏קוד QR לכניסה אל Chrome בתור <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">‏הפעלה או השבתה של Gemini ב-Chrome Canary</translation>
+<translation id="8380754585531979907">‏כדי לעבור בין Gemini ב-Chrome לבין הכרטיסייה הפתוחה, אפשר להשתמש במקלדת.</translation>
 <translation id="8387459386171870978">‏המשך השימוש ב-Chrome</translation>
 <translation id="8394720698884623075">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chrome</translation>
 <translation id="8403038600646341038">‏הלוגו של Chromium בתוך מסך מחשב.</translation>

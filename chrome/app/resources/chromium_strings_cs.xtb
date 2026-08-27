@@ -40,7 +40,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1356661055722410047">Novinka! Můžete překládat text i obrázky na obrazovce</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1388276868779258475">V aplikaci Chromium můžete web procházet i na cestách</translation>
-<translation id="1397530502368084401">&amp;Spravovat profily prohlížeče Chromium</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1465192221147974788">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="1478370723027452770">Nápověda k Chrome for Testing</translation>
@@ -270,7 +269,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="390528597099634151">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chromium přihlášen. Chcete-li své procházení oddělit, Chromium vám může vytvořit vlastní profil.</translation>
 <translation id="3909353120217047026">Toto rozšíření porušuje zásady Internetového obchodu Chrome a může být nebezpečné. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
-<translation id="3937491663738985329">&amp;Přizpůsobit Chromium</translation>
 <translation id="3941890832296813527">Chyba instalace: Název souboru instalačního programu je neplatný nebo není podporován.</translation>
 <translation id="3945058413678539331">Chromium se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="3954172517175569325">Vaše hesla, platební metody a adresy, které jste si uložili do účtu Google, budou z tohoto zařízení odstraněny. Pokud je budete chtít v prohlížeči Chromium zase použít, znovu se přihlaste.</translation>
@@ -770,6 +768,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8980139959902937527">Mějte zabezpečení od Googlu vždy po ruce s aplikací Chromium na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromium nelze spustit, protože při otevírání vašeho profilu došlo k chybě. Zkuste Chromium restartovat.</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
+<translation id="8993855408334954620">Pomocí klávesnice můžete přecházet mezi Gemini v Chromiu a otevřenou kartou.</translation>
 <translation id="9018218886431812662">Instalace byla dokončena</translation>
 <translation id="9019929317751753759">Aby byl prohlížeč Chromium bezpečnější, deaktivovali jsme následující rozšíření, které není uvedeno na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a pravděpodobně bylo přidáno bez vašeho vědomí.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>

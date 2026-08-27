@@ -455,7 +455,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5649156266046089790">A Chrome-profilokkal különválaszthatja minden Chrome-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
 <translation id="5655063652337498476">A Chrome iOS-alkalmazásával útközben is felfedezhet termékeket a kamerájával, nyomon követheti az árcsökkenéseket, stb.</translation>
 <translation id="565744775970812598">A(z) <ph name="FILE_NAME" /> veszélyes lehet, ezért a Chrome letiltotta.</translation>
-<translation id="566040795510471729">A Chrome s&amp;zemélyre szabása</translation>
 <translation id="566568153320186256">A Chrome kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a fionomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ az Energiatakarékos módról<ph name="END_LINK" />.</translation>
 <translation id="567202749201779594">Törölje a fiókjában lévő Chrome-adatokat</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához.}=1{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
@@ -682,7 +681,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7777080907402804672">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chrome igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket. A funkciót a beállítások között bármikor kikapcsolhatja.</translation>
 <translation id="778331955594035129">A Chrome-nak helymeghatározási jogosultságra van szüksége ehhez a webhelyhez</translation>
 <translation id="7787950393032327779">Úgy tűnik, a profilt egy másik Google Chrome-folyamat (<ph name="PROCESS_ID" />) használja egy másik számítógépen (<ph name="HOST_NAME" />). A Chrome zárolta a profilt, hogy az ne sérülhessen. Ha biztos benne, hogy nem használja másik folyamat a profilt, feloldhatja azt, és újraindíthatja a Chrome-ot.</translation>
-<translation id="7792336732117553384">&amp;Chrome-profilok kezelése</translation>
 <translation id="7801699035218095297">A Google Chrome megpróbálkozik a jelszavak másolásával. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="7804364787702057554">Az Ön fiókja a Chrome-ban</translation>
 <translation id="7804947029129221742">A keresőmotor a Chrome-on kívülről lett módosítva. A Chrome visszaállította az eredeti, alapértelmezett motort az Ön biztonsága érdekében. <ph name="LEARN_MORE_LINK" /></translation>
@@ -754,6 +752,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="8370748943308169953">QR-kód a Chrome-ba való bejelentkezéshez mint <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">A Gemini a Chrome Canaryben be- vagy kikapcsolása</translation>
+<translation id="8380754585531979907">A billentyűzet segítségével válthat a Gemini a Chrome-ban és a megnyitott lap között.</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
 <translation id="8394720698884623075">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
 <translation id="8403038600646341038">A Chrome logója egy számítógép képernyőjén.</translation>

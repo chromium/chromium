@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1095093219235104018">Finna og fylla út með Gemini</translation>
 <translation id="1096992026380844478">Samstillingarkostirnir þínir verða endurheimtir í samræmi við síðustu öryggisafritun. <ph name="BEGIN_LINK" />Sjáðu hvað þú getur samstillt<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{Eitt aðgangsorð staðfest strax}one{# aðgangsorð staðfest strax}other{# aðgangsorð staðfest strax}}</translation>
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Taktu úr lás með andlitskenni</translation>
 <translation id="1111776967764068277">Ertu þreytt(ur) á að afrita tengla?</translation>
@@ -1986,7 +1985,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7464143666517313304">Þetta eyðir vistuðum heimilisföngum í þessu tæki.</translation>
 <translation id="7468373585447318060">Fylgstu með verðlækkunum á öllum vörunum sem þú vaktar.</translation>
 <translation id="746872191028309255">Notaðu myndavélina þína eða myndasafnið til að versla það sem þú sérð.</translation>
-<translation id="7469215556134875318">frá notkun aðgangsorðatékks</translation>
 <translation id="7471557245617580330">Búa til nýjan flipa</translation>
 <translation id="7473555040328423550">Bæta flipa við</translation>
 <translation id="7476548258282096076">Þetta kort sýnir vefsvæðin sem þú opnar oftast.</translation>

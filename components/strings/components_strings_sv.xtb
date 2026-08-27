@@ -239,7 +239,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="139305205187523129"><ph name="HOST_NAME" /> skickade ingen data.</translation>
 <translation id="1393071644879491291">Angripare på webbplatsen som du försökte besöka kan lura dig att installera mjukvara eller avslöja sådant som lösenord, telefon- eller kreditkortsnummer. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Webbplatser som du lägger till här används inte som referens för svar, även om fliken är öppen. Om en webbplats du lägger till för närvarande används i en tråd kan det ta upp till 30 minuter innan tråden slutar hänvisa till den.</translation>
-<translation id="1402151528875251561">Visa historik i sidopanelen</translation>
 <translation id="1405567553485452995">Ljusgrön</translation>
 <translation id="1406370515365284486">Dina betalningsmetoder sparas fortfarande</translation>
 <translation id="1406500794671479665">Verifierar …</translation>
@@ -1008,7 +1007,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2679216653373462289">Använd rörelse- och ljussensorer</translation>
 <translation id="2679659833697380">Din information sparas på enheten</translation>
-<translation id="2680837394649649718">Skickades till Chrome på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Andra resultat hittades</translation>
 <translation id="2686919536310834199">Skicka feedback för Hjälp mig skriva.</translation>
 <translation id="2687555958734450033">Bästa passning</translation>
@@ -1615,7 +1613,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3752181611900535304">Vill du spara adressen i kontot?</translation>
 <translation id="3752543821772132562">Ignoreras eftersom <ph name="POLICY_NAME" /> inte har angetts.</translation>
 <translation id="3754210790023674521">Avsluta bild-i-bild-läge</translation>
-<translation id="3754664361823138853">&amp;Öppna sidan Historik</translation>
 <translation id="3757511311058373406">Filter för automatisk webbsökning</translation>
 <translation id="3759461132968374835">Inga krascher har rapporterats nyligen. Krascher som uppstod när kraschrapporteringen var inaktiverad visas inte här.</translation>
 <translation id="3760561303380396507">Vill du använda Windows Hello i stället för CVC?</translation>
@@ -2059,7 +2056,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivera utökat skydd<ph name="END_ENHANCED_PROTECTION_LINK" /> för att få Chromes högsta säkerhet</translation>
 <translation id="4475299370877036544">Den här åtgärden kan bryta mot organisationens policyer</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Det här formuläret är inte säkert. Autofyll har inaktiverats.</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Kaku 4-kuvert</translation>
@@ -3529,7 +3525,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6998512609912910179">Fyll i formulär snabbare</translation>
 <translation id="7000094925113284872">Kartlägg en stjärnas livscykel</translation>
 <translation id="7002897669829306463">Hemadress, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7004562620237466965">Endast dechiffrering</translation>
 <translation id="7006930604109697472">Skicka ändå</translation>
 <translation id="7009364359744329733">Kortet är inte tillgängligt just nu. Försök igen senare.</translation>
@@ -4354,6 +4349,7 @@ Mer information.
 <translation id="8410956920192583322">Månadsvisa eller fyra avbetalningar</translation>
 <translation id="8412145213513410671">Krascher (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du måste ange samma lösenfras två gånger.</translation>
+<translation id="8413126021676339697">Visa fullständig historik</translation>
 <translation id="8414322570408428950">En tilläggshändelse inträffar</translation>
 <translation id="8416694386774425977">Nätverkskonfigurationen är ogiltig och kunde inte importeras.
 Mer information:
@@ -4661,7 +4657,6 @@ Mer information:
 <translation id="8988966534058783995">Vill du använda rörelsesensorer?</translation>
 <translation id="899688752321268742"><ph name="URL" /> vill veta när du använder enheten aktivt</translation>
 <translation id="8997023839087525404">Servern visade ett certifikat som inte lämnats ut via principen Certifikattransparens. Detta är ett krav för vissa certifikat för att säkerställa att de är pålitliga och skyddar mot hackare.</translation>
-<translation id="9000145382638074673">Dina enheter</translation>
 <translation id="9001074447101275817">Proxyservern <ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>
 <translation id="9001963517402879850">Hoppa!</translation>
 <translation id="9003263770394939629">Förslag från Gemini. Hantera förbättrad autofyll i inställningarna.</translation>

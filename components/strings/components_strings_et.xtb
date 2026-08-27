@@ -239,7 +239,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> ei saatnud andmeid.</translation>
 <translation id="1393071644879491291">Saidil, mida proovisite külastada, võivad ründajad meelitada teid tarkvara installima või näiteks paroole, telefoni- või krediitkaardinumbreid avaldama. Chrome soovitab tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Siia lisatud saite vastamiseks ei kasutata, isegi kui vaheleht on avatud. Kui lisatavat saiti kasutatakse praegu lõimes, võib lõimel sellele viitamise lõpetamiseks kuluda kuni 30 minutit.</translation>
-<translation id="1402151528875251561">Kuva ajalugu külgpaneelil</translation>
 <translation id="1405567553485452995">Heleroheline</translation>
 <translation id="1406370515365284486">Teie makseviisid jäävad salvestatuks.</translation>
 <translation id="1406500794671479665">Kinnitamine ...</translation>
@@ -1008,7 +1007,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2679216653373462289">Kasutada liikumis- ja valgusandureid</translation>
 <translation id="2679659833697380">Teie teave salvestatakse teie seadmesse.</translation>
-<translation id="2680837394649649718">Saadetud teie seadme <ph name="DEVICE_NAME" /> Chrome'i.</translation>
 <translation id="2683195745483370038">Leiti muud tulemused</translation>
 <translation id="2686919536310834199">Saatke tagasisidet funktsiooni „Aita mul kirjutada” jaoks.</translation>
 <translation id="2687555958734450033">Parim sobivus</translation>
@@ -1615,7 +1613,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3752181611900535304">Kas salvestada aadress kontole?</translation>
 <translation id="3752543821772132562">Eirati, sest reegel <ph name="POLICY_NAME" /> on seadistamata.</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
-<translation id="3754664361823138853">&amp;Ava ajaloo leht</translation>
 <translation id="3757511311058373406">Automaatse sirvimise filtrid</translation>
 <translation id="3759461132968374835">Hiljuti teatatud krahhe ei ole. Siin ei ilmu krahhid, mis toimusid siis, kui krahhide aruandlus oli keelatud.</translation>
 <translation id="3760561303380396507">Kas kasutada CVC asemel Windows Hello autentimist?</translation>
@@ -2059,7 +2056,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4473643328224505070">Chrome'i kõrgeima taseme turvalisuse saavutamiseks <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />lülitage sisse täiustatud kaitse<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">See toiming võib rikkuda teie organisatsiooni eeskirju</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
-<translation id="4476953670630786061">See vorm pole turvaline. Automaattäide on välja lülitatud.</translation>
 <translation id="4477350412780666475">Järgmine lugu</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Ümbrik Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6998512609912910179">Vormide kiirem täitmine</translation>
 <translation id="7000094925113284872">Kaardista tähe elutsükkel</translation>
 <translation id="7002897669829306463">Kodune aadress, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Hiljutised vahelehed</translation>
 <translation id="7004562620237466965">Ainult dešifreerimine</translation>
 <translation id="7006930604109697472">Saada ikkagi</translation>
 <translation id="7009364359744329733">See kaart pole praegu saadaval. Proovige hiljem uuesti.</translation>
@@ -4354,6 +4349,7 @@ Lisateave:
 <translation id="8410956920192583322">Igakuiselt või neli osamakset</translation>
 <translation id="8412145213513410671">Krahhid (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Peate sisestama sama parooli kaks korda.</translation>
+<translation id="8413126021676339697">Kuva kogu ajalugu</translation>
 <translation id="8414322570408428950">Laienduse sündmuse toimumine</translation>
 <translation id="8416694386774425977">Võrgu seadistus on sobimatu ja seda ei saa importida.
 Lisateave:
@@ -4660,7 +4656,6 @@ Lisateave:
 <translation id="8988966534058783995">Kas kasutada liikumisandureid?</translation>
 <translation id="899688752321268742"><ph name="URL" /> soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="8997023839087525404">Server esitas sertifikaadi, mida ei ole sertifikaadi läbipaistvuse reegli kohaselt avalikustatud. See on teatud sertifikaatide puhul nõutav, et need oleksid usaldusväärsed ja kaitseksid ründajate eest.</translation>
-<translation id="9000145382638074673">Teie seadmed</translation>
 <translation id="9001074447101275817">Puhverserver <ph name="DOMAIN" /> nõuab kasutajanime ja parooli.</translation>
 <translation id="9001963517402879850">Hüpake!</translation>
 <translation id="9003263770394939629">Gemini soovitatud. Täiustatud automaattäidet saate hallata seadetes.</translation>

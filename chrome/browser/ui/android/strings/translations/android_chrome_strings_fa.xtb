@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">گرفتن عکس از صفحه‌</translation>
 <translation id="1108214977745280468">مشاهده اطلاعات آماری صفحه</translation>
 <translation id="1108938384783527433">همگام‌سازی سابقه</translation>
+<translation id="1109663842695712985">‏برخی از داده‌های Chrome هنوز در «حساب Google» شما ذخیره نشده است. پیش از خروج از سیستم، چند دقیقه صبر کنید. اگر اکنون از سیستم خارج شوید، داده‌های ذخیره‌نشده حذف خواهد شد.</translation>
 <translation id="1111673857033749125">نشانک‌های ذخیره‌شده در سایر دستگاه‌های شما در اینجا نشان داده می‌شوند.</translation>
 <translation id="1123537484474186311">‫<ph name="TAB_TITLE" />، زبانه تصویردرتصویر</translation>
 <translation id="1126696498560056882">مدیریت حساب‌ها در این دستگاه</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634">استفاده از <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677">‫<ph name="TAB_TITLE" />، زبانه ضبط سنجاق‌شده</translation>
 <translation id="1600756129506222718">‫<ph name="TAB_TITLE" />، زبانه هم‌رسانی</translation>
+<translation id="1601378265092360672">داده‌های مرور شامل سابقه مرور، کوکی‌ها و دیگر داده‌های سایت، تصاویر و فایل‌های ذخیره‌شده در حافظه نهان، و زبانه های باز است</translation>
 <translation id="160275202205869636">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در آن ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{حذف ۱ مورد انتخاب‌شده}one{حذف # مورد انتخاب‌شده}other{حذف # مورد انتخاب‌شده}}</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">کوکی‌ها، حافظه نهان، و دیگر داده‌های سایت</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">تلفن شما</translation>
+<translation id="4295640788982898778">‏افزونه‌های شما در «حساب Google» شما ذخیره شده‌اند، اما هر داده‌ای که این افزونه‌ها فقط در این دستگاه ذخیره کرده باشند ممکن است حذف شود</translation>
 <translation id="4296252229500326964">زبانه ناشناس جدید</translation>
 <translation id="4298161202289999785">‫<ph name="TAB_TITLE" />، زبانه ناشناس چندانتخابی</translation>
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">‏باز کردن برنامه «لنز Google»</translation>
 <translation id="435863252455918214">‏مدیریت افزونه‌ها در منو اصلی Chrome</translation>
 <translation id="4359809482106103048">ایمنی در یک نگاه</translation>
+<translation id="4374192654218566997">‏‫\n\nهمچنین می‌توانید این داده‌ها را از این دستگاه بردارید:</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="4384468725000734951">‏استفاده از Sogou برای جستجو</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">محتوایی که دنبال می‌کنید و جستجوها و موضوع‌های پیشنهادی را مدیریت کنید</translation>
 <translation id="7119984597597798764">بستن <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">‏ورود به سیستم Chrome</translation>
+<translation id="7130633106249192408">حذف کردن داده‌های مرور از این دستگاه</translation>
 <translation id="7136694880210472378">پیش‌فرض قرار دادن</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های # سایت بررسی شد}other{اجازه‌های # سایت بررسی شد}}</translation>
 <translation id="7138678301420049075">غیره</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">منوی کارت فید</translation>
 <translation id="82296173028782770">ویرایش پرسمان جستجو: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">افزودن به نشانک‌ها</translation>
+<translation id="8236917170563564587">یا هم‌رسانی کردن این زبانه</translation>
 <translation id="8243077599929149377">نام کاربری‌تان را اضافه کنید</translation>
 <translation id="8244387390464017490">سفارشی‌سازی صفحه زبانه جدید</translation>
 <translation id="8244444485683708655">پیوست کردن عکس دوربین</translation>

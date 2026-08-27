@@ -39,7 +39,6 @@
 <translation id="1356661055722410047">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1388276868779258475">Dùng ứng dụng Chromium để tiếp tục duyệt web mọi lúc, mọi nơi</translation>
-<translation id="1397530502368084401">&amp;Quản lý hồ sơ trên Chromium</translation>
 <translation id="141901961143729572">Chia sẻ suy nghĩ của bạn</translation>
 <translation id="1465192221147974788">Để chia sẻ cửa sổ, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="1478370723027452770">Nhận trợ giúp về Chrome for Testing</translation>
@@ -269,7 +268,6 @@
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> đã đăng nhập vào hồ sơ này trên Chromium. Để tách biệt hoạt động duyệt web của bạn, Chromium có thể tạo hồ sơ riêng cho bạn.</translation>
 <translation id="3909353120217047026">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến và có thể không an toàn. Hãy xoá khỏi Chromium để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
-<translation id="3937491663738985329">Tuỳ chỉnh Chromium</translation>
 <translation id="3941890832296813527">Lỗi cài đặt: Tên tệp của trình cài đặt không hợp lệ hoặc không được hỗ trợ.</translation>
 <translation id="3945058413678539331">Chromium đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="3954172517175569325">Mật khẩu, phương thức thanh toán và địa chỉ mà bạn đã lưu trong Tài khoản Google sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
@@ -769,6 +767,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8980139959902937527">Mang theo các tính năng an toàn của Google mọi lúc, mọi nơi nhờ ứng dụng Chromium trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Không thể khởi động Chromium vì đã xảy ra lỗi khi mở hồ sơ của bạn. Hãy thử khởi động lại Chromium.</translation>
 <translation id="8988036198400390003">Quản lý hồ sơ trên Chromium</translation>
+<translation id="8993855408334954620">Dùng bàn phím để di chuyển giữa Gemini trong Chromium và thẻ đang mở.</translation>
 <translation id="9018218886431812662">Đã cài đặt xong</translation>
 <translation id="9019929317751753759">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>

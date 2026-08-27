@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1095093219235104018">Cari dan isi dengan Gemini</translation>
 <translation id="1096992026380844478">Tetapan penyegerakan anda akan dipulihkan berdasarkan sandaran terakhir anda. <ph name="BEGIN_LINK" />Lihat item yang boleh anda segerakkan<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 kata laluan disahkan dengan serta-merta}other{# kata laluan disahkan dengan serta-merta}}</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Buka kunci dengan Face ID</translation>
 <translation id="1111776967764068277">Bosan menyalin pautan?</translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3038136505713492417">Sahkan identiti anda untuk menggunakan kunci laluan pada peranti ini</translation>
 <translation id="3039671569659952257">Padamkan folder</translation>
+<translation id="3041835740069544003">Kini Chrome boleh mengesan dan mengisi lebih banyak borang dengan pemahaman borang yang lebih pintar. Untuk melakukan tindakan ini, kandungan halaman dan URL boleh diproses dalam ruang privasi pada awan. Urus dalam tetapan.</translation>
 <translation id="3050988301648974170">Buka Semakan Kata Laluan</translation>
 <translation id="3053332585453689122">Menghantar URL yang anda lawati dan sedikit sampel kandungan halaman, muat turun, aktiviti sambungan dan maklumat sistem kepada Penyemakan Imbas Selamat Google untuk disemak jika sampel tersebut berbahaya.</translation>
 <translation id="3055102495753300780">Storan maklumat</translation>
@@ -1986,7 +1986,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7464143666517313304">Langkah ini memadamkan alamat yang disimpan pada peranti ini.</translation>
 <translation id="7468373585447318060">Dapatkan maklumat terkini tentang semua produk yang anda jejaki.</translation>
 <translation id="746872191028309255">Beli-belah perkara yang anda lihat dengan kamera atau galeri foto anda.</translation>
-<translation id="7469215556134875318">sejak menggunakan Semakan kata laluan</translation>
 <translation id="7471557245617580330">Buat tab baharu</translation>
 <translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7476548258282096076">Kad ini menunjukkan laman anda yang paling kerap dilawati.</translation>

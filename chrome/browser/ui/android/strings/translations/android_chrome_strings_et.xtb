@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Kuva jäädvustamine</translation>
 <translation id="1108214977745280468">Kuva lehe statistika</translation>
 <translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
+<translation id="1109663842695712985">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis salvestamata andmed kustutatakse.</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, pilt-pildis vaheleht</translation>
 <translation id="1126696498560056882">Selles seadmes olevate kontode haldamine</translation>
@@ -157,6 +158,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1598163867407640634">Kasutage saiti <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, kinnitatud salvestav vaheleht</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, jagav vaheleht</translation>
+<translation id="1601378265092360672">Sirvimisandmed hõlmavad teie sirvimisajalugu, küpsisefaile ja muid saidiandmeid, vahemällu salvestatud pilte ja faile ning avatud vahelehti.</translation>
 <translation id="160275202205869636">Kui see on sees, saate andmeid oma Google'i kontol kasutada ja salvestada. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Eemalda 1 valitud üksus}other{Eemalda # valitud üksust}}</translation>
 <translation id="1639239467298939599">Laadimine</translation>
@@ -810,6 +812,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4285846616383034558">Küpsised, vahemälu ja muud saidiandmed</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Androidi seadetes ekraaniluku sisselülitamine<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">teie telefon</translation>
+<translation id="4295640788982898778">Teie laiendused on salvestatud teie Google’i kontole, kuid kõik andmed, mille need on salvestanud ainult sellesse seadmesse, võidakse kustutada.</translation>
 <translation id="4296252229500326964">Uus inkognito vaheleht</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, mitmikvalikuga inkognito vaheleht</translation>
 <translation id="4298388696830689168">Lingitud saidid</translation>
@@ -833,6 +836,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4358630185957185589">Ava Google Lens</translation>
 <translation id="435863252455918214">Laiendusi saate hallata Chrome'i peamenüüs.</translation>
 <translation id="4359809482106103048">Ohutuse ülevaade</translation>
+<translation id="4374192654218566997">\n\nSamuti saate need andmed sellest seadmest eemaldada.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Kui probleem jääb korduma, võite proovida teisi viise, kuidas saidil <ph name="SITE_ETLD_PLUS_ONE" /> jätkata.</translation>
 <translation id="4384468725000734951">Otsimiseks kasutatakse teenust Sogou</translation>
@@ -977,6 +981,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4913169188695071480">Peata värskendamine</translation>
 <translation id="4921224083091001889">Kõigis seadmetes oma paroolide ja muule juurdepääsemiseks logige Chrome'i kontoga <ph name="EMAIL" /> sisse.</translation>
 <translation id="4923173329789776645">Teie organisatsioon ei soovita allalaadimist</translation>
+<translation id="4924398189611529766">Inkognito režiimis sirvite privaatsemalt, sest teised seda seadet kasutavad inimesed ei näe teie tegevust. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Ekraanipilt: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Saate salvestada pilte ja faile, et neid võrguühenduseta vaadata või teistes rakendustes jagada</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{Üks järjehoidja ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole.}other{# järjehoidjat ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole.}}</translation>
@@ -1541,6 +1546,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7117485132243600300">Hallake jälgitavat sisu, soovitatud teemasid ja otsinguid</translation>
 <translation id="7119984597597798764">Sule <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Logige Chrome'i sisse</translation>
+<translation id="7130633106249192408">Sirvimisandmete sellest seadmest kustutamine</translation>
 <translation id="7136694880210472378">Muuda vaikevalikuks</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 saidi load on üle vaadatud}other{# saidi load on üle vaadatud}}</translation>
 <translation id="7138678301420049075">Muu</translation>
@@ -1833,6 +1839,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8223642481677794647">Voo kaardimenüü</translation>
 <translation id="82296173028782770">Muutke otsingupäringut: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Lisa järjehoidjatesse</translation>
+<translation id="8236917170563564587">Jaga hoopis seda vahelehte</translation>
 <translation id="8243077599929149377">Lisage oma kasutajanimi</translation>
 <translation id="8244387390464017490">Uue vahelehe kohandamine</translation>
 <translation id="8244444485683708655">Kaamera pildi manustamine</translation>

@@ -194,6 +194,7 @@
 <translation id="1319245136674974084">לא צריך לשאול יותר לגבי האפליקציה הזו</translation>
 <translation id="132301787627749051">חיפוש תמונה בלוח</translation>
 <translation id="1323433172918577554">הצגת פריטים נוספים</translation>
+<translation id="1326962902431997202">קו חוצה</translation>
 <translation id="1330449323196174374">כנף שמאלית בקיפול</translation>
 <translation id="1330952240988133220">‏שמירת מספר ה-Redress באופן מאובטח ב-Google Wallet</translation>
 <translation id="133173645041092770">סגירת האתר</translation>
@@ -238,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> לא שלח נתונים.</translation>
 <translation id="1393071644879491291">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">אתרים שיתווספו לכאן לא יהיו מקור לתשובות, גם אם הכרטיסייה פתוחה. אם האתר שמוסיפים נמצא באותו רגע בשימוש בשרשור, יכול להיות שיעברו עד 30 דקות עד שהשרשור יפסיק להפנות אליו.</translation>
-<translation id="1402151528875251561">הצגת ההיסטוריה בחלונית צדדית</translation>
 <translation id="1405567553485452995">ירוק בהיר</translation>
 <translation id="1406370515365284486">אמצעי התשלום שלך עדיין יישמרו</translation>
 <translation id="1406500794671479665">מאמת...</translation>
@@ -1007,7 +1007,6 @@
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2679216653373462289">להשתמש בחיישני התנועה והאור</translation>
 <translation id="2679659833697380">הפרטים שלך נשמרו במכשיר</translation>
-<translation id="2680837394649649718">‏הכרטיסייה נשלחה ל-Chrome במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">נמצאו תוצאות אחרות</translation>
 <translation id="2686919536310834199">ניתן לשלוח משוב בנושא העזרה בכתיבה.</translation>
 <translation id="2687555958734450033">ההתאמה הטובה ביותר</translation>
@@ -1614,7 +1613,6 @@
 <translation id="3752181611900535304">לשמור את הכתובת בחשבון?</translation>
 <translation id="3752543821772132562">המערכת התעלמה מהמדיניות הזו כי המדיניות <ph name="POLICY_NAME" /> לא מוגדרת.</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
-<translation id="3754664361823138853">&amp;פתיחת דף ההיסטוריה</translation>
 <translation id="3757511311058373406">מסננים לפעולות אוטומטיות בדפדפן</translation>
 <translation id="3759461132968374835">לא התקבלו דיווחים על קריסות לאחרונה. קריסות שהתרחשו בזמן שאפשרות הדיווח על קריסות הייתה מושבתת לא יופיעו כאן.</translation>
 <translation id="3760561303380396507">‏האם להשתמש ב-Windows Hello במקום ב-CVC?</translation>
@@ -2058,7 +2056,6 @@
 <translation id="4473643328224505070">‏כדי ליהנות מאבטחה ברמה הגבוהה ביותר ב-Chrome, צריך <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />להפעיל את ההגנה המשופרת<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">הפעולה הזו עלולה להפר את מדיניות הארגון</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">הטופס הזה לא מאובטח. המילוי האוטומטי נכבה.</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4480760608050410381">‏סרטון MP4</translation>
 <translation id="4489023393592172404">‏מעטפה – Kaku 4</translation>
@@ -3533,7 +3530,6 @@ Del</translation>
 <translation id="6998512609912910179">מילוי טפסים מהיר יותר</translation>
 <translation id="7000094925113284872">תמפה את מחזור החיים של כוכב</translation>
 <translation id="7002897669829306463">כתובת מגורים, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">כרטיסיות אחרונות</translation>
 <translation id="7004562620237466965">פענוח בלבד</translation>
 <translation id="7006930604109697472">לשליחה בכל זאת</translation>
 <translation id="7009364359744329733">הכרטיס הזה לא זמין כרגע. אפשר לנסות שוב אחר כך.</translation>
@@ -3705,6 +3701,7 @@ Del</translation>
 <translation id="7308436126008021607">סנכרון ברקע</translation>
 <translation id="7310392214323165548">המכשיר יופעל מחדש בקרוב</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
+<translation id="7311565174465466858">‏‫<ph name="TAB_KEY" /> כדי לשאול את <ph name="AI_ENGINE_NAME" />, עליך ללחוץ על Tab ואז על Enter</translation>
 <translation id="7313107491291103073">הארגון שלך סימן את האתר הזה כי הוא עלול להפר מדיניות.</translation>
 <translation id="7315372670898739748">הקישור לא הצליח. אפשר לנסות שוב יותר מאוחר</translation>
 <translation id="7316521168101843192">‏הקובץ נשמר ב-OneDrive של מיקרוסופט</translation>
@@ -4357,6 +4354,7 @@ Del</translation>
 <translation id="8410956920192583322">תשלום חודשי או 4 תשלומים.</translation>
 <translation id="8412145213513410671">קריסות (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">עליך להזין את אותו משפט-סיסמה פעמיים.</translation>
+<translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
 <translation id="8414322570408428950">מתרחש אירוע של תוסף</translation>
 <translation id="8416694386774425977">תצורת הרשת אינה חוקית ולא ניתן לייבא אותה.
 פרטים נוספים:
@@ -4663,7 +4661,6 @@ Del</translation>
 <translation id="8988966534058783995">להשתמש בחיישני התנועה?</translation>
 <translation id="899688752321268742">האתר <ph name="URL" /> מבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="8997023839087525404">השרת הציג אישור שלא נחשף באופן ציבורי בעזרת מדיניות 'שקיפות אישורים'. זוהי דרישה עבור חלק מהאישורים, ומטרתה לוודא שהם מהימנים וכדי להגן מפני תוקפים.</translation>
-<translation id="9000145382638074673">המכשירים שלך</translation>
 <translation id="9001074447101275817">‏שרת ה-proxy ‏<ph name="DOMAIN" /> מצריך שם משתמש וסיסמה.</translation>
 <translation id="9001963517402879850">צריך לקפוץ!</translation>
 <translation id="9003263770394939629">‏הצעה של Gemini. אפשר לנהל את המילוי האוטומטי המשופר בהגדרות.</translation>

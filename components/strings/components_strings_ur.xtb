@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> نے کوئی ڈیٹا نہیں بھیجا۔</translation>
 <translation id="1393071644879491291">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈز، فون یا کریڈٹ کارڈ نمبرز جیسی چیزیں افشاء کروا سکتے ہیں۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">یہاں شامل کردہ سائٹس کو جوابات کے لیے حوالہ نہیں دیا جائے گا، چاہے ٹیب کھلا ہو۔ اگر آپ کی شامل کردہ سائٹ فی الحال کسی سلسلہ میں استعمال ہو رہی ہے تو سلسلہ کو اس کا حوالہ دینا بند کرنے میں 30 منٹ تک لگ سکتے ہیں۔</translation>
-<translation id="1402151528875251561">سائیڈ پینل میں سرگزشت دکھائیں</translation>
 <translation id="1405567553485452995">ہلکا سبز</translation>
 <translation id="1406370515365284486">آپ کے ادائیگی کے طریقے اب بھی محفوظ کیے جائیں گے</translation>
 <translation id="1406500794671479665">توثیق ہو رہی ہے…</translation>
@@ -1008,7 +1007,6 @@
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2679216653373462289">اپنے موشن اور لائٹ سینسرز کا استعمال کریں</translation>
 <translation id="2679659833697380">آپ کی معلومات آپ کے آلے میں محفوظ ہے</translation>
-<translation id="2680837394649649718">‏آپ کے <ph name="DEVICE_NAME" /> پر Chrome کو بھیجا گیا۔</translation>
 <translation id="2683195745483370038">دوسرے نتائج ملے</translation>
 <translation id="2686919536310834199">لکھنے میں میری مدد کریں کے لیے تاثرات بھیجیں۔</translation>
 <translation id="2687555958734450033">بہترین فٹ</translation>
@@ -1616,7 +1614,6 @@
 <translation id="3752181611900535304">اکاؤنٹ میں پتہ محفوظ کریں؟</translation>
 <translation id="3752543821772132562">پالیسی کو نظر انداز کیا گیا کیونکہ <ph name="POLICY_NAME" /> سیٹ نہیں ہے۔</translation>
 <translation id="3754210790023674521">تصویر میں تصویر سے باہر نکلیں</translation>
-<translation id="3754664361823138853">سرگزشت کا صفحہ &amp;کھولیں</translation>
 <translation id="3757511311058373406">آٹو براؤز فلٹرز</translation>
 <translation id="3759461132968374835">آپ کے پاس فی الحال کوئی اطلاع کردہ کریشز نہیں ہیں۔  کریش رپورٹنگ غیر فعال ہونے پر پیش آنے والے کریشز یہاں ظاہر نہیں ہوں گے۔</translation>
 <translation id="3760561303380396507">‏CVC کے بجائے Windows Hello کا استعمال کریں؟</translation>
@@ -2060,7 +2057,6 @@
 <translation id="4473643328224505070">‏Chrome کی اعلی ترین سطح کی سیکیورٹی حاصل کرنے کیلئے، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />بہتر کردہ حفاظت آن کریں<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">یہ کارروائی آپ کی تنظیم کی پالیسیوں کی خلاف ورزی کر سکتی ہے</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />۔ <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">یہ فارم محفوظ نہیں ہے۔ آٹو فل کو آف کر دیا گیا ہے۔</translation>
 <translation id="4477350412780666475">اگلا ٹریک</translation>
 <translation id="4480760608050410381">‏‫MP4 ویڈیو</translation>
 <translation id="4489023393592172404">‏Kaku 4 لفافہ</translation>
@@ -3531,7 +3527,6 @@
 <translation id="6998512609912910179">تیزی سے فارمز پُر کریں</translation>
 <translation id="7000094925113284872">ستارے کی زندگی کے دورانیہ کا نقشہ بنائیں</translation>
 <translation id="7002897669829306463">گھر کا پتہ، <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">حالیہ ٹیبز</translation>
 <translation id="7004562620237466965">صرف ڈی سائفر</translation>
 <translation id="7006930604109697472">بہر صورت بھیجیں</translation>
 <translation id="7009364359744329733">یہ کارڈ اس وقت دستیاب نہیں ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
@@ -4355,6 +4350,7 @@
 <translation id="8410956920192583322">ماہانہ یا 4 قسطیں</translation>
 <translation id="8412145213513410671">کریشز (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">آپ کو وہی پاس فریز دوبار درج کرنا ضروری ہے۔</translation>
+<translation id="8413126021676339697">مکمل سرگزشت دکھائیں</translation>
 <translation id="8414322570408428950">ایکسٹینشن سے متعلق ایونٹ ہوتا ہے</translation>
 <translation id="8416694386774425977">نیٹ ورک کنفیگریشن غلط ہے اور اسے درآمد نہیں کیا جا سکا۔
 اضافی معلومات:
@@ -4661,7 +4657,6 @@
 <translation id="8988966534058783995">موشن سینسرز استعمال کریں؟</translation>
 <translation id="899688752321268742"><ph name="URL" /> جاننا چاہتا ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="8997023839087525404">سرور نے ایک ایسا سرٹیفیکیٹ پیش کیا جس کا سرٹیفیکیٹ کی شفافیت کی پالیسی استعمال کر کے انکشاف نہیں کیا گیا۔ یہ یقینی بنانے کیلئے کہ کچھ سرٹیفیکیٹس قابل بھروسہ ہیں اور حملہ آوروں کے خلاف حفاظت کرتی ہیں، یہ ان کیلئے ایک تقاضہ ہے۔</translation>
-<translation id="9000145382638074673">آپ کے آلات</translation>
 <translation id="9001074447101275817">پراکسی <ph name="DOMAIN" /> کیلئے ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="9001963517402879850">کودیں!</translation>
 <translation id="9003263770394939629">‏‫Gemini کی طرف سے تجویز کردہ۔ ترتیبات میں بہتر کردہ آٹو فل کا نظم کریں۔</translation>

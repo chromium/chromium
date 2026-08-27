@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1095093219235104018">Find and fill with Gemini</translation>
 <translation id="1096992026380844478">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 password instantly verified}other{# passwords instantly verified}}</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Unlock with Face ID</translation>
 <translation id="1111776967764068277">Tired of copying links?</translation>
@@ -378,7 +377,7 @@
 <translation id="2165110345209765380">Search with AI Mode completed!</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2180338296831857171">Delete addresses</translation>
-<translation id="218350106843433823">AutoFill passwords and passkeys</translation>
+<translation id="218350106843433823">Autofill passwords and passkeys</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tap <ph name="BEGIN_BOLD" />Save to Downloads<ph name="END_BOLD" /></translation>
@@ -1986,7 +1985,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7464143666517313304">This deletes addresses saved on this device.</translation>
 <translation id="7468373585447318060">Keep up with price drops on all the products that you track.</translation>
 <translation id="746872191028309255">Shop what you see with your camera or photo gallery.</translation>
-<translation id="7469215556134875318">since using Password Checkup</translation>
 <translation id="7471557245617580330">Create new tab</translation>
 <translation id="7473555040328423550">Add tab</translation>
 <translation id="7476548258282096076">This card shows your most visited sites.</translation>

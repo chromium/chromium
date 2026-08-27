@@ -41,7 +41,6 @@
 <translation id="1356661055722410047">አዲስ! ማያ ገፅዎ ላይ ሁለቱንም ጽሁፍ እና ምስሎችን መተርጎም ይችላሉ</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1388276868779258475">በመሄድ ላይ እያሉ ማሰስን ለመቀጠል የChromium መተግበሪያን ይጠቀሙ</translation>
-<translation id="1397530502368084401">እና የChromium መገለጫዎችን ያስተዳድሩ</translation>
 <translation id="141901961143729572">ሀሳቦችዎን ያጋሩ</translation>
 <translation id="1465192221147974788">መስኮትዎን ለማጋራት በሥርዓት ቅንብሮች ውስጥ ለChromium የማያ ገፅ መቅረጽን ይፍቀዱ።</translation>
 <translation id="1478370723027452770">በChrome ለሙከራ ላይ እገዛ ያግኙ</translation>
@@ -271,7 +270,6 @@
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> አስቀድመው ወደዚህ የChromium መገለጫ ገብተዋል። አሰሳዎን የተለየ እንደሆነ ለማቆየት Chromium የራስዎን መገለጫ ለእርስዎ መፍጠር ይችላል።</translation>
 <translation id="3909353120217047026">ይህ ቅጥያ የChrome የድር መደብር መመሪያን ይጥሳል እና ደህንነቱ ያልተጠበቀ ሊሆን ይችላል። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
-<translation id="3937491663738985329">የእርስዎን Chromium ያብጁ</translation>
 <translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
 <translation id="3945058413678539331">Chromium የይለፍ ቃላትን ለመቅዳት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="3954172517175569325">የእርስዎ የይለፍ ቃላቶች፣ የመክፈያ ዘዴዎች እና በGoogle መለያዎ ውስጥ ያስቀመጧቸው አድራሻዎች ከዚህ መሣሪያ ይወገዳሉ። እንደገና Chromium ውስጥ እነሱን ለመጠቀም መልሰው በመለያ ይግቡ።</translation>
@@ -771,6 +769,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8980139959902937527">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ባለው የChromium መተግበሪያ የGoogleን ደኅንነት በመሄድ ላይ ይውሰዱ</translation>
 <translation id="8981150672034878610">መገለጫዎን ሲከፍቱ የሆነ ስሕተት ስለተከሰተ Chromiumን መጀመር አይቻልም። Chromiumን እንደገና ለማስጀመር ይሞክሩ።</translation>
 <translation id="8988036198400390003">የChromium መገለጫዎችን ያስተዳድሩ</translation>
+<translation id="8993855408334954620">በGemini በChromium ውስጥ እና በክፍት ትርዎ መካከል ለመዳሰስ የቁልፍ ሰሌዳዎን ይጠቀሙ።</translation>
 <translation id="9018218886431812662">ጭነት ተጠናቅቋል</translation>
 <translation id="9019929317751753759">Chromiumን ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተዘረዘረውን የሚከተለውን ቅጥያ አሰናክለነዋል እና እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="9022552996538154597">Chromium ውስጥ ይግቡ</translation>

@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Kërko me "Lenten e Google"</translation>
 <translation id="1095093219235104018">Gjej dhe plotëso me Gemini</translation>
 <translation id="1096992026380844478">Cilësimet e tua të sinkronizimit do të restaurohen bazuar në rezervimin tënd të fundit. <ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 fjalëkalim u verifikua menjëherë}other{# fjalëkalime u verifikuan menjëherë}}</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Shkyç me Face ID</translation>
 <translation id="1111776967764068277">Je lodhur duke kopjuar lidhje?</translation>
@@ -1986,7 +1985,6 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7464143666517313304">Kjo fshin adresat e ruajtura në këtë pajisje.</translation>
 <translation id="7468373585447318060">Qëndro i informuar për uljet e çmimeve për të gjitha produktet që monitoron.</translation>
 <translation id="746872191028309255">Kërko për të blerë ato që shikon me kamerën ose nga galeria e fotografive.</translation>
-<translation id="7469215556134875318">që nga përdorimi i "Kontrollit të fjalëkalimit"</translation>
 <translation id="7471557245617580330">Krijo skedë të re</translation>
 <translation id="7473555040328423550">Shto skedë</translation>
 <translation id="7476548258282096076">Kjo kartë shfaq sajtet e tua më të vizituara.</translation>

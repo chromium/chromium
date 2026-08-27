@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1095093219235104018">Leidke ja täitke Geminiga</translation>
 <translation id="1096992026380844478">Sünkroonimisseaded taastatakse teie viimase varukoopia alusel. <ph name="BEGIN_LINK" />Vaadake, mida sünkroonida saate<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{Üks parool kontrollitud}other{# parooli kontrollitud}}</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Avage Face ID-ga</translation>
 <translation id="1111776967764068277">Kas olete linkide kopeerimisest tüdinud?</translation>
@@ -1986,7 +1985,6 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7464143666517313304">See kustutab sellesse seadmesse salvestatud aadressid.</translation>
 <translation id="7468373585447318060">Olge kursis kõikide teie jälgitavate toodete hinnaalandustega.</translation>
 <translation id="746872191028309255">Ostke, mida näete oma kaameras või fotogaleriis.</translation>
-<translation id="7469215556134875318">alates paroolikontrolli kasutuselevõtmisest</translation>
 <translation id="7471557245617580330">Loo uus vaheleht</translation>
 <translation id="7473555040328423550">Vahelehe lisamine</translation>
 <translation id="7476548258282096076">See kaart näitab teie enim külastatud saite.</translation>

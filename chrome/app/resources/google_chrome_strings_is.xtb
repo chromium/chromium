@@ -463,7 +463,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5649156266046089790">Þú getur aðskilið allt efnið þitt á Chrome með Chrome-prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="5655063652337498476">Uppgötvaðu vörur með myndavélinni þinni, fylgstu með verðlækkunum og margt fleira á ferðinni með Chrome í iOS.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> gæti verið skaðleg skrá og Chrome útilokaði hana.</translation>
-<translation id="566040795510471729">&amp;Sérsníddu Chrome</translation>
 <translation id="566568153320186256">Chromium sparar rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Eyddu Chrome-gögnum af reikningnum þínum</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu}=1{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn vill að þú endurræsir Chrome til að setja upp þessa uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7777080907402804672">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="778331955594035129">Chrome verður að fá staðsetningarheimild fyrir þetta vefsvæði</translation>
 <translation id="7787950393032327779">Annað Google Chrome-ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chrome hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chrome.</translation>
-<translation id="7792336732117553384">&amp;Stjórna Chrome-prófílum</translation>
 <translation id="7801699035218095297">Google Chrome er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="7804364787702057554">Reikningurinn þinn í Chrome</translation>
 <translation id="7804947029129221742">Leitarvélinni þinni var breytt utan Chrome. Chrome endurstillti hana á upphafleg sjálfgefin gildi til að vernda þig. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +759,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="8370748943308169953">QR-kóði til að skrá inn í Chrome sem <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Velja/afvelja Gemini í Chrome Canary</translation>
+<translation id="8380754585531979907">Notaðu lyklaborðið til að fletta á milli Gemini í Chrome og opna flipans.</translation>
 <translation id="8387459386171870978">Halda áfram að nota Chrome</translation>
 <translation id="8394720698884623075">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome</translation>
 <translation id="8403038600646341038">Chrome-lógó á tölvuskjá.</translation>

@@ -239,7 +239,6 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> داده‌ای ارسال نکرد.</translation>
 <translation id="1393071644879491291">‏مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری‌تان را افشا کنید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">سایت‌هایی که در اینجا اضافه می‌کنید برای پاسخ‌ها ارجاع داده نخواهند شد، حتی اگر زبانه باز باشد. اگر سایتی که اضافه می‌کنید درحال‌حاضر در رشته‌ای استفاده می‌شود، ممکن است تا ۳۰ دقیقه طول بکشد تا ارجاع رشته به آن متوقف شود.</translation>
-<translation id="1402151528875251561">نمایش سابقه در پانل کناری</translation>
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406370515365284486">روش‌های پرداختتان همچنان ذخیره خواهند ماند</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
@@ -1009,7 +1008,6 @@
 <translation id="2677748264148917807">ترک کردن</translation>
 <translation id="2679216653373462289">استفاده از حسگرهای حرکتی و نوری</translation>
 <translation id="2679659833697380">اطلاعات شما در دستگاهتان ذخیره می‌شود</translation>
-<translation id="2680837394649649718">‏به Chrome در <ph name="DEVICE_NAME" /> شما ارسال شد.</translation>
 <translation id="2683195745483370038">نتایج دیگری پیدا شد</translation>
 <translation id="2686919536310834199">درباره «کمک به نوشتن» بازخورد ارسال کنید.</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
@@ -1616,7 +1614,6 @@
 <translation id="3752181611900535304">نشانی در حساب ذخیره شود؟</translation>
 <translation id="3752543821772132562">نادیده گرفته می‌شود زیرا <ph name="POLICY_NAME" /> تنظیم نشده است.</translation>
 <translation id="3754210790023674521">خروج از تصویردرتصویر</translation>
-<translation id="3754664361823138853">&amp;باز کردن صفحه سابقه</translation>
 <translation id="3757511311058373406">فیلترهای مرور خودکار</translation>
 <translation id="3759461132968374835">شما اخیراً گزارش خرابی ارسال نکرده‌اید. مشکلاتی که در هنگام غیرفعال بودن ویژگی ارائه گزارش خرابی ایجاد شده است، در اینجا نمایش داده نمی‌شود.</translation>
 <translation id="3760561303380396507">‏به‌جای CVC از Windows Hello استفاده شود؟</translation>
@@ -2060,7 +2057,6 @@
 <translation id="4473643328224505070">‏برای دریافت بالاترین سطح امنیتی Chrome، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />محافظت بهبودیافته را روشن کنید<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="4475299370877036544">این اقدام ممکن است خط‌مشی‌های سازمانتان را نقض کند</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">این فرم ایمن نیست. تکمیل خودکار خاموش شده است.</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
 <translation id="4480760608050410381">‏ویدیو MP4</translation>
 <translation id="4489023393592172404">پاکت کاکو ۴</translation>
@@ -3530,7 +3526,6 @@
 <translation id="6998512609912910179">فرم‌ها را سریع‌تر تکمیل کنید</translation>
 <translation id="7000094925113284872">چرخه زندگی یک ستاره را ترسیم کنید</translation>
 <translation id="7002897669829306463">نشانی خانه، <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">زبانه‌های جدید</translation>
 <translation id="7004562620237466965">فقط کشف رمز</translation>
 <translation id="7006930604109697472">در هر حال فرستاده شود</translation>
 <translation id="7009364359744329733">این کارت درحال‌حاضر دردسترس نیست. لطفاً بعداً دوباره امتحان کنید.</translation>
@@ -4355,6 +4350,7 @@
 <translation id="8410956920192583322">ماهانه یا در ۴ قسط</translation>
 <translation id="8412145213513410671">خرابی‌ها (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">شما باید همان گذرعبارت را دوبار وارد کنید.</translation>
+<translation id="8413126021676339697">نمایش کل سابقه</translation>
 <translation id="8414322570408428950">رویداد افزونه اتفاق می‌افتد</translation>
 <translation id="8416694386774425977">پیکربندی شبکه نامعتبر است و نمی‌توان آن را وارد کرد.
 توضیحات بیشتر:
@@ -4661,7 +4657,6 @@
 <translation id="8988966534058783995">از حسگرهای حرکتی استفاده شود؟</translation>
 <translation id="899688752321268742"><ph name="URL" /> می‌خواهد بداند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید</translation>
 <translation id="8997023839087525404">سرور گواهی‌ای را ارائه کرده است که با استفاده از خط‌مشی شفافیت گواهینامه به‌صورت عمومی نشان داده نشده است. برای برخی گواهی‌ها این یک مسئله ضروری است تا از قابل اعتماد بودن آن‌ها و محافظت دربرابر مهاجمین اطمینان حاصل شود.</translation>
-<translation id="9000145382638074673">دستگاه‌های شما</translation>
 <translation id="9001074447101275817">پروکسی <ph name="DOMAIN" /> به نام کاربری و گذرواژه نیاز دارد.</translation>
 <translation id="9001963517402879850">پرش!</translation>
 <translation id="9003263770394939629">‏پیشنهادشده توسط Gemini. مدیریت کردن تکمیل خودکار بهبودیافته در تنظیمات</translation>

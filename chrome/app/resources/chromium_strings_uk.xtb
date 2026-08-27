@@ -39,7 +39,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1388276868779258475">Переглядайте вебсторінки, де б ви не були, у додатку Chromium</translation>
-<translation id="1397530502368084401">&amp;Керувати профілями Chromium</translation>
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
 <translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
@@ -269,7 +268,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="390528597099634151">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chromium.</translation>
 <translation id="3909353120217047026">Це розширення порушує правила Веб-магазину Chrome і може бути небезпечним. Вилучіть його з Chromium, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
-<translation id="3937491663738985329">Н&amp;алаштувати Chromium</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="3945058413678539331">Chromium намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="3954172517175569325">Ваші паролі, способи оплати й адреси, збережені в обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chromium, увійдіть в обліковий запис.</translation>
@@ -769,6 +767,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8980139959902937527">Користуйтеся функціями безпеки Google, де б ви не були, у додатку Chromium на вашому пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Не вдалося запустити Chromium через помилку під час відкриття профілю. Перезапустіть Chromium.</translation>
 <translation id="8988036198400390003">Керувати профілями Chromium</translation>
+<translation id="8993855408334954620">Використовуйте клавіатуру, щоб переходити між Gemini у Chromium і відкритою вкладкою.</translation>
 <translation id="9018218886431812662">Встановлення завершено</translation>
 <translation id="9019929317751753759">Щоб зробити Chromium безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="9022552996538154597">Вхід у Chromium</translation>

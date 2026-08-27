@@ -38,7 +38,6 @@
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1388276868779258475">Izmantojiet lietotni Chromium, lai turpinātu pārlūkošanu, atrodoties ceļā</translation>
-<translation id="1397530502368084401">&amp;Pārvaldīt Chromium profilus</translation>
 <translation id="141901961143729572">Dalieties domās!</translation>
 <translation id="1465192221147974788">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
 <translation id="1478370723027452770">Saņemt palīdzību saistībā ar Chrome for Testing</translation>
@@ -268,7 +267,6 @@
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="390528597099634151">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chromium profilā. Lai atdalītu pārlūkošanu, pārlūkā Chromium varat sev izveidot atsevišķu profilu.</translation>
 <translation id="3909353120217047026">Šis paplašinājums pārkāpj Chrome interneta veikala politiku, un, iespējams, tas nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
-<translation id="3937491663738985329">P&amp;ielāgot pārlūku Chromium</translation>
 <translation id="3941890832296813527">Instalēšanas kļūda: instalēšanas programmas faila nosaukums nav derīgs vai netiek atbalstīts.</translation>
 <translation id="3945058413678539331">Chromium mēģina nokopēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="3954172517175569325">Jūsu Google kontā saglabātās paroles, maksājuma veidi un adreses tiks noņemtas no šīs ierīces. Lai atkal izmantotu šos datus pārlūkā Chromium, atkārtoti pierakstieties.</translation>
@@ -766,6 +764,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8980139959902937527">Izmantojiet lietotni Chromium savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūstu Google drošības iespējām, atrodoties ceļā</translation>
 <translation id="8981150672034878610">Nevar palaist pārlūku Chromium, jo radās problēma, atverot jūsu profilu. Mēģiniet restartēt pārlūku Chromium.</translation>
 <translation id="8988036198400390003">Pārvaldīt Chromium profilus</translation>
+<translation id="8993855408334954620">Izmantojiet tastatūru, lai pārvietotos starp Gemini pārlūkā Chromium un atvērto cilni.</translation>
 <translation id="9018218886431812662">Instalēšana pabeigta</translation>
 <translation id="9019929317751753759">Lai uzlabotu Chromium drošību, mēs atspējojām tālāk norādīto paplašinājumu, kas nav norādīts vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienots, jums nezinot.</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>

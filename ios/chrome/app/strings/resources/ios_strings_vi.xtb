@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1095093219235104018">Tìm và điền bằng Gemini</translation>
 <translation id="1096992026380844478">Chế độ cài đặt đồng bộ hoá sẽ được khôi phục dựa trên lần sao lưu gần đây nhất. <ph name="BEGIN_LINK" />Xem những nội dung bạn có thể đồng bộ hoá<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{Đã xác minh tức thì 1 mật khẩu}other{Đã xác minh tức thì # mật khẩu}}</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Mở khoá bằng Face ID</translation>
 <translation id="1111776967764068277">Bạn đã chán việc phải sao chép đường liên kết?</translation>
@@ -378,7 +377,7 @@
 <translation id="2165110345209765380">Đã hoàn thành tác vụ tìm kiếm bằng Chế độ AI!</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2180338296831857171">Xoá các địa chỉ</translation>
-<translation id="218350106843433823">Tính năng tự động điền mật khẩu và khoá truy cập</translation>
+<translation id="218350106843433823">Tự động điền mật khẩu và khoá truy cập</translation>
 <translation id="2184272387334793084">Đăng nhập để sử dụng mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="2186206192313702726">Google Ống kính</translation>
 <translation id="2188993354115194873">Nhấn <ph name="BEGIN_BOLD" />Lưu vào nội dung tải xuống<ph name="END_BOLD" /></translation>
@@ -629,6 +628,7 @@
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3038136505713492417">Xác minh danh tính của bạn để sử dụng khoá truy cập trên thiết bị này</translation>
 <translation id="3039671569659952257">Xóa thư mục</translation>
+<translation id="3041835740069544003">Giờ đây, Chrome có thể phát hiện và điền vào nhiều biểu mẫu hơn nhờ khả năng hiểu biểu mẫu thông minh hơn. Để làm việc này, nội dung trang và URL có thể được xử lý trong một không gian riêng tư trên đám mây. Bạn có thể quản lý việc này trong phần cài đặt.</translation>
 <translation id="3050988301648974170">Mở tính năng Kiểm tra mật khẩu</translation>
 <translation id="3053332585453689122">Gửi các URL bạn truy cập và một mẫu nhỏ nội dung trang, nội dung tải xuống, hoạt động của tiện ích và thông tin hệ thống cho dịch vụ Duyệt web An toàn của Google để kiểm tra xem các nội dung đó có gây hại hay không.</translation>
 <translation id="3055102495753300780">Dung lượng lưu trữ thông tin</translation>
@@ -1748,7 +1748,7 @@
 <translation id="6640268266988685324">Thẻ đang mở</translation>
 <translation id="6641465290890659327">Chia sẻ một bản sao mật khẩu của bạn</translation>
 <translation id="6642362222295953972">Chuyển sang thẻ đang mở</translation>
-<translation id="6643016212128521049">Xóa</translation>
+<translation id="6643016212128521049">Xoá</translation>
 <translation id="6645899968535965230">Mã QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659660757330712663">Bạn có thể vuốt thanh công cụ để chuyển đổi giữa các thẻ.</translation>
@@ -1986,7 +1986,6 @@
 <translation id="7464143666517313304">Thao tác này sẽ xoá các địa chỉ đã lưu trên thiết bị này.</translation>
 <translation id="7468373585447318060">Nhận thông tin giảm giá cho tất cả sản phẩm bạn theo dõi.</translation>
 <translation id="746872191028309255">Mua sản phẩm bạn thấy bằng camera hoặc thư viện ảnh.</translation>
-<translation id="7469215556134875318">kể từ khi sử dụng tính năng Kiểm tra mật khẩu</translation>
 <translation id="7471557245617580330">Tạo thẻ mới</translation>
 <translation id="7473555040328423550">Thêm thẻ</translation>
 <translation id="7476548258282096076">Thẻ này hiển thị các trang web bạn truy cập nhiều nhất.</translation>

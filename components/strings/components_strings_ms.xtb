@@ -239,7 +239,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="139305205187523129"><ph name="HOST_NAME" /> tidak menghantar sebarang data.</translation>
 <translation id="1393071644879491291">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian atau mendedahkan perkara seperti kata laluan, telefon atau nombor kad kredit anda. Chrome amat mengesyorkan untuk kembali ke tempat selamat. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut tentang amaran ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Laman yang anda tambahkan di sini tidak akan dirujuk untuk mendapatkan respons, walaupun tab dibuka. Jika laman yang anda tambahkan sedang digunakan dalam urutan, urutan tersebut mungkin mengambil masa hingga 30 minit untuk berhenti merujuk laman tersebut.</translation>
-<translation id="1402151528875251561">Tunjukkan Sejarah dalam Panel Sisi</translation>
 <translation id="1405567553485452995">Hijau Cerah</translation>
 <translation id="1406370515365284486">Kaedah pembayaran anda akan tetap disimpan</translation>
 <translation id="1406500794671479665">Mengesahkan...</translation>
@@ -1008,7 +1007,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2679216653373462289">Gunakan penderia gerakan dan cahaya anda</translation>
 <translation id="2679659833697380">Maklumat anda disimpan pada peranti anda</translation>
-<translation id="2680837394649649718">Dihantar kepada Chrome pada <ph name="DEVICE_NAME" /> anda.</translation>
 <translation id="2683195745483370038">Hasil carian lain yang ditemukan</translation>
 <translation id="2686919536310834199">Hantar maklum balas untuk Bantu saya tulis.</translation>
 <translation id="2687555958734450033">Paling sesuai</translation>
@@ -1616,7 +1614,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3752181611900535304">Simpan alamat dalam akaun?</translation>
 <translation id="3752543821772132562">Diabaikan kerana <ph name="POLICY_NAME" /> tidak ditetapkan.</translation>
 <translation id="3754210790023674521">Keluar daripada gambar dalam gambar</translation>
-<translation id="3754664361823138853">&amp;Buka Halaman Sejarah</translation>
 <translation id="3757511311058373406">Penapis semak imbas automatik</translation>
 <translation id="3759461132968374835">Tiada laporan nahas yang dibuat baru-baru ini.  Nahas yang berlaku apabila laporan nahas dilumpuhkan tidak akan kelihatan di sini.</translation>
 <translation id="3760561303380396507">Gunakan Windows Hello dan bukan CVC?</translation>
@@ -2060,7 +2057,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Hidupkan perlindungan dipertingkat<ph name="END_ENHANCED_PROTECTION_LINK" /> untuk mendapatkan keselamatan tahap tertinggi Chrome</translation>
 <translation id="4475299370877036544">Tindakan ini mungkin melanggar dasar organisasi anda</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Borang ini tidak selamat. Autolengkap telah dimatikan.</translation>
 <translation id="4477350412780666475">Lagu Seterusnya</translation>
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="4489023393592172404">Sampul Kaku 4</translation>
@@ -3530,7 +3526,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6998512609912910179">Isi borang dengan lebih pantas</translation>
 <translation id="7000094925113284872">Petakan kitaran hayat bintang</translation>
 <translation id="7002897669829306463">Alamat rumah, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Tab Terbaharu</translation>
 <translation id="7004562620237466965">Tafsir Sahaja</translation>
 <translation id="7006930604109697472">Hantar sahaja</translation>
 <translation id="7009364359744329733">Kad maya tidak tersedia pada masa ini. Sila cuba sebentar lagi.</translation>
@@ -4355,6 +4350,7 @@ Butiran tambahan:
 <translation id="8410956920192583322">Bulanan atau 4 ansuran</translation>
 <translation id="8412145213513410671">Nahas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda mesti memasukkan frasa laluan yang sama dua kali.</translation>
+<translation id="8413126021676339697">Paparkan sejarah penuh</translation>
 <translation id="8414322570408428950">Peristiwa sambungan berlaku</translation>
 <translation id="8416694386774425977">Konfigurasi rangkaian tidak sah dan tidak boleh diimport.
 Butiran tambahan:
@@ -4662,7 +4658,6 @@ Butiran tambahan:
 <translation id="8988966534058783995">Gunakan penderia gerakan?</translation>
 <translation id="899688752321268742"><ph name="URL" /> ingin mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="8997023839087525404">Pelayan memberikan sijil yang tidak didedahkan kepada umum menggunakan dasar Ketelusan Sijil. Ini merupakan keperluan bagi sesetengah sijil untuk memastikan sijil itu boleh dipercayai dan untuk melindungi pengguna daripada penyerang.</translation>
-<translation id="9000145382638074673">Peranti Anda</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi memerlukan nama pengguna dan kata laluan.</translation>
 <translation id="9001963517402879850">Lompat!</translation>
 <translation id="9003263770394939629">Dicadangkan oleh Gemini. Urus autolengkap dipertingkatkan dalam tetapan.</translation>

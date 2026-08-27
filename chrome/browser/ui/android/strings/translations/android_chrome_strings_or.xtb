@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">ସ୍କ୍ରିନ୍ କ୍ୟାପ୍‍ଚର୍‌</translation>
 <translation id="1108214977745280468">ପୃଷ୍ଠା ଇନସାଇଟ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1108938384783527433">ଇତିହାସ ସିଙ୍କ</translation>
+<translation id="1109663842695712985">ଆପଣଙ୍କର କିଛି Chrome ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ। ସାଇନ ଆଉଟ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ସେଭ ହୋଇନଥିବା ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="1111673857033749125">ଏଠାରେ, ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ସେଭ୍‌ ହୋ‍ଇଥିବା ବୁକ୍‌ମାର୍କ ଦେଖାଯିବ।</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ପିକଚର-ଇନ-ପିକଚର ଟାବ</translation>
 <translation id="1126696498560056882">ଏହି ଡିଭାଇସରେ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -157,6 +158,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" /> ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ସେୟାର କରୁଥିବା ଟାବ</translation>
+<translation id="1601378265092360672">ବ୍ରାଉଜିଂ ଡାଟାରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା, କେଶେ ହୋଇଥିବା ଇମେଜ ଓ ଫାଇଲ ଏବଂ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="160275202205869636">ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରନ୍ତୁ। ବନ୍ଦ ଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ଡାଟା ସେଭ କରାଯାଏ।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}other{#ଟି ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}}</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
@@ -810,6 +812,7 @@
 <translation id="4285846616383034558">କୁକୀ, କେଶେ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ସେଟିଂସରେ ସ୍କ୍ରିନ ଲକ ଚାଲୁ କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ଆପଣଙ୍କ ଫୋନ</translation>
+<translation id="4295640788982898778">ଆପଣଙ୍କ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଛି, କିନ୍ତୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଗୁଡ଼ିକ ସେଭ କରିଥିବା ଯେ କୌଣସି ଡାଟା ଡିଲିଟ ହୋଇପାରେ</translation>
 <translation id="4296252229500326964">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="4298388696830689168">ଲିଙ୍କ୍‌ ହୋ‍ଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
@@ -833,6 +836,7 @@
 <translation id="4358630185957185589">Google Lens ଖୋଲନ୍ତୁ</translation>
 <translation id="435863252455918214">Chromeର ମୁଖ୍ୟ ମେନୁରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4359809482106103048">ଏକ ନଜରରେ ସୁରକ୍ଷା</translation>
+<translation id="4374192654218566997">\n\nଆପଣ ଏହି ଡିଭାଇସରୁ ଏହି ଡାଟାକୁ ମଧ୍ୟ କାଢ଼ି ଦେଇପାରିବେ:</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4380055775103003110">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
 <translation id="4384468725000734951">ସର୍ଚ୍ଚ ପାଇଁ Sogou ବ୍ୟବହାର କରାଯାଉଛି</translation>
@@ -1541,6 +1545,7 @@
 <translation id="7117485132243600300">ଆପଣ ଫଲୋ କରୁଥିବା ବିଷୟବସ୍ତୁ ଏବଂ ପ୍ରସ୍ତାବିତ ବିଷୟ ଓ ସର୍ଚ୍ଚଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7121179479711575744">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7130633106249192408">ଏହି ଡିଭାଇସରୁ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="7136694880210472378">ଡିଫଲ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}other{# ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}}</translation>
 <translation id="7138678301420049075">ଅନ୍ୟ</translation>
@@ -1833,6 +1838,7 @@
 <translation id="8223642481677794647">ଫିଡ୍ କାର୍ଡ ମେନୁ</translation>
 <translation id="82296173028782770">ସର୍ଚ୍ଚ କ୍ୱେରୀ ଏଡିଟ କରନ୍ତୁ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">ବୁକମାର୍କଗୁଡ଼ିକରେ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8236917170563564587">ଏହା ପରିବର୍ତ୍ତେ ଏହି ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8243077599929149377">ଆପଣଙ୍କ ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8244387390464017490">ନୂଆ ଟାବ ପୃଷ୍ଠା କଷ୍ଟମାଇଜ କର</translation>
 <translation id="8244444485683708655">କେମେରା ଛବି ଆଟାଚ କରନ୍ତୁ</translation>

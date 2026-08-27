@@ -462,7 +462,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5649156266046089790">Pomocí profilů Chrome můžete všechny své údaje v Chromu uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
 <translation id="5655063652337498476">Objevujte produkty pomocí fotoaparátu, sledujte poklesy cen a mnohem víc na cestách s Chromem pro iOS.</translation>
 <translation id="565744775970812598">Soubor <ph name="FILE_NAME" /> může být nebezpečný, proto jej Chrome zablokoval.</translation>
-<translation id="566040795510471729">&amp;Přizpůsobit Chrome</translation>
 <translation id="566568153320186256">Chrome šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. <ph name="BEGIN_LINK" />Další informace o Spořiči energie<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Vymazat data Chromu v účtu</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymních oken se neotevře znovu.}}</translation>
@@ -689,7 +688,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7777080907402804672">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="778331955594035129">Chrome pro tento web potřebuje přístup k poloze</translation>
 <translation id="7787950393032327779">Profil je zřejmě využíván jiným procesem prohlížeče Google Chrome (<ph name="PROCESS_ID" />) nebo v jiném počítač (<ph name="HOST_NAME" />). Chrome profil uzamkl, aby nedošlo k jeho poškození. Pokud jste si jisti, že žádný jiný proces tento profil nevyužívá, můžete jej odemknout a Chrome znovu spustit.</translation>
-<translation id="7792336732117553384">&amp;Spravovat profily Chrome</translation>
 <translation id="7801699035218095297">Google Chrome se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chromu</translation>
 <translation id="7804947029129221742">Mimo Chrome byl změněn váš vyhledávač. Chrome ho kvůli vaší ochraně resetoval na původní výchozí nastavení. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +759,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8370748943308169953">QR kód k přihlášení do Chromu jako <ph name="USER_NAME" /></translation>
 <translation id="8377158135256176353">Přepnout Gemini v Chromu Canary</translation>
+<translation id="8380754585531979907">Pomocí klávesnice můžete přecházet mezi Gemini v Chromu a otevřenou kartou.</translation>
 <translation id="8387459386171870978">Pokračovat v používání Chromu</translation>
 <translation id="8394720698884623075">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu</translation>
 <translation id="8403038600646341038">Logo Chrome na obrazovce počítače.</translation>

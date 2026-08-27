@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1095093219235104018">使用 Gemini 尋找並填入內容</translation>
 <translation id="1096992026380844478">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看你可同步處理的內容<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{已即時驗證 1 個密碼}other{已即時驗證 # 個密碼}}</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">使用 Face ID 解鎖</translation>
 <translation id="1111776967764068277">不想再複製連結？</translation>
@@ -1984,7 +1983,6 @@
 <translation id="7464143666517313304">這將會刪除此裝置儲存的地址。</translation>
 <translation id="7468373585447318060">緊貼所有追蹤產品的減價消息。</translation>
 <translation id="746872191028309255">透過相機或相片庫購買所見內容。</translation>
-<translation id="7469215556134875318">使用「密碼安全檢查」以來</translation>
 <translation id="7471557245617580330">新增分頁</translation>
 <translation id="7473555040328423550">新增分頁</translation>
 <translation id="7476548258282096076">此資訊卡顯示你最常瀏覽的網站。</translation>

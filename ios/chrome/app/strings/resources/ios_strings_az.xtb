@@ -35,7 +35,6 @@
 <translation id="1086486568852410168">Google Linza ilə axtarın</translation>
 <translation id="1095093219235104018">Gemini ilə tapın və doldurun</translation>
 <translation id="1096992026380844478">Sinxronizasiya ayarları son yedəkləməyə əsasən bərpa olunacaq. <ph name="BEGIN_LINK" />Nəyi sinxronlaşdıra biləcəyinizə baxın<ph name="END_LINK" /></translation>
-<translation id="1097807529207545420">{count,plural, =1{1 parol dərhal doğrulandı}other{# parol dərhal doğrulandı}}</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="1110772719190051587">Üz ID-si ilə kiliddən çıxarın</translation>
 <translation id="1111776967764068277">Keçidləri kopiyalamaqdan bezmisiniz?</translation>
@@ -1986,7 +1985,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7464143666517313304">Bu, bu cihazda yadda saxlanılmış ünvanları silir.</translation>
 <translation id="7468373585447318060">İzlədiyiniz bütün məhsullarda qiymət endirimlərindən xəbərdar olun.</translation>
 <translation id="746872191028309255">Kamera və ya fotoqalereya ilə gördüklərinizi satın alın.</translation>
-<translation id="7469215556134875318">Parol yoxlanışından istifadə etdikdən bəri</translation>
 <translation id="7471557245617580330">Yeni panel yaradın</translation>
 <translation id="7473555040328423550">Tab əlavə edin</translation>
 <translation id="7476548258282096076">Bu kart sizə ən çox daxil olunan saytları göstərir.</translation>

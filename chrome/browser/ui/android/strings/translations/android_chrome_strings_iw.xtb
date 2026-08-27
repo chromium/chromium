@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">צילום מסך</translation>
 <translation id="1108214977745280468">הצגת התובנות לגבי הדף</translation>
 <translation id="1108938384783527433">סנכרון ההיסטוריה</translation>
+<translation id="1109663842695712985">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google. עליך לחכות כמה דקות לפני היציאה מהחשבון, אחרת הנתונים האלה יימחקו.</translation>
 <translation id="1111673857033749125">סימניות שנשמרו במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="1123537484474186311">‫<ph name="TAB_TITLE" />, כרטיסייה במצב "תמונה בתוך תמונה"</translation>
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
@@ -78,6 +79,7 @@
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1269129608791067105">ההיסטוריה תופיע כאן</translation>
 <translation id="1280921956537356716">אני רוצה לקבל התראות על טיפים</translation>
+<translation id="1287449971634955609">הסרת התוספים ומחיקת הנתונים שלהם שנשמרו במכשיר הזה</translation>
 <translation id="1289129165308566697">רוצה לראות את ההיסטוריה שלך במכשירים אחרים?</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1298077576058087471">קראת חדשות היום? אפשר לחסוך עד 60% בניצול חבילת הגלישה</translation>
@@ -790,6 +792,7 @@
 <translation id="4209029522667123437">‫<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • החשבון שהשתמשת בו באתר הזה</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
 <translation id="421517251707893998">לוחצים על "הצמדת קיצור הדרך הזה"</translation>
+<translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> – ‏<ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">האזנה לדף הזה</translation>
 <translation id="4217657297368492684">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת שנבחרה, במצב "תמונה בתוך תמונה"</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
@@ -809,6 +812,7 @@
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">הטלפון שלך</translation>
+<translation id="4295640788982898778">‏התוספים שלך נשמרים בחשבון Google, אבל יכול להיות שיימחקו נתונים מהתוספים שנשמרו רק במכשיר הזה.</translation>
 <translation id="4296252229500326964">כרטיסייה פרטית חדשה</translation>
 <translation id="4298161202289999785">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
@@ -832,6 +836,7 @@
 <translation id="4358630185957185589">‏פתיחה של Google Lens</translation>
 <translation id="435863252455918214">‏אפשר לנהל את התוספים בתפריט הראשי של Chrome</translation>
 <translation id="4359809482106103048">סיכום אמצעי הבטיחות</translation>
+<translation id="4374192654218566997">‏\n\nיש לך אפשרות גם להסיר את הנתונים האלה מהמכשיר:</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4380055775103003110">אם הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">‏שימוש ב-Sogou לחיפוש</translation>
@@ -986,6 +991,7 @@
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="4964614743143953889">‏ב-Chrome מוצגות אזהרות מפני הורדות ואתרים לא בטוחים</translation>
 <translation id="496607651705915226">‏כדי לשמור סיסמאות חדשות ולהשתמש בהן בחשבון Google, צריך לעדכן את Google Play Services</translation>
+<translation id="4971526871834232950"><ph name="GROUP_DESCRIPTION" /> – ‏<ph name="TABS_DESCRIPTION" /></translation>
 <translation id="4971753085054504448">‏אפשר לנסות לחפש משהו אחר או לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות תוצאות נוספות.</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="497983151715419057">כאן אפשר לראות את הכרטיסיות והקבוצות הלא פעילות</translation>
@@ -1832,6 +1838,7 @@
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="82296173028782770">עריכת שאילתת החיפוש: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">הוספה לסימניות</translation>
+<translation id="8236917170563564587">שיתוף הכרטיסייה הזו</translation>
 <translation id="8243077599929149377">הוספה של שם המשתמש</translation>
 <translation id="8244387390464017490">התאמה אישית של דף הכרטיסייה החדשה</translation>
 <translation id="8244444485683708655">צירוף תמונה מהמצלמה</translation>

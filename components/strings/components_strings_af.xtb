@@ -239,7 +239,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="139305205187523129"><ph name="HOST_NAME" /> het geen data gestuur nie.</translation>
 <translation id="1393071644879491291">Aanvallers op die webwerf wat jy probeer besoek het, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoorde, foonnommer of kredietkaartnommers te openbaar. Chrome beveel sterk aan dat jy na veiligheid terugkeer. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Werwe wat jy hier byvoeg, sal nie vir antwoorde gebruik word nie, selfs al is die oortjie oop. As ’n werf wat jy byvoeg tans in ’n kletsdraad gebruik word, kan dit tot 30 minute neem voordat die kletsdraad ophou om daarna te verwys.</translation>
-<translation id="1402151528875251561">Wys geskiedenis op kantpaneel</translation>
 <translation id="1405567553485452995">Liggroen</translation>
 <translation id="1406370515365284486">Jou betaalmetodes sal gestoor word</translation>
 <translation id="1406500794671479665">Verifieer tans …</translation>
@@ -1008,7 +1007,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2679216653373462289">Gebruik jou beweging- en ligsensors</translation>
 <translation id="2679659833697380">Jou inligting is op jou toestel gestoor</translation>
-<translation id="2680837394649649718">Gestuur na Chrome op jou <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Ander resultate gevind</translation>
 <translation id="2686919536310834199">Stuur terugvoer vir Help my skryf.</translation>
 <translation id="2687555958734450033">Beste passing</translation>
@@ -1615,7 +1613,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3752181611900535304">Stoor adres in rekening?</translation>
 <translation id="3752543821772132562">Geïgnoreer omdat <ph name="POLICY_NAME" /> nie gestel is nie.</translation>
 <translation id="3754210790023674521">Verlaat prent-in-prent</translation>
-<translation id="3754664361823138853">Maak geskiedenisbladsy &amp;oop</translation>
 <translation id="3757511311058373406">Outonavigeerfilters</translation>
 <translation id="3759461132968374835">Jy het geen omvalle wat onlangs aangemeld is nie. Omvalle wat plaasgevind het toe omvalverslaggewing gedeaktiveer is, sal nie hier verskyn nie.</translation>
 <translation id="3760561303380396507">Gebruik Windows Hello pleks van CVC?</translation>
@@ -2059,7 +2056,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Skakel verbeterde beskerming aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om Chrome se hoogste sekuriteitvlak te kry</translation>
 <translation id="4475299370877036544">Hierdie handeling kan jou organisasie se beleide oortree</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
-<translation id="4476953670630786061">Hierdie vorm is nie veilig nie. Outovul is afgeskakel.</translation>
 <translation id="4477350412780666475">Volgende snit</translation>
 <translation id="4480760608050410381">MP4-video</translation>
 <translation id="4489023393592172404">Koevert Kaku 4</translation>
@@ -3529,7 +3525,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6998512609912910179">Vul vorms vinniger in</translation>
 <translation id="7000094925113284872">Stippel die lewensiklus van ’n ster uit</translation>
 <translation id="7002897669829306463">Huisadres, <ph name="ADDRESS" /></translation>
-<translation id="7004499039102548441">Onlangse oortjies</translation>
 <translation id="7004562620237466965">Net ontsyfer</translation>
 <translation id="7006930604109697472">Stuur in elk geval</translation>
 <translation id="7009364359744329733">Hierdie kaart is nie nou beskikbaar nie. Probeer later weer.</translation>
@@ -4353,6 +4348,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8410956920192583322">Maandelikse of 4 paaiemente</translation>
 <translation id="8412145213513410671">Omvalle (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Jy moet dieselfde wagfrase twee keer invoer.</translation>
+<translation id="8413126021676339697">Wys volle geskiedenis</translation>
 <translation id="8414322570408428950">Uitbreidingsgeval vind plaas</translation>
 <translation id="8416694386774425977">Die netwerkopstelling is ongeldig en kon nie ingevoer word nie.
 Bykomende besonderhede:
@@ -4659,7 +4655,6 @@ Bykomende besonderhede:
 <translation id="8988966534058783995">Gebruik bewegingsensors?</translation>
 <translation id="899688752321268742"><ph name="URL" /> wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="8997023839087525404">Die bediener het 'n sertifikaat aangebied wat nie deur die Sertifikaatdeursigtigheidbeleid publiek openbaar gemaak is nie. Dit is 'n vereiste vir sekere sertifikate om te verseker dat hulle betroubaar is en beskerming teen aanvallers bied.</translation>
-<translation id="9000145382638074673">Jou toestelle</translation>
 <translation id="9001074447101275817">Die instaanbediener <ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>
 <translation id="9001963517402879850">Spring!</translation>
 <translation id="9003263770394939629">Voorgestel deur Gemini. Bestuur verbeterde outovul in instellings.</translation>

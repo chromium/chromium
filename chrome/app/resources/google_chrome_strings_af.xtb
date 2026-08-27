@@ -463,7 +463,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5649156266046089790">Met Chrome-profiele kan jy al jou Chrome-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
 <translation id="5655063652337498476">Ontdek produkte met jou kamera, spoor prysdalings na en meer met Chrome op iOS terwyl jy aan die beweeg is.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlik wees en daarom het Chrome dit geblokkeer.</translation>
-<translation id="566040795510471729">Pasmaak jou Chrome</translation>
 <translation id="566568153320186256">Chrome bespaar batterykrag deur agtergrondaktiwiteit en visuele effekte, soos gladde rollees en videoraamtempo’s, te beperk. <ph name="BEGIN_LINK" />Kry meer inligting oor Energiebespaarder<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Vee die Chrome-data in jou rekening uit</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas}=1{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
@@ -690,7 +689,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7777080907402804672">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="778331955594035129">Chrome het liggingtoestemming vir hierdie werf nodig</translation>
 <translation id="7787950393032327779">Dit lyk of die profiel tans deur 'n ander Google Chrome-proses (<ph name="PROCESS_ID" />) op 'n ander rekenaar (<ph name="HOST_NAME" />) gebruik word. Chrome het die profiel gesluit sodat dit nie gekorrupteer word nie. As jy seker is geen ander prosesse gebruik hierdie profiel nie, kan jy die profiel ontsluit en Chrome herbegin.</translation>
-<translation id="7792336732117553384">&amp;Bestuur Chrome-profiele</translation>
 <translation id="7801699035218095297">Google Chrome probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="7804364787702057554">Jou rekening in Chrome</translation>
 <translation id="7804947029129221742">Jou soekenjin is van buite Chrome af verander. Chrome het dit na die oorspronklike verstek teruggestel om jou te beskerm. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +760,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="8370748943308169953">QR-kode om as <ph name="USER_NAME" /> by Chrome aan te meld</translation>
 <translation id="8377158135256176353">Wissel Gemini in Chrome Kanarie</translation>
+<translation id="8380754585531979907">Gebruik jou sleutelbord om tussen Gemini in Chrome en jou oop oortjie te navigeer.</translation>
 <translation id="8387459386171870978">Hou aan om Chrome te gebruik</translation>
 <translation id="8394720698884623075">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg is</translation>
 <translation id="8403038600646341038">Chrome-logo binne ’n rekenaarskerm.</translation>

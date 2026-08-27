@@ -31,6 +31,7 @@
 <translation id="1105960400813249514">Képernyőrögzítés</translation>
 <translation id="1108214977745280468">Oldalstatisztikák mutatása</translation>
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
+<translation id="1109663842695712985">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába. A kijelentkezés előtt várjon néhány percet. Ha most kijelentkezik, akkor a nem mentett adatok törlődnek.</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, lap kép a képben módban</translation>
 <translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
@@ -157,6 +158,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1598163867407640634">Használja a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyet a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, rögzített, felvételt készítő lap</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tartalmat megosztó lap</translation>
+<translation id="1601378265092360672">A böngészési adatok közé tartoznak a böngészési előzmények, a cookie-k és egyéb webhelyadatok, a gyorsítótárazott képek és fájlok, valamint a megnyitott lapok.</translation>
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -810,6 +812,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4285846616383034558">Cookie-k, gyorsítótár és egyéb webhelyadatok</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Állítsa be a képernyőzárat az Android beállításai között<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">telefonjáról</translation>
+<translation id="4295640788982898778">A bővítményei el vannak mentve az Ön Google-fiókjába, de a csak erre az eszközre mentett adataik törlődhetnek.</translation>
 <translation id="4296252229500326964">Új inkognitó lap</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, több kiválasztott inkognitó lap</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
@@ -833,6 +836,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4358630185957185589">A Google Lens megnyitása</translation>
 <translation id="435863252455918214">Bővítményeit a Chrome főmenüjében kezelheti</translation>
 <translation id="4359809482106103048">Biztonsági áttekintés</translation>
+<translation id="4374192654218566997">\n\nA következő adatokat is eltávolíthatja erről az eszközről:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ha a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="4384468725000734951">A Sogou használata a kereséshez</translation>
@@ -1541,6 +1545,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7117485132243600300">A követett tartalmak, javasolt témák és keresések kezelése</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> bezárása</translation>
 <translation id="7121179479711575744">Bejelentkezés a Chrome-ba</translation>
+<translation id="7130633106249192408">Böngészési adatok törlése erről az eszközről</translation>
 <translation id="7136694880210472378">Legyen alapértelmezett</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 webhely engedélyei felülvizsgálva}other{# webhely engedélyei felülvizsgálva}}</translation>
 <translation id="7138678301420049075">Egyéb</translation>
@@ -1833,6 +1838,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8223642481677794647">A hírcsatornakártya menüje</translation>
 <translation id="82296173028782770">Keresőkifejezés szerkesztése: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Hozzáadás a könyvjelzőkhöz</translation>
+<translation id="8236917170563564587">Jelenlegi lap megosztása</translation>
 <translation id="8243077599929149377">Adja meg felhasználónevét</translation>
 <translation id="8244387390464017490">Új lap oldal testreszabása</translation>
 <translation id="8244444485683708655">Kamerakép csatolása</translation>
