@@ -144,6 +144,51 @@ public class SelectActionMenuHelperTest {
 
     @Test
     @Feature({"TextInput"})
+    public void testDefaultMenuItemsAreSpacedForInterposition_floating() {
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        pendingMenu.addAll(
+                SelectActionMenuHelper.getDefaultItems(
+                        mContext,
+                        mDelegate,
+                        MenuType.FLOATING,
+                        /* isSelectionReadOnly= */ true,
+                        "test",
+                        null));
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertEquals(7, menuItems.size());
+        // Consecutive default items are spaced out (rather than assigned consecutive integers) so
+        // that embedders can interpose their own items in the gaps between two default items at
+        // stable positions. A spacing > 1 guarantees at least one free order slot per gap.
+        for (int i = 1; i < menuItems.size(); i++) {
+            int gap = menuItems.get(i).order - menuItems.get(i - 1).order;
+            assertEquals(SelectActionMenuHelper.DEFAULT_ITEM_ORDER_SPACING, gap);
+        }
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void testDefaultMenuItemsAreSpacedForInterposition_dropdown() {
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        pendingMenu.addAll(
+                SelectActionMenuHelper.getDefaultItems(
+                        mContext,
+                        mDelegate,
+                        MenuType.DROPDOWN,
+                        /* isSelectionReadOnly= */ true,
+                        "test",
+                        null));
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertEquals(7, menuItems.size());
+        // Same spacing guarantee as the floating menu: consecutive default items leave a free
+        // order slot in between so embedders can interpose their own items.
+        for (int i = 1; i < menuItems.size(); i++) {
+            int gap = menuItems.get(i).order - menuItems.get(i - 1).order;
+            assertEquals(SelectActionMenuHelper.DEFAULT_ITEM_ORDER_SPACING, gap);
+        }
+    }
+
+    @Test
+    @Feature({"TextInput"})
     public void testDefaultMenuItemsOrder_dropdown() {
         PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
         pendingMenu.addAll(

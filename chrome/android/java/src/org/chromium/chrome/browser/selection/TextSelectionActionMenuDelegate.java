@@ -277,12 +277,17 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
                         PARAM_ASK_GEMINI_SELECTION_MENU_POSITION);
-        // Defaults to the secondary assist section; the field trial can opt into the assist
-        // section instead.
+        // By default "Ask Gemini" is interposed among the default items, in the gap just before
+        // Web Search (see SelectionMenuItem.ItemOrder.ASK_GEMINI). The field trial can opt into
+        // the primary assist slot ("assist", shown first) or the secondary assist section
+        // ("secondary", shown after Web Search) instead.
         if (ASK_GEMINI_POSITION_ASSIST.equals(position)) {
             builder.setOrderAndCategory(0, ItemGroupOffset.ASSIST_ITEMS);
-        } else {
+        } else if (ASK_GEMINI_POSITION_SECONDARY.equals(position)) {
             builder.setOrderAndCategory(0, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+        } else {
+            builder.setOrderAndCategory(
+                    SelectionMenuItem.ItemOrder.ASK_GEMINI, ItemGroupOffset.DEFAULT_ITEMS);
         }
     }
 

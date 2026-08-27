@@ -56,10 +56,22 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         int ALTERNATIVE_ITEMS = Menu.CATEGORY_ALTERNATIVE;
     }
 
-    /** Relative order constants within ItemGroupOffset categories. */
+    /**
+     * Relative order constants within {@link ItemGroupOffset} categories.
+     *
+     * <p>Within {@link ItemGroupOffset#DEFAULT_ITEMS}, the built-in default items (cut, copy,
+     * paste, ...) are spaced out rather than assigned consecutive integers (see {@code
+     * SelectActionMenuHelper#DEFAULT_ITEM_ORDER_SPACING}). This leaves free order slots in the gaps
+     * between two consecutive default items so that embedders can interpose their own items at
+     * stable positions without reordering the default items. The constants below occupy such gaps.
+     * A new interposition constant should pick a free value inside the desired gap -- for example,
+     * if the spacing is 10 and two adjacent default items end up at orders N and N+10, any value
+     * strictly between them (such as N+5) places the new item between them.
+     */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
         ItemOrder.COPY_LINK_TO_HIGHLIGHT,
+        ItemOrder.ASK_GEMINI,
         ItemOrder.OPEN_IN_READING_MODE,
         ItemOrder.READ_ALOUD_READ_ONLY,
         ItemOrder.WEB_SEARCH_EDITABLE,
@@ -69,6 +81,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public @interface ItemOrder {
         // Within DEFAULT_ITEMS:
         int COPY_LINK_TO_HIGHLIGHT = 45;
+        int ASK_GEMINI = 46;
         int OPEN_IN_READING_MODE = 58;
         int READ_ALOUD_READ_ONLY = 65;
 

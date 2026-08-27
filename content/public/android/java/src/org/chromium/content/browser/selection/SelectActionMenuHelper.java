@@ -51,6 +51,20 @@ import java.util.Locale;
 public class SelectActionMenuHelper {
     private static final String TAG = "SelectActionMenu"; // 20 char limit.
 
+    /**
+     * Spacing between consecutive default selection menu items within the {@link
+     * SelectionMenuItem.ItemGroupOffset#DEFAULT_ITEMS} category. Default items are assigned orders
+     * {@code 0, DEFAULT_ITEM_ORDER_SPACING, 2 * DEFAULT_ITEM_ORDER_SPACING, ...} based on their
+     * position in the (possibly delegate-customized) order array, rather than consecutive integers.
+     * This leaves {@code DEFAULT_ITEM_ORDER_SPACING - 1} free order slots in the gap between any
+     * two consecutive default items so that embedders can interpose their own items at stable
+     * positions without having to reorder the default items. See {@link
+     * SelectionMenuItem.ItemOrder} for the interposition constants embedders use (e.g. {@link
+     * SelectionMenuItem.ItemOrder#COPY_LINK_TO_HIGHLIGHT}, which lands in a gap between two default
+     * items).
+     */
+    @VisibleForTesting static final int DEFAULT_ITEM_ORDER_SPACING = 10;
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
         ItemKeyShortcuts.CUT,
@@ -201,9 +215,9 @@ public class SelectActionMenuHelper {
                         : selectionActionMenuDelegate.getDefaultMenuItemOrder(menuType);
         for (int pos = 0; pos < itemOrder.length; pos++) {
             @DefaultItem int item = itemOrder[pos];
-            // Space out default items by 10 (CUT=10, COPY=20, ..., WEB_SEARCH=60, SHARE=70)
-            // leaving orders 61-69 free for additional items to be interposed with.
-            int order = pos * 10;
+            // Space default items out (see DEFAULT_ITEM_ORDER_SPACING) so embedders can interpose
+            // their own items in the gaps between two default items at stable positions.
+            int order = pos * DEFAULT_ITEM_ORDER_SPACING;
             if (item == DefaultItem.CUT) {
                 if (delegate.canCut()) {
                     menuItems.add(cut(order));
