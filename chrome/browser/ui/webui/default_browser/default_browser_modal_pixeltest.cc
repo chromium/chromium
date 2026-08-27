@@ -46,7 +46,8 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
                                     ->GetTabStripModel()
                                     ->GetActiveWebContents()
                                     ->GetTopLevelNativeWindow(),
-                                use_settings_illustration, can_pin_to_taskbar);
+                                use_settings_illustration, can_pin_to_taskbar,
+                                /*activate_on_show=*/true);
   }
 
  private:

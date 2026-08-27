@@ -33,14 +33,16 @@ void DefaultBrowserModalDialogManager::ShowForBrowser(
   CHECK(window);
 
   gfx::NativeWindow parent_window = gfx::NativeWindow();
+  bool is_parent_active = false;
   if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
           window->GetNativeWindow())) {
     parent_window = widget->GetNativeWindow();
+    is_parent_active = widget->IsActive();
   }
 
-  std::unique_ptr<views::Widget> dialog_widget =
-      ::default_browser::Show(browser->GetProfile(), parent_window,
-                              use_settings_illustration_, can_pin_to_taskbar());
+  std::unique_ptr<views::Widget> dialog_widget = ::default_browser::Show(
+      browser->GetProfile(), parent_window, use_settings_illustration_,
+      can_pin_to_taskbar(), is_parent_active);
   dialog_widget->MakeCloseSynchronous(base::BindOnce(
       &DefaultBrowserModalDialogManager::OnDialogWidgetCloseRequested,
       base::Unretained(this), browser));

@@ -39,7 +39,8 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kDefaultBrowserModalDialogId);
 std::unique_ptr<views::Widget> Show(Profile* profile,
                                     gfx::NativeWindow parent,
                                     bool use_settings_illustration,
-                                    bool can_pin_to_taskbar) {
+                                    bool can_pin_to_taskbar,
+                                    bool activate_on_show) {
   GURL url(chrome::kChromeUIDefaultBrowserModalURL);
   if (use_settings_illustration) {
     url = net::AppendQueryParameter(url, "illustration", "true");
@@ -64,6 +65,7 @@ std::unique_ptr<views::Widget> Show(Profile* profile,
   spec.modal_type = ui::mojom::ModalType::kWindow;
   spec.element_identifier = kDefaultBrowserModalDialogId;
   spec.show_close_button = true;
+  spec.activate_on_show = activate_on_show;
 
   return webui_dialog::ChromeWebUIDialog::Show(
       parent, std::move(contents_wrapper), spec);

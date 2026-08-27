@@ -35,7 +35,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kDefaultBrowserModalDialogId);
 std::unique_ptr<views::Widget> Show(Profile* profile,
                                     gfx::NativeWindow parent,
                                     bool use_settings_illustration,
-                                    bool can_pin_to_taskbar);
+                                    bool can_pin_to_taskbar,
+                                    bool activate_on_show);
 
 }  // namespace default_browser
 
