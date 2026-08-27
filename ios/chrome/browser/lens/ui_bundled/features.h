@@ -25,29 +25,8 @@ extern const char kLensTranslateToggleMode[];
 // Integer that maps to the translate toggle mode enum.
 int LensTranslateToggleMode();
 
-// Whether to enable the unary salient text API.
-BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
-
-// Whether to disable single tap text selection.
-BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
-
-// Whether to disable gesture text selection.
-BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
-
-// Whether to block fetch objects interaction RPCs on separate handshake.
-BASE_DECLARE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake);
-
-// Whether to prewarm hard stickiness in Input Selection.
-BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInInputSelection);
-
-// Whether to prewarm hard stickiness in query formulation.
-BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
-
 // Whether to enable the fetch srp API.
 BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
-
-// Whether to enable exact matches.
-BASE_DECLARE_FEATURE(kLensExactMatchesEnabled);
 
 // Whether to make unused still outputs optional in Lens camera.
 BASE_DECLARE_FEATURE(kLensCameraNoStillOutputRequired);
@@ -63,9 +42,6 @@ BASE_DECLARE_FEATURE(kLensInitialLvfZoomLevel90Percent);
 
 // Whether to enable Lens triple camera.
 BASE_DECLARE_FEATURE(kLensTripleCameraEnabled);
-
-// Whether to enable the Strokes API for Lens.
-BASE_DECLARE_FEATURE(kLensStrokesAPIEnabled);
 
 // Whether to enable the Shader V2 for Lens Omnient.
 BASE_DECLARE_FEATURE(kLensOmnientShaderV2Enabled);
