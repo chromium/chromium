@@ -7,8 +7,6 @@
 import './main.js';
 
 export type {BrowserProxy} from './browser_proxy.js';
-export type {PageHandlerInterface} from './glic.mojom-webui.js';
-export {GuestPageType, PageCallbackRouter, PreloadPageCallbackRouter, ZoomAction} from './glic.mojom-webui.js';
 export {ObservableSetByTabId} from './glic_api_impl/client/observable_set_by_tab_id.js';
 export type {ObservableSetByTabIdDelegate, ObservableSetByTabIdObservable} from './glic_api_impl/client/observable_set_by_tab_id.js';
 export type {WebClientHost} from './glic_api_impl/request_types.js';
@@ -17,6 +15,8 @@ export type {InterfaceDef, InterfaceDefMethods} from './glic_api_impl/transport/
 export {defInterface, defMessage} from './glic_api_impl/transport/messaging.js';
 export type {ErrorCodec, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageReceiver, PostMessageRemote, PostMessageRouter, PostMessageSender, RequestMessage, TransferableException} from './glic_api_impl/transport/post_message_transport.js';
 export {createBidirectionalPostMessageTransport, InverseSet, ON_PIPE_CLOSED, PostMessageReceiverImpl, PostMessageRemoteImpl, PostMessageRequestReceiver, PostMessageRequestSender, PostMessageRouterImpl, Queue} from './glic_api_impl/transport/post_message_transport.js';
+export type {PageHandlerInterface} from './glic_webui.mojom-webui.js';
+export {GuestPageType, PageCallbackRouter, PreloadPageCallbackRouter, ZoomAction} from './glic_webui.mojom-webui.js';
 export {ObservableValue, Subject} from './observable.js';
 export type {WebviewDelegate} from './webview.js';
 export {WebviewController, WebviewPersistentState} from './webview.js';

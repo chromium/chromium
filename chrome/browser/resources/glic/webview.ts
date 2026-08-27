@@ -8,8 +8,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
-import {GuestPageType, WebClientState as WebClientStateMojo, ZoomAction} from './glic.mojom-webui.js';
 import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
+import {GuestPageType, WebClientState as WebClientStateMojo, ZoomAction} from './glic_webui.mojom-webui.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {GlicRequestHeaderInjector} from './shared/glic_request_headers.js';

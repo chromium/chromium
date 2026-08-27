@@ -97,6 +97,7 @@ build_webui("build") {
     "$target_gen_dir/glic_api_impl/generate_impl/enum_conversions.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic_internals.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/glic/host/glic_webui.mojom-webui.ts",
     "$root_gen_dir/chrome/common/actor_webui.mojom-webui.ts",
     "$root_gen_dir/chrome/common/glic_enums.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
