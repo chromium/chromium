@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -717,6 +718,39 @@ public class UrlBarMediatorUnitTest {
 
         mMediator.endInput();
         assertFalse(mMediator.isInInputSession());
+    }
+
+    @Test
+    public void testAllowMultilineInput_drivenByDisplayState() {
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        doReturn(UrlBarData.EMPTY).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(session);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.DRAFTING);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.WEBSITE);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.SUGGESTIONS);
+        assertTrue(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        mMediator.endInput();
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+
+        input.setDisplayState(DisplayState.SUGGESTIONS);
+        assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
     }
 
     private static SpannableStringBuilder spannable(String text) {

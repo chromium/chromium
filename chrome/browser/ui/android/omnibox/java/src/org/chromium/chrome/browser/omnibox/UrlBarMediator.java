@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.components.omnibox.TextSelection;
@@ -56,6 +57,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private boolean mShowOriginOnly;
     private final @Nullable Callback<String> mTextChangeListener;
     private final @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
+    private final Callback<@DisplayState Integer> mDisplayStateObserver =
+            this::onDisplayStateChanged;
 
     /**
      * Creates a URLBarMediator.
@@ -78,6 +81,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mRichTextChangeListener = richTextChangeListener;
 
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
@@ -93,6 +97,9 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     public void destroy() {
+        if (mCurrentInput != null) {
+            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
+        }
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
         mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, null);
@@ -100,17 +107,30 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
     /** Signals that the Omnibox input session has begun. */
     void beginInput(FuseboxSessionState sessionState) {
+        if (mCurrentInput != null) {
+            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
+        }
         mCurrentInput = sessionState.getAutocompleteInput();
+        mCurrentInput
+                .getDisplayStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mDisplayStateObserver);
         pushCurrentInputToModel();
     }
 
     /** Signals that the Omnibox input session has ended. */
     void endInput() {
         if (!isInInputSession()) return;
+        mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         var pageUrl = mCurrentInput.getPageUrl();
         mCurrentInput = null;
         var data = UrlBarData.forUrl(pageUrl);
         setUrlBarData(data, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
+    }
+
+    private void onDisplayStateChanged(@DisplayState int displayState) {
+        boolean allowMultiline = displayState == DisplayState.SUGGESTIONS;
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, allowMultiline);
     }
 
     /* package */ void pushCurrentInputToModel() {
