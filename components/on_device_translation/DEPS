@@ -1,5 +1,5 @@
 include_rules = [
-  "+crypto/sha2.h",
+  "+crypto/hash.h",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
   "+components/prefs",

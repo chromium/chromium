@@ -4,20 +4,18 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_CONSTANTS_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_CONSTANTS_H_
 
+#include <array>
 #include <cstdint>
-#include <iterator>
 
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace component_updater {
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: lbimbicckdokpoicboneldipejkhjgdg
-extern const uint8_t kTranslateKitPublicKeySHA256[32];
+extern const std::array<uint8_t, crypto::hash::kSha256Size>
+    kTranslateKitPublicKeySHA256;
 }  // namespace component_updater
 
-static_assert(std::size(component_updater::kTranslateKitPublicKeySHA256) ==
-                  crypto::kSHA256Length,
-              "Wrong hash length");
 
 namespace on_device_translation {
 
