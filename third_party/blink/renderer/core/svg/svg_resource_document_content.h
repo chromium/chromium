@@ -100,6 +100,8 @@ class CORE_EXPORT SVGResourceDocumentContent final
   void NotifyObservers();
 
   SVGResourceTarget* GetResourceTarget(const AtomicString& element_id);
+  void UpdateLifecycleForUse();
+
   void Trace(Visitor*) const;
 
  private:
@@ -116,6 +118,7 @@ class CORE_EXPORT SVGResourceDocumentContent final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   KURL url_;
   ResourceStatus status_ = ResourceStatus::kNotStarted;
+  bool inhibit_content_change_ = false;
   bool was_disposed_ = false;
 };
 
