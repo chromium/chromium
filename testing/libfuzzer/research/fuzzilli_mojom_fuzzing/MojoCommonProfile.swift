@@ -6,23 +6,83 @@
 /// constructors, and CodeGenerators. It does not provide a standalone profile
 /// that can be used for fuzzing (i.e., `--profile=mojoCommon` is invalid).
 
+/// Types defined in this file are only used by generated profiles if they are
+/// listed in `IGNORED_TYPES` in
+/// `mojo/public/tools/bindings/generators/mojom_fuzzilli_generator.py`. When a
+/// type is added to `IGNORED_TYPES`, the generator skips emitting code for it
+/// in per-interface profiles and assumes it is provided globally here. If a
+/// type is defined here but NOT listed in `IGNORED_TYPES`, the generator will
+/// generate duplicate definitions in the target profile, leading to
+/// compilation errors.
+///
+/// Naming Conventions:
+/// 1. Group names:
+///    - Module and type name, seperated by dots (e.g.
+///      "mojoBase.mojom.String16", "url.mojom.Url").
+/// 2. `ILType` names:
+///    - The unique name is the namespace concatenated with the type name, in
+///      PascalCase (e.g. "MojoBaseMojomString16", "UrlMojomUrl",
+///      "SkiaMojomBitmapN32").
+///    - ILType: `js<UniqueName>` (e.g. `jsMojoBaseMojomString16`).
+///    - Constructors: `js<UniqueName>Constructor`.
+/// 4. `ObjectGroup` and `OptionsBag` names:
+///    - Namespace concatenated with the type name, in camelCase (e.g.
+///      "urlMojomUrl")
+/// 5. CodeGenerator names:
+///    - `Mojo<namespace><type name>Generator` (e.g. `MojoUrlMojomUrlGenerator`)
+
 public enum CommonMojoStrings {
-    // mojoBase
-    static let string16 = "mojoBase.mojom.String16"
+    static let mojo = "Mojo"
+
+    static let boolElement = "BoolElement"
+    static let int8Element = "Int8Element"
     static let int16Element = "Int16Element"
+    static let int32Element = "Int32Element"
+    static let int64Element = "Int64Element"
+    static let uint8Element = "Uint8Element"
+    static let uint16Element = "Uint16Element"
+    static let uint32Element = "Uint32Element"
+    static let uint64Element = "Uint64Element"
+    static let floatElement = "FloatElement"
+    static let stringElement = "StringElement"
+
+    // mojo
+    static let mojoCreateSharedBufferResult = "MojoCreateSharedBufferResult"
+    static let mojoHandle = "MojoHandle"
+
+    // mojoBase
+    static let mojoBaseMojomBigBuffer = "mojoBase.mojom.BigBuffer"
+    static let mojoBaseMojomBigBufferSharedMemoryRegion = "mojoBase.mojom.BigBufferSharedMemoryRegion"
+    static let mojoBaseMojomBigString16 = "mojoBase.mojom.BigString16"
+    static let mojoBaseMojomBigString = "mojoBase.mojom.BigString"
+    static let mojoBaseMojomString16 = "mojoBase.mojom.String16"
+    static let mojoBaseMojomUint128 = "mojoBase.mojom.Uint128"
+
+    // skia
+    static let skiaMojomBitmapN32ImageInfo = "skia.mojom.BitmapN32ImageInfo"
+    static let skiaMojomAlphaType = "skia.mojom.AlphaType"
 
     // url
-    static let url = "url.mojom.Url"
-    static let schemeHostPort = "url.mojom.SchemeHostPort"
+    static let urlMojomUrl = "url.mojom.Url"
+    static let urlMojomSchemeHostPort = "url.mojom.SchemeHostPort"
 }
 
 public let commonMojoBuiltins: [String: ILType] = [
+    CommonMojoStrings.mojo: .jsMojo,
+
     // mojoBase
-    CommonMojoStrings.string16: .jsString16Constructor,
+    CommonMojoStrings.mojoBaseMojomString16: .jsMojoBaseMojomString16Constructor,
+
+    CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion: .jsMojoBaseMojomBigBufferSharedMemoryRegionConstructor,
+    CommonMojoStrings.mojoBaseMojomBigString16: .jsMojoBaseMojomBigString16Constructor,
+    CommonMojoStrings.mojoBaseMojomUint128: .jsMojoBaseMojomUint128,
+
+    // skia
+    CommonMojoStrings.skiaMojomBitmapN32ImageInfo: .jsSkiaMojomBitmapN32ImageInfoConstructor,
 
     //url
-    CommonMojoStrings.schemeHostPort: .jsSchemeHostPortConstructor,
-    CommonMojoStrings.url: .jsUrlConstructor,
+    CommonMojoStrings.urlMojomSchemeHostPort: .jsUrlMojomSchemeHostPortConstructor,
+    CommonMojoStrings.urlMojomUrl: .jsUrlMojomUrlConstructor,
 ]
 
 public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
@@ -30,90 +90,346 @@ public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
     (MojoObjectLiteralNoopGenerator, 1),
 
     // mojoBase
-    (MojoString16Generator, 1),
+    (MojoMojoBaseMojomBigBufferBytesGenerator, 1),
+    (MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator, 1),
+    (MojoMojoBaseMojomString16Generator, 1),
+
+    // skia
+    (MojoSkiaMojomColorTransferFunctionArrayGenerator, 1),
+    (MojoSkiaMojomColorToXyzMatrixArrayGenerator, 1),
 
     // url
-    (MojoSchemeHostPortGenerator, 1),
-    (MojoUrlGenerator, 1),
+    (MojoUrlMojomUrlSchemeHostPortGenerator, 1),
+    (MojoUrlMojomUrlGenerator, 1),
 ]
 
 public let commonMojoObjectGroups: [ObjectGroup] = [
-    // mojoBase
+    .mojo,
+
+    .boolElement,
+    .int8Element,
     .int16Element,
-    .string16,
+    .int32Element,
+    .int64Element,
+    .uint8Element,
+    .uint16Element,
+    .uint32Element,
+    .uint64Element,
+    .floatElement,
+    .stringElement,
+
+    // mojo
+    .mojoCreateSharedBufferResult,
+    .mojoHandle,
+
+    // mojoBase
+    .mojoBaseMojomBigBufferSharedMemoryRegion,
+    .mojoBaseMojomBigString16,
+    .mojoBaseMojomString16,
+    .mojoBaseMojomUint128,
+
+    // skia
+    .skiaMojomBitmapN32ImageInfo,
 
     //url
-    .schemeHostPort,
-    .url,
+    .urlMojomSchemeHostPort,
+    .urlMojomUrl,
 ]
 
 public let commonMojoEnumerations: [ILType] = []
 
-public let commonMojoOptionsBags: [OptionsBag] = []
+public let commonMojoOptionsBags: [OptionsBag] = [
+    .mojoBaseMojomBigBuffer,
+]
 
 extension ILType {
-    public static let jsString16: ILType = .object(
-        ofGroup: CommonMojoStrings.string16, withProperties: ["data"])
-    public static let jsString16Constructor: ILType = .constructor(
-        [.plain(.createJsArrayType(ofElementType: .int16Element))] => .jsString16
+    // mojo
+    public static let jsMojo: ILType = .object(
+        ofGroup: CommonMojoStrings.mojo,
+        withMethods: ["createSharedBuffer"]
     )
+    public static let jsMojoCreateSharedBufferResult: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoCreateSharedBufferResult,
+        withProperties: ["result", "handle"]
+    )
+    public static let jsMojoHandle: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoHandle)
 
-    // This type is used to create a parameterized jsArray, since the type
+    // These type are used to create a parameterized `jsArray`s, since the type
     // argument provided to `createJsArrayType` needs to have a group. Note
-    // that Fuzzilli will evaluate that `integer` objects "may be"
-    // (`ILType.MayBe`) of type `int16Element`
-    public static let int16Element: ILType =
+    // that Fuzzilli will evaluate that primitive variables may be of these
+    // proxy types (e.g. `integer` variables may be (`ILType.MayBe`) of type
+    // `int16Element`)
+    public static let jsBoolElement: ILType =
+        .boolean + .object(ofGroup: CommonMojoStrings.boolElement)
+    public static let jsInt8Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.int8Element)
+    public static let jsInt16Element: ILType =
         .integer + .object(ofGroup: CommonMojoStrings.int16Element)
+    public static let jsInt32Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.int32Element)
+    public static let jsInt64Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.int64Element)
+    public static let jsUint8Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.uint8Element)
+    public static let jsUint16Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.uint16Element)
+    public static let jsUint32Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.uint32Element)
+    public static let jsUint64Element: ILType =
+        .integer + .object(ofGroup: CommonMojoStrings.uint64Element)
+    public static let jsFloatElement: ILType =
+        .float + .object(ofGroup: CommonMojoStrings.floatElement)
+    public static let jsStringElement: ILType =
+        .string + .object(ofGroup: CommonMojoStrings.stringElement)
+
+    // mojoBase
+    public static let jsMojoBaseMojomBigBuffer: ILType = OptionsBag.mojoBaseMojomBigBuffer.group.instanceType
+
+    public static let jsMojoBaseMojomBigBufferSharedMemoryRegion: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion,
+        withProperties: ["bufferHandle", "size"])
+    public static let jsMojoBaseMojomBigBufferSharedMemoryRegionConstructor: ILType = .constructor(
+        [.plain(.jsMojoHandle), .integer] => .jsMojoBaseMojomBigBufferSharedMemoryRegion
+    )
+    public static let jsMojoBaseMojomBigString16: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomBigString16, withProperties: ["data"])
+    public static let jsMojoBaseMojomBigString16Constructor: ILType = .constructor(
+        [.plain(.jsMojoBaseMojomBigBuffer)] => .jsMojoBaseMojomBigString16
+    )
+    public static let jsMojoBaseMojomBigString: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomBigString, withProperties: ["data"])
+    public static let jsMojoBaseMojomBigStringConstructor: ILType = .constructor(
+        [.plain(.jsMojoBaseMojomBigBuffer)] => .jsMojoBaseMojomBigString)
+    public static let jsMojoBaseMojomString16: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomString16, withProperties: ["data"])
+    public static let jsMojoBaseMojomString16Constructor: ILType = .constructor(
+        [.plain(.createJsArrayType(ofElementType: .jsInt16Element))] => .jsMojoBaseMojomString16
+    )
+    public static let jsMojoBaseMojomUint128: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomUint128, withProperties: ["high", "low"])
+
+    // skia
+    // TODO(crbug.com/546113480): Remove BitmapN32ImageInfo once fixed-size array generation
+    // logic is supported, as the Fuzzilli profile generator can then generate this type.
+    public static let jsSkiaMojomBitmapN32ImageInfo: ILType = .object(
+        ofGroup: CommonMojoStrings.skiaMojomBitmapN32ImageInfo,
+        withProperties: [
+            "alphaType", "width", "height", "colorTransferFunction", "colorToXyzMatrix",
+        ]
+    )
+    public static let jsSkiaMojomBitmapN32ImageInfoConstructor: ILType = .constructor(
+        [
+            .plain(.jsSkiaMojomAlphaType), .integer, .integer,
+            .plain(.jsSkiaMojomColorTransferFunctionArray),
+            .plain(.jsSkiaMojomColorToXyzMatrixArray),
+        ] => .jsSkiaMojomBitmapN32ImageInfo
+    )
+    public static let jsSkiaMojomAlphaType: ILType = .intEnumeration(
+        ofName: CommonMojoStrings.skiaMojomAlphaType, withValues: Array(0...4)
+    )
+    public static let jsSkiaMojomColorTransferFunctionArray: ILType = .createJsArrayType(
+        ofElementType: .jsFloatElement)
+    public static let jsSkiaMojomColorToXyzMatrixArray: ILType = .createJsArrayType(
+        ofElementType: .jsFloatElement)
 
     // url
-    public static let jsUrl: ILType = .object(
-        ofGroup: CommonMojoStrings.url, withProperties: ["url"])
-    public static let jsUrlConstructor: ILType = .constructor(
-        [.string] => .jsUrl
+    public static let jsUrlMojomUrl: ILType = .object(
+        ofGroup: CommonMojoStrings.urlMojomUrl, withProperties: ["url"])
+    public static let jsUrlMojomUrlConstructor: ILType = .constructor(
+        [.string] => .jsUrlMojomUrl
     )
-    public static let jsSchemeHostPort: ILType = .object(
-        ofGroup: CommonMojoStrings.schemeHostPort,
+    public static let jsUrlMojomSchemeHostPort: ILType = .object(
+        ofGroup: CommonMojoStrings.urlMojomSchemeHostPort,
         withProperties: ["scheme", "host", "port"])
-    public static let jsSchemeHostPortConstructor: ILType = .constructor(
-        [.string, .string, .integer] => .jsSchemeHostPort
+    public static let jsUrlMojomSchemeHostPortConstructor: ILType = .constructor(
+        [.string, .string, .integer] => .jsUrlMojomSchemeHostPort
     )
 }
+
 extension ObjectGroup {
-    public static let string16 = ObjectGroup(
-        name: CommonMojoStrings.string16,
-        instanceType: .jsString16,
+    // mojo
+    public static let mojo = ObjectGroup(
+        name: CommonMojoStrings.mojo,
+        instanceType: .jsMojo,
+        properties: [:],
+        methods: [
+            "createSharedBuffer": [.integer] => .jsMojoCreateSharedBufferResult
+        ]
+    )
+
+    public static let mojoCreateSharedBufferResult = ObjectGroup(
+        name: CommonMojoStrings.mojoCreateSharedBufferResult,
+        instanceType: .jsMojoCreateSharedBufferResult,
         properties: [
-            "data": .createJsArrayType(ofElementType: .int16Element)
+            "result": .integer,
+            "handle": .jsMojoHandle,
         ],
         methods: [:]
     )
 
-    public static let int16Element = ObjectGroup(
-        name: CommonMojoStrings.int16Element,
-        instanceType: .int16Element,
+    public static let mojoHandle = ObjectGroup(
+        name: CommonMojoStrings.mojoHandle,
+        instanceType: .jsMojoHandle,
         properties: [:],
         methods: [:]
     )
 
+    public static let boolElement = ObjectGroup(
+        name: CommonMojoStrings.boolElement,
+        instanceType: .jsBoolElement,
+        properties: [:],
+        methods: [:]
+    )
+    public static let int8Element = ObjectGroup(
+        name: CommonMojoStrings.int8Element,
+        instanceType: .jsInt8Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let int16Element = ObjectGroup(
+        name: CommonMojoStrings.int16Element,
+        instanceType: .jsInt16Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let int32Element = ObjectGroup(
+        name: CommonMojoStrings.int32Element,
+        instanceType: .jsInt32Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let int64Element = ObjectGroup(
+        name: CommonMojoStrings.int64Element,
+        instanceType: .jsInt64Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let uint8Element = ObjectGroup(
+        name: CommonMojoStrings.uint8Element,
+        instanceType: .jsUint8Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let uint16Element = ObjectGroup(
+        name: CommonMojoStrings.uint16Element,
+        instanceType: .jsUint16Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let uint32Element = ObjectGroup(
+        name: CommonMojoStrings.uint32Element,
+        instanceType: .jsUint32Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let uint64Element = ObjectGroup(
+        name: CommonMojoStrings.uint64Element,
+        instanceType: .jsUint64Element,
+        properties: [:],
+        methods: [:]
+    )
+    public static let floatElement = ObjectGroup(
+        name: CommonMojoStrings.floatElement,
+        instanceType: .jsFloatElement,
+        properties: [:],
+        methods: [:]
+    )
+    public static let stringElement = ObjectGroup(
+        name: CommonMojoStrings.stringElement,
+        instanceType: .jsStringElement,
+        properties: [:],
+        methods: [:]
+    )
+
+    // mojoBase
+    public static let mojoBaseMojomBigBufferSharedMemoryRegion = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion,
+        instanceType: .jsMojoBaseMojomBigBufferSharedMemoryRegion,
+        properties: [
+            "bufferHandle": .jsMojoHandle,
+            "size": .integer,
+        ],
+        methods: [:]
+    )
+    public static let mojoBaseMojomBigString = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomBigString,
+        instanceType: .jsMojoBaseMojomBigString,
+        properties: [
+            "data": .jsMojoBaseMojomBigBuffer
+        ],
+        methods: [:]
+    )
+    public static let mojoBaseMojomBigString16 = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomBigString16,
+        instanceType: .jsMojoBaseMojomBigString16,
+        properties: [
+            "data": .jsMojoBaseMojomBigBuffer
+        ],
+        methods: [:]
+    )
+    public static let mojoBaseMojomString16 = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomString16,
+        instanceType: .jsMojoBaseMojomString16,
+        properties: [
+            "data": .createJsArrayType(ofElementType: .jsInt16Element)
+        ],
+        methods: [:]
+    )
+    public static let mojoBaseMojomUint128 = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomUint128,
+        instanceType: .jsMojoBaseMojomUint128,
+        properties: [
+            "high": .integer,
+            "low": .integer,
+        ],
+        methods: [:]
+    )
+
+    // skia
+    public static let skiaMojomBitmapN32ImageInfo = ObjectGroup(
+        name: CommonMojoStrings.skiaMojomBitmapN32ImageInfo,
+        instanceType: .jsSkiaMojomBitmapN32ImageInfo,
+        properties: [
+            "alphaType": .jsSkiaMojomAlphaType,
+            "width": .integer,
+            "height": .integer,
+            "colorTransferFunction": .jsSkiaMojomColorTransferFunctionArray,
+            "colorToXyzMatrix": .jsSkiaMojomColorToXyzMatrixArray,
+        ],
+        methods: [:]
+    )
+
     // url
-    public static let url = ObjectGroup(
-        name: CommonMojoStrings.url,
-        instanceType: .jsUrl,
+    public static let urlMojomUrl = ObjectGroup(
+        name: CommonMojoStrings.urlMojomUrl,
+        instanceType: .jsUrlMojomUrl,
         properties: [
             "url": .string
         ],
         methods: [:]
     )
-
-    public static let schemeHostPort = ObjectGroup(
-        name: CommonMojoStrings.schemeHostPort,
-        instanceType: .jsSchemeHostPort,
+    public static let urlMojomSchemeHostPort = ObjectGroup(
+        name: CommonMojoStrings.urlMojomSchemeHostPort,
+        instanceType: .jsUrlMojomSchemeHostPort,
         properties: [
             "scheme": .string,
             "host": .string,
             "port": .integer,
         ],
         methods: [:]
+    )
+}
+
+extension OptionsBag {
+    public static let mojoBaseMojomBigBuffer = OptionsBag(
+        name: CommonMojoStrings.mojoBaseMojomBigBuffer,
+        properties: [
+            "bytes": .createJsArrayType(ofElementType: .jsUint8Element),
+            "sharedMemory": ILType.jsMojoBaseMojomBigBufferSharedMemoryRegion,
+            "invalidBuffer": .boolean,
+        ],
+        selectionMode: .exactlyOne
     )
 }
 
@@ -142,9 +458,40 @@ public let MojoObjectLiteralNoopGenerator = CodeGenerator(
 ) { b in }
 
 // mojoBase
-public let MojoString16Generator = CodeGenerator(
-    "MojoString16Generator",
-    produces: [.jsString16]
+public let MojoMojoBaseMojomBigBufferBytesGenerator = CodeGenerator(
+    "MojoMojoBaseMojomBigBufferBytesGenerator",
+    inputs: .one,
+    produces: [.createJsArrayType(ofElementType: .jsUint8Element)]
+) { b, _ in
+    var elements: [Variable] = [b.loadInt(Int64.random(in: 0...255))]
+    b.createArray(with: elements, elementGroupName: CommonMojoStrings.uint8Element)
+}
+
+public let MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator = CodeGenerator(
+    "MojoMojoBaseMojomBigBufferSharedBufferGenerator",
+    inputs: .one,
+    produces: [.jsMojoBaseMojomBigBufferSharedMemoryRegion]
+) { b, _ in
+    let mojo = b.createNamedVariable(forBuiltin: "Mojo")
+    let numBytes = b.loadInt(Int64.random(in: 0...Int64(UInt32.max)))
+    let sharedBufferResult = b.callMethod("createSharedBuffer", on: mojo, withArgs: [numBytes])
+    let handle = b.getProperty("handle", of: sharedBufferResult)
+
+    let mapResult = b.callMethod("mapBuffer", on: handle, withArgs: [b.loadInt(0), numBytes])
+    let buffer = b.getProperty("buffer", of: mapResult)
+    let uint8ArrayConstructor = b.createNamedVariable(forBuiltin: "Uint8Array")
+    let view = b.construct(uint8ArrayConstructor, withArgs: [buffer])
+    let randomByte = b.loadInt(Int64.random(in: 0...255))
+    b.callMethod("fill", on: view, withArgs: [randomByte])
+
+    let regionConstructor = b.createNamedVariable(
+        forBuiltin: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion)
+    b.construct(regionConstructor, withArgs: [handle, numBytes])
+}
+
+public let MojoMojoBaseMojomString16Generator = CodeGenerator(
+    "MojoMojoBaseMojomString16Generator",
+    produces: [.jsMojoBaseMojomString16]
 ) { b in
     // Ideally the CodeGenerator would use a string from the JavaScript
     // program. Such a string would be represented by a `Variable` object, and
@@ -157,25 +504,51 @@ public let MojoString16Generator = CodeGenerator(
         elements.append(b.loadInt(Int64(charCode)))
     }
     let array = b.createArray(with: elements, elementGroupName: CommonMojoStrings.int16Element)
-    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.string16)
+    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.mojoBaseMojomString16)
     b.construct(constructor, withArgs: [array])
 }
 
+// skia
+public let MojoSkiaMojomColorTransferFunctionArrayGenerator = CodeGenerator(
+    "MojoSkiaMojomColorTransferFunctionArrayGenerator",
+    inputs: .one,
+    produces: [.jsSkiaMojomColorTransferFunctionArray],
+) { b, _ in
+    var floats: [Variable] = []
+    for _ in 1...7 {
+        floats.append(b.loadFloat(b.randomFloat()))
+    }
+    b.createArray(with: floats, elementGroupName: CommonMojoStrings.floatElement)
+}
+
+public let MojoSkiaMojomColorToXyzMatrixArrayGenerator = CodeGenerator(
+    "MojoSkiaMojomColorToXyzMatrixArrayGenerator",
+    inputs: .one,
+    produces: [.jsSkiaMojomColorToXyzMatrixArray],
+) { b, _ in
+    var floats: [Variable] = []
+    for _ in 1...9 {
+        floats.append(b.loadFloat(b.randomFloat()))
+    }
+    b.createArray(with: floats, elementGroupName: CommonMojoStrings.floatElement)
+}
+
+
 // url
 // TODO(http://crbug.com/514397167) determine broader URL generation strategy
-public let MojoUrlGenerator = CodeGenerator(
-    "MojoUrlGenerator",
-    produces: [.jsUrl]
+public let MojoUrlMojomUrlGenerator = CodeGenerator(
+    "MojoUrlMojomUrlGenerator",
+    produces: [.jsUrlMojomUrl]
 ) { b in
     let urlString = b.loadString("https://example.com/" + b.randomString())
-    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.url)
+    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.urlMojomUrl)
     b.construct(constructor, withArgs: [urlString])
 }
 
 // TODO(http://crbug.com/514397167) determine broader SchemeHostPort generation strategy
-public let MojoSchemeHostPortGenerator = CodeGenerator(
-    "MojoSchemeHostPortGenerator",
-    produces: [.jsSchemeHostPort]
+public let MojoUrlMojomUrlSchemeHostPortGenerator = CodeGenerator(
+    "MojoUrlMojomUrlSchemeHostPortGenerator",
+    produces: [.jsUrlMojomSchemeHostPort]
 ) { b in
     let schemes = ["https", "wss"]
     let hosts = ["example.com", "localhost", "127.0.0.1", "[::1]", "xn--n3h.net"]
@@ -189,6 +562,6 @@ public let MojoSchemeHostPortGenerator = CodeGenerator(
     let hostVar = b.loadString(selectedHost)
     let portVar = b.loadInt(port)
 
-    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.schemeHostPort)
+    let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.urlMojomSchemeHostPort)
     b.construct(constructor, withArgs: [schemeVar, hostVar, portVar])
 }
