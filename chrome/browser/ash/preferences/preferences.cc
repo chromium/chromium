@@ -561,6 +561,12 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterInt64Pref(ash::prefs::kHatsOfficeSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(ash::prefs::kHatsOfficeSurveyIsSelected, false);
 
+  // Slow and Laggy Deep Dive HaTS prefs.
+  registry->RegisterInt64Pref(
+      ash::prefs::kHatsSlowAndLaggyDeepDiveSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(
+      ash::prefs::kHatsSlowAndLaggyDeepDiveSurveyIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(
