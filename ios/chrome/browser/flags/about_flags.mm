@@ -3060,6 +3060,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kNewTabPagePinnedOmniboxColorUpdateName,
      flag_descriptions::kNewTabPagePinnedOmniboxColorUpdateDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNewTabPagePinnedOmniboxColorUpdate)},
+    {"gemini-insights-chip-ablation",
+     flag_descriptions::kGeminiInsightsChipAblationName,
+     flag_descriptions::kGeminiInsightsChipAblationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiInsightsChipAblation)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
