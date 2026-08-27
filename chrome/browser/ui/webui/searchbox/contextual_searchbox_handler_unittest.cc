@@ -4252,6 +4252,12 @@ class MockScreenshareDelegate
               (override));
   MOCK_METHOD(void, OnScreensharePickerOpened, (), (override));
   MOCK_METHOD(void, OnScreensharePickerClosed, (), (override));
+  MOCK_METHOD(void,
+              ShowRegionSelectOverlay,
+              (const SkBitmap&,
+               const RegionCaptureSource&,
+               RegionSelectedCallback),
+              (override));
 };
 
 TEST_F(ContextualSearchboxHandlerTest, ShowScreenshotMenu_ForwardsToDelegate) {
@@ -4462,6 +4468,16 @@ TEST_F(ContextualSearchboxHandlerTest, CaptureRegionScreenshot_Success) {
   MockScreenshareDelegate delegate;
   EXPECT_CALL(delegate, OnScreensharePickerOpened());
   EXPECT_CALL(delegate, OnScreensharePickerClosed());
+  EXPECT_CALL(delegate, ShowRegionSelectOverlay)
+      .WillOnce(
+          [](const SkBitmap& screenshot,
+             const ContextualSearchboxHandler::RegionCaptureSource& source,
+             ContextualSearchboxHandler::ScreenshareDelegate::
+                 RegionSelectedCallback callback) {
+            EXPECT_EQ(source.type, ContextualSearchboxHandler::
+                                       RegionCaptureSource::Type::kAllDisplays);
+            std::move(callback).Run(screenshot);
+          });
   handler().set_screenshare_delegate(&delegate);
 
   profile()->GetPrefs()->SetInteger(
@@ -4480,7 +4496,7 @@ TEST_F(ContextualSearchboxHandlerTest, CaptureRegionScreenshot_Success) {
       ->set_mime_types_allowed("image/png");
 
   content::desktop_capture::ScopedDesktopCapturerForTesting scoped_capturer(
-      std::make_unique<FakeDesktopCapturer>(webrtc::DesktopSize(3840, 2160)));
+      std::make_unique<FakeDesktopCapturer>(webrtc::DesktopSize(1000, 800)));
 
   std::unique_ptr<lens::ContextualInputData> captured_input_data;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
@@ -4518,6 +4534,34 @@ TEST_F(ContextualSearchboxHandlerTest, CaptureRegionScreenshot_Success) {
   handler().set_screenshare_delegate(nullptr);
 }
 
+// Tests that if the user cancels/escapes the region select overlay,
+// CaptureRegionScreenshot returns an empty token and resets capture state.
+TEST_F(ContextualSearchboxHandlerTest,
+       CaptureRegionScreenshot_UserCancelledOverlay) {
+  MockScreenshareDelegate delegate;
+  EXPECT_CALL(delegate, OnScreensharePickerOpened());
+  EXPECT_CALL(delegate, OnScreensharePickerClosed());
+  EXPECT_CALL(delegate, ShowRegionSelectOverlay)
+      .WillOnce(
+          [](const SkBitmap& screenshot,
+             const ContextualSearchboxHandler::RegionCaptureSource& source,
+             ContextualSearchboxHandler::ScreenshareDelegate::
+                 RegionSelectedCallback callback) {
+            // Simulates user hitting Escape or closing overlay (empty bitmap).
+            std::move(callback).Run(SkBitmap());
+          });
+  handler().set_screenshare_delegate(&delegate);
+
+  content::desktop_capture::ScopedDesktopCapturerForTesting scoped_capturer(
+      std::make_unique<FakeDesktopCapturer>(webrtc::DesktopSize(1000, 800)));
+
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  handler().CaptureRegionScreenshot(future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+  handler().set_screenshare_delegate(nullptr);
+}
+
 // Tests that concurrent calls to CaptureRegionScreenshot while a capture is
 // already in progress are rejected, returning an empty token for subsequent
 // calls.
@@ -4526,6 +4570,14 @@ TEST_F(ContextualSearchboxHandlerTest,
   MockScreenshareDelegate delegate;
   EXPECT_CALL(delegate, OnScreensharePickerOpened());
   EXPECT_CALL(delegate, OnScreensharePickerClosed());
+  EXPECT_CALL(delegate, ShowRegionSelectOverlay)
+      .WillOnce(
+          [](const SkBitmap& screenshot,
+             const ContextualSearchboxHandler::RegionCaptureSource& source,
+             ContextualSearchboxHandler::ScreenshareDelegate::
+                 RegionSelectedCallback callback) {
+            std::move(callback).Run(screenshot);
+          });
   handler().set_screenshare_delegate(&delegate);
 
   profile()->GetPrefs()->SetInteger(
@@ -4579,6 +4631,21 @@ TEST_F(ContextualSearchboxHandlerTest, CaptureRegionScreenshot_EmptyBitmap) {
 
   EXPECT_FALSE(future.Get().has_value());
   handler().set_screenshare_delegate(nullptr);
+}
+
+// Tests that if screenshare_delegate_ is null during a region screenshot,
+// it safely fails without uploading full desktop screenshot.
+TEST_F(ContextualSearchboxHandlerTest,
+       CaptureRegionScreenshot_NullDelegateFailsSafely) {
+  handler().set_screenshare_delegate(nullptr);
+
+  content::desktop_capture::ScopedDesktopCapturerForTesting scoped_capturer(
+      std::make_unique<FakeDesktopCapturer>(webrtc::DesktopSize(1000, 800)));
+
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  handler().CaptureRegionScreenshot(future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 #if BUILDFLAG(IS_MAC)

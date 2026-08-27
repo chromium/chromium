@@ -50,6 +50,8 @@ gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
     if (screen->GetDisplayWithDisplayId(*source.display_id, &display)) {
       return display.bounds();
     }
+    // Fall back to primary display if specified display was disconnected.
+    return screen->GetPrimaryDisplay().bounds();
   }
 
   // Full virtual desktop (Windows / Linux full desktop capture)

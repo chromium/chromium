@@ -2516,7 +2516,8 @@ void ContextualSearchboxHandler::CaptureRegionScreenshot(
   constexpr content::DesktopMediaID::Id kFullDesktopScreenId = -1;
   content::DesktopMediaID source(content::DesktopMediaID::TYPE_SCREEN,
                                  kFullDesktopScreenId);
-  CaptureAndUploadScreenshot(source, std::move(callback));
+  CaptureAndUploadScreenshot(source, std::move(callback),
+                             RegionCaptureSource::AllDisplays());
 #else
   std::move(callback).Run(std::nullopt);
 #endif
@@ -2604,14 +2605,16 @@ void ContextualSearchboxHandler::OnChromeDefaultPickerResults(
 
 void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
     content::DesktopMediaID source,
-    StartScreenshareCallback callback) {
+    StartScreenshareCallback callback,
+    std::optional<RegionCaptureSource> region_capture_source) {
   is_capturing_ = true;
   auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
   active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(
       source,
       base::BindOnce(&ContextualSearchboxHandler::OnScreenshotCaptured,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(safe_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(safe_callback),
+                     std::move(region_capture_source)));
   if (!active_screenshot_request_) {
     NotifyScreensharePickerClosed();
     is_capturing_ = false;
@@ -2620,6 +2623,7 @@ void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
 
 void ContextualSearchboxHandler::OnScreenshotCaptured(
     StartScreenshareCallback callback,
+    std::optional<RegionCaptureSource> region_capture_source,
     const SkBitmap& bitmap) {
   active_screenshot_request_.reset();
   NotifyScreensharePickerClosed();
@@ -2629,9 +2633,38 @@ void ContextualSearchboxHandler::OnScreenshotCaptured(
     return;
   }
 
+  if (region_capture_source) {
+    if (screenshare_delegate_) {
+      screenshare_delegate_->ShowRegionSelectOverlay(
+          bitmap, *region_capture_source,
+          base::BindOnce(&ContextualSearchboxHandler::OnRegionSelected,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    } else {
+      is_capturing_ = false;
+      std::move(callback).Run(std::nullopt);
+    }
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ProcessScreenshotInBackground, bitmap),
+      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotProcessed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextualSearchboxHandler::OnRegionSelected(
+    StartScreenshareCallback callback,
+    const SkBitmap& region_bitmap) {
+  if (region_bitmap.empty()) {
+    is_capturing_ = false;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ProcessScreenshotInBackground, region_bitmap),
       base::BindOnce(&ContextualSearchboxHandler::OnScreenshotProcessed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

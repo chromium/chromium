@@ -186,6 +186,30 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
             gfx::Rect(0, 0, 1824, 768));
 }
 
+// Verifies that when a specific display is requested but cannot be found (e.g.
+// disconnected), GetOverlayBoundsForSource falls back to the primary display.
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplay_DisconnectedDisplayFallsBackToPrimary) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(800, 600);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::ForDisplay(900), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+            gfx::Rect(0, 0, 800, 600));
+}
+
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        SingleDisplayMatch_MatchesTargetDisplay) {
   display::test::TestScreen test_screen(/*create_display=*/false,

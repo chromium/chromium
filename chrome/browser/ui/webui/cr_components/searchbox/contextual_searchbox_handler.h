@@ -175,6 +175,8 @@ class ContextualSearchboxHandler
                                          RegionSelectedCallback callback) {}
   };
 
+  using RegionCaptureSource = ScreenshareDelegate::RegionCaptureSource;
+
   struct ProcessedScreenshot {
     std::vector<uint8_t> png_bytes;
     std::optional<std::string> thumbnail_data_url;
@@ -591,10 +593,16 @@ class ContextualSearchboxHandler
                                     StartScreenshareCallback callback,
                                     webrtc::DesktopCapturer::Source source);
   void OnNativePickerCancelled(StartScreenshareCallback callback);
-  void CaptureAndUploadScreenshot(content::DesktopMediaID source,
-                                  StartScreenshareCallback callback);
-  void OnScreenshotCaptured(StartScreenshareCallback callback,
-                            const SkBitmap& bitmap);
+  void CaptureAndUploadScreenshot(
+      content::DesktopMediaID source,
+      StartScreenshareCallback callback,
+      std::optional<RegionCaptureSource> region_capture_source = std::nullopt);
+  void OnScreenshotCaptured(
+      StartScreenshareCallback callback,
+      std::optional<RegionCaptureSource> region_capture_source,
+      const SkBitmap& bitmap);
+  void OnRegionSelected(StartScreenshareCallback callback,
+                        const SkBitmap& region_bitmap);
   void OnScreenshotProcessed(StartScreenshareCallback callback,
                              ProcessedScreenshot result);
   void NotifyScreensharePickerOpened();
