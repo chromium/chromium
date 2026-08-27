@@ -6188,12 +6188,6 @@ inline constexpr char kEnableCommandLineOnNonRootedName[] =
 inline constexpr char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-inline constexpr char kEnableClipboardDataControlsAndroidName[] =
-    "Enable enterprise data controls.";
-inline constexpr char kEnableClipboardDataControlsAndroidDescription[] =
-    "Enables the enterprise data controls on Android for restricting copy and "
-    "paste actions for the clipboard.";
-
 inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesName[] =
     "Enable escape handling for secondary activities and native pages.";
 inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =

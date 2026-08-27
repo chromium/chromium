@@ -6,13 +6,11 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -103,12 +101,6 @@ TEST_F(FindBackendTest, InternalState) {
 }
 
 TEST_F(FindBackendTest, PolicyRestrictions) {
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      data_controls::kEnableClipboardDataControlsAndroid);
-#endif
-
   data_controls::SetDataControls(profile()->GetPrefs(), {R"({
                     "name": "block_google_to_bing",
                     "rule_id": "1234",

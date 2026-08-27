@@ -546,8 +546,6 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_ANDROID_SIDE_PANEL_LOGS = "EnableAndroidSidePanelLogs";
     public static final String ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY =
             "EnableBrowserWindowInterfaceForCustomTabActivity";
-    public static final String ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID =
-            "EnableClipboardDataControlsAndroid";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU =
             "EnableDownloadSaveAsContextMenu";

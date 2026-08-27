@@ -1000,19 +1000,14 @@ void PasteIfAllowedByPolicy(
   if (SkipDataControlOrContentAnalysisChecks(destination)) {
     std::move(callback).Run(std::nullopt);
     return;
-  } else if (base::FeatureList::IsEnabled(
-                 data_controls::kEnableClipboardDataControlsAndroid)) {
-    // Call PasteIfAllowedByDataControls directly as
-    // DataTransferPolicyController::PasteIfAllowed contains logic that isn't
-    // relevant to Android.
-    PasteIfAllowedByDataControls(source, destination, metadata,
-                                 std::move(clipboard_paste_data),
-                                 std::move(callback));
-    return;
-  } else {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
   }
+
+  // Call PasteIfAllowedByDataControls directly as
+  // DataTransferPolicyController::PasteIfAllowed contains logic that isn't
+  // relevant to Android.
+  PasteIfAllowedByDataControls(source, destination, metadata,
+                               std::move(clipboard_paste_data),
+                               std::move(callback));
 #else
   if (ui::DataTransferPolicyController::HasInstance()) {
     std::variant<size_t, std::vector<base::FilePath>> pasted_content;
@@ -1056,16 +1051,11 @@ bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
 bool IsPastePolicyCheckRequired(const BasicPasteSource& source,
                                 const content::ClipboardEndpoint& destination,
                                 const ui::ClipboardMetadata& metadata) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          data_controls::kEnableClipboardDataControlsAndroid)) {
-    return false;
-  }
-#else
+#if !BUILDFLAG(IS_ANDROID)
   if (ui::DataTransferPolicyController::HasInstance()) {
     return true;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (GetPasteVerdict(source, destination, metadata).level() !=
       data_controls::Rule::Level::kNotSet) {
@@ -1102,14 +1092,6 @@ void IsClipboardCopyAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          data_controls::kEnableClipboardDataControlsAndroid)) {
-    std::move(callback).Run(metadata.format_type, data, std::nullopt);
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
@@ -1145,12 +1127,7 @@ bool IsCopyPolicyCheckRequired(const content::ClipboardEndpoint& source,
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     return false;
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          data_controls::kEnableClipboardDataControlsAndroid)) {
-    return false;
-  }
-#else
+#if !BUILDFLAG(IS_ANDROID)
   // IsUrlAllowedToCopy checks a deprecated CopyPreventionSettings that isn't
   // applicable on Android.
   std::u16string replacement_data;
@@ -1162,7 +1139,7 @@ bool IsCopyPolicyCheckRequired(const content::ClipboardEndpoint& source,
                                    &replacement_data)) {
     return true;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   return data_controls::ChromeRulesServiceFactory::GetInstance()
                  ->GetForBrowserContext(source.browser_context())
                  ->GetCopyRestrictedBySourceVerdict(GetUrlFromEndpoint(source))
@@ -1180,12 +1157,6 @@ void IsClipboardShareAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          data_controls::kEnableClipboardDataControlsAndroid)) {
-    std::move(callback).Run(metadata.format_type, data, std::nullopt);
-    return;
-  }
-
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
@@ -1205,12 +1176,6 @@ void IsClipboardGenericCopyActionAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          data_controls::kEnableClipboardDataControlsAndroid)) {
-    std::move(callback).Run(metadata.format_type, data, std::nullopt);
-    return;
-  }
-
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;

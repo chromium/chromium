@@ -6,10 +6,6 @@
 
 namespace data_controls {
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableClipboardDataControlsAndroid,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kEnableDownloadDataControls, base::FEATURE_DISABLED_BY_DEFAULT);
 

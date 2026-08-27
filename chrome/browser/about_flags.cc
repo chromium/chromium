@@ -6028,13 +6028,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReengagementNotification)},
 
-    // Enterprise Data Controls
-    {"enable-clipboard-data-controls-android",
-     flag_descriptions::kEnableClipboardDataControlsAndroidName,
-     flag_descriptions::kEnableClipboardDataControlsAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsAndroid)},
-
     // Android Edge to edge
     {"edgeless-top-inset", flag_descriptions::kEdgelessTopInsetName,
      flag_descriptions::kEdgelessTopInsetDescription, kOsAndroid,

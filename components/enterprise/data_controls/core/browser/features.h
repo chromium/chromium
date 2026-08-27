@@ -10,10 +10,6 @@
 
 namespace data_controls {
 
-#if BUILDFLAG(IS_ANDROID)
-// Controls enabling Data Controls rules for clipboard copy / paste on Android.
-BASE_DECLARE_FEATURE(kEnableClipboardDataControlsAndroid);
-#endif
 
 // Controls enabling Data Controls rules for downloads.
 BASE_DECLARE_FEATURE(kEnableDownloadDataControls);

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.enterprise.util;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_CONTROLS_SEARCH_WITH;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -41,10 +40,6 @@ public class DataProtectionBridge {
      */
     public static void verifyCopyTextIsAllowedByPolicy(
             String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
@@ -62,10 +57,6 @@ public class DataProtectionBridge {
      */
     public static void verifyShareTextIsAllowedByPolicy(
             String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyShareTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
@@ -81,10 +72,6 @@ public class DataProtectionBridge {
      */
     public static void verifyCopyUrlIsAllowedByPolicy(
             String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
@@ -102,10 +89,6 @@ public class DataProtectionBridge {
      */
     public static void verifyShareUrlIsAllowedByPolicy(
             String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyShareUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
@@ -121,10 +104,6 @@ public class DataProtectionBridge {
      */
     public static void verifyCopyImageIsAllowedByPolicy(
             String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
@@ -142,10 +121,6 @@ public class DataProtectionBridge {
      */
     public static void verifyShareImageIsAllowedByPolicy(
             String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyShareImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
@@ -165,10 +140,6 @@ public class DataProtectionBridge {
      */
     public static void verifyGenericCopyImageActionIsAllowedByPolicy(
             String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
-            callback.onResult(true);
-            return;
-        }
         getJni().verifyGenericCopyImageActionIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 

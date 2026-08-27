@@ -7649,21 +7649,6 @@
             ]
         }
     ],
-    "EnableClipboardDataControlsAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_140",
-                    "enable_features": [
-                        "EnableClipboardDataControlsAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [

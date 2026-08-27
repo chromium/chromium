@@ -172,7 +172,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &contextual_tasks::kContextualTasksSidePanel,
     &credential_management::features::kCredentialManagementThirdPartyWebApiRequestForwarding,
     &data_controls::kDataControlsSearchWith,
-    &data_controls::kEnableClipboardDataControlsAndroid,
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,

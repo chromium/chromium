@@ -256,7 +256,6 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)
     @Manual(message = "crbug.com/414443097")
     public void testCopyLinkURL_notAllowedByPolicy() throws Throwable {
         doAnswer(sCopyIsNotAllowedByPolicy)
@@ -323,7 +322,6 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures(ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)
     public void testLongPressOnImage_notAllowedByPolicy() throws TimeoutException {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
@@ -358,7 +356,6 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures(ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)
     public void testOpenInEphemeralTab_notAllowedByPolicy() throws TimeoutException {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
@@ -987,7 +984,6 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures(ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)
     public void testCopyImage_notAllowedByPolicy() throws Throwable {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)

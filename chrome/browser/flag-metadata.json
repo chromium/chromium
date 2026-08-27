@@ -3510,11 +3510,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "enable-clipboard-data-controls-android",
-    "owners": ["clhager@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium

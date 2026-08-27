@@ -1169,10 +1169,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
-        ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     @DisableFeatures({
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
         ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
@@ -1201,10 +1198,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
-        ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     @DisableFeatures({
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
         ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
