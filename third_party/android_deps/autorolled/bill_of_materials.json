@@ -227,7 +227,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.13.0-alpha01"
+        "version": "1.13.0-alpha02"
     },
     {
         "name": "runtime-retain",
@@ -687,7 +687,7 @@
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha01"
+        "version": "2.12.0-alpha02"
     },
     {
         "name": "lifecycle-livedata",
@@ -722,7 +722,7 @@
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha01"
+        "version": "2.12.0-alpha02"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -742,7 +742,7 @@
     {
         "name": "lifecycle-runtime-ktx-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha01"
+        "version": "2.12.0-alpha02"
     },
     {
         "name": "lifecycle-service",
@@ -757,7 +757,7 @@
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha01"
+        "version": "2.12.0-alpha02"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -782,7 +782,7 @@
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha01"
+        "version": "2.12.0-alpha02"
     },
     {
         "name": "loader",
@@ -1457,7 +1457,7 @@
     {
         "name": "play-services-fido",
         "group": "com.google.android.gms",
-        "version": "21.3.0"
+        "version": "21.3.1"
     },
     {
         "name": "play-services-flags",
