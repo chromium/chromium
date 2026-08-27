@@ -42,6 +42,7 @@
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 
 class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
  public:
@@ -66,7 +67,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
 class TestOmniboxContextMenuController : public OmniboxContextMenuController {
  public:
+  using OmniboxContextMenuController::GetIconForInputType;
+  using OmniboxContextMenuController::GetIconForModel;
   using OmniboxContextMenuController::OmniboxContextMenuController;
+  using OmniboxContextMenuController::OnGetInputState;
 
   ContextualSearchboxHandler* GetSearchboxHandler() const override {
     return handler_;
@@ -319,6 +323,74 @@ TEST_F(OmniboxContextMenuControllerTest, GetIconForInputType_Drive) {
   EXPECT_EQ(
       controller()->GetIconForInputType(omnibox::InputType::INPUT_TYPE_DRIVE),
       expected_icon);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       GetIconForModel_UseSearchboxConfigIconIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kAimUseSearchboxConfigIconIds);
+
+  omnibox::InputState state;
+  omnibox::ModelConfig regular_config;
+  regular_config.set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config.mutable_icon()->set_icon_id(omnibox::IconResourceIds::BOLT);
+  state.model_configs.push_back(regular_config);
+
+  controller()->OnGetInputState(state);
+
+  ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(controller()->GetIconForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR),
+            expected_icon);
+
+  omnibox::ModelConfig drive_config;
+  drive_config.set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  drive_config.mutable_icon()->set_icon_id(omnibox::IconResourceIds::DRIVE);
+  state.model_configs.push_back(drive_config);
+
+  omnibox::ModelConfig photo_prints_config;
+  photo_prints_config.set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  photo_prints_config.mutable_icon()->set_icon_id(
+      omnibox::IconResourceIds::PHOTO_PRINTS);
+  state.model_configs.push_back(photo_prints_config);
+
+  controller()->OnGetInputState(state);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  ui::ImageModel expected_drive_icon = ui::ImageModel::FromVectorIcon(
+      vector_icons::kGoogleDriveMonochromeIcon, ui::kColorMenuIcon,
+      ui::SimpleMenuModel::kDefaultIconSize);
+#else
+  ui::ImageModel expected_drive_icon = ui::ImageModel();
+#endif
+  EXPECT_EQ(controller()->GetIconForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_PRO),
+            expected_drive_icon);
+  EXPECT_EQ(controller()->GetIconForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE),
+            ui::ImageModel());
+}
+
+TEST_F(OmniboxContextMenuControllerTest, GetIconForModel_LegacyFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kAimUseSearchboxConfigIconIds);
+
+  omnibox::InputState state;
+  omnibox::ModelConfig regular_config;
+  regular_config.set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config.mutable_icon()->set_icon_id(omnibox::IconResourceIds::BOLT);
+  state.model_configs.push_back(regular_config);
+
+  controller()->OnGetInputState(state);
+
+  ui::ImageModel expected_legacy_icon = ui::ImageModel::FromVectorIcon(
+      kAcuteIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(controller()->GetIconForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR),
+            expected_legacy_icon);
 }
 
 TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {

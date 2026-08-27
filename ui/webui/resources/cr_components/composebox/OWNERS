@@ -37,6 +37,7 @@ per-file error_scrim*=file:EXTENDED_OWNERS
 per-file file_carousel*=file:EXTENDED_OWNERS
 per-file file_thumbnail*=file:EXTENDED_OWNERS
 per-file icons.html.ts=file:EXTENDED_OWNERS
+per-file searchbox_config_icons.html.ts=file:EXTENDED_OWNERS
 per-file recent_tab_chip*=file:EXTENDED_OWNERS
 per-file threads_rail*=file:EXTENDED_OWNERS
 

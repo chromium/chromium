@@ -15,6 +15,7 @@
 #include "components/omnibox/composebox/composebox_query.mojom-forward.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/omnibox_proto/icon_resource_ids.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/input_type_config.pb.h"
 #include "third_party/omnibox_proto/model_config.pb.h"
@@ -45,7 +46,6 @@ struct EnumTraits<composebox_query::mojom::InputType, omnibox::InputType> {
 };
 
 template <>
-
 struct EnumTraits<composebox_query::mojom::ContextUploadStatus,
                   contextual_search::ContextUploadStatus> {
   static composebox_query::mojom::ContextUploadStatus ToMojom(
@@ -98,6 +98,8 @@ struct StructTraits<composebox_query::mojom::ModelConfigDataView,
   static std::vector<omnibox::UrlParam> aim_url_params(
       const omnibox::ModelConfig& config);
   static const std::string& menu_tooltip(const omnibox::ModelConfig& config);
+  // Returns raw int32 corresponding to omnibox::IconResourceIds.
+  static int32_t icon(const omnibox::ModelConfig& config);
 
   static bool Read(composebox_query::mojom::ModelConfigDataView data,
                    omnibox::ModelConfig* output);

@@ -179,6 +179,7 @@ export function createValidInputState(): InputState {
         hintText: 'Gemini Pro hint',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 144,
       },
     ],
     modelSectionConfig: {

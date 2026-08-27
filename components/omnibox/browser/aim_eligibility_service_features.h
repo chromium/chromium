@@ -58,6 +58,10 @@ extern const base::FeatureParam<bool> kRequestOnPrimaryAccountChanges;
 // PEC API response in the AIM eligibility response.
 BASE_DECLARE_FEATURE(kAimUsePecApi);
 
+// If enabled, searchbox context menus will use the dynamic icon IDs provided in
+// `SearchboxConfig` rather than legacy hardcoded client mappings.
+BASE_DECLARE_FEATURE(kAimUseSearchboxConfigIconIds);
+
 // Configures whether to include the client locale in the AIM eligibility
 // request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityIncludeClientLocale);

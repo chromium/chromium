@@ -101,6 +101,7 @@ suite('ComposeboxInputPlaceholder', () => {
         menuLabel: '',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }],
     });
 

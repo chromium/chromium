@@ -1748,6 +1748,7 @@ suite('ComposeboxMixinTest', () => {
           menuLabel: 'Regular',
           hintText: 'Hint Regular',
           menuTooltip: '',
+          icon: 0,
         },
         {
           model: ModelMode.kGeminiPro,
@@ -1755,6 +1756,7 @@ suite('ComposeboxMixinTest', () => {
           menuLabel: 'Pro',
           hintText: 'Hint Pro',
           menuTooltip: '',
+          icon: 0,
         },
       ],
       modelSectionConfig: null,

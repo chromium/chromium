@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './searchbox_config_icons.html.js';
 import './composebox_tab_favicon.js';
 import './composebox_favicon_group.js';
 import '//resources/cr_elements/icons.html.js';
@@ -223,43 +224,6 @@ export class ContextualActionMenuElement extends
         ToolMode.kCanvas,
         {
           icon: 'composebox:draft-spark',
-        },
-      ],
-    ]);
-  }
-
-  protected get supportedModels_(): Map<ModelMode, {
-    icon: string,
-  }> {
-    return new Map([
-      [
-        ModelMode.kGeminiRegular,
-        {
-          icon: 'composebox:acute',
-        },
-      ],
-      [
-        ModelMode.kGeminiProAutoroute,
-        {
-          icon: 'composebox:autorenew',
-        },
-      ],
-      [
-        ModelMode.kGeminiPro,
-        {
-          icon: 'composebox:timer',
-        },
-      ],
-      [
-        ModelMode.kGeminiProNoGenUi,
-        {
-          icon: 'composebox:timer',
-        },
-      ],
-      [
-        ModelMode.kGeminiFlashLatest,
-        {
-          icon: 'composebox:bolt',
         },
       ],
     ]);
@@ -1292,7 +1256,28 @@ export class ContextualActionMenuElement extends
   }
 
   protected getIconForModelMode_(mode: ModelMode): string|undefined {
-    return this.supportedModels_.get(mode)?.icon;
+    if (getLoadTimeBoolean('useSearchboxConfigIconIds', false) &&
+        this.inputState) {
+      const config = this.inputState.modelConfigs.find(c => c.model === mode);
+      if (config && config.icon) {
+        return `searchbox_config:${config.icon}`;
+      }
+    }
+    // Fallback to legacy hardcoded model mapping if flag is disabled or no icon
+    // is specified in config.
+    switch (mode) {
+      case ModelMode.kGeminiRegular:
+        return 'composebox:acute';
+      case ModelMode.kGeminiProAutoroute:
+        return 'composebox:autorenew';
+      case ModelMode.kGeminiPro:
+      case ModelMode.kGeminiProNoGenUi:
+        return 'composebox:timer';
+      case ModelMode.kGeminiFlashLatest:
+        return 'composebox:bolt';
+      default:
+        return undefined;
+    }
   }
 }
 

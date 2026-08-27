@@ -49,6 +49,8 @@ const base::FeatureParam<bool> kRequestOnPrimaryAccountChanges{
 
 BASE_FEATURE(kAimUsePecApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimUseSearchboxConfigIconIds, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimServerEligibilityIncludeClientLocale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

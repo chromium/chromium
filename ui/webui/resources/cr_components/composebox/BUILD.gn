@@ -60,6 +60,7 @@ build_webui("build") {
     "file_thumbnail.html.ts",
     "file_thumbnail.ts",
     "icons.html.ts",
+    "searchbox_config_icons.html.ts",
     "current_tab_chip.html.ts",
     "current_tab_chip.ts",
     "threads_rail.html.ts",

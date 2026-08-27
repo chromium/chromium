@@ -560,6 +560,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
 #endif
   dict.Set("contextualMenuUsePecApi",
            base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
+  dict.Set(
+      "useSearchboxConfigIconIds",
+      base::FeatureList::IsEnabled(omnibox::kAimUseSearchboxConfigIconIds));
   dict.Set("ShowContextMenuHeaders",
            ntp_composebox::kShowContextMenuHeaders.Get());
   dict.Set("composeboxSmartTabSharingVisible",

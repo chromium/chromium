@@ -1217,6 +1217,71 @@ std::u16string OmniboxContextMenuController::GetMenuLabelForModel(
 
 ui::ImageModel OmniboxContextMenuController::GetIconForModel(
     omnibox::ModelMode model) const {
+  if (base::FeatureList::IsEnabled(omnibox::kAimUseSearchboxConfigIconIds)) {
+    const auto* model_config = GetModelConfig(model);
+    // LINT.IfChange(SearchboxConfigIcons)
+    if (model_config && model_config->has_icon() &&
+        model_config->icon().has_icon_id()) {
+      switch (model_config->icon().icon_id()) {
+        case omnibox::IconResourceIds::BOLT:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::AUTORENEW:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kAutorenewIcon
+                                                : kAutorenewOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::ACUTE:
+          return ui::ImageModel::FromVectorIcon(
+              kAcuteIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::TIMER:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kTimerIcon : kTimerOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::BANANA:
+          return ui::ImageModel::FromResourceId(
+              IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
+        case omnibox::IconResourceIds::DRAFT_SPARK:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kDraftSparkIcon
+                                                : kDraftSparkOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::TRAVEL_EXPLORE:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kTravelExploreIcon
+                                                : kTravelExploreOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::ATTACH_FILE:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kAttachFileIcon
+                                                : kAttachFileOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::ADD_PHOTO_ALTERNATE:
+          return ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kAddPhotoAlternateIcon
+                                                : kAddPhotoAlternateOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+        case omnibox::IconResourceIds::DRIVE:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          return ui::ImageModel::FromVectorIcon(
+              vector_icons::kGoogleDriveMonochromeIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize);
+#else
+          return ui::ImageModel();
+#endif
+        case omnibox::IconResourceIds::PHOTO_PRINTS:
+          return ui::ImageModel();
+        default:
+          break;
+      }
+    }
+  }
+  // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/searchbox_config_icons.html.ts:SearchboxConfigIcons)
+
+  // Fallback to legacy hardcoded model mapping if flag is disabled or no icon
+  // is specified in config.
   switch (model) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
       return ui::ImageModel::FromVectorIcon(
