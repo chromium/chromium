@@ -110,15 +110,6 @@ struct ToV8Traits<IDLBoolean> {
   }
 };
 
-// Bigint
-template <>
-struct ToV8Traits<IDLBigint> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const BigInt& bigint) {
-    return bigint.ToV8(script_state->GetContext());
-  }
-};
-
 // Integer
 // int8_t
 template <bindings::IDLIntegerConvMode mode>
@@ -580,19 +571,6 @@ struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLIntegerTypeBase<T, mode>>::ToV8(script_state, *value);
-  }
-};
-
-// Nullable Bigints
-template <>
-struct ToV8Traits<IDLNullable<IDLBigint>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const std::optional<BigInt>& value) {
-    if (!value) {
-      return v8::Null(script_state->GetIsolate());
-    }
-    return ToV8Traits<IDLBigint>::ToV8(script_state, *value);
   }
 };
 

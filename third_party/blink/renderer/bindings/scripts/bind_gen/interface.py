@@ -6818,6 +6818,12 @@ def _collect_include_headers(class_like):
             headers.add(PathManager(union_def_obj).api_path(ext="h"))
             return
 
+        if idl_type.is_bigint:
+            headers.add(
+                "third_party/blink/renderer/bindings/core/v8/to_v8_traits_bigint.h"
+            )
+            return
+
         if idl_type.is_frozen_array:
             headers.add(
                 "third_party/blink/renderer/bindings/core/v8/frozen_array.h")

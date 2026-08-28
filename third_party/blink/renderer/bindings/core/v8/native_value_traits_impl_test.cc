@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl_bigint.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internals.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h"

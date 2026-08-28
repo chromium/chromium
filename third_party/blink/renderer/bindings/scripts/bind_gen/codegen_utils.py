@@ -102,6 +102,10 @@ def collect_forward_decls_and_include_headers(idl_types):
         elif idl_type.is_bigint:
             header_include_headers.add(
                 "third_party/blink/renderer/platform/bindings/bigint.h")
+            source_include_headers.update([
+                "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl_bigint.h",
+                "third_party/blink/renderer/bindings/core/v8/to_v8_traits_bigint.h",
+            ])
         elif idl_type.is_data_view:
             header_include_headers.update([
                 "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h",
