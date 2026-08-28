@@ -15,6 +15,7 @@ import './collapsible_autofill_settings_card.js';
 import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_section.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
@@ -269,9 +270,7 @@ export class SettingsAutofillPageElement extends
           {
             id: YourSavedInfoDataChip.TRAVEL_INFO,
             label: this.i18n('yourSavedInfoTravelInfoChip'),
-            icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-                'privacy20:person-check' :
-                'privacy20:person-check-old',
+            icon: 'privacy20:person-check',
             isVisibleWhenNoEntitiesOfTypeExists: () =>
                 this.availableAutofillAiTypes_.has(
                     EntityTypeName.kKnownTravelerNumber) ||

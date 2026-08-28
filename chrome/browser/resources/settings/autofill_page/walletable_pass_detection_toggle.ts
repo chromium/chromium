@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 // <if expr="_google_chrome">
