@@ -495,6 +495,47 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
       GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
   EXPECT_FALSE(
       GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type"));
+
+  // Verify that restricted callers cannot modify IPAddressConfigType or
+  // NameServersConfigType. These prevent unauthorized static IP/DNS clearing.
+  EXPECT_EQ(
+      "Error.PropertiesNotAllowed: [NameServersConfigType]",
+      RunFunctionAndReturnError(
+          base::MakeRefCounted<NetworkingPrivateSetPropertiesFunction>(),
+          base::StringPrintf(R"(["%s", {"NameServersConfigType": "DHCP"}])",
+                             kPrivateWifiGuid)));
+
+  EXPECT_EQ("Error.PropertiesNotAllowed: [IPAddressConfigType]",
+            RunFunctionAndReturnError(
+                base::MakeRefCounted<NetworkingPrivateSetPropertiesFunction>(),
+                base::StringPrintf(R"(["%s", {"IPAddressConfigType": "DHCP"}])",
+                                   kPrivateWifiGuid)));
+}
+
+TEST_F(NetworkingPrivateApiTest, GetNetworkRestrictedProperties) {
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
+      base::MakeRefCounted<NetworkingPrivateGetPropertiesFunction>(),
+      base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_FALSE(result->GetDict().Find("IPAddressConfigType"));
+  EXPECT_FALSE(result->GetDict().Find("NameServersConfigType"));
+}
+
+TEST_F(NetworkingPrivateApiTest, GetNetworkRestrictedPropertiesFromWebUI) {
+  scoped_refptr<NetworkingPrivateGetPropertiesFunction> get_properties =
+      base::MakeRefCounted<NetworkingPrivateGetPropertiesFunction>();
+  get_properties->set_source_context_type(mojom::ContextType::kWebUi);
+  get_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
+
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
+      get_properties, base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_TRUE(result->GetDict().Find("IPAddressConfigType"));
+  EXPECT_TRUE(result->GetDict().Find("NameServersConfigType"));
 }
 
 TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
@@ -519,7 +560,9 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
              "IPAddress": "123.123.123.1",
              "NameServers": ["8.8.8.8"],
              "Type": "IPv4"
-           }
+           },
+           "IPAddressConfigType": "DHCP",
+           "NameServersConfigType": "DHCP"
          })";
   RunFunction(
       set_properties,
@@ -530,6 +573,10 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
   EXPECT_TRUE(
       GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type"));
+  EXPECT_TRUE(
+      GetUserSettingStringData(kPrivateWifiGuid, "IPAddressConfigType"));
+  EXPECT_TRUE(
+      GetUserSettingStringData(kPrivateWifiGuid, "NameServersConfigType"));
 }
 
 TEST_F(NetworkingPrivateApiTest, CreateSharedNetwork) {
@@ -1116,10 +1163,8 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
                    .Set("Scanning", false))
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")
-          .Set("IPAddressConfigType", "DHCP")
           .Set("Metered", true)
           .Set("Name", "cellular")
-          .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
           .Set("TrafficCounterResetTime", 0.0)
           .Set("Type", "Cellular");

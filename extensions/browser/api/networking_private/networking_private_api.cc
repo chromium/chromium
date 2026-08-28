@@ -32,8 +32,16 @@ const int kDefaultNetworkListLimit = 1000;
 const char kPrivateOnlyError[] = "Requires networkingPrivate API access.";
 
 const char* const kPrivatePropertyPathsForSet[] = {
-    "Cellular.APN", "ProxySettings", "StaticIPConfig", "VPN.Host",
-    "VPN.IPsec",    "VPN.L2TP",      "VPN.OpenVPN",    "VPN.ThirdPartyVPN",
+    "Cellular.APN",
+    "IPAddressConfigType",
+    "NameServersConfigType",
+    "ProxySettings",
+    "StaticIPConfig",
+    "VPN.Host",
+    "VPN.IPsec",
+    "VPN.L2TP",
+    "VPN.OpenVPN",
+    "VPN.ThirdPartyVPN",
 };
 
 const char* const kPrivatePropertyPathsForGet[] = {
@@ -50,6 +58,8 @@ const char* const kPrivatePropertyPathsForGet[] = {
     "Cellular.MEID",
     "Cellular.MIN",
     "Ethernet.EAP",
+    "IPAddressConfigType",
+    "NameServersConfigType",
     "VPN.IPsec",
     "VPN.L2TP",
     "VPN.OpenVPN",
