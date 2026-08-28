@@ -460,13 +460,20 @@ const std::string& PolicyUIHandler::GetAppliedTestPoliciesImpl() {
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::ListValue& args) {
+  CHECK_EQ(args.size(), 1u);
   AllowJavascript();
-  ResolveJavascriptCallback(args[0],
-                            policy::PolicyLogger::GetInstance()->GetAsList());
+  policy::PolicyLogger::GetInstance()->GetAsList(
+      base::BindOnce(&PolicyUIHandler::OnGetPolicyLogs,
+                     weak_factory_.GetWeakPtr(), args[0].Clone()));
+}
+
+void PolicyUIHandler::OnGetPolicyLogs(base::Value callback_id,
+                                      base::ListValue logs) {
+  ResolveJavascriptCallback(callback_id, logs);
 }
 
 void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
-  std::move(callback).Run(policy::PolicyLogger::GetInstance()->GetAsMojoList());
+  policy::PolicyLogger::GetInstance()->GetAsMojoList(std::move(callback));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

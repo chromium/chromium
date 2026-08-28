@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -59,7 +60,9 @@ constexpr char kFetchYamlFrontmatter[] =
     "Prompt content goes here.";
 
 bool HasPolicyLogMessage(std::string_view substring) {
-  base::ListValue logs = policy::PolicyLogger::GetInstance()->GetAsList();
+  base::test::TestFuture<base::ListValue> future;
+  policy::PolicyLogger::GetInstance()->GetAsList(future.GetCallback());
+  base::ListValue logs = future.Take();
   for (const auto& log : logs) {
     if (log.is_dict()) {
       const std::string* message = log.GetDict().FindString("message");

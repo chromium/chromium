@@ -261,22 +261,22 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   logs_.emplace_back(std::move(new_log));
 }
 
-base::ListValue PolicyLogger::GetAsList() {
+void PolicyLogger::GetAsList(GetAsListCallback callback) {
   base::ListValue all_logs_list;
   base::AutoLock lock(lock_);
   for (const Log& log : logs_) {
     all_logs_list.Append(log.GetAsDict());
   }
-  return all_logs_list;
+  std::move(callback).Run(std::move(all_logs_list));
 }
 
-std::vector<policy::mojom::LogPtr> PolicyLogger::GetAsMojoList() {
+void PolicyLogger::GetAsMojoList(GetAsMojoListCallback callback) {
   std::vector<policy::mojom::LogPtr> all_logs_list;
   base::AutoLock lock(lock_);
   all_logs_list.reserve(logs_.size());
   std::ranges::transform(logs_, std::back_inserter(all_logs_list),
                          &PolicyLogger::Log::GetAsMojoLog);
-  return all_logs_list;
+  std::move(callback).Run(std::move(all_logs_list));
 }
 
 void PolicyLogger::RecordPerformanceMetrics() {

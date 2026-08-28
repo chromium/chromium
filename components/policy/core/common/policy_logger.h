@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -160,6 +161,10 @@ class POLICY_EXPORT PolicyLogger {
     int line_;
   };
 
+  using GetAsListCallback = base::OnceCallback<void(base::ListValue)>;
+  using GetAsMojoListCallback =
+      base::OnceCallback<void(std::vector<policy::mojom::LogPtr>)>;
+
   static constexpr size_t kMaxLogCount = 200;
 
   static PolicyLogger* GetInstance();
@@ -171,11 +176,11 @@ class POLICY_EXPORT PolicyLogger {
   PolicyLogger& operator=(const PolicyLogger&) = delete;
   ~PolicyLogger();
 
-  // Returns the logs list as base::ListValue to send to UI.
-  base::ListValue GetAsList();
+  // Returns the logs list as base::ListValue to send to UI asynchronously.
+  void GetAsList(GetAsListCallback callback);
 
-  // Returns the logs in the mojo format.
-  std::vector<policy::mojom::LogPtr> GetAsMojoList();
+  // Returns the logs in the mojo format asynchronously.
+  void GetAsMojoList(GetAsMojoListCallback callback);
 
   // Records memory usage and log count UMA metrics.
   void RecordPerformanceMetrics();

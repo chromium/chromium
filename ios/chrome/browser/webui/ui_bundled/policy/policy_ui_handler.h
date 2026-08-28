@@ -139,6 +139,7 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Called to handle the "getPolicyLogs" WebUI message from
   // chrome://policy/logs.
   void HandleGetPolicyLogs(const base::ListValue& args);
+  void OnGetPolicyLogs(base::Value callback_id, base::ListValue logs);
 
   // Called to handle the "getAppliedTestPolicies" WebUI message from
   // chrome://policy/test. This returns the policies that have been set through

@@ -129,6 +129,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   // Handler functions for chrome://policy/logs.
   void HandleGetPolicyLogs(const base::ListValue& args);
+  void OnGetPolicyLogs(base::Value callback_id, base::ListValue logs);
 
   // Send information about the current policy values to the UI. Information is
   // sent in two parts to the UI:
