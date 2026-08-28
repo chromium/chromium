@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
@@ -14,19 +17,34 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 namespace {
 
 using ::base::Bucket;
 using ::testing::ElementsAre;
+
+void FindStyledLabels(views::View* root,
+                      std::vector<views::StyledLabel*>& results) {
+  if (auto* label = views::AsViewClass<views::StyledLabel>(root)) {
+    results.push_back(label);
+  }
+  for (views::View* child : root->children()) {
+    FindStyledLabels(child, results);
+  }
+}
 
 class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -72,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OfferingPasswordChangeDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
 
+  EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
+
   EXPECT_CALL(delegate_, StartPasswordChangeFlow);
   GetDialogDelegate()->AcceptDialog();
 
@@ -88,6 +110,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OfferingPasswordChangeDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+
+  EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
 
   EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
@@ -106,6 +132,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PrivacyNoticeDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
 
+  EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
+  EXPECT_EQ(GetDialogDelegate()->AsBubbleDialogDelegate()->GetSubtitle(), u"");
+
   EXPECT_CALL(delegate_, OnPrivacyNoticeAccepted);
   GetDialogDelegate()->AcceptDialog();
 
@@ -122,6 +153,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PrivacyNoticeDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_EQ(GetDialogDelegate()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_LEAK_DIALOG_TITLE));
 
   EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
@@ -385,6 +420,108 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
   EXPECT_EQ("a",
             content::EvalJs(web_contents,
                             "document.getElementById('test_input').value;"));
+}
+
+class PasswordChangeUIControllerWithPrivateInferenceBrowserTest
+    : public PasswordChangeUIControllerBrowserTest {
+ public:
+  PasswordChangeUIControllerWithPrivateInferenceBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        password_change::features::
+            kPasswordChangeWithPrivateInferenceLoginCheck);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordChangeUIControllerWithPrivateInferenceBrowserTest,
+    PrivacyNoticeDialogAccepted) {
+  EXPECT_CALL(delegate_, GetDisplayOrigin)
+      .WillRepeatedly(testing::Return(u"example.com"));
+
+  UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_EQ(
+      GetDialogDelegate()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OFFER_DIALOG_TITLE_WITH_PI));
+  EXPECT_EQ(GetDialogDelegate()->AsBubbleDialogDelegate()->GetSubtitle(),
+            u"example.com");
+
+  EXPECT_CALL(delegate_, OnPrivacyNoticeAccepted);
+  GetDialogDelegate()->AcceptDialog();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithPrivacyNotice",
+      PasswordChangeDialogAction::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordChangeUIControllerWithPrivateInferenceBrowserTest,
+    PrivacyNoticeDialogCancelled) {
+  EXPECT_CALL(delegate_, GetDisplayOrigin)
+      .WillRepeatedly(testing::Return(u"example.com"));
+
+  UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_EQ(
+      GetDialogDelegate()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OFFER_DIALOG_TITLE_WITH_PI));
+
+  EXPECT_CALL(delegate_, OnPasswordChangeDeclined);
+  EXPECT_CALL(delegate_, Stop);
+  GetDialogDelegate()->CancelDialog();
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithPrivacyNotice",
+      PasswordChangeDialogAction::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordChangeUIControllerWithPrivateInferenceBrowserTest,
+    PrivacyNoticeDialogLinkClicked) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<div>Test</div>")));
+
+  EXPECT_CALL(delegate_, GetDisplayOrigin)
+      .WillRepeatedly(testing::Return(u"example.com"));
+
+  UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  std::vector<views::StyledLabel*> styled_labels;
+  FindStyledLabels(ui_controller_->dialog_widget()->GetContentsView(),
+                   styled_labels);
+  ASSERT_FALSE(styled_labels.empty());
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  styled_labels.back()->ClickFirstLinkForTesting();
+  tab_waiter.Wait();
+
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(chrome::kChromeUiPasswordChangeUrl));
+
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog",
+      PasswordChangeDialogAction::kLinkClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.LeakDetectionDialog.WithPrivacyNotice",
+      PasswordChangeDialogAction::kLinkClicked,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

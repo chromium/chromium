@@ -37,6 +37,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
   MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));
   MOCK_METHOD(void, OnPasswordChangeDeclined, (), (override));
   MOCK_METHOD(void, RetryLoginCheck, (), (override));
+  MOCK_METHOD(std::u16string, GetDisplayOrigin, (), (const, override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 

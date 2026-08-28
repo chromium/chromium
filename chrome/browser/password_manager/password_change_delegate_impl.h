@@ -96,6 +96,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
   void RetryLoginCheck() override;
+  std::u16string GetDisplayOrigin() const override;
   void AddObserver(PasswordChangeDelegate::Observer* observer) override;
   void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
 
@@ -111,8 +112,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void UpdateState(State new_state);
 
   bool IsPrivacyNoticeAcknowledged() const;
-
-  std::u16string GetDisplayOrigin() const;
 
   void OnCrossOriginNavigationDetected();
 

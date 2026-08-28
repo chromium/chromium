@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
 
 namespace content {
@@ -142,6 +144,9 @@ class PasswordChangeDelegate {
   // Called when the user chooses to retry the login check (by clicking
   // 'Retry' on the toast).
   virtual void RetryLoginCheck() = 0;
+
+  // Returns origin string that is displayed in the UI.
+  virtual std::u16string GetDisplayOrigin() const = 0;
 
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
