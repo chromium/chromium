@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_signin_promo_mediator.h"
 
 #import "base/check_op.h"
-#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -106,13 +104,6 @@
 }
 
 - (void)updateSignInPromoVisibility {
-  // TODO(crbug.com/542168449): Remove the sign-in promo code.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAndPasswordsRemoveSignInPromo)) {
-    self.shouldShowSignInPromo = NO;
-    return;
-  }
-
   if (_signinPromoViewMediator.showSpinner) {
     SigninPromoViewConfigurator* promoConfigurator =
         [_signinPromoViewMediator createConfigurator];

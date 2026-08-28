@@ -24,7 +24,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -116,21 +115,6 @@
                  grey_text(l10n_util::GetNSString(
                      IDS_IOS_SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS))]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the sign-in promo is not visible when the promo removal feature is
-// enabled.
-- (void)testSignInPromoNotVisibleWithPromoRemovalEnabled {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(
-      autofill::features::kAutofillAndPasswordsRemoveSignInPromo);
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self openAutofillAndPasswordsSettings];
-
-  // Verify the sign-in promo is not visible.
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests that the sign-in promo is not visible when the user is signed in.
