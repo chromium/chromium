@@ -32,6 +32,8 @@ public abstract class CompatQuirks {
         Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA,
         Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT,
         Quirk.LEGACY_DARK_MODE,
+        Quirk.FULL_USERAGENT,
+        Quirk.DISABLE_FILESYSTEM_ACCESS_API,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Quirk {
@@ -58,6 +60,18 @@ public abstract class CompatQuirks {
          * apps targeting < T.
          */
         int LEGACY_DARK_MODE = 4;
+
+        /**
+         * Default to the legacy full useragent instead of the reduced UA. Normally enabled for apps
+         * targeting < C.
+         */
+        int FULL_USERAGENT = 5;
+
+        /**
+         * Disable the Filesystem Access API for compatibility with old implementations of
+         * WebChromeClient.onShowFileChooser(). Normally enabled for apps targeting < C.
+         */
+        int DISABLE_FILESYSTEM_ACCESS_API = 6;
     }
 
     /**
