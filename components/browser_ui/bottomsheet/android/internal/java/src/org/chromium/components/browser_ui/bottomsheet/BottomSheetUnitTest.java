@@ -1585,4 +1585,47 @@ public class BottomSheetUnitTest {
         assertEquals(
                 ViewGroup.LayoutParams.WRAP_CONTENT, contentContainer.getLayoutParams().height);
     }
+
+    @Test
+    public void testContentContainerHeight_StandardFormFactor() {
+        BottomSheet.setSmallScreenForTesting(false);
+        int containerHeight = 1000;
+        BottomSheet sheet =
+                (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        mSheetContainer.layout(0, 0, 1000, containerHeight);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        sheet.setBottomSheetContentContainerForTesting(contentContainer);
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ false);
+
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(1.0f).when(mSheetContent).getFullHeightRatio();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+
+        // Standard form factor non-wrap sheets use MATCH_PARENT.
+        sheet.setSheetState(SheetState.HALF, false);
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT, contentContainer.getLayoutParams().height);
+
+        sheet.setSheetState(SheetState.FULL, false);
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT, contentContainer.getLayoutParams().height);
+    }
 }

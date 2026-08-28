@@ -1317,7 +1317,9 @@ class BottomSheet extends BottomSheetView
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
-            updateContentContainerHeight();
+            if (isLargeFormFactorUiEnabled() || isFullHeightResizeContent()) {
+                updateContentContainerHeight();
+            }
             assumeNonNull(getCurrentSheetContent());
 
             // TalkBack will announce the pane title via sendPaneChangeAccessibilityEvent and
