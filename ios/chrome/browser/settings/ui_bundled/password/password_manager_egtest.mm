@@ -2371,10 +2371,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_notVisible()];
 
   // Successful auth should remove blocking view and Password Manager should be
-  // visible visible.
+  // visible.
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
-  [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordsTableViewMatcher()];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
