@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
@@ -192,7 +193,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (sObserverForTest != null) sObserverForTest.onEditorDismiss();
     }
 
-    private void rebuildProfileList() {
+    @VisibleForTesting
+    void rebuildProfileList() {
         PreferenceScreen screen = getPreferenceScreen();
         screen.removeAll();
         screen.setOrderingAsAdded(true);
@@ -232,6 +234,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 PersonalDataManagerFactory.getForProfile(getProfile());
         ChromeSwitchPreference autofillSwitch =
                 new ChromeSwitchPreference(getStyledContext(), null);
+        // Do not persist this toggle to Android's SharedPreferences. Chrome natively
+        // persists this state across platforms via PersonalDataManager and UserPrefs.
+        // Failing to set this to false causes Android's PreferenceManager to override
+        // setChecked() with cached SharedPreferences values upon binding.
+        autofillSwitch.setPersistent(false);
         autofillSwitch.setTitle(R.string.autofill_enable_profiles_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
         boolean disabledSettings = disabledSettingsInThirdPartyMode(getProfile());
