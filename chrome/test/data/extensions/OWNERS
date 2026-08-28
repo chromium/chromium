@@ -1,1 +1,8 @@
+# //chrome/test/data (the parent directory) is owned by everyone, which is
+# generally good. However, the tests in here, particularly those associated
+# with API tests, often constitute a test of the public extension API surface.
+# Changes to those tests may indicate a behavior change in those public APIs,
+# and should be reviewed by a member of the extensions team.
+set noparent
+
 file://extensions/OWNERS

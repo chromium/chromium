@@ -40,6 +40,7 @@ file://third_party/blink/web_tests/HEADLESS_OWNERS
 # Extension related files.
 file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS
 file://extensions/common/api/API_OWNERS
+file://extensions/OWNERS
 
 # This restriction is in place to avoid accidental addition to our top level
 # layout files, such as add duplicated assets, or introducing new colors when
