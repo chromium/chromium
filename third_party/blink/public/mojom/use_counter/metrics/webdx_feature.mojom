@@ -510,6 +510,8 @@ enum WebDXFeature {
   kDRAFT_Symbols = 446,
   kJSSelfProfilingMarkers = 447,
   kDRAFT_Haptics = 448,
+  kLargestContentfulPaint = 449,
+  kEventTiming = 450,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
