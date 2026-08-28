@@ -3363,7 +3363,7 @@ Google Chrome is unable to recover your settings.
         </if>
 
         <message name="IDS_DICTATION_ONBOARDING_TITLE" desc="The title string in the onboarding dialog for the dictation feature." translateable="false">
-          Allow Talk to type to use your microphone and page content to generate polished text?
+          Let Chrome use your microphone and page content to generate polished text?
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
           Your microphone will be used to capture your voice
