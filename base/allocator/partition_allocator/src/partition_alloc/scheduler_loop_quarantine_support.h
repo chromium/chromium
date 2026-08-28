@@ -93,7 +93,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   PA_STACK_ALLOCATED();
 
  public:
-  PA_ALWAYS_INLINE ScopedSchedulerLoopQuarantineTaskScope() {
+  PA_ALWAYS_INLINE explicit ScopedSchedulerLoopQuarantineTaskScope(
+      QuarantineTaskType task_type = QuarantineTaskType::kNormal)
+      : task_type_(task_type) {
     active_ = internal::ThreadCache::IsInitialized();
     if (!active_) {
       return;
@@ -103,7 +105,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
         internal::ThreadCache::EnsureAndGetForQuarantine();
     PA_CHECK(internal::ThreadCache::IsValid(tcache));
 
-    tcache->GetSchedulerLoopQuarantineBranch().OnTaskStart();
+    tcache->GetSchedulerLoopQuarantineBranch().OnTaskStart(task_type_);
   }
 
   PA_ALWAYS_INLINE ~ScopedSchedulerLoopQuarantineTaskScope() {
@@ -115,10 +117,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
         internal::ThreadCache::EnsureAndGetForQuarantine();
     PA_CHECK(internal::ThreadCache::IsValid(tcache));
 
-    tcache->GetSchedulerLoopQuarantineBranch().OnTaskFinish();
+    tcache->GetSchedulerLoopQuarantineBranch().OnTaskFinish(task_type_);
   }
 
   bool active_ = false;
+  const QuarantineTaskType task_type_;
 };
 
 namespace internal {

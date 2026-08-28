@@ -9,6 +9,7 @@
 
 namespace base::allocator {
 
+using partition_alloc::QuarantineTaskType;
 using partition_alloc::SchedulerLoopQuarantineScanPolicyUpdater;
 using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 using partition_alloc::ScopedSchedulerLoopQuarantineTaskScope;

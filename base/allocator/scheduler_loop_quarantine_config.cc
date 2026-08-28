@@ -65,6 +65,7 @@ constexpr char kKeyEnableZapping[] = "enable-zapping";
 constexpr char kKeyLeakOnDestruction[] = "leak-on-destruction";
 constexpr char kKeyEnableTaskControlledPurge[] = "enable-task-controlled-purge";
 constexpr char kKeyPauseInBetweenTasks[] = "pause-in-between-tasks";
+constexpr char kKeyExcludeNonIpcTasks[] = "exclude-non-ipc-tasks";
 constexpr char kKeyBranchCapacityInBytes[] = "branch-capacity-in-bytes";
 constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
 
@@ -211,6 +212,8 @@ GetSchedulerLoopQuarantineConfiguration(
   config.pause_in_between_tasks =
       config_entry->FindBool(kKeyPauseInBetweenTasks)
           .value_or(config.pause_in_between_tasks);
+  config.exclude_non_ipc_tasks = config_entry->FindBool(kKeyExcludeNonIpcTasks)
+                                     .value_or(config.exclude_non_ipc_tasks);
   config.branch_capacity_in_bytes =
       static_cast<size_t>(config_entry->FindInt(kKeyBranchCapacityInBytes)
                               .value_or(config.branch_capacity_in_bytes));
@@ -242,7 +245,8 @@ bool HasSchedulerLoopQuarantineTaskControl(
       }
       const DictValue& branch_dict = branch_val.GetDict();
       if (branch_dict.FindBool(kKeyEnableTaskControlledPurge).value_or(false) ||
-          branch_dict.FindBool(kKeyPauseInBetweenTasks).value_or(false)) {
+          branch_dict.FindBool(kKeyPauseInBetweenTasks).value_or(false) ||
+          branch_dict.FindBool(kKeyExcludeNonIpcTasks).value_or(false)) {
         return true;
       }
     }

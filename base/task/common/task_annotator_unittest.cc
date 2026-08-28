@@ -699,4 +699,218 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
 #endif
 }
 
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ExcludeNonIpcTasks_PIBT_False) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      false;
+  opts.scheduler_loop_quarantine_thread_local_config.exclude_non_ipc_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  // Initially active (0) because PIBT is false.
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+
+  // Test with Non-IPC task (should be paused during execution)
+  {
+    PendingTask non_ipc_task(FROM_HERE, base::BindLambdaForTesting([&]() {
+                               EXPECT_EQ(1, branch_accessor.PausedCount());
+                             }));
+    annotator.RunTask("TestNonIpcTask", non_ipc_task);
+    EXPECT_EQ(0, branch_accessor.PausedCount());
+  }
+
+  // Test with IPC task (should be active during execution)
+  {
+    PendingTask ipc_task(FROM_HERE, base::BindLambdaForTesting([&]() {
+                           EXPECT_EQ(0, branch_accessor.PausedCount());
+                         }));
+    ipc_task.ipc_interface_name = "TestInterface";
+    ipc_task.ipc_hash = 12345;
+    annotator.RunTask("TestIpcTask", ipc_task);
+    EXPECT_EQ(0, branch_accessor.PausedCount());
+  }
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ExcludeNonIpcTasks_PIBT_True) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.exclude_non_ipc_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  // Initially paused (1) because PIBT is true.
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+
+  // Test with Non-IPC task (should remain paused during execution)
+  {
+    PendingTask non_ipc_task(FROM_HERE, base::BindLambdaForTesting([&]() {
+                               EXPECT_EQ(1, branch_accessor.PausedCount());
+                             }));
+    annotator.RunTask("TestNonIpcTask", non_ipc_task);
+    EXPECT_EQ(1, branch_accessor.PausedCount());
+  }
+
+  // Test with IPC task (should be active during execution)
+  {
+    PendingTask ipc_task(FROM_HERE, base::BindLambdaForTesting([&]() {
+                           EXPECT_EQ(0, branch_accessor.PausedCount());
+                         }));
+    ipc_task.ipc_interface_name = "TestInterface";
+    ipc_task.ipc_hash = 12345;
+    annotator.RunTask("TestIpcTask", ipc_task);
+    EXPECT_EQ(1, branch_accessor.PausedCount());
+  }
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ConfigureInsideTask_ENIT_FalseToTrue_NonIpc) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      false;
+  opts.scheduler_loop_quarantine_thread_local_config.exclude_non_ipc_tasks =
+      false;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+
+        // Reconfigure inside task, changing exclude_non_ipc_tasks to true.
+        partition_alloc::internal::SchedulerLoopQuarantineConfig new_config;
+        new_config.enable_quarantine = true;
+        new_config.exclude_non_ipc_tasks = true;
+        new_config.branch_capacity_in_bytes = 8192;
+        root.ReconfigureSchedulerLoopQuarantineForCurrentThread(new_config);
+
+        // Should become paused immediately because this is a Non-IPC task.
+        EXPECT_EQ(1, branch_accessor.PausedCount());
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After task, it should be active again (0) because PIBT is false.
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ConfigureInsideTask_ENIT_TrueToFalse_NonIpc) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      false;
+  opts.scheduler_loop_quarantine_thread_local_config.exclude_non_ipc_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(1, branch_accessor.PausedCount());
+
+        // Reconfigure inside task, changing exclude_non_ipc_tasks to false.
+        partition_alloc::internal::SchedulerLoopQuarantineConfig new_config;
+        new_config.enable_quarantine = true;
+        new_config.exclude_non_ipc_tasks = false;
+        new_config.branch_capacity_in_bytes = 8192;
+        root.ReconfigureSchedulerLoopQuarantineForCurrentThread(new_config);
+
+        // Should become active immediately.
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After task, it should remain active.
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+#endif
+}
+
 }  // namespace base

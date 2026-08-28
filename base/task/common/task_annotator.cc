@@ -220,7 +220,7 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
         scoped_quarantine_task_scope;
     if (g_scheduler_loop_quarantine_task_controlled_purge_enabled.load(
             std::memory_order_relaxed)) {
-      scoped_quarantine_task_scope.emplace();
+      scoped_quarantine_task_scope.emplace(pending_task);
     }
 
     if (g_task_annotator_observer) {

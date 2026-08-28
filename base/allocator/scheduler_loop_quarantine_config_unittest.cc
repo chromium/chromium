@@ -46,6 +46,7 @@ constexpr char kValidTestingConfigJSON[] = R"({
       "leak-on-destruction": false,
       "enable-task-controlled-purge": true,
       "pause-in-between-tasks": true,
+      "exclude-non-ipc-tasks": true,
       "branch-capacity-in-bytes": 400
     },
   },
@@ -106,6 +107,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_TRUE(config.leak_on_destruction);
   EXPECT_FALSE(config.enable_task_controlled_purge);
   EXPECT_FALSE(config.pause_in_between_tasks);
+  EXPECT_FALSE(config.exclude_non_ipc_tasks);
   EXPECT_EQ(100, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/global");
 
@@ -116,6 +118,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_FALSE(config.leak_on_destruction);
   EXPECT_FALSE(config.enable_task_controlled_purge);
   EXPECT_FALSE(config.pause_in_between_tasks);
+  EXPECT_FALSE(config.exclude_non_ipc_tasks);
   EXPECT_EQ(300, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/*");
 
@@ -126,6 +129,7 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_FALSE(config.leak_on_destruction);
   EXPECT_TRUE(config.enable_task_controlled_purge);
   EXPECT_TRUE(config.pause_in_between_tasks);
+  EXPECT_TRUE(config.exclude_non_ipc_tasks);
   EXPECT_EQ(400, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/main");
 
@@ -448,6 +452,11 @@ TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
               "pause-in-between-tasks": true
             }
           },
+          "network": {
+            "main": {
+              "exclude-non-ipc-tasks": true
+            }
+          },
           "renderer": {
             "main": {
               "enable-task-controlled-purge": false,
@@ -462,6 +471,8 @@ TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
   EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("gpu"));
   // Enables pause-in-between-tasks only.
   EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("utility"));
+  // Enables exclude-non-ipc-tasks only.
+  EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("network"));
   // Enables neither.
   EXPECT_FALSE(HasSchedulerLoopQuarantineTaskControl("renderer"));
 }
