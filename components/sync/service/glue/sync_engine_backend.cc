@@ -364,6 +364,15 @@ void SyncEngineBackend::DoInvalidateCredentials() {
   }
 }
 
+void SyncEngineBackend::DoOnCredentialsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // DoOnCredentialsChanged can be called when backend initialization has failed
+  // or after shutdown has started, in which case `sync_manager_` may be null.
+  if (sync_manager_) {
+    sync_manager_->OnCredentialsChanged();
+  }
+}
+
 void SyncEngineBackend::DoStartConfiguration() {
   sync_manager_->StartConfiguration();
 }

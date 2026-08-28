@@ -115,6 +115,8 @@ void FakeSyncManager::InvalidateCredentials() {
   NOTIMPLEMENTED();
 }
 
+void FakeSyncManager::OnCredentialsChanged() {}
+
 void FakeSyncManager::StartSyncingNormally(base::Time last_poll_time) {
   // Do nothing.
 }

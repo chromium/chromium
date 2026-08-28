@@ -139,6 +139,10 @@ class SyncManager {
   // Clears the authentication tokens.
   virtual void InvalidateCredentials() = 0;
 
+  // Notifies that credentials have changed when access token propagation is
+  // enabled.
+  virtual void OnCredentialsChanged() = 0;
+
   // Put the syncer in normal mode ready to perform nudges and polls.
   virtual void StartSyncingNormally(base::Time last_poll_time) = 0;
 

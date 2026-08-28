@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_token_status.h"
 #include "content/public/test/browser_test.h"
@@ -74,17 +76,26 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
 
 class SyncAuthTestBase : public SyncTest {
  public:
-  explicit SyncAuthTestBase(SetupSyncMode setup_sync_mode)
+  explicit SyncAuthTestBase(SetupSyncMode setup_sync_mode,
+                            bool use_propagated_access_token = false)
       : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (use_propagated_access_token) {
+      enabled_features.push_back(syncer::kSyncUsePropagatedAccessToken);
+    } else {
+      disabled_features.push_back(syncer::kSyncUsePropagatedAccessToken);
+    }
     if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
+      enabled_features.insert(
+          enabled_features.end(),
           {syncer::kReplaceSyncPromosWithSignInPromos,
            switches::kSyncEnableBookmarksInTransportMode,
            switches::kEnablePreferencesAccountStorage,
            syncer::kSeparateLocalAndAccountSearchEngines,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
-          {});
+           syncer::kReadingListEnableSyncTransportModeUponSignIn});
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   SyncAuthTestBase(const SyncAuthTestBase&) = delete;
@@ -141,21 +152,37 @@ class SyncAuthTestBase : public SyncTest {
   int entry_index_ = 0;
 };
 
-class SyncAuthTest
-    : public SyncAuthTestBase,
-      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+class SyncAuthTest : public SyncAuthTestBase,
+                     public testing::WithParamInterface<
+                         std::tuple<SyncTest::SetupSyncMode, bool>> {
  public:
-  SyncAuthTest() : SyncAuthTestBase(GetSetupSyncMode()) {}
+  SyncAuthTest()
+      : SyncAuthTestBase(GetSetupSyncMode(), UsePropagatedAccessToken()) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
+
+  bool UsePropagatedAccessToken() const { return std::get<1>(GetParam()); }
 };
+
+namespace {
+
+std::string SyncAuthTestParamNameGenerator(
+    const testing::TestParamInfo<std::tuple<SyncTest::SetupSyncMode, bool>>&
+        info) {
+  const auto& [setup_sync_mode, use_propagated_access_token] = info.param;
+  return base::StrCat({SetupSyncModeAsString(setup_sync_mode), "_",
+                       use_propagated_access_token ? "PropagatedAccessToken"
+                                                   : "CachedAccessToken"});
+}
+
+}  // namespace
 
 INSTANTIATE_TEST_SUITE_P(,
                          SyncAuthTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
+                         testing::Combine(GetSyncTestModes(), testing::Bool()),
+                         SyncAuthTestParamNameGenerator);
 
 // Verify that sync works with a valid OAuth2 token.
 IN_PROC_BROWSER_TEST_P(SyncAuthTest, Sanity) {

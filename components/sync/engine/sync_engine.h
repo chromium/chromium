@@ -96,6 +96,10 @@ class SyncEngine : public DataTypeConfigurer {
   // Invalidates the SyncCredentials.
   virtual void InvalidateCredentials() = 0;
 
+  // Notifies the engine that credentials have changed when access token
+  // propagation is enabled.
+  virtual void OnCredentialsChanged() = 0;
+
   // Transport metadata getters.
   virtual std::string GetCacheGuid() const = 0;
   virtual std::string GetBirthday() const = 0;

@@ -114,6 +114,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // SyncEngine::InvalidateCredentials.
   void DoInvalidateCredentials();
 
+  // Called to notify the sync manager of credential changes on behalf of
+  // SyncEngine::OnCredentialsChanged.
+  void DoOnCredentialsChanged();
+
   // Switches sync engine into configuration mode. In this mode only initial
   // data for newly enabled types is downloaded from server. No local changes
   // are committed to server.

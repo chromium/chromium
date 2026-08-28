@@ -42,6 +42,7 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, TriggerRefresh, (const DataTypeSet&), (override));
   MOCK_METHOD(void, UpdateCredentials, (const SyncCredentials&), (override));
   MOCK_METHOD(void, InvalidateCredentials, (), (override));
+  MOCK_METHOD(void, OnCredentialsChanged, (), (override));
   MOCK_METHOD(std::string, GetCacheGuid, (), (const override));
   MOCK_METHOD(std::string, GetBirthday, (), (const override));
   MOCK_METHOD(base::Time, GetLastSyncedTimeForDebugging, (), (const override));

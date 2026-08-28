@@ -1387,6 +1387,12 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
     } else {
       engine_->UpdateCredentials(credentials);
     }
+  } else if (!auth_manager_->GetCredentials().access_token_info.token.empty()) {
+    // If a sync cycle previously failed due to an auth error (HTTP 401), the
+    // scheduler entered exponential backoff. Notifying the engine here allows
+    // it to exit backoff and immediately retry sync once new credentials
+    // are available.
+    engine_->OnCredentialsChanged();
   }
 
   DVLOG(2) << "Notify observers on credentials changed";

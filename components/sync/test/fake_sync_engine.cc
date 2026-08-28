@@ -68,6 +68,8 @@ void FakeSyncEngine::InvalidateCredentials() {
   last_credentials_.reset();
 }
 
+void FakeSyncEngine::OnCredentialsChanged() {}
+
 std::string FakeSyncEngine::GetCacheGuid() const {
   return "fake_engine_cache_guid";
 }

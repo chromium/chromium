@@ -74,6 +74,8 @@ class FakeSyncEngine final : public SyncEngine {
 
   void InvalidateCredentials() override;
 
+  void OnCredentialsChanged() override;
+
   std::string GetCacheGuid() const override;
 
   std::string GetBirthday() const override;

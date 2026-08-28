@@ -213,6 +213,13 @@ void SyncEngineImpl::InvalidateCredentials() {
       base::BindOnce(&SyncEngineBackend::DoInvalidateCredentials, backend_));
 }
 
+void SyncEngineImpl::OnCredentialsChanged() {
+  CHECK(base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoOnCredentialsChanged, backend_));
+}
+
 std::string SyncEngineImpl::GetCacheGuid() const {
   // The cached cache GUID should usually be identical to the one stored in
   // prefs, but in some cases (when an account got removed from the device) the

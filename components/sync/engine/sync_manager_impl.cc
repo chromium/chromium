@@ -291,6 +291,12 @@ void SyncManagerImpl::InvalidateCredentials() {
   connection_manager_->SetAccessTokenInfo(signin::AccessTokenInfo());
 }
 
+void SyncManagerImpl::OnCredentialsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
+  scheduler_->OnCredentialsUpdated();
+}
+
 void SyncManagerImpl::AddObserver(SyncManager::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
@@ -338,7 +344,14 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
 void SyncManagerImpl::OnConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observing_network_connectivity_changes_) {
+  // In the legacy model (without token propagation), observing network
+  // connectivity changes is paused after an auth error to prevent running a
+  // sync cycle with stale/missing cached credentials down to the network layer.
+  // With kSyncUsePropagatedAccessToken enabled, the scheduler fetches an
+  // access token on demand and waits for it asynchronously before running the
+  // cycle, so network changes can be safely forwarded to trigger retry.
+  if (!observing_network_connectivity_changes_ &&
+      !base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
     DVLOG(1) << "Network change dropped.";
     return;
   }
