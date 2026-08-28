@@ -6,6 +6,7 @@ package org.chromium.chrome.test;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 
 import org.junit.rules.TestRule;
@@ -15,6 +16,9 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.build.BuildConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JUnit test rule that takes care of setup and teardown for tests that need to override the
@@ -45,6 +49,48 @@ public class OverrideContextWrapperTestRule implements TestRule {
         @Override
         public PackageManager getPackageManager() {
             return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public FeatureInfo[] getSystemAvailableFeatures() {
+                    FeatureInfo[] features = super.getSystemAvailableFeatures();
+                    if (mIsAutomotive == null && mIsDesktop == null) {
+                        return features;
+                    }
+                    if (features == null
+                            && !Boolean.TRUE.equals(mIsAutomotive)
+                            && !Boolean.TRUE.equals(mIsDesktop)) {
+                        return null;
+                    }
+
+                    List<FeatureInfo> overriddenFeatures = new ArrayList<>();
+                    if (features != null) {
+                        for (FeatureInfo feature : features) {
+                            if (feature != null
+                                    && ((mIsAutomotive != null
+                                                    && PackageManager.FEATURE_AUTOMOTIVE.equals(
+                                                            feature.name))
+                                            || (mIsDesktop != null
+                                                    && PackageManager.FEATURE_PC.equals( // nocheck
+                                                            feature.name)))) {
+                                continue;
+                            }
+                            overriddenFeatures.add(feature);
+                        }
+                    }
+                    if (Boolean.TRUE.equals(mIsAutomotive)) {
+                        FeatureInfo automotiveFeature = new FeatureInfo();
+                        automotiveFeature.name = PackageManager.FEATURE_AUTOMOTIVE;
+                        overriddenFeatures.add(automotiveFeature);
+                    }
+                    if (Boolean.TRUE.equals(mIsDesktop)) {
+                        FeatureInfo pcFeature = new FeatureInfo();
+                        pcFeature.name = PackageManager.FEATURE_PC; // nocheck
+                        overriddenFeatures.add(pcFeature);
+                    }
+                    return overriddenFeatures.toArray(new FeatureInfo[0]);
+                }
+
+                // DeviceInfo still uses hasSystemFeature() below Android T and when the system
+                // feature snapshot is unavailable.
                 @Override
                 public boolean hasSystemFeature(String name) {
                     if (mIsAutomotive != null && PackageManager.FEATURE_AUTOMOTIVE.equals(name)) {
