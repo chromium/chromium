@@ -283,17 +283,17 @@ public class ChromeTabbedActivityTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.setClass(mActivity, ChromeTabbedActivity.class);
-        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
         if (expectedTitle != null) {
             intent.putExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE, expectedTitle);
         }
+        intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
 
         if (!isSingleTab) {
             ArrayList<String> extraUrls =
                     Lists.newArrayList(
                             JUnitTestGURLs.URL_2.getSpec(), JUnitTestGURLs.URL_3.getSpec());
             intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, extraUrls);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
         }
         IntentUtils.setForceIsTrustedIntentForTesting(true);
 

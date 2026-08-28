@@ -5165,21 +5165,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             ? mTabModelSelector.getModel(firstTab.isIncognito())
                             : null;
             if (tabModel != null) {
-                if (launchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                        && parentTab == null) {
-                    if (additionalUrls == null || additionalUrls.isEmpty()) {
-                        // For single-tab launches, we must explicitly wrap the tab in a new group.
-                        tabModel.createSingleTabGroup(firstTab);
-                    }
-                    // Apply passed tab group title when creating a new tab group.
-                    Token groupId = firstTab.getTabGroupId();
-                    if (groupId != null) {
-                        String groupTitle =
-                                IntentUtils.safeGetStringExtra(
-                                        intent, IntentHandler.EXTRA_TAB_GROUP_TITLE);
-                        if (groupTitle != null) {
-                            tabModel.setTabGroupTitle(groupId, groupTitle);
-                        }
+                // If a tab group was created for the new tabs, apply any requested group title.
+                Token groupId = firstTab.getTabGroupId();
+                if (groupId != null) {
+                    String groupTitle =
+                            IntentUtils.safeGetStringExtra(
+                                    intent, IntentHandler.EXTRA_TAB_GROUP_TITLE);
+                    if (groupTitle != null) {
+                        tabModel.setTabGroupTitle(groupId, groupTitle);
                     }
                 }
             }

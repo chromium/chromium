@@ -170,7 +170,7 @@ public class BookmarkOpenerImplUnitTest {
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
         assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                (Integer) TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
                 IntentHandler.getTabLaunchType(startedIntent));
         assertTrue(
                 startedIntent.getBooleanExtra(
@@ -189,7 +189,7 @@ public class BookmarkOpenerImplUnitTest {
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
         assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                (Integer) TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
                 IntentHandler.getTabLaunchType(startedIntent));
         assertTrue(
                 startedIntent.getBooleanExtra(
@@ -261,14 +261,14 @@ public class BookmarkOpenerImplUnitTest {
                 startedIntent.getBooleanExtra(
                         IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, false));
 
-        // Folder has [A, B, C]. Background launch -> reversed [C, B, A].
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
+        // Folder has [A, B, C]. Forward launch -> [A, B, C].
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
         List<String> additionalUrls =
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertNotNull(additionalUrls);
         assertEquals(2, additionalUrls.size());
         assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(1));
     }
 
     @Test
@@ -280,34 +280,13 @@ public class BookmarkOpenerImplUnitTest {
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
-        // Foreground launch: base tab is A (active), background tabs reversed [C, B].
         assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
         List<String> additionalUrls =
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertNotNull(additionalUrls);
         assertEquals(2, additionalUrls.size());
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
-    }
-
-    @Test
-    public void testOpenBookmarksInNewTabs_BackgroundLaunchType_MultipleBookmarksOrdering() {
-        assertTrue(
-                mOpener.openBookmarksInNewTabs(
-                        Arrays.asList(mBookmarkId1, mBookmarkId2, mBookmarkId3),
-                        /* incognito= */ false,
-                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
-
-        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
-        assertNotNull(startedIntent);
-        // Background launch: entire list reversed [A, B, C] -> [C, B, A].
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
-        List<String> additionalUrls =
-                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
-        assertNotNull(additionalUrls);
-        assertEquals(2, additionalUrls.size());
         assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(1));
     }
 
     @Test
@@ -318,14 +297,13 @@ public class BookmarkOpenerImplUnitTest {
 
         Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
-        // Tab group uses FROM_LONGPRESS_BACKGROUND_IN_GROUP (background) -> reversed [C, B, A].
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), startedIntent.getDataString());
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
         List<String> additionalUrls =
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertNotNull(additionalUrls);
         assertEquals(2, additionalUrls.size());
         assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem1.getUrl().getSpec(), additionalUrls.get(1));
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(1));
         assertTrue(
                 startedIntent.getBooleanExtra(
                         IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
@@ -347,8 +325,8 @@ public class BookmarkOpenerImplUnitTest {
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertNotNull(additionalUrls);
         assertEquals(2, additionalUrls.size());
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(1));
     }
 
     @Test
@@ -362,8 +340,8 @@ public class BookmarkOpenerImplUnitTest {
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertNotNull(additionalUrls);
         assertEquals(2, additionalUrls.size());
-        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(0));
-        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(1));
+        assertEquals(mBookmarkItem2.getUrl().getSpec(), additionalUrls.get(0));
+        assertEquals(mBookmarkItem3.getUrl().getSpec(), additionalUrls.get(1));
     }
 
     @Test

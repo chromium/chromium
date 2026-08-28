@@ -424,24 +424,33 @@ public class MultiInstanceManagerApi31Test {
                         /* isIncognito= */ false, /* openInTabGroup= */ true);
 
         CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Target activity tab model should contain 3 tabs",
-                                targetActivity.getCurrentTabModel().getCount(),
-                                is(3)));
-        Assert.assertFalse(
-                "Target activity should not be Incognito", targetActivity.isIncognitoWindow());
-        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var tabModel = targetActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "Target activity tab model should contain 3 tabs",
+                            tabModel.getCount(),
+                            is(3));
                     Tab tab0 = tabModel.getTabAt(0);
+                    Criteria.checkThat("Tab 0 should be non-null", tab0, notNullValue());
                     Tab tab1 = tabModel.getTabAt(1);
+                    Criteria.checkThat("Tab 1 should be non-null", tab1, notNullValue());
                     Tab tab2 = tabModel.getTabAt(2);
-                    Assert.assertEquals(
-                            "Tab 1 parent should be Tab 0", tab0.getId(), tab1.getParentId());
-                    Assert.assertEquals(
-                            "Tab 2 parent should be Tab 0", tab0.getId(), tab2.getParentId());
+                    Criteria.checkThat("Tab 2 should be non-null", tab2, notNullValue());
+                    Criteria.checkThat(
+                            "Tab 0 should have a tab group ID",
+                            tab0.getTabGroupId(),
+                            notNullValue());
+                    Criteria.checkThat(
+                            "Tab 1 should be in the same tab group as Tab 0",
+                            tab1.getTabGroupId(),
+                            is(tab0.getTabGroupId()));
+                    Criteria.checkThat(
+                            "Tab 2 should be in the same tab group as Tab 0",
+                            tab2.getTabGroupId(),
+                            is(tab0.getTabGroupId()));
                 });
+        Assert.assertFalse(
+                "Target activity should not be Incognito", targetActivity.isIncognitoWindow());
     }
 
     @Test

@@ -53,6 +53,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -318,20 +319,38 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             boolean openInTabGroup,
             @Nullable Intent intent) {
         Tab firstTab = createNewTab(firstTabParams, type, parent, intent);
+        if (firstTab == null || mTabModel == null) return firstTab;
+
         if (additionalUrls != null && !additionalUrls.isEmpty()) {
-            Tab groupParent = openInTabGroup ? firstTab : null;
             @TabLaunchType
             int additionalUrlLaunchType =
                     openInTabGroup
                             ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                             : TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+            List<Tab> additionalTabs = new ArrayList<>();
             // Iterate backwards because background tabs are inserted immediately after the active
             // tab, so inserting from last to first preserves the exact list order.
             for (int i = additionalUrls.size() - 1; i >= 0; i--) {
                 LoadUrlParams copy = LoadUrlParams.copy(firstTabParams);
                 copy.setUrl(additionalUrls.get(i));
-                createNewTab(copy, additionalUrlLaunchType, groupParent);
+                // Do not pass firstTab as parent; establishing a parent relationship
+                // causes issues during subsequent tab reparenting (e.g. crashing when
+                // dragging a tab group into a new window). Tabs are grouped explicitly below.
+                Tab tab = createNewTab(copy, additionalUrlLaunchType, parent, intent);
+                if (tab != null) {
+                    additionalTabs.add(0, tab);
+                }
             }
+            if (openInTabGroup) {
+                if (additionalTabs.isEmpty()) {
+                    mTabModel.createSingleTabGroup(firstTab);
+                } else {
+                    mTabModel.mergeListOfTabsToGroup(
+                            additionalTabs, firstTab, TabGroupMergeNotificationType.DONT_NOTIFY);
+                }
+            }
+        } else if (openInTabGroup) {
+            mTabModel.createSingleTabGroup(firstTab);
         }
         return firstTab;
     }
