@@ -604,4 +604,12 @@ TEST_F(GlicCueTargetAsyncTest, DestructorFiresPendingCallback) {
   EXPECT_FALSE(eligible);
 }
 
+TEST_F(GlicCueTargetTest, RequiresModelExecutionAndSupportsIntrusiveness) {
+  EXPECT_TRUE(target_->RequiresModelExecution());
+  EXPECT_TRUE(target_->SupportsIntrusiveness(
+      contextual_cueing::CueIntrusiveness::kLoud));
+  EXPECT_FALSE(target_->SupportsIntrusiveness(
+      contextual_cueing::CueIntrusiveness::kQuiet));
+}
+
 }  // namespace glic

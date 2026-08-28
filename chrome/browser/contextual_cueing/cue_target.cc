@@ -32,4 +32,16 @@ const char* GetName(CueTargetType type) {
   }
 }
 
+bool CueTarget::SupportsIntrusiveness(CueIntrusiveness intrusiveness) const {
+  if (RequiresModelExecution()) {
+    return intrusiveness == CueIntrusiveness::kLoud;
+  }
+  return SupportsIntrusivenessImpl(intrusiveness);
+}
+
+bool CueTarget::SupportsIntrusivenessImpl(
+    CueIntrusiveness intrusiveness) const {
+  return true;
+}
+
 }  // namespace contextual_cueing

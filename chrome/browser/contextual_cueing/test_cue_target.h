@@ -12,7 +12,10 @@ namespace contextual_cueing {
 class TestCueTarget : public CueTarget {
  public:
   bool eligible = true;
+  bool requires_model_execution = false;
   std::optional<CueIntrusiveness> eligible_intrusiveness;
+  std::set<CueIntrusiveness> supported_intrusiveness = {
+      CueIntrusiveness::kLoud, CueIntrusiveness::kQuiet};
   std::optional<optimization_guide::proto::ContextualCue> generate_result;
   bool page_eligible = true;
   CueActionData click_data = std::monostate();
@@ -25,6 +28,7 @@ class TestCueTarget : public CueTarget {
 
   // CueTarget:
   CueTargetType GetType() const override;
+  bool RequiresModelExecution() const override;
   bool IsEligible() const override;
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         CueIntrusiveness intrusiveness,
@@ -41,6 +45,9 @@ class TestCueTarget : public CueTarget {
       std::vector<tabs::TabHandle> tabs_to_show) const override;
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
+
+ protected:
+  bool SupportsIntrusivenessImpl(CueIntrusiveness intrusiveness) const override;
 };
 
 }  // namespace contextual_cueing

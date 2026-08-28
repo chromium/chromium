@@ -76,6 +76,15 @@ class CueTarget {
   // scoring, backoff tracking, and metrics (impressions, clicks, dismissals).
   virtual CueTargetType GetType() const = 0;
 
+  // Whether this target relies on the backend Model Execution Service (MES)
+  // to generate cue content rather than generating content locally.
+  virtual bool RequiresModelExecution() const = 0;
+
+  // Returns true if this target supports the given intrusiveness level.
+  // Targets requiring MES are restricted to kLoud only. Non-MES targets
+  // can override SupportsIntrusivenessImpl() to declare supported levels.
+  bool SupportsIntrusiveness(CueIntrusiveness intrusiveness) const;
+
   // Synchronous profile-level gate (e.g., feature disabled, panel already
   // open). Called by the controller before constructing the async barrier.
   //
@@ -148,6 +157,11 @@ class CueTarget {
 
   virtual optimization_guide::proto::ContextualCueingSurface GetSurface()
       const = 0;
+
+ protected:
+  // Default for non-MES targets is to allow both kLoud and kQuiet.
+  // Subclasses may override to customize.
+  virtual bool SupportsIntrusivenessImpl(CueIntrusiveness intrusiveness) const;
 };
 
 }  // namespace contextual_cueing

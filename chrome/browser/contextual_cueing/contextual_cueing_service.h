@@ -43,6 +43,12 @@ class ContextualCueingService : public KeyedService {
   // page loads requirement after a cueing UI is shown.
   void ReportPageLoad();
 
+  enum class AllowedIntrusivenessResult {
+    kLoud,
+    kQuiet,
+    kBlocked,
+  };
+
   // Called when the user clicks the cue action button.
   void OnCueClicked(CueTargetType type);
 
@@ -50,10 +56,18 @@ class ContextualCueingService : public KeyedService {
   void OnCueDismissed(CueTargetType type);
 
   // Called when the cue is shown to the user.
-  void OnCueShown(const GURL& url, CueTargetType type);
+  void OnCueShown(const GURL& url,
+                  CueTargetType type,
+                  CueIntrusiveness intrusiveness = CueIntrusiveness::kLoud);
 
-  // Returns true if a nudge can be shown.
-  ContextualCueingDecision CanShowCue(const GURL& url) const;
+  // Returns true if a nudge can be shown at the specified intrusiveness level.
+  ContextualCueingDecision CanShowCue(
+      const GURL& url,
+      CueIntrusiveness intrusiveness = CueIntrusiveness::kLoud) const;
+
+  // Returns the highest allowed intrusiveness tier and the associated decision.
+  std::pair<AllowedIntrusivenessResult, ContextualCueingDecision>
+  GetAllowedIntrusiveness(const GURL& url) const;
 
   // Returns the UCB score for the given target, incorporating per-target
   // interaction stats and UCB hyperparameters from Finch.

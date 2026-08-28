@@ -2225,8 +2225,7 @@ class ContextualCueingControllerMultiSourceBrowserTest
         {{kContextualCueingV2,
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "always"},
-           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"},
-           {"ContextualCueingV2DisableCueBackoff", "true"}}},
+           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"}}},
          {kContextualCueingV2MultiSource, {}}},
         /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
   }
@@ -2388,6 +2387,177 @@ IN_PROC_BROWSER_TEST_F(
       ContextualCueingDecision::kAgeRestrictionEnforced, 1);
   VerifyProactiveCueDecision(ukm_recorder,
                              ContextualCueingDecision::kAgeRestrictionEnforced);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       QuietCueFallbackWhenLoudCapsExceeded) {
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  // Register a non-MES target that supports quiet cues.
+  auto non_mes_target = std::make_unique<TestCueTarget>();
+  non_mes_target->requires_model_execution = false;
+  non_mes_target->supported_intrusiveness = {CueIntrusiveness::kLoud,
+                                             CueIntrusiveness::kQuiet};
+  non_mes_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  browser()
+      ->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->contextual_cueing_controller()
+      ->RegisterCueTarget(CueTargetType::kTestSource,
+                          std::move(non_mes_target));
+
+  // Exhaust loud caps by showing a loud cue.
+  service->OnCueShown(GURL("https://example.com"), CueTargetType::kGlic,
+                      CueIntrusiveness::kLoud);
+
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      visible_ = model.GetVisible();
+      anchored_message_showing_ = model.ShouldShowAnchoredMessage();
+    }
+    bool visible_ = false;
+    bool anchored_message_showing_ = false;
+  };
+
+  TestObserver observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&observer);
+  GetPageActionController()->AddObserver(kActionAnchoredContextualCue,
+                                         observation);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // The chip should be visible, but anchored message should NOT be showing
+  // (quiet mode).
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_FALSE(observer.anchored_message_showing_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       MESOnlyTargetBlockedWhenCapsExceeded) {
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  // Override the default target on the tab to explicitly require MES.
+  cue_target()->requires_model_execution = true;
+
+  // Exhaust loud caps by showing a loud cue.
+  service->OnCueShown(GURL("https://example.com"), CueTargetType::kGlic,
+                      CueIntrusiveness::kLoud);
+
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      visible_ = model.GetVisible();
+    }
+    bool visible_ = false;
+  };
+
+  TestObserver observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&observer);
+  GetPageActionController()->AddObserver(kActionAnchoredContextualCue,
+                                         observation);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kTargetFeatureNotEligible, 1);
+
+  EXPECT_FALSE(observer.visible_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       QuietCueAllowedAfterDismissal) {
+  auto* service =
+      ContextualCueingServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  // Register a non-MES target that supports quiet cues.
+  auto non_mes_target = std::make_unique<TestCueTarget>();
+  non_mes_target->requires_model_execution = false;
+  non_mes_target->supported_intrusiveness = {CueIntrusiveness::kLoud,
+                                             CueIntrusiveness::kQuiet};
+  non_mes_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  browser()
+      ->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->contextual_cueing_controller()
+      ->RegisterCueTarget(CueTargetType::kTestSource,
+                          std::move(non_mes_target));
+
+  // User dismisses a cue.
+  service->OnCueDismissed(CueTargetType::kGlic);
+
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      visible_ = model.GetVisible();
+      anchored_message_showing_ = model.ShouldShowAnchoredMessage();
+    }
+    bool visible_ = false;
+    bool anchored_message_showing_ = false;
+  };
+
+  TestObserver observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&observer);
+  GetPageActionController()->AddObserver(kActionAnchoredContextualCue,
+                                         observation);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // The chip should still be visible, but anchored message is NOT showing.
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_FALSE(observer.anchored_message_showing_);
+
+  // When clicking the suggestion chip, it should expand out into an anchored
+  // message.
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  EXPECT_TRUE(observer.visible_);
+  EXPECT_TRUE(observer.anchored_message_showing_);
 }
 
 }  // namespace

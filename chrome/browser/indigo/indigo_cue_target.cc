@@ -55,6 +55,10 @@ contextual_cueing::CueTargetType IndigoCueTarget::GetType() const {
   return contextual_cueing::CueTargetType::kIndigo;
 }
 
+bool IndigoCueTarget::RequiresModelExecution() const {
+  return false;
+}
+
 bool IndigoCueTarget::IsEligible() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch)) {
     return true;

@@ -147,6 +147,78 @@ TEST_F(ContextualCueingServiceV2Test, NotEnoughTimeSinceLastClick) {
   EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
 }
 
+TEST_F(ContextualCueingServiceV2Test, GetAllowedIntrusiveness_LoudWhenNoCaps) {
+  GURL url("https://example.com");
+  auto [tier, decision] = service()->GetAllowedIntrusiveness(url);
+  EXPECT_EQ(tier, ContextualCueingService::AllowedIntrusivenessResult::kLoud);
+  EXPECT_EQ(decision, ContextualCueingDecision::kSuccess);
+}
+
+TEST_F(ContextualCueingServiceV2Test,
+       GetAllowedIntrusiveness_QuietWhenLoudCapsExceeded) {
+  GURL url("https://example.com");
+  service()->OnCueShown(url, CueTargetType::kGlic, CueIntrusiveness::kLoud);
+
+  // Loud cue is blocked by quiet page loads requirement.
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
+            ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue);
+  // Quiet cue is still allowed.
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kQuiet),
+            ContextualCueingDecision::kSuccess);
+
+  auto [tier, decision] = service()->GetAllowedIntrusiveness(url);
+  EXPECT_EQ(tier, ContextualCueingService::AllowedIntrusivenessResult::kQuiet);
+  EXPECT_EQ(decision,
+            ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue);
+}
+
+TEST_F(ContextualCueingServiceV2Test,
+       GetAllowedIntrusiveness_QuietOnDismissAndClick) {
+  GURL url("https://example.com");
+
+  // Dismissal blocks loud cue, but allows quiet cue.
+  service()->OnCueDismissed(CueTargetType::kGlic);
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
+            ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kQuiet),
+            ContextualCueingDecision::kSuccess);
+
+  auto [tier_dismiss, decision_dismiss] =
+      service()->GetAllowedIntrusiveness(url);
+  EXPECT_EQ(tier_dismiss,
+            ContextualCueingService::AllowedIntrusivenessResult::kQuiet);
+  EXPECT_EQ(decision_dismiss,
+            ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal);
+
+  // Fast forward past dismissal backoff and simulate a click.
+  task_environment_.FastForwardBy(kDismissBackoffTime.Get() + base::Minutes(1));
+  service()->OnCueClicked(CueTargetType::kGlic);
+
+  // Click blocks loud cue, but allows quiet cue.
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kLoud),
+            ContextualCueingDecision::kNotEnoughTimeSinceLastClick);
+  EXPECT_EQ(service()->CanShowCue(url, CueIntrusiveness::kQuiet),
+            ContextualCueingDecision::kSuccess);
+
+  auto [tier_click, decision_click] = service()->GetAllowedIntrusiveness(url);
+  EXPECT_EQ(tier_click,
+            ContextualCueingService::AllowedIntrusivenessResult::kQuiet);
+  EXPECT_EQ(decision_click,
+            ContextualCueingDecision::kNotEnoughTimeSinceLastClick);
+}
+
+TEST_F(ContextualCueingServiceV2Test, QuietCueDoesNotTriggerLoudBackoff) {
+  GURL url("https://example.com");
+  // Showing a quiet cue should not consume quiet page loads or loud frequency
+  // caps.
+  service()->OnCueShown(url, CueTargetType::kTestSource,
+                        CueIntrusiveness::kQuiet);
+
+  auto [tier, decision] = service()->GetAllowedIntrusiveness(url);
+  EXPECT_EQ(tier, ContextualCueingService::AllowedIntrusivenessResult::kLoud);
+  EXPECT_EQ(decision, ContextualCueingDecision::kSuccess);
+}
+
 // ---------------------------------------------------------------------------
 // Pref persistence round-trip tests
 // ---------------------------------------------------------------------------

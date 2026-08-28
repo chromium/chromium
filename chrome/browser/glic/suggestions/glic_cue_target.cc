@@ -83,6 +83,10 @@ contextual_cueing::CueTargetType GlicCueTarget::GetType() const {
   return contextual_cueing::CueTargetType::kGlic;
 }
 
+bool GlicCueTarget::RequiresModelExecution() const {
+  return true;
+}
+
 void GlicCueTarget::CheckEligibility(
     base::WeakPtr<content::WebContents> web_contents,
     contextual_cueing::CueIntrusiveness intrusiveness,

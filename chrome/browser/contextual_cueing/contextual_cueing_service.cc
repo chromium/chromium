@@ -74,25 +74,29 @@ void ContextualCueingService::OnCueDismissed(CueTargetType type) {
   WriteStatsToPref(type);
 }
 
-void ContextualCueingService::OnCueShown(const GURL& url, CueTargetType type) {
+void ContextualCueingService::OnCueShown(const GURL& url,
+                                         CueTargetType type,
+                                         CueIntrusiveness intrusiveness) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (kMinPageCountBetweenNudges.Get()) {
-    // Let the cue logic be performed the next page after quiet count pages.
-    remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get() + 1;
-  }
-  shown_backoff_end_time_ =
-      base::TimeTicks::Now() + kMinTimeBetweenNudges.Get();
+  if (intrusiveness == CueIntrusiveness::kLoud) {
+    if (kMinPageCountBetweenNudges.Get()) {
+      // Let the cue logic be performed the next page after quiet count pages.
+      remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get() + 1;
+    }
+    shown_backoff_end_time_ =
+        base::TimeTicks::Now() + kMinTimeBetweenNudges.Get();
 
-  recent_nudge_tracker_.CueingNudgeShown();
+    recent_nudge_tracker_.CueingNudgeShown();
 
-  auto origin = url::Origin::Create(url);
-  auto origin_iter = recent_visited_origins_.Get(origin);
-  if (origin_iter == recent_visited_origins_.end()) {
-    origin_iter = recent_visited_origins_.Put(
-        origin, NudgeCapTracker(kCueCapCountPerOrigin.Get(),
-                                kCueCapTimePerOrigin.Get()));
+    auto origin = url::Origin::Create(url);
+    auto origin_iter = recent_visited_origins_.Get(origin);
+    if (origin_iter == recent_visited_origins_.end()) {
+      origin_iter = recent_visited_origins_.Put(
+          origin, NudgeCapTracker(kCueCapCountPerOrigin.Get(),
+                                  kCueCapTimePerOrigin.Get()));
+    }
+    origin_iter->second.CueingNudgeShown();
   }
-  origin_iter->second.CueingNudgeShown();
 
   target_stats_[type].impressions++;
   WriteStatsToPref(type);
@@ -111,10 +115,24 @@ void ContextualCueingService::LogCueShownMetadata(CueLogPtr cue_log) {
 #endif
 
 contextual_cueing::ContextualCueingDecision ContextualCueingService::CanShowCue(
-    const GURL& url) const {
+    const GURL& url,
+    CueIntrusiveness intrusiveness) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (kDisableCueBackoff.Get()) {
     return ContextualCueingDecision::kSuccess;
+  }
+
+  if (intrusiveness == CueIntrusiveness::kQuiet) {
+    return ContextualCueingDecision::kSuccess;
+  }
+
+  if (dismiss_backoff_end_time_ &&
+      (base::TimeTicks::Now() < *dismiss_backoff_end_time_)) {
+    return ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal;
+  }
+  if (click_backoff_end_time_ &&
+      (base::TimeTicks::Now() < *click_backoff_end_time_)) {
+    return ContextualCueingDecision::kNotEnoughTimeSinceLastClick;
   }
 
   if (remaining_quiet_loads_ > 0) {
@@ -123,14 +141,6 @@ contextual_cueing::ContextualCueingDecision ContextualCueingService::CanShowCue(
   if (shown_backoff_end_time_ &&
       (base::TimeTicks::Now() < *shown_backoff_end_time_)) {
     return ContextualCueingDecision::kNotEnoughTimeSinceLastCue;
-  }
-  if (dismiss_backoff_end_time_ &&
-      (base::TimeTicks::Now() < *dismiss_backoff_end_time_)) {
-    return ContextualCueingDecision::kNotEnoughTimeSinceLastDismissal;
-  }
-  if (click_backoff_end_time_ &&
-      (base::TimeTicks::Now() < *click_backoff_end_time_)) {
-    return ContextualCueingDecision::kNotEnoughTimeSinceLastClick;
   }
 
   if (!recent_nudge_tracker_.CanShowNudge()) {
@@ -144,6 +154,22 @@ contextual_cueing::ContextualCueingDecision ContextualCueingService::CanShowCue(
   }
 
   return ContextualCueingDecision::kSuccess;
+}
+
+std::pair<ContextualCueingService::AllowedIntrusivenessResult,
+          contextual_cueing::ContextualCueingDecision>
+ContextualCueingService::GetAllowedIntrusiveness(const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (auto decision = CanShowCue(url, CueIntrusiveness::kLoud);
+      decision == ContextualCueingDecision::kSuccess) {
+    return {AllowedIntrusivenessResult::kLoud,
+            ContextualCueingDecision::kSuccess};
+  } else if (auto quiet_decision = CanShowCue(url, CueIntrusiveness::kQuiet);
+             quiet_decision == ContextualCueingDecision::kSuccess) {
+    return {AllowedIntrusivenessResult::kQuiet, decision};
+  } else {
+    return {AllowedIntrusivenessResult::kBlocked, quiet_decision};
+  }
 }
 
 const TargetStats& ContextualCueingService::GetStatsForTarget(
