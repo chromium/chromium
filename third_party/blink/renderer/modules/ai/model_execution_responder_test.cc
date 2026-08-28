@@ -96,8 +96,8 @@ TEST(CreateModelExecutionResponder, Simple) {
   responder->OnStreaming("a");
   responder->OnStreaming("b");
   responder->OnContextOverflow();
-  responder->OnCompletion(
-      mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      kTestTokenNumber, /*response_tokens=*/0));
   // Check that the promise will be resolved with the "result" string.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
@@ -166,8 +166,8 @@ TEST(CreateModelExecutionResponder, NonStreaming) {
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
   responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
-  responder->OnCompletion(
-      mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      kTestTokenNumber, /*response_tokens=*/0));
 
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
@@ -307,7 +307,7 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
-      /*current_tokens=*/1u));
+      /*current_tokens=*/1u, /*response_tokens=*/0u));
 
   controller->abort(scope.GetScriptState());
 
@@ -384,7 +384,7 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
-      /*current_tokens=*/1u));
+      /*current_tokens=*/1u, /*response_tokens=*/0u));
 
   // Check that we can read the stream.
   auto* reader =
@@ -510,7 +510,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(1u));
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(1u, 0u));
 
   // Check that the AbortError is passed to the stream.
   auto* reader =
@@ -561,6 +561,63 @@ TEST(CreateModelExecutionStreamingResponder, RejectOnMojoDisconnection) {
       AIMetrics::GetAISessionCrashedMetricName(
           AIMetrics::AISessionType::kLanguageModel),
       true, 1);
+}
+
+TEST(CreateModelExecutionResponder, TokenMetrics) {
+  uint64_t kCurrentTokens = 100u;
+  uint64_t kResponseTokens = 60u;
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  base::RunLoop disconnect_runloop;
+  base::RunLoop complete_runloop;
+
+  base::HistogramTester histogram_tester;
+
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, /*signal=*/nullptr,
+      blink::scheduler::GetSequencedTaskRunnerForTesting(),
+      AIMetrics::AISessionType::kLanguageModel,
+      blink::BindOnce(
+          [](base::RunLoop* runloop, ScriptPromiseResolver<IDLString>* resolver,
+             const String& response,
+             mojom::blink::ModelExecutionContextInfoPtr context_info) {
+            ResolvePromiseOnCompletion(resolver, response,
+                                       std::move(context_info));
+            runloop->Quit();
+          },
+          blink::Unretained(&complete_runloop), WrapPersistent(resolver)),
+      /*tool_call_callback=*/base::NullCallback(),
+      /*overflow_callback=*/base::DoNothing(),
+      base::BindOnce(&RejectPromiseOnError<IDLString>,
+                     WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
+                     nullptr, WrapPersistent(script_state)));
+
+  mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
+      std::move(pending_remote));
+  responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      kCurrentTokens, kResponseTokens));
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  complete_runloop.Run();
+  disconnect_runloop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      AIMetrics::GetAISessionContextTokensMetricName(
+          AIMetrics::AISessionType::kLanguageModel),
+      static_cast<int>(kCurrentTokens), 1);
+  histogram_tester.ExpectUniqueSample(
+      AIMetrics::GetAISessionResponseTokensMetricName(
+          AIMetrics::AISessionType::kLanguageModel),
+      static_cast<int>(kResponseTokens), 1);
 }
 
 }  // namespace blink

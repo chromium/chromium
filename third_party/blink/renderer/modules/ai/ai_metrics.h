@@ -77,6 +77,8 @@ class MODULES_EXPORT AIMetrics {
       AISessionType session_type);
   static std::string GetAISessionContextTokensMetricName(
       AISessionType session_type);
+  static std::string GetAISessionResponseTokensMetricName(
+      AISessionType session_type);
   static std::string GetAISessionCrashedMetricName(AISessionType session_type);
 
   // Enum mappings from mojo/V8 enums to metric enums. Returns nullopt if the

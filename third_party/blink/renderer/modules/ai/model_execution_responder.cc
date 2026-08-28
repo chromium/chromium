@@ -54,12 +54,15 @@ void RecordCompletionMetrics(
         AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type),
         duration);
   }
-  // TODO(crbug.com/481347574): Add ResponseTokens metric and ensure
-  // ContextTokens is populated across all APIs.
   if (context_info) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionContextTokensMetricName(session_type),
         base::saturated_cast<int>(context_info->current_tokens));
+    if (context_info->response_tokens > 0) {
+      base::UmaHistogramCounts1M(
+          AIMetrics::GetAISessionResponseTokensMetricName(session_type),
+          base::saturated_cast<int>(context_info->response_tokens));
+    }
   }
 }
 

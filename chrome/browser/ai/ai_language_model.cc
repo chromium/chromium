@@ -325,6 +325,7 @@ class AILanguageModel::PromptState
   const std::string& response() const { return full_response_; }
   // The total token count for this request including input and output tokens.
   uint32_t token_count() const { return token_count_; }
+  uint32_t response_token_count() const { return response_token_count_; }
   Mode mode() const { return mode_; }
 
  private:
@@ -360,7 +361,6 @@ class AILanguageModel::PromptState
           << base::NumberToString(tokens_processed) << " tokens:\n"
           << optimization_guide::OnDeviceInputToString(*input_);
     }
-    generate_start_ = base::TimeTicks::Now();
     context_receiver_.reset();
     token_count_ = tokens_processed;
     if (mode_ == Mode::kAppendOnly) {
@@ -374,9 +374,6 @@ class AILanguageModel::PromptState
     if (output_tokens_ == 0) {
       CHECK(telemetry_logger_.has_value());
       telemetry_logger_->RecordFirstResponse();
-      base::UmaHistogramMediumTimes(
-          "AI.Session.LanguageModel.FirstResponseTime",
-          telemetry_logger_->GetTimeToFirstResponse());
     }
     output_tokens_++;
     full_response_ += chunk->text;
@@ -400,15 +397,11 @@ class AILanguageModel::PromptState
 
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override {
     completed_ = true;
+    response_token_count_ = summary->output_token_count;
     token_count_ += summary->output_token_count;
 
     CHECK(telemetry_logger_.has_value());
     telemetry_logger_->RecordCompletion(summary->output_token_count);
-    base::UmaHistogramMediumTimes(
-        "AI.Session.LanguageModel.ResponseCompleteTime",
-        base::TimeTicks::Now() - generate_start_);
-    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ResponseTokens",
-                                  summary->output_token_count);
 
     // The `OnComplete()` method on `responder_` will be called in
     // `AILanguageModel::OnPromptOutputComplete()` after adding the response to
@@ -555,6 +548,8 @@ class AILanguageModel::PromptState
 
   // Total number of tokens in input and output.
   uint32_t token_count_ = 0;
+  // Number of output response tokens in the latest turn.
+  uint32_t response_token_count_ = 0;
   // The full response so far.
   std::string full_response_;
   // Number of tokens in the response.
@@ -573,7 +568,6 @@ class AILanguageModel::PromptState
 
   std::optional<optimization_guide::OnDeviceRequestTelemetryLogger>
       telemetry_logger_;
-  base::TimeTicks generate_start_;
 
   base::WeakPtrFactory<PromptState> weak_factory_{this};
 };
@@ -725,9 +719,6 @@ AILanguageModel::AILanguageModel(
 
 AILanguageModel::~AILanguageModel() {
   const bool crashed = !initial_session_;
-  // If the initial session has been reset, the session crashed.
-  base::UmaHistogramBoolean("AI.Session.LanguageModel.Crashed", crashed);
-
   if (logger_ && logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -1175,8 +1166,8 @@ void AILanguageModel::OnPromptOutputComplete() {
   }
   uint32_t total_tokens =
       context_->non_evictable_tokens() + context_->evictable_tokens();
-  responder->OnCompletion(
-      blink::mojom::ModelExecutionContextInfo::New(total_tokens));
+  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
+      total_tokens, prompt_state_->response_token_count()));
   if (model_client_) {
     model_client_->solution().ReportHealthyCompletion();
   }

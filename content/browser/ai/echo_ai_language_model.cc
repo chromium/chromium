@@ -222,8 +222,8 @@ void EchoAILanguageModel::DoMockExecution(
     responder->OnContextOverflow();
   }
 
-  responder->OnCompletion(
-      blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
+  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
+      current_tokens_, /*response_tokens=*/0));
 }
 
 void EchoAILanguageModel::Prompt(

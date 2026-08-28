@@ -66,6 +66,8 @@ enum ModelStreamingResponseStatus {
 struct ModelExecutionContextInfo {
   // The latest number of existing tokens.
   uint64 current_tokens;
+  // The number of output response tokens generated in the latest turn.
+  uint64 response_tokens = 0;
 };
 
 // Represents a tool call requested by the language model during execution.

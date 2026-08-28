@@ -97,6 +97,13 @@ std::string AIMetrics::GetAISessionContextTokensMetricName(
 }
 
 // static
+std::string AIMetrics::GetAISessionResponseTokensMetricName(
+    AISessionType session_type) {
+  return base::StrCat(
+      {"AI.Session.", GetAISessionTypeName(session_type), ".ResponseTokensV2"});
+}
+
+// static
 std::string AIMetrics::GetAISessionCrashedMetricName(
     AISessionType session_type) {
   return base::StrCat(
