@@ -686,21 +686,22 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
-#elif BUILDFLAG(ENABLE_GUEST_VIEW)
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
+// Below are includes for when guest view is enabled, but extensions are *not*.
+#include "chrome/browser/android/guest_view/chrome_content_browser_client_guest_view_part.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_url_loader_factory_interceptor.h"  // nogncheck
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/guest_view/chrome_content_browser_client_guest_view_part.h"
 #endif
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
@@ -1473,7 +1474,7 @@ bool IsActorActingOnWebContents(WebContents* web_contents) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 bool ShouldGrantWindowManagementPrivilegesToIwaChildWindow(
     WebContents* web_contents,
     const content::SiteInstance& main_frame_site) {
@@ -1496,7 +1497,7 @@ bool ShouldGrantWindowManagementPrivilegesToIwaChildWindow(
                          blink::PermissionType::WINDOW_MANAGEMENT),
                  opener_frame) == blink::mojom::PermissionStatus::GRANTED;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -1776,9 +1777,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
     CHECK(IsIsolatedWebAppUrl(site));
@@ -1791,9 +1790,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
 
     return iwa_url_info.storage_partition_config(browser_context);
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 
   return default_storage_partition_config;
 }
@@ -2738,10 +2735,7 @@ void ChromeContentBrowserClient::PersistIsolatedOrigin(
 bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   if (!content::AreIsolatedWebAppsEnabled(browser_context)) {
     return false;
   }
@@ -2751,9 +2745,7 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   if (IsIsolatedWebAppOrigin(origin)) {
     return true;
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   return false;
 }
 
@@ -4681,7 +4673,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     if (delegate) {
       web_prefs->web_app_scope = delegate->GetManifestScope();
     }
-#elif BUILDFLAG(ENABLE_EXTENSIONS)
+#elif BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {
       web_prefs->web_app_scope = GURL();
       // Set |web_app_scope| based on the app associated with the app window if
@@ -4886,14 +4878,14 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   if (!web_prefs->allow_unrestricted_window_focus &&
       ShouldGrantWindowManagementPrivilegesToIwaChildWindow(web_contents,
                                                             main_frame_site)) {
     web_prefs->allow_unrestricted_window_focus = true;
     prefs_changed = true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 
   for (auto& parts : extra_parts_) {
     prefs_changed |= parts->OverrideWebPreferencesAfterNavigation(
