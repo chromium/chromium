@@ -952,3 +952,9 @@ BASE_FEATURE(kPageContextAutofillOtpRedactions,
 bool IsPageContextAutofillOtpRedactionsEnabled() {
   return base::FeatureList::IsEnabled(kPageContextAutofillOtpRedactions);
 }
+
+BASE_FEATURE(kGeminiInsightsChipAblation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiInsightsChipAblationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiInsightsChipAblation);
+}

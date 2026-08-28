@@ -891,6 +891,11 @@ inline constexpr char kGeminiFRERefactorName[] = "Gemini FRE Refactor";
 inline constexpr char kGeminiFRERefactorDescription[] =
     "Enables the refactored Gemini First Run Experience UI.";
 
+inline constexpr char kGeminiInsightsChipAblationName[] =
+    "Gemini Insights Chip Ablation";
+inline constexpr char kGeminiInsightsChipAblationDescription[] =
+    "When enabled, the generic Gemini suggestion chip is disabled.";
+
 inline constexpr char kGeminiLiveDormantReasonsName[] =
     "Gemini Live Dormant Reasons";
 inline constexpr char kGeminiLiveDormantReasonsDescription[] =

@@ -520,4 +520,10 @@ BASE_DECLARE_FEATURE(kPageContextAutofillOtpRedactions);
 // Returns true if `kPageContextAutofillOtpRedactions` is enabled.
 bool IsPageContextAutofillOtpRedactionsEnabled();
 
+// When enabled, the "Get insights with Gemini chip" is disabled.
+BASE_DECLARE_FEATURE(kGeminiInsightsChipAblation);
+
+// Returns true if the `GeminiInsightsChipAblation` feature is enabled.
+bool IsGeminiInsightsChipAblationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

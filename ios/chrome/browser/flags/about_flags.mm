@@ -2960,6 +2960,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kNewGeolocationPermissionDelegateDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kNewGeolocationPermissionDelegate)},
+    {"gemini-insights-chip-ablation",
+     flag_descriptions::kGeminiInsightsChipAblationName,
+     flag_descriptions::kGeminiInsightsChipAblationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiInsightsChipAblation)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
