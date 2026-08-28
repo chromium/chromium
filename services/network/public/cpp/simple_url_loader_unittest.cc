@@ -2970,6 +2970,124 @@ TEST_P(SimpleURLLoaderTest, DownloadProgressCallbackIncremental) {
   task_environment_.RunUntilIdle();
 }
 
+// Pausing stops reading the body for downloads to a file, and resuming
+// completes the download. For the other download types, pausing is a no-op.
+TEST_P(SimpleURLLoaderTest, PauseAndResumeReadingBody) {
+  const bool can_pause =
+      SimpleLoaderTestHelper::IsDownloadTypeToFile(GetDownloadType());
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
+  // Three body bytes, each written after the previous one was processed.
+  loader_factory.AddEvents(
+      {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
+       TestLoaderEvent::kBodyDataRead, TestLoaderEvent::kBodyDataRead,
+       TestLoaderEvent::kBodyBufferClosed, TestLoaderEvent::kResponseComplete});
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelperForURL(GURL("foo://bar/"), "GET", &loader_factory);
+  SimpleURLLoader* loader = test_helper->simple_url_loader();
+
+  std::vector<uint64_t> progress;
+  loader->SetOnDownloadProgressCallback(
+      base::BindLambdaForTesting([&](uint64_t current) {
+        progress.push_back(current);
+        // Pause once the first byte has been written to the file. The pause is
+        // applied on the file sequence before the next byte is sent.
+        if (current == 1) {
+          loader->PauseReadingBody();
+        }
+      }));
+
+  loader_factory.RunTest(test_helper.get(), /*wait_for_completion=*/false);
+  task_environment_.RunUntilIdle();
+
+  if (IsHeadersOnly()) {
+    EXPECT_TRUE(progress.empty());
+  } else if (can_pause) {
+    // The second byte was already being read when the pause took effect; the
+    // third one stays in the pipe until the request is resumed.
+    EXPECT_THAT(progress, testing::ElementsAre(1u, 2u));
+  } else {
+    // Pausing is a no-op: everything was read.
+    EXPECT_EQ(3u, progress.back());
+  }
+
+  loader->ResumeReadingBody();
+  test_helper->Wait();
+
+  EXPECT_EQ(net::OK, loader->NetError());
+  if (!IsHeadersOnly()) {
+    EXPECT_EQ(3u, progress.back());
+    ASSERT_TRUE(test_helper->response_body());
+    EXPECT_EQ("aaa", *test_helper->response_body());
+  }
+}
+
+// Pausing before the request starts holds back the body until resumed.
+TEST_P(SimpleURLLoaderTest, PauseReadingBodyBeforeStart) {
+  if (!SimpleLoaderTestHelper::IsDownloadTypeToFile(GetDownloadType())) {
+    GTEST_SKIP() << "Pausing only applies to downloads to a file.";
+  }
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
+  loader_factory.AddEvents(
+      {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
+       TestLoaderEvent::kBodyDataRead, TestLoaderEvent::kBodyDataRead,
+       TestLoaderEvent::kBodyBufferClosed, TestLoaderEvent::kResponseComplete});
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelperForURL(GURL("foo://bar/"), "GET", &loader_factory);
+  SimpleURLLoader* loader = test_helper->simple_url_loader();
+
+  std::vector<uint64_t> progress;
+  loader->SetOnDownloadProgressCallback(base::BindLambdaForTesting(
+      [&](uint64_t current) { progress.push_back(current); }));
+
+  loader->PauseReadingBody();
+  loader_factory.RunTest(test_helper.get(), /*wait_for_completion=*/false);
+  task_environment_.RunUntilIdle();
+
+  // The reader stops after the first byte it was handed.
+  EXPECT_THAT(progress, testing::ElementsAre(1u));
+
+  loader->ResumeReadingBody();
+  test_helper->Wait();
+
+  EXPECT_EQ(net::OK, loader->NetError());
+  // The remaining bytes may arrive in a single read.
+  EXPECT_EQ(3u, progress.back());
+  ASSERT_TRUE(test_helper->response_body());
+  EXPECT_EQ("aaa", *test_helper->response_body());
+}
+
+// Resuming a request that is not paused, and pausing twice, are no-ops.
+TEST_P(SimpleURLLoaderTest, ResumeReadingBodyWithoutPauseIsNoOp) {
+  const uint32_t kResponseSize = 512 * 1024;
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelperForURL(test_server_.GetURL(
+          base::StringPrintf("/response-size?%u", kResponseSize)));
+  SimpleURLLoader* loader = test_helper->simple_url_loader();
+
+  loader->ResumeReadingBody();
+  bool toggled = false;
+  loader->SetOnDownloadProgressCallback(
+      base::BindLambdaForTesting([&](uint64_t current) {
+        if (toggled) {
+          return;
+        }
+        toggled = true;
+        loader->ResumeReadingBody();
+        loader->PauseReadingBody();
+        loader->PauseReadingBody();
+        loader->ResumeReadingBody();
+      }));
+  test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
+
+  EXPECT_EQ(net::OK, loader->NetError());
+  if (!IsHeadersOnly()) {
+    ASSERT_TRUE(test_helper->response_body());
+    EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
+  }
+}
+
 TEST_P(SimpleURLLoaderNoAdoptInProgressLoadTest, RetryOn5xx) {
   const GURL kInitialURL("foo://bar/initial");
   struct TestCase {

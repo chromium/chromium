@@ -301,6 +301,22 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
       mojom::URLLoaderFactory* url_loader_factory,
       SimpleURLLoaderStreamConsumer* stream_consumer) = 0;
 
+  // Pauses reading the response body from the network service. Only has an
+  // effect for DownloadToFile and DownloadToTempFile requests; it is a no-op
+  // for the other download methods: DownloadToString and DownloadHeadersOnly
+  // buffer the whole body, and DownloadAsStream consumers already control the
+  // flow themselves by delaying the resume callback of OnDataReceived().
+  // While paused, no more data is read from the body pipe, so the request
+  // applies backpressure to the network connection. The connection stays open;
+  // a server or proxy may end a request that stays paused for a long time,
+  // which is then reported as a normal failure. May be called before the
+  // response starts. Calling it while already paused is a no-op.
+  virtual void PauseReadingBody() {}
+
+  // Resumes reading the response body after PauseReadingBody(). A no-op if the
+  // request is not paused.
+  virtual void ResumeReadingBody() {}
+
   // Sets callback to be invoked during redirects. Callback may delete the
   // SimpleURLLoader.
   virtual void SetOnRedirectCallback(

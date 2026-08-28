@@ -259,6 +259,8 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void DownloadAsStream(
       mojom::URLLoaderFactory* url_loader_factory,
       SimpleURLLoaderStreamConsumer* stream_consumer) override;
+  void PauseReadingBody() override;
+  void ResumeReadingBody() override;
   void SetOnRedirectCallback(
       const OnRedirectCallback& on_redirect_callback) override;
   void SetOnResponseStartedCallback(
@@ -447,6 +449,11 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // redirects.
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<BodyHandler> body_handler_;
+
+  // Whether the consumer wants the body reading paused. Recorded here so a
+  // pause requested before the request is started, or before any response or
+  // body pipe exists, is applied once the request starts.
+  bool pause_reading_body_ = false;
 
   mojo::Receiver<mojom::URLLoaderClient> client_receiver_{this};
   mojo::Remote<mojom::URLLoader> url_loader_;
@@ -709,6 +716,12 @@ class BodyHandler {
   // invoked synchronously.
   virtual void PrepareToRetry(base::OnceClosure retry_callback) = 0;
 
+  // Called by SimpleURLLoader to stop and restart reading the body. Only
+  // handlers that can hold back the body pipe implement these; the default
+  // implementations do nothing.
+  virtual void PauseReadingBody() {}
+  virtual void ResumeReadingBody() {}
+
  protected:
   SimpleURLLoaderImpl* simple_url_loader() { return simple_url_loader_; }
 
@@ -940,6 +953,20 @@ class SaveToFileBodyHandler : public BodyHandler {
     file_writer_->DeleteFile(std::move(retry_callback));
   }
 
+  void PauseReadingBody() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (file_writer_) {
+      file_writer_->PauseReadingBody();
+    }
+  }
+
+  void ResumeReadingBody() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (file_writer_) {
+      file_writer_->ResumeReadingBody();
+    }
+  }
+
  private:
   // Class to read from a mojo::ScopedDataPipeConsumerHandle and write the
   // contents to a file. Does all reading and writing on a separate file
@@ -1010,6 +1037,24 @@ class SaveToFileBodyHandler : public BodyHandler {
                                     std::move(on_file_deleted_closure)));
     }
 
+    // Stops reading from the body pipe until ResumeReadingBody() is called.
+    // Data that has already been read is still written to the file. Safe to
+    // call before StartWriting().
+    void PauseReadingBody() {
+      DCHECK(body_handler_task_runner_->RunsTasksInCurrentSequence());
+      file_writer_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&FileWriter::PauseOnFileSequence,
+                                    base::Unretained(this)));
+    }
+
+    // Resumes reading from the body pipe after PauseReadingBody().
+    void ResumeReadingBody() {
+      DCHECK(body_handler_task_runner_->RunsTasksInCurrentSequence());
+      file_writer_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&FileWriter::ResumeOnFileSequence,
+                                    base::Unretained(this)));
+    }
+
     // Destroys the FileWriter on the file TaskRunner.
     static void Destroy(std::unique_ptr<FileWriter> file_writer) {
       DCHECK(
@@ -1029,6 +1074,34 @@ class SaveToFileBodyHandler : public BodyHandler {
     }
 
    private:
+    void PauseOnFileSequence() {
+      DCHECK(file_writer_task_runner_->RunsTasksInCurrentSequence());
+      // The paused state belongs to the consumer's request, not to a single
+      // attempt: it is kept when the request is retried and the writer is
+      // reused, so a retried download stays paused until resumed.
+      //
+      // Only |paused_| is set here. |waiting_for_resume_| is set by
+      // OnDataRead() once the reader actually stops, so a resume that arrives
+      // before any data was read does not touch a reader that does not exist.
+      paused_ = true;
+    }
+
+    void ResumeOnFileSequence() {
+      DCHECK(file_writer_task_runner_->RunsTasksInCurrentSequence());
+      if (!paused_) {
+        return;
+      }
+      paused_ = false;
+      if (!waiting_for_resume_) {
+        return;
+      }
+      waiting_for_resume_ = false;
+      if (body_reader_) {
+        // May delete |body_reader_| if the pipe has been closed.
+        body_reader_->Resume();
+      }
+    }
+
     void StartWritingOnFileSequence(
         mojo::ScopedDataPipeConsumerHandle body_data_pipe,
         OnDoneCallback on_done_callback) {
@@ -1090,6 +1163,13 @@ class SaveToFileBodyHandler : public BodyHandler {
                                       body_reader_->total_bytes_read()));
       }
 
+      if (paused_) {
+        // Stop driving the pipe until ResumeOnFileSequence() calls
+        // BodyReader::Resume().
+        waiting_for_resume_ = true;
+        return net::ERR_IO_PENDING;
+      }
+
       return net::OK;
     }
 
@@ -1102,6 +1182,7 @@ class SaveToFileBodyHandler : public BodyHandler {
       // consumer uses it.
       file_.Close();
       body_reader_.reset();
+      waiting_for_resume_ = false;
 
       body_handler_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(on_done_callback_), error,
@@ -1117,6 +1198,7 @@ class SaveToFileBodyHandler : public BodyHandler {
 
         // Close the body pipe.
         body_reader_.reset();
+        waiting_for_resume_ = false;
 
         // May as well clean this up, too.
         on_done_callback_.Reset();
@@ -1160,6 +1242,12 @@ class SaveToFileBodyHandler : public BodyHandler {
     // True if a file was successfully created. Set to false when the file is
     // destroyed.
     bool owns_file_ = false;
+
+    // True while the consumer has paused reading the body.
+    bool paused_ = false;
+    // True if OnDataRead() returned ERR_IO_PENDING because of |paused_|, so
+    // the BodyReader needs Resume() to continue.
+    bool waiting_for_resume_ = false;
   };
 
   // Called by FileWriter::Destroy after deleting a partially downloaded file.
@@ -1392,6 +1480,28 @@ void SimpleURLLoaderImpl::DownloadAsStream(
   body_handler_ = std::make_unique<DownloadAsStreamBodyHandler>(
       this, !on_download_progress_callback_.is_null(), stream_consumer);
   Start(url_loader_factory);
+}
+
+void SimpleURLLoaderImpl::PauseReadingBody() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pause_reading_body_) {
+    return;
+  }
+  pause_reading_body_ = true;
+  if (body_handler_) {
+    body_handler_->PauseReadingBody();
+  }
+}
+
+void SimpleURLLoaderImpl::ResumeReadingBody() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pause_reading_body_) {
+    return;
+  }
+  pause_reading_body_ = false;
+  if (body_handler_) {
+    body_handler_->ResumeReadingBody();
+  }
 }
 
 void SimpleURLLoaderImpl::SetOnRedirectCallback(
@@ -1753,6 +1863,12 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
   DCHECK(!request_state_->finished);
   DCHECK(!url_loader_);
   DCHECK(!request_state_->body_started);
+
+  // Apply a pause requested before the request was started. A no-op for body
+  // handlers that cannot pause.
+  if (pause_reading_body_) {
+    body_handler_->PauseReadingBody();
+  }
 
   if (url_loader_client_endpoints_) {
     DCHECK(!url_loader_factory);
