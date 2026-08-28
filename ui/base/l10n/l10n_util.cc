@@ -21,11 +21,13 @@
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
 #include "base/i18n/tag_converters.h"
+#include "base/i18n/unicodestring.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -68,6 +70,7 @@ namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::IcuLocaleConverter;
 using ::base::i18n::LanguageTag;
 using ::base::i18n::LanguageTagMatcher;
 using ::ui_l10n::GetAcceptLanguageMatcher;
@@ -92,12 +95,48 @@ void AdjustParagraphDirectionality(std::u16string* paragraph) {
 #endif
 }
 
-std::string_view GetLanguageSubtagWithFallback(std::string_view locale) {
-  size_t separator_pos = locale.find('-');
-  if (separator_pos == std::string_view::npos) {
-    separator_pos = locale.find('_');
+std::u16string GetDisplayNameForLocaleInternal(
+    const base::i18n::LanguageTag& locale,
+    const base::i18n::LanguageTag& display_locale) {
+  if (locale.tag_string() == "zh-TW") {
+    return GetDisplayNameForLocaleInternal(GetKnownLanguageTag("zh-Hant"),
+                                           display_locale);
   }
-  return locale.substr(0, separator_pos);
+  if (locale.tag_string() == "zh-CN") {
+    return GetDisplayNameForLocaleInternal(GetKnownLanguageTag("zh-Hans"),
+                                           display_locale);
+  }
+
+#if BUILDFLAG(ENABLE_PSEUDOLOCALES)
+  if (locale == GetKnownLanguageTag("en-XA")) {
+    return u"Long strings pseudolocale (en-XA)";
+  } else if (locale == GetKnownLanguageTag("ar-XB")) {
+    return u"RTL pseudolocale (ar-XB)";
+  }
+#endif  // BUILDFLAG(ENABLE_PSEUDOLOCALES)
+
+#if BUILDFLAG(IS_IOS)
+  // Use the Foundation API to get the localized display name, removing the need
+  // for the ICU data file to include this data.
+  return GetDisplayNameForLocale(locale, display_locale);
+#else
+#if BUILDFLAG(IS_ANDROID)
+  // Use Java API to get locale display name so it would be possible to remove
+  // most of the lang data from icu data to reduce binary size, except for
+  // zh-Hans and zh-Hant because the current Android Java API doesn't support
+  // scripts.
+  // TODO(wangxianzhu): remove the special handling of zh-Hans and zh-Hant once
+  // Android Java API supports scripts.
+  if (locale.language_subtag() != "zh") {
+    return GetDisplayNameForLocale(locale, display_locale);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  icu::UnicodeString display_name_unicode;
+  IcuLocaleConverter::GetInstance().FromLanguageTag(locale).getDisplayName(
+      IcuLocaleConverter::GetInstance().FromLanguageTag(display_locale),
+      display_name_unicode);
+  return base::i18n::UnicodeStringToString16(display_name_unicode);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -287,111 +326,78 @@ bool IsLocaleNameTranslated(std::string_view locale,
       base::UTF16ToASCII(display_name) != locale;
 }
 
-std::u16string GetDisplayNameForLocaleWithoutCountry(
-    std::string_view locale,
-    std::string_view display_locale,
-    bool is_for_ui,
-    bool disallow_default) {
-  return GetDisplayNameForLocale(GetLanguageSubtagWithFallback(locale),
-                                 display_locale, is_for_ui, disallow_default);
-}
-
-std::u16string GetDisplayNameForLocale(
-    const base::i18n::LanguageTag& locale,
-    const base::i18n::LanguageTag& display_locale,
-    bool is_for_ui,
-    bool disallow_default) {
-  return GetDisplayNameForLocale(locale.tag_string(),
-                                 display_locale.tag_string(), is_for_ui,
-                                 disallow_default);
+std::u16string GetDisplayNameForLocale(const LanguageTag& locale,
+                                       const LanguageTag& display_locale,
+                                       bool is_for_ui,
+                                       bool disallow_default) {
+  std::u16string display_name =
+      GetDisplayNameForLocaleInternal(locale, display_locale);
+  if (display_name.empty() && !disallow_default) {
+    display_name =
+        GetDisplayNameForLocaleInternal(locale, GetKnownLanguageTag("en-US"));
+  }
+  if (is_for_ui && base::i18n::IsRTL()) {
+    base::i18n::AdjustStringForLocaleDirection(&display_name);
+  }
+  return display_name;
 }
 
 std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        std::string_view display_locale,
                                        bool is_for_ui,
                                        bool disallow_default) {
-  std::string locale_code = std::string(locale);
-  std::string display_locale_code = std::string(display_locale);
-  // Internally, zh-CN and zh-TW are used, but  the display names are supposed
-  // to be Chinese (Simplified) and Chinese (Traditional) instead of Chinese
-  // (China) and Chinese (Taiwan). Translate uses "tl" (Tagalog) to mean "fil"
-  // (Filipino). Until Google translate is changed to understand "fil", make
-  // "tl" alias to "fil". Translate also uses "gom" (Goan Konkani) for "kok"
-  // (Konkani).
-  if (locale_code == "gom") {
-    locale_code = "kok";
-  } else if (locale_code == "mo") {
-    locale_code = "ro-MD";
-  } else if (locale_code == "tl") {
-    locale_code = "fil";
-  } else if (locale_code == "zh-CN") {
-    locale_code = "zh-Hans";
-  } else if (locale_code == "zh-TW") {
-    locale_code = "zh-Hant";
-  }
-
-  std::u16string display_name;
-
-#if BUILDFLAG(ENABLE_PSEUDOLOCALES)
-  if (locale_code == "en-XA") {
-    return u"Long strings pseudolocale (en-XA)";
-  } else if (locale_code == "ar-XB") {
-    return u"RTL pseudolocale (ar-XB)";
-  }
-#endif  // BUILDFLAG(ENABLE_PSEUDOLOCALES)
-
-#if BUILDFLAG(IS_IOS)
-  // Use the Foundation API to get the localized display name, removing the need
-  // for the ICU data file to include this data.
-  display_name = GetDisplayNameForLocale(locale_code, display_locale_code);
-#else
-#if BUILDFLAG(IS_ANDROID)
-  // Use Java API to get locale display name so it would be possible to remove
-  // most of the lang data from icu data to reduce binary size, except for
-  // zh-Hans and zh-Hant because the current Android Java API doesn't support
-  // scripts.
-  // TODO(wangxianzhu): remove the special handling of zh-Hans and zh-Hant once
-  // Android Java API supports scripts.
-  if (!locale_code.starts_with("zh-Han")) {
-    display_name = GetDisplayNameForLocale(locale_code, display_locale_code);
-  } else
-#endif  // BUILDFLAG(IS_ANDROID)
-  {
-    UErrorCode error = U_ZERO_ERROR;
-    const int kBufferSize = 1024;
-
-    int32_t actual_size;
-    // Country code in ICU64 is obtained by `uloc_getDisplayCountry`.
-    if (locale_code[0] == '-' || locale_code[0] == '_') {
-      actual_size = uloc_getDisplayCountry(
-          locale_code.c_str(), display_locale_code.c_str(),
-          base::WriteInto(&display_name, kBufferSize), kBufferSize - 1, &error);
-    } else {
-      actual_size = uloc_getDisplayName(
-          locale_code.c_str(), display_locale_code.c_str(),
-          base::WriteInto(&display_name, kBufferSize), kBufferSize - 1, &error);
-    }
-    if (disallow_default && U_USING_DEFAULT_WARNING == error)
-      return std::u16string();
-    DCHECK(U_SUCCESS(error));
-    display_name.resize(base::checked_cast<size_t>(actual_size));
-  }
-#endif  // BUILDFLAG(IS_IOS)
-
-  // Add directional markup so parentheses are properly placed.
-  if (is_for_ui && base::i18n::IsRTL())
-    base::i18n::AdjustStringForLocaleDirection(&display_name);
-  return display_name;
-}
-
-std::u16string GetDisplayNameForCountry(std::string_view country_code,
-                                        std::string_view display_locale) {
-  if (country_code.empty()) {
+  std::optional<LanguageTag> locale_tag = GetLanguageTagFromString(locale);
+  std::optional<LanguageTag> display_locale_tag =
+      GetLanguageTagFromString(display_locale);
+  if (!locale_tag || !display_locale_tag) {
     return std::u16string();
   }
-  return GetDisplayNameForLocale(base::StrCat({"_", country_code}),
-                                 display_locale, false);
+
+  return GetDisplayNameForLocale(*locale_tag, *display_locale_tag, is_for_ui,
+                                 disallow_default);
 }
+
+std::u16string GetDisplayNameForLocaleWithoutCountry(
+    std::string_view locale,
+    std::string_view display_locale,
+    bool is_for_ui,
+    bool disallow_default) {
+  std::optional<LanguageTag> locale_tag = GetLanguageTagFromString(locale);
+  std::optional<LanguageTag> display_locale_tag =
+      GetLanguageTagFromString(display_locale);
+
+  if (!locale_tag || !display_locale_tag) {
+    return std::u16string();
+  }
+
+  return GetDisplayNameForLocale(locale_tag->WithLanguageSubtagOnly(),
+                                 *display_locale_tag, is_for_ui,
+                                 disallow_default);
+}
+
+#if !BUILDFLAG(IS_IOS)
+std::u16string GetDisplayNameForCountry(std::string_view country_code,
+                                        std::string_view display_locale) {
+  if (display_locale.empty()) {
+    return std::u16string();
+  }
+  std::optional<LanguageTag> und_with_country =
+      GetLanguageTagFromString(base::StrCat({"und-", country_code}));
+  if (!und_with_country) {
+    return std::u16string();
+  }
+
+  icu::Locale icu_display_locale =
+      IcuLocaleConverter::GetInstance().FromLanguageTag(
+          GetLanguageTagFromString(display_locale)
+              .value_or(GetKnownLanguageTag("en-US")));
+  icu::UnicodeString display_country;
+  IcuLocaleConverter::GetInstance()
+      .FromLanguageTag(*und_with_country)
+      .getDisplayCountry(icu_display_locale, display_country);
+  return base::i18n::UnicodeStringToString16(display_country);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 std::string GetStringUTF8(int message_id) {
   return base::UTF16ToUTF8(GetStringUTF16(message_id));

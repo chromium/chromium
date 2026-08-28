@@ -285,9 +285,9 @@ TEST_F(AIWriterTest, CanCreateUnIsLanguagesSupported) {
 TEST_F(AIWriterTest, ToProtoOptionsLanguagesSupported) {
   // Writer proto expects base language display names in English.
   std::vector<std::pair<std::string, std::string>> languages = {
-      {"en", "English"},  {"en-us", "English"},  {"en-uk", "English"},
-      {"es", "Spanish"},  {"es-sp", "Spanish"},  {"es-mx", "Spanish"},
-      {"ja", "Japanese"}, {"ja-jp", "Japanese"}, {"ja-foo", "Japanese"},
+      {"en", "English"},  {"en-us", "English"},  {"en-gb", "English"},
+      {"es", "Spanish"},  {"es-es", "Spanish"},  {"es-mx", "Spanish"},
+      {"ja", "Japanese"}, {"ja-jp", "Japanese"},
   };
   blink::mojom::AIWriterCreateOptionsPtr options = GetDefaultOptions();
   for (const auto& language : languages) {

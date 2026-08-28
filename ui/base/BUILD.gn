@@ -646,7 +646,10 @@ if (is_ios) {
       "l10n/l10n_util_ios.h",
       "l10n/l10n_util_ios.mm",
     ]
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//base/i18n:language_tag_no_icu",
+    ]
     frameworks = [ "Foundation.framework" ]
   }
 }

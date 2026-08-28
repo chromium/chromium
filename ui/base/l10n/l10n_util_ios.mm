@@ -6,10 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/check.h"
-#include "base/no_destructor.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_local.h"
+#import "base/check.h"
+#import "base/i18n/language_tag.h"
+#import "base/no_destructor.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/threading/thread_local.h"
 
 namespace l10n_util {
 namespace {
@@ -85,11 +86,32 @@ NSString* GetDisplayNameForLocale(NSString* language,
 
 }  // namespace
 
-std::u16string GetDisplayNameForLocale(const std::string& locale,
-                                       const std::string& display_locale) {
-  return base::SysNSStringToUTF16(
-      GetDisplayNameForLocale(base::SysUTF8ToNSString(locale),
-                              base::SysUTF8ToNSString(display_locale)));
+std::u16string GetDisplayNameForLocale(
+    const base::i18n::LanguageTag& locale,
+    const base::i18n::LanguageTag& display_locale) {
+  return base::SysNSStringToUTF16(GetDisplayNameForLocale(
+      base::SysUTF8ToNSString(locale.tag_string()),
+      base::SysUTF8ToNSString(display_locale.tag_string())));
+}
+
+std::u16string GetDisplayNameForCountry(std::string_view country_code,
+                                        std::string_view display_locale) {
+  if (display_locale.empty()) {
+    return std::u16string();
+  }
+
+  NSString* ns_country_code = base::SysUTF8ToNSString(country_code);
+  NSString* ns_display_locale = base::SysUTF8ToNSString(display_locale);
+
+  NSLocale* ns_locale = LocaleCache::LocaleForIdentifier(ns_display_locale);
+  NSString* localized_country_name =
+      [ns_locale displayNameForKey:NSLocaleCountryCode value:ns_country_code];
+
+  if (localized_country_name.length) {
+    return base::SysNSStringToUTF16(localized_country_name);
+  }
+
+  return base::SysNSStringToUTF16(ns_country_code);
 }
 
 }  // namespace l10n_util

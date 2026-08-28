@@ -6,8 +6,10 @@
 #define UI_BASE_L10N_L10N_UTIL_IOS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
+#include "base/i18n/language_tag.h"
 
 namespace l10n_util {
 
@@ -27,8 +29,14 @@ namespace l10n_util {
 // exposes the necessary function from ICU, and iOS is trying to not depend
 // on ICU to reduce the package size.
 COMPONENT_EXPORT(UI_BASE)
-std::u16string GetDisplayNameForLocale(const std::string& locale,
-                                       const std::string& display_locale);
+std::u16string GetDisplayNameForLocale(
+    const base::i18n::LanguageTag& locale,
+    const base::i18n::LanguageTag& display_locale);
+
+// Get localized country name using NSLocale Foundation API.
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetDisplayNameForCountry(std::string_view country_code,
+                                        std::string_view display_locale);
 
 }  // namespace l10n_util
 
