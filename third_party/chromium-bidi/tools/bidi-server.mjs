@@ -105,6 +105,36 @@ export function parseCommandLineArgs() {
         type: 'string',
         default: process.env.CHROMEDRIVER_BIN,
       },
+      'test-filter': {
+        type: 'string',
+      },
+      'test-filter-file': {
+        type: 'string',
+      },
+      'isolated-script-test-filter': {
+        type: 'string',
+      },
+      'isolated-script-test-filter-file': {
+        type: 'string',
+      },
+      'isolated-script-test-output': {
+        type: 'string',
+      },
+      'isolated-script-test-perf-output': {
+        type: 'string',
+      },
+      'isolated-outdir': {
+        type: 'string',
+      },
+      'isolated-script-test-repeat': {
+        type: 'string',
+      },
+      'isolated-script-test-launcher-retry-limit': {
+        type: 'string',
+      },
+      'isolated-script-test-also-run-disabled-tests': {
+        type: 'boolean',
+      },
     },
     allowPositionals: true,
     strict: false,
@@ -114,8 +144,13 @@ export function parseCommandLineArgs() {
     fileOrFolder: positionals,
     k: values.k,
     s: values.s,
-    'repeat-times': Number(values['repeat-times']),
-    'reruns-times': Number(values['reruns-times']),
+    'repeat-times': Number(
+      values['isolated-script-test-repeat'] || values['repeat-times'],
+    ),
+    'reruns-times': Number(
+      values['isolated-script-test-launcher-retry-limit'] ||
+        values['reruns-times'],
+    ),
     'total-shards': Number(values['total-shards']),
     'shard-id': Number(values['shard-id']),
     'gen-dir': values['gen-dir'],
@@ -123,6 +158,11 @@ export function parseCommandLineArgs() {
     'python-spec': values['python-spec'],
     'browser-bin': values['browser-bin'],
     'chromedriver-bin': values['chromedriver-bin'],
+    'test-filter':
+      values['test-filter'] || values['isolated-script-test-filter'],
+    'test-filter-file':
+      values['test-filter-file'] || values['isolated-script-test-filter-file'],
+    'isolated-script-test-output': values['isolated-script-test-output'],
   };
 }
 

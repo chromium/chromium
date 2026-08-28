@@ -315,7 +315,27 @@ Filter unit tests by file path:
 ../../out/Default/bin/run_webdriver_bidi_unittests -- --test-path-pattern="<path_pattern>"
 ```
 
+Filter unit tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter`):
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_unittests --test-filter=':chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error when the predicate is truthy'
+```
+
+Multiple tests can be separated with `::`:
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_unittests --test-filter=':chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw an error when the predicate is truthy:::chromium-bidi!mocha:src/utils/:DefaultMap.test.ts#DefaultMap:sets and gets properly'
+```
+
+Or using filter files (`--test-filter-file` / `--isolated-script-test-filter-file`):
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_unittests --test-filter-file=path/to/filter_file.txt
+```
+
 > [!NOTE]
+> When running in `zsh` or other shells that interpret `!`, `#`, or `[`/`]`, make sure to wrap the filter argument in single quotes `'...'` to prevent history expansion (`event not found`) or glob expansion (`no matches found`).
+>
 > When running from the Chromium repository root (`src/`), use `out/Default/bin/run_webdriver_bidi_unittests`.
 
 ### E2E tests
@@ -344,6 +364,29 @@ Run all E2E tests:
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests
 ```
+
+Filter E2E tests using ResultDB / Chromium test filter (`--test-filter` / `--isolated-script-test-filter`):
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_e2e_tests --test-filter=':chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_bluetooth_add_same_characteristic_uuid_twice'
+```
+
+Legacy pytest node IDs and multiple `::`-separated test IDs are also supported:
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_e2e_tests --isolated-script-test-filter='tests/bluetooth/test_characteristic_emulation.py::test_bluetooth_add_same_characteristic_uuid_twice::tests/browser/test_create_user_context.py::test_browser_create_user_context_proxy[True]'
+```
+
+Or using filter files (`--test-filter-file` / `--isolated-script-test-filter-file`):
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_e2e_tests --test-filter-file=path/to/filter_file.txt
+```
+
+> [!NOTE]
+> When running in `zsh` or other shells that interpret `!`, `#`, or `[`/`]`, make sure to wrap the filter argument in single quotes `'...'` to prevent history expansion (`event not found`) or glob expansion (`no matches found`).
+>
+> When running from the Chromium repository root (`src/`), use `out/Default/bin/run_webdriver_bidi_e2e_tests`.
 
 Additionally the output is recorded under `./logs/<DATE>.e2e.log`, which will contain
 both the PyTest logs and in the event of `FAILED` test all the Chromium-BiDi logs.

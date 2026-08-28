@@ -29,8 +29,7 @@ def main():
     parser.add_argument("--node-py", required=True)
     parser.add_argument("--browser-bin", default=None)
     parser.add_argument("--chromedriver-bin", default=None)
-    parser.add_argument("args", nargs=argparse.REMAINDER)
-    args = parser.parse_args()
+    args, unknown_args = parser.parse_known_args()
 
     # The current directory may be the root of the checkout or the build dir (e.g. out/Default).
     # Use __file__ to reliably find the source directory for chromium-bidi.
@@ -63,7 +62,7 @@ def main():
             else:
                 shutil.copy2(src, dst)
 
-    node_args = args.args
+    node_args = unknown_args
     while node_args and node_args[0] == "--":
         node_args = node_args[1:]
     node_dir = os.path.dirname(os.path.abspath(args.node_py))
@@ -87,9 +86,7 @@ def main():
     if args.browser_bin:
         cmd.extend(["--browser-bin", os.path.abspath(args.browser_bin)])
     if args.chromedriver_bin:
-        cmd.extend(
-            ["--chromedriver-bin",
-             os.path.abspath(args.chromedriver_bin)])
+        cmd.extend(["--chromedriver-bin", os.path.abspath(args.chromedriver_bin)])
     cmd.extend(node_args)
     return subprocess.call(cmd, env=env)
 

@@ -216,6 +216,12 @@ if (argv.k) {
 if (argv.s) {
   e2eArgs.push('-s');
 }
+if (argv['test-filter']) {
+  e2eArgs.push(`--test-filter=${argv['test-filter']}`);
+}
+if (argv['test-filter-file']) {
+  e2eArgs.push(`--test-filter-file=${argv['test-filter-file']}`);
+}
 
 const e2eProcess = child_process.spawn(pythonCommand, e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],

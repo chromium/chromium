@@ -16,7 +16,145 @@
 import html
 import json
 import os
+import re
 import urllib.request
+
+
+def format_test_id(nodeid: str):
+    """Formats a pytest nodeid into a ResultDB canonical structured testId and dict.
+
+    Canonical flat format: :chromium-bidi!pytest:${coarseName}:${fineName}#${caseName}
+    """
+    parts = nodeid.split("::")
+    file_path = parts[0]
+    case_components = parts[1:] if len(parts) > 1 else [os.path.basename(file_path)]
+
+    coarse_name = os.path.dirname(file_path)
+    if coarse_name and not coarse_name.endswith("/"):
+        coarse_name += "/"
+    fine_name = os.path.basename(file_path)
+
+    def flat_escape(s: str) -> str:
+        return re.sub(r"([!#:\\])", r"\\\1", s)
+
+    coarse_flat = flat_escape(coarse_name)
+    fine_flat = flat_escape(fine_name)
+    case_flat = ":".join(flat_escape(c) for c in case_components)[:512]
+
+    test_id = f":chromium-bidi!pytest:{coarse_flat}:{fine_flat}#{case_flat}"
+    test_id_structured = {
+        "moduleName": "chromium-bidi",
+        "moduleScheme": "pytest",
+        "coarseName": coarse_name,
+        "fineName": fine_name,
+        "caseNameComponents": case_components,
+    }
+    return test_id, test_id_structured
+
+
+def parse_filter_tokens(filter_str: str) -> list[str]:
+    """Parses a filter string into individual filter patterns.
+
+    Handles :: separation as well as legacy joined nodeids (file.py::func_name).
+    """
+    raw_tokens = [t.strip() for t in filter_str.split("::") if t.strip()]
+    patterns = []
+    i = 0
+    while i < len(raw_tokens):
+        token = raw_tokens[i]
+        # Check if this token is a file path and next token is a test function name (legacy nodeid joined by ::)
+        if (
+            (
+                token.endswith(".py")
+                or ".py:" in token
+                or (token.startswith("-") and token[1:].endswith(".py"))
+            )
+            and i + 1 < len(raw_tokens)
+            and not raw_tokens[i + 1].endswith(".py")
+            and not raw_tokens[i + 1].startswith(":")
+            and not raw_tokens[i + 1].startswith("tests/")
+        ):
+            patterns.append(f"{token}::{raw_tokens[i + 1]}")
+            i += 2
+        else:
+            patterns.append(token)
+            i += 1
+    return patterns
+
+
+class TestFilter:
+    """Represents a single test filter rule."""
+
+    __test__ = False
+
+    def __init__(self, filter_text: str):
+        self.is_exclusion = filter_text.startswith("-")
+        if self.is_exclusion:
+            filter_text = filter_text[1:]
+        self.is_prefix = filter_text.endswith("*")
+        if self.is_prefix:
+            filter_text = filter_text[:-1]
+        self.filter_text = filter_text
+
+    def matches_string(self, s: str) -> bool:
+        if self.is_prefix:
+            return s.startswith(self.filter_text)
+        return s == self.filter_text
+
+    def is_match(
+        self, structured_id: str, nodeid: str, file_path: str, func_name: str
+    ) -> bool:
+        return (
+            self.matches_string(structured_id)
+            or self.matches_string(nodeid)
+            or self.matches_string(file_path)
+            or self.matches_string(func_name)
+        )
+
+    def specificity_key(self):
+        return len(self.filter_text)
+
+
+class TestFilterGroup:
+    """Represents a group of filters (e.g. from a single CLI flag or file)."""
+
+    __test__ = False
+
+    def __init__(self, filters: list[TestFilter]):
+        self.filters = sorted(filters, key=lambda f: f.specificity_key(), reverse=True)
+        if self.filters and all(f.is_exclusion for f in self.filters):
+            self.filters.append(TestFilter("*"))
+
+    @classmethod
+    def from_filter_file(cls, filepath: str):
+        filters = []
+        tag_regex = re.compile(
+            r"\[[^\]]*\]|Bug\([^)]*\)|crbug\.com/\S*|skbug\.com/\S*|webkit\.org/\S*",
+            re.VERBOSE,
+        )
+        with open(filepath, encoding="utf-8") as f:
+            for line in f:
+                raw_line = re.split(r"(?:\s|^)#", line)[0].strip()
+                if not raw_line:
+                    continue
+                is_skip = "[ Skip ]" in raw_line or "[ Failure ]" in raw_line
+                cleaned_line = tag_regex.sub("", raw_line).strip()
+                if cleaned_line:
+                    for token in parse_filter_tokens(cleaned_line):
+                        if is_skip and not token.startswith("-"):
+                            token = "-" + token
+                        filters.append(TestFilter(token))
+        return cls(filters)
+
+    def is_test_included(
+        self, structured_id: str, nodeid: str, file_path: str, func_name: str
+    ) -> bool:
+        if not self.filters:
+            return True
+        for f in self.filters:
+            if f.is_match(structured_id, nodeid, file_path, func_name):
+                return not f.is_exclusion
+        return False
 
 
 class ResultSinkReporter:
@@ -89,8 +227,10 @@ class ResultSinkReporter:
         else:
             return
 
+        test_id, test_id_structured = format_test_id(report.nodeid)
         test_result = {
-            "testId": report.nodeid.replace("\n", " ")[:512],
+            "testId": test_id,
+            "testIdStructured": test_id_structured,
             "status": status,
             "expected": expected,
             "duration": f"{report.duration:.3f}s",
@@ -111,6 +251,76 @@ class ResultSinkReporter:
         if self.pending_results:
             self._send_batch(self.pending_results)
             self.pending_results = []
+
+
+def pytest_addoption(parser):
+    group = parser.getgroup("test_filtering", "Test filtering options")
+    group.addoption(
+        "--test-filter",
+        "--isolated-script-test-filter",
+        action="append",
+        default=[],
+        dest="test_filters",
+        help="Double-colon separated test filters",
+    )
+    group.addoption(
+        "--test-filter-file",
+        "--isolated-script-test-filter-file",
+        action="append",
+        default=[],
+        dest="test_filter_files",
+        help="Path to test filter file",
+    )
+
+
+def pytest_collection_modifyitems(session, config, items):
+    test_filters = list(config.getoption("test_filters") or [])
+    test_filter_files = list(config.getoption("test_filter_files") or [])
+
+    env_filter = os.environ.get("ISOLATED_SCRIPT_TEST_FILTER") or os.environ.get(
+        "TEST_FILTER"
+    )
+    if env_filter:
+        test_filters.append(env_filter)
+
+    env_filter_file = os.environ.get(
+        "ISOLATED_SCRIPT_TEST_FILTER_FILE"
+    ) or os.environ.get("TEST_FILTER_FILE")
+    if env_filter_file:
+        test_filter_files.append(env_filter_file)
+
+    if not test_filters and not test_filter_files:
+        return
+
+    filter_groups = []
+    for f_str in test_filters:
+        tokens = parse_filter_tokens(f_str)
+        if tokens:
+            filter_groups.append(TestFilterGroup([TestFilter(t) for t in tokens]))
+
+    for f_path in test_filter_files:
+        if os.path.exists(f_path):
+            group = TestFilterGroup.from_filter_file(f_path)
+            if group.filters:
+                filter_groups.append(group)
+
+    if not filter_groups:
+        return
+
+    kept_items = []
+    for item in items:
+        structured_id, _ = format_test_id(item.nodeid)
+        file_path = item.nodeid.split("::")[0]
+        func_name = item.name
+
+        included = all(
+            group.is_test_included(structured_id, item.nodeid, file_path, func_name)
+            for group in filter_groups
+        )
+        if included:
+            kept_items.append(item)
+
+    items[:] = kept_items
 
 
 def pytest_configure(config):
