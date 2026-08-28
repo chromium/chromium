@@ -776,18 +776,19 @@ public class StatusMediator
         return navigationController.getPendingEntry();
     }
 
-    private boolean hasPendingNonNtpNavigation() {
+    private @Nullable GURL getPendingUrl() {
         NavigationEntry pendingEntry = getPendingEntry();
-        if (pendingEntry == null) return false;
+        return pendingEntry != null ? pendingEntry.getUrl() : null;
+    }
 
-        return !UrlUtilities.isNtpUrl(pendingEntry.getUrl());
+    private boolean hasPendingNonNtpNavigation() {
+        GURL url = getPendingUrl();
+        return url != null && !UrlUtilities.isNtpUrl(url);
     }
 
     private boolean hasPendingHttpOrHttpsNavigation() {
-        NavigationEntry pendingEntry = getPendingEntry();
-        if (pendingEntry == null || pendingEntry.getUrl() == null) return false;
-
-        return UrlUtilities.isHttpOrHttps(pendingEntry.getUrl());
+        GURL url = getPendingUrl();
+        return url != null && UrlUtilities.isHttpOrHttps(url);
     }
 
     /** Returns status icon resource for the user-selected default search engine. */
