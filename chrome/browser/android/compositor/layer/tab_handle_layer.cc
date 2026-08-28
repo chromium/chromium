@@ -68,6 +68,7 @@ void TabHandleLayer::SetProperties(
     float divider_offset_x,
     float bottom_margin,
     float top_margin,
+    float content_padding_x,
     float close_button_padding,
     float close_button_extra_offset,
     float close_button_alpha,
@@ -177,9 +178,8 @@ void TabHandleLayer::SetProperties(
   close_button_hover_highlight_->SetBounds(
       close_button_background_resource->size());
 
-  const float padding_right = tab_handle_resource->size().width() -
-                              tab_handle_resource->padding().right();
-  const float padding_left = tab_handle_resource->padding().x();
+  const float padding_right = content_padding_x;
+  const float padding_left = content_padding_x;
 
   float close_width = close_button_->bounds().width() - close_button_padding +
                       close_button_extra_offset;

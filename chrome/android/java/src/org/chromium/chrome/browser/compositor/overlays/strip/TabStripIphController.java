@@ -225,12 +225,12 @@ public class TabStripIphController {
                 assert tab != null;
                 float left =
                         isRtl
-                                ? -tab.getFaviconPadding() - tab.getFaviconSize()
-                                : tab.getFaviconPadding();
+                                ? -tab.getContentPaddingX() - tab.getFaviconSize()
+                                : tab.getContentPaddingX();
                 float right =
                         isRtl
-                                ? -tab.getFaviconPadding()
-                                : tab.getFaviconPadding() + tab.getFaviconSize();
+                                ? -tab.getContentPaddingX()
+                                : tab.getContentPaddingX() + tab.getFaviconSize();
                 xOffset = (isRtl ? tab.getDrawX() + tab.getWidth() : tab.getDrawX()) * dpToPx;
                 anchorRect.left = (int) (left * dpToPx);
                 anchorRect.right = (int) (right * dpToPx);

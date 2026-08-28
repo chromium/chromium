@@ -219,6 +219,7 @@ class TabStripSceneLayer : public SceneLayer {
                         float divider_offset_x,
                         float bottom_margin,
                         float top_margin,
+                        float content_padding_x,
                         float close_button_padding,
                         float close_button_extra_offset,
                         float close_button_alpha,
