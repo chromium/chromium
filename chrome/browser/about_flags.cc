@@ -4731,19 +4731,17 @@ const FeatureEntry::Choice kSymphoniaDemuxingChoices[] = {
      kSymphoniaDemuxingFeatureList}};
 #endif
 
-// Proofreader requires LiteRT-LM and Manifest Broker.
+// Proofreader requires Manifest Broker.
 const FeatureEntry::Choice kAIProofreaderChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "AIProofreadingAPI,OnDeviceModelLitertLmBackend,"
-     "OptimizationGuideManifestBroker"}};
+     "AIProofreadingAPI,OptimizationGuideManifestBroker"}};
 
-// Summarizer Performance Preference requires LiteRT-LM and Manifest Broker.
+// Summarizer Performance Preference requires Manifest Broker.
 const FeatureEntry::Choice kAISummarizationPerformancePreferenceChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "AISummarizationPerformancePreference,OnDeviceModelLitertLmBackend,"
-     "OptimizationGuideManifestBroker"}};
+     "AISummarizationPerformancePreference,OptimizationGuideManifestBroker"}};
 
 // Semantic Embedder. Enables the API for both Window and Worker contexts.
 const FeatureEntry::Choice kAISemanticEmbedderChoices[] = {
@@ -4760,21 +4758,20 @@ const FeatureEntry::Choice kPromptAPIToolUseChoices[] = {
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend,"
+     "OptimizationGuideManifestBroker,"
      "AIApiFoundationalModel:model_version/v4"}};
 
 const FeatureEntry::Choice kSpeculativeDecodingChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "OnDeviceModelSpeculativeDecoding,OptimizationGuideManifestBroker,"
-     "OnDeviceModelLitertLmBackend,AIApiFoundationalModel:model_version/v4,"
-     "AIPromptAPIParams"}};
+     "AIApiFoundationalModel:model_version/v4,AIPromptAPIParams"}};
 
 const FeatureEntry::Choice kOnDeviceWebSpeechSmallExpertModelChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "OnDeviceWebSpeech,OnDeviceWebSpeechSmallExpertModel,"
-     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend"}};
+     "OptimizationGuideManifestBroker"}};
 
 const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
     {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};

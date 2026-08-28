@@ -14176,24 +14176,6 @@
             ]
         }
     ],
-    "OnDeviceModelLitertLmBackend": [
-        {
-            "platforms": [
-                "chromeos",
-                "windows",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OnDeviceModelLitertLmBackend"
-                    ]
-                }
-            ]
-        }
-    ],
     "OnTaskStatusCheck": [
         {
             "platforms": [
