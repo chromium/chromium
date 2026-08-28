@@ -2637,7 +2637,6 @@ crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-inter
 # ====== New tests from wpt-importer added here ======
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/phrasing-elements.html [ Pass Timeout ]
 crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/section-and-grouping-elements.html [ Pass Timeout ]
-crbug.com/553095398 external/wpt/html/syntax/parsing/custom-element-reparenting-shadow-cycle.html [ Crash ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
@@ -2660,7 +2659,6 @@ crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces.html [ Fail
 crbug.com/550484948 external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.html [ Timeout ]
 crbug.com/550484948 external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.worker.html [ Timeout ]
 crbug.com/550470670 external/wpt/custom-elements/parser/xml-parser-custom-element-reparents-during-construction.xhtml [ Crash ]
-crbug.com/550458650 external/wpt/html/syntax/parsing/adoption-agency-reparenting-pagehide.tentative.html [ Crash ]
 crbug.com/550481743 external/wpt/svg/styling/text-overflow-presentation-attribute-foreignobject.html [ Failure ]
 crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.html [ Timeout ]
 crbug.com/550484948 virtual/webcrypto-pqc/external/wpt/WebCryptoAPI/derive_bits_keys/derived_bits_length.https.any.worker.html [ Timeout ]

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Custom element constructor moves the intended parent into a template element's contents
-  assert_equals: the custom element was dropped on the floor expected null but got Element node <body><x-a><p>x</p></x-a></body>
-Harness: the test ran to completion.
-

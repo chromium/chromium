@@ -184,11 +184,18 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
 }
 
 void ContainerNode::ParserTakeAllChildrenFrom(ContainerNode& old_parent) {
-  while (Node* child = old_parent.firstChild()) {
-    // Explicitly remove since appending can fail, but this loop shouldn't be
-    // infinite.
-    old_parent.ParserRemoveChild(*child);
-    ParserAppendChild(child);
+  HeapVector<Member<Node>> children;
+  for (Node* child = old_parent.firstChild(); child;
+       child = child->nextSibling()) {
+    children.push_back(child);
+  }
+  for (Node* child : children) {
+    if (child->parentNode() == &old_parent) {
+      old_parent.ParserRemoveChild(*child);
+      if (!child->ContainsIncludingHostElements(*this)) {
+        ParserAppendChild(child);
+      }
+    }
   }
 }
 
@@ -647,6 +654,13 @@ void ContainerNode::ParserInsertBefore(Node* new_child, Node& next_child) {
   // See: fast/parser/execute-script-during-adoption-agency-removal.html
   while (ContainerNode* parent = new_child->parentNode())
     parent->ParserRemoveChild(*new_child);
+
+  // Since parser insertions skip dom pre-insertion checks for performance
+  // reasons, we make this particular check here in case removal steps had side
+  // effects.
+  if (new_child->ContainsIncludingHostElements(*this)) {
+    return;
+  }
 
   // This can happen if foster parenting moves nodes into a template
   // content document, but next_child is still a "direct" child of the
@@ -1248,6 +1262,13 @@ void ContainerNode::ParserAppendChild(Node* new_child) {
   // See: fast/parser/execute-script-during-adoption-agency-removal.html
   while (ContainerNode* parent = new_child->parentNode())
     parent->ParserRemoveChild(*new_child);
+
+  // Since parser insertions skip dom pre-insertion checks for performance
+  // reasons, we make this particular check here in case removal steps had side
+  // effects.
+  if (new_child->ContainsIncludingHostElements(*this)) {
+    return;
+  }
 
   if (GetDocument() != new_child->GetDocument())
     GetDocument().adoptNode(new_child, ASSERT_NO_EXCEPTION);
