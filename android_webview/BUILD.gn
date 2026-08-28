@@ -416,13 +416,6 @@ if (_is_default_toolchain) {
       "//android_webview/nonembedded:nonembedded_java",
       "//android_webview/support_library:support_lib_glue_java",
     ]
-
-    # If we are using an unreleased Android SDK snapshot, include the downstream
-    # glue code to support any functionality specific to the in-development
-    # Android version.
-    if (!public_android_sdk) {
-      deps += [ "//clank/android_webview/unreleased:unreleased_glue_java" ]
-    }
   }
 
   # Contains all Java dependencies used by WebView.
