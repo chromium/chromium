@@ -106,3 +106,8 @@ crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClos
 
 # Gardening suppression 2026-08-27
 crbug.com/553554439 [ iOS26.5 iPad Simulator ] ReadingListTestCase/testMarkMixedEntriesRead [ Pass Failure ]
+
+# Gardening suppression 2026-08-28
+crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testClientSideDetectionRuns [ Failure ]
+crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testPageWithUnsafeIframeSkipSubresources [ Failure ]
+crbug.com/553941600 [ Device ] SafeBrowsingTestCase/testRestoreToWarningPagePreservesHistory [ Failure ]
