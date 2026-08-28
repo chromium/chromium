@@ -125,5 +125,31 @@ TEST_F(InMemoryEntitySuppressionManagerTest,
   EXPECT_FALSE(suppression_manager_.IsSuppressed(vehicle2));
 }
 
+// Tests that an entity is considered suppressed if any of its satisfied merge
+// constraints matches a suppressed entry.
+TEST_F(InMemoryEntitySuppressionManagerTest, SuppressedIfAnyConstraintMatches) {
+  // Vehicle has two separate merge constraints: [Plate number] and [VIN].
+  EntityInstance vehicle_to_suppress =
+      test::GetVehicleEntityInstance(test::VehicleOptions{
+          .plate = u"PLATE123",
+          .number = u"VIN123",
+      });
+  EntityInstance vehicle_matching_plate =
+      test::GetVehicleEntityInstance(test::VehicleOptions{
+          .plate = u"PLATE123",
+          .number = u"Different VIN",
+      });
+  EntityInstance vehicle_matching_vin =
+      test::GetVehicleEntityInstance(test::VehicleOptions{
+          .plate = u"Different Plate",
+          .number = u"VIN123",
+      });
+
+  ASSERT_TRUE(suppression_manager_.SuppressEntity(vehicle_to_suppress));
+
+  EXPECT_TRUE(suppression_manager_.IsSuppressed(vehicle_matching_plate));
+  EXPECT_TRUE(suppression_manager_.IsSuppressed(vehicle_matching_vin));
+}
+
 }  // namespace
 }  // namespace autofill
