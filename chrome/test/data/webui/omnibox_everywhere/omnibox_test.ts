@@ -711,6 +711,12 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         assertTrue(closeEventFired);
         assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
       });
+
+  test('getFileInputsElement returns element or null when disabled', () => {
+    assertEquals(composebox.$.fileInputs, composebox.getFileInputsElement());
+    composebox.contextMenuEnabled = false;
+    assertEquals(null, composebox.getFileInputsElement());
+  });
 });
 
 suite('UnboundedUtilsTest', () => {

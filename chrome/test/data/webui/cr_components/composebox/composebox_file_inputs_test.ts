@@ -61,4 +61,15 @@ suite('ComposeboxFileInputsTest', () => {
     assertEquals(event.detail.files, dataTransfer.files);
     assertEquals(fileInputsElement.$.fileInput.value, '');
   });
+
+  test('picker methods are no-ops when file inputs are disabled', async () => {
+    fileInputsElement.disableFileInputs = true;
+    await fileInputsElement.updateComplete;
+    fileInputsElement.openFilePicker();
+    fileInputsElement.openImagePicker();
+    assertEquals(
+        null, fileInputsElement.shadowRoot.querySelector('#fileInput'));
+    assertEquals(
+        null, fileInputsElement.shadowRoot.querySelector('#imageInput'));
+  });
 });

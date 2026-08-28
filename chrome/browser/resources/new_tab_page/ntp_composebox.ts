@@ -213,7 +213,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     super.updateInputPlaceholder();
   }
 
-  async handleFuseboxAction(request: FuseboxActionRequest) {
+  override async handleFuseboxAction(request: FuseboxActionRequest) {
     const action = request.fuseboxAction;
     // TODO(crbug.com/548681676): Wire to TutorialId once server proto rolls.
     if (this.energyEffectAnimationEnabled &&

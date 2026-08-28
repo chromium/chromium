@@ -8,11 +8,14 @@ import './test_composebox_mixin.js';
 import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
+import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputSource, QueryActionOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, DriveUploadError, InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -54,6 +57,24 @@ function setSelectionOffset(input: HTMLElement, offset: number) {
       sel.addRange(range);
     }
   }
+}
+
+function createFuseboxActionRequest(
+    overrides: Partial<FuseboxAction> = {}, suggestion = '') {
+  const fuseboxAction: FuseboxAction = {
+    queryActionOverride: null,
+    preferredInventory: null,
+    preselectedInputSource: null,
+    preselectedModel: null,
+    preselectedTool: null,
+    searchboxOverride: null,
+    ...overrides,
+  };
+  return {suggestion, files: [], fuseboxAction};
+}
+
+function createInputSourceRequest(inputSource: InputSource) {
+  return createFuseboxActionRequest({preselectedInputSource: inputSource});
 }
 
 suite('ComposeboxMixinTest', () => {
@@ -1983,6 +2004,131 @@ suite('ComposeboxMixinTest', () => {
 
     assertFalse(eventFired);
     assertFalse(element.isListening);
+  });
+
+  test('handleFuseboxAction maps state and preserves hint', async () => {
+    const request = createFuseboxActionRequest(
+        {
+          preferredInventory: SuggestInventory.kTravel,
+          preselectedModel: ModelMode.kGeminiRegular,
+          preselectedTool: ToolMode.kDeepSearch,
+        },
+        'query');
+    await element.handleFuseboxAction(request);
+    const state = element.state!;
+    assertDeepEquals(request.files, state.files);
+    assertEquals(ModelMode.kGeminiRegular, state.model);
+    assertEquals(ToolMode.kDeepSearch, state.mode);
+    assertEquals(SuggestInventory.kTravel, state.suggestInventory);
+    assertEquals(request.suggestion, state.text);
+
+    await element.handleFuseboxAction(
+        {suggestion: 'without action', files: []});
+    assertEquals(ModelMode.kUnspecified, element.state!.model);
+    assertEquals(ToolMode.kUnspecified, element.state!.mode);
+
+    element.input = 'existing input';
+    await element.handleFuseboxAction(createFuseboxActionRequest(
+        {queryActionOverride: QueryActionOverride.kHint}, 'action hint'));
+    await microtasksFinished();
+    await element.updateComplete;
+    assertEquals('existing input', element.input);
+    assertEquals('action hint', element.inputPlaceholder);
+
+    element.onInputStateChanged(new MockInputState({hintText: 'server hint'}));
+    await microtasksFinished();
+    await element.updateComplete;
+    assertEquals('action hint', element.inputPlaceholder);
+  });
+
+  test('handleFuseboxAction dispatches input sources', async () => {
+    element.contextMenuEnabled = true;
+    const fileInputs = element.$.fileInputs;
+    const originalFilePicker = fileInputs.openFilePicker;
+    const originalImagePicker = fileInputs.openImagePicker;
+    const originalVoiceHandler = element.onVoiceSearchButtonClick;
+    const effects: string[] = [];
+    const run = (inputSource: InputSource) =>
+        element.handleFuseboxAction(createInputSourceRequest(inputSource));
+    fileInputs.openFilePicker = () => effects.push('file');
+    fileInputs.openImagePicker = () => effects.push('gallery');
+    element.onVoiceSearchButtonClick = () => effects.push('voice');
+
+    try {
+      await Promise.all([
+        InputSource.kInputSourceFilePicker,
+        InputSource.kInputSourceGallery,
+        InputSource.kInputSourceVoice,
+      ].map(run));
+      assertDeepEquals(['file', 'gallery', 'voice'], effects);
+
+      const originalGetter = element.getFileInputsElement;
+      try {
+        element.getFileInputsElement = () => null;
+        await Promise.all([
+          InputSource.kInputSourceFilePicker,
+          InputSource.kInputSourceGallery,
+        ].map(run));
+      } finally {
+        element.getFileInputsElement = originalGetter;
+      }
+
+      await Promise.all([
+        InputSource.kInputSourceCamera,
+        InputSource.kInputSourceUnspecified,
+      ].map(run));
+      assertDeepEquals(['file', 'gallery', 'voice'], effects);
+    } finally {
+      fileInputs.openFilePicker = originalFilePicker;
+      fileInputs.openImagePicker = originalImagePicker;
+      element.onVoiceSearchButtonClick = originalVoiceHandler;
+    }
+  });
+
+  test('handleFuseboxAction guards and opens tab picker', async () => {
+    await element.updateComplete;
+    const mixinView: ComposeboxEmbedderMixinInterface = element;
+    const originalGetter = mixinView.getContextEntrypointElement;
+    const inputStateCalls = searchboxHandler.getCallCount('getInputState');
+    const recentTabsCalls = searchboxHandler.getCallCount('getRecentTabs');
+
+    try {
+      mixinView.getContextEntrypointElement = () =>
+        document.createElement('cr-composebox-contextual-entrypoint-button');
+      element.inputState = null;
+
+      const blocked = element.handleFuseboxAction(createInputSourceRequest(
+        InputSource.kInputSourceTabPicker));
+      assertEquals(
+        inputStateCalls, searchboxHandler.getCallCount('getInputState'));
+      await blocked;
+      assertEquals(
+          recentTabsCalls, searchboxHandler.getCallCount('getRecentTabs'));
+      assertFalse(element.shareTabsFlyoutOpen);
+    } finally {
+      mixinView.getContextEntrypointElement = originalGetter;
+    }
+
+    element.inputState = new MockInputState();
+    await element.updateComplete;
+    const menu = element.$.contextEntrypoint;
+    await menu.updateComplete;
+    const button =
+        menu.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
+            '#entrypointButton')!;
+    await button.updateComplete;
+    const entrypoint =
+        button.shadowRoot.querySelector<HTMLElement>('#entrypoint')!;
+    let clicked = false;
+    entrypoint.addEventListener('click', () => clicked = true);
+    searchboxHandler.resetResolver('getRecentTabs');
+    searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+
+    await element.handleFuseboxAction(
+        createInputSourceRequest(InputSource.kInputSourceTabPicker));
+    assertEquals(1, searchboxHandler.getCallCount('getRecentTabs'));
+    assertTrue(element.shareTabsFlyoutOpen);
+    assertTrue(clicked);
   });
 
   // <if expr="not is_android">
