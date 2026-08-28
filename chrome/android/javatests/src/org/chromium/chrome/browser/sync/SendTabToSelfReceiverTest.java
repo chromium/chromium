@@ -164,7 +164,7 @@ public class SendTabToSelfReceiverTest {
     public void testSendTabToSelfMessageBanner() throws Exception {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
-                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+                "stts_test_guid", "https://www.example1.com", "Example", "Example Phone", now);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
 
         TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
@@ -210,7 +210,7 @@ public class SendTabToSelfReceiverTest {
     public void testSendTabToSelfMessageBannerClickOpensSingleTab() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
-                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+                "stts_test_guid", "https://www.example1.com", "Example", "Example Phone", now);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
 
         TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
