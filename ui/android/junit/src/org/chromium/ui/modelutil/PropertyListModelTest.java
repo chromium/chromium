@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -24,7 +23,6 @@ import java.util.List;
  * removed at the correct times.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PropertyListModelTest implements ListObservable.ListObserver<PropertyKey> {
     private static final int METHOD_COUNT = 36;
     private static final PropertyModel.WritableIntPropertyKey INTEGER_KEY =

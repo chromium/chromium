@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -31,7 +30,6 @@ import org.chromium.ui.R;
 
 /** Unit tests for {@link DownloadableFontTextAppearanceSpan}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DownloadableFontTextAppearanceSpanTest {
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();

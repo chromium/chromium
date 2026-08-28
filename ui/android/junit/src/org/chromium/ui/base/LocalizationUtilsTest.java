@@ -12,7 +12,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -20,7 +19,6 @@ import java.util.Locale;
 
 /** Tests for LocalizationUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LocalizationUtilsTest {
     @Test
     @SmallTest

@@ -75,7 +75,6 @@ import java.util.Map;
 
 /** Tests logic in the Clipboard class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ClipboardTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

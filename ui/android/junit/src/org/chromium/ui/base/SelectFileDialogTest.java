@@ -68,7 +68,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @DisableFeatures({
     UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
 })

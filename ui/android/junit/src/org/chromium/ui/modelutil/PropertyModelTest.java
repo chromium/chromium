@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
@@ -39,7 +38,6 @@ import java.util.function.Function;
 
 /** Tests to ensure/validate the interactions with the PropertyModel. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PropertyModelTest {
     @IntDef({TestIntDef.VAL_A, TestIntDef.VAL_B, TestIntDef.VAL_C})
     @Retention(RetentionPolicy.SOURCE)

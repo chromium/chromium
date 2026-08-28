@@ -25,9 +25,7 @@ import org.chromium.base.test.util.CallbackHelper;
 
 /** Tests for {@link LoadingView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowView.class})
+@Config(shadows = {ShadowView.class})
 public class LoadingViewTest {
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();

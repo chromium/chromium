@@ -15,13 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the {@link org.chromium.ui.widget.ViewLookupCachingFrameLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ViewLookupCachingFrameLayoutTest {
     private static final int VIEW1_ID = 10;
     private static final int VIEW2_ID = 20;

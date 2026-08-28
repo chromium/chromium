@@ -14,14 +14,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.theme.ThemeResourceWrapper.ThemeObserver;
 
 /** Unit tests for {@link ThemeResourceWrapperProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ThemeResourceWrapperProviderUnitTest {
 
     private Context mBaseContext;

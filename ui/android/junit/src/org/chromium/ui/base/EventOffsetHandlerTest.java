@@ -13,13 +13,11 @@ import android.view.MotionEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the EventOffsetHandler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EventOffsetHandlerTest {
     private EventOffsetHandler mHandler;
     private final EventOffsetHandler.EventOffsetHandlerDelegate mDelegate =

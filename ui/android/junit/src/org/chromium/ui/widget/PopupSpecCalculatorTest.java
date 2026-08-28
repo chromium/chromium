@@ -28,7 +28,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
 
 /** Unit tests for the static positioning methods in {@link PopupSpecCalculator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowView.class, qualifiers = "w600dp-h1000dp-mdpi")
+@Config(shadows = ShadowView.class, qualifiers = "w600dp-h1000dp-mdpi")
 public final class PopupSpecCalculatorTest {
     private Rect mWindowRect;
     private int mRootWidth;

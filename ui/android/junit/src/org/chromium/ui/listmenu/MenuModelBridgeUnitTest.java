@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -25,7 +24,6 @@ import java.util.List;
 
 /** Tests for {@link MenuModelBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class MenuModelBridgeUnitTest {
     private MenuModelBridge mMenuModelBridge;
 
