@@ -13,6 +13,7 @@ source_set("composebox") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui:webui_util",
@@ -52,6 +53,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",

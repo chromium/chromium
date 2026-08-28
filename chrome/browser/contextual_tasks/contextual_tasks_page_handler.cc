@@ -19,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/global_features.h"
@@ -891,6 +892,10 @@ void ContextualTasksPageHandler::OnContextMenuOpened() {
 void ContextualTasksPageHandler::NotifySmartTabSharingTryItIphResult(
     bool accepted) {
 #if !BUILDFLAG(IS_ANDROID)
+  contextual_tasks::LogPromoInteraction(
+      accepted ? contextual_tasks::SmartTabSharingPromoAction::kPromoAccepted
+               : contextual_tasks::SmartTabSharingPromoAction::kPromoDismissed);
+
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
       web_ui_controller_->GetProfile());
   if (tracker) {

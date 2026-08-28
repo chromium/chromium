@@ -37,6 +37,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -843,9 +844,19 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
           GetIsSmartTabSharingEnabled(profile_)) {
     return;
   }
+
   if (smart_tab_sharing_active_for_thread_.has_value() &&
       *smart_tab_sharing_active_for_thread_ == active) {
     return;
+  }
+  contextual_tasks::LogMenuOptionClicked(
+      active ? contextual_tasks::SmartTabSharingToggleState::kToggledOn
+             : contextual_tasks::SmartTabSharingToggleState::kToggledOff);
+  if (!active && IsSmartTabSharingActive()) {
+    auto* session_handle = GetContextualSessionHandle();
+    if (session_handle && !session_handle->previous_turns().empty()) {
+      contextual_tasks::LogOptOutMidThread(true);
+    }
   }
   smart_tab_sharing_active_for_thread_ = active;
   auto* session_handle = GetContextualSessionHandle();
@@ -2088,6 +2099,14 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     bool is_voice_search) {
   MaybeTriggerSmartTabSharingPromo(query_text, web_contents_);
 
+  contextual_tasks::LogThreadWithTabsSubmitted(IsSmartTabSharingActive());
+  if (IsSmartTabSharingActive()) {
+    auto* session_handle = GetContextualSessionHandle();
+    if (session_handle && !session_handle->previous_turns().empty()) {
+      contextual_tasks::LogOptOutMidThread(false);
+    }
+  }
+
   if (query_contextualizer_) {
     contextual_tasks::QueryContextualizer::ContextualizeParams params;
     params.task_id = GetTaskId();
@@ -2120,11 +2139,12 @@ void ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo(
     return;
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (feature_engagement::NonIphPromo::RequestPermissionToShow(
-          profile_, feature_engagement::kIPHSmartTabSharingTryItFeature)) {
-    if (auto* web_ui_interface =
-            contextual_tasks::GetWebUiInterface(web_contents_)) {
-      if (web_ui_interface->GetPageRemote().is_bound()) {
+  if (auto* web_ui_interface = GetContextualTasksUiInterface()) {
+    if (web_ui_interface->GetPageRemote().is_bound()) {
+      if (feature_engagement::NonIphPromo::RequestPermissionToShow(
+              profile_, feature_engagement::kIPHSmartTabSharingTryItFeature)) {
+        contextual_tasks::LogPromoInteraction(
+            contextual_tasks::SmartTabSharingPromoAction::kPromoShown);
         web_ui_interface->GetPageRemote()->ShowSmartTabSharingTryItIph();
       }
     }
@@ -2422,6 +2442,11 @@ ContextualSearchboxHandler::GetActiveTaskContextProvider() {
              ? contextual_tasks::ActiveTaskContextProvider::From(
                    browser_window_interface)
              : nullptr;
+}
+
+contextual_tasks::ContextualTasksUIInterface*
+ContextualSearchboxHandler::GetContextualTasksUiInterface() {
+  return contextual_tasks::GetWebUiInterface(web_contents_);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

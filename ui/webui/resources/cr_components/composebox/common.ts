@@ -579,3 +579,11 @@ export function mapUploadErrorToProcessFilesError(errorType: ContextUploadErrorT
 export function isValidTabId(tabId: number|undefined|null): boolean {
   return typeof tabId === 'number' && tabId > 0;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+export enum SmartTabSharingSurface {
+  OMNIBOX_COMPOSEBOX = 0,
+  CONTEXTUAL_SEARCHBOX = 1,
+  MAX_VALUE = CONTEXTUAL_SEARCHBOX,
+}

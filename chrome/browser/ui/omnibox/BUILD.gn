@@ -271,6 +271,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:ui_features",

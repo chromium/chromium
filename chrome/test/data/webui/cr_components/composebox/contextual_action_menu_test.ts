@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 
+import {SmartTabSharingSurface} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {DEFAULT_FLYOUT_WIDTH_PX, DEFAULT_MAX_MENU_HEIGHT_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
@@ -3595,5 +3596,151 @@ suite('ContextualActionMenu', () => {
 
           assertFalse(actionMenu.$.menu.open);
         });
+  });
+
+  suite('SmartTabSharingMetrics', () => {
+    let originalRecordEnumerationValue: any;
+    let recordedMetrics:
+        Array<{metricName: string, value: number, enumSize: number}> = [];
+
+    suiteSetup(() => {
+      (window as any).chrome = (window as any).chrome || {};
+      (window as any).chrome.histograms =
+          (window as any).chrome.histograms || {};
+      originalRecordEnumerationValue =
+          (window as any).chrome.histograms.recordEnumerationValue;
+      (window as any).chrome.histograms.recordEnumerationValue =
+          (metricName: string, value: number, enumSize: number) => {
+            recordedMetrics.push({metricName, value, enumSize});
+            if (originalRecordEnumerationValue) {
+              originalRecordEnumerationValue(metricName, value, enumSize);
+            }
+          };
+    });
+
+    suiteTeardown(() => {
+      if ((window as any).chrome && (window as any).chrome.histograms) {
+        (window as any).chrome.histograms.recordEnumerationValue =
+            originalRecordEnumerationValue;
+      }
+    });
+
+    setup(() => {
+      recordedMetrics = [];
+    });
+
+    test(
+        'Logs OMNIBOX_COMPOSEBOX when shown directly from NewTabPage',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'NewTabPage';
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.smartTabSharingActive = true;
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          assertEquals(1, recordedMetrics.length);
+          assertEquals(
+              'ContextualSearch.SmartTabSharing.MenuOptionShown',
+              recordedMetrics[0]!.metricName);
+          assertEquals(
+              SmartTabSharingSurface.OMNIBOX_COMPOSEBOX,
+              recordedMetrics[0]!.value);
+        });
+
+    test(
+        'Logs OMNIBOX_COMPOSEBOX when shown directly from Omnibox',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'Omnibox';
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.smartTabSharingActive = true;
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          assertEquals(1, recordedMetrics.length);
+          assertEquals(
+              SmartTabSharingSurface.OMNIBOX_COMPOSEBOX,
+              recordedMetrics[0]!.value);
+        });
+
+    test(
+        'Logs CONTEXTUAL_SEARCHBOX when shown directly from ContextualTasks',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'ContextualTasks';
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.smartTabSharingActive = true;
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          assertEquals(1, recordedMetrics.length);
+          assertEquals(
+              SmartTabSharingSurface.CONTEXTUAL_SEARCHBOX,
+              recordedMetrics[0]!.value);
+        });
+
+    test(
+        'Does not log when smartTabSharingActive is false and flyout is closed',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'NewTabPage';
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.smartTabSharingActive = false;
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          assertEquals(0, recordedMetrics.length);
+        });
+
+    test(
+        'Logs when smartTabSharingActive is false but flyout is open',
+        async () => {
+          asInternal(actionMenu).metricsSource_ = 'NewTabPage';
+          actionMenu.smartTabSharingVisible = true;
+          actionMenu.smartTabSharingActive = false;
+          actionMenu.contextManagementInComposeboxEnabled = true;
+          actionMenu.tabSuggestions = [createTabSuggestion()];
+          actionMenu.inputState = new MockInputState({
+            allowedInputTypes: [InputType.kBrowserTab],
+          });
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+
+          // Open flyout
+          actionMenu.shareTabsFlyoutOpen = true;
+          await microtasksFinished();
+
+          assertEquals(1, recordedMetrics.length);
+          assertEquals(
+              SmartTabSharingSurface.OMNIBOX_COMPOSEBOX,
+              recordedMetrics[0]!.value);
+        });
+
+    test('Logs only once per show', async () => {
+      asInternal(actionMenu).metricsSource_ = 'NewTabPage';
+      actionMenu.smartTabSharingVisible = true;
+      actionMenu.smartTabSharingActive = true;
+
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+
+      assertEquals(1, recordedMetrics.length);
+
+      // Trigger update again without closing, should not log again
+      actionMenu.requestUpdate();
+      await microtasksFinished();
+      assertEquals(1, recordedMetrics.length);
+
+      // Close and re-show, should log again
+      const closePromise = eventToPromise('close', actionMenu);
+      actionMenu.close();
+      await closePromise;
+
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+      assertEquals(2, recordedMetrics.length);
+    });
   });
 });

@@ -38,6 +38,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_ui_interface.h",
     "contextual_tasks_ui_service_delegate.h",
     "contextual_tasks_utils.h",
+    "smart_tab_sharing_metrics.h",
     "smart_tab_sharing_settings_policy_handler.h",
     "task_info_delegate.h",
   ]
@@ -114,6 +115,7 @@ source_set("impl") {
     "contextual_tasks_utils.cc",
     "site_exclusion_detail.cc",
     "site_exclusion_detail.h",
+    "smart_tab_sharing_metrics.cc",
   ]
 
   if (enable_extensions_core) {
