@@ -283,6 +283,12 @@ class ActorTask : public base::SupportsUserData {
   // The set of tabs that were acted on by the last call to Act.
   TabHandleSet GetLastActedTabs() const;
 
+  // The tab that was most recently added or actuated on. Unlike GetTabs()
+  // and GetLastActedTabs(), this handle is preserved after task completion
+  // as long as the underlying tab has not been destroyed.
+  tabs::TabInterface* GetLastActuatedTab() const;
+  tabs::TabHandle GetLastActuatedTabHandle() const;
+
   base::WeakPtr<ActorTask> GetWeakPtr();
 
   Profile* GetProfile() const;
@@ -453,6 +459,10 @@ class ActorTask : public base::SupportsUserData {
   // turn. Reset at the beginning of each call to Act.
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActorControlledTabState>>
       to_observe_tabs_;
+
+  // The handle of the tab most recently added for actuation, preserved across
+  // task completion.
+  tabs::TabHandle last_actuated_tab_;
 
   // A set of additional tab observations performed directly by the tools.
   std::vector<optimization_guide::proto::TabObservation>

@@ -2088,17 +2088,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                             profileProvider.getOriginalProfile(), url, intent));
             return true;
         }
-        Tab tab =
+        UrlIntentProcessingResult result =
                 processUrlViewIntent(
                         loadUrlParams,
                         tabOpenType,
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                         tabIdToBringToFront,
                         intent);
-        if (tab == null) {
+        if (!result.handledIntent) {
             Log.e(TAG, "processUrlViewIntent returned null, failing to handle intent.");
             return false;
         }
+        Tab tab = result.tab;
         boolean shouldPin = IntentHandler.getPinnedState(intent);
         if (shouldPin && !tab.getIsPinned()) {
             getTabModelSelector()
@@ -2243,11 +2244,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         // 3. Process the intent and open a new tab for the URL.
         return processUrlViewIntent(
-                loadUrlParams,
-                tabOpenType,
-                IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                Tab.INVALID_TAB_ID,
-                intent);
+                        loadUrlParams,
+                        tabOpenType,
+                        IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
+                        Tab.INVALID_TAB_ID,
+                        intent)
+                .tab;
     }
 
     private void handleMhtmlFileOrContentIntent(
@@ -2818,15 +2820,49 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
     }
 
+    /** Result of processing a URL view intent. */
+    private static class UrlIntentProcessingResult {
+        public final @Nullable Tab tab;
+        public final boolean handledIntent;
+
+        public UrlIntentProcessingResult(@Nullable Tab tab, boolean handledIntent) {
+            this.tab = tab;
+            this.handledIntent = handledIntent;
+        }
+
+        public static UrlIntentProcessingResult handled(@Nullable Tab tab) {
+            return new UrlIntentProcessingResult(tab, true);
+        }
+
+        public static UrlIntentProcessingResult unhandled() {
+            return new UrlIntentProcessingResult(null, false);
+        }
+    }
+
+    private @Nullable Tab selectTabAndShow(int tabId) {
+        // TODO(crbug.com/553668329): Ensure that the background tab is swapped with the placeholder
+        // tab before onTabStateInitialized.
+        Tab target = getTabModelSelector().getTabById(tabId);
+        if (target == null) return null;
+        getTabModelSelector().selectModel(target.isIncognito());
+        TabModel model = getTabModelSelector().getModel(target.isIncognito());
+        TabModelUtils.setIndex(model, model.indexOf(target));
+        LayoutManagerChrome lm = getLayoutManager();
+        if (lm != null && lm.isLayoutVisible(LayoutType.HUB)) {
+            lm.showLayout(LayoutType.BROWSING, /* animate= */ false);
+        }
+        return target;
+    }
+
     /** Processes a url view intent. */
-    private @Nullable Tab processUrlViewIntent(
+    private UrlIntentProcessingResult processUrlViewIntent(
             LoadUrlParams loadUrlParams,
             @TabOpenType int tabOpenType,
             String externalAppId,
             int tabIdToBringToFront,
             Intent intent) {
         if (isActivityFinishingOrDestroyed()) {
-            return null;
+            return UrlIntentProcessingResult.unhandled();
         }
         if (isProbablyFromChrome(intent, externalAppId)) {
             RecordUserAction.record("MobileTabbedModeViewIntentFromChrome");
@@ -2921,29 +2957,23 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }
 
-                Tab tabToBringToFront = tabModel.getTabById(tabIdToBringToFront);
-                if (tabToBringToFront == null) {
-                    TabModel otherModel = getTabModelSelector().getModel(!tabModel.isIncognito());
-                    tabToBringToFront = otherModel.getTabById(tabIdToBringToFront);
-                    if (tabToBringToFront != null) {
-                        getTabModelSelector().selectModel(otherModel.isIncognito());
-                        TabModelUtils.setIndex(otherModel, otherModel.indexOf(tabToBringToFront));
-                        resultTab = tabToBringToFront;
-                    } else {
-                        Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
-                        return null;
+                resultTab = selectTabAndShow(tabIdToBringToFront);
+                if (resultTab == null) {
+                    if (!getTabModelSelector().isTabStateInitialized()) {
+                        TabModelUtils.runOnTabStateInitialized(
+                                getTabModelSelector(),
+                                (selector) -> {
+                                    if (isActivityFinishingOrDestroyed()) return;
+                                    if (selectTabAndShow(tabIdToBringToFront) == null
+                                            && selector.getTotalTabCount() == 0) {
+                                        createInitialTab();
+                                    }
+                                });
+                        return UrlIntentProcessingResult.handled(/* tab= */ null);
                     }
-                } else {
-                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tabToBringToFront));
-                    resultTab = tabToBringToFront;
+                    Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
+                    return UrlIntentProcessingResult.unhandled();
                 }
-
-                LayoutManagerChrome layoutManager = getLayoutManager();
-                // If the tab-switcher is displayed, hide it to show the tab.
-                if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.HUB)) {
-                    layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
-                }
-
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:
                 // The browser triggered the intent. This happens when clicking links which
@@ -3002,7 +3032,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 if (!TextUtils.equals(externalAppId, getPackageName())) {
                     assert false : "Only Chrome is allowed to open incognito tabs";
                     Log.e(TAG, "Only Chrome is allowed to open incognito tabs");
-                    return null;
+                    return UrlIntentProcessingResult.unhandled();
                 }
 
                 if (!IncognitoUtils.isIncognitoModeEnabled(
@@ -3027,7 +3057,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         Log.e(TAG, "Tried to open incognito tab while incognito disabled");
                     }
 
-                    return null;
+                    return UrlIntentProcessingResult.unhandled();
                 }
 
                 if (url == null || url.equals(getOriginalNativeNtpUrl())) {
@@ -3100,7 +3130,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
         maybeAttachSendTabToSelfObservers(resultTab, intent, loadUrlParams);
 
-        return resultTab;
+        return resultTab == null
+                ? UrlIntentProcessingResult.unhandled()
+                : UrlIntentProcessingResult.handled(resultTab);
     }
 
     private void maybeAttachSendTabToSelfObservers(
