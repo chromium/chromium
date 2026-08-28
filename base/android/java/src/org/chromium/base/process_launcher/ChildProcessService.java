@@ -34,11 +34,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
-import org.chromium.base.MemoryPressureLevel;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionConstantsBridge;
 import org.chromium.build.annotations.Initializer;
@@ -196,36 +193,6 @@ public class ChildProcessService {
                 public void forceKill() {
                     assert mServiceBound;
                     Process.killProcess(Process.myPid());
-                }
-
-                @Override
-                public void onMemoryPressure(@MemoryPressureLevel int pressure) {
-                    // This method is called by the host process when the host process reports
-                    // pressure to its native side. The key difference between the host process
-                    // and its services is that the host process polls memory pressure when it
-                    // gets CRITICAL, and periodically invokes pressure listeners until pressure
-                    // subsides. (See MemoryPressureMonitor for more info.)
-                    //
-                    // Services don't poll, so this side-channel is used to notify services about
-                    // memory pressure from the host process's POV.
-                    //
-                    // However, since both host process and services listen to ComponentCallbacks2,
-                    // we can't be sure that the host process won't get better signals than their
-                    // services.
-                    // I.e. we need to watch out for a situation where a service gets CRITICAL, but
-                    // the host process gets MODERATE - in this case we need to ignore MODERATE.
-                    //
-                    // So we're ignoring pressure from the host process if it's better than the last
-                    // reported pressure. I.e. the host process can drive pressure up, but it'll go
-                    // down only when we the service get a signal through ComponentCallbacks2.
-                    ThreadUtils.postOnUiThread(
-                            () -> {
-                                if (pressure
-                                        >= MemoryPressureMonitor.INSTANCE
-                                                .getLastReportedPressure()) {
-                                    MemoryPressureMonitor.INSTANCE.notifyPressure(pressure);
-                                }
-                            });
                 }
 
                 @Override

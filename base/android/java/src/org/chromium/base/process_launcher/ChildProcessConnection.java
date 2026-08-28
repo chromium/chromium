@@ -24,13 +24,11 @@ import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
-import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
-import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.memory.SelfFreezeCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
@@ -303,7 +301,6 @@ public class ChildProcessConnection {
     @GuardedBy("mProcessStateLock")
     private boolean mKilledByUs;
 
-    private @Nullable MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SelfFreezeCallback mSelfFreezeCallback;
 
     // If the process threw an exception before entering the main loop, the exception
@@ -694,12 +691,6 @@ public class ChildProcessConnection {
 
             mServiceConnectComplete = true;
 
-            if (mMemoryPressureCallback == null) {
-                final MemoryPressureCallback callback = this::onMemoryPressure;
-                ThreadUtils.postOnUiThread(() -> MemoryPressureListener.addCallback(callback));
-                mMemoryPressureCallback = callback;
-            }
-
             if (mSelfFreezeCallback == null) {
                 final SelfFreezeCallback callback = this::onSelfFreeze;
                 MemoryPressureListener.addSelfFreezeCallback(callback);
@@ -1005,12 +996,6 @@ public class ChildProcessConnection {
         mConnectionParams = null;
         mConnectionController.unbind();
 
-        if (mMemoryPressureCallback != null) {
-            final MemoryPressureCallback callback = mMemoryPressureCallback;
-            ThreadUtils.postOnUiThread(() -> MemoryPressureListener.removeCallback(callback));
-            mMemoryPressureCallback = null;
-        }
-
         if (mSelfFreezeCallback != null) {
             final SelfFreezeCallback callback = mSelfFreezeCallback;
             MemoryPressureListener.removeSelfFreezeCallback(callback);
@@ -1208,19 +1193,6 @@ public class ChildProcessConnection {
 
     private boolean getAlwaysFallback() {
         return sAlwaysFallback && !mIndependentFallback;
-    }
-
-    private void onMemoryPressure(@MemoryPressureLevel int pressure) {
-        mLauncherHandler.post(() -> onMemoryPressureOnLauncherThread(pressure));
-    }
-
-    private void onMemoryPressureOnLauncherThread(@MemoryPressureLevel int pressure) {
-        if (mService == null) return;
-        try {
-            mService.onMemoryPressure(pressure);
-        } catch (RemoteException ex) {
-            // Ignore
-        }
     }
 
     private void onSelfFreeze() {

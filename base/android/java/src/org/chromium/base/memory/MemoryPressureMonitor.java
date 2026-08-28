@@ -72,8 +72,8 @@ import java.util.function.Supplier;
  *    sense to do so (when Chrome is in the foreground / there are WebView instances
  *    around).
  *
- * 2. Services (GPU, renderers) don't poll, instead they get additional pressure signals
- *    from the main process.
+ * 2. Services (GPU, renderers) don't use this class; instead, they receive memory
+ *    pressure notifications forwarded from the browser process via Mojo IPC.
  *
  * NOTE: This class should only be used on UiThread as defined by ThreadUtils (which is
  *       Android main thread for Chrome, but can be some other thread for WebView).</pre>

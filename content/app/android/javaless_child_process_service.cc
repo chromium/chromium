@@ -23,8 +23,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
@@ -67,7 +65,6 @@ class ChildProcessService : public BnChildProcessService,
       const std::shared_ptr<IParentProcess>& parentProcess,
       const std::optional<std::vector<SpAIBinder>>& clientInterfaces) override;
   ScopedAStatus forceKill() override;
-  ScopedAStatus onMemoryPressure(int32_t pressure) override;
   ScopedAStatus onSelfFreeze() override;
   ScopedAStatus dumpProcessStack() override;
   ScopedAStatus getSourceDir(std::string* _aidl_return) override;
@@ -245,22 +242,6 @@ ScopedAStatus ChildProcessService::bindToCaller(const std::string& in_clazz,
 ScopedAStatus ChildProcessService::forceKill() {
   // This matches what we do in Java (Process.killProcess).
   kill(getpid(), SIGKILL);
-  return ScopedAStatus::ok();
-}
-
-ScopedAStatus ChildProcessService::onMemoryPressure(int32_t pressure) {
-  // Make sure the renderer main thread has been initialized. If it hasn't, it's
-  // probably too early during startup, and notifying memory pressure likely
-  // won't work either.
-  if (base::SingleThreadTaskRunner::HasMainThreadDefault()) {
-    // This logic doesn't match the Java equivalent. In the Java implementation,
-    // we assume that the ChildProcessService is getting memory pressure signals
-    // from the browser process (this function), and ComponentCallbacks2. We
-    // only have signals from the browser process available to a javaless
-    // renderer, so we trust what it sends entirely.
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
-        static_cast<base::MemoryPressureLevel>(pressure));
-  }
   return ScopedAStatus::ok();
 }
 
