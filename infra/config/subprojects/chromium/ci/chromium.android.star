@@ -2528,6 +2528,9 @@ ci.builder(
                     "--disable-field-trial-config",
                     "--skia-gold-consider-unsupported",
                 ],
+                # Remove from CQ to save test resource. More details can be
+                # found in https://crbug.com/548722074
+                ci_only = True,
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
