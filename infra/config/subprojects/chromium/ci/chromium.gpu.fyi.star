@@ -1249,9 +1249,8 @@ shared_gpu.ci.linux_builder(
         ],
     ),
     targets = targets.bundle(
-        # This bot doesn't run any browser-based tests (tab_capture_end2end_tests)
         targets = [
-            "gpu_common_gtests_passthrough_swiftshader",
+            "gpu_all_linux_tsan_gtests",
         ],
         mixins = [
             "gpu_linux_gce_stable",

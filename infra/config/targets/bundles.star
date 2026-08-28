@@ -3156,6 +3156,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_linux_tsan_gtests",
+    targets = [
+        "gpu_linux_tsan_gtests",
+        "gpu_fyi_linux_tsan_gtests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_all_linux_wayland_release_telemetry_tests",
     targets = [
         "gpu_linux_wayland_release_telemetry_tests",
@@ -4384,6 +4392,13 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "gpu_fyi_linux_tsan_gtests",
+    targets = [
+        "gpu_common_gtests_passthrough_swiftshader",
+    ],
+)
+
 # Wayland tests use GLES instead of GL due to how ANGLE interfaces with
 # Wayland vs. X11.
 targets.bundle(
@@ -4553,6 +4568,13 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl_conformance_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_linux_tsan_gtests",
+    targets = [
+        # No non-FYI Linux/TSan gtests at the moment.
     ],
 )
 
