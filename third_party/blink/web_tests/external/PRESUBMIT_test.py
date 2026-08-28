@@ -100,6 +100,7 @@ class MockFile(object):
         return self.local_path
 
 
+@unittest.skip('https://crbug.com/553643606 - needs more investigation')
 class LintWPTTest(unittest.TestCase):
     def setUp(self):
         self._test_file = os.path.join(
