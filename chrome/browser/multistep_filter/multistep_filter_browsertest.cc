@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
 
   actions::ActionItem* action = actions::ActionManager::Get().FindAction(
       kActionMultistepFilter,
-      browser()->GetFeatures().browser_actions()->root_action_item());
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action);
   action->InvokeAction(actions::ActionInvocationContext());
 

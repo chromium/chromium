@@ -1266,7 +1266,7 @@ SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
 }
 
 actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {
-  return browser_actions() ? browser_actions()->root_action_item() : nullptr;
+  return browser_actions_ ? browser_actions_->root_action_item() : nullptr;
 }
 
 ToastController* BrowserWindowFeatures::toast_controller() {

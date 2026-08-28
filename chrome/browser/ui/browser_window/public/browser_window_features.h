@@ -317,8 +317,6 @@ class BrowserWindowFeatures {
     return accelerator_provider_;
   }
 
-  BrowserActions* browser_actions() { return browser_actions_.get(); }
-
   chrome::BrowserCommandController* browser_command_controller() const {
     return browser_command_controller_.get();
   }

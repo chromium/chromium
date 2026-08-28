@@ -183,7 +183,7 @@ void RegisterOmniboxActions(
     return;
   }
 
-  auto* browser_actions = browser->GetFeatures().browser_actions();
+  auto* browser_actions = BrowserActions::From(browser);
   if (!browser_actions) {
     return;
   }

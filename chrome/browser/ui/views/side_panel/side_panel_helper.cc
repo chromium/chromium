@@ -72,8 +72,7 @@ void SidePanelHelper::PopulateGlobalEntries(
 actions::ActionItem* SidePanelHelper::GetActionItem(
     BrowserWindowInterface* browser,
     SidePanelEntryKey entry_key) {
-  BrowserActions* const browser_actions =
-      browser->GetFeatures().browser_actions();
+  BrowserActions* const browser_actions = BrowserActions::From(browser);
   if (entry_key.id() == SidePanelEntryId::kExtension) {
     std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(entry_key.ToString());
