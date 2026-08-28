@@ -21877,21 +21877,6 @@
             ]
         }
     ],
-    "WebViewSingleSharedContextState": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewSingleSharedContextState"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewStartupNonBlockingWebViewConstructor": [
         {
             "platforms": [
@@ -22039,6 +22024,21 @@
                     ],
                     "disable_features": [
                         "BreakoutBoxConversionWithoutSinkSignal"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebviewSingleSharedContextState": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewSingleSharedContextState"
                     ]
                 }
             ]
