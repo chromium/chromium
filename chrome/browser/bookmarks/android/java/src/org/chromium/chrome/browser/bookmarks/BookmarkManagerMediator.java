@@ -28,6 +28,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -936,7 +937,12 @@ class BookmarkManagerMediator
 
         @BookmarkUiMode int currentUiMode = getCurrentUiMode();
         @Nullable BookmarkUiState currentState = getCurrentUiState();
-        if (Objects.equals(currentState, state)) return;
+        if (Objects.equals(currentState, state)) {
+            if (mNativePage != null && !TextUtils.equals(mNativePage.getUrl(), state.mUrl)) {
+                notifyUi(state, false);
+            }
+            return;
+        }
 
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
@@ -989,7 +995,21 @@ class BookmarkManagerMediator
                         TextUtils.equals(mNativePage.getUrl(), getOriginalBookmarksUrl())
                                 || TextUtils.equals(
                                         mNativePage.getUrl(), getOriginalNativeBookmarksUrl());
-                mNativePage.onStateChange(state.mUrl, replaceLastUrl);
+                if (replaceLastUrl) {
+                    // When navigating to chrome://bookmarks, the initial entry commits
+                    // asynchronously in NavigationController. Post to UI_DEFAULT so the initial
+                    // navigation commits before replacing it on the backstack.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            mCallbackController.makeCancelable(
+                                    () -> {
+                                        if (mNativePage != null) {
+                                            mNativePage.onStateChange(state.mUrl, true);
+                                        }
+                                    }));
+                } else {
+                    mNativePage.onStateChange(state.mUrl, false);
+                }
             }
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
             String searchText = getCurrentSearchText();

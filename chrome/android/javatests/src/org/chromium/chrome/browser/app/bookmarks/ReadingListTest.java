@@ -145,7 +145,8 @@ public class ReadingListTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
+            String rootFolderId = "folder/0";
+            mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl() + rootFolderId);
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mItemsContainer =
