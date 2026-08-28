@@ -67,6 +67,12 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // added.
   bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
+  // As above, with per-show overrides applied to every instance, including
+  // ones mirrored into browsers created later. `params.scope` must be
+  // unset; scope overrides are a Show() concept.
+  bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+                    InfoBarShowParams params);
+
   // Hides the infobar in `web_contents`. Removes tab-scoped instances;
   // instances tracked by the global machinery are skipped (use the
   // identifier-only overload).
@@ -103,6 +109,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   struct GlobalInfoBarContext {
     InfoBarSpec spec;
+    InfoBarShowParams params;
     std::map<infobars::InfoBarManager*, infobars::InfoBar*> active_instances;
   };
 

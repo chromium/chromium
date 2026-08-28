@@ -357,24 +357,32 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
 
 bool BrowserInfoBarManager::ShowGlobally(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
+  return ShowGlobally(identifier, InfoBarShowParams());
+}
+
+bool BrowserInfoBarManager::ShowGlobally(
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+    InfoBarShowParams params) {
+  CHECK(!params.scope.has_value());
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
     return false;
   }
   CHECK(it->second.scope() == InfoBarScope::kGlobal);
 
-  const InfoBarSpec& spec = it->second;
-
   if (active_global_infobars_.contains(identifier)) {
     return false;
   }
-  active_global_infobars_[identifier] = GlobalInfoBarContext{.spec = spec};
+
+  GlobalInfoBarContext& context = active_global_infobars_[identifier] =
+      GlobalInfoBarContext{.spec = it->second, .params = std::move(params)};
 
   bool added_any_infobars = false;
   GlobalBrowserCollection::GetInstance()->ForEach(
-      [this, &spec, identifier,
+      [this, &context, identifier,
        &added_any_infobars](BrowserWindowInterface* browser) {
-        if (spec.browser_filter() && !spec.browser_filter().Run(browser)) {
+        if (context.spec.browser_filter() &&
+            !context.spec.browser_filter().Run(browser)) {
           return true;
         }
         tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
@@ -386,7 +394,7 @@ bool BrowserInfoBarManager::ShowGlobally(
           if (manager) {
             auto infobar =
                 CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
-                    spec, active_contents, InfoBarShowParams()));
+                    context.spec, active_contents, context.params));
             auto* added_infobar = manager->AddInfoBar(std::move(infobar));
             if (added_infobar) {
               static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
@@ -405,6 +413,10 @@ bool BrowserInfoBarManager::ShowGlobally(
 
   if (added_any_infobars) {
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
+  } else {
+    // A false return must mean nothing is showing and nothing will appear
+    // later, so drop the armed context.
+    active_global_infobars_.erase(identifier);
   }
   return added_any_infobars;
 }
@@ -586,7 +598,7 @@ void BrowserInfoBarManager::OnActiveTabChanged(
       }
       auto infobar =
           CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
-              context.spec, active_contents, InfoBarShowParams()));
+              context.spec, active_contents, context.params));
       auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
       if (added_infobar) {
         static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())

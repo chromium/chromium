@@ -158,8 +158,10 @@ struct InfoBarShowParams {
   InfoBarShowParams();
   InfoBarShowParams(InfoBarShowParams&&);
   InfoBarShowParams& operator=(InfoBarShowParams&&);
-  InfoBarShowParams(const InfoBarShowParams&) = delete;
-  InfoBarShowParams& operator=(const InfoBarShowParams&) = delete;
+  // Copyable: a global show stamps one params set onto every mirrored
+  // instance.
+  InfoBarShowParams(const InfoBarShowParams&);
+  InfoBarShowParams& operator=(const InfoBarShowParams&);
   ~InfoBarShowParams();
 
   // Overrides the spec's message text and suppresses its template.

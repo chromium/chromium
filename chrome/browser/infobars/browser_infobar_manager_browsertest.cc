@@ -292,6 +292,63 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       ShowGloballyRollsBackWhenNothingShown) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetBrowserFilter(base::BindRepeating(
+                              [](BrowserWindowInterface*) { return false; }))
+                          .Build());
+  // Every browser is rejected, so nothing shows and nothing stays armed:
+  // a browser opened afterwards must not receive the infobar.
+  EXPECT_FALSE(manager()->ShowGlobally(identifier));
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  EXPECT_EQ(0u, InfoBarCountIn(browser2));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalShowParamsApplyToEveryInstance) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Spec Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+  InfoBarShowParams params;
+  params.message_text = u"Per-show Message";
+  params.result_callback = base::BindLambdaForTesting(
+      [&](content::WebContents*, InfoBarResult result) {
+        results.push_back(result);
+      });
+  ASSERT_TRUE(manager()->ShowGlobally(identifier, std::move(params)));
+  auto message_in = [](BrowserWindowInterface* browser) {
+    return ContentInfoBarManager::FromWebContents(
+               browser->GetTabStripModel()->GetActiveWebContents())
+        ->infobars()[0]
+        ->delegate()
+        ->AsConfirmInfoBarDelegate()
+        ->GetMessageText();
+  };
+  EXPECT_EQ(u"Per-show Message", message_in(browser()));
+  // A browser created while the infobar is up inherits the same overrides.
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_EQ(1u, InfoBarCountIn(browser2));
+  EXPECT_EQ(u"Per-show Message", message_in(browser2));
+  // Dismissing one instance cascades and reports exactly once, through the
+  // per-show callback.
+  infobars::InfoBar* infobar2 =
+      ContentInfoBarManager::FromWebContents(
+          browser2->GetTabStripModel()->GetActiveWebContents())
+          ->infobars()[0];
+  infobar2->delegate()->InfoBarDismissed();
+  infobar2->RemoveSelf();
+  EXPECT_EQ(0u, InfoBarCountIn(browser()));
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(InfoBarResult::kDismissed, results[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        GlobalNoDismissalOnWindowDestruction) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   auto spec = InfoBarSpec::Builder(identifier)

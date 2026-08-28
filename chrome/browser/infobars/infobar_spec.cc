@@ -159,6 +159,9 @@ InfoBarSpec& InfoBarSpec::operator=(const InfoBarSpec&) = default;
 InfoBarShowParams::InfoBarShowParams() = default;
 InfoBarShowParams::InfoBarShowParams(InfoBarShowParams&&) = default;
 InfoBarShowParams& InfoBarShowParams::operator=(InfoBarShowParams&&) = default;
+InfoBarShowParams::InfoBarShowParams(const InfoBarShowParams&) = default;
+InfoBarShowParams& InfoBarShowParams::operator=(const InfoBarShowParams&) =
+    default;
 InfoBarShowParams::~InfoBarShowParams() = default;
 
 }  // namespace infobars
