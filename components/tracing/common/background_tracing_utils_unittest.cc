@@ -211,4 +211,9 @@ TEST_F(BackgroundTracingUtilsTest,
       tracing::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
+TEST_F(BackgroundTracingUtilsTest, GetPresetTracingScenariosConfig) {
+  auto preset_config = tracing::GetPresetTracingScenariosConfig();
+  EXPECT_TRUE(preset_config.has_value());
+}
+
 }  // namespace
