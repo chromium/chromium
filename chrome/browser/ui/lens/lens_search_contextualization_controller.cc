@@ -929,8 +929,10 @@ void LensSearchContextualizationController::IsPageContextEligible(
 
 void LensSearchContextualizationController::CreatePageContextEligibilityAPI() {
   // Post to a background thread to avoid blocking the set up of the overlay.
+  // Use USER_BLOCKING priority because page context eligibility is on the
+  // critical path for opening the Lens Overlay and checking page context.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&optimization_guide::PageContextEligibility::Get),
       base::BindOnce(&LensSearchContextualizationController::
                          OnPageContextEligibilityAPILoaded,
