@@ -1922,7 +1922,7 @@
     {
       // https://github.com/w3c/csswg-drafts/issues/12122
       name: "CSSScrollMarkerGroupModes",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-overflow-5/#active-before-after-scroll-markers
