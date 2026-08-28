@@ -640,7 +640,6 @@ public abstract class ChromeFeatureList {
             "MoveToFrontInLaunchIntentDispatcher";
     public static final String MULTI_INSTANCE_SHARED_PREFS_MIGRATION =
             "MultiInstanceSharedPrefsMigration";
-    public static final String MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED = "MvcUpdateViewWhenModelChanged";
     public static final String NAVIGATION_LIST_MENU = "NavigationListMenu";
     // Enabled by syncer::kNewTabPageCustomizationThemeSync on C++ side.
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC =
@@ -1275,11 +1274,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMultiInstanceSharedPrefsMigration =
             newCachedFlag(MULTI_INSTANCE_SHARED_PREFS_MIGRATION, true);
-    public static final CachedFlag sMvcUpdateViewWhenModelChanged =
-            newCachedFlag(
-                    MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sNewTabPageCustomizationThemeSync =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC, /* defaultValue= */ false);
     public static final CachedFlag sNewTabPageCustomizationV2 =
@@ -1604,7 +1598,6 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselect,
                     sMoveToFrontInLaunchIntentDispatcher,
                     sMultiInstanceSharedPrefsMigration,
-                    sMvcUpdateViewWhenModelChanged,
                     sNewTabPageCustomizationThemeSync,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,

@@ -23,8 +23,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -86,20 +84,6 @@ public class CompositorModelChangeProcessorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
-    public void testBindAndNoRequestFrame() {
-        int callCount = mRequestRenderCallbackHelper.getCallCount();
-        mFrameRequestSupplier.set(System.currentTimeMillis());
-
-        verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
-        Assert.assertEquals(
-                "A render should not have been requested!",
-                callCount,
-                mRequestRenderCallbackHelper.getCallCount());
-    }
-
-    @Test
-    @Features.EnableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
     public void testNoBindAndNoRequestFrameOnModelUnchanged() throws TimeoutException {
         int callCount = mRequestRenderCallbackHelper.getCallCount();
         mFrameRequestSupplier.set(System.currentTimeMillis());
@@ -121,23 +105,7 @@ public class CompositorModelChangeProcessorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
     public void testMCPWithExclusions() {
-        int callCount = mRequestRenderCallbackHelper.getCallCount();
-        mModel.set(
-                PROPERTY_EXCLUDED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
-
-        mFrameRequestSupplier.set(System.currentTimeMillis());
-        verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
-        Assert.assertEquals(
-                "A render should not have been requested!",
-                callCount,
-                mRequestRenderCallbackHelper.getCallCount());
-    }
-
-    @Test
-    @Features.EnableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
-    public void testMCPWithExclusionsNoBind() {
         int callCount = mRequestRenderCallbackHelper.getCallCount();
         mModel.set(
                 PROPERTY_EXCLUDED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
