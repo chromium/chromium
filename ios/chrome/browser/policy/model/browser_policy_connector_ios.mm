@@ -22,7 +22,6 @@
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_loader_ios.h"
-#import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_ios.h"
@@ -87,7 +86,6 @@ void BrowserPolicyConnectorIOS::MaybeApplyLocalTestPolicies(
 void BrowserPolicyConnectorIOS::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  policy::PolicyLogger::GetInstance()->EnableLogDeletion();
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
           GetDeviceManagementUrl(), GetRealtimeReportingUrl(),

@@ -5,39 +5,9 @@
 #include "components/policy/core/common/policy_logger.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/features.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "content/public/browser/browser_task_traits.h"    // nogncheck
-#include "content/public/browser/browser_thread.h"         // nogncheck
-#include "content/public/test/browser_task_environment.h"  // nogncheck
-#else
-#include "ios/web/public/test/web_task_environment.h"  // nogncheck
-#include "ios/web/public/thread/web_task_traits.h"     // nogncheck
-#include "ios/web/public/thread/web_thread.h"          // nogncheck
-#endif
-
-using testing::_;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Property;
-
-#if BUILDFLAG(USE_BLINK)
-using content::GetIOThreadTaskRunner;
-using content::GetUIThreadTaskRunner;
-#else
-using web::GetIOThreadTaskRunner;
-using web::GetUIThreadTaskRunner;
-#endif
 
 namespace policy {
 
@@ -59,22 +29,11 @@ class PolicyLoggerTest : public PlatformTest {
   ~PolicyLoggerTest() override = default;
 
  protected:
-  // Clears the logs list and resets the deletion flag before the test and its
-  // tasks are deleted. This is important to prevent tests from affecting each
-  // other's results.
+  // Clears the logs list before the test. This is important to prevent tests
+  // from affecting each other's results.
   void SetUp() override {
     policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-#if BUILDFLAG(USE_BLINK)
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-#else
-  web::WebTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-#endif
 };
 
 // Checks that the logger is enabled by feature and that `GetAsList` returns an
@@ -95,41 +54,6 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
                   .GetDict()
                   .FindString("message")),
             "Element added: when the feature is enabled.");
-}
-
-// Checks that the deletion of expired logs works as expected.
-TEST_F(PolicyLoggerTest, DeleteOldLogs) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!PolicyLogger::IsPolicyLoggingEnabled()) {
-    GTEST_SKIP() << "Policy logging is disabled on ChromeOS stable";
-  }
-#endif
-  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
-  policy_logger->EnableLogDeletion();
-  size_t log_count_before_adding = GetLogCount(policy_logger);
-
-  AddLogs("First log at t=0.", policy_logger);
-  AddLogs("Second log at t=0+delta.", policy_logger);
-
-  base::TimeDelta first_time_elapsed = policy::PolicyLogger::kTimeToLive / 2;
-  task_environment_.FastForwardBy(first_time_elapsed + base::Minutes(1));
-  AddLogs("Third log at t=TimeToLive/2.", policy_logger);
-
-  // Check that the logs that were in the list for `kTimeToLive` minutes were
-  // deleted and that the one that did not expire is still in the list.
-  task_environment_.FastForwardBy(first_time_elapsed);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(1));
-  EXPECT_EQ(*(policy_logger->GetAsList()[log_count_before_adding]
-                  .GetDict()
-                  .FindString("message")),
-            "Element added: Third log at t=TimeToLive/2.");
-
-  // Check that the last log was deleted after `kTimeToLive` minutes to ensure
-  // that a second deleting task was scheduled after deleting the old ones.
-  task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(0));
 }
 
 // Checks that the first log added is deleted when `PolicyLogger::kMaxLogCount`
@@ -162,103 +86,6 @@ TEST_F(PolicyLoggerTest, MaxCountExceededDeletesOldestLog) {
 
   EXPECT_EQ(*(current_logs[current_count - 1].GetDict().FindString("message")),
             "Element added: Last log added and size is exceeded.");
-}
-
-// Checks that `ScheduleOldLogsDeletion` does not crash when there is no task
-// runner.
-TEST(PolicyLoggerTestNoTaskRunner, ScheduleOldLogsDeletion) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!PolicyLogger::IsPolicyLoggingEnabled()) {
-    GTEST_SKIP() << "Policy logging is disabled on ChromeOS stable";
-  }
-#endif
-  ASSERT_TRUE(!base::SequencedTaskRunner::HasCurrentDefault());
-  policy::PolicyLogger::GetInstance()->ScheduleOldLogsDeletionForTesting();
-}
-
-// Checks that the deletion of expired logs works as expected.
-TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreaded) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!PolicyLogger::IsPolicyLoggingEnabled()) {
-    GTEST_SKIP() << "Policy logging is disabled on ChromeOS stable";
-  }
-#endif
-  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
-  policy_logger->EnableLogDeletion();
-  size_t log_count_before_adding = GetLogCount(policy_logger);
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&AddLogs, "First log at t=0.", policy_logger));
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AddLogs, "Second log at t=0+delta.", policy_logger));
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(2));
-
-  base::TimeDelta first_time_elapsed = policy::PolicyLogger::kTimeToLive / 2;
-  task_environment_.FastForwardBy(first_time_elapsed + base::Minutes(1));
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AddLogs, "Third log at t=TimeToLive/2.", policy_logger));
-
-  // Check that the logs that were in the list for `kTimeToLive` minutes were
-  // deleted and that the one that did not expire is still in the list.
-  task_environment_.FastForwardBy(first_time_elapsed);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(1));
-  EXPECT_EQ(*(policy_logger->GetAsList()[log_count_before_adding]
-                  .GetDict()
-                  .FindString("message")),
-            "Element added: Third log at t=TimeToLive/2.");
-
-  // Check that the last log was deleted after `kTimeToLive` minutes to ensure
-  // that a second deleting task was scheduled after deleting the old ones.
-  task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(0));
-}
-
-// Checks that the deletion of expired logs works does not happen when no
-// SequenceTaskRunner is available.
-TEST_F(PolicyLoggerTest, DeleteOldLogsMultithreadedNoSequencedTaskRunner) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!PolicyLogger::IsPolicyLoggingEnabled()) {
-    GTEST_SKIP() << "Policy logging is disabled on ChromeOS stable";
-  }
-#endif
-  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
-  policy_logger->EnableLogDeletion();
-
-  // Threadpool does not use SequencedTaskRunner, so this should not crash and
-  // should not schedule the deletion of old logs.
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::BindOnce(&AddLogs, "First log at t=0.", policy_logger));
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&AddLogs, "Second log at t=0+delta.", policy_logger));
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(2));
-
-  base::TimeDelta first_time_elapsed = policy::PolicyLogger::kTimeToLive / 2;
-  task_environment_.FastForwardBy(first_time_elapsed + base::Minutes(1));
-  // Threadpool does not use SequencedTaskRunner, so this should not crash and
-  // should not schedule the deletion of old logs.
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&AddLogs, "Third log at t=TimeToLive/2.", policy_logger));
-
-  // Check that the logs that were in the list for `kTimeToLive` minutes were
-  // not deleted.
-  task_environment_.FastForwardBy(first_time_elapsed);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(3));
-
-  // Check that the last log no logs were deleted after `kTimeToLive` minutes.
-  task_environment_.FastForwardBy(policy::PolicyLogger::kTimeToLive);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(GetLogCount(policy_logger), size_t(3));
 }
 
 }  // namespace policy

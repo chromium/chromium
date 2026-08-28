@@ -11,7 +11,8 @@
 #include <string_view>
 
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -159,7 +160,6 @@ class POLICY_EXPORT PolicyLogger {
     int line_;
   };
 
-  static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
   static constexpr size_t kMaxLogCount = 200;
 
   static PolicyLogger* GetInstance();
@@ -177,40 +177,15 @@ class POLICY_EXPORT PolicyLogger {
   // Returns the logs in the mojo format.
   std::vector<policy::mojom::LogPtr> GetAsMojoList();
 
-  // Sets `is_log_deletion_enabled_` to allow scheduling old log deletion.
-  void EnableLogDeletion();
-
   // Records memory usage and log count UMA metrics.
   void RecordPerformanceMetrics();
 
-  // Clears `logs_` and sets `is_log_deletion_scheduled_` as cleanup after every
-  // test.
+  // Clears `logs_` as cleanup after every test.
   void ResetLoggerForTesting();
 
-  // Deletes old logs for testing purposes.
-  void ScheduleOldLogsDeletionForTesting();
-
  private:
-  // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if
-  // there is no deletion task scheduled.
+  // Adds a new log to the logs_ list.
   void AddLog(Log&& new_log);
-
-  // Deletes logs in the list that have been in the list for `kTimeToLive`
-  // minutes to an hour.
-  void DeleteOldLogs();
-
-  // Posts a new log deletion task and sets the `is_log_deletion_scheduled_`
-  // flag.
-  void ScheduleOldLogsDeletion();
-
-  // Log deletion scheduling fails in unit tests when there is no task
-  // environment (See crbug.com/1434241). To avoid having  a task environment in
-  // every existing and new unit test that calls a function with logs, this flag
-  // is disabled in unit tests, and enabled everywhere else early in the policy
-  // stack initialization from `BrowserPolicyConnector::Init`.
-  bool is_log_deletion_enabled_{false};
-
-  bool is_log_deletion_scheduled_{false};
 
   base::Lock lock_;
 
