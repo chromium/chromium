@@ -22,7 +22,10 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -636,4 +639,75 @@ TEST_F(LoginStateCheckerTest, RecordsLoginCheckDurationOnSuccess) {
   histogram_tester.ExpectTimeBucketCount(
       "PasswordManager.PasswordChange.LoginCheckDuration",
       kExpectedDurationTime, 1);
+}
+
+TEST_F(LoginStateCheckerTest, SubframeNavigationIgnored) {
+  base::test::TestFuture<LoginCheckResult> future;
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("child_frame");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com/subframe"), child_rfh);
+
+  // Capturer is not reset because subframe navigation is ignored.
+  EXPECT_TRUE(checker->capturer());
+}
+
+TEST_F(LoginStateCheckerTest, UncommittedNavigationIgnored) {
+  base::test::TestFuture<LoginCheckResult> future;
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/failed"), web_contents());
+  simulator->Fail(net::ERR_ABORTED);
+
+  // Capturer is not reset because uncommitted navigation is ignored.
+  EXPECT_TRUE(checker->capturer());
+}
+
+TEST_F(LoginStateCheckerTest,
+       PrimaryMainFrameCommittedNavigationTriggersRecheck) {
+  base::test::TestFuture<LoginCheckResult> future;
+  {
+    InSequence s;
+    EXPECT_CALL(*optimization_service(), ExecuteModel)
+        .WillOnce(WithArg<3>(&PostResponse<ResponseType::kFailure>));
+    EXPECT_CALL(*optimization_service(), ExecuteModel)
+        .WillOnce(WithArg<3>(&PostResponse<ResponseType::kSuccess>));
+  }
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
+  EXPECT_THAT(future.Take(),
+              HasLoginCheckStatus(LoginCheckResult::Status::kLoggedOut));
+
+  // Primary main frame committed navigation.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/next"));
+
+  ASSERT_TRUE(checker->capturer());
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
+  EXPECT_THAT(future.Take(),
+              HasLoginCheckStatus(LoginCheckResult::Status::kLoggedIn));
 }

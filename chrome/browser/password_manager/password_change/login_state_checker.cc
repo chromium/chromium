@@ -159,6 +159,10 @@ void LoginStateChecker::RetryLoginCheck() {
 
 void LoginStateChecker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle && (!navigation_handle->IsInPrimaryMainFrame() ||
+                            !navigation_handle->HasCommitted())) {
+    return;
+  }
   capturer_.reset();
   CheckLoginState(/*ignore_attempts_limit=*/false);
 }
