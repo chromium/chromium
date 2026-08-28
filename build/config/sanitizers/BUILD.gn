@@ -731,17 +731,11 @@ config("not_fuzzed") {
 # shim_supports_alloc_token, and is propagated to the dependant targets via
 # all_dependent_config. In linux component build, it is propagated to directly
 # dependant targets using public_config.
+# By default the number of tokens is bounded by SIZE_MAX.
+# See: https://clang.llvm.org/docs/AllocToken.html
 config("alloc_token") {
   if (is_clang) {
     cflags = [ "-fsanitize=alloc-token" ]
-    if (is_win) {
-      cflags += [
-        "-Xclang",
-        "-falloc-token-max=2",
-      ]
-    } else {
-      cflags += [ "-falloc-token-max=2" ]
-    }
     if (is_linux) {
       if (!defined(alloc_token_linux_ignorelist_path)) {
         alloc_token_linux_ignorelist_path =

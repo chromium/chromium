@@ -175,10 +175,9 @@ std::array<
     kNumPartitions>
     g_roots = {};
 
-// TODO(crbug.com/549496291) update this to extract the pointer/non-pointer
-// status when AllocToken budget changes.
 PA_ALWAYS_INLINE size_t PartitionIndexFromAllocToken(AllocToken alloc_token) {
-  return alloc_token.value();
+  return AllocTokenHasPointerValue(alloc_token) ? kPointerPartitionIndex
+                                                : kDefaultPartitionIndex;
 }
 
 partition_alloc::PartitionRoot* Allocator(size_t partition_index) {

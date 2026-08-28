@@ -8,6 +8,8 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include <limits>
+
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
@@ -21,6 +23,7 @@ inline constexpr size_t kNumPartitions = 2;
 inline constexpr size_t kNumPartitions = 1;
 #endif
 inline constexpr size_t kDefaultPartitionIndex = 0;
+inline constexpr size_t kPointerPartitionIndex = 1;
 
 namespace internal {
 
@@ -267,6 +270,17 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       eventually_zero_freed_memory, enable_tighter_aligned_alloc_bound);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// AllocToken with TypeHashPointerSplit mode assigns the bottom
+// half ID-space for pointer-less types and the top half for
+// pointer-containing types. In practice this is just the first bit is zero if
+// pointer-less. See: https://clang.llvm.org/docs/AllocToken.html
+inline constexpr size_t kAllocTokenHasPointerBit =
+    static_cast<size_t>(1) << (std::numeric_limits<size_t>::digits - 1);
+
+PA_ALWAYS_INLINE bool AllocTokenHasPointerValue(AllocToken alloc_token) {
+  return (alloc_token.value() & kAllocTokenHasPointerBit) != 0;
+}
 
 }  // namespace allocator_shim
 
