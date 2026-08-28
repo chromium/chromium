@@ -655,6 +655,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/views/tabs:tab",
       "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/common",

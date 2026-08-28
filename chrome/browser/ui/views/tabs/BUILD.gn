@@ -78,6 +78,8 @@ source_set("new_tab_button_menu_model_impl") {
     "//ui/base",
     "//ui/base/interaction",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_group") {
@@ -116,6 +118,7 @@ source_set("tab_group_impl") {
 
   deps = [
     ":base",
+    ":tab",
     ":tab_group",
     "//base",
     "//base:i18n",
@@ -148,6 +151,8 @@ source_set("tab_group_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_style_views") {
@@ -178,6 +183,7 @@ source_set("tab_style_views_impl") {
 
   deps = [
     ":base",
+    ":tab",
     ":tab_group",
     ":tab_style_views",
     "//base",
@@ -199,6 +205,8 @@ source_set("tab_style_views_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("tab_container") {
@@ -212,6 +220,7 @@ source_set("tab_container") {
 
   deps = [
     ":base",
+    ":tab",
     ":tab_group",
     "//base",
     "//chrome/browser/ui/tabs",
@@ -223,13 +232,6 @@ source_set("tab_container") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  # TODO(crbug.com/451609048): Remove this circular dependency when the
-  # following header gets componentized:
-  # - c/b/ui/views/tabs/tab.h
-  # (No allow_circular_includes_from entry belongs here -- the waiver that
-  # makes this legal is declared on //chrome/browser/ui:ui, which is the
-  # target that owns tab.h and depends on this target.)
 }
 
 source_set("tab_container_impl") {
@@ -243,6 +245,7 @@ source_set("tab_container_impl") {
 
   deps = [
     ":base",
+    ":tab",
     ":tab_container",
     ":tab_group",
     ":tab_style_views",
@@ -266,10 +269,90 @@ source_set("tab_container_impl") {
   ]
 
   # TODO(crbug.com/451609048): Remove this circular dependency when the
-  # following headers get componentized:
-  # - c/b/ui/views/tabs/tab.h
+  # following header gets componentized:
   # - c/b/ui/views/tabs/tab_strip.h
   # (No allow_circular_includes_from entry belongs here -- the waiver that
   # makes this legal is declared on //chrome/browser/ui:ui, which is the
-  # target that owns tab.h and tab_strip.h and depends on this target.)
+  # target that owns tab_strip.h and depends on this target.)
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("tab") {
+  sources = [ "tab.h" ]
+
+  deps = [
+    ":base",
+    ":tab_style_views",
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//chrome/common:buildflags",
+    "//components/performance_manager",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("tab_impl") {
+  sources = [ "tab.cc" ]
+
+  deps = [
+    ":base",
+    ":tab",
+    ":tab_style_views",
+    "//base",
+    "//cc/paint",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/dictation",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui:glow",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/thumbnails",
+    "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//chrome/browser/ui/window_metadata",
+    "//chrome/common:chrome_features",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/tabs:public",
+    "//skia",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/boca/on_task" ]
+  }
+
+  # frame/browser_frame_view.h, frame/browser_view.h,
+  # tabs/browser_tab_strip_controller.h, and tabs/tab_strip.h are all still
+  # monolithic in ui:ui (crbug.com/353332589) and are only ever needed by
+  # tab.cc, never by tab.h -- so this :tab_impl target is the one that
+  # carries the real dependency and the corresponding
+  # allow_circular_includes_from grant on ui:ui, not the public :tab target.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

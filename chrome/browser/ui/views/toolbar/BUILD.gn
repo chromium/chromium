@@ -503,6 +503,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/extensions:test_support",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/tabs:tab",
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//chrome/browser/user_education",

@@ -141,6 +141,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/commerce",
       "//chrome/browser/ui/views/data_sharing",
+      "//chrome/browser/ui/views/tabs:tab",
       "//chrome/browser/ui/views/tabs:tab_group",
       "//chrome/browser/ui/views/tabs/groups",
       "//chrome/browser/ui/views/tabs/tab",

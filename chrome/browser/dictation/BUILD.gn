@@ -175,6 +175,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/dictation",
+    "//chrome/browser/ui/views/tabs:tab",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",
