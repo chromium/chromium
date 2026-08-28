@@ -18,11 +18,11 @@ constexpr base::TimeDelta kSendLogBufferDelay = base::Milliseconds(200);
 }  // namespace
 
 Journal::PendingAsyncEntry::PendingAsyncEntry(base::PassKey<Journal> pass_key,
-                                              base::SafeRef<Journal> journal,
+                                              base::WeakPtr<Journal> journal,
                                               TaskId task_id,
                                               std::string_view event_name)
     : pass_key_(pass_key),
-      journal_(journal),
+      journal_(std::move(journal)),
       task_id_(task_id),
       event_name_(event_name) {}
 
@@ -37,17 +37,23 @@ void Journal::PendingAsyncEntry::EndEntry(
   CHECK(!terminated_);
   terminated_ = true;
   ACTOR_LOG() << "End " << event_name_ << ": " << details;
-  journal_->AddEndEvent(pass_key_, task_id_, event_name_, std::move(details));
+  if (journal_) {
+    journal_->AddEndEvent(pass_key_, task_id_, event_name_, std::move(details));
+  }
 }
 
 void Journal::PendingAsyncEntry::Log(std::string_view event_name) {
-  journal_->Log(task_id_, event_name, {});
+  if (journal_) {
+    journal_->Log(task_id_, event_name, {});
+  }
 }
 
 void Journal::PendingAsyncEntry::Log(
     std::string_view event_name,
     std::vector<mojom::JournalDetailsPtr> details) {
-  journal_->Log(task_id_, event_name, std::move(details));
+  if (journal_) {
+    journal_->Log(task_id_, event_name, std::move(details));
+  }
 }
 
 Journal::Journal() = default;
@@ -89,7 +95,7 @@ std::unique_ptr<Journal::PendingAsyncEntry> Journal::CreatePendingAsyncEntry(
       std::string(event_name), MakeRendererTrackUUID(task_id),
       std::move(details)));
   return base::WrapUnique(new PendingAsyncEntry(base::PassKey<Journal>(),
-                                                weak_factory_.GetSafeRef(),
+                                                weak_factory_.GetWeakPtr(),
                                                 task_id, event_name));
 }
 

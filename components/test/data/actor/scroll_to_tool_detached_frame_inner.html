@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="wrap" hidden="until-found">
+    <button id="target">Target</button>
+  </div>
+  <script>
+    const wrap = document.getElementById('wrap');
+    wrap.addEventListener('beforematch', () => {
+      // Remove the mid iframe from the top window.
+      // Since mid is cross-origin, removing it synchronously detaches this frame.
+      parent.parent.document.getElementById('mid').remove();
+    });
+  </script>
+</body>
+</html>

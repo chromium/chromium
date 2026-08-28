@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -179,6 +180,11 @@ class ToolBase {
                                  bool check_aria) const;
 
   bool is_revalidation_ = false;
+
+  // Used to verify this object is still alive across synchronous DOM event
+  // dispatches (such as `beforematch`) that might detach the frame and destroy
+  // this tool while executing on the stack.
+  base::WeakPtrFactory<ToolBase> weak_ptr_factory_{this};
 };
 }  // namespace actor
 

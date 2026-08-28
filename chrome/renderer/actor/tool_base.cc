@@ -574,25 +574,52 @@ bool ToolBase::EnsureTargetInView() {
   int32_t dom_node_id = target_->get_dom_node_id();
   WebElement node = GetNodeFromIdIncludingPopup(frame_.get(), dom_node_id)
                         .DynamicTo<WebElement>();
-  if (node && node.VisibleBoundsInWidget().IsEmpty()) {
-    gfx::Rect bounds_before = node.BoundsInWidget();
-    node.RevealAutoExpandableAncestors();
-    node.ScrollIntoViewIfNeeded();
+  if (!node) {
+    return false;
+  }
 
-    journal_->Log(task_id_, "ScrollIntoView",
-                  JournalDetailsBuilder()
-                      .Add("target", node)
-                      .Add("CurBounds", bounds_before)
-                      .Add("NewBounds", node.BoundsInWidget())
-                      .Add("NewBoundsVisible", node.VisibleBoundsInWidget())
-                      .Add("ViewportBounds",
-                           node.GetDocument().GetFrame()->VisibleContentRect())
-                      .Build());
-
+  // Bounds queries force lifecycle/layout updates in Blink. Guard against the
+  // possibility of layout side effects detaching the owning frame and
+  // destroying this tool while executing on the stack.
+  base::WeakPtr<ToolBase> weak_this = weak_ptr_factory_.GetWeakPtr();
+  if (!node.VisibleBoundsInWidget().IsEmpty()) {
+    return false;
+  }
+  if (!weak_this) {
     return true;
   }
 
-  return false;
+  gfx::Rect bounds_before = node.BoundsInWidget();
+  if (!weak_this) {
+    return true;
+  }
+
+  // Revealing auto-expandable ancestors synchronously dispatches DOM events
+  // (`beforematch`) that might run script detaching the owning frame and
+  // destroying this tool.
+  node.RevealAutoExpandableAncestors();
+  if (!weak_this) {
+    return true;
+  }
+  node.ScrollIntoViewIfNeeded();
+  if (!weak_this) {
+    return true;
+  }
+
+  blink::WebLocalFrame* local_frame = node.GetDocument().GetFrame();
+  gfx::Rect viewport_bounds =
+      local_frame ? local_frame->VisibleContentRect() : gfx::Rect();
+
+  journal_->Log(task_id_, "ScrollIntoView",
+                JournalDetailsBuilder()
+                    .Add("target", node)
+                    .Add("CurBounds", bounds_before)
+                    .Add("NewBounds", node.BoundsInWidget())
+                    .Add("NewBoundsVisible", node.VisibleBoundsInWidget())
+                    .Add("ViewportBounds", viewport_bounds)
+                    .Build());
+
+  return true;
 }
 
 mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
