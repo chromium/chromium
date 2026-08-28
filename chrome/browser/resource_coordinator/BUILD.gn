@@ -211,6 +211,7 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/ui",
+      "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/tabs:test_support",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",

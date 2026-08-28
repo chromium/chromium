@@ -97,6 +97,60 @@ if (!is_android) {
     ]
   }
 
+  source_set("browser_window_state") {
+    public = [ "browser_window_state.h" ]
+    sources = [ "browser_window_state.cc" ]
+    public_deps = [
+      "//base",
+      "//components/prefs",
+      "//ui/base:types",
+      "//ui/base/mojom:ui_base_types",
+    ]
+    deps = [
+      "//chrome/browser:defaults",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/ui/window_sizer",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+    ]
+  }
+
+  source_set("tab_ui_helper") {
+    public = [ "tab_ui_helper.h" ]
+    sources = [ "tab_ui_helper.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//components/tabs:enum",
+      "//content/public/browser",
+      "//ui/base/unowned_user_data",
+    ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/favicon",
+      "//chrome/browser/resource_coordinator:mojo_bindings",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/common:constants",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/tabs:public",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/resources:ui_resources_grd",
+      "//url",
+    ]
+  }
+
   source_set("browser_actions") {
     public = [ "browser_actions.h" ]
     public_deps = [
@@ -1269,8 +1323,6 @@ static_library("ui") {
       "browser_window.h",
       "browser_window_deleter.cc",
       "browser_window_deleter.h",
-      "browser_window_state.cc",
-      "browser_window_state.h",
       "browser_window_theme_observer.cc",
       "browser_window_theme_observer.h",
       "chrome_pages.cc",
@@ -1280,12 +1332,8 @@ static_library("ui") {
       "scoped_tabbed_browser_displayer.h",
       "singleton_tabs.cc",
       "singleton_tabs.h",
-      "tab_ui_helper.cc",
-      "tab_ui_helper.h",
       "unload_controller.cc",
       "unload_controller.h",
-      "views/search_engine_choice/search_engine_choice_dialog_view.cc",
-      "views/search_engine_choice/search_engine_choice_dialog_view.h",
     ]
 
     if (enable_dice_support) {
@@ -1307,10 +1355,12 @@ static_library("ui") {
       ":accelerator_table",
       ":browser_actions",
       ":browser_select_file_dialog_controller",
+      ":browser_window_state",
       ":collected_cookies_infobar_delegate",
       ":confirm_bubble_model",
       ":focus_tab_after_navigation_helper",
       ":layout_constants",
+      ":tab_ui_helper",
       ":uma_browsing_activity_observer",
       "//base",
       "//chrome/browser:chrome_browser_interface_binders_webui_parts",
@@ -1367,6 +1417,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/data_sharing",
       "//chrome/browser/ui/views/data_sharing:impl",
       "//chrome/browser/ui/views/glic",
+      "//chrome/browser/ui/views/search_engine_choice",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/glic:impl",
       "//chrome/browser/ui/waap:window_metrics_manager",

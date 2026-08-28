@@ -69,6 +69,7 @@ source_set("impl") {
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/color:color_headers",

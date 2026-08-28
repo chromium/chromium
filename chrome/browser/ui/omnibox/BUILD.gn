@@ -159,6 +159,7 @@ source_set("impl") {
       "//chrome/browser/safe_browsing",
       "//chrome/browser/ssl",
       "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",

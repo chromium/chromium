@@ -325,6 +325,7 @@ if (!is_android) {
       "//chrome/browser/interstitials:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender",
+      "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/certificate_viewer",

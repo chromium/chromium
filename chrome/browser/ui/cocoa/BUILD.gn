@@ -153,6 +153,7 @@ source_set("cocoa") {
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:simple_message_box_internal",
+    "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/bookmarks",

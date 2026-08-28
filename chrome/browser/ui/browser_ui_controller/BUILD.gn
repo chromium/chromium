@@ -30,6 +30,7 @@ source_set("impl") {
     "//chrome/browser/app_mode",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:status_bubble",
+    "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/location_bar",

@@ -294,6 +294,7 @@ if (!is_android) {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui:browser_window_state",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/startup",

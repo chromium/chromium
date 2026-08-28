@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("search_engine_choice") {
+  public = [ "search_engine_choice_dialog_view.h" ]
+  sources = [ "search_engine_choice_dialog_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/search_engine_choice",
+    "//chrome/browser/ui/webui/search_engine_choice",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views/controls/webview",
+  ]
+}
