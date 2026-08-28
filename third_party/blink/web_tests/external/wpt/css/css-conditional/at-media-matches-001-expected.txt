@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] "@media all" always matches
+  assert_true: expected true got undefined
+[FAIL] "@media not all" never matches
+  assert_false: expected false got undefined
+Harness: the test ran to completion.
+

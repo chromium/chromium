@@ -1,0 +1,78 @@
+This is a testharness.js-based test.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] dfn expecting name from title
+  assert_equals: <dfn id="el-4" class="ex-label" data-testname="dfn expecting name from title" title="dfn title attribute value" data-expectedlabel="dfn title attribute value">dfn text node contents</dfn> expected "dfn title attribute value" but got "dfn text node contents"
+[FAIL] dfn expecting name to be empty
+  assert_equals: <dfn id="el-5" class="ex-label" data-testname="dfn expecting name to be empty" data-expectedlabel="">dfn text node contents</dfn> expected "" but got "dfn text node contents"
+[FAIL] b expecting name from title
+  assert_equals: <b id="el-24" class="ex-label" data-testname="b expecting name from title" title="b title attribute value" data-expectedlabel="b title attribute value">b text node contents</b> expected "b title attribute value" but got ""
+[FAIL] bdi expecting name from title
+  assert_equals: <bdi id="el-29" class="ex-label" data-testname="bdi expecting name from title" title="bdi title attribute value" data-expectedlabel="bdi title attribute value">bdi text node contents</bdi> expected "bdi title attribute value" but got ""
+[FAIL] bdo expecting name from title
+  assert_equals: <bdo id="el-34" class="ex-label" data-testname="bdo expecting name from title" title="bdo title attribute value" data-expectedlabel="bdo title attribute value">bdo text node contents</bdo> expected "bdo title attribute value" but got ""
+[FAIL] br expecting name from 2 aria-labelledby refs
+  assert_equals: <br id="el-36" class="ex-label" data-testname="br expecting name from 2 aria-labelledby refs" aria-labelledby="el-36-label-1 el-36-label-2" aria-label="br aria-label attribute value" title="br title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents"> expected "aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents" but got ""
+[FAIL] br expecting name from 1 aria-labelledby ref
+  assert_equals: <br id="el-37" class="ex-label" data-testname="br expecting name from 1 aria-labelledby ref" aria-labelledby="el-37-label-1" aria-label="br aria-label attribute value" title="br title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents"> expected "aria-labelledby ref element #1 text contents" but got ""
+[FAIL] br expecting name from aria-label
+  assert_equals: <br id="el-38" class="ex-label" data-testname="br expecting name from aria-label" aria-label="br aria-label attribute value" title="br title attribute value" data-expectedlabel="br aria-label attribute value"> expected "br aria-label attribute value" but got ""
+[FAIL] br expecting name from title
+  assert_equals: <br id="el-39" class="ex-label" data-testname="br expecting name from title" title="br title attribute value" data-expectedlabel="br title attribute value"> expected "br title attribute value" but got ""
+[FAIL] cite expecting name from title
+  assert_equals: <cite id="el-44" class="ex-label" data-testname="cite expecting name from title" title="cite title attribute value" data-expectedlabel="cite title attribute value">cite text node contents</cite> expected "cite title attribute value" but got ""
+[FAIL] code expecting name from title
+  assert_equals: <code id="el-49" class="ex-label" data-testname="code expecting name from title" title="code title attribute value" data-expectedlabel="code title attribute value">code text node contents</code> expected "code title attribute value" but got ""
+[FAIL] em expecting name from title
+  assert_equals: <em id="el-54" class="ex-label" data-testname="em expecting name from title" title="em title attribute value" data-expectedlabel="em title attribute value">em text node contents</em> expected "em title attribute value" but got ""
+[FAIL] i expecting name from title
+  assert_equals: <i id="el-59" class="ex-label" data-testname="i expecting name from title" title="i title attribute value" data-expectedlabel="i title attribute value">i text node contents</i> expected "i title attribute value" but got ""
+[FAIL] kbd expecting name from title
+  assert_equals: <kbd id="el-64" class="ex-label" data-testname="kbd expecting name from title" title="kbd title attribute value" data-expectedlabel="kbd title attribute value">kbd text node contents</kbd> expected "kbd title attribute value" but got ""
+[FAIL] mark expecting name from title
+  assert_equals: <mark id="el-69" class="ex-label" data-testname="mark expecting name from title" title="mark title attribute value" data-expectedlabel="mark title attribute value">mark text node contents</mark> expected "mark title attribute value" but got ""
+[FAIL] q expecting name from title
+  assert_equals: <q id="el-74" class="ex-label" data-testname="q expecting name from title" title="q title attribute value" data-expectedlabel="q title attribute value">q text node contents</q> expected "q title attribute value" but got ""
+[FAIL] rp expecting name from 2 aria-labelledby refs
+  assert_equals: <rp id="el-76" class="ex-label" data-testname="rp expecting name from 2 aria-labelledby refs" aria-labelledby="el-76-label-1 el-76-label-2" aria-label="rp aria-label attribute value" title="rp title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents">rp #1</rp> expected "aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents" but got ""
+[FAIL] rp expecting name from 1 aria-labelledby ref
+  assert_equals: <rp id="el-77" class="ex-label" data-testname="rp expecting name from 1 aria-labelledby ref" aria-labelledby="el-77-label-1" aria-label="rp aria-label attribute value" title="rp title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents">rp #1</rp> expected "aria-labelledby ref element #1 text contents" but got ""
+[FAIL] rp expecting name from aria-label
+  assert_equals: <rp id="el-78" class="ex-label" data-testname="rp expecting name from aria-label" aria-label="rp aria-label attribute value" title="rp title attribute value" data-expectedlabel="rp aria-label attribute value">rp #1</rp> expected "rp aria-label attribute value" but got ""
+[FAIL] rp expecting name from title
+  assert_equals: <rp id="el-79" class="ex-label" data-testname="rp expecting name from title" title="rp title attribute value" data-expectedlabel="rp title attribute value">rp #1</rp> expected "rp title attribute value" but got ""
+[FAIL] rt expecting name from 2 aria-labelledby refs
+  assert_equals: <rt id="el-81" class="ex-label" data-testname="rt expecting name from 2 aria-labelledby refs" aria-labelledby="el-81-label-1 el-81-label-2" aria-label="rt aria-label attribute value" title="rt title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents">rt</rt> expected "aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents" but got ""
+[FAIL] rt expecting name from 1 aria-labelledby ref
+  assert_equals: <rt id="el-82" class="ex-label" data-testname="rt expecting name from 1 aria-labelledby ref" aria-labelledby="el-82-label-1" aria-label="rt aria-label attribute value" title="rt title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents">rt</rt> expected "aria-labelledby ref element #1 text contents" but got ""
+[FAIL] rt expecting name from aria-label
+  assert_equals: <rt id="el-83" class="ex-label" data-testname="rt expecting name from aria-label" aria-label="rt aria-label attribute value" title="rt title attribute value" data-expectedlabel="rt aria-label attribute value">rt</rt> expected "rt aria-label attribute value" but got ""
+[FAIL] rt expecting name from title
+  assert_equals: <rt id="el-84" class="ex-label" data-testname="rt expecting name from title" title="rt title attribute value" data-expectedlabel="rt title attribute value">rt</rt> expected "rt title attribute value" but got ""
+[FAIL] s expecting name from title
+  assert_equals: <s id="el-89" class="ex-label" data-testname="s expecting name from title" title="s title attribute value" data-expectedlabel="s title attribute value">s text node contents</s> expected "s title attribute value" but got ""
+[FAIL] samp expecting name from title
+  assert_equals: <samp id="el-94" class="ex-label" data-testname="samp expecting name from title" title="samp title attribute value" data-expectedlabel="samp title attribute value">samp text node contents</samp> expected "samp title attribute value" but got ""
+[FAIL] small expecting name from title
+  assert_equals: <small id="el-99" class="ex-label" data-testname="small expecting name from title" title="small title attribute value" data-expectedlabel="small title attribute value">small text node contents</small> expected "small title attribute value" but got ""
+[FAIL] strong expecting name from title
+  assert_equals: <strong id="el-104" class="ex-label" data-testname="strong expecting name from title" title="strong title attribute value" data-expectedlabel="strong title attribute value">strong text node contents</strong> expected "strong title attribute value" but got ""
+[FAIL] sub expecting name from title
+  assert_equals: <sub id="el-109" class="ex-label" data-testname="sub expecting name from title" title="sub title attribute value" data-expectedlabel="sub title attribute value">sub text node contents</sub> expected "sub title attribute value" but got ""
+[FAIL] sup expecting name from title
+  assert_equals: <sup id="el-114" class="ex-label" data-testname="sup expecting name from title" title="sup title attribute value" data-expectedlabel="sup title attribute value">sup text node contents</sup> expected "sup title attribute value" but got ""
+[FAIL] time expecting name from title
+  assert_equals: <time id="el-119" class="ex-label" data-testname="time expecting name from title" title="time title attribute value" data-expectedlabel="time title attribute value">time text node contents</time> expected "time title attribute value" but got ""
+[FAIL] u expecting name from title
+  assert_equals: <u id="el-124" class="ex-label" data-testname="u expecting name from title" title="u title attribute value" data-expectedlabel="u title attribute value">u text node contents</u> expected "u title attribute value" but got ""
+[FAIL] var expecting name from title
+  assert_equals: <var id="el-129" class="ex-label" data-testname="var expecting name from title" title="var title attribute value" data-expectedlabel="var title attribute value">var text node contents</var> expected "var title attribute value" but got ""
+[FAIL] wbr expecting name from 2 aria-labelledby refs
+  assert_equals: <wbr id="el-131" class="ex-label" data-testname="wbr expecting name from 2 aria-labelledby refs" aria-labelledby="el-131-label-1 el-131-label-2" aria-label="wbr aria-label attribute value" title="wbr title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents"> expected "aria-labelledby ref element #1 text contents aria-labelledby ref element #2 text contents" but got ""
+[FAIL] wbr expecting name from 1 aria-labelledby ref
+  assert_equals: <wbr id="el-132" class="ex-label" data-testname="wbr expecting name from 1 aria-labelledby ref" aria-labelledby="el-132-label-1" aria-label="wbr aria-label attribute value" title="wbr title attribute value" data-expectedlabel="aria-labelledby ref element #1 text contents"> expected "aria-labelledby ref element #1 text contents" but got ""
+[FAIL] wbr expecting name from aria-label
+  assert_equals: <wbr id="el-133" class="ex-label" data-testname="wbr expecting name from aria-label" aria-label="wbr aria-label attribute value" title="wbr title attribute value" data-expectedlabel="wbr aria-label attribute value"> expected "wbr aria-label attribute value" but got ""
+[FAIL] wbr expecting name from title
+  assert_equals: <wbr id="el-134" class="ex-label" data-testname="wbr expecting name from title" title="wbr title attribute value" data-expectedlabel="wbr title attribute value"> expected "wbr title attribute value" but got ""
+Harness: the test ran to completion.
+

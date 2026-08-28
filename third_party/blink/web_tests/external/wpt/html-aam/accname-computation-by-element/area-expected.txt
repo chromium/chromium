@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] area expecting name from title
+  assert_equals: <area id="el-6" class="ex-label" data-testname="area expecting name from title" href="#" alt="Mapped image alt attribute value" shape="rect" coords="0,0,20,20" title="area title attribute value" data-expectedlabel="area title attribute value"> expected "area title attribute value" but got "Mapped image alt attribute value"
+[FAIL] area expecting name to be empty
+  assert_equals: <area id="el-7" class="ex-label" data-testname="area expecting name to be empty" href="#" alt="Mapped image alt attribute value" shape="rect" coords="0,0,20,20" data-expectedlabel=""> expected "" but got "Mapped image alt attribute value"
+Harness: the test ran to completion.
+

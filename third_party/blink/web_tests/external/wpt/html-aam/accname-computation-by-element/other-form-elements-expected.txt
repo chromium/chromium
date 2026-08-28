@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] input[type="file"] expecting name from title
+  assert_equals: <input type="file" id="el-48" class="ex-label" data-testname="input[type=&quot;file&quot;] expecting name from title" title="input title attribute value" data-expectedlabel="input title attribute value"> expected "input title attribute value" but got "Choose File"
+[FAIL] input[type="file"] expecting name to be empty
+  assert_equals: <input type="file" id="el-49" class="ex-label" data-testname="input[type=&quot;file&quot;] expecting name to be empty" data-expectedlabel=""> expected "" but got "Choose File"
+Harness: the test ran to completion.
+

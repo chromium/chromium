@@ -41,22 +41,7 @@ def setup_event_recorder(session, inline):
     return _setup_event_recorder
 
 
-def test_wheel_scroll_dispatches_multiple_events(session, setup_event_recorder, wheel_chain):
-    setup_event_recorder("wheel")
-
-    wheel_chain.scroll(0, 0, 30, 60, duration=DURATION).perform()
-
-    events = wait_for_events(session, min_count=2)
-    assert len(events) > 1
-    assert all(event["type"] == "wheel" for event in events)
-
-    # The incremental deltas of all dispatched events have to add up to the
-    # requested scroll distance.
-    assert sum(event["deltaX"] for event in events) == 30
-    assert sum(event["deltaY"] for event in events) == 60
-
-
-def test_pointer_move_dispatches_multiple_events(session, setup_event_recorder, mouse_chain):
+def test_mouse_move_dispatches_multiple_events(session, setup_event_recorder, mouse_chain):
     setup_event_recorder("mousemove")
 
     mouse_chain \
@@ -88,3 +73,18 @@ def test_touch_move_dispatches_multiple_events(session, setup_event_recorder, to
     # The last event has to reach the requested target position.
     assert events[-1]["clientX"] == pytest.approx(200, abs=1.0)
     assert events[-1]["clientY"] == pytest.approx(100, abs=1.0)
+
+
+def test_wheel_scroll_dispatches_multiple_events(session, setup_event_recorder, wheel_chain):
+    setup_event_recorder("wheel")
+
+    wheel_chain.scroll(0, 0, 30, 60, duration=DURATION).perform()
+
+    events = wait_for_events(session, min_count=2)
+    assert len(events) > 1
+    assert all(event["type"] == "wheel" for event in events)
+
+    # The incremental deltas of all dispatched events have to add up to the
+    # requested scroll distance.
+    assert sum(event["deltaX"] for event in events) == 30
+    assert sum(event["deltaY"] for event in events) == 60

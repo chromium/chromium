@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Table with two captions, the first hidden
+  assert_equals: <table class="ex-label" data-testname="Table with two captions, the first hidden" data-expectedlabel="Visible caption">\n    <caption hidden="">Hidden caption</caption>\n    <caption>Visible caption</caption>\n  </table> expected "Visible caption" but got ""
+[FAIL] Fieldset with two legends, the first hidden
+  assert_equals: <fieldset class="ex-label" data-testname="Fieldset with two legends, the first hidden" data-expectedlabel="Visible legend">\n    <legend hidden="">Hidden legend</legend>\n    <legend>Visible legend</legend>\n  </fieldset> expected "Visible legend" but got ""
+Harness: the test ran to completion.
+

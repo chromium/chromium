@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] th expecting name from title
+  assert_equals: <th id="el-9" class="ex-label" data-testname="th expecting name from title" title="th title attribute value" data-expectedlabel="th title attribute value">th text node contents</th> expected "th title attribute value" but got "th text node contents"
+[FAIL] th expecting name to be empty
+  assert_equals: <th id="el-10" class="ex-label" data-testname="th expecting name to be empty" data-expectedlabel="">th text node contents</th> expected "" but got "th text node contents"
+[FAIL] td expecting name from title
+  assert_equals: <td id="el-14" class="ex-label" data-testname="td expecting name from title" title="td title attribute value" data-expectedlabel="td title attribute value">td text node contents</td> expected "td title attribute value" but got "td text node contents"
+[FAIL] td expecting name to be empty
+  assert_equals: <td id="el-15" class="ex-label" data-testname="td expecting name to be empty" data-expectedlabel="">td text node contents</td> expected "" but got "td text node contents"
+[FAIL] tbody expecting name from title
+  assert_equals: <tbody id="el-24" class="ex-label" data-testname="tbody expecting name from title" title="tbody title attribute value" data-expectedlabel="tbody title attribute value"><tr><td>td text node contents</td></tr></tbody> expected "tbody title attribute value" but got ""
+Harness: the test ran to completion.
+

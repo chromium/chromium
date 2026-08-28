@@ -51,28 +51,7 @@ async def setup_event_recorder(bidi_session, top_context, inline):
     return _setup_event_recorder
 
 
-async def test_wheel_scroll_dispatches_multiple_events(
-    bidi_session, top_context, setup_event_recorder
-):
-    await setup_event_recorder("wheel")
-
-    actions = Actions()
-    actions.add_wheel().scroll(x=0, y=0, delta_x=30, delta_y=60, duration=DURATION)
-    await bidi_session.input.perform_actions(
-        actions=actions, context=top_context["context"]
-    )
-
-    events = await wait_for_events(bidi_session, top_context["context"], min_count=2)
-    assert len(events) > 1
-    assert all(event["type"] == "wheel" for event in events)
-
-    # The incremental deltas of all dispatched events have to add up to the
-    # requested scroll distance.
-    assert sum(event["deltaX"] for event in events) == 30
-    assert sum(event["deltaY"] for event in events) == 60
-
-
-async def test_pointer_move_dispatches_multiple_events(
+async def test_mouse_move_dispatches_multiple_events(
     bidi_session, top_context, setup_event_recorder
 ):
     await setup_event_recorder("mousemove")
@@ -115,3 +94,24 @@ async def test_touch_move_dispatches_multiple_events(
     # The last event has to reach the requested target position.
     assert events[-1]["clientX"] == pytest.approx(200, abs=1.0)
     assert events[-1]["clientY"] == pytest.approx(100, abs=1.0)
+
+
+async def test_wheel_scroll_dispatches_multiple_events(
+    bidi_session, top_context, setup_event_recorder
+):
+    await setup_event_recorder("wheel")
+
+    actions = Actions()
+    actions.add_wheel().scroll(x=0, y=0, delta_x=30, delta_y=60, duration=DURATION)
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    events = await wait_for_events(bidi_session, top_context["context"], min_count=2)
+    assert len(events) > 1
+    assert all(event["type"] == "wheel" for event in events)
+
+    # The incremental deltas of all dispatched events have to add up to the
+    # requested scroll distance.
+    assert sum(event["deltaX"] for event in events) == 30
+    assert sum(event["deltaY"] for event in events) == 60
