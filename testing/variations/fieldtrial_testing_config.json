@@ -2095,21 +2095,6 @@
             ]
         }
     ],
-    "AutofillAndPasswordsRemoveSignInPromo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAndPasswordsRemoveSignInPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
