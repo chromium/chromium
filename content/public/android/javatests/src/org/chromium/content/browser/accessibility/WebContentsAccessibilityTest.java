@@ -554,7 +554,7 @@ public class WebContentsAccessibilityTest {
      * @param args Bundle optional arguments
      * @throws ExecutionException Error
      */
-    private void performTextActionOnUiThread(
+    private void performTextActionOnUiThreadAndWaitForTraversalAndSelectionEvents(
             int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat action, Bundle args)
             throws ExecutionException {
         // Reset values for traversal and selection events.
@@ -601,7 +601,7 @@ public class WebContentsAccessibilityTest {
 
     /**
      * Helper method for performing a movement-at-granularity action and asserting the resulting
-     * traversal and selection bounds.
+     * traversal.
      *
      * @param viewId int virtualViewId of the target node.
      * @param moveAtGranularityAction AccessibilityActionCompat movement action to perform.
@@ -609,10 +609,36 @@ public class WebContentsAccessibilityTest {
      * @param extendSelection boolean whether to extend selection or move cursor.
      * @param expectedTraverseFrom int expected start index of the traversed character/word range.
      * @param expectedTraverseTo int expected end index of the traversed character/word range.
-     * @param expectedSelectionFrom int expected start index of the resulting selection (pass -1 if
-     *     selection events are not expected or asserted).
-     * @param expectedSelectionTo int expected end index of the resulting selection (pass -1 if
-     *     selection events are not expected or asserted).
+     * @throws ExecutionException Error during UI-thread action dispatch.
+     */
+    private void moveAtGranularityAndAssertBounds(
+            int viewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat moveAtGranularityAction,
+            int granularity,
+            boolean extendSelection,
+            int expectedTraverseFrom,
+            int expectedTraverseTo)
+            throws ExecutionException {
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, granularity);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, extendSelection);
+        performTextActionOnUiThreadAndWaitForTraversalEvent(viewId, moveAtGranularityAction, args);
+        Assert.assertEquals(expectedTraverseFrom, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(expectedTraverseTo, mTestData.getTraverseToIndex());
+    }
+
+    /**
+     * Helper method for performing a movement-at-granularity action and asserting the resulting
+     * traversal and selection bounds. Selection bounds are changed only on editable nodes.
+     *
+     * @param viewId int virtualViewId of the target node.
+     * @param moveAtGranularityAction AccessibilityActionCompat movement action to perform.
+     * @param granularity int movement granularity (e.g. MOVEMENT_GRANULARITY_CHARACTER).
+     * @param extendSelection boolean whether to extend selection or move cursor.
+     * @param expectedTraverseFrom int expected start index of the traversed character/word range.
+     * @param expectedTraverseTo int expected end index of the traversed character/word range.
+     * @param expectedSelectionFrom int expected start index of the resulting selection.
+     * @param expectedSelectionTo int expected end index of the resulting selection.
      * @throws ExecutionException Error during UI-thread action dispatch.
      */
     private void moveAtGranularityAndAssertBounds(
@@ -625,19 +651,16 @@ public class WebContentsAccessibilityTest {
             int expectedSelectionFrom,
             int expectedSelectionTo)
             throws ExecutionException {
+        Assert.assertTrue(createAccessibilityNodeInfo(viewId).isEditable());
         Bundle args = new Bundle();
         args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, granularity);
         args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, extendSelection);
-        if (expectedSelectionFrom == -1 && expectedSelectionTo == -1) {
-            performTextActionOnUiThreadAndWaitForTraversalEvent(
-                    viewId, moveAtGranularityAction, args);
-        } else {
-            performTextActionOnUiThread(viewId, moveAtGranularityAction, args);
-            Assert.assertEquals(expectedSelectionFrom, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(expectedSelectionTo, mTestData.getSelectionToIndex());
-        }
+        performTextActionOnUiThreadAndWaitForTraversalAndSelectionEvents(
+                viewId, moveAtGranularityAction, args);
         Assert.assertEquals(expectedTraverseFrom, mTestData.getTraverseFromIndex());
         Assert.assertEquals(expectedTraverseTo, mTestData.getTraverseToIndex());
+        Assert.assertEquals(expectedSelectionFrom, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(expectedSelectionTo, mTestData.getSelectionToIndex());
     }
 
     /**
@@ -2216,9 +2239,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ true,
                 /* expectedTraverseFrom= */ 0,
-                /* expectedTraverseTo= */ 1,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 1);
 
         // 2. Set selection from p1 (offset 2) to p2 (offset 6).
         setAndAssertExtendedSelection(
@@ -2232,9 +2253,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ true,
                 /* expectedTraverseFrom= */ 6,
-                /* expectedTraverseTo= */ 7,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 7);
     }
 
     /**
@@ -2243,7 +2262,8 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    public void testEvent_MovementAtGranularity_ChildOffsetSelection() throws Throwable {
+    public void testEvent_MovementAtGranularity_WithExtendedSelectionOverEditableNode()
+            throws Throwable {
         setupTestWithHTML(
                 """
                 <p id="p1">FirstParagraph</p>
@@ -2272,34 +2292,152 @@ public class WebContentsAccessibilityTest {
                 /* expectedSelectionFrom= */ 0,
                 /* expectedSelectionTo= */ 1);
 
-        // 3. Set extended selection from beginning of p1 to end of editable using child offset.
+        // 3. Set extended selection from beginning of p1 to the end of editable. Since the next
+        // node is a text-selectable node, a text offset is used.
         setAndAssertExtendedSelection(
-                rootVvid,
-                p1Vvid,
-                0,
-                OFFSET_TYPE_TEXT,
-                rootVvid,
-                input1Index + 1,
-                OFFSET_TYPE_CHILD,
-                p1Vvid,
-                0,
-                OFFSET_TYPE_TEXT,
-                p2Vvid,
-                0,
-                OFFSET_TYPE_TEXT);
+                rootVvid, p1Vvid, 0, OFFSET_TYPE_TEXT, p2Vvid, 0, OFFSET_TYPE_TEXT);
 
-        // 4. Moving forward with extended selection on input1 should fail as we are already at the
-        // end of the node.
-        // TODO(crbug.com/548749861): Fix this, the correct expectation is action failure.
+        // 4. Set accessibility focus to p2 since selection end is on p2.
+        performActionOnUiThread(p2Vvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        // 5. Move forward with extended selection on p2 succeeds (0 -> 1).
         moveAtGranularityAndAssertBounds(
-                input1Vvid,
+                p2Vvid,
                 ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1);
+    }
+
+    /**
+     * Test forward movement at character granularity with extended selection across a
+     * non-text-selectable node.
+     */
+    @Test
+    @SmallTest
+    public void
+            testEvent_MovementAtGranularity_WithExtendedSelectionForwardOverNonTextSelectableNode()
+                    throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="p1">P1</p>
+                <a id="link" href="https://en.wikipedia.org/wiki/Wikipedia" title="Wikipedia">Wikipedia</a>
+                <p id="p2">P2</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int linkVvid = waitForNodeMatching(sClassNameMatcher, "android.view.View");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        int linkIndex = 1;
+
+        // Focus on the link node and send a forward movement request to it.
+        focusNode(linkVvid);
+        moveAtGranularityAndAssertBounds(
+                linkVvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1);
+
+        // Since the user extended selection forward into the link (non-text-selectable node), the
+        // selection end is set to the end of the link node.
+        setAndAssertExtendedSelection(
+                rootVvid,
+                rootVvid,
+                linkIndex,
+                OFFSET_TYPE_CHILD,
+                rootVvid,
+                linkIndex + 1,
+                OFFSET_TYPE_CHILD);
+
+        // Send another forward movement on the link node.
+        // Since the link is already fully selected, forward movement fails.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+        Assert.assertFalse(
+                performActionOnUiThread(linkVvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args));
+
+        // Focus on P2 and move forward again. The first character of P2 should be selected.
+        focusNode(p2Vvid);
+        moveAtGranularityAndAssertBounds(
+                p2Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1);
+    }
+
+    /**
+     * Test backward movement at character granularity with extended selection across a
+     * non-text-selectable node.
+     */
+    @Test
+    @SmallTest
+    public void
+            testEvent_MovementAtGranularity_WithExtendedSelectionBackwardOverNonTextSelectableNode()
+                    throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="p1">P1</p>
+                <a id="link" href="https://en.wikipedia.org/wiki/Wikipedia" title="Wikipedia">Wikipedia</a>
+                <p id="p2">P2</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int linkVvid = waitForNodeMatching(sClassNameMatcher, "android.view.View");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        int linkIndex = 1;
+
+        // Focus on P2 and set selection to the beginning of P2.
+        focusNode(p2Vvid);
+        setAndAssertExtendedSelection(
+                rootVvid, p2Vvid, 0, OFFSET_TYPE_TEXT, p2Vvid, 0, OFFSET_TYPE_TEXT);
+
+        // Send backward movement request to P2.
+        // The request should fail since the cursor is at the beginning of P2 (offset 0).
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+        Assert.assertFalse(
+                performActionOnUiThread(p2Vvid, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args));
+
+        // Focus on the link node and send another backward movement request.
+        focusNode(linkVvid);
+        moveAtGranularityAndAssertBounds(
+                linkVvid,
+                ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 8,
+                /* expectedTraverseTo= */ 9);
+
+        // Since the user extended selection backward into the link (non-text-selectable node), the
+        // selection end is set to the beginning of the link node.
+        setAndAssertExtendedSelection(
+                rootVvid, p2Vvid, 0, OFFSET_TYPE_TEXT, rootVvid, linkIndex, OFFSET_TYPE_CHILD);
+
+        // Send another backward movement on the link node.
+        // Since the link is already fully selected from offset 0, backward movement fails.
+        Assert.assertFalse(
+                performActionOnUiThread(linkVvid, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args));
+
+        // Focus on P1 and move backward again. The last character of P1 should be selected.
+        focusNode(p1Vvid);
+        moveAtGranularityAndAssertBounds(
+                p1Vvid,
+                ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
                 /* expectedTraverseFrom= */ 1,
-                /* expectedTraverseTo= */ 2,
-                /* expectedSelectionFrom= */ 0,
-                /* expectedSelectionTo= */ 2);
+                /* expectedTraverseTo= */ 2);
     }
 
     /**
@@ -2327,18 +2465,14 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 0,
-                /* expectedTraverseTo= */ 1,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 1);
         moveAtGranularityAndAssertBounds(
                 p1Vvid,
                 ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 1,
-                /* expectedTraverseTo= */ 2,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 2);
 
         // Clear accessibility focus on p1.
         performActionOnUiThread(p1Vvid, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null);
@@ -2351,9 +2485,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 2,
-                /* expectedTraverseTo= */ 3,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 3);
 
         // Move focus to p2 (new node: granularity index resets for p2).
         focusNode(p2Vvid);
@@ -2363,9 +2495,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 0,
-                /* expectedTraverseTo= */ 1,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 1);
     }
 
     /**
@@ -2393,9 +2523,7 @@ public class WebContentsAccessibilityTest {
                         MOVEMENT_GRANULARITY_CHARACTER,
                         extendSelection,
                         /* expectedTraverseFrom= */ i,
-                        /* expectedTraverseTo= */ i + 1,
-                        /* expectedSelectionFrom= */ -1,
-                        /* expectedSelectionTo= */ -1);
+                        /* expectedTraverseTo= */ i + 1);
             }
 
             for (int i = 5; i > 0; i--) {
@@ -2405,9 +2533,7 @@ public class WebContentsAccessibilityTest {
                         MOVEMENT_GRANULARITY_CHARACTER,
                         extendSelection,
                         /* expectedTraverseFrom= */ i - 1,
-                        /* expectedTraverseTo= */ i,
-                        /* expectedSelectionFrom= */ -1,
-                        /* expectedSelectionTo= */ -1);
+                        /* expectedTraverseTo= */ i);
             }
         }
     }
@@ -2435,9 +2561,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 4,
-                /* expectedTraverseTo= */ 5,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 5);
     }
 
     /**
@@ -2761,9 +2885,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 3,
-                /* expectedTraverseTo= */ 4,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 4);
 
         // Focus away to clean up.
         performActionOnUiThread(rootVvid, ACTION_ACCESSIBILITY_FOCUS, null);
@@ -2786,9 +2908,7 @@ public class WebContentsAccessibilityTest {
                 MOVEMENT_GRANULARITY_CHARACTER,
                 /* extendSelection= */ false,
                 /* expectedTraverseFrom= */ 0,
-                /* expectedTraverseTo= */ 1,
-                /* expectedSelectionFrom= */ -1,
-                /* expectedSelectionTo= */ -1);
+                /* expectedTraverseTo= */ 1);
     }
 
     // ------------------ Tests of AccessibilityNodeInfo objects ------------------ //
@@ -4166,23 +4286,13 @@ public class WebContentsAccessibilityTest {
                 rootVvid, paragraph1Vvid, 1, OFFSET_TYPE_TEXT, paragraph2Vvid, 5, OFFSET_TYPE_TEXT);
 
         // Selection from the beginning of one editable to the end of another.
-        // Since the editables are fully selected, this is supported, but selection positions are
-        // specified using child offset.
-        // TODO(crbug.com/443078007): Returned selection contradicts the selection boundary rules
-        // since selection start is inside an editable and selection end is outside of it. This does
-        // not cause user visible issues, but if TB sends back the same selection to Chrome, it will
-        // be rejected. Fix the issue here and in next test cases.
+        // This is supported since the editables are fully selected, but because the node after the
+        // second editable is text-selectable, selection is done using text offsets.
         setAndAssertExtendedSelection(
                 rootVvid,
                 rootVvid,
                 input1Index,
                 OFFSET_TYPE_CHILD,
-                rootVvid,
-                input2Index + 1,
-                OFFSET_TYPE_CHILD,
-                input1Vvid,
-                0,
-                OFFSET_TYPE_TEXT,
                 paragraph2Vvid,
                 0,
                 OFFSET_TYPE_TEXT);
@@ -4195,13 +4305,7 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 input1Index,
-                OFFSET_TYPE_CHILD,
-                paragraph1Vvid,
-                1,
-                OFFSET_TYPE_TEXT,
-                input1Vvid,
-                0,
-                OFFSET_TYPE_TEXT);
+                OFFSET_TYPE_CHILD);
 
         // Selection from non-editable to the end of the editable.
         setAndAssertExtendedSelection(
@@ -4211,13 +4315,7 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 input2Index + 1,
-                OFFSET_TYPE_CHILD,
-                paragraph1Vvid,
-                1,
-                OFFSET_TYPE_TEXT,
-                paragraph2Vvid,
-                0,
-                OFFSET_TYPE_TEXT);
+                OFFSET_TYPE_CHILD);
 
         // Selection from the beginning of the editable to to a non-editable.
         setAndAssertExtendedSelection(
@@ -4225,12 +4323,6 @@ public class WebContentsAccessibilityTest {
                 rootVvid,
                 input1Index,
                 OFFSET_TYPE_CHILD,
-                paragraph2Vvid,
-                10,
-                OFFSET_TYPE_TEXT,
-                input1Vvid,
-                0,
-                OFFSET_TYPE_TEXT,
                 paragraph2Vvid,
                 10,
                 OFFSET_TYPE_TEXT);
@@ -4373,13 +4465,7 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 contenteditable1Index,
-                OFFSET_TYPE_CHILD,
-                p1Vvid,
-                1,
-                OFFSET_TYPE_TEXT,
-                contenteditable1Vvid,
-                0,
-                OFFSET_TYPE_TEXT);
+                OFFSET_TYPE_CHILD);
 
         // From the end of a contenteditable to outside it.
         setAndAssertExtendedSelection(
@@ -4387,12 +4473,6 @@ public class WebContentsAccessibilityTest {
                 rootVvid,
                 contenteditable1Index + 1,
                 OFFSET_TYPE_CHILD,
-                p2Vvid,
-                5,
-                OFFSET_TYPE_TEXT,
-                p2Vvid,
-                0,
-                OFFSET_TYPE_TEXT,
                 p2Vvid,
                 5,
                 OFFSET_TYPE_TEXT);
@@ -4521,6 +4601,123 @@ public class WebContentsAccessibilityTest {
         // Select the image within the contentEditable.
         setAndAssertExtendedSelection(
                 rootVvid, editableVvid, 0, OFFSET_TYPE_CHILD, editableVvid, 1, OFFSET_TYPE_CHILD);
+    }
+
+    /**
+     * Test setting extended selection using child offsets on an ancestor container when the
+     * targeted child is a non-leaf node (e.g., a link containing text) wrapped inside an
+     * intermediate ignored container (e.g., display: contents).
+     *
+     * <p>Structurally, when resolving unignored selection positions, Chrome descends into the child
+     * subtree. This test verifies that Android conversion bubbles the start boundary position
+     * upward through intermediate ignored containers back to the ancestor container, maintaining
+     * the position as a child offset at the ancestor level without losing precision or dropping
+     * into descendant text nodes.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_childOffsetAcrossIgnoredContainer()
+            throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="container">
+                  <span style="display: contents">
+                    <p id="paragraph1">Text before</p>
+                    <a id="link" href="#">Link text</a>
+                    <p id="paragraph2">Text after</p>
+                  </span>
+                </div>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int containerVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "container");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "link");
+
+        int linkIndex = 1;
+
+        // Select the link using child offsets on the container.
+        setAndAssertExtendedSelection(
+                rootVvid,
+                containerVvid,
+                linkIndex,
+                OFFSET_TYPE_CHILD,
+                containerVvid,
+                linkIndex + 1,
+                OFFSET_TYPE_CHILD);
+    }
+
+    /**
+     * Test setting extended selection using child offsets on an ancestor container when the
+     * targeted child is a non-text container (e.g., a div wrapping an image) inside an intermediate
+     * ignored container.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_nonTextContainerInIgnoredContainer()
+            throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="container">
+                  <span style="display: contents">
+                    <p id="paragraph1">Paragraph1</p>
+                    <div id="image_wrapper">
+                      <img id="image" src="pipe.jpg" alt="pipe" tabIndex="0" />
+                    </div>
+                    <p id="paragraph2">Paragraph2</p>
+                  </span>
+                </div>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int containerVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "container");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "image");
+
+        int wrapperIndex = 1;
+
+        // Select the image wrapper using child offsets on the container.
+        setAndAssertExtendedSelection(
+                rootVvid,
+                containerVvid,
+                wrapperIndex,
+                OFFSET_TYPE_CHILD,
+                containerVvid,
+                wrapperIndex + 1,
+                OFFSET_TYPE_CHILD);
+    }
+
+    /**
+     * Test setting extended selection on an ancestor container to select a non-text container
+     * wrapping multiple non-text elements (e.g., images).
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_nonTextContainerWrappingImages()
+            throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="container">
+                  <img id="image1" src="pipe.jpg" alt="" tabIndex="0" />
+                  <img id="image2" src="pipe.jpg" alt="" tabIndex="0" />
+                </div>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "container");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "image1");
+        waitForNodeMatching(sViewIdResourceNameMatcher, "image2");
+
+        int containerIndex = 0;
+
+        // Select the container using child offsets on the root (from 0 to 1, where 1 is after
+        // container).
+        setAndAssertExtendedSelection(
+                rootVvid,
+                rootVvid,
+                containerIndex,
+                OFFSET_TYPE_CHILD,
+                rootVvid,
+                containerIndex + 1,
+                OFFSET_TYPE_CHILD);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */

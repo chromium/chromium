@@ -522,7 +522,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Returns nullptr if neither selection start nor end is on the given node, or
   // `kAXAndroidUndefinedSelectionIndex` if either selection start or end is
   // not on it.
-  base::android::ScopedJavaLocalRef<jintArray> GetSelectionRangeAsTextOffsets(
+  base::android::ScopedJavaLocalRef<jintArray> GetSelectionAsTextOffsetsForNode(
       JNIEnv* env,
       int32_t unique_id);
 

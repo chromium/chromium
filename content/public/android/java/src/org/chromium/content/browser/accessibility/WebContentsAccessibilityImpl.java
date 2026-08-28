@@ -2198,7 +2198,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // non-editable nodes if they are selected by child offsets.
         int[] selection =
                 WebContentsAccessibilityImplJni.get()
-                        .getSelectionRangeAsTextOffsets(mNativeObj, mAccessibilityFocusId);
+                        .getSelectionAsTextOffsetsForNode(mNativeObj, mAccessibilityFocusId);
         if (selection != null) {
             int startOffset = selection[SEL_START_OFFSET];
             int endOffset = selection[SEL_END_OFFSET];
@@ -3073,7 +3073,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         int @Nullable [] getExtendedSelection(
                 long nativeWebContentsAccessibilityAndroid, int virtualViewId);
 
-        int @Nullable [] getSelectionRangeAsTextOffsets(
+        int @Nullable [] getSelectionAsTextOffsetsForNode(
                 long nativeWebContentsAccessibilityAndroid, int id);
 
         int[] getLabeledByNodeIdsForTesting( // IN-TEST
