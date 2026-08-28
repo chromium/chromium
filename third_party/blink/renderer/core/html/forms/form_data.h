@@ -129,18 +129,18 @@ class FormData::Entry final : public GarbageCollected<FormData::Entry> {
   Entry(const String& name, Blob* blob, const String& filename);
   void Trace(Visitor*) const;
 
-  bool IsString() const { return !blob_; }
-  bool isFile() const { return blob_ != nullptr; }
+  bool IsString() const { return !file_; }
+  bool isFile() const { return file_ != nullptr; }
   const String& name() const { return name_; }
   const String& Value() const { return value_; }
-  Blob* GetBlob() const { return blob_.Get(); }
+  CORE_EXPORT Blob* GetBlob() const;
   CORE_EXPORT File* GetFile() const;
   const String& Filename() const { return filename_; }
 
  private:
   const String name_;
   const String value_;
-  const Member<Blob> blob_;
+  const Member<File> file_;
   const String filename_;
 };
 

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_usvstring.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -94,6 +95,52 @@ TEST(FormDataTest, getAll) {
   EXPECT_EQ("value1", results[0]->GetAsUSVString());
 
   EXPECT_EQ(1u, fd->size());
+}
+
+TEST(FormDataTest, BlobEntryCreatesFileOnce) {
+  test::TaskEnvironment task_environment;
+  auto* blob = Blob::Create(nullptr);
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
+  fd->append("blob", blob);
+
+  File* file = fd->Entries()[0]->GetFile();
+  EXPECT_EQ("blob", file->name());
+  EXPECT_EQ(blob->GetBlobDataHandle(), file->GetBlobDataHandle());
+  EXPECT_EQ(file, fd->Entries()[0]->GetFile());
+  EXPECT_EQ(file, fd->get("blob")->GetAsFile());
+  EXPECT_EQ(file, fd->getAll("blob")[0]->GetAsFile());
+}
+
+TEST(FormDataTest, FileEntryWithFilenameIsClonedOnce) {
+  test::TaskEnvironment task_environment;
+  auto* original = MakeGarbageCollected<File>(
+      "/tmp/form_data_test", "original.txt", "relative/original.txt",
+      File::kIsNotUserVisible, /*has_snapshot_data=*/true, /*size=*/42,
+      base::Time::UnixEpoch(), BlobDataHandle::Create());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
+  fd->append("file", original, "renamed.txt");
+
+  File* file = fd->Entries()[0]->GetFile();
+  EXPECT_NE(original, file);
+  EXPECT_EQ("renamed.txt", file->name());
+  EXPECT_EQ("/tmp/form_data_test", file->GetPath());
+  EXPECT_EQ("relative/original.txt", file->webkitRelativePath());
+  EXPECT_EQ(original->GetBlobDataHandle(), file->GetBlobDataHandle());
+  EXPECT_EQ(original->LastModifiedTime(), file->LastModifiedTime());
+
+  auto encoded_multipart = fd->EncodeMultiPartFormData();
+  ASSERT_GE(encoded_multipart->Elements().size(), 2u);
+  const String& boundary = encoded_multipart->Boundary();
+  EXPECT_EQ(String(encoded_multipart->Elements()[0].data_),
+            String("--" + boundary +
+                   "\r\nContent-Disposition: form-data; name=\"file\"; "
+                   "filename=\"renamed.txt\"\r\n"
+                   "Content-Type: application/octet-stream\r\n\r\n"));
+  EXPECT_EQ(FormDataElement::kEncodedFile,
+            encoded_multipart->Elements()[1].type_);
+  EXPECT_EQ("/tmp/form_data_test", encoded_multipart->Elements()[1].filename_);
+
+  EXPECT_EQ(file, fd->Entries()[0]->GetFile());
 }
 
 TEST(FormDataTest, has) {
