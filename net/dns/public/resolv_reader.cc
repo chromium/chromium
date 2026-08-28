@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "net/base/ip_endpoint.h"
@@ -63,13 +64,17 @@ std::optional<std::vector<IPEndPoint>> GetNameservers(
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FREEBSD)
   union res_sockaddr_union addresses[MAXNS];
   int nscount = res_getservers(const_cast<res_state>(&res), addresses, MAXNS);
-  DCHECK_GE(nscount, 0);
-  DCHECK_LE(nscount, MAXNS);
-  for (int i = 0; i < nscount; ++i) {
+  // res_getservers() is not documented to return a negative value or more
+  // entries than requested, but handle those cases defensively rather than
+  // trusting the libc, since the count bounds the buffer accesses below.
+  if (nscount < 0 || nscount > MAXNS) {
+    return std::nullopt;
+  }
+  for (const auto& address :
+       base::span(addresses).first(static_cast<size_t>(nscount))) {
     IPEndPoint ipe;
-    if (!ipe.FromSockAddr(reinterpret_cast<const struct sockaddr*>(
-                              &UNSAFE_TODO(addresses[i])),
-                          sizeof addresses[i])) {
+    if (!ipe.FromSockAddr(reinterpret_cast<const struct sockaddr*>(&address),
+                          sizeof(address))) {
       return std::nullopt;
     }
     nameservers.push_back(ipe);
@@ -78,23 +83,28 @@ std::optional<std::vector<IPEndPoint>> GetNameservers(
   static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
                     std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
                 "incompatible libresolv res_state");
-  DCHECK_LE(res.nscount, MAXNS);
+  // |nscount| tracks the number of configured nameservers and should never be
+  // negative or exceed MAXNS, but handle those cases defensively rather than
+  // trusting the libc, since the count bounds the buffer accesses below.
+  if (res.nscount < 0 || res.nscount > MAXNS) {
+    return std::nullopt;
+  }
+  const size_t nscount = static_cast<size_t>(res.nscount);
   // Initially, glibc stores IPv6 in |_ext.nsaddrs| and IPv4 in |nsaddr_list|.
   // In res_send.c:res_nsend, it merges |nsaddr_list| into |nsaddrs|,
   // but we have to combine the two arrays ourselves.
-  for (int i = 0; i < res.nscount; ++i) {
+  auto nsaddr_list = base::span(res.nsaddr_list).first(nscount);
+  auto nsaddrs = base::span(res._u._ext.nsaddrs).first(nscount);
+  for (size_t i = 0; i < nscount; ++i) {
     IPEndPoint ipe;
     const struct sockaddr* addr = nullptr;
     size_t addr_len = 0;
-    if (UNSAFE_TODO(res.nsaddr_list[i])
-            .sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(
-          &UNSAFE_TODO(res.nsaddr_list[i]));
-      addr_len = sizeof res.nsaddr_list[i];
-    } else if (UNSAFE_TODO(res._u._ext.nsaddrs[i])) {
-      addr = reinterpret_cast<const struct sockaddr*>(
-          UNSAFE_TODO(res._u._ext.nsaddrs[i]));
-      addr_len = sizeof *res._u._ext.nsaddrs[i];
+    if (nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
+      addr = reinterpret_cast<const struct sockaddr*>(&nsaddr_list[i]);
+      addr_len = sizeof(nsaddr_list[i]);
+    } else if (nsaddrs[i]) {
+      addr = reinterpret_cast<const struct sockaddr*>(nsaddrs[i]);
+      addr_len = sizeof(*nsaddrs[i]);
     } else {
       return std::nullopt;
     }
