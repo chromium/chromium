@@ -61,6 +61,7 @@ source_set("impl") {
   deps = [
     ":prefs",
     "//build:branding_buildflags",
+    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:file_select_helper",
     "//chrome/browser/autocomplete",
