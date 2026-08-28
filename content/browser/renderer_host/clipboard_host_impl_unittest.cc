@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -47,7 +46,6 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
@@ -1115,8 +1113,6 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   ClipboardHostImplChangeTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPlatformClipboardMonitor);
     ui::TestClipboard::CreateForCurrentThread();
   }
 
@@ -1153,7 +1149,6 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   // `ClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
   raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockClipboardListener : public blink::mojom::ClipboardListener {

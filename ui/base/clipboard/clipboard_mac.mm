@@ -42,7 +42,6 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -122,9 +121,7 @@ Clipboard* Clipboard::Create() {
 // ClipboardMac implementation.
 ClipboardMac::ClipboardMac() {
   DCHECK(CalledOnValidThread());
-  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
-    ClipboardMonitor::GetInstance()->SetNotifier(this);
-  }
+  ClipboardMonitor::GetInstance()->SetNotifier(this);
 }
 
 ClipboardMac::~ClipboardMac() {

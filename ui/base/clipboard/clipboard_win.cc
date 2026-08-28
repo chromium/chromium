@@ -269,9 +269,7 @@ ClipboardWin::ClipboardWin() {
   if (base::CurrentUIThread::IsSet())
     clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
 
-  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
-    ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
-  }
+  ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
 
   if (base::FeatureList::IsEnabled(features::kNonBlockingOsClipboardReads)) {
     worker_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
