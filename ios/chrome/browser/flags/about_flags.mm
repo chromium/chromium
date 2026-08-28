@@ -2982,12 +2982,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kFetchDeviceAuthorizationKeysDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(webauthn::features::kFetchDeviceAuthorizationKeys)},
-    {"autofill-and-passwords-remove-sign-in-promo",
-     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoName,
-     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
     {"recover-tabs-of-last-closed-window",
      flag_descriptions::kRecoverTabsOfLastClosedWindowName,
      flag_descriptions::kRecoverTabsOfLastClosedWindowDescription,
