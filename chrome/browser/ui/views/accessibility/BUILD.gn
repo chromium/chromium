@@ -151,7 +151,10 @@ if (!is_android) {
 
     if (is_win) {
       sources += [ "tab_strip_dump_accessibility_events_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/views/tabs:tab" ]
+      deps += [
+        "//chrome/browser/ui/views/tabs:tab",
+        "//chrome/browser/ui/views/tabs:tab_strip",
+      ]
     }
   }
 

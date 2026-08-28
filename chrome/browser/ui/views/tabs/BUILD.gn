@@ -50,6 +50,8 @@ source_set("base_impl") {
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("new_tab_button_menu_model") {
@@ -120,6 +122,7 @@ source_set("tab_group_impl") {
     ":base",
     ":tab",
     ":tab_group",
+    ":tab_strip",
     "//base",
     "//base:i18n",
     "//chrome/app:generated_resources",
@@ -248,6 +251,7 @@ source_set("tab_container_impl") {
     ":tab",
     ":tab_container",
     ":tab_group",
+    ":tab_strip",
     ":tab_style_views",
     "//base",
     "//base:i18n",
@@ -268,12 +272,6 @@ source_set("tab_container_impl") {
     "//ui/views",
   ]
 
-  # TODO(crbug.com/451609048): Remove this circular dependency when the
-  # following header gets componentized:
-  # - c/b/ui/views/tabs/tab_strip.h
-  # (No allow_circular_includes_from entry belongs here -- the waiver that
-  # makes this legal is declared on //chrome/browser/ui:ui, which is the
-  # target that owns tab_strip.h and depends on this target.)
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
@@ -306,6 +304,7 @@ source_set("tab_impl") {
   deps = [
     ":base",
     ":tab",
+    ":tab_strip",
     ":tab_style_views",
     "//base",
     "//cc/paint",
@@ -348,8 +347,7 @@ source_set("tab_impl") {
     deps += [ "//chrome/browser/ash/boca/on_task" ]
   }
 
-  # frame/browser_frame_view.h, frame/browser_view.h,
-  # tabs/browser_tab_strip_controller.h, and tabs/tab_strip.h are all still
+  # frame/browser_frame_view.h and frame/browser_view.h are still
   # monolithic in ui:ui (crbug.com/353332589) and are only ever needed by
   # tab.cc, never by tab.h -- so this :tab_impl target is the one that
   # carries the real dependency and the corresponding
@@ -381,6 +379,7 @@ source_set("tab_strip_button_impl") {
 
   deps = [
     ":base",
+    ":tab_strip",
     ":tab_strip_button",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
@@ -397,6 +396,143 @@ source_set("tab_strip_button_impl") {
     "//ui/gfx/geometry",
     "//ui/views",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("tab_strip") {
+  sources = [
+    "browser_tab_strip_controller.h",
+    "tab_strip.h",
+    "tab_strip_action_container.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/glic",
+    "//chrome/browser/ui/views/tabs:base",
+    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/views/tabs:tab_container",
+    "//chrome/browser/ui/views/tabs:tab_group",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/glic",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//chrome/common:buildflags",
+    "//components/prefs",
+    "//components/tab_groups",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//ui/views",
+  ]
+}
+
+source_set("tab_strip_impl") {
+  sources = [
+    "browser_tab_strip_controller.cc",
+    "tab_strip.cc",
+    "tab_strip_action_container.cc",
+  ]
+
+  deps = [
+    ":tab",
+    ":tab_strip",
+    "//base",
+    "//base:i18n",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/actor/ui/task_list_bubble:controller",
+    "//chrome/browser/actor/ui/task_list_bubble:ui",
+    "//chrome/browser/favicon",
+    "//chrome/browser/geic",
+    "//chrome/browser/geic:ui",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resource_coordinator",
+    "//chrome/browser/search",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:tab_ui_helper",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/tabs:utils",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/contextual_tasks",
+    "//chrome/browser/ui/views/frame:glass_frame_service",
+    "//chrome/browser/ui/views/glic",
+    "//chrome/browser/ui/views/tabs:base",
+    "//chrome/browser/ui/views/tabs:tab_container",
+    "//chrome/browser/ui/views/tabs:tab_container_impl",
+    "//chrome/browser/ui/views/tabs:tab_group",
+    "//chrome/browser/ui/views/tabs:tab_strip_button",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/browser/ui/views/tabs/glic",
+    "//chrome/browser/ui/views/tabs/groups",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//chrome/browser/ui/web_applications",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/crash/core/common:crash_key",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser",
+    "//components/saved_tab_groups/public",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/gfx/range",
+    "//ui/views",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/public/cpp",
+      "//chrome/browser/ash/boca/on_task",
+      "//chromeos/ash/experiences/system_web_apps/types",
+    ]
+  }
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

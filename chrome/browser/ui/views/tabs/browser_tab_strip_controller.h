@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -24,6 +23,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 class BrowserFrameView;
+class BrowserView;
 class BrowserWindowInterface;
 class Tab;
 class TabGroup;

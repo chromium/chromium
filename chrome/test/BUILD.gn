@@ -2359,6 +2359,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/storage",
       "//chrome/browser/ui/views/tabs:base",
       "//chrome/browser/ui/views/tabs:tab",
+      "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/browser/ui/views/tabs:tab_style_views",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/groups:browser_tests",
@@ -7803,6 +7804,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs:base",
       "//chrome/browser/ui/views/tabs:tab_container",
       "//chrome/browser/ui/views/tabs:tab_group",
+      "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/browser/ui/views/tabs:tab_strip_button",
       "//chrome/browser/ui/views/tabs:tab_style_views",
       "//chrome/browser/ui/views/tabs/dragging",
@@ -9169,6 +9171,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
         "//chrome/browser/ui/views/tabs:tab",
         "//chrome/browser/ui/views/tabs:tab_group",
+        "//chrome/browser/ui/views/tabs:tab_strip",
         "//chrome/browser/ui/views/tabs/tab",
         "//chrome/browser/ui/views/tabs/vertical:impl",
         "//chrome/browser/ui/views/translate",
@@ -10170,4 +10173,5 @@ test("captcha_provider_fuzztests") {
     "//third_party/fuzztest:fuzztest_gtest_main",
     "//url",
   ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

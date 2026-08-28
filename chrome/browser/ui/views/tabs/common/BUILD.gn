@@ -179,6 +179,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
     "//chrome/browser/ui/views/tabs/shared",
