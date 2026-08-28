@@ -3318,11 +3318,15 @@ public class TabListMediatorUnitTest {
     @Test
     public void testOnInitializeAccessibilityNodeInfo() {
         // Setup related mocks and initialize needed components.
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
         AccessibilityAction action1 = new AccessibilityAction(R.id.move_tab_left, "left");
         AccessibilityAction action2 = new AccessibilityAction(R.id.move_tab_right, "right");
         AccessibilityAction action3 = new AccessibilityAction(R.id.move_tab_up, "up");
         when(mTabGridAccessibilityHelper.getPotentialActionsForView(mItemView1))
                 .thenReturn(List.of(action1, action2, action3));
+        when(mTabGridAccessibilityHelper.getPositionsOfReorderAction(eq(mItemView1), anyInt()))
+                .thenReturn(new Pair<>(0, 1));
         InOrder accessibilityNodeInfoInOrder = Mockito.inOrder(mAccessibilityNodeInfo);
         assertNull(mMediator.getAccessibilityDelegateForTesting());
         mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);

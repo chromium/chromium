@@ -522,22 +522,8 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             return;
         }
 
-        boolean isPinned = TabProperties.isPinnedTab(model);
-        boolean canMoveUp;
-        boolean canMoveDown;
-        if (isPinned) {
-            // Pinned tabs can move up if not the first, and down only if the next item is also
-            // pinned.
-            canMoveUp = position > 0;
-            canMoveDown =
-                    position + 1 < mModelList.size()
-                            && TabProperties.isPinnedTab(mModelList.get(position + 1).model);
-        } else {
-            // Unpinned items can move up if predecessor is not pinned, and down if not at list end.
-            canMoveUp =
-                    position > 0 && !TabProperties.isPinnedTab(mModelList.get(position - 1).model);
-            canMoveDown = position + 1 < mModelList.size();
-        }
+        boolean canMoveUp = canReorderToPosition(position, position - 1);
+        boolean canMoveDown = canReorderToPosition(position, position + 1);
 
         Context context = host.getContext();
         boolean isTabGroup = TabProperties.isTabGroupHeader(model);

@@ -519,18 +519,81 @@ public class FlatLayoutDelegateUnitTest {
 
     @Test
     public void testPopulateAccessibilityNodeInfo_CallsHelper() {
-        addTabsToModelList(TAB1_ID);
+        addTabsToModelList(TAB1_ID, TAB2_ID);
         PropertyModel model = mModelList.get(0).model;
 
         View view = new View(ApplicationProvider.getApplicationContext());
         AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
-        AccessibilityAction action = new AccessibilityAction(R.id.move_tab_up, "Move Up");
+        AccessibilityAction action = new AccessibilityAction(R.id.move_tab_down, "Move Down");
         when(mAccessibilityHelper.getPotentialActionsForView(view)).thenReturn(List.of(action));
+        when(mAccessibilityHelper.getPositionsOfReorderAction(view, R.id.move_tab_down))
+                .thenReturn(new Pair<>(0, 1));
         mDelegate.setAccessibilityHelper(mAccessibilityHelper);
 
         mDelegate.populateAccessibilityNodeInfo(view, info, model);
 
         assertTrue(info.getActionList().contains(action));
+    }
+
+    @Test
+    public void testPopulateAccessibilityNodeInfo_PinnedTabCannotMoveToUnpinned() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+        PropertyModel pinnedModel = mModelList.get(0).model;
+        pinnedModel.set(TabProperties.IS_PINNED, true);
+        PropertyModel unpinnedModel = mModelList.get(1).model;
+        unpinnedModel.set(TabProperties.IS_PINNED, false);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        AccessibilityAction action = new AccessibilityAction(R.id.move_tab_down, "Move Down");
+        when(mAccessibilityHelper.getPotentialActionsForView(view)).thenReturn(List.of(action));
+        when(mAccessibilityHelper.getPositionsOfReorderAction(view, R.id.move_tab_down))
+                .thenReturn(new Pair<>(0, 1));
+        mDelegate.setAccessibilityHelper(mAccessibilityHelper);
+
+        mDelegate.populateAccessibilityNodeInfo(view, info, pinnedModel);
+
+        assertFalse(info.getActionList().contains(action));
+    }
+
+    @Test
+    public void testPopulateAccessibilityNodeInfo_UnpinnedTabCannotMoveToPinned() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+        PropertyModel pinnedModel = mModelList.get(0).model;
+        pinnedModel.set(TabProperties.IS_PINNED, true);
+        PropertyModel unpinnedModel = mModelList.get(1).model;
+        unpinnedModel.set(TabProperties.IS_PINNED, false);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        AccessibilityAction action = new AccessibilityAction(R.id.move_tab_up, "Move Up");
+        when(mAccessibilityHelper.getPotentialActionsForView(view)).thenReturn(List.of(action));
+        when(mAccessibilityHelper.getPositionsOfReorderAction(view, R.id.move_tab_up))
+                .thenReturn(new Pair<>(1, 0));
+        mDelegate.setAccessibilityHelper(mAccessibilityHelper);
+
+        mDelegate.populateAccessibilityNodeInfo(view, info, unpinnedModel);
+
+        assertFalse(info.getActionList().contains(action));
+    }
+
+    @Test
+    public void testPerformReorderAction_BlockedAcrossPinnedBoundary() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+        mModelList.get(0).model.set(TabProperties.IS_PINNED, true);
+        mModelList.get(1).model.set(TabProperties.IS_PINNED, false);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        when(mAccessibilityHelper.getPositionsOfReorderAction(view, R.id.move_tab_down))
+                .thenReturn(new Pair<>(0, 1));
+        when(mAccessibilityHelper.isReorderAction(R.id.move_tab_down)).thenReturn(true);
+        mDelegate.setAccessibilityHelper(mAccessibilityHelper);
+
+        assertFalse(
+                mDelegate.performAccessibilityAction(
+                        view, R.id.move_tab_down, /* args= */ null, /* model= */ null));
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
     }
 
     private void addTabsToModelList(int... tabIds) {
