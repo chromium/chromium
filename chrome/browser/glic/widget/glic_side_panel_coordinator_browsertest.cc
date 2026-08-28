@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
   EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // The Glic side panel should be active for the first tab again.
   EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, Backgrounded) {
             GlicSidePanelCoordinator::State::kBackgrounded);
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // It should transition back to kShown.
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
@@ -447,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorRoundedCornersTest,
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kBackgrounded);
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
 
   // Verify rounded corners are still there

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -184,7 +185,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   [[nodiscard]] InteractiveTestApi::MultiStep CreateMockWebClientRequest(
@@ -291,7 +292,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
   ActorTask& actor_task() { return *actor_keyed_service().GetTask(task_id_); }
   tabs::TabInterface* active_tab() {
-    return browser()->tab_strip_model()->GetActiveTab();
+    return browser()->GetActiveTabInterface();
   }
 
   void StopAllTasks() {
@@ -336,7 +337,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   void OpenGlicAndCreateTask() {
     RunTestSequence(OpenGlic());
     TrackGlicInstanceWithTabIndex(
-        InProcessBrowserTest::browser()->tab_strip_model()->active_index());
+        InProcessBrowserTest::browser()->GetTabStripModel()->active_index());
     base::test::TestFuture<
         base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
         create_task_future;

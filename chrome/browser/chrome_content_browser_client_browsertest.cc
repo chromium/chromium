@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
 // browser theme.
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, ChromeSearchTheme) {
   // Open an incognito browser and navigate to search scheme.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       CreateIncognitoBrowser(GetBrowser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, GURL("chrome-search://most-visited/title.html")));

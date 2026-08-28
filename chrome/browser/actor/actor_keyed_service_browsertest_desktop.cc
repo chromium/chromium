@@ -9,6 +9,8 @@
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/sharing/sharing_window_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"

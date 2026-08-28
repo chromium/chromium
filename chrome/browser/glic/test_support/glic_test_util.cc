@@ -35,6 +35,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #else
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 

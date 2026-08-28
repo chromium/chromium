@@ -777,10 +777,12 @@ void ContextualTasksUI::CreatePageHandler(
 #if !BUILDFLAG(IS_ANDROID)
   // Determine if the Lens overlay is showing when the page is created.
   if (auto* browser = GetBrowser()) {
-    if (auto* controller = LensSearchController::FromTabWebContents(
-            browser->GetTabStripModel()->GetActiveWebContents())) {
-      OnLensOverlayStateChanged(controller->IsShowingUI(),
-                                controller->invocation_source());
+    if (auto* tab = browser->GetActiveTabInterface()) {
+      if (auto* controller =
+              LensSearchController::FromTabWebContents(tab->GetContents())) {
+        OnLensOverlayStateChanged(controller->IsShowingUI(),
+                                  controller->invocation_source());
+      }
     }
   }
 #endif
@@ -889,10 +891,12 @@ void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
     auto* browser = GetBrowser();
     if (browser) {
 #if !BUILDFLAG(IS_ANDROID)
-      if (auto* controller = LensSearchController::FromTabWebContents(
-              browser->GetTabStripModel()->GetActiveWebContents())) {
-        controller->CloseLensAsync(
-            lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+      if (auto* tab = browser->GetActiveTabInterface()) {
+        if (auto* controller =
+                LensSearchController::FromTabWebContents(tab->GetContents())) {
+          controller->CloseLensAsync(
+              lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+        }
       }
 #endif
     }

@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -709,9 +710,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* new_contents = new_contents_ptr.get();
-  browser()->tab_strip_model()->AppendWebContents(std::move(new_contents_ptr),
-                                                  /*foreground=*/true);
-  tabs::TabInterface* new_tab = browser()->tab_strip_model()->GetActiveTab();
+  browser()->GetTabStripModel()->AppendWebContents(std::move(new_contents_ptr),
+                                                   /*foreground=*/true);
+  tabs::TabInterface* new_tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_EQ(new_tab->GetContents(), new_contents);
   ASSERT_TRUE(new_contents->GetController().GetLastCommittedEntry());
   ASSERT_TRUE(

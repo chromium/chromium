@@ -94,7 +94,7 @@ namespace {
 BrowsingDataModel* GetSiteSettingsAllowedBrowsingDataModel(
     BrowserWindowInterface* browser) {
   PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
+      PageSpecificContentSettings::GetForFrame(browser->GetTabStripModel()
                                                    ->GetActiveWebContents()
                                                    ->GetPrimaryMainFrame());
   return settings->allowed_browsing_data_model();
@@ -103,7 +103,7 @@ BrowsingDataModel* GetSiteSettingsAllowedBrowsingDataModel(
 BrowsingDataModel* GetSiteSettingsBlockedBrowsingDataModel(
     BrowserWindowInterface* browser) {
   PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
+      PageSpecificContentSettings::GetForFrame(browser->GetTabStripModel()
                                                    ->GetActiveWebContents()
                                                    ->GetPrimaryMainFrame());
   return settings->blocked_browsing_data_model();
@@ -232,7 +232,7 @@ class CookieSettingsTest
   void CookieCheckIncognitoWindow(bool cookies_enabled) {
     ASSERT_TRUE(ReadCookie(browser()).empty());
 
-    Browser* incognito = CreateIncognitoBrowser();
+    BrowserWindowInterface* incognito = CreateIncognitoBrowser();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, GetPageURL()));
     ASSERT_TRUE(ReadCookie(incognito).empty());
     WriteCookie(incognito);
@@ -302,7 +302,7 @@ class CookieSettingsTest
   // Set a cookie by visiting a page that has a Set-Cookie header.
   void HttpWriteCookieWithURL(BrowserWindowInterface* browser,
                               const GURL& url) {
-    auto* frame = browser->tab_strip_model()
+    auto* frame = browser->GetTabStripModel()
                       ->GetActiveWebContents()
                       ->GetPrimaryMainFrame();
     // Need to load via |frame| for the accessed/blocked cookies lists to be
@@ -313,7 +313,7 @@ class CookieSettingsTest
  private:
   // Read a cookie via JavaScript.
   std::string JSReadCookie(BrowserWindowInterface* browser) {
-    return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
                            "document.cookie")
         .ExtractString();
   }
@@ -321,7 +321,7 @@ class CookieSettingsTest
   // Read a cookie with JavaScript cookie-store API
   std::string JSAsyncReadCookie(BrowserWindowInterface* browser) {
     return content::EvalJs(
-               browser->tab_strip_model()->GetActiveWebContents(),
+               browser->GetTabStripModel()->GetActiveWebContents(),
                "async function doGet() {"
                "  const cookies = await window.cookieStore.getAll();"
                "  let cookie_str = '';"
@@ -336,7 +336,7 @@ class CookieSettingsTest
   // Read a cookie by fetching the page url (which we should have just navigated
   // to) and checking what Cookie header (if any) it saw.
   std::string HttpReadCookie(BrowserWindowInterface* browser) {
-    GURL url = browser->tab_strip_model()
+    GURL url = browser->GetTabStripModel()
                    ->GetActiveWebContents()
                    ->GetLastCommittedURL();
     EXPECT_EQ(GetPageURL(), url);
@@ -346,7 +346,7 @@ class CookieSettingsTest
   // Set a cookie with JavaScript.
   void JSWriteCookie(BrowserWindowInterface* browser) {
     bool rv =
-        content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+        content::ExecJs(browser->GetTabStripModel()->GetActiveWebContents(),
                         "document.cookie = 'name=Good;Max-Age=3600'");
     CHECK(rv);
   }
@@ -354,7 +354,7 @@ class CookieSettingsTest
   // Set a cookie with JavaScript cookie-store api.
   void JSAsyncWriteCookie(BrowserWindowInterface* browser) {
     content::EvalJsResult result =
-        content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
                         "async function doSet() {"
                         "  await window.cookieStore.set("
                         "       { name: 'name',"
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, AllowCookiesUsingExceptions) {
   settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   content::CookieChangeObserver observer1(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   WriteCookie(browser());
   ASSERT_TRUE(ReadCookie(browser()).empty());
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, AllowCookiesUsingExceptions) {
   settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_ALLOW);
 
   content::CookieChangeObserver observer2(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   WriteCookie(browser());
   ASSERT_FALSE(ReadCookie(browser()).empty());
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksCacheStorage) {
   };
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   for (auto& op : kTestOps) {
     EXPECT_EQ(EvalJs(tab, base::StringPrintf(kBaseScript, op.cmd, op.cmd)),
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksIndexedDB) {
   settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   const char kBaseScript[] =
       "(async function() {"
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
   settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   const char kPromiseBaseScript[] =
       "(async function() {"
@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksFileSystem) {
   };
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   for (auto& op : kTestOps) {
     EXPECT_EQ(EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)),
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectLoopCookies) {
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   MockWebContentsLoadFailObserver observer(web_contents);
   EXPECT_CALL(observer, DidFinishNavigation(IsErrorTooManyRedirects()));
 
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, CookiesIgnoredFor204) {
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -895,14 +895,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   observer.Wait();
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
@@ -931,13 +931,13 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("a.com", "/setcookie.html");
   GURL other_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   CookieSettingsFactory::GetForProfile(browser()->GetProfile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, ContentSettingsBlockDataURLs) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(u"Data URL", web_contents->GetTitle());
 
   EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectCrossOrigin) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
                   web_contents->GetPrimaryMainFrame())
@@ -1014,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
   const GURL url_2 =
       embedded_test_server()->GetURL("b.com", "/javaScriptTitle.html");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_1));
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RendererUpdateWhilePendingCommit) {
       embedded_test_server()->GetURL("b.test", "/title1.html");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   content::CommitMessageDelayer delayer(
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SecureCookies) {
       0u);
 
   content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
   observer.Wait();
@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   GURL http_url = embedded_test_server()->GetURL("/worker_import_module.html");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::u16string expected_title(u"Imported");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(u"Failed");
@@ -1272,7 +1272,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
       https_server_.GetURL("/service_worker/create_service_worker.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), setup_url));
   content::EvalJsResult result =
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "register('/sw.js')");
   ASSERT_EQ("DONE", result);
 
@@ -1298,15 +1298,15 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
       lookupSw();)";
 
   content::EvalJsResult result2 = content::EvalJs(
-      browser()->tab_strip_model()->GetActiveWebContents(), kClientScript);
+      browser()->GetTabStripModel()->GetActiveWebContents(), kClientScript);
   EXPECT_EQ(result2, true);
 
   {
     content::CookieChangeObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     // Set a cookie, see that it's reported.
     content::EvalJsResult result3 =
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                         "requestCookieSet('first')");
     EXPECT_EQ(result3, "set executed for first");
     observer.Wait();
@@ -1324,13 +1324,13 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
 
   {
     content::CookieChangeObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     // Now set with cookies blocked.
     content_settings::CookieSettings* settings =
         CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
     settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
     content::EvalJsResult result4 =
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                         "requestCookieSet('second')");
     EXPECT_EQ(result4, "set executed for second");
     observer.Wait();
@@ -1377,7 +1377,7 @@ class ContentSettingsWithPrerenderingBrowserTest
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -1553,7 +1553,7 @@ class ContentSettingsWithFencedFrameBrowserTest : public ContentSettingsTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:

@@ -1089,7 +1089,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
             /*create_if_needed=*/true))
         ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
 
-    Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+    BrowserWindowInterface* otr_browser =
+        CreateIncognitoBrowser(browser()->GetProfile());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser, GURL(full_url)));
 
     // Make sure no additional hints requests were received.

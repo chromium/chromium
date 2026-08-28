@@ -16,6 +16,7 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, VisibleOnAllWorkspaces) {
 }
 
 IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, PinnedAfterReset) {
-  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->GetTabStripModel()->SetTabPinned(0, true);
   // Force a reset, to verify that SessionService::BuildCommandsForBrowser
   // handles pinned tabs correctly.
   service()->ResetFromCurrentBrowsers();
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, PinnedAfterReset) {
 
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
+          browser()->GetTabStripModel()->GetWebContentsAt(0));
   std::unique_ptr<sessions::SessionCommand> pinned_command =
       sessions::CreatePinnedStateCommand(session_tab_helper->session_id(),
                                          true);
@@ -159,11 +160,12 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, LogExit) {
       FindMostRecentEventOfType(SessionServiceEventLogType::kExit);
   ASSERT_TRUE(exit_event);
   EXPECT_EQ(1, exit_event->data.exit.window_count);
-  EXPECT_EQ(browser()->tab_strip_model()->count(),
+  EXPECT_EQ(browser()->GetTabStripModel()->count(),
             exit_event->data.exit.tab_count);
 
   // Create another window, which should remove the exit.
   SessionID window2_id = SessionID::NewUnique();
-  service()->SetWindowType(window2_id, BrowserWindowInterface::TYPE_NORMAL);
+  service()->SetWindowType(window2_id,
+                           BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
 }

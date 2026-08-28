@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -71,7 +72,7 @@ class BaseActorUiTabControllerTest : public InProcessBrowserTest {
     TabStripRegionView* tab_strip_view =
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
     tabs::TabInterface* active_tab =
-        browser()->tab_strip_model()->GetActiveTab();
+        browser()->GetTabStripModel()->GetActiveTab();
     if (!active_tab) {
       return nullptr;
     }
@@ -112,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ActorUiStateManagerInterface* state_manager =
       actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
   ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?1"),
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));
   tabs::TabInterface* actuating_tab =
-      browser()->tab_strip_model()->GetActiveTab();
+      browser()->GetTabStripModel()->GetActiveTab();
 
   // Start acting on the tab.
   base::RunLoop loop;
@@ -240,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // change.
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?2"),
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfTab(actuating_tab));
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfTab(actuating_tab));
 
   // The UserAction should record the active status change.
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -255,8 +256,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // previously actuating tab.
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?3"),
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfTab(actuating_tab));
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfTab(actuating_tab));
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Actor.Ui.ActuatingTabWebContentsAttached"));
@@ -268,10 +269,10 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   ActorUiStateManagerInterface* state_manager =
       actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   FutureTabStripModelObserver observer;
   tab_strip_model->AddObserver(&observer);
 
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   ActorUiStateManagerInterface* state_manager =
       actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
   ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled,
   ActorUiStateManagerInterface* state_manager =
       actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
   ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
   ASSERT_NE(controller, nullptr);

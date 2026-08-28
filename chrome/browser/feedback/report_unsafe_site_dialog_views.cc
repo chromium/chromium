@@ -87,15 +87,13 @@ void ReportUnsafeSiteDialog::Show(BrowserWindowInterface* browser) {
     return;
   }
 
-  content::WebContents* web_contents =
-      browser->GetTabStripModel()->GetActiveWebContents();
-  if (!web_contents) {
+  tabs::TabInterface* tab_interface = browser->GetActiveTabInterface();
+  if (!tab_interface) {
     return;
   }
 
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents);
-  if (!tab_interface) {
+  content::WebContents* web_contents = tab_interface->GetContents();
+  if (!web_contents) {
     return;
   }
 

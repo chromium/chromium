@@ -14,6 +14,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -54,7 +55,7 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
 
   // Helper to determine if a dialog is visible on the current active tab.
   bool IsDialogVisible() {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     auto* manager =
         web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
     return manager && manager->IsDialogActive();
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
   // This destroys the Controller (SkillsUiTabController) AND
   // the View (SkillsUI) simultaneously.
   // The test passes if this line does not trigger an ASAN crash / Segfault.
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
 }
 
 // Verify Tab Switching Isolation
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   EXPECT_TRUE(IsDialogVisible());
 
   // Switch back to A to prove the dialog is still there.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_TRUE(IsDialogVisible());
 }
 

@@ -48,7 +48,7 @@ void PerformMouseClickOnView(views::View* view) {
 }
 
 // Clicks the location icon to open the page info bubble.
-void OpenPageInfoBubble(Browser* browser) {
+void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   LocationIconTestAccessor(browser).ShowBubble();
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleView::GetPageInfoBubbleForTesting();
@@ -58,7 +58,7 @@ void OpenPageInfoBubble(Browser* browser) {
 
 // Opens the Page Info bubble and retrieves the UI view identified by
 // |view_id|.
-views::View* GetView(Browser* browser, int view_id) {
+views::View* GetView(BrowserWindowInterface* browser, int view_id) {
   views::Widget* page_info_bubble =
       PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
   EXPECT_TRUE(page_info_bubble);

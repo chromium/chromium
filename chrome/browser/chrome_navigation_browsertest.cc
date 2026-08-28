@@ -2137,7 +2137,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 // https://crbug.com/40274462.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        NavigationCanceledOnProfileShutdown) {
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   Profile* incognito_profile =
       browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
   ASSERT_TRUE(incognito_profile);
@@ -2767,10 +2767,10 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
   // TODO(alexmos): This might change in the future if we decide to inherit
   // main profile's isolated origins in incognito. See
   // https://crbug.com/40602510.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, saved_url));
   content::WebContents* contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
   EXPECT_FALSE(contents->GetPrimaryMainFrame()
                    ->GetSiteInstance()
                    ->RequiresDedicatedProcess());
@@ -3124,14 +3124,14 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest, PersistAcrossRestarts) {
 // Check that COOP sites are not persisted in Incognito; the isolation should
 // only persist for the duration of the Incognito session.
 IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest, Incognito) {
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   GURL coop_url = https_server()->GetURL(
       "foo.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, coop_url));
   content::WebContents* contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
   // Simulate user activation to isolate foo.com for the rest of the incognito
   // session.
   EXPECT_TRUE(ExecJs(contents, "// no-op"));

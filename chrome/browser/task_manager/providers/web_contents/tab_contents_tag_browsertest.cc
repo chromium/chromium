@@ -27,6 +27,7 @@
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"

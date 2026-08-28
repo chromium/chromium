@@ -16,10 +16,10 @@
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,12 +72,14 @@ class DictationSessionUiImplBrowserTest
  protected:
   auto CloseTab(int index) {
     return Do([this, index]() {
-      browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->GetTabStripModel()->CloseWebContentsAt(
           index, TabCloseTypes::CLOSE_USER_GESTURE);
     });
   }
 
-  auto MoveTabToWindow(Browser* source, Browser* target, int index) {
+  auto MoveTabToWindow(BrowserWindowInterface* source,
+                       BrowserWindowInterface* target,
+                       int index) {
     return Do([source, target, index]() {
       chrome::MoveTabsToExistingWindow(source, target, {index});
     });
@@ -321,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // clang-format off
   RunTestSequence(
@@ -338,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, TabSwitchHidesUI) {
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest, CloseTabEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // clang-format off
   RunTestSequence(
@@ -359,10 +361,11 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        UiFollowsDetachedTab) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
 
   // clang-format off
   RunTestSequence(
@@ -386,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // clang-format off
   RunTestSequence(
@@ -417,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        TabSwitchShowsDictationStoppedToast) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // clang-format off
   RunTestSequence(
@@ -437,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SwitchBackToDictatingTabDuringFinalization) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // clang-format off
   RunTestSequence(
@@ -570,9 +573,10 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SecondWindowInvokesDictationMovesUI) {
   // Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   content::WebContents* window2_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
+      second_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(window2_contents, nullptr);
 
   // clang-format off

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/files/file_enumerator.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"

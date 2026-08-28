@@ -22,14 +22,17 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -51,8 +54,10 @@ Profile* GetProfileOrDie(int profile_index) {
   return profile;
 }
 
-Browser* GetBrowserOrDie(int profile_index, int window_index = 0) {
-  Browser* browser = test()->GetBrowser(profile_index, window_index);
+BrowserWindowInterface* GetBrowserOrDie(int profile_index,
+                                        int window_index = 0) {
+  BrowserWindowInterface* browser =
+      test()->GetBrowser(profile_index, window_index);
   CHECK(browser);
   return browser;
 }
@@ -152,7 +157,7 @@ bool OpenTabInWindow(int profile_index, int window_index, const GURL& url) {
   DVLOG(1) << "Opening tab: " << url.spec() << " using profile "
            << profile_index << " window " << window_index << ".";
   TabStripModel* tab_strip =
-      GetBrowserOrDie(profile_index, window_index)->tab_strip_model();
+      GetBrowserOrDie(profile_index, window_index)->GetTabStripModel();
   int tab_index = tab_strip->count();
   return OpenTabAtIndexInWindow(profile_index, window_index, tab_index, url);
 }
@@ -166,11 +171,12 @@ bool OpenTabAtIndexInWindow(int profile_index,
                             int window_index,
                             int tab_index,
                             const GURL& url) {
-  Browser* browser = GetBrowserOrDie(profile_index, window_index);
+  BrowserWindowInterface* browser =
+      GetBrowserOrDie(profile_index, window_index);
   chrome::AddTabAt(browser, url, tab_index, true);
   return WaitForTabToLoad(
       profile_index, url,
-      browser->tab_strip_model()->GetWebContentsAt(tab_index));
+      browser->GetTabStripModel()->GetWebContentsAt(tab_index));
 }
 
 bool OpenMultipleTabs(int profile_index, const std::vector<GURL>& urls) {
@@ -184,7 +190,7 @@ bool OpenMultipleTabs(int profile_index, const std::vector<GURL>& urls) {
 }
 
 void CloseTab(int profile_index, int tab_index) {
-  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->tab_strip_model();
+  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->GetTabStripModel();
   tab_strip->CloseWebContentsAt(tab_index, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
@@ -192,13 +198,15 @@ void MoveTab(int profile_index,
              int from_window_index,
              int to_window_index,
              int tab_index) {
-  Browser* from_browser = GetBrowserOrDie(profile_index, from_window_index);
-  Browser* to_browser = GetBrowserOrDie(profile_index, to_window_index);
+  BrowserWindowInterface* from_browser =
+      GetBrowserOrDie(profile_index, from_window_index);
+  BrowserWindowInterface* to_browser =
+      GetBrowserOrDie(profile_index, to_window_index);
 
   std::unique_ptr<tabs::TabModel> detached_tab =
-      from_browser->tab_strip_model()->DetachTabAtForInsertion(tab_index);
+      from_browser->GetTabStripModel()->DetachTabAtForInsertion(tab_index);
 
-  TabStripModel* target_strip = to_browser->tab_strip_model();
+  TabStripModel* target_strip = to_browser->GetTabStripModel();
   target_strip->InsertDetachedTabAt(
       target_strip->count(), std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
 }
@@ -215,23 +223,25 @@ void NavigateTabInWindow(int profile_index, int window_index, const GURL& url) {
 }
 
 void NavigateTabBack(int profile_index) {
-  content::WebContents* web_contents =
-      GetBrowserOrDie(profile_index)->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetBrowserOrDie(profile_index)
+                                           ->GetTabStripModel()
+                                           ->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
   web_contents->GetController().GoBack();
   observer.WaitForNavigationFinished();
 }
 
 void NavigateTabForward(int profile_index) {
-  content::WebContents* web_contents =
-      GetBrowserOrDie(profile_index)->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetBrowserOrDie(profile_index)
+                                           ->GetTabStripModel()
+                                           ->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
   web_contents->GetController().GoForward();
   observer.WaitForNavigationFinished();
 }
 
 bool WaitForTabsToLoad(int profile_index, const std::vector<GURL>& urls) {
-  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->tab_strip_model();
+  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->GetTabStripModel();
   int tab_index = 0;
   for (const GURL& url : urls) {
     content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);

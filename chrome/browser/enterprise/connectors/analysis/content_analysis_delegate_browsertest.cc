@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"

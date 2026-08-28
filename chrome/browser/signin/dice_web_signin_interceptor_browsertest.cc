@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
@@ -2078,14 +2079,15 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                   .has_value());
 
   // A browser has been created for the new profile and the tab was moved there.
-  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
@@ -2368,14 +2370,15 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                   .has_value());
 
   // A browser has been created for the new profile and the tab was moved there.
-  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(
       histogram_tester,
@@ -2619,14 +2622,15 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                   .has_value());
 
   // A browser has been created for the new profile and the tab was moved there.
-  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(
       histogram_tester,
@@ -2995,14 +2999,15 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
             base::UTF8ToUTF16(std::string(kCustomSearchEngineDomain)));
 
   // A browser has been created for the new profile and the tab was moved there.
-  Browser* added_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* added_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptMultiUser);

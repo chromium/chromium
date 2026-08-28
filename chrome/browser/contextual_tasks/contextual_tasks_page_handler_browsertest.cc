@@ -15,12 +15,14 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -74,7 +76,7 @@ class ContextualTasksPageHandlerBrowserTest : public ::InProcessBrowserTest {
 
     profile_ = browser()->GetProfile();
 
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents_ = browser()->GetActiveTabInterface()->GetContents();
     web_ui_.set_web_contents(web_contents_);
 
     contextual_tasks_ui_ = std::make_unique<ContextualTasksUI>(&web_ui_);
@@ -127,29 +129,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenFeedbackUi) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenMyActivityUi) {
-  auto* tab_strip = browser()->tab_strip_model();
-  int start_count = tab_strip->count();
+  auto* tab_list = TabListInterface::From(browser());
+  int start_count = tab_list->GetTabCount();
   page_handler_->OpenMyActivityUi();
-  EXPECT_EQ(tab_strip->count(), start_count + 1);
-  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(tab_list->GetTabCount(), start_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetActiveTabInterface()->GetContents();
   EXPECT_EQ(active_contents->GetURL().spec(), "https://myactivity.google.com/myactivity");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOnboardingHelpUi) {
-  auto* tab_strip = browser()->tab_strip_model();
-  int start_count = tab_strip->count();
+  auto* tab_list = TabListInterface::From(browser());
+  int start_count = tab_list->GetTabCount();
   page_handler_->OpenOnboardingHelpUi();
-  EXPECT_EQ(tab_strip->count(), start_count + 1);
-  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(tab_list->GetTabCount(), start_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetActiveTabInterface()->GetContents();
   EXPECT_EQ(active_contents->GetURL().spec(), "https://support.google.com/chrome?p=AI_tab_share");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenOverflowMenuHelpUi) {
-  auto* tab_strip = browser()->tab_strip_model();
-  int start_count = tab_strip->count();
+  auto* tab_list = TabListInterface::From(browser());
+  int start_count = tab_list->GetTabCount();
   page_handler_->OpenOverflowMenuHelpUi();
-  EXPECT_EQ(tab_strip->count(), start_count + 1);
-  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(tab_list->GetTabCount(), start_count + 1);
+  content::WebContents* active_contents =
+      browser()->GetActiveTabInterface()->GetContents();
   EXPECT_EQ(active_contents->GetURL().spec(), "https://support.google.com/chrome/answer/17025061");
 }
 

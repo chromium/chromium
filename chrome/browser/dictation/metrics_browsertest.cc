@@ -11,7 +11,8 @@
 #include "chrome/browser/dictation/listener_stream_provider.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "content/public/browser/editable_level.h"
@@ -82,9 +83,9 @@ IN_PROC_BROWSER_TEST_F(
                                      DictationStreamStartTrigger::kSessionStart,
                                      1);
 
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   content::WebContents* window2_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
+      second_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(window2_contents, nullptr);
 
   SimulateInvokeViaContextMenu(window2_contents->GetPrimaryMainFrame(),

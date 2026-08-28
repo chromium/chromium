@@ -20,7 +20,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -290,7 +290,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     offline_content_provider_observer_->set_delegate(delegate_);
   }
 
-  virtual void SetUpBrowser(Browser* browser) {
+  virtual void SetUpBrowser(BrowserWindowInterface* browser) {
     set_active_browser(browser);
     // Load the helper page that helps drive these tests.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -360,7 +360,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   // Runs the |script| in the current tab and writes the output to |*result|.
   content::EvalJsResult RunScript(const std::string& script) {
-    return content::EvalJs(active_browser_->tab_strip_model()
+    return content::EvalJs(active_browser_->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetPrimaryMainFrame(),
                            script);
@@ -435,7 +435,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   void RevokeDownloadPermission() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     DownloadRequestLimiter::TabDownloadState* tab_download_state =
         g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
             web_contents);
@@ -465,7 +465,9 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     std::move(quit_closure).Run();
   }
 
-  void set_active_browser(Browser* browser) { active_browser_ = browser; }
+  void set_active_browser(BrowserWindowInterface* browser) {
+    active_browser_ = browser;
+  }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
@@ -502,7 +504,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
@@ -913,7 +915,7 @@ class BackgroundFetchFencedFrameBrowserTest
   BackgroundFetchFencedFrameBrowserTest() = default;
   ~BackgroundFetchFencedFrameBrowserTest() override = default;
 
-  void SetUpBrowser(Browser* browser) override {
+  void SetUpBrowser(BrowserWindowInterface* browser) override {
     set_active_browser(browser);
     GURL url = https_server()->GetURL("/empty.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
@@ -948,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
       fenced_frame_test_helper().CreateFencedFrame(browser()
-                                                       ->tab_strip_model()
+                                                       ->GetTabStripModel()
                                                        ->GetActiveWebContents()
                                                        ->GetPrimaryMainFrame(),
                                                    fenced_frame_url);
@@ -992,7 +994,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       cross_origin_server.GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
       fenced_frame_test_helper().CreateFencedFrame(browser()
-                                                       ->tab_strip_model()
+                                                       ->GetTabStripModel()
                                                        ->GetActiveWebContents()
                                                        ->GetPrimaryMainFrame(),
                                                    fenced_frame_url);
@@ -1112,7 +1114,7 @@ class BackgroundFetchLocalNetworkAccessBrowserTest
         *command_line);
   }
 
-  void SetUpBrowser(Browser* browser) override {
+  void SetUpBrowser(BrowserWindowInterface* browser) override {
     set_active_browser(browser);
     // Load the helper page that helps drive these tests.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

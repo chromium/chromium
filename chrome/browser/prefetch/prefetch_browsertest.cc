@@ -73,7 +73,8 @@ class PrefetchBrowserTest : public InProcessBrowserTest {
     prefetch::SetPreloadPagesState(browser()->GetProfile()->GetPrefs(), value);
   }
 
-  bool RunPrefetchExperiment(bool expect_success, Browser* browser) {
+  bool RunPrefetchExperiment(bool expect_success,
+                             BrowserWindowInterface* browser) {
     GURL url = embedded_test_server()->GetURL(kPrefetchPage);
 
     const std::u16string expected_title =
@@ -123,10 +124,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PreferenceWorks) {
 IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, IncognitoTest) {
   Profile* incognito_profile =
       browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  Browser* incognito_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(incognito_profile,
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(incognito_profile, /*from_user_gesture=*/true));
 
   // Navigate just to have a tab in this window, otherwise there is no
   // WebContents for the incognito browser.

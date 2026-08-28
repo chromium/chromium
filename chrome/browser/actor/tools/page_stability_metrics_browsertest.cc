@@ -22,6 +22,7 @@
 #include "components/actor/core/page_stability_metrics_common.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"

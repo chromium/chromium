@@ -45,6 +45,8 @@ class TestMessageCenterObserver : public message_center::MessageCenterObserver {
   std::string last_displayed_id_;
 };
 
+class BrowserWindowInterface;
+
 class NotificationsTest : public InProcessBrowserTest {
  public:
   NotificationsTest();
@@ -53,8 +55,7 @@ class NotificationsTest : public InProcessBrowserTest {
   int GetNotificationCount();
   int GetNotificationPopupCount();
 
-  void CloseBrowserWindow(Browser* browser);
-  void CrashTab(Browser* browser, int index);
+  void CrashTab(BrowserWindowInterface* browser, int index);
 
   void DenyOrigin(const GURL& origin);
   void AllowOrigin(const GURL& origin);
@@ -62,32 +63,33 @@ class NotificationsTest : public InProcessBrowserTest {
   void SetDefaultContentSetting(ContentSetting setting);
   void DropOriginPreference(const GURL& origin);
 
-  std::string CreateNotification(Browser* browser,
+  std::string CreateNotification(BrowserWindowInterface* browser,
                                  bool wait_for_new_balloon,
                                  const char* icon,
                                  const char* title,
                                  const char* body,
                                  const char* replace_id,
                                  const char* onclick = "");
-  std::string CreateSimpleNotification(Browser* browser,
+  std::string CreateSimpleNotification(BrowserWindowInterface* browser,
                                        bool wait_for_new_balloon);
-  bool RequestAndAcceptPermission(Browser* browser);
-  bool RequestAndDenyPermission(Browser* browser);
-  bool RequestAndDismissPermission(Browser* browser);
-  bool RequestPermissionAndWait(Browser* browser);
-  std::string QueryPermissionStatus(Browser* browser);
-  bool CancelNotification(const char* notification_id, Browser* browser);
+  bool RequestAndAcceptPermission(BrowserWindowInterface* browser);
+  bool RequestAndDenyPermission(BrowserWindowInterface* browser);
+  bool RequestAndDismissPermission(BrowserWindowInterface* browser);
+  bool RequestPermissionAndWait(BrowserWindowInterface* browser);
+  std::string QueryPermissionStatus(BrowserWindowInterface* browser);
+  bool CancelNotification(const char* notification_id,
+                          BrowserWindowInterface* browser);
   void GetDisabledContentSettings(ContentSettingsForOneType* settings);
   bool CheckOriginInSetting(const ContentSettingsForOneType& settings,
                             const GURL& origin);
 
   GURL GetTestPageURLForFile(const std::string& file) const;
   GURL GetTestPageURL() const;
-  content::WebContents* GetActiveWebContents(Browser* browser);
+  content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser);
 
  private:
   std::string RequestAndRespondToPermission(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       permissions::PermissionRequestManager::AutoResponseType bubble_response);
 
   base::test::ScopedFeatureList feature_list_;

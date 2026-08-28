@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -131,7 +132,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   void SetUpOnMainThread() override {
     SigninBrowserTestBase::SetUpOnMainThread();
 
-    browser()->tab_strip_model()->AddObserver(this);
+    browser()->GetTabStripModel()->AddObserver(this);
 
     RegisterTestCueTargetForTab(browser()->GetActiveTabInterface());
 
@@ -155,7 +156,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   }
 
   void TearDownOnMainThread() override {
-    browser()->tab_strip_model()->RemoveObserver(this);
+    browser()->GetTabStripModel()->RemoveObserver(this);
     SigninBrowserTestBase::TearDownOnMainThread();
   }
 
@@ -235,7 +236,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   void SimulateFilterPassed(
       const GURL& url = GURL("https://www.activetab.com/abc")) {
     content::WebContents* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(active_web_contents);
     contextual_cueing_controller()->OnPageContentAnnotated(
         page_content_annotations::HistoryVisit(
@@ -340,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerTabListNeverTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* background_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   SessionID background_tab_id =
       sessions::SessionTabHelper::IdForTab(background_contents);
 
@@ -449,12 +450,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerTabListOnlyIfMultipleTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* background_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   SessionID background_tab_id =
       sessions::SessionTabHelper::IdForTab(background_contents);
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_contents);
 
@@ -527,12 +528,12 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* background_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   SessionID background_tab_id =
       sessions::SessionTabHelper::IdForTab(background_contents);
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_contents);
 
@@ -568,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(
   }));
 
   // Close the background tab.
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 
   // The contextual cue anchored message should not be shown on the active tab.
@@ -589,12 +590,12 @@ IN_PROC_BROWSER_TEST_F(
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* background_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   SessionID background_tab_id =
       sessions::SessionTabHelper::IdForTab(background_contents);
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_contents);
 
@@ -630,12 +631,12 @@ IN_PROC_BROWSER_TEST_F(
   }));
 
   // Activate the background tab and have it navigate to a new URL.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("https://www.othertab.com/2")));
 
   // Activate the original foreground tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // The contextual cue anchored message should not be shown on the active tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -685,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
   cue_target()->page_eligible = false;
   contextual_cueing_controller()->OnPageContentAnnotated(
@@ -723,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   SeedExecutionResult(std::move(result));
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(
@@ -781,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   cue->set_suggested_cuj("TestCUJ");
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
 
   // Add a valid tab to the response.
@@ -1355,10 +1356,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   SeedExecutionResult(MakeCompleteResponse());
 
   // Put the active tab in split view.
-  browser()->tab_strip_model()->AddToNewSplit(
+  browser()->GetTabStripModel()->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveTab()->IsSplit());
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveTab()->IsSplit());
 
   SimulateFilterPassed();
 
@@ -1675,7 +1676,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // Add an infobar to the active tab.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager->AddInfoBar(
@@ -1824,7 +1825,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Perform a back/forward (history) navigation using the back button.
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Verify that the cue is hidden.
   ASSERT_TRUE(base::test::RunUntil(
@@ -2041,10 +2042,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerShowInSplitViewBrowserTest,
   SeedExecutionResult(MakeCompleteResponse());
 
   // Put the active tab in split view.
-  browser()->tab_strip_model()->AddToNewSplit(
+  browser()->GetTabStripModel()->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveTab()->IsSplit());
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveTab()->IsSplit());
 
   SimulateFilterPassed();
 
@@ -2170,10 +2171,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   }));
 
   // Create second browser and move the active tab to it.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   std::unique_ptr<tabs::TabModel> detached_tab =
-      browser()->tab_strip_model()->DetachTabAtForInsertion(/*index=*/1);
-  second_browser->tab_strip_model()->InsertDetachedTabAt(
+      browser()->GetTabStripModel()->DetachTabAtForInsertion(/*index=*/1);
+  second_browser->GetTabStripModel()->InsertDetachedTabAt(
       /*index=*/0, std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
 
   page_actions::PageActionController* second_controller =

@@ -18,6 +18,8 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -840,7 +842,7 @@ IN_PROC_BROWSER_TEST_P(
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ASSERT_TRUE(nav_manager.WaitForRequestStart());
 
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 
   auto act_result = result.Get();

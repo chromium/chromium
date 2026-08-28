@@ -49,7 +49,7 @@ class UpdateMetricsProviderBrowserTest : public InProcessBrowserTest {
 
   void AddTab(const GURL& url) { AddTabInBrowser(browser(), url); }
 
-  void AddTabInBrowser(Browser* browser, const GURL& url) {
+  void AddTabInBrowser(BrowserWindowInterface* browser, const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(UpdateMetricsProviderBrowserTest,
   SetUpgradeAvailable();
 
   // Create a second browser window.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   AddTabInBrowser(browser2, GURL("about:blank"));
 
   provider_.ProvideCurrentSessionData(nullptr);

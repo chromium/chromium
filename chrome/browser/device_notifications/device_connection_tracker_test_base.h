@@ -15,6 +15,7 @@
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/device_notifications/device_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 

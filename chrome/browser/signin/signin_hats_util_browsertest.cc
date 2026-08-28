@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
   signin::LaunchHatsSurveyForProfile(trigger(), profile,
                                      /*defer_if_no_browser=*/true);
 
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_NE(incognito_browser, nullptr);
 }
 

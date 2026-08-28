@@ -31,6 +31,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"

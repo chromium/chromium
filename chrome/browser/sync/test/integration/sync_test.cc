@@ -184,7 +184,7 @@ constexpr auto kAccountId2 =
 class SyncTest::ClosedBrowserObserver : public BrowserCollectionObserver {
  public:
   using OnBrowserRemovedCallback =
-      base::RepeatingCallback<void(Browser* browser)>;
+      base::RepeatingCallback<void(BrowserWindowInterface* browser)>;
 
   explicit ClosedBrowserObserver(OnBrowserRemovedCallback callback)
       : browser_remove_callback_(std::move(callback)) {
@@ -194,7 +194,7 @@ class SyncTest::ClosedBrowserObserver : public BrowserCollectionObserver {
   ~ClosedBrowserObserver() override = default;
 
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    browser_remove_callback_.Run(browser->GetBrowserForMigrationOnly());
+    browser_remove_callback_.Run(browser);
   }
 
  private:
@@ -493,12 +493,14 @@ void SyncTest::SetUsePrimaryUserProfile(bool value) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-Browser* SyncTest::GetBrowser(int profile_index, int window_index) const {
+BrowserWindowInterface* SyncTest::GetBrowser(int profile_index,
+                                             int window_index) const {
   CHECK(!clients_.empty()) << "SetupClients() has not yet been called.";
   CHECK(profile_index >= 0 && profile_index < std::ssize(clients_))
       << "GetBrowser(): Profile index is out of bounds: " << profile_index;
 
-  const std::vector<raw_ptr<Browser, AcrossTasksDanglingUntriaged>>& browsers =
+  const std::vector<
+      raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>>& browsers =
       clients_[profile_index].browsers;
   CHECK(window_index >= 0 && window_index < std::ssize(browsers))
       << "GetBrowser(): Window index is out of bounds: " << window_index
@@ -506,7 +508,7 @@ Browser* SyncTest::GetBrowser(int profile_index, int window_index) const {
       << ". (Did you forget to call AddBrowser() to create additional "
          "windows?)";
 
-  Browser* browser = browsers[window_index];
+  BrowserWindowInterface* browser = browsers[window_index];
   CHECK(browser) << "GetBrowser(): Browser for profile " << profile_index
                  << " and window " << window_index
                  << " was not created. Call AddBrowser() explicitly if this "
@@ -515,12 +517,10 @@ Browser* SyncTest::GetBrowser(int profile_index, int window_index) const {
   return browser;
 }
 
-Browser* SyncTest::AddBrowser(int profile_index) {
+BrowserWindowInterface* SyncTest::AddBrowser(int profile_index) {
   Profile* profile = GetProfile(profile_index);
-  Browser* browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   clients_[profile_index].browsers.push_back(browser);
 
   chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
@@ -533,7 +533,7 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   return browser;
 }
 
-void SyncTest::OnBrowserRemoved(Browser* browser) {
+void SyncTest::OnBrowserRemoved(BrowserWindowInterface* browser) {
   for (SyncClientState& client : clients_) {
     std::erase(client.browsers, browser);
   }
@@ -673,10 +673,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   // This is needed for performance reasons, mostly to reduce flakiness due to
   // test timeouts during initialization and teardown.
   if (index == 0) {
-    Browser* browser =
-        CreateBrowserWindow(
-            BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
-            ->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
     clients_[index].browsers.push_back(browser);
 
     chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
@@ -963,9 +961,9 @@ void SyncTest::TearDownOnMainThread() {
   // Make a copy of browser pointers before calling CloseBrowserAsynchronously,
   // as closing a browser can synchronously notify observers and modify
   // clients_[...].browsers.
-  std::vector<Browser*> browsers_to_close;
+  std::vector<BrowserWindowInterface*> browsers_to_close;
   for (const SyncClientState& client : clients_) {
-    for (Browser* browser : client.browsers) {
+    for (BrowserWindowInterface* browser : client.browsers) {
       if (browser) {
         browsers_to_close.push_back(browser);
       }
@@ -978,7 +976,7 @@ void SyncTest::TearDownOnMainThread() {
   std::vector<std::unique_ptr<ui_test_utils::BrowserDestroyedObserver>>
       browser_observers;
   browser_observers.reserve(browsers_to_close.size());
-  for (Browser* browser : browsers_to_close) {
+  for (BrowserWindowInterface* browser : browsers_to_close) {
     browser_observers.push_back(
         std::make_unique<ui_test_utils::BrowserDestroyedObserver>(browser));
     CloseBrowserAsynchronously(browser);

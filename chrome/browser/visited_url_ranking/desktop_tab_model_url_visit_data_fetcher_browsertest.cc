@@ -9,7 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -56,14 +56,14 @@ class DesktopTabModelURLVisitDataFetcherTest : public InProcessBrowserTest {
   }
 
  protected:
-  void AddTabWithTitle(Browser* browser,
+  void AddTabWithTitle(BrowserWindowInterface* browser,
                        const GURL url,
                        const std::string title) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     web_contents->UpdateTitleForEntry(
         web_contents->GetController().GetActiveEntry(),
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(DesktopTabModelURLVisitDataFetcherTest,
   // Change the order of the tabs so that the most recent one is last in the tab
   // strip. By doing so, we can validate the fetcher is retaining the last
   // active tab regardless of position.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   // InProcessBrowserTest starts with one tab. The new tabs are added after it.
   tab_strip_model->MoveWebContentsAt(1, kNumTabs, true);
 

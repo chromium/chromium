@@ -22,8 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/dictation/onboarding_dialog_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -243,9 +243,9 @@ IN_PROC_BROWSER_TEST_P(
       extensions::api::dictation_private::StreamState::kTranscribing);
 
   // Create a second window and trigger the context menu entry point from it.
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   content::WebContents* window2_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
+      second_browser->GetTabStripModel()->GetActiveWebContents();
   SimulateInvokeViaContextMenu(window2_contents->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(456));
 

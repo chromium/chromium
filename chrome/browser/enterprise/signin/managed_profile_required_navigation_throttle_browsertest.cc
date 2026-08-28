@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"

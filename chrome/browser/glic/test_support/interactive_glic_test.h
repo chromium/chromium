@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_features.h"
@@ -275,8 +276,7 @@ class InteractiveGlicTestMixin : public T {
       return WaitForGlic(instrument_mode);
     }
 
-    tabs::TabInterface* active_tab =
-        browser()->tab_strip_model()->GetActiveTab();
+    tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
 
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
@@ -710,7 +710,7 @@ class InteractiveGlicTestMixin : public T {
 
   auto CheckTabCount(int expected_count) {
     return Api::CheckResult(
-        [this] { return browser()->tab_strip_model()->count(); },
+        [this] { return browser()->GetTabStripModel()->count(); },
         expected_count, "CheckTabCount");
   }
 

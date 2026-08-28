@@ -20,8 +20,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -67,7 +67,7 @@ std::string RunScript(content::RenderFrameHost* render_frame_host,
 // load and wait one single frame here by calling a javascript function.
 class IFrameLoader : public content::WebContentsObserver {
  public:
-  IFrameLoader(Browser* browser, int iframe_id, const GURL& url);
+  IFrameLoader(BrowserWindowInterface* browser, int iframe_id, const GURL& url);
 
   IFrameLoader(const IFrameLoader&) = delete;
   IFrameLoader& operator=(const IFrameLoader&) = delete;
@@ -96,11 +96,12 @@ class IFrameLoader : public content::WebContentsObserver {
   base::OnceClosure quit_closure_;
 };
 
-IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
-    : navigation_completed_(false),
-      javascript_completed_(false) {
+IFrameLoader::IFrameLoader(BrowserWindowInterface* browser,
+                           int iframe_id,
+                           const GURL& url)
+    : navigation_completed_(false), javascript_completed_(false) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   content::WebContentsObserver::Observe(web_contents);
   std::string script(base::StringPrintf(
       "window.domAutomationController.send(addIFrame(%d, \"%s\"));",
@@ -176,7 +177,7 @@ class GeolocationBrowserTest : public base::test::WithFeatureOverride,
   void SetUpOnMainThread() override;
   void TearDownInProcessBrowserTestFixture() override;
 
-  Browser* current_browser() { return current_browser_; }
+  BrowserWindowInterface* current_browser() { return current_browser_; }
   void set_html_for_tests(const std::string& html_for_tests) {
     html_for_tests_ = html_for_tests;
   }
@@ -196,7 +197,7 @@ class GeolocationBrowserTest : public base::test::WithFeatureOverride,
   }
 
   content::WebContents* web_contents() {
-    return current_browser()->tab_strip_model()->GetActiveWebContents();
+    return current_browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // Initializes the test server and navigates to `target`
@@ -257,7 +258,8 @@ class GeolocationBrowserTest : public base::test::WithFeatureOverride,
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
   // The current Browser as set in Initialize. May be for an incognito profile.
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      current_browser_ = nullptr;
 
   // The https server used for the tests
   net::EmbeddedTestServer https_test_server_{

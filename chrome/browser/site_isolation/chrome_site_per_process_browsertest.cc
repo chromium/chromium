@@ -1513,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
-  Browser* browser_on_secondary_display =
+  BrowserWindowInterface* browser_on_secondary_display =
       CreateBrowser(browser()->GetProfile());
 
   // Open a page with an OOPIF on the secondary display.

@@ -7,6 +7,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 

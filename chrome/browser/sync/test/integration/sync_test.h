@@ -62,6 +62,7 @@
 #define E2E_ONLY(test_name) MACRO_CONCAT(DISABLED_E2ETest, test_name)
 #define E2E_ENABLED(test_name) MACRO_CONCAT(test_name, E2ETest)
 
+class BrowserWindowInterface;
 class FakeSyncGCMDriver;
 class KeyedService;
 class ProfileManager;
@@ -178,11 +179,12 @@ class SyncTest : public PlatformBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to the browser at `window_index` for profile
   // `profile_index`. Callee owns the object and manages its lifetime.
-  Browser* GetBrowser(int profile_index, int window_index = 0) const;
+  BrowserWindowInterface* GetBrowser(int profile_index,
+                                     int window_index = 0) const;
 
   // Adds a new browser belonging to profile `profile_index`, and appends
   // it to that client's list of browsers.
-  Browser* AddBrowser(int profile_index);
+  BrowserWindowInterface* AddBrowser(int profile_index);
 #endif
 
   // Returns a pointer to a particular sync client. Callee owns the object
@@ -338,8 +340,11 @@ class SyncTest : public PlatformBrowserTest,
       content::BrowserContext* context);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Called when a |browser| was removed (e.g. when the last tab is closed).
-  void OnBrowserRemoved(Browser* browser);
+  // Called when the |browser| was removed externally. This just marks the
+  // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
+  // and |profiles_| in sync. It is used when the |browser| is removed within a
+  // test (e.g. when the last tab is closed for the |browser|).
+  void OnBrowserRemoved(BrowserWindowInterface* browser);
 #endif
 
   // Helper to block the current thread while the data models sync depends on
@@ -413,7 +418,8 @@ class SyncTest : public PlatformBrowserTest,
     raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile = nullptr;
     std::unique_ptr<SyncServiceImplHarness> harness;
 #if !BUILDFLAG(IS_ANDROID)
-    std::vector<raw_ptr<Browser, AcrossTasksDanglingUntriaged>> browsers;
+    std::vector<raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>>
+        browsers;
 #endif
   };
 

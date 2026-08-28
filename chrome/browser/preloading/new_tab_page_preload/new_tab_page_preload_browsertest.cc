@@ -28,6 +28,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -104,8 +105,7 @@ class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
 
   NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager() {
     return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
+        ->GetActiveTabInterface()
         ->GetTabFeatures()
         ->new_tab_page_preload_pipeline_manager();
   }

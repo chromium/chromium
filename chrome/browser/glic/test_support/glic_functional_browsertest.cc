@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/test_support/glic_functional_browsertest.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 namespace glic::test {
 
 base::expected<base::Value, std::string> ToExpected(
@@ -18,11 +20,11 @@ GlicFunctionalBrowserTestBase::GlicFunctionalBrowserTestBase() = default;
 GlicFunctionalBrowserTestBase::~GlicFunctionalBrowserTestBase() = default;
 
 content::WebContents* GlicFunctionalBrowserTestBase::web_contents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 tabs::TabInterface* GlicFunctionalBrowserTestBase::active_tab() {
-  return browser()->tab_strip_model()->GetActiveTab();
+  return browser()->GetTabStripModel()->GetActiveTab();
 }
 
 base::expected<base::Value, std::string>

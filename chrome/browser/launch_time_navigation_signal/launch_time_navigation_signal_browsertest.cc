@@ -421,7 +421,7 @@ class LaunchNavigationBrowserWithPopupTest
     auto* contents = browser()->GetTabStripModel()->GetActiveWebContents();
     content::ExecuteScriptAsync(
         contents, "w = open('about:blank', '', 'width=200,height=200');");
-    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+    BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(popup, browser());
     auto* popup_contents = popup->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(WaitForLoadStop(popup_contents));

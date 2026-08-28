@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   WriteFile(FILE_PATH_LITERAL("test.html"), "");
   InitializeServer();
 
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   base::RunLoop run_loop;
   blink::mojom::ServiceWorkerRegistrationOptions options(

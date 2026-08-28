@@ -33,12 +33,12 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -96,14 +96,12 @@ class LocalContextualSearchboxHandlerTestHarness : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     // Safely reset pointers inside controllers to avoid dangling references
-    for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
-      tabs::TabInterface* tab =
-          tabs::TabLookupFromWebContents::FromWebContents(
-              browser()->tab_strip_model()->GetWebContentsAt(i))
-              ->model();
-      if (tab && tab->GetTabFeatures()) {
-        tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
-            nullptr);
+    if (TabListInterface* tab_list = TabListInterface::From(browser())) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+        if (tab && tab->GetTabFeatures()) {
+          tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+              nullptr);
+        }
       }
     }
     mock_tab_controller_ = nullptr;
@@ -137,13 +135,11 @@ class LocalContextualSearchboxHandlerTestHarness : public InProcessBrowserTest {
 
   tabs::TabInterface* AddTab(const GURL& url) {
     chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_LINK);
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+    content::WebContents* contents = tab->GetContents();
     content::TestNavigationObserver navigation_observer(contents);
     navigation_observer.Wait();
 
-    tabs::TabInterface* tab =
-        tabs::TabLookupFromWebContents::FromWebContents(contents)->model();
     tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(nullptr);
     auto mock_tab_controller =
         std::make_unique<MockTabContextualizationController>(tab);
@@ -1773,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_WaitsForUpload) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
@@ -1867,7 +1863,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_ImageReplacedThenOtherTerminalStates) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
@@ -2015,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_ThenDeleteToTriggerFullSubmit) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
@@ -2112,7 +2108,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_AfterDeleteLastUploadingFile) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
@@ -2216,7 +2212,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   resource.title = kTitle;
   resource.tab_id = session_id;
 
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found!.";
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
 
@@ -2323,7 +2319,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_Immediately) {
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
 
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
@@ -2408,7 +2404,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_WaitsForFilesAndDelayedTabs) {
   // Set up tabs and functions that return them.
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   ASSERT_NE(active_tab, nullptr) << "No active tab found.";
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
   SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
@@ -2578,7 +2574,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        AddDeleteAdd_DelayedAndRegular_Submit) {
   // Set up task and tabs, and mock related functions.
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
   int32_t tab_handle_id = active_tab->GetHandle().raw_value();
   SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
 

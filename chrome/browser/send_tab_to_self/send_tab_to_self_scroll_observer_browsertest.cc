@@ -16,9 +16,9 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -41,7 +41,7 @@ namespace send_tab_to_self {
 
 namespace {
 
-void SimulateOpeningReceivedTab(Browser* browser,
+void SimulateOpeningReceivedTab(BrowserWindowInterface* browser,
                                 const SendTabToSelfEntry& entry) {
   SendTabToSelfToolbarBubbleController* controller =
       SendTabToSelfToolbarBubbleController::From(browser);

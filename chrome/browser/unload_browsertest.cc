@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -145,7 +145,7 @@ class UnloadTest : public InProcessBrowserTest {
   }
 
   void CheckTitle(const char* expected_title, bool wait = false) {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     std::u16string expected = base::ASCIIToUTF16(expected_title);
     std::u16string actual;
     if (wait)
@@ -199,10 +199,10 @@ class UnloadTest : public InProcessBrowserTest {
       dialog->view()->CancelAppModalDialog();
   }
 
-  void PrepareForDialog(Browser* browser) {
-    for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
+  void PrepareForDialog(BrowserWindowInterface* browser) {
+    for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
       content::PrepContentsForBeforeUnloadTest(
-          browser->tab_strip_model()->GetWebContentsAt(i));
+          browser->GetTabStripModel()->GetWebContentsAt(i));
     }
   }
 
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseBeforeUnloadCancel) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, MAYBE_BrowserListCloseBeforeUnloadCancel) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListDoubleCloseBeforeUnloadCancel) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest,
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseTabWhenOtherTabHasListener) {
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
   content::SimulateMouseClick(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      browser()->GetTabStripModel()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft);
   tab_add.Wait();
   // Need to wait for the title, because the initial page (about:blank) can stop
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseTabWhenOtherTabHasListener) {
   CheckTitle("popup", true);
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::CloseTab(browser());
   destroyed_watcher.Wait();
 
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
   GURL opener_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL popup_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
   content::TestNavigationObserver popup_observer(nullptr);
@@ -653,9 +653,9 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, VisibilityChangeOnlyDispatchedOnce) {
   EXPECT_TRUE(
       ExecJs(opener_contents, "window.open('" + popup_url.spec() + "');"));
   popup_observer.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   content::WebContents* popup_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(opener_contents, popup_contents);
   content::RenderFrameHost* popup_rfh = popup_contents->GetPrimaryMainFrame();
 
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithCrossSiteIframe) {
   // Navigate iframe cross-site.
   GURL frame_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", frame_url));
 
   // Install a dialog-showing beforeunload handler in the iframe.
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithSameSiteIframe) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(child->GetSiteInstance(),
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, OnBeforeUnloadCancelByPreventDefault) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, OnBeforeUnloadCancelByReturnValue) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, OnBeforeUnloadCancelByReturn) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, OnBeforeUnloadCancelByReturnEmpty) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BeforeUnloadListenerCancelByPreventDefault) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BeforeUnloadListenerCancelByReturnValue) {
   // waiting for an ack from the renderer.
   std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+      browser()->GetTabStripModel()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
