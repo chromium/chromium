@@ -53,6 +53,7 @@ std::string GetWalletReminderNoticeRequest::GetRequestContent() {
 
   base::DictValue request_dict;
   request_dict.Set("context", std::move(context));
+  request_dict.Set("chrome_user_context", BuildChromeUserContext());
 
   return base::WriteJson(request_dict).value();
 }

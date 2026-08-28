@@ -10,11 +10,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_test_api.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -76,6 +80,9 @@ TEST(CreateCardRequestTest, GetRequestUrlPath) {
 }
 
 TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillAddChromeUserContextFields);
+
   std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
   base::DictValue address =
       base::DictValue()
@@ -103,11 +110,18 @@ TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
                         PaymentsRequest::BuildCustomerContextDictionary(
                             111122223333))
                    .Set("language_code", "en"))
-          .Set("chrome_user_context",
-               base::DictValue().Set(
-                   "client_behavior_signals",
-                   base::ListValue().Append(static_cast<int>(
-                       ClientBehaviorConstants::kOfferingToSaveCvc))))
+          .Set(
+              "chrome_user_context",
+              base::DictValue()
+                  .Set("client_behavior_signals",
+                       base::ListValue().Append(static_cast<int>(
+                           ClientBehaviorConstants::kOfferingToSaveCvc)))
+                  .Set("full_sync_enabled", false)
+                  .Set("chrome_major_version",
+                       version_info::GetMajorVersionNumberAsInt())
+                  .Set("client_type",
+                       static_cast<int>(test_api(request.get())
+                                            .GetChromeUserContextClientType())))
           .Set("context_token", "some context token")
           .Set("risk_data_encoded",
                PaymentsRequest::BuildRiskDictionary("some risk data"))

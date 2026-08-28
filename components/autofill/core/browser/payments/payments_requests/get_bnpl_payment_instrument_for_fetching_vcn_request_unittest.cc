@@ -8,7 +8,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_test_api.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -68,6 +72,9 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillAddChromeUserContextFields);
+
   Dict request_dict =
       Dict()
           .Set("context",
@@ -77,7 +84,15 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
                    .Set("customer_context",
                         PaymentsRequest::BuildCustomerContextDictionary(
                             request_details_.billing_customer_number)))
-          .Set("chrome_user_context", Dict().Set("full_sync_enabled", true))
+          .Set(
+              "chrome_user_context",
+              base::DictValue()
+                  .Set("full_sync_enabled", true)
+                  .Set("chrome_major_version",
+                       version_info::GetMajorVersionNumberAsInt())
+                  .Set("client_type",
+                       static_cast<int>(test_api(request_.get())
+                                            .GetChromeUserContextClientType())))
           .Set("instrument_id", request_details_.instrument_id)
           .Set("risk_data_encoded",
                PaymentsRequest::BuildRiskDictionary(request_details_.risk_data))

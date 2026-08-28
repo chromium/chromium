@@ -99,15 +99,14 @@ class PaymentsRequest {
       int64_t external_customer_id);
 
  protected:
-  // Shared helper function that builds the Chrome user context which is then
+  // Shared helper functions that builds the Chrome user context which is then
   // set in the payment requests.
-  // Note: `full_sync_enabled` is being deprecated. Don't call this in new code.
-  // Use the below function instead.
+  base::DictValue BuildChromeUserContext();
+  base::DictValue BuildChromeUserContext(
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals);
   base::DictValue BuildChromeUserContext(
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       bool full_sync_enabled);
-  base::DictValue BuildChromeUserContext(
-      const std::vector<ClientBehaviorConstants>& client_behavior_signals);
 
   // Shared helper functoin that returns a dictionary with the structure
   // expected by Payments RPCs, containing each of the fields in |profile|,
@@ -143,6 +142,27 @@ class PaymentsRequest {
   // and end (ex. 1234-1234).
   std::vector<std::pair<int, int>> ParseSupportedCardBinRangesString(
       const std::string& supported_card_bin_ranges_string);
+
+ private:
+  friend class PaymentsRequestTestApi;
+
+  // Represents the client type, based on expectations in the
+  // ChromeUserContext::ClientType enum in the internal Payments proto. This
+  // list must stay consistent with that enum.
+  enum class ClientType {
+    kUnknown = 0,
+    kWindows = 1,
+    kMac = 2,
+    kLinux = 3,
+    kChromeOs = 4,
+    kClank = 5,
+    kBling = 6,
+    kMaxValue = kBling,
+  };
+
+  // Returns the user's client type, based on expectations in the
+  // ChromeUserContext::ClientType enum in the internal Payments proto.
+  PaymentsRequest::ClientType GetChromeUserContextClientType();
 };
 
 }  // namespace autofill::payments

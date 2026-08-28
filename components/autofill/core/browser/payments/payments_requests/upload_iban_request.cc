@@ -74,9 +74,9 @@ std::string UploadIbanRequest::GetRequestContent() {
                     request_details_.billing_customer_number));
   }
   request_dict.Set("context", std::move(context));
-  base::DictValue chrome_user_context;
-  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
-  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
+  request_dict.Set("chrome_user_context",
+                   BuildChromeUserContext(/*client_behavior_signals=*/{},
+                                          full_sync_enabled_));
   request_dict.Set("context_token", request_details_.context_token);
 
   std::string json_request = base::WriteJson(request_dict).value();

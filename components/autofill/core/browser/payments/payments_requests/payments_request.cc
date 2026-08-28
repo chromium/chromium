@@ -26,6 +26,8 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/version_info/version_info.h"
 
 namespace autofill::payments {
 
@@ -87,18 +89,32 @@ base::DictValue PaymentsRequest::BuildCustomerContextDictionary(
   return customer_context;
 }
 
-base::DictValue PaymentsRequest::BuildChromeUserContext(
-    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-    bool full_sync_enabled) {
-  base::DictValue chrome_user_context =
-      BuildChromeUserContext(client_behavior_signals);
-  chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
-  return chrome_user_context;
+base::DictValue PaymentsRequest::BuildChromeUserContext() {
+  return BuildChromeUserContext(/*client_behavior_signals=*/{},
+                                /*full_sync_enabled=*/false);
 }
 
 base::DictValue PaymentsRequest::BuildChromeUserContext(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals) {
+  return BuildChromeUserContext(client_behavior_signals,
+                                /*full_sync_enabled=*/false);
+}
+
+base::DictValue PaymentsRequest::BuildChromeUserContext(
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
+    bool full_sync_enabled) {
   base::DictValue chrome_user_context;
+
+  // Set client type and major version metadata.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAddChromeUserContextFields)) {
+    chrome_user_context.Set("client_type",
+                            static_cast<int>(GetChromeUserContextClientType()));
+    chrome_user_context.Set("chrome_major_version",
+                            version_info::GetMajorVersionNumberAsInt());
+  }
+
+  // Set client behavior signals, if they exist.
   if (!client_behavior_signals.empty()) {
     base::ListValue active_client_signals;
     for (ClientBehaviorConstants signal : client_behavior_signals) {
@@ -108,6 +124,11 @@ base::DictValue PaymentsRequest::BuildChromeUserContext(
     chrome_user_context.Set("client_behavior_signals",
                             std::move(active_client_signals));
   }
+
+  // Set full sync vs. Butter sync status.  Note that this value is being
+  // deprecated and may not be trustworthy in new code.
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
+
   return chrome_user_context;
 }
 
@@ -226,6 +247,24 @@ PaymentsRequest::ParseSupportedCardBinRangesString(
     }
   }
   return supported_card_bin_ranges;
+}
+
+PaymentsRequest::ClientType PaymentsRequest::GetChromeUserContextClientType() {
+#if BUILDFLAG(IS_WIN)
+  return ClientType::kWindows;
+#elif BUILDFLAG(IS_MAC)
+  return ClientType::kMac;
+#elif BUILDFLAG(IS_LINUX)
+  return ClientType::kLinux;
+#elif BUILDFLAG(IS_CHROMEOS)
+  return ClientType::kChromeOs;
+#elif BUILDFLAG(IS_ANDROID)
+  return ClientType::kClank;
+#elif BUILDFLAG(IS_IOS)
+  return ClientType::kBling;
+#else
+  return ClientType::kUnknown;
+#endif
 }
 
 }  // namespace autofill::payments
