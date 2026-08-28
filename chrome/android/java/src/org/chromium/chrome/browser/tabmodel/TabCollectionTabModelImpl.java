@@ -2312,8 +2312,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assert tabGroupIdForNewGroup == null
                         || willCreateNewGroup
                         || tabGroupIdForNewGroup.equals(maybeDestinationTabGroupId)
+                        || (!candidateTabGroupIds.isEmpty()
+                                && tabGroupIdForNewGroup.equals(candidateTabGroupIds.get(0)))
                 : "A new tab group ID should not be provided if the merge contains a tab group"
-                        + " unless it matches the destination tab's group ID.";
+                        + " unless it matches the destination tab's group ID or the candidate"
+                        + " group ID.";
 
         // Find a destination tab group ID.
         final Token destinationTabGroupId;

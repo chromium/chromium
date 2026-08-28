@@ -130,8 +130,17 @@ public class TabGroupUtils {
         boolean tabGroupCollapsed = tabGroupMetadata.tabGroupCollapsed;
         int tabGroupColor = tabGroupMetadata.tabGroupColor;
 
-        // 2. Create the local tab group in the current TabModel.
-        tabModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
+        // 2. Create the local tab group in the current TabModel if not already grouped.
+        boolean alreadyGrouped = true;
+        for (Tab tab : tabs) {
+            if (!Objects.equals(tab.getTabGroupId(), tabGroupId)) {
+                alreadyGrouped = false;
+                break;
+            }
+        }
+        if (!alreadyGrouped) {
+            tabModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
+        }
         tabGroupId = tabs.get(0).getTabGroupId();
         assumeNonNull(tabGroupId);
 

@@ -2678,6 +2678,28 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testCreateTabGroupForTabGroupSync_FirstTabUngroupedSecondTabGrouped() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token newGroupId = Token.createRandom();
+                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab1), newGroupId);
+
+                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab0, tab1), newGroupId);
+
+                    assertEquals(newGroupId, tab0.getTabGroupId());
+                    assertEquals(newGroupId, tab1.getTabGroupId());
+                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(newGroupId);
+                    assertEquals(2, tabsInGroup.size());
+                    assertTrue(tabsInGroup.containsAll(List.of(tab0, tab1)));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testMergeTabsToGroup_SingleToSingle() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();

@@ -307,4 +307,29 @@ public class TabGroupUtilsUnitTest {
                 TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector, otherSelector)));
         assertFalse(TabGroupUtils.hasTabGroups(mTabModel, (Collection<TabModelSelector>) null));
     }
+
+    @Test
+    public void testRegroupTabs_alreadyGrouped_skipsCreateTabGroupForTabGroupSync() {
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
+        TabGroupMetadata tabGroupMetadata =
+                new TabGroupMetadata(
+                        /* selectedTabId= */ TAB1_ID,
+                        /* sourceWindowId= */ 1,
+                        TAB_GROUP_ID1,
+                        TAB_IDS_TO_URLS,
+                        /* tabGroupColor= */ 0,
+                        TAB_GROUP_TITLE,
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        /* isGroupShared= */ false,
+                        /* isIncognito= */ false);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        TabGroupUtils.regroupTabs(mTabModel, tabs, tabGroupMetadata, false);
+
+        verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
+        verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
+    }
 }
