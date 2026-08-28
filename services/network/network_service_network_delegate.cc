@@ -67,6 +67,13 @@ NetworkServiceNetworkDelegate::NetworkServiceNetworkDelegate(
 
 NetworkServiceNetworkDelegate::~NetworkServiceNetworkDelegate() = default;
 
+void NetworkServiceNetworkDelegate::
+    SetShouldForceIgnoreSiteForCookiesCallbackForTesting(
+        base::RepeatingCallback<void(const net::URLRequest&)> callback) {
+  should_force_ignore_site_for_cookies_callback_for_testing_ =
+      std::move(callback);
+}
+
 void NetworkServiceNetworkDelegate::MaybeTruncateReferrer(
     net::URLRequest* const request,
     const GURL& effective_url) {
@@ -297,8 +304,11 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
 
 bool NetworkServiceNetworkDelegate::OnShouldForceIgnoreSiteForCookies(
     const net::URLRequest& request) {
+  if (should_force_ignore_site_for_cookies_callback_for_testing_) {
+    should_force_ignore_site_for_cookies_callback_for_testing_.Run(request);
+  }
   return url_loader_util::ShouldForceIgnoreSiteForCookies(
-      request.url(), request.initiator(), request.site_for_cookies(),
+      request.url_chain(), request.initiator(), request.site_for_cookies(),
       network_context_->cors_origin_access_list());
 }
 

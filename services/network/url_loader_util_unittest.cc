@@ -192,8 +192,96 @@ TEST_F(ConfigureUrlRequestTest,
   // initiator and target, and they are same-site, so the delegate path
   // should return true.
   EXPECT_TRUE(ShouldForceIgnoreSiteForCookies(
-      url_request->url(), url_request->initiator(),
+      url_request->url_chain(), url_request->initiator(),
       url_request->site_for_cookies(), origin_access_list));
+}
+
+TEST_F(ConfigureUrlRequestTest,
+       ForceIgnoreSiteForCookiesRequiresAccessToEntireUrlChain) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  const url::Origin extension_origin =
+      url::Origin::Create(GURL("chrome-extension://abc123"));
+  const GURL allowed_url("https://allowed.example/resource");
+  const GURL another_allowed_url("https://allowed.example/redirected");
+  const GURL disallowed_url("https://disallowed.example/redirect");
+
+  cors::OriginAccessList origin_access_list;
+  origin_access_list.AddAllowListEntryForOrigin(
+      extension_origin, "https", "allowed.example",
+      /*port=*/0, mojom::CorsDomainMatchMode::kDisallowSubdomains,
+      mojom::CorsPortMatchMode::kAllowAnyPort,
+      mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  const net::SiteForCookies extension_site_for_cookies =
+      net::SiteForCookies::FromOrigin(extension_origin);
+  EXPECT_TRUE(ShouldForceIgnoreSiteForCookies({allowed_url}, extension_origin,
+                                              extension_site_for_cookies,
+                                              origin_access_list));
+  EXPECT_TRUE(ShouldForceIgnoreSiteForCookies(
+      {allowed_url, another_allowed_url}, extension_origin,
+      extension_site_for_cookies, origin_access_list));
+
+  // A redirect chain must not acquire the SameSite bypass when it enters the
+  // extension's allowed origins, or retain it after leaving them.
+  EXPECT_FALSE(ShouldForceIgnoreSiteForCookies(
+      {disallowed_url, allowed_url}, extension_origin,
+      extension_site_for_cookies, origin_access_list));
+  EXPECT_FALSE(ShouldForceIgnoreSiteForCookies(
+      {allowed_url, disallowed_url}, extension_origin,
+      extension_site_for_cookies, origin_access_list));
+  EXPECT_FALSE(ShouldForceIgnoreSiteForCookies(
+      {allowed_url, disallowed_url, another_allowed_url}, extension_origin,
+      extension_site_for_cookies, origin_access_list));
+  EXPECT_FALSE(ShouldForceIgnoreSiteForCookies(
+      {}, extension_origin, extension_site_for_cookies, origin_access_list));
+}
+
+TEST_F(ConfigureUrlRequestTest,
+       ForceIgnoreSiteForCookiesDoesNotCombineAuthorizationPaths) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  const url::Origin extension_origin =
+      url::Origin::Create(GURL("chrome-extension://abc123"));
+  const url::Origin web_origin =
+      url::Origin::Create(GURL("https://initiator.example"));
+  const GURL web_origin_allowed_url(
+      "https://web-origin-allowed.example/resource");
+  const GURL extension_allowed_url("https://sub.initiator.example/resource");
+  const GURL another_extension_allowed_url(
+      "https://other.initiator.example/redirected");
+
+  cors::OriginAccessList origin_access_list;
+  origin_access_list.AddAllowListEntryForOrigin(
+      web_origin, "https", "web-origin-allowed.example",
+      /*port=*/0, mojom::CorsDomainMatchMode::kDisallowSubdomains,
+      mojom::CorsPortMatchMode::kAllowAnyPort,
+      mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+  origin_access_list.AddAllowListEntryForOrigin(
+      extension_origin, "https", "initiator.example",
+      /*port=*/0, mojom::CorsDomainMatchMode::kAllowSubdomains,
+      mojom::CorsPortMatchMode::kAllowAnyPort,
+      mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  const net::SiteForCookies extension_site_for_cookies =
+      net::SiteForCookies::FromOrigin(extension_origin);
+  EXPECT_TRUE(ShouldForceIgnoreSiteForCookies(
+      {web_origin_allowed_url}, web_origin, extension_site_for_cookies,
+      origin_access_list));
+  EXPECT_TRUE(ShouldForceIgnoreSiteForCookies(
+      {extension_allowed_url}, web_origin, extension_site_for_cookies,
+      origin_access_list));
+  EXPECT_TRUE(ShouldForceIgnoreSiteForCookies(
+      {extension_allowed_url, another_extension_allowed_url}, web_origin,
+      extension_site_for_cookies, origin_access_list));
+
+  // Each URL is allowed by one of the two authorization paths, but neither
+  // path covers the whole chain.
+  EXPECT_FALSE(ShouldForceIgnoreSiteForCookies(
+      {web_origin_allowed_url, extension_allowed_url}, web_origin,
+      extension_site_for_cookies, origin_access_list));
 }
 
 }  // namespace
