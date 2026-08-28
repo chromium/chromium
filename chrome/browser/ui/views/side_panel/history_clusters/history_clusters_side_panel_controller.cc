@@ -21,8 +21,7 @@ void HistoryClustersSidePanelController::ShowJourneysSidePanel(
   if (BrowserWindowInterface* browser =
           GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
               web_contents_)) {
-    auto* coordinator =
-        browser->GetFeatures().history_clusters_side_panel_coordinator();
+    auto* coordinator = HistoryClustersSidePanelCoordinator::From(browser);
     coordinator->Show(query);
   }
 }

@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
                        ShowRespectsManagedPolicy) {
   // Verify that history clusters opens when configured by policy.
   HistoryClustersSidePanelCoordinator* const history_clusters_coordinator =
-      browser()->GetFeatures().history_clusters_side_panel_coordinator();
+      HistoryClustersSidePanelCoordinator::From(browser());
   policy::PolicyMap policies;
   policies.Set(policy::key::kHistoryClustersVisible,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

@@ -41,10 +41,20 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_HistoryClustersSidePanelUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
+DEFINE_USER_DATA(HistoryClustersSidePanelCoordinator);
+
+// static
+HistoryClustersSidePanelCoordinator* HistoryClustersSidePanelCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
     BrowserWindowInterface* browser,
     Profile* profile)
-    : browser_(CHECK_DEREF(browser)), profile_(CHECK_DEREF(profile)) {
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
+      browser_(CHECK_DEREF(browser)),
+      profile_(CHECK_DEREF(profile)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
   base::RepeatingClosure callback(base::BindRepeating(
       &HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged,

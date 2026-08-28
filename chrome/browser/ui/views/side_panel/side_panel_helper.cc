@@ -51,9 +51,8 @@ void SidePanelHelper::PopulateGlobalEntries(
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->GetProfile()) &&
       !HistorySidePanelCoordinator::IsSupported()) {
-    browser->GetFeatures()
-        .history_clusters_side_panel_coordinator()
-        ->CreateAndRegisterEntry(window_registry);
+    HistoryClustersSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
+        window_registry);
   }
 
   // Add history.

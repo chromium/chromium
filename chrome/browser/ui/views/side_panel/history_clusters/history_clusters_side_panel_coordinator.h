@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class GURL;
@@ -25,8 +26,14 @@ class View;
 // the history clusters SidePanelEntry.
 class HistoryClustersSidePanelCoordinator {
  public:
+  DECLARE_USER_DATA(HistoryClustersSidePanelCoordinator);
+
   HistoryClustersSidePanelCoordinator(BrowserWindowInterface* browser,
                                       Profile* profile);
+
+  // Returns the coordinator for `browser`, or null if it does not have one.
+  static HistoryClustersSidePanelCoordinator* From(
+      BrowserWindowInterface* browser);
   ~HistoryClustersSidePanelCoordinator();
 
   // Returns whether HistoryClustersSidePanelCoordinator is supported for
@@ -49,6 +56,9 @@ class HistoryClustersSidePanelCoordinator {
   void OnHistoryClustersPreferenceChanged();
 
  private:
+  ui::ScopedUnownedUserData<HistoryClustersSidePanelCoordinator>
+      scoped_unowned_user_data_;
+
   std::unique_ptr<views::View> CreateHistoryClustersWebView(
       SidePanelEntryScope& scope);
 

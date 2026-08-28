@@ -416,8 +416,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   }
 
   history_clusters_side_panel_coordinator_ =
-      std::make_unique<HistoryClustersSidePanelCoordinator>(
-          browser, browser->GetProfile());
+      GetUserDataFactory().CreateInstance<HistoryClustersSidePanelCoordinator>(
+          *browser, browser, browser->GetProfile());
 
   if (HistorySidePanelCoordinator::IsSupported()) {
     GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(*browser,

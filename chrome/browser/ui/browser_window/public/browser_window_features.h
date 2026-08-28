@@ -359,11 +359,6 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
-  HistoryClustersSidePanelCoordinator*
-  history_clusters_side_panel_coordinator() {
-    return history_clusters_side_panel_coordinator_.get();
-  }
-
   sessions::LiveTabContext* live_tab_context();
 
   // Returns the LocationBar for this browser window. Currently delegates to

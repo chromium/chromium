@@ -799,7 +799,7 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   }
 
   auto* const history_clusters_side_panel_coordinator =
-      bwi->GetFeatures().history_clusters_side_panel_coordinator();
+      HistoryClustersSidePanelCoordinator::From(bwi);
   if (history_clusters_side_panel_coordinator &&
       history_clusters_side_panel_coordinator->Show(query)) {
     return true;
