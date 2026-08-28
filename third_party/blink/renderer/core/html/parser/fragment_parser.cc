@@ -238,7 +238,7 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
           : kAllowScriptingContent;
 
   const bool should_sanitize =
-      options.sanitizer_init() ||
+      options.WillSanitize() ||
       (config.sanitizer_mode == Sanitizer::Mode::kSafe);
 
   if (should_sanitize &&

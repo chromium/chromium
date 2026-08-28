@@ -76,7 +76,9 @@ class CORE_EXPORT FragmentParserOptions {
       const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options);
 
   TrustMode trust_mode() const { return trust_mode_; }
+  bool IsTrusted() const { return trust_mode_ == TrustMode::kTrusted; }
   RunScripts run_scripts() const { return run_scripts_; }
+  bool WillSanitize() const { return sanitizer_init_ != nullptr; }
   V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets* sanitizer_init() const {
     return sanitizer_init_;
   }

@@ -647,7 +647,7 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
                                   const AtomicString& interface_name,
                                   const AtomicString& property_name,
                                   ExceptionState& exception_state) {
-  if (options.trust_mode() == FragmentParserOptions::TrustMode::kTrusted) {
+  if (options.IsTrusted()) {
     return options;
   }
 
@@ -725,12 +725,6 @@ String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
                                     const AtomicString& interface_name,
                                     const AtomicString& property_name,
                                     ExceptionState& exception_state) {
-  String compliant_string = TrustedTypesCheckForHTML(
-      html, execution_context, interface_name, property_name, exception_state);
-  if (exception_state.HadException()) {
-    return String();
-  }
-
   if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
     auto trusted_options = TrustedTypesCheckForParserOptions(
         resolved_options, /*fail_if_default_policy_is_missing=*/false,
@@ -740,7 +734,23 @@ String TrustedTypesCheckForFragment(const V8UnionStringOrTrustedHTML* html,
     }
     resolved_options = *trusted_options;
   }
-  return compliant_string;
+
+  if (html && html->IsTrustedHTML()) {
+    return html->GetAsTrustedHTML()->toString();
+  }
+
+  const String raw_string = html ? html->GetAsString() : g_empty_string;
+
+  const bool is_sanitized_by_parser =
+      RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled() &&
+      resolved_options.IsTrusted() && resolved_options.WillSanitize();
+
+  if (is_sanitized_by_parser) {
+    return raw_string;
+  }
+
+  return TrustedTypesCheckForHTML(raw_string, execution_context, interface_name,
+                                  property_name, exception_state);
 }
 
 std::tuple<String, FragmentParserOptions> TrustedTypesCheckForLegacyFragment(
@@ -749,24 +759,39 @@ std::tuple<String, FragmentParserOptions> TrustedTypesCheckForLegacyFragment(
     const AtomicString& interface_name,
     const AtomicString& property_name,
     ExceptionState& exception_state) {
-  String compliant_string = TrustedTypesCheckForHTML(
-      html, execution_context, interface_name, property_name, exception_state);
+  FragmentParserOptions resolved_options;
+  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
+    auto trusted_options = TrustedTypesCheckForParserOptions(
+        resolved_options, /*fail_if_default_policy_is_missing=*/false,
+        execution_context, interface_name, property_name, exception_state);
+    if (!trusted_options) {
+      return {String(), FragmentParserOptions()};
+    }
+    resolved_options = *trusted_options;
+  }
+
+  if (html && html->IsTrustedHTML()) {
+    return {html->GetAsTrustedHTML()->toString(), resolved_options};
+  }
+
+  const String raw_string =
+      html ? html->GetAsStringLegacyNullToEmptyString() : g_empty_string;
+
+  const bool is_sanitized_by_parser =
+      RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled() &&
+      resolved_options.IsTrusted() && resolved_options.WillSanitize();
+
+  if (is_sanitized_by_parser) {
+    return {raw_string, resolved_options};
+  }
+
+  String compliant_string =
+      TrustedTypesCheckForHTML(raw_string, execution_context, interface_name,
+                               property_name, exception_state);
   if (exception_state.HadException()) {
     return {String(), FragmentParserOptions()};
   }
-
-  if (!RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
-    return {compliant_string, FragmentParserOptions()};
-  }
-
-  auto trusted_options = TrustedTypesCheckForParserOptions(
-      FragmentParserOptions(), /*fail_if_default_policy_is_missing=*/false,
-      execution_context, interface_name, property_name, exception_state);
-  if (exception_state.HadException()) {
-    return {String(), FragmentParserOptions()};
-  }
-
-  return {compliant_string, trusted_options.value_or(FragmentParserOptions())};
+  return {compliant_string, resolved_options};
 }
 
 std::optional<FragmentParserOptions> TrustedTypesCheckForStreaming(
