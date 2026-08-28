@@ -45,6 +45,7 @@
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
 #include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -263,6 +264,12 @@
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/common/request_header_integrity/chrome_companero.mojom.h"  // nogncheck
+#include "chrome/common/request_header_integrity/chrome_companero_loader.h"  // nogncheck
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/media/chrome_key_systems.h"
 #endif
@@ -418,6 +425,18 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
   chrome_observer_ = std::make_unique<ChromeRenderThreadObserver>();
   web_cache_impl_ = std::make_unique<web_cache::WebCacheImpl>();
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    mojo::PendingRemote<request_header_integrity::mojom::ChromeCompanero>
+        remote;
+    browser_interface_broker_->GetInterface(
+        remote.InitWithNewPipeAndPassReceiver());
+    request_header_integrity::ChromeCompaneroLoader::GetInstance()
+        .SetMojoRemote(std::move(remote));
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* extensions_renderer_client =

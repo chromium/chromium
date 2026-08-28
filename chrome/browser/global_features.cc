@@ -86,6 +86,11 @@
 #include "chrome/browser/on_device_translation/installer_impl.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/browser/request_header_integrity/chrome_companero_host.h"  // nogncheck
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck
+#endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser
@@ -244,6 +249,13 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
         safe_browsing::ApplicationAdvancedProtectionStatusDetector>(
         g_browser_process->profile_manager());
   }
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    chrome_companero_host_ = CreateChromeCompaneroHost();
+  }
+#endif
 }
 
 void GlobalFeatures::Init() {
@@ -291,6 +303,10 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 
   glass_frame_service_.reset();
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  chrome_companero_host_.reset();
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
       DefaultBrowserPromptManager::CloseReason::kDismiss);
@@ -327,6 +343,13 @@ std::unique_ptr<scheduled_restart::ScheduledRestartManager>
 GlobalFeatures::CreateScheduledRestartManager() {
   return std::make_unique<scheduled_restart::ScheduledRestartManager>(
       *UpgradeDetector::GetInstance());
+}
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+std::unique_ptr<request_header_integrity::ChromeCompaneroHost>
+GlobalFeatures::CreateChromeCompaneroHost() {
+  return std::make_unique<request_header_integrity::ChromeCompaneroHost>();
 }
 #endif
 

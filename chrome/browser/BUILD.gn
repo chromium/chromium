@@ -154,6 +154,7 @@ source_set("global_features") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
+    "//chrome/common/request_header_integrity:buildflags",
   ]
 }
 
@@ -3277,7 +3278,10 @@ source_set("browser") {
   }
 
   if (enable_request_header_integrity) {
-    deps += [ "//chrome/common/request_header_integrity" ]
+    deps += [
+      "//chrome/browser/request_header_integrity",
+      "//chrome/common/request_header_integrity",
+    ]
   }
 
   if (enable_service_discovery) {

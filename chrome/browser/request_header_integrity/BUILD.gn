@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
+
+if (enable_request_header_integrity) {
+  source_set("request_header_integrity") {
+    public = [ "chrome_companero_host.h" ]
+    sources = [ "chrome_companero_host.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/common/request_header_integrity:buildflags",
+      "//chrome/common/request_header_integrity:mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+
+    deps = [ "//chrome/common/request_header_integrity" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "chrome_companero_host_unittest.cc" ]
+
+    deps = [
+      ":request_header_integrity",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

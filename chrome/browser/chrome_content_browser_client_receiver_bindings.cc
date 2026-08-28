@@ -26,6 +26,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/metrics/call_stacks/call_stack_profile_collector.h"
@@ -105,6 +106,12 @@
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/request_header_integrity/chrome_companero_host.h"  // nogncheck
+#include "chrome/common/request_header_integrity/chrome_companero.mojom.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -725,4 +732,16 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
   }
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (auto host_receiver =
+          receiver.As<request_header_integrity::mojom::ChromeCompanero>()) {
+    if (auto* features = g_browser_process->GetFeatures()) {
+      if (auto* host = features->chrome_companero_host()) {
+        host->BindReceiver(std::move(host_receiver));
+        return;
+      }
+    }
+  }
+#endif
 }
