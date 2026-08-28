@@ -159,6 +159,7 @@ void BindTrackedElementHandlerRestricted(
       controller->GetAs<CustomizeChromeUI>() ||
       controller->GetAs<PasswordManagerUI>() ||
       controller->GetAs<HistoryUI>() ||
+      controller->GetAs<OmniboxEverywhereUI>() ||
 #if !BUILDFLAG(IS_CHROMEOS)
       controller->GetAs<ProfilePickerUI>() ||
 #endif  // !BUILDFLAG(IS_CHROMEOS)

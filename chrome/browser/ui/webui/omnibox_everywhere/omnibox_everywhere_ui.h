@@ -22,7 +22,12 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+
+namespace user_education {
+class HelpBubbleHandler;
+}
 
 namespace omnibox_everywhere_debug {
 class OmniboxEverywhereDebugPageHandler;
@@ -57,6 +62,7 @@ class OmniboxEverywhereUI
       public searchbox::mojom::PageHandlerFactory,
       public omnibox_everywhere_debug::mojom::PageHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
+      public help_bubble::mojom::HelpBubbleHandlerFactory,
       public ContextualSearchboxHandler::ScreenshareDelegate,
       public ui::SimpleMenuModel::Delegate {
  public:
@@ -105,6 +111,15 @@ class OmniboxEverywhereUI
       mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandler>
           handler) override;
 
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          receiver);
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
+
   ComposeboxEverywhereHandler* composebox_handler() {
     return composebox_handler_.get();
   }
@@ -142,6 +157,8 @@ class OmniboxEverywhereUI
   std::unique_ptr<omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>
       debug_page_handler_;
 
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       shared_session_handle_;
 
@@ -158,6 +175,8 @@ class OmniboxEverywhereUI
       searchbox_page_factory_receiver_{this};
   mojo::Receiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
       debug_page_factory_receiver_{this};
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_handler_factory_receiver_{this};
 
   base::WeakPtrFactory<OmniboxEverywhereUI> weak_factory_{this};
 

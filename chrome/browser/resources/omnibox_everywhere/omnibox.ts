@@ -14,6 +14,7 @@ import {ContextType, recordContextAdditionMethod, recordContextualElementClicked
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
@@ -50,8 +51,8 @@ export interface OmniboxEverywhereOmniboxElement {
 
 // Note: Copied from omnibox_popup_searchbox.ts.
 //       I18nMixinLit may eventually be moved to SearchboxMixin.
-const OmniboxEverywhereOmniboxElementBase =
-    SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement)));
+const OmniboxEverywhereOmniboxElementBase = HelpBubbleMixinLit(
+    SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement))));
 
 export class OmniboxEverywhereOmniboxElement extends
     OmniboxEverywhereOmniboxElementBase implements SearchboxMixinInterface,
@@ -227,6 +228,12 @@ export class OmniboxEverywhereOmniboxElement extends
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.initialInputScrollHeight = this.$.input.scrollHeight;
+    const lensButton =
+        this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
+    if (lensButton) {
+      this.registerHelpBubble(
+          'kOmniboxEverywhereLensButtonElementId', lensButton);
+    }
   }
 
   focusInput() {
@@ -331,6 +338,8 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   protected onLensSearchClick_(e: Event) {
+    this.notifyHelpBubbleAnchorActivated(
+        'kOmniboxEverywhereLensButtonElementId');
     this.isScreenshotMenuOpen = true;
     const anchor = e.currentTarget as HTMLElement;
     const rect = anchor.getBoundingClientRect();

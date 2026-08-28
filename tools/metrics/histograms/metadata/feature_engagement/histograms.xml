@@ -532,6 +532,8 @@ chromium-metrics-reviews@google.com.
       summary="informing user of customizing new tab page theme via NTP
                customization option in the App menu"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
+  <variant name="IPH_OmniboxEverywhereLensPromo"
+      summary="the Lens search feature in Omnibox Everywhere"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
   <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>
   <variant name="IPH_PageSummaryPdfMenu" summary="the analyze pdf menu item"/>

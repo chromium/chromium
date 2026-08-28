@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
@@ -28,8 +27,11 @@ class OmniboxEverywhereFeaturePromoController
   OmniboxEverywhereFeaturePromoController(
       feature_engagement::Tracker* tracker_service,
       UserEducationService* user_education_service,
-      OmniboxEverywhereService* service);
+      base::WeakPtr<OmniboxEverywhereService> service);
   ~OmniboxEverywhereFeaturePromoController() override;
+
+  using user_education::FeaturePromoControllerImpl::MaybeShowPromo;
+  void MaybeShowPromo(user_education::FeaturePromoParams params);
 
  private:
   // FeaturePromoControllerImpl:
@@ -51,7 +53,8 @@ class OmniboxEverywhereFeaturePromoController
   user_education::UserEducationContextPtr GetContextForHelpBubble(
       const ui::TrackedElement* anchor_element) const override;
 
-  const raw_ptr<OmniboxEverywhereService> service_;
+  base::WeakPtr<OmniboxEverywhereService> service_;
+  user_education::UserEducationContextPtr context_;
   base::WeakPtrFactory<OmniboxEverywhereFeaturePromoController> weak_factory_{
       this};
 };

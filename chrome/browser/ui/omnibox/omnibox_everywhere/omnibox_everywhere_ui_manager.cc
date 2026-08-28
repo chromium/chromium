@@ -463,6 +463,13 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   if (web_contents()) {
     web_contents()->Focus();
   }
+
+  if (profile_) {
+    if (auto* service =
+            OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+      service->MaybeShowLensPromo();
+    }
+  }
 }
 
 void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {

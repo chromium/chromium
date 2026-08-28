@@ -64,6 +64,7 @@ class OmniboxEverywhereService : public KeyedService {
   virtual bool IsPopupVisible() const;
   virtual bool IsPopupVisibleForProfile() const;
   Profile* profile() const { return profile_; }
+  virtual void MaybeShowLensPromo();
   virtual void ShowProfilePicker();
   virtual void OnDrivePickerOpened();
   virtual void OnDrivePickerClosed();

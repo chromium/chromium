@@ -708,6 +708,9 @@ should be able to be added at any place in this file.
   <variant name="_NewTabPageThemeCustomization"
       summary="In product help for NewTabPage theme customization feature."/>
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
+  <variant name="_OmniboxEverywhereLensPromo"
+      summary="In product help for the Lens search feature in Omnibox
+               Everywhere."/>
   <variant name="_PageInfo" summary="In product help for opening PageInfo."/>
   <variant name="_PageInfoStoreInfo" summary="For PageInfoStoreInfo feature."/>
   <variant name="_PageSummaryPdfMenu"

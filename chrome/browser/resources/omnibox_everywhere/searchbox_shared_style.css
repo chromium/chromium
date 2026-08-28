@@ -179,3 +179,9 @@
   -webkit-mask-image: url(
     '//resources/cr_components/searchbox/icons/screenshot_region.svg');
 }
+
+help-bubble {
+  -webkit-app-region: no-drag;
+  width: 340px;
+}
+

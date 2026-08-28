@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -39,7 +41,7 @@ OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
   if (tracker_service && user_education_service) {
     feature_promo_controller_ = std::make_unique<
         omnibox_everywhere::OmniboxEverywhereFeaturePromoController>(
-        tracker_service, user_education_service, this);
+        tracker_service, user_education_service, weak_factory_.GetWeakPtr());
     feature_promo_controller_->Init();
   }
 }
@@ -83,6 +85,11 @@ bool OmniboxEverywhereService::AcquireProfileKeepAlive() {
 
 void OmniboxEverywhereService::ReleaseProfileKeepAlive() {
   profile_keep_alive_.reset();
+  if (feature_promo_controller_) {
+    feature_promo_controller_->EndPromo(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
+  }
 }
 
 void OmniboxEverywhereService::Shutdown() {
@@ -109,6 +116,14 @@ bool OmniboxEverywhereService::IsPopupVisibleForProfile() const {
          controller()->ui_manager()->profile() == profile_;
 }
 
+void OmniboxEverywhereService::MaybeShowLensPromo() {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->MaybeShowPromo(
+        user_education::FeaturePromoParams(
+            feature_engagement::kIPHOmniboxEverywhereLensPromoFeature));
+  }
+}
+
 void OmniboxEverywhereService::ShowProfilePicker() {
   if (controller()) {
     controller()->ShowProfilePicker();
@@ -128,6 +143,13 @@ void OmniboxEverywhereService::OnDrivePickerClosed() {
 }
 
 void OmniboxEverywhereService::OnScreensharePickerOpened() {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->NotifyFeatureUsedIfValid(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature);
+    feature_promo_controller_->EndPromo(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
+  }
   if (ui_manager()) {
     ui_manager()->OnScreensharePickerOpened();
   }

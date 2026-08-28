@@ -7497,6 +7497,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Settings
         </message>
       </if>
+      <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_BODY" desc="Body text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere." translateable="false">
+        Ask about what's on your screen
+      </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_ACCESSIBLE_TEXT" desc="Accessible text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere." translateable="false">
+        Ask anything about what's on your screen by sharing your screen.
+      </message>
 
 
       <!-- NTP -->

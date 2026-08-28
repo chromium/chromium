@@ -11,6 +11,7 @@ import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
+
 import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -20,6 +21,7 @@ import {ComposeboxEmbedderMixin, SubmitButtonIconType} from '//resources/cr_comp
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -39,8 +41,11 @@ export interface OmniboxEverywhereComposeboxElement {
   };
 }
 
-export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
-(CrLitElement) {
+const OmniboxEverywhereComposeboxElementBase =
+    HelpBubbleMixinLit(ComposeboxEmbedderMixin(CrLitElement));
+
+export class OmniboxEverywhereComposeboxElement extends
+    OmniboxEverywhereComposeboxElementBase {
   static get is() {
     return 'omnibox-everywhere-composebox';
   }
@@ -93,6 +98,8 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onLensSearchClick_(e: Event) {
+    this.notifyHelpBubbleAnchorActivated(
+        'kOmniboxEverywhereLensButtonElementId');
     this.isScreenshotMenuOpen = true;
     const anchor = e.currentTarget as HTMLElement;
     const rect = anchor.getBoundingClientRect();
@@ -141,6 +148,12 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.focusInput();
+    const lensButton =
+        this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
+    if (lensButton) {
+      this.registerHelpBubble(
+          'kOmniboxEverywhereLensButtonElementId', lensButton);
+    }
   }
 
   override getActiveElement(): Element|null {

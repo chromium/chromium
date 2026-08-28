@@ -431,7 +431,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       help_bubble::mojom::HelpBubbleHandlerFactory, UserEducationInternalsUI,
       ReadingListUI, NewTabPageUI, CustomizeChromeUI, PasswordManagerUI,
       HistoryUI, lens::LensOverlayUntrustedUI, lens::LensSidePanelUntrustedUI,
-      ContextualTasksUI
+      ContextualTasksUI, OmniboxEverywhereUI
 #if !BUILDFLAG(IS_CHROMEOS)
       ,
       ProfilePickerUI

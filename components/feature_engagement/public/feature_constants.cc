@@ -163,6 +163,9 @@ const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime{
 BASE_FEATURE(kIPHLensOverlayTranslateButtonFeature,
              "IPH_LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHOmniboxEverywhereLensPromoFeature,
+             "IPH_OmniboxEverywhereLensPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabAudioMutingFeature,
              "IPH_TabAudioMuting",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -17,10 +17,50 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace omnibox_everywhere {
 
 namespace {
+
+class OmniboxEverywhereUserEducationContext
+    : public user_education::UserEducationContext {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+
+  explicit OmniboxEverywhereUserEducationContext(
+      base::WeakPtr<const OmniboxEverywhereService> service)
+      : service_(std::move(service)) {}
+
+  bool IsValid() const override {
+    return service_ && service_->IsPopupVisibleForProfile();
+  }
+
+  ui::ElementContext GetElementContext() const override {
+    return ui::ElementContext();
+  }
+
+  user_education::AnchorElementFilter GetDefaultElementFilter() const override {
+    return base::BindRepeating(
+        [](const ui::ElementTracker::ElementList& elements)
+            -> ui::TrackedElement* {
+          return elements.empty() ? nullptr : elements.front();
+        });
+  }
+
+  const ui::AcceleratorProvider* GetAcceleratorProvider() const override {
+    return nullptr;
+  }
+
+ protected:
+  ~OmniboxEverywhereUserEducationContext() override = default;
+
+ private:
+  const base::WeakPtr<const OmniboxEverywhereService> service_;
+};
+
+DEFINE_SAFE_CAST_TARGET(OmniboxEverywhereUserEducationContext)
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kOmniboxEverywhereOpenAndActivePrecondition);
@@ -31,11 +71,11 @@ class OmniboxEverywhereOpenAndActivePrecondition
     : public user_education::FeaturePromoPreconditionBase {
  public:
   explicit OmniboxEverywhereOpenAndActivePrecondition(
-      const OmniboxEverywhereService* service)
+      base::WeakPtr<const OmniboxEverywhereService> service)
       : FeaturePromoPreconditionBase(
             kOmniboxEverywhereOpenAndActivePrecondition,
             "Omnibox Everywhere is open and active"),
-        service_(service) {}
+        service_(std::move(service)) {}
   ~OmniboxEverywhereOpenAndActivePrecondition() override = default;
 
   // user_education::FeaturePromoPreconditionBase:
@@ -54,7 +94,7 @@ class OmniboxEverywhereOpenAndActivePrecondition
   }
 
  private:
-  const raw_ptr<const OmniboxEverywhereService> service_;
+  const base::WeakPtr<const OmniboxEverywhereService> service_;
 };
 
 }  // namespace
@@ -63,7 +103,7 @@ OmniboxEverywhereFeaturePromoController::
     OmniboxEverywhereFeaturePromoController(
         feature_engagement::Tracker* tracker_service,
         UserEducationService* user_education_service,
-        OmniboxEverywhereService* service)
+        base::WeakPtr<OmniboxEverywhereService> service)
     : user_education::FeaturePromoControllerImpl(
           tracker_service,
           &user_education_service->feature_promo_registry(),
@@ -72,7 +112,9 @@ OmniboxEverywhereFeaturePromoController::
           &user_education_service->feature_promo_session_policy(),
           &user_education_service->tutorial_service(),
           user_education_service->product_messaging_controller()),
-      service_(service) {
+      service_(std::move(service)),
+      context_(base::MakeRefCounted<OmniboxEverywhereUserEducationContext>(
+          service_)) {
   MaybeRegisterChromeFeaturePromos(
       user_education_service->feature_promo_registry());
   RegisterChromeHelpBubbleFactories(
@@ -138,14 +180,22 @@ OmniboxEverywhereFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
     ui::TrackedElement* anchor_element,
     const ui::AcceleratorProvider* accelerator_provider) const {
+  if (!accelerator_provider) {
+    return std::u16string();
+  }
   return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
       promo_type, accelerator_provider, anchor_element);
+}
+
+void OmniboxEverywhereFeaturePromoController::MaybeShowPromo(
+    user_education::FeaturePromoParams params) {
+  FeaturePromoControllerImpl::MaybeShowPromo(std::move(params), context_);
 }
 
 user_education::UserEducationContextPtr
 OmniboxEverywhereFeaturePromoController::GetContextForHelpBubble(
     const ui::TrackedElement* anchor_element) const {
-  return nullptr;
+  return context_;
 }
 
 }  // namespace omnibox_everywhere
