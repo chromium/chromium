@@ -84,6 +84,11 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
 
   static std::unique_ptr<DocumentPolicy> CopyStateFrom(const DocumentPolicy*);
 
+  // Returns the current policy state as a ParsedDocumentPolicy. Default values
+  // are omitted to preserve its sparse representation, and endpoint mappings
+  // are retained for non-default features.
+  ParsedDocumentPolicy GetParsedPolicy() const;
+
   DocumentPolicy(const DocumentPolicy&) = delete;
   DocumentPolicy& operator=(const DocumentPolicy&) = delete;
 

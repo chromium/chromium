@@ -109,5 +109,38 @@ TEST_F(DocumentPolicyTest, AllEnumFeaturesHaveTokenMappings) {
   }
 }
 
+// GetParsedPolicy() should return only the features whose value differs from
+// the default (defaults are filtered out) and should preserve the endpoint
+// map. This is the extraction used to inherit Document-Policy into
+// local-scheme workers (about:, blob:, data:, filesystem:).
+TEST_F(DocumentPolicyTest, GetParsedPolicyFiltersDefaultsAndKeepsEndpoints) {
+  // Build a policy that sets js-profiling (default false) to true, with an
+  // endpoint group, and explicitly sets force-load-at-top to its default.
+  const auto kFeature = mojom::DocumentPolicyFeature::kJSProfiling;
+  const auto kDefaultFeature = mojom::DocumentPolicyFeature::kForceLoadAtTop;
+  DocumentPolicy::ParsedDocumentPolicy header_policy;
+  header_policy.feature_state[kFeature] = PolicyValue::CreateBool(true);
+  header_policy.endpoint_map[kFeature] = "endpoint-group";
+  header_policy.feature_state[kDefaultFeature] = PolicyValue::CreateBool(false);
+  header_policy.endpoint_map[kDefaultFeature] = "default-endpoint-group";
+
+  std::unique_ptr<DocumentPolicy> policy =
+      DocumentPolicy::CreateWithHeaderPolicy(header_policy);
+
+  DocumentPolicy::ParsedDocumentPolicy parsed = policy->GetParsedPolicy();
+
+  // Only the non-default feature is present; all defaulted features are
+  // filtered out.
+  EXPECT_EQ(parsed.feature_state.size(), 1u);
+  ASSERT_TRUE(parsed.feature_state.contains(kFeature));
+  EXPECT_EQ(parsed.feature_state.at(kFeature), PolicyValue::CreateBool(true));
+  EXPECT_FALSE(parsed.feature_state.contains(kDefaultFeature));
+
+  // Endpoint mappings are retained only for non-default features.
+  EXPECT_EQ(parsed.endpoint_map.size(), 1u);
+  EXPECT_EQ(parsed.endpoint_map.at(kFeature), "endpoint-group");
+  EXPECT_FALSE(parsed.endpoint_map.contains(kDefaultFeature));
+}
+
 }  // namespace
 }  // namespace blink

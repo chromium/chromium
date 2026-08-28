@@ -139,6 +139,11 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   Vector<network::mojom::blink::ContentSecurityPolicyPtr>
       outside_content_security_policies;
 
+  // The creator's document policy. This is populated only for dedicated
+  // workers, which inherit it for local schemes (about:, blob:, data:,
+  // filesystem:). Other worker and worklet types leave it empty.
+  DocumentPolicy::DocumentPolicyBundle creator_document_policy;
+
   // This is used only for classic dedicated workers with off-the-main-thread
   // fetch disabled.
   //

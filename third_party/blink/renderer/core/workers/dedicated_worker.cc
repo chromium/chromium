@@ -590,6 +590,18 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       origin_ ? origin_->IsolatedCopy() : nullptr,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   params->dedicated_worker_start_time = start_time_;
+
+  // Store the creator's document policy for inheritance by local-scheme
+  // workers.
+  const DocumentPolicy* creator_document_policy =
+      execution_context->GetSecurityContext().GetDocumentPolicy();
+  if (creator_document_policy) {
+    params->creator_document_policy.policy =
+        creator_document_policy->GetParsedPolicy();
+  }
+  // TODO(crbug.com/40786013): Inherit report-only Document-Policy once worker
+  // global scopes support Document-Policy violation reporting.
+
   return params;
 }
 

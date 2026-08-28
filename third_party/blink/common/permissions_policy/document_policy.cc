@@ -36,6 +36,24 @@ std::unique_ptr<DocumentPolicy> DocumentPolicy::CopyStateFrom(
   return new_policy;
 }
 
+DocumentPolicy::ParsedDocumentPolicy DocumentPolicy::GetParsedPolicy() const {
+  DocumentPolicyFeatureState feature_state;
+  FeatureEndpointMap endpoint_map;
+  for (const auto& entry : GetDocumentPolicyFeatureInfoMap()) {
+    PolicyValue current_value =
+        internal_feature_state_[static_cast<size_t>(entry.first)];
+    if (current_value != entry.second.default_value) {
+      feature_state.emplace(entry.first, current_value);
+      auto endpoint = endpoint_map_.find(entry.first);
+      if (endpoint != endpoint_map_.end()) {
+        endpoint_map.insert(*endpoint);
+      }
+    }
+  }
+  return ParsedDocumentPolicy{std::move(feature_state),
+                              std::move(endpoint_map)};
+}
+
 namespace {
 
 net::structured_headers::Item PolicyValueToItem(
