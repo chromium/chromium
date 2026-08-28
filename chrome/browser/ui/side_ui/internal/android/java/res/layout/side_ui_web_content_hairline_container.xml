@@ -15,6 +15,7 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/top_web_content_hairline"
         android:src="@drawable/toolbar_hairline"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
