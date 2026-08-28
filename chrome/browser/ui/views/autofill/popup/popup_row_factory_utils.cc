@@ -658,16 +658,6 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
-// Checks if the text of a Label fits in one line.
-// Assumes that a non-empty text has been set on a label before calling this
-// function.
-[[nodiscard]] bool FitsInOneLine(const views::Label& label) {
-  CHECK(!label.GetText().empty());
-  const int line_height = label.GetLineHeight();
-  CHECK(line_height > 0);
-  return label.GetHeightForWidth(kAtMemorySuggestionWidth) == line_height;
-}
-
 std::unique_ptr<PopupRowContentView>
 CreateAtMemorySearchResultPopupRowContentView(
     const Suggestion& suggestion,
@@ -683,7 +673,15 @@ CreateAtMemorySearchResultPopupRowContentView(
   main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   main_text_label->SetMaximumWidth(kAtMemorySuggestionWidth);
 
-  const bool main_label_fits_in_one_line = FitsInOneLine(*main_text_label);
+  // Checks if the text of a label fits in one line. Assumes that non-empty
+  // text has been set on `label` before calling this lambda.
+  const auto fits_in_one_line = [](const views::Label& label) -> bool {
+    CHECK(!label.GetText().empty());
+    const int line_height = label.GetLineHeight();
+    CHECK(line_height > 0);
+    return label.GetHeightForWidth(kAtMemorySuggestionWidth) == line_height;
+  };
+  const bool main_label_fits_in_one_line = fits_in_one_line(*main_text_label);
 
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
