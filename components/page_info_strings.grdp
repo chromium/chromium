@@ -772,6 +772,9 @@
     <message name="IDS_CERT_OID_ML_DSA_87" desc="description of public key algorithm ML-DSA-87">
       ML-DSA-87
     </message>
+    <message name="IDS_CERT_OID_MTC_PROOF" desc="label for certificate signing algorithm for Merkle Tree Certificates. Translator note: this refers to evidence that proves that the certificate is in a Merkle Tree.">
+      Merkle Tree proof
+    </message>
 
     <!-- Extended Key Usage strings shared across platforms -->
     <message name="IDS_CERT_EKU_ANY_EKU" desc="description of X.509 certificate extended key usage value `anyExtendedKeyUsage`. This indicates that the certificate may be used for any purpose.">

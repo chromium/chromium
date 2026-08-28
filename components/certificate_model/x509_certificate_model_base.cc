@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "components/certificate_model/x509_certificate_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
 #include "net/cert/qwac.h"
@@ -243,6 +244,7 @@ std::optional<int> GetCommonOidStringId(bssl::der::Input oid) {
           {bssl::der::Input(kOidAlgMldsa44), IDS_CERT_OID_ML_DSA_44},
           {bssl::der::Input(kOidAlgMldsa65), IDS_CERT_OID_ML_DSA_65},
           {bssl::der::Input(kOidAlgMldsa87), IDS_CERT_OID_ML_DSA_87},
+          {bssl::der::Input(kOidAlgMtcProofDraft), IDS_CERT_OID_MTC_PROOF},
 
           // Extended Key Usage fields:
           {bssl::der::Input(bssl::kAnyEKU), IDS_CERT_EKU_ANY_EKU},
