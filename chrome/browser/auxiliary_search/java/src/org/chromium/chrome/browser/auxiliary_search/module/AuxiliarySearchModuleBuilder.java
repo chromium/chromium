@@ -12,7 +12,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -30,7 +29,6 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
 
     private final Context mContext;
     private final Runnable mOpenSettingsRunnable;
-    private static boolean sShownInThisSession;
 
     public AuxiliarySearchModuleBuilder(Context context, Runnable openSettingsRunnable) {
         mContext = context;
@@ -42,10 +40,6 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
     @Override
     public boolean build(
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!AuxiliarySearchUtils.canShowCard(sShownInThisSession)) {
-            return false;
-        }
-
         AuxiliarySearchModuleCoordinator coordinator =
                 new AuxiliarySearchModuleCoordinator(moduleDelegate, mOpenSettingsRunnable);
         onModuleBuiltCallback.onResult(coordinator);
@@ -54,16 +48,9 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
 
     @Override
     public ViewGroup createView(ViewGroup parentView) {
-        sShownInThisSession = true;
-
-        ViewGroup viewGroup =
-                (ViewGroup)
-                        LayoutInflater.from(mContext)
-                                .inflate(
-                                        R.layout.auxiliary_search_module_layout, parentView, false);
-        AuxiliarySearchUtils.incrementModuleImpressions();
-
-        return viewGroup;
+        return (ViewGroup)
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.auxiliary_search_module_layout, parentView, false);
     }
 
     @Override
@@ -80,15 +67,8 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
     @Override
     public @Nullable InputContext createInputContext() {
         InputContext inputContext = new InputContext();
-        float available = 0;
-        if (isEligible() && AuxiliarySearchUtils.canShowCard(sShownInThisSession)) {
-            available = 1;
-        }
+        float available = isEligible() ? 1 : 0;
         inputContext.addEntry(CARD_AVAILABILITY_INPUT_NAME, ProcessedValue.fromFloat(available));
         return inputContext;
-    }
-
-    static void resetShownInThisSessionForTesting() {
-        sShownInThisSession = false;
     }
 }

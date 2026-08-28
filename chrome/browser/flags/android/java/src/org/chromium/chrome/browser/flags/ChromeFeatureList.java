@@ -1891,8 +1891,6 @@ public abstract class ChromeFeatureList {
                     LOW_END_MEMORY_EXPERIMENT,
                     "LowMemoryDeviceThresholdMB",
                     SysUtils.LOW_MEMORY_DEVICE_THRESHOLD_MB);
-    public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleForceCardShow =
-            newBooleanCachedFeatureParam(ANDROID_APP_INTEGRATION_MODULE, "force_card_shown", false);
 
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleShowThirdPartyCard =
             newBooleanCachedFeatureParam(
@@ -2280,7 +2278,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAnimatedProgressBarFpsCap,
                     sAndroidApbJumpToCompletionNoFade,
                     sAndroidApbJumpToCompletionWithFade,
-                    sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,

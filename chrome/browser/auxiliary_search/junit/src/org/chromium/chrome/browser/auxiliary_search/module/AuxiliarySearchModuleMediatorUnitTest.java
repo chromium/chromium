@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
@@ -46,8 +45,6 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link AuxiliarySearchModuleMediator}. */
@@ -266,10 +263,5 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         verify(mModuleDelegate).onModuleClicked(eq(ModuleType.AUXILIARY_SEARCH));
         verify(mModuleDelegate).removeModule(eq(ModuleType.AUXILIARY_SEARCH));
         histogramWatcher.assertExpected();
-
-        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-        assertTrue(
-                prefManager.readBoolean(
-                        ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, false));
     }
 }

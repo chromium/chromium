@@ -117,14 +117,6 @@ public final class ChromePreferenceKeys {
     public static final String AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND =
             "Chrome.AuxiliarySearch.ConsumerSchemaFound";
 
-    /** The total times that the opt in card was shown to the user. */
-    public static final String AUXILIARY_SEARCH_MODULE_IMPRESSION =
-            "Chrome.AuxiliarySearchModule.Impression";
-
-    /** Whether users have responded to the opt in card. */
-    public static final String AUXILIARY_SEARCH_MODULE_USER_RESPONDED =
-            "Chrome.AuxiliarySearchModule.UserResponded";
-
     public static final String AUTOFILL_THIRD_PARTY_MODE_STATE =
             "Chrome.AutofillThirdPartyMode.State";
 
@@ -1196,8 +1188,6 @@ public final class ChromePreferenceKeys {
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
                 AUTOFILL_THIRD_PARTY_MODE_STATE,
                 AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
-                AUXILIARY_SEARCH_MODULE_USER_RESPONDED,
-                AUXILIARY_SEARCH_MODULE_IMPRESSION,
                 AUXILIARY_SEARCH_IS_SCHEMA_SET,
                 AUXILIARY_SEARCH_SCHEMA_VERSION,
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,

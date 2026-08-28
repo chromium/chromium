@@ -46,10 +46,14 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
+import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -79,12 +83,14 @@ public class TabsSettingsUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private AuxiliarySearchHooks mAuxiliarySearchHooksMock;
 
     @Before
     public void setUp() {
+        HomeModulesRankingHelperJni.setInstanceForTesting(mHomeModulesRankingHelperJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
@@ -278,6 +284,10 @@ public class TabsSettingsUnitTest {
 
         assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
         verify(listener).onConfigChanged(eq(false));
+        verify(mHomeModulesRankingHelperJniMock)
+                .notifyCardInteracted(
+                        eq(mProfileMock),
+                        eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
         AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
@@ -309,6 +319,10 @@ public class TabsSettingsUnitTest {
 
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isChecked());
         verify(listener).onConfigChanged(eq(true));
+        verify(mHomeModulesRankingHelperJniMock)
+                .notifyCardInteracted(
+                        eq(mProfileMock),
+                        eq(HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH)));
         AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 

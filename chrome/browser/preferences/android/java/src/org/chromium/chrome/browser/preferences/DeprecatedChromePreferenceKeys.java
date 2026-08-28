@@ -34,6 +34,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.AssistantVoiceConsentTapsCounter.ConsentTapsCount",
                 "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled",
                 "Chrome.AuxiliarySearch.IsSchemaV2Set",
+                "Chrome.AuxiliarySearchModule.Impression",
+                "Chrome.AuxiliarySearchModule.UserResponded",
                 "Chrome.ContinuousSearch.DismissalCount",
                 "Chrome.Cryptid.LastRenderTimestamp",
                 "Chrome.FindsNotifications.OptInDeclined",

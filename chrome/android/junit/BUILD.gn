@@ -1505,6 +1505,8 @@ if (is_android) {
       "//base:holder_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/actor/android:java",
+      "//chrome/browser/magic_stack/android:java",
+      "//chrome/browser/segmentation_platform:client_util_java",
       "//chrome/browser/settings:search_java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_suggestion:java",

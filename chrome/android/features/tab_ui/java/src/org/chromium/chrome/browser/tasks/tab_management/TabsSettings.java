@@ -26,9 +26,12 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -162,6 +165,9 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 (preference, newValue) -> {
                     boolean enabled = (boolean) newValue;
                     AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(enabled);
+                    HomeModulesRankingHelper.notifyCardInteracted(
+                            getProfile(),
+                            HomeModulesMetricsUtils.getModuleName(ModuleType.AUXILIARY_SEARCH));
                     return true;
                 });
 

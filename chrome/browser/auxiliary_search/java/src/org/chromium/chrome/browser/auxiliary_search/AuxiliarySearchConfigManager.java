@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Handles the sharing Tabs with the system state changes in settings. */
 @NullMarked
@@ -64,11 +61,6 @@ public class AuxiliarySearchConfigManager {
      * @param enabled True is the sharing Tabs with the system is enabled.
      */
     public void notifyShareTabsStateChanged(boolean enabled) {
-        // Saves the user's response here in case the user changed the setting without clicking the
-        // opt-in card on the magic stack.
-        SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-        prefManager.writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, true);
-
         for (ShareTabsWithOsStateListener listener : mShareTabsWithOsStateListeners) {
             listener.onConfigChanged(enabled);
         }
