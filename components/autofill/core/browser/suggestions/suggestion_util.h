@@ -65,6 +65,14 @@ Suggestion CreateUndoSuggestion();
 // addresses...", "Manage payment methods...", etc.).
 bool IsManagementFooterOption(const Suggestion& suggestion);
 
+// Extend the list of suggestions by inserting the new suggestions just
+// before the footer and add a new separator between existing and new
+// suggestions. The position of the footer is determined by the last separator
+// in `suggestions`. Thus, there may be no separators between footer items.
+// TODO(crbug.com/550171676): Improve logic for finding position of footer.
+void InsertBeforeFooter(std::vector<Suggestion>& suggestions,
+                        std::vector<Suggestion> suggestions_to_be_added);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_UTIL_H_

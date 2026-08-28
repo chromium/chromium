@@ -532,9 +532,18 @@ class BrowserAutofillManager : public AutofillManager {
   // Merges suggestions with `FillingProduct::kAddress` with the other
   // suggestions whose products supports merging with address suggestions (see
   // `kSupportedMerges` in `suggestion_generator.h` for more details).
-  std::vector<Suggestion> MergeWithAddressSuggestions(
-      std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map,
+  static std::vector<Suggestion> MergeWithAddressSuggestions(
+      std::map<FillingProduct, std::vector<Suggestion>> suggestions_map,
+      const AutofillField* trigger_field,
       AutofillSuggestionTriggerSource trigger_source);
+
+  // Combines autocomplete suggestions and existing suggestions into a
+  // single list, prioritizing address suggestions and filtering out
+  // autocomplete suggestions that are unlikely to match the field type.
+  static void MergeAutocompleteAndAddressSuggestions(
+      std::vector<Suggestion>& suggestions,
+      std::vector<Suggestion> autocomplete_suggestions,
+      FieldType trigger_field_type);
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (Autofill AI, SingleFieldFiller(s), address
@@ -611,8 +620,8 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Combines identity credential suggestions and existing suggestions into a
   // single list, prioritizing identity credential suggestions first.
-  void MergeIdentityCredentialsAndAddressSuggestions(
-      std::vector<Suggestion>& suggestion,
+  static void MergeIdentityCredentialsAndAddressSuggestions(
+      std::vector<Suggestion>& suggestions,
       std::vector<Suggestion> identity_credential_suggestions);
 
   // Iterate through all the fields in the form to process the log events for

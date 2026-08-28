@@ -233,21 +233,7 @@ void MergeLoyaltyCardsAndAddressSuggestions(
   // There is at least one email, separator and manage addresses suggestion.
   CHECK_GE(email_suggestions.size(), 3u);
 
-  // Find the last separator by searching backwards.
-  auto last_separator_it = std::find_if(
-      email_suggestions.rbegin(), email_suggestions.rend(),
-      [](const Suggestion& s) { return s.type == SuggestionType::kSeparator; });
-  CHECK(last_separator_it != email_suggestions.rend());
-
-  // .base() converts the reverse iterator into a forward iterator that
-  // points after the found separator.
-  auto inserted_cards_it = email_suggestions.insert(
-      last_separator_it.base(), loyalty_card_suggestions.begin(),
-      loyalty_card_suggestions.end());
-
-  // Insert a new separator right after the loyalty cards we just added.
-  email_suggestions.insert(inserted_cards_it + loyalty_card_suggestions.size(),
-                           Suggestion(SuggestionType::kSeparator));
+  InsertBeforeFooter(email_suggestions, std::move(loyalty_card_suggestions));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

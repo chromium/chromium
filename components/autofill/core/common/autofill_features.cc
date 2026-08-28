@@ -876,6 +876,12 @@ BASE_FEATURE_PARAM(int,
                    "autocomplete_label_sensitive_migration_generation",
                    0);
 
+// If enabled, add autocomplete suggestions for email fields to the currently
+// shown address suggestions if they are valid email addresses.
+// TODO(crbug.com/506033768): Remove when launched.
+BASE_FEATURE(kAutofillMergeAddressAndAutocompleteEmailSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.
