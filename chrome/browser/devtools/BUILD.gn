@@ -412,6 +412,7 @@ static_library("devtools") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//components/constrained_window",
       "//components/content_settings/core/common",
       "//components/custom_handlers",

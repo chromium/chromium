@@ -62,6 +62,7 @@ static_library("impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views:simple_web_view_dialog",
+    "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/ui/window_metadata",

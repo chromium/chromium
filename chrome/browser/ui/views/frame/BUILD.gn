@@ -270,3 +270,122 @@ if (is_win) {
     public_deps = [ "//ui/views" ]
   }
 }
+
+source_set("browser_native_widget_factory") {
+  public = [ "browser_native_widget_factory.h" ]
+  sources = [ "browser_native_widget_factory.cc" ]
+  public_deps = [
+    ":browser_native_widget",
+    "//build:buildflag_header_h",
+  ]
+}
+
+source_set("contents_web_view") {
+  public = [ "contents_web_view.h" ]
+  sources = [ "contents_web_view.cc" ]
+  public_deps = [
+    ":web_contents_close_handler_delegate",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:buildflags",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/gfx/geometry",
+    "//ui/views/controls/webview",
+  ]
+  deps = [
+    ":web_contents_close_handler",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:status_bubble",
+    "//components/tabs:public",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//skia:skia_core_public_headers",
+    "//third_party/blink/public/common:headers",
+    "//ui/color:color_headers",
+    "//ui/compositor",
+    "//ui/views",
+  ]
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+    ]
+  }
+}
+
+source_set("multi_contents_drop_target_view") {
+  public = [ "multi_contents_drop_target_view.h" ]
+  sources = [ "multi_contents_drop_target_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/gfx/animation",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("multi_contents_view_drop_target_controller") {
+  public = [ "multi_contents_view_drop_target_controller.h" ]
+  sources = [ "multi_contents_view_drop_target_controller.cc" ]
+  public_deps = [
+    ":multi_contents_drop_target_view",
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
+    "//components/prefs",
+    "//ui/base/interaction",
+    "//ui/views",
+  ]
+  deps = [
+    "//base:i18n",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/views/tabs/dragging",
+    "//chrome/common:constants",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/base/dragdrop:types",
+    "//ui/compositor",
+  ]
+}
+
+source_set("multi_contents_view_delegate") {
+  public = [ "multi_contents_view_delegate.h" ]
+  sources = [ "multi_contents_view_delegate.cc" ]
+  public_deps = [
+    ":multi_contents_drop_target_view",
+    ":multi_contents_view_drop_target_controller",
+    "//base",
+    "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/split_tabs",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base",
+    "//url",
+  ]
+}

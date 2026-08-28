@@ -299,6 +299,7 @@ if (enable_webui_ntp && !is_android) {
       "//chrome/browser/contextual_search",
       "//chrome/browser/signin",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/test_support",

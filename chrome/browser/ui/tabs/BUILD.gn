@@ -824,6 +824,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//chrome/test/user_education:impl",
