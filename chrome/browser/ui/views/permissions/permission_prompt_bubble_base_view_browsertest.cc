@@ -93,6 +93,20 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
     const std::string& actual_name = name.substr(0, name.find("/"));
     AddRequestForContentSetting(actual_name);
     base::RunLoop().RunUntilIdle();
+
+    // In WebUI Toolbar mode, permission chips use WebUIPermissionChip, which
+    // drives expand animations via asynchronous Mojo IPCs instead of native
+    // gfx::Animation. `base::RunLoop().RunUntilIdle()` alone does not wait for
+    // the WebUI IPC callback to arrive. If the chip is still animating,
+    // forcibly snap the chip to expanded and trigger `OnExpandAnimationEnded()`
+    // so the prompt bubble widget is created synchronously before `ShowUi()`
+    // returns.
+    ChipController* chip_controller = GetChipController();
+    if (chip_controller && chip_controller->IsAnimating()) {
+      chip_controller->chip()->ResetAnimation(
+          PermissionChipInterface::AnimationState::kExpanded);
+      chip_controller->OnExpandAnimationEnded();
+    }
   }
 
   GURL GetTestUrl() { return test_url_; }
