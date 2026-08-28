@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "enumerate_shell_extensions_unittest.cc",
     "inspection_results_cache_unittest.cc",
     "module_database_unittest.cc",
+    "module_event_sink_impl_unittest.cc",
     "module_info_unittest.cc",
     "module_info_util_unittest.cc",
     "module_inspector_unittest.cc",

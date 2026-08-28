@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
