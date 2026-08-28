@@ -296,6 +296,7 @@ group("zucchini_fuzzers") {
   testonly = true
   deps = [
     "//components/zucchini/fuzzers:zucchini_disassembler_dex_fuzzer",
+    "//components/zucchini/fuzzers:zucchini_disassembler_elf_fuzzer",
     "//components/zucchini/fuzzers:zucchini_disassembler_win32_fuzzer",
     "//components/zucchini/fuzzers:zucchini_patch_fuzzer",
   ]
