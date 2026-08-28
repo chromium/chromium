@@ -8,7 +8,6 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
@@ -91,8 +90,6 @@ class CORE_EXPORT PaintTimingDetector
   void NotifyBackgroundImageFinished(const StyleFetchedImage*);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
   void NotifyPaintFinished();
-  void NotifyInputEvent(WebInputEvent::Type);
-  void NotifyScroll(mojom::blink::ScrollType);
 
   void DidChangePerformanceTiming();
 
@@ -124,9 +121,6 @@ class CORE_EXPORT PaintTimingDetector
   FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
                            LargestImagePaint_Detached_Frame);
 
-  // Method called to stop recording the Largest Contentful Paint.
-  void OnInputOrScroll();
-
   // Returns the `LocalDOMWindow` associated with the relevant document, or
   // nullptr if the associated frame is detached.
   LocalDOMWindow* DomWindow() const;
@@ -143,9 +137,6 @@ class CORE_EXPORT PaintTimingDetector
   const Member<TextPaintTimingDetector> text_paint_timing_detector_;
   // This member lives forever, to detect LCP entries for soft navigations.
   const Member<ImagePaintTimingDetector> image_paint_timing_detector_;
-
-  // Set when first notified about an input or scroll event.
-  bool did_notify_first_input_or_scroll_ = false;
 
   // Because PaintTimingVisualizer is a TraceSessionObserver, unique_ptr is
   // needed to avoid having a reference back into GCed memory, which is

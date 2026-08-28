@@ -131,12 +131,6 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
   });
 }
 
-void ImagePaintTimingDetector::StopRecordEntries() {
-  // Clear the records queued for presentation callback to ensure no new updates
-  // occur.
-  images_queued_for_paint_time_.clear();
-}
-
 void ImagePaintTimingDetector::AssignPaintTimeToRegisteredQueuedRecords(
     uint32_t last_queued_frame_index,
     const base::TimeTicks& presentation_timestamp,

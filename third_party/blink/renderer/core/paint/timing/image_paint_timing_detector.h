@@ -94,13 +94,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // image is pending.
   void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
 
-  // Clears `images_queued_for_paint_time_` when hard LCP is stopped due to
-  // input.
-  //
-  // TODO(crbug.com/503691215, crbug.com/454082773): This should be removed and
-  // the decision should be left up to individual clients.
-  void StopRecordEntries();
-
   OptionalPaintTimingDetectorCallback<ImageRecord> TakePaintTimingCallback();
 
   // Called when documentElement changes from zero to nonzero opacity. Makes the

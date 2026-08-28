@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
@@ -61,6 +62,23 @@ WindowPerformance* GetPerformanceInstance(LocalFrame* frame) {
     performance = DOMWindowPerformance::performance(*frame->DomWindow());
   }
   return performance;
+}
+
+const char* ScrollTypeToString(mojom::blink::ScrollType scroll_type) {
+  switch (scroll_type) {
+    case mojom::blink::ScrollType::kUser:
+      return "user";
+    case mojom::blink::ScrollType::kProgrammatic:
+      return "programmatic";
+    case mojom::blink::ScrollType::kClamping:
+      return "clamping";
+    case mojom::blink::ScrollType::kCompositor:
+      return "compositor";
+    case mojom::blink::ScrollType::kAnchoring:
+      return "anchoring";
+    case mojom::blink::ScrollType::kScrollStart:
+      return "scrollstart";
+  }
 }
 
 }  // namespace
@@ -781,6 +799,31 @@ void PaintTiming::NotifyPaintFinished() {
   ForEachClient([](PaintTimingClient* client) { client->OnPaintFinished(); });
 
   MarkPaintTimingInternal();
+}
+
+void PaintTiming::NotifyInputEvent(WebInputEvent::Type type) {
+  // A single keyup event should be ignored. It could be caused by user actions
+  // such as refreshing via Ctrl+R.
+  if (type == WebInputEvent::Type::kMouseMove ||
+      type == WebInputEvent::Type::kMouseEnter ||
+      type == WebInputEvent::Type::kMouseLeave ||
+      type == WebInputEvent::Type::kKeyUp ||
+      WebInputEvent::IsPinchGestureEventType(type)) {
+    return;
+  }
+  OnInputOrScroll();
+}
+
+void PaintTiming::NotifyScroll(mojom::blink::ScrollType scroll_type) {
+  // TODO(crbug.com/330709851): Remove once we're sure scroll restoration is
+  // handled properly for soft navs.
+  TRACE_EVENT("loading", "PaintTiming::NotifyScroll", "type",
+              ScrollTypeToString(scroll_type));
+  if (scroll_type != mojom::blink::ScrollType::kUser &&
+      scroll_type != mojom::blink::ScrollType::kCompositor) {
+    return;
+  }
+  OnInputOrScroll();
 }
 
 void PaintTiming::OnInputOrScroll() {

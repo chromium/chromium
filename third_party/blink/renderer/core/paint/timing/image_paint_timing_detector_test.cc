@@ -82,14 +82,14 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
   }
 
   ImageRecord* LargestImage() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->LargestContentfulPaintCalculatorForTest()
         ->LargestPaintedOrPendingImageForTest();
   }
 
   ImageRecord* LargestPaintedImage() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->LargestContentfulPaintCalculatorForTest()
         ->LargestPaintedImageForTest();
@@ -133,7 +133,7 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
   }
 
   base::TimeTicks LargestPaintTime() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->LargestContentfulPaintCalculatorForTest()
         ->LatestLcpDetails()
@@ -141,7 +141,7 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
   }
 
   uint64_t LargestPaintSize() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->LargestContentfulPaintCalculatorForTest()
         ->LatestLcpDetails()
@@ -149,7 +149,7 @@ class ImagePaintTimingDetectorTestBase : public PaintTimingTestBase {
   }
 
   bool HasLargestIgnoredImage() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->HasLargestIgnoredImageForTest();
   }
@@ -919,8 +919,7 @@ TEST_P(ImagePaintTimingDetectorTest, DeactivateAfterUserInput) {
   SimulateScroll();
   SetImageContent("target", 5, 5);
   SimulateRenderingAndPresentationTime();
-  EXPECT_FALSE(
-      PaintTiming::From(GetDocument()).GetLargestContentfulPaintManager());
+  EXPECT_FALSE(GetPaintTiming().GetLargestContentfulPaintManager());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
@@ -932,8 +931,7 @@ TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
   SimulateKeyUp();
   SetImageContent("target", 5, 5);
   SimulateRenderingAndPresentationTime();
-  EXPECT_TRUE(
-      PaintTiming::From(GetDocument()).GetLargestContentfulPaintManager());
+  EXPECT_TRUE(GetPaintTiming().GetLargestContentfulPaintManager());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, NullTimeNoCrash) {
@@ -1159,18 +1157,18 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
   EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
   EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
 
-  PaintTiming& paint_timing = PaintTiming::From(GetDocument());
   // FCP and first image paint should not be marked, since this feature is tied
   // to hard LCP.
   //
   // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
   // check the paint time instead of presentation time.
   base::TimeTicks fcp_timestamp =
-      paint_timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+      GetPaintTiming()
+          .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
   EXPECT_TRUE(fcp_timestamp.is_null());
 
   base::TimeTicks image_timestamp =
-      paint_timing.FirstImagePaintRenderedButNotPresentedAsMonotonicTime();
+      GetPaintTiming().FirstImagePaintRenderedButNotPresentedAsMonotonicTime();
   EXPECT_TRUE(image_timestamp.is_null());
 }
 

@@ -66,7 +66,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/text_overflow_post_layout_snapshot.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -654,8 +654,7 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   }
 
   if (offset_changed && GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
-    PaintTimingDetector::From(GetLayoutBox()->GetDocument())
-        .NotifyScroll(scroll_type);
+    PaintTiming::From(GetLayoutBox()->GetDocument()).NotifyScroll(scroll_type);
     GetLayoutBox()->GetFrameView()->GetLayoutShiftTracker().NotifyScroll(
         scroll_type, delta);
     // FrameSelection caches visual selection information which needs to be

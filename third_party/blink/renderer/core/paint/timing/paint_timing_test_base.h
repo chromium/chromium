@@ -142,6 +142,10 @@ class PaintTimingTestBase : public RenderingTest {
 
   PaintTiming& GetPaintTiming() { return PaintTiming::From(GetDocument()); }
 
+  PaintTiming& GetChildFramePaintTiming() {
+    return PaintTiming::From(ChildDocument());
+  }
+
   PaintTimingDetector& GetPaintTimingDetector() {
     return PaintTimingDetector::From(GetDocument());
   }
@@ -158,15 +162,15 @@ class PaintTimingTestBase : public RenderingTest {
 
   void SimulateScroll(
       mojom::blink::ScrollType type = mojom::blink::ScrollType::kUser) {
-    GetPaintTimingDetector().NotifyScroll(type);
+    GetPaintTiming().NotifyScroll(type);
   }
 
   void SimulateKeyDown() {
-    GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kKeyDown);
+    GetPaintTiming().NotifyInputEvent(WebInputEvent::Type::kKeyDown);
   }
 
   void SimulateKeyUp() {
-    GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kKeyUp);
+    GetPaintTiming().NotifyInputEvent(WebInputEvent::Type::kKeyUp);
   }
 
   // Sets the image content the given `id`, which must be an `ImageElement` or

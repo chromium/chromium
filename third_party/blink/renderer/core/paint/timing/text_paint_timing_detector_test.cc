@@ -35,7 +35,7 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
     // Cache the main frame LCP calculator so it can still be accessed after
     // input events.
     main_frame_lcp_calculator_ =
-        PaintTiming::From(GetDocument())
+        GetPaintTiming()
             .GetLargestContentfulPaintManager()
             ->LargestContentfulPaintCalculatorForTest();
   }
@@ -70,13 +70,14 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
   }
 
   bool HasLargestIgnoredText() {
-    return PaintTiming::From(GetDocument())
+    return GetPaintTiming()
         .GetLargestContentfulPaintManager()
         ->HasLargestIgnoredTextForTest();
   }
 
   void SimulateInputEvent() {
-    GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kMouseDown);
+    GetPaintTimingDetector().GetPaintTiming().NotifyInputEvent(
+        WebInputEvent::Type::kMouseDown);
   }
 
   base::TimeTicks LargestPaintTime() {
@@ -121,7 +122,7 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
 
   TextRecord* ChildFrameTextRecordOfLargestTextPaint() {
     LargestContentfulPaintCalculator* calculator =
-        PaintTiming::From(ChildDocument())
+        GetChildFramePaintTiming()
             .GetLargestContentfulPaintManager()
             ->LargestContentfulPaintCalculatorForTest();
     return calculator->LargestTextForTest();
@@ -142,8 +143,7 @@ class TextPaintTimingDetectorTest : public PaintTimingTestBase {
   }
 
   bool IsRecordingLargestTextPaint() {
-    return !!PaintTiming::From(GetDocument())
-                 .GetLargestContentfulPaintManager();
+    return !!GetPaintTiming().GetLargestContentfulPaintManager();
   }
 
   Persistent<LargestContentfulPaintCalculator> main_frame_lcp_calculator_;
@@ -801,7 +801,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
   // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
   // check the paint time instead of presentation time.
   base::TimeTicks fcp_timestamp =
-      PaintTiming::From(GetDocument())
+      GetPaintTiming()
           .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
   EXPECT_TRUE(fcp_timestamp.is_null());
 }
@@ -880,8 +880,7 @@ TEST_F(TextPaintTimingDetectorTest, NodeModifiedWhileRecordPending) {
 
   // LCP ignores repainted elements, so ensure we can still get the timing for
   // the repaint.
-  PaintTiming::From(GetDocument())
-      .AddClient(MakeGarbageCollected<TestClient>());
+  GetPaintTiming().AddClient(MakeGarbageCollected<TestClient>());
 
   // Simulate painting the text node. This should queue a presentation callback
   // for this frame.

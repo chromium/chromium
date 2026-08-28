@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -103,6 +104,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
   void NotifyPaintFinished();
+  void NotifyInputEvent(WebInputEvent::Type);
+  void NotifyScroll(mojom::blink::ScrollType);
 
   // The getters below return monotonically-increasing seconds, or zero if the
   // given paint event has not yet occurred. See the comments for
@@ -195,8 +198,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void OnRestoredFromBackForwardCache();
 
   void MarkPaintTiming();
-
-  void OnInputOrScroll();
 
   void Trace(Visitor*) const override;
 
@@ -295,6 +296,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
           compute_painted_text_callback,
       const base::TimeTicks& raw_presentation_timestamp,
       const DOMPaintTimingInfo&);
+
+  void OnInputOrScroll();
 
   Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;
