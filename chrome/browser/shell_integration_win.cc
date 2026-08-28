@@ -28,8 +28,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -51,7 +49,6 @@
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/win/registry_watcher.h"
-#include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -232,88 +229,11 @@ DefaultWebClientState GetDefaultWebClientStateFromShellUtilDefaultState(
   NOTREACHED();
 }
 
-// A recorder of user actions in the Windows Settings app.
-class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
- public:
-  // Creates the recorder and the monitor that drives it. |continuation| will be
-  // run once the monitor's initialization completes (regardless of success or
-  // failure).
-  explicit DefaultBrowserActionRecorder(base::OnceClosure continuation)
-      : continuation_(std::move(continuation)), settings_app_monitor_(this) {}
-
-  DefaultBrowserActionRecorder(const DefaultBrowserActionRecorder&) = delete;
-  DefaultBrowserActionRecorder& operator=(const DefaultBrowserActionRecorder&) =
-      delete;
-
- private:
-  // win::SettingsAppMonitor::Delegate:
-  void OnInitialized(HRESULT result) override {
-    // UMA indicates that this succeeds > 99.98% of the time.
-    if (SUCCEEDED(result)) {
-      base::RecordAction(
-          base::UserMetricsAction("SettingsAppMonitor.Initialized"));
-    }
-    std::move(continuation_).Run();
-  }
-
-  void OnAppFocused() override {
-    base::RecordAction(
-        base::UserMetricsAction("SettingsAppMonitor.AppFocused"));
-  }
-
-  void OnChooserInvoked() override {
-    base::RecordAction(
-        base::UserMetricsAction("SettingsAppMonitor.ChooserInvoked"));
-  }
-
-  void OnBrowserChosen(const std::wstring& browser_name) override {
-    if (browser_name == InstallUtil::GetDisplayName()) {
-      base::RecordAction(
-          base::UserMetricsAction("SettingsAppMonitor.ChromeBrowserChosen"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("SettingsAppMonitor.OtherBrowserChosen"));
-    }
-  }
-
-  void OnPromoFocused() override {
-    base::RecordAction(
-        base::UserMetricsAction("SettingsAppMonitor.PromoFocused"));
-  }
-
-  void OnPromoChoiceMade(bool accept_promo) override {
-    if (accept_promo) {
-      base::RecordAction(
-          base::UserMetricsAction("SettingsAppMonitor.CheckItOut"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("SettingsAppMonitor.SwitchAnyway"));
-    }
-  }
-
-  // A closure to be run once initialization completes.
-  base::OnceClosure continuation_;
-
-  // Monitors user interaction with the Windows Settings app for the sake of
-  // reporting user actions.
-  SettingsAppMonitor settings_app_monitor_;
-};
-
-// A function bound up in a callback with a DefaultBrowserActionRecorder and
-// a closure to keep the former alive until the time comes to run the latter.
-void OnSettingsAppFinished(
-    std::unique_ptr<DefaultBrowserActionRecorder> recorder,
-    base::OnceClosure on_finished_callback) {
-  recorder.reset();
-  std::move(on_finished_callback).Run();
-}
-
 // There is no way to make sure the user is done with the system settings, but a
-// signal that the interaction is finished is needed for UMA. A timer of 2
-// minutes is used as a substitute. The registry keys for the scheme
-// association with an app are also monitored to signal the end of the
-// interaction early when it is clear that the user made a choice (e.g. http
-// and https for default browser).
+// signal that the interaction is finished is needed. A timer of 2 minutes is
+// used as a substitute. The registry keys for the scheme association with an
+// app are also monitored to signal the end of the interaction early when it is
+// clear that the user made a choice (e.g. http and https for default browser).
 //
 // This helper class manages both the timer and the registry watchers and makes
 // sure the callback for the end of the settings interaction is only run once.
@@ -363,12 +283,7 @@ class OpenSystemSettingsHelper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Make sure all the registry watchers have fired.
     if (--registry_watcher_count_ == 0) {
-      // Give the ui automation events time to get processed, before finishing
-      // the system settings interaction.
-      timer_.Start(
-          FROM_HERE, base::Seconds(5),
-          base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
-                         weak_ptr_factory_.GetWeakPtr()));
+      ConcludeInteraction();
     }
   }
 
@@ -749,20 +664,11 @@ void SetAsDefaultBrowserUsingSystemSettings(
     NOTREACHED() << "Error getting app exe path";
   }
 
-  // Create an action recorder that will open the settings app once it has
-  // initialized.
-  std::unique_ptr<DefaultBrowserActionRecorder> recorder =
-          std::make_unique<DefaultBrowserActionRecorder>(base::BindOnce(
-          base::IgnoreResult(&ShellUtil::ShowMakeChromeDefaultSystemUI),
-          chrome_exe));
-
-  // The helper manages its own lifetime. Bind the action recorder
-  // into the finished callback to keep it alive throughout the
-  // interaction.
+  // The helper manages its own lifetime.
   static constexpr std::wstring_view kSchemes[] = {L"http", L"https"};
-  OpenSystemSettingsHelper::Begin(
-      kSchemes, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
-                               std::move(on_finished_callback)));
+  OpenSystemSettingsHelper::Begin(kSchemes, std::move(on_finished_callback));
+
+  ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe);
 }
 
 void SetAsDefaultClientForSchemeUsingSystemSettings(

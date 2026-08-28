@@ -9,7 +9,6 @@ assert(is_win)
 source_set("win") {
   public = [
     "app_icon.h",
-    "automation_controller.h",
     "browser_util.h",
     "chrome_elf_init.h",
     "chrome_select_file_dialog_factory.h",
@@ -27,9 +26,7 @@ source_set("win") {
     "jumplist_updater.h",
     "parental_controls.h",
     "remove_app_compat_entries.h",
-    "settings_app_monitor.h",
     "taskbar_manager.h",
-    "ui_automation_util.h",
     "uninstallation_via_os_settings.h",
     "util_win_service.h",
   ]
@@ -69,7 +66,6 @@ source_set("jumplist") {
 source_set("impl") {
   sources = [
     "app_icon.cc",
-    "automation_controller.cc",
     "browser_util.cc",
     "chrome_elf_init.cc",
     "chrome_select_file_dialog_factory.cc",
@@ -88,10 +84,8 @@ source_set("impl") {
     "jumplist_updater.cc",
     "parental_controls.cc",
     "remove_app_compat_entries.cc",
-    "settings_app_monitor.cc",
     "taskbar_manager.cc",
     "titlebar_config.cc",
-    "ui_automation_util.cc",
     "uninstallation_via_os_settings.cc",
     "util_win_service.cc",
   ]

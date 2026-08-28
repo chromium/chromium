@@ -17,8 +17,8 @@ as an attribute to the <action> tag.
 
 Please run extract_actions.py to add new actions and pretty-print this file.
 
-If a user action is not being used any more, put an <obsolete> tag under
-the <action> tag with necessary explanation. Don't delete things in this file.
+If a user action is not being used any more, it can now be deleted instead of
+marked osolete..
 
 Please send CLs to chromium-metrics-reviews@google.com rather than to specific
 individuals. These CLs will be automatically reassigned to a reviewer within
@@ -45319,64 +45319,6 @@ should be able to be added at any place in this file.
   <description>
     The user selected the &quot;Only Show on NTP&quot; option for the bookmark
     bar visibility setting in the Settings appearance page.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.AppFocused">
-  <owner>grt@chromium.org</owner>
-  <description>The Windows Settings app became focused.</description>
-</action>
-
-<action name="SettingsAppMonitor.CheckItOut">
-  <owner>grt@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <description>
-    The user clicked the &quot;Check it out&quot; button in the Edge promo.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.ChooserInvoked">
-  <owner>grt@chromium.org</owner>
-  <description>
-    The user opened the Windows Settings app's browser chooser.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.ChromeBrowserChosen">
-  <owner>grt@chromium.org</owner>
-  <description>
-    The user selected Chrome from the Windows Settings app's browser chooser.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.Initialized">
-  <owner>grt@chromium.org</owner>
-  <description>
-    The Windows Settings app monitor initialized successfully. This action can
-    be used as an anchor representing the start of a user's interactions with
-    the app regardless of what UX in Chrome initiated the flow.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.OtherBrowserChosen">
-  <owner>grt@chromium.org</owner>
-  <description>
-    The user selected a different browser from the Windows Settings app's
-    browser chooser.
-  </description>
-</action>
-
-<action name="SettingsAppMonitor.PromoFocused">
-  <owner>grt@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <description>The Edge promo became focused.</description>
-</action>
-
-<action name="SettingsAppMonitor.SwitchAnyway">
-  <owner>grt@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <description>
-    The user clicked the &quot;Switch Anyway&quot; button in the Edge promo.
   </description>
 </action>
 
