@@ -22,6 +22,7 @@
 #include "components/skills/internal/skill_parser.rs.h"
 #include "components/skills/public/skills_prefs.h"
 #include "crypto/hash.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -214,6 +215,7 @@ void EnterpriseSkillsProvider::FetchSkillsFromUrls() {
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = url;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    resource_request->redirect_mode = network::mojom::RedirectMode::kError;
 
     auto url_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
@@ -303,7 +305,8 @@ void EnterpriseSkillsProvider::OnURLLoadComplete(
     // ParseAndValidateSkill.
   } else {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << kLogPrefix << kDownloadFailedError << expected_hash;
+        << kLogPrefix << kDownloadFailedError << expected_hash
+        << " (Error: " << net::ErrorToShortString(source->NetError()) << ").";
   }
 
   std::erase_if(url_loaders_, [source](const auto& loader) {

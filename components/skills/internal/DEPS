@@ -13,3 +13,9 @@ include_rules = [
   "+services/network/network_service.h",
   "+mojo/public/cpp/bindings",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+net/url_request/redirect_info.h",
+  ],
+}

@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -364,6 +365,8 @@ TEST_F(EnterpriseSkillsProviderFetchTest, ValidateResourceRequest) {
   EXPECT_EQ("GET", captured_request.method);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             captured_request.credentials_mode);
+  EXPECT_EQ(network::mojom::RedirectMode::kError,
+            captured_request.redirect_mode);
 }
 
 TEST_F(EnterpriseSkillsProviderFetchTest, NetworkFailure) {
@@ -554,6 +557,34 @@ TEST_F(EnterpriseSkillsProviderFetchTest, DownloadFailureLogsToPolicyLogger) {
   EXPECT_EQ(0u, provider_->GetSkills().size());
   EXPECT_TRUE(
       HasPolicyLogMessage(base::StrCat({kLogPrefix, kDownloadFailedError})));
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest, RedirectFailureFailsDownload) {
+  policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  std::string expected_hash =
+      base::HexEncode(crypto::hash::Sha256(kFetchYamlFrontmatter));
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+
+  SetPolicyPref({{kTestUrl1, expected_hash}});
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://login.corp.google.com/auth");
+  redirect_info.status_code = net::HTTP_FOUND;
+  network::TestURLLoaderFactory::Redirects redirects;
+  redirects.emplace_back(redirect_info, network::mojom::URLResponseHead::New());
+
+  test_url_loader_factory_.AddResponse(
+      GURL(kTestUrl1), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_UNEXPECTED),
+      std::move(redirects));
+
+  run_loop.Run();
+  EXPECT_EQ(0u, provider_->GetSkills().size());
+  EXPECT_TRUE(HasPolicyLogMessage(
+      base::StrCat({kLogPrefix, kDownloadFailedError, expected_hash,
+                    " (Error: ERR_UNEXPECTED)"})));
 }
 
 TEST_F(EnterpriseSkillsProviderFetchTest,
