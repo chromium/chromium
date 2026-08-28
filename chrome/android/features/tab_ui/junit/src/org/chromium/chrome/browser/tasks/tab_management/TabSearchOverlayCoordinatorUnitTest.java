@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -942,6 +943,34 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Hide overlay and verify exclusion rects are cleared.
         mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
         assertTrue(mPanelContainer.getSystemGestureExclusionRects().isEmpty());
+    }
+
+    @Test
+    public void testPanelTopMargin_FullscreenVsDesktopWindowing() {
+        // In fullscreen / split screen (not in desktop windowing), top margin is offset by
+        // (tabStripHeight - reservedTopPadding - hairlineGap).
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
+        showOverlay();
+
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        var params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
+        int expectedMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding)
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_search_overlay_hairline_gap);
+        assertEquals(expectedMargin, params.topMargin);
+
+        // In desktop windowing mode, top margin is 0.
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        showOverlay();
+
+        params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
+        assertEquals(0, params.topMargin);
     }
 
     @Test

@@ -412,6 +412,7 @@ public class TabSearchOverlayCoordinator
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, TabSearchOverlayViewBinder::bind);
+        updatePanelTopMargin();
     }
 
     /**
@@ -648,8 +649,7 @@ public class TabSearchOverlayCoordinator
             mPopupWindow.showAtLocation(decorView, Gravity.START | Gravity.TOP, 0, 0);
         }
 
-        // Ensure that transient properties (like empty state visibility) are reset to their
-        // default states before showing the search UI.
+        updatePanelTopMargin();
         mModel.set(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE, false);
         mModel.set(TabSearchOverlayProperties.VISIBLE, true);
         mBackPressStateSupplier.set(true);
@@ -695,6 +695,41 @@ public class TabSearchOverlayCoordinator
     /** Returns whether the tab search overlay is currently visible. */
     public boolean isVisible() {
         return mModel.get(TabSearchOverlayProperties.VISIBLE);
+    }
+
+    /**
+     * Updates the top margin of the panel view based on desktop windowing state.
+     *
+     * <p>In desktop windowing mode (freeform window), the panel starts at the top of the window
+     * (topMargin = 0) to align with the caption bar / tab strip. When not in desktop windowing
+     * (e.g. fullscreen or split screen mode), the panel is offset below the OS application window
+     * toolbar / status bar trigger zone so that the close button remains accessible and clickable.
+     */
+    private void updatePanelTopMargin() {
+        boolean isInDesktopWindow =
+                mDesktopWindowStateManager != null
+                        && mDesktopWindowStateManager.getAppHeaderState() != null
+                        && mDesktopWindowStateManager.getAppHeaderState().isInDesktopWindow();
+        if (mPanelContainer != null) {
+            View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+            if (panelView != null
+                    && panelView.getLayoutParams() instanceof LinearLayout.LayoutParams params) {
+                var res = mPanelContainer.getContext().getResources();
+                int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
+                int reservedTopPadding =
+                        res.getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding);
+                int hairlineGap =
+                        res.getDimensionPixelSize(R.dimen.tab_search_overlay_hairline_gap);
+                int topMargin =
+                        !isInDesktopWindow
+                                ? (tabStripHeight - reservedTopPadding - hairlineGap)
+                                : 0;
+                if (params.topMargin != topMargin) {
+                    params.topMargin = topMargin;
+                    panelView.setLayoutParams(params);
+                }
+            }
+        }
     }
 
     /**
