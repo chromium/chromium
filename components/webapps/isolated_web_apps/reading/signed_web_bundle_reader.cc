@@ -436,7 +436,6 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK_EQ(state_, State::kInitialized);
 
     if (error) {
       std::move(callback).Run(base::unexpected(
