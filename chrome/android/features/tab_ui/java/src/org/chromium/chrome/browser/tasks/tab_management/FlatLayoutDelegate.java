@@ -89,6 +89,8 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
         // external sources to the ModelList.
     }
 
+    // TabGroupObserver implementation.
+
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         // No update needed. Flat layout does not display tab group headers.

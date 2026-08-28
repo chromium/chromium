@@ -232,6 +232,8 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         }
     }
 
+    // TabGroupObserver implementation.
+
     @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);

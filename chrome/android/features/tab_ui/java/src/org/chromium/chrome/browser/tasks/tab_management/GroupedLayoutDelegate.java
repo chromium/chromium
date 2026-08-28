@@ -324,6 +324,8 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         super.onTabClose(tab);
     }
 
+    // TabGroupObserver implementation.
+
     @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForTabGroupId(tabGroupId);
@@ -344,6 +346,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
      */
     @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+        if (tabModelNewIndex == tabModelOldIndex) return;
         if (mThumbnailProvider == null) {
             return;
         }

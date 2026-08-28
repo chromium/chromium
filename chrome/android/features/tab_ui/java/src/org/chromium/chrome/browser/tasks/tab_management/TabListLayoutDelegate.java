@@ -299,6 +299,8 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
         mModelList.moveItem(currentUiIndex, targetUiIndex);
     }
 
+    // TabGroupObserver implementation.
+
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         mMediator.updateTabGroupTitle(tabGroupId);
@@ -306,6 +308,8 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
     @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+        if (tabModelNewIndex == tabModelOldIndex) return;
+
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
 
         // Maintain correct order.
