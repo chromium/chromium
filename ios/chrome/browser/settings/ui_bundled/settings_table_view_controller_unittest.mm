@@ -645,6 +645,20 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
        sectionIdentifier:SettingsSectionIdentifierInfo]);
 }
 
+// Verifies that if kDomainLevelSitePermissions is enabled, then there is a
+// Site Permissions Settings item in the Info section.
+TEST_F(SettingsTableViewControllerTest, HasSitePermissionsMenuItem) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kDomainLevelSitePermissions);
+
+  CreateController();
+  CheckController();
+
+  EXPECT_TRUE([controller().tableViewModel
+      hasItemForItemType:SettingsItemTypeSitePermissions
+       sectionIdentifier:SettingsSectionIdentifierInfo]);
+}
+
 // Verifies that Backend Promo Debug Tools item is in the Debug section when
 // enabled.
 TEST_F(SettingsTableViewControllerTest, HasBackendPromoDebugToolsItem) {

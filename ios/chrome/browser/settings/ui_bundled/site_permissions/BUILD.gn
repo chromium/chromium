@@ -1,0 +1,79 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("site_permissions") {
+  sources = [
+    "site_permissions_consumer.h",
+    "site_permissions_coordinator.h",
+    "site_permissions_coordinator.mm",
+    "site_permissions_coordinator_delegate.h",
+    "site_permissions_mediator.h",
+    "site_permissions_mediator.mm",
+    "site_permissions_site_item.h",
+    "site_permissions_site_item.mm",
+    "site_permissions_table_view_controller.h",
+    "site_permissions_table_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/url_formatter",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "site_permissions_constants.h",
+    "site_permissions_constants.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "site_permissions_coordinator_unittest.mm",
+    "site_permissions_mediator_unittest.mm",
+    "site_permissions_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":site_permissions",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+}

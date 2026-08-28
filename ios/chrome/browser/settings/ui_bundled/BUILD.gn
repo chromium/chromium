@@ -196,6 +196,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/settings/ui_bundled/safety_check",
     "//ios/chrome/browser/settings/ui_bundled/safety_check:constants",
     "//ios/chrome/browser/settings/ui_bundled/safety_check:ui",
+    "//ios/chrome/browser/settings/ui_bundled/site_permissions",
+    "//ios/chrome/browser/settings/ui_bundled/site_permissions:constants",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/settings/ui_bundled/tabs",
     "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs",

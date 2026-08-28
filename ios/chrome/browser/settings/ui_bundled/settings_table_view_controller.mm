@@ -117,6 +117,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/site_permissions/site_permissions_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/site_permissions/site_permissions_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/voice_search_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -277,6 +279,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     SafariDataImportUIHandler,
     SafetyCheckCoordinatorDelegate,
     SearchEngineObserving,
+    SitePermissionsCoordinatorDelegate,
     SyncObserverModelBridge,
     TabsSettingsCoordinatorDelegate> {
   // The browser where the settings are being displayed.
@@ -393,6 +396,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   // Downloads settings coordinator.
   DownloadsSettingsCoordinator* _downloadsSettingsCoordinator;
+
+  // Site permissions coordinator.
+  SitePermissionsCoordinator* _sitePermissionsCoordinator;
 }
 
 // The item related to the switch for the show feed settings.
@@ -674,6 +680,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
       toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   [model addItem:[self contentSettingsDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    [model addItem:[self sitePermissionsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  }
   if (shouldShowDownloadsSettings) {
     [model addItem:[self downloadsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
@@ -1180,6 +1190,16 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           accessibilityIdentifier:kSettingsContentSettingsCellId];
 }
 
+- (TableViewItem*)sitePermissionsDetailItem {
+  // TODO(crbug.com/553098545): Use localized string.
+  return [self detailItemWithType:SettingsItemTypeSitePermissions
+                             text:@"Site Permissions"
+                       detailText:nil
+                           symbol:SettingsRootSymbol(SymbolGearshape2)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:kSettingsSitePermissionsCellId];
+}
+
 - (TableViewItem*)downloadsSettingsDetailItem {
   return [self detailItemWithType:SettingsItemTypeDownloadsSettings
                              text:l10n_util::GetNSString(
@@ -1544,6 +1564,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     case SettingsItemTypeContentSettings:
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
       [self showContentSettings];
+      break;
+    case SettingsItemTypeSitePermissions:
+      base::RecordAction(base::UserMetricsAction("Settings.SitePermissions"));
+      [self showSitePermissionsSettings];
       break;
     case SettingsItemTypeDownloadsSettings:
       base::RecordAction(base::UserMetricsAction("Settings.DownloadsSettings"));
@@ -2435,6 +2459,22 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   [_downloadsSettingsCoordinator start];
 }
 
+- (void)showSitePermissionsSettings {
+  if (_sitePermissionsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  // Stop the coordinator before restarting it, if it exists.
+  [_sitePermissionsCoordinator stop];
+
+  _sitePermissionsCoordinator = [[SitePermissionsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _sitePermissionsCoordinator.delegate = self;
+  [_sitePermissionsCoordinator start];
+}
+
 // Records that the user has reached the impression limit for the enhanced safe
 // browsing inline promo.
 - (void)maybeRecordEnhancedSafeBrowsingImpressionLimitReached {
@@ -2810,6 +2850,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
+
+  [_sitePermissionsCoordinator stop];
+  _sitePermissionsCoordinator = nil;
 
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];
@@ -3235,6 +3278,14 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     (DownloadsSettingsCoordinator*)coordinator {
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
+}
+
+#pragma mark - SitePermissionsCoordinatorDelegate
+
+- (void)sitePermissionsCoordinatorWasRemoved:
+    (SitePermissionsCoordinator*)coordinator {
+  [_sitePermissionsCoordinator stop];
+  _sitePermissionsCoordinator = nil;
 }
 
 #pragma mark - EnhancedSafeBrowsingInlinePromoDelegate

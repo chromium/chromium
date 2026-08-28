@@ -47,6 +47,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypePrivacy,
   SettingsItemTypeLanguageSettings,
   SettingsItemTypeContentSettings,
+  SettingsItemTypeSitePermissions,
   SettingsItemTypeDownloadsSettings,
   SettingsItemTypeSafariDataImport,
   SettingsItemTypeBandwidth,
@@ -249,5 +250,8 @@ extern NSString* const kSettingsDetectUnitsCellId;
 
 // The accessibility identifier of the default browser passive promo cell.
 extern NSString* const kSettingsDefaultBrowserPassiveCellId;
+
+// The accessibility identifier of the site permissions cell.
+extern NSString* const kSettingsSitePermissionsCellId;
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

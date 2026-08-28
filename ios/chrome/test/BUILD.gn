@@ -588,6 +588,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/settings/ui_bundled/privacy/incognito:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/safety_check:unit_tests",
+    "//ios/chrome/browser/settings/ui_bundled/site_permissions:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/sync:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/utils:unit_tests",
     "//ios/chrome/browser/share_kit/model:unit_tests",
