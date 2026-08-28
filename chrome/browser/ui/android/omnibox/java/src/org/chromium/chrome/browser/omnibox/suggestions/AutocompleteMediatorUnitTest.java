@@ -80,7 +80,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLay
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
@@ -2858,14 +2858,14 @@ public class AutocompleteMediatorUnitTest {
         input.setUserText("");
         mMediator.onInputChanged();
         assertEquals(
-                Mode.WRAPPING_WITH_SENTINEL,
+                TraversalMode.WRAPPING_WITH_SENTINEL,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
         // Prefixed -- use WRAPPING_WITH_SENTINEL mode on mobile.
         input.setUserText("test");
         mMediator.onInputChanged();
         assertEquals(
-                Mode.WRAPPING_WITH_SENTINEL,
+                TraversalMode.WRAPPING_WITH_SENTINEL,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
 
@@ -2882,20 +2882,21 @@ public class AutocompleteMediatorUnitTest {
         input.setUserText("");
         mMediator.onInputChanged();
         assertEquals(
-                Mode.SENTINEL_THEN_WRAPPING,
+                TraversalMode.SENTINEL_THEN_WRAPPING,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onInputChanged();
         assertEquals(
-                Mode.WRAPPING_WITH_SENTINEL,
+                TraversalMode.WRAPPING_WITH_SENTINEL,
                 mListModel.get(SuggestionListProperties.SELECTION_MODE));
 
         // Prefixed -- use WRAPPING mode on desktop.
         input.setUserText("test");
         input.setRequestType(AutocompleteRequestType.SEARCH);
         mMediator.onInputChanged();
-        assertEquals(Mode.WRAPPING, mListModel.get(SuggestionListProperties.SELECTION_MODE));
+        assertEquals(
+                TraversalMode.WRAPPING, mListModel.get(SuggestionListProperties.SELECTION_MODE));
     }
 
     @Test

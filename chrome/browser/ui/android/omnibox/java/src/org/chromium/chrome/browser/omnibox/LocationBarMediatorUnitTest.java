@@ -111,7 +111,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxAnimator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SiteSearchActivationSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -641,17 +641,17 @@ public class LocationBarMediatorUnitTest {
     public void testDisplayStateChanged_updatesSelectionMode() {
         LocationBarSelectionController selectionController =
                 mMediator.getSelectionControllerForTesting();
-        assertEquals(Mode.SATURATING, selectionController.getSelectionModeForTesting());
+        assertEquals(TraversalMode.SATURATING, selectionController.getSelectionModeForTesting());
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         mMediator.beginInput(input);
-        assertEquals(Mode.SATURATING, selectionController.getSelectionModeForTesting());
+        assertEquals(TraversalMode.SATURATING, selectionController.getSelectionModeForTesting());
 
         input.setDisplayState(DisplayState.SUGGESTIONS);
-        assertEquals(Mode.WRAPPING, selectionController.getSelectionModeForTesting());
+        assertEquals(TraversalMode.WRAPPING, selectionController.getSelectionModeForTesting());
 
         input.setDisplayState(DisplayState.DRAFTING);
-        assertEquals(Mode.SATURATING, selectionController.getSelectionModeForTesting());
+        assertEquals(TraversalMode.SATURATING, selectionController.getSelectionModeForTesting());
     }
 
     @Test

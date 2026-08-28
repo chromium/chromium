@@ -14,7 +14,7 @@ class AttachmentsSelectionController extends SelectionController {
     private final FuseboxAttachmentModelList mModelList;
 
     public AttachmentsSelectionController(FuseboxAttachmentModelList modelList) {
-        super(Mode.SATURATING_WITH_SENTINEL);
+        super(TraversalMode.SATURATING_WITH_SENTINEL);
         mModelList = modelList;
     }
 

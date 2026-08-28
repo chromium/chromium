@@ -33,6 +33,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -80,7 +81,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private @Px int mBaseBottomPadding;
     private @Px int mBaseTopPadding;
     private final HeaderDecoration mHeaderDecoration;
-    private @SelectionController.Mode int mSelectionMode;
+    private @TraversalMode int mSelectionMode;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -331,7 +332,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mLayoutScrollListener = suggestionLayoutScrollListener;
             setLayoutManager(mLayoutScrollListener);
 
-            mSelectionMode = SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+            mSelectionMode = TraversalMode.WRAPPING_WITH_SENTINEL;
             mSelectionController =
                     new RecyclerViewSelectionController(mLayoutScrollListener, mSelectionMode);
             addOnChildAttachStateChangeListener(mSelectionController);
@@ -476,7 +477,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param mode The selection mode to use.
      */
-    public void setSelectionMode(@SelectionController.Mode int mode) {
+    public void setSelectionMode(@TraversalMode int mode) {
         mSelectionMode = mode;
         mSelectionController.setSelectionMode(mSelectionMode);
         mSelectionController.reset();

@@ -15,7 +15,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.base.KeyNavigationUtil;
 
@@ -42,7 +42,7 @@ public class ActionChipsView extends RecyclerView {
 
         mSelectionController =
                 new RecyclerViewSelectionController(
-                        layoutManager, SelectionController.Mode.SATURATING_WITH_SENTINEL);
+                        layoutManager, TraversalMode.SATURATING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         setMinimumHeight(

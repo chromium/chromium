@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -26,8 +27,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
      */
     WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED = new WritableBooleanPropertyKey();
 
-    WritableIntDefPropertyKey<SelectionController.Mode> SELECTION_MODE =
-            new WritableIntDefPropertyKey<>(SelectionController.Mode.SATURATING);
+    WritableIntDefPropertyKey<TraversalMode> SELECTION_MODE =
+            new WritableIntDefPropertyKey<>(TraversalMode.SATURATING);
 
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 

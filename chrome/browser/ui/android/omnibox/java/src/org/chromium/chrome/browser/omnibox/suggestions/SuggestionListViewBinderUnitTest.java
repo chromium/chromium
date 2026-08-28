@@ -34,7 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -212,11 +212,12 @@ public class SuggestionListViewBinderUnitTest {
 
     @Test
     public void selectionMode() {
-        mListModel.set(SuggestionListProperties.SELECTION_MODE, Mode.WRAPPING);
-        verify(mDropdown).setSelectionMode(Mode.WRAPPING);
+        mListModel.set(SuggestionListProperties.SELECTION_MODE, TraversalMode.WRAPPING);
+        verify(mDropdown).setSelectionMode(TraversalMode.WRAPPING);
 
-        mListModel.set(SuggestionListProperties.SELECTION_MODE, Mode.WRAPPING_WITH_SENTINEL);
-        verify(mDropdown).setSelectionMode(Mode.WRAPPING_WITH_SENTINEL);
+        mListModel.set(
+                SuggestionListProperties.SELECTION_MODE, TraversalMode.WRAPPING_WITH_SENTINEL);
+        verify(mDropdown).setSelectionMode(TraversalMode.WRAPPING_WITH_SENTINEL);
     }
 
     @Test

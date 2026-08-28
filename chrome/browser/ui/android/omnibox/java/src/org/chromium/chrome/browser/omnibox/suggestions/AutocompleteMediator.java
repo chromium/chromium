@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactory;
@@ -1144,15 +1145,15 @@ class AutocompleteMediator
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         boolean isUnconventional = !mAutocompleteInput.isConventionalRequestType();
         boolean hasDesktopExperience = OmniboxCapabilities.hasDesktopExperience(mContext);
-        @SelectionController.Mode int selectionMode;
+        @TraversalMode int selectionMode;
         if (!hasDesktopExperience || isUnconventional) {
-            selectionMode = SelectionController.Mode.WRAPPING_WITH_SENTINEL;
+            selectionMode = TraversalMode.WRAPPING_WITH_SENTINEL;
         } else if (isInZeroPrefixContext) {
             // In desktop experiences, we use SENTINEL_THEN_WRAPPING to match the behavior of the
             // desktop browser.
-            selectionMode = SelectionController.Mode.SENTINEL_THEN_WRAPPING;
+            selectionMode = TraversalMode.SENTINEL_THEN_WRAPPING;
         } else {
-            selectionMode = SelectionController.Mode.WRAPPING;
+            selectionMode = TraversalMode.WRAPPING;
         }
         mListPropertyModel.set(SuggestionListProperties.SELECTION_MODE, selectionMode);
         mListPropertyModel.set(SuggestionListProperties.RESET_SELECTION, null);

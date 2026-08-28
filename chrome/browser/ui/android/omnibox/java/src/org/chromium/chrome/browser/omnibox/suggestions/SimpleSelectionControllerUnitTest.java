@@ -18,7 +18,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 
 /** Robolectric unit tests for {@link SimpleSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,7 +43,7 @@ public class SimpleSelectionControllerUnitTest {
     @Test
     public void setItemCount() {
         SimpleSelectionController c =
-                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
+                new SimpleSelectionController(mListener, MAX_POSITION, TraversalMode.SATURATING);
         verifyPositionSet(c, 0);
 
         // Grow list of items

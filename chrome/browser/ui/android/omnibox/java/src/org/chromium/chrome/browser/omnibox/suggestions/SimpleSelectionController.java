@@ -31,7 +31,7 @@ public class SimpleSelectionController extends SelectionController {
      * @param mode Selection mode that defines how the controller will behave
      */
     public SimpleSelectionController(
-            OnSelectionChangedListener listener, int itemCount, @Mode int mode) {
+            OnSelectionChangedListener listener, int itemCount, @TraversalMode int mode) {
         super(mode);
 
         assert itemCount < Integer.MAX_VALUE;

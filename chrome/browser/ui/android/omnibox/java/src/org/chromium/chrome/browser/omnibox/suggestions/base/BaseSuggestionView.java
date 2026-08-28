@@ -24,6 +24,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.ActivatableSuggestionView;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -101,9 +102,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
 
         mActionButtonsHighlighter =
                 new SimpleSelectionController(
-                        this::highlightActionButton,
-                        0,
-                        SimpleSelectionController.Mode.SATURATING_WITH_SENTINEL);
+                        this::highlightActionButton, 0, TraversalMode.SATURATING_WITH_SENTINEL);
 
         mActionButtonTouchListener =
                 new View.OnTouchListener() {

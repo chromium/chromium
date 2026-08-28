@@ -17,7 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.ActivatableSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.TraversalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -50,7 +50,7 @@ public class BaseCarouselSuggestionView extends RecyclerView {
 
         mSelectionController =
                 new RecyclerViewSelectionController(
-                        layoutManager, SelectionController.Mode.SATURATING_WITH_SENTINEL);
+                        layoutManager, TraversalMode.SATURATING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         if (adapter != null) {
