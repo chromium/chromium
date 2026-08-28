@@ -44,7 +44,10 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -52,6 +55,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -180,6 +184,8 @@ const int kCtrlOrCmdMask = ui::EF_COMMAND_DOWN;
 const int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
 #endif
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
+
 }  // namespace
 
 class OmniboxViewTest : public InProcessBrowserTest {
@@ -205,10 +211,19 @@ class OmniboxViewTest : public InProcessBrowserTest {
                                            signin::ConsentLevel::kSignin);
     identity_test_env()->SetRefreshTokenForPrimaryAccount();
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+    if (features::IsWebUILocationBarEnabled()) {
+      webui_toolbar_wc_util_ = WebContentsInteractionTestUtil::ForNonTabWebView(
+          ToolbarButtonProvider::From(browser())
+              ->GetWebUIToolbarViewForTesting()
+              ->GetWebViewForTesting(),
+          kWebUIToolbarId);
+    }
   }
 
   void TearDownOnMainThread() override {
     mock_contextual_tasks_service_ = nullptr;
+    webui_toolbar_wc_util_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -257,6 +272,53 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
   omnibox::OmniboxPopupCloser* GetOmniboxPopupCloser() {
     return omnibox::OmniboxPopupCloser::From(browser());
+  }
+
+  void WaitTillPopupOpen() {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return GetOmniboxController()->IsPopupOpen(); }));
+
+    // With WebUILocationBar, we also need the WebUI part to realize it's
+    // open; sadly it seems to get some difficulty getting the mojo message
+    // about it received when the test is blasting it with keypresses
+    // simultaneously to popup trying to startup; so this resorts to
+    // waiting for it explicitly.
+    if (webui_toolbar_wc_util_) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        WebContentsInteractionTestUtil::DeepQuery location_bar(
+            {"toolbar-app", "location-bar"});
+        return webui_toolbar_wc_util_
+            ->EvaluateAt(location_bar,
+                         "(el) => el.classList.contains('popup-open')")
+            .GetBool();
+      }));
+    }
+  }
+
+  void WaitTillKeywordMode() {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return GetOmniboxEditModel()->keyword_state() == KeywordState::kKeyword;
+    }));
+
+    if (webui_toolbar_wc_util_) {
+      // For WebUILocationBar, wait for it to show the selected keyword chip.
+      // This is actually masking over a real bug risk --- both the browser and
+      // typing are trying to write to the omnibox here, and the scheme used to
+      // resolve races can only let one win, but we basically want both to win
+      // --- the keyword prefix should be removed and characters appended.
+      // Fortunately, users don't quite type as fast
+      // as ui_test_utils::SendKeyPressSync.
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        WebContentsInteractionTestUtil::DeepQuery location_bar(
+            {"toolbar-app", "location-bar"});
+        return webui_toolbar_wc_util_
+            ->EvaluateAt(
+                location_bar,
+                "(el) => el.shadowRoot.querySelector('selected-keyword') "
+                "!== null")
+            .GetBool();
+      }));
+    }
   }
 
   static void SendKeyForBrowser(const BrowserWindowInterface* browser,
@@ -477,6 +539,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
   // Non-owning pointer.
   raw_ptr<TestLocationBarModel> test_location_bar_model_ = nullptr;
+
+  // If the WebUI location bar is enabled, this is used to communicate with it.
+  std::unique_ptr<WebContentsInteractionTestUtil> webui_toolbar_wc_util_;
 };
 
 // Test if ctrl-* accelerators are workable in omnibox.
@@ -1683,11 +1748,14 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
-  EXPECT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), kSiteSearchPolicyKeyword);
 
   // Trigger keyword mode.
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), kSiteSearchPolicyKeyword);
 
@@ -1696,12 +1764,13 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSiteSearchPolicyTextURL);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSiteSearchPolicyTextURL;
+  }));
 }
 
 // Verifies that keyword search works when `SiteSearchSettings` policy defines
@@ -1734,8 +1803,13 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest, FeaturedPolicyKeyword) {
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), u"");
 
+  // Popup must be open, or else Tab won't trigger the keyword, but just
+  // traverse focus.
+  WaitTillPopupOpen();
+
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(),
             kSiteSearchPolicyKeywordWithAtPrefix);
@@ -1745,12 +1819,13 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest, FeaturedPolicyKeyword) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSiteSearchPolicyTextURL);  // ...?q=ABC
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSiteSearchPolicyTextURL;
+  }));  // ...?q=ABC
 }
 
 // Verifies that featured search engine is shown with starter pack on "@" state
@@ -1780,8 +1855,10 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, /*modifiers=*/0));
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  WaitTillKeywordMode();
   EXPECT_EQ(GetOmniboxEditModel()->keyword(),
             kSiteSearchPolicyKeywordWithAtPrefix);
 
@@ -1790,12 +1867,13 @@ IN_PROC_BROWSER_TEST_P(SiteSearchPolicyOmniboxViewTest,
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSiteSearchPolicyTextURL);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSiteSearchPolicyTextURL;
+  }));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
