@@ -389,7 +389,7 @@ export const ComposeboxEmbedderMixin =
               ComposeboxProxyImpl.getInstance().observeSmartTabSharingActive(
                   (active: boolean) => {
                     this.smartTabSharingActive = active;
-                    if (!active) {
+                    if (this.smartTabSharingVisible && !active) {
                       this.addedTabsIds = new Map();
                       this.resetRestoredTabs();
                     }

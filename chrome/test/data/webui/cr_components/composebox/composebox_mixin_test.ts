@@ -2249,6 +2249,69 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'observeSmartTabSharingActive clears addedTabsIds and resets restored' +
+          ' tabs when smartTabSharingVisible is true and active becomes false',
+      async () => {
+        const dummyToken = {
+          high: 1n,
+          low: 1n,
+        } as unknown as UnguessableToken;
+        const tab = {
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'about:blank?10',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = true;
+        element.addedTabsIds = new Map([[10, dummyToken]]);
+        element.aimThreadRestoredTabs = [tab];
+
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(false);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(element.smartTabSharingActive);
+        assertEquals(0, element.addedTabsIds.size);
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+      });
+
+  test(
+      'observeSmartTabSharingActive preserves addedTabsIds and restored tabs' +
+          ' when smartTabSharingVisible is false and active becomes false',
+      async () => {
+        const dummyToken = {
+          high: 1n,
+          low: 1n,
+        } as unknown as UnguessableToken;
+        const tab = {
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'about:blank?10',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        element.smartTabSharingVisible = false;
+        element.smartTabSharingActive = true;
+        element.addedTabsIds = new Map([[10, dummyToken]]);
+        element.aimThreadRestoredTabs = [tab];
+
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(false);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(element.smartTabSharingActive);
+        assertEquals(1, element.addedTabsIds.size);
+        assertTrue(element.addedTabsIds.has(10));
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+      });
+
+  test(
       'resetSession resets submitting, input, tool, and models', async () => {
         element.submitting = true;
         element.input = 'previous query';
