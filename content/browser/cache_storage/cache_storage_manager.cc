@@ -174,7 +174,7 @@ void ValidateAndAddBucketFromPath(
     storage_key = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(GURL(index.origin())));
   }
-  DCHECK(!storage_key.origin().GetURL().is_empty());
+  CHECK(!storage_key.origin().GetURL().is_empty(), base::NotFatalUntil::M158);
 
   storage::BucketLocator bucket_locator{};
 
@@ -319,10 +319,10 @@ scoped_refptr<CacheStorageManager> CacheStorageManager::Create(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host) {
-  DCHECK(cache_task_runner);
-  DCHECK(scheduler_task_runner);
-  DCHECK(quota_manager_proxy);
-  DCHECK(blob_storage_context);
+  CHECK(cache_task_runner, base::NotFatalUntil::M158);
+  CHECK(scheduler_task_runner, base::NotFatalUntil::M158);
+  CHECK(quota_manager_proxy, base::NotFatalUntil::M158);
+  CHECK(blob_storage_context, base::NotFatalUntil::M158);
 
   return base::WrapRefCounted(new CacheStorageManager(
       profile_path, std::move(cache_task_runner),
@@ -453,11 +453,11 @@ void CacheStorageManager::CacheStorageUnreferenced(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cache_storage);
+  CHECK(cache_storage, base::NotFatalUntil::M158);
   cache_storage->AssertUnreferenced();
   auto it = cache_storage_map_.find({bucket_locator, owner});
   CHECK(it != cache_storage_map_.end());
-  DCHECK(it->second.get() == cache_storage);
+  CHECK(it->second.get() == cache_storage, base::NotFatalUntil::M158);
 
   // Currently we don't do anything when a CacheStorage instance becomes
   // unreferenced.  In the future we will deallocate some or all of the
@@ -753,10 +753,10 @@ CacheStorageManager::CacheStorageManager(
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       blob_storage_context_(std::move(blob_storage_context)),
       cache_storage_dispatcher_host_(std::move(cache_storage_dispatcher_host)) {
-  DCHECK(cache_task_runner_);
-  DCHECK(scheduler_task_runner_);
-  DCHECK(quota_manager_proxy_);
-  DCHECK(blob_storage_context_);
+  CHECK(cache_task_runner_, base::NotFatalUntil::M158);
+  CHECK(scheduler_task_runner_, base::NotFatalUntil::M158);
+  CHECK(quota_manager_proxy_, base::NotFatalUntil::M158);
+  CHECK(blob_storage_context_, base::NotFatalUntil::M158);
 }
 
 base::FilePath CacheStorageManager::ConstructBucketPath(

@@ -36,11 +36,11 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
     mojo::PendingRemote<blink::mojom::Blob> blob_remote,
     uint64_t blob_size,
     EntryAndBoolCallback callback) {
-  DCHECK(entry);
-  DCHECK_LE(0, disk_cache_body_index);
-  DCHECK(blob_remote);
-  DCHECK(!consumer_handle_.is_valid());
-  DCHECK(!pending_read_);
+  CHECK(entry, base::NotFatalUntil::M158);
+  CHECK_LE(0, disk_cache_body_index, base::NotFatalUntil::M158);
+  CHECK(blob_remote, base::NotFatalUntil::M158);
+  CHECK(!consumer_handle_.is_valid(), base::NotFatalUntil::M158);
+  CHECK(!pending_read_, base::NotFatalUntil::M158);
 
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
@@ -111,7 +111,7 @@ void CacheStorageBlobToDiskCache::RunCallback(bool success) {
 void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
   // Get the handle_ from a previous read operation if we have one.
   if (pending_read_) {
-    DCHECK(pending_read_->IsComplete());
+    CHECK(pending_read_->IsComplete(), base::NotFatalUntil::M158);
     consumer_handle_ = pending_read_->ReleaseHandle();
     pending_read_ = nullptr;
   }

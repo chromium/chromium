@@ -119,7 +119,7 @@ blink::mojom::MatchResponsePtr EagerlyReadResponseBody(
   // Clear the main body blob entry.  There should still be a |side_data_blob|
   // value for reading code cache, however.
   response->blob = nullptr;
-  DCHECK(response->side_data_blob);
+  CHECK(response->side_data_blob, base::NotFatalUntil::M158);
 
   return blink::mojom::MatchResponse::NewEagerResponse(
       blink::mojom::EagerResponse::New(std::move(response),
@@ -204,7 +204,7 @@ class CacheStorageDispatcherHost::CacheImpl
         document_isolation_policy_(document_isolation_policy),
         dip_reporter_(std::move(dip_reporter)),
         owner_(owner) {
-    DCHECK(host_);
+    CHECK(host_, base::NotFatalUntil::M158);
   }
 
   CacheImpl(const CacheImpl&) = delete;
@@ -537,15 +537,17 @@ class CacheStorageDispatcherHost::CacheImpl
                       perfetto::Flow::Global(trace_id), "status",
                       CacheStorageTracedValue(error->value));
           if (operation_type == blink::mojom::OperationType::kDelete) {
-            DCHECK_EQ(operation_count, 1);
+            CHECK_EQ(operation_count, 1, base::NotFatalUntil::M158);
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Browser.DeleteOne", elapsed);
           } else if (operation_count > 1) {
-            DCHECK_EQ(operation_type, blink::mojom::OperationType::kPut);
+            CHECK_EQ(operation_type, blink::mojom::OperationType::kPut,
+                     base::NotFatalUntil::M158);
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Browser.PutMany",
                                      elapsed);
           } else {
-            DCHECK_EQ(operation_type, blink::mojom::OperationType::kPut);
+            CHECK_EQ(operation_type, blink::mojom::OperationType::kPut,
+                     base::NotFatalUntil::M158);
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Browser.PutOne",
                                      elapsed);
           }
@@ -839,7 +841,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
             std::move(callback).Run(base::unexpected(error));
             return;
           }
-          DCHECK(self->bucket_.has_value());
+          CHECK(self->bucket_.has_value(), base::NotFatalUntil::M158);
 
           TRACE_EVENT(
               "CacheStorage",
@@ -940,7 +942,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
             std::move(callback).Run(base::unexpected(error));
             return;
           }
-          DCHECK(self->bucket_.has_value());
+          CHECK(self->bucket_.has_value(), base::NotFatalUntil::M158);
 
           mojo::PendingAssociatedRemote<blink::mojom::CacheStorageCache>
               pending_remote;
@@ -1014,7 +1016,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   void GetOrCreateCacheStorage(
       base::OnceCallback<void(content::CacheStorage*)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(host_);
+    CHECK(host_, base::NotFatalUntil::M158);
     if (!bucket_) {
       std::move(callback).Run(nullptr);
       return;
@@ -1095,7 +1097,7 @@ void CacheStorageDispatcherHost::AddReceiver(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bucket.has_value()) {
-    DCHECK_EQ(bucket->storage_key, storage_key);
+    CHECK_EQ(bucket->storage_key, storage_key, base::NotFatalUntil::M158);
     if (WasNotifiedOfBucketDataDeletion(bucket.value())) {
       // The list of deleted buckets gets added to each time
       // `CacheStorageManager::DeleteBucketData()` is called, but it's not

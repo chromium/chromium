@@ -213,7 +213,8 @@ BtmRedirectContext::BtmRedirectContext(
 BtmRedirectContext::~BtmRedirectContext() = default;
 
 void BtmRedirectContext::AppendClientRedirect(BtmRedirectPtr client_redirect) {
-  DCHECK_EQ(client_redirect->redirect_type, BtmRedirectType::kClient);
+  CHECK_EQ(client_redirect->redirect_type, BtmRedirectType::kClient,
+           base::NotFatalUntil::M158);
   redirectors_.insert(client_redirect->site);
   redirects_.push_back(std::move(client_redirect));
   MaybeTrimAndHandlePartialRedirectChain();
@@ -222,7 +223,8 @@ void BtmRedirectContext::AppendClientRedirect(BtmRedirectPtr client_redirect) {
 void BtmRedirectContext::AppendServerRedirects(
     std::vector<BtmRedirectPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
-    DCHECK_EQ(redirect->redirect_type, BtmRedirectType::kServer);
+    CHECK_EQ(redirect->redirect_type, BtmRedirectType::kServer,
+             base::NotFatalUntil::M158);
     redirectors_.insert(redirect->site);
     redirects_.push_back(std::move(redirect));
   }
@@ -235,7 +237,7 @@ void BtmRedirectContext::MaybeTrimAndHandlePartialRedirectChain() {
     return;
   }
 
-  DCHECK_GE(redirects_.size(), trim_count);
+  CHECK_GE(redirects_.size(), trim_count, base::NotFatalUntil::M158);
 
   // Use an empty `final_url`. This processes the redirect as different from the
   // final URL, which allows recording in the BTM database.

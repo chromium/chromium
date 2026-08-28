@@ -1905,7 +1905,8 @@ void CacheStorageCache::PutDidCreateEntry(
           network::mojom::FetchResponseType::kOpaque &&
       put_context->response->response_type !=
           network::mojom::FetchResponseType::kOpaqueRedirect) {
-    DCHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT);
+    CHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT,
+             base::NotFatalUntil::M158);
   }
   response_metadata->set_status_code(put_context->response->status_code);
   response_metadata->set_status_text(put_context->response->status_text);
@@ -1930,8 +1931,10 @@ void CacheStorageCache::PutDidCreateEntry(
   for (ResponseHeaderMap::const_iterator it =
            put_context->response->headers.begin();
        it != put_context->response->headers.end(); ++it) {
-    DCHECK_EQ(std::string::npos, it->first.find('\0'));
-    DCHECK_EQ(std::string::npos, it->second.find('\0'));
+    CHECK_EQ(std::string::npos, it->first.find('\0'),
+             base::NotFatalUntil::M158);
+    CHECK_EQ(std::string::npos, it->second.find('\0'),
+             base::NotFatalUntil::M158);
     proto::CacheHeaderMap* header_map = response_metadata->add_headers();
     header_map->set_name(it->first);
     header_map->set_value(it->second);
@@ -1939,8 +1942,9 @@ void CacheStorageCache::PutDidCreateEntry(
   for (const auto& header : put_context->response->cors_exposed_header_names)
     response_metadata->add_cors_exposed_header_names(header);
 
-  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
-         put_context->response->padding);
+  CHECK(!ShouldPadResourceSize(*put_context->response) ||
+            put_context->response->padding,
+        base::NotFatalUntil::M158);
   response_metadata->set_padding(put_context->response->padding);
 
   int64_t side_data_padding = 0;
@@ -1981,8 +1985,9 @@ void CacheStorageCache::PutDidWriteHeaders(
     return;
   }
 
-  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
-         (padding + side_data_padding));
+  CHECK(!ShouldPadResourceSize(*put_context->response) ||
+            (padding + side_data_padding),
+        base::NotFatalUntil::M158);
   cache_padding_ += padding + side_data_padding;
 
   PutWriteBlobToCache(std::move(put_context), INDEX_RESPONSE_BODY);
@@ -1991,8 +1996,9 @@ void CacheStorageCache::PutDidWriteHeaders(
 void CacheStorageCache::PutWriteBlobToCache(
     std::unique_ptr<PutContext> put_context,
     int disk_cache_body_index) {
-  DCHECK(disk_cache_body_index == INDEX_RESPONSE_BODY ||
-         disk_cache_body_index == INDEX_SIDE_DATA);
+  CHECK(disk_cache_body_index == INDEX_RESPONSE_BODY ||
+            disk_cache_body_index == INDEX_SIDE_DATA,
+        base::NotFatalUntil::M158);
 
   TRACE_EVENT("CacheStorage", "CacheStorageCache::PutWriteBlobToCache",
               perfetto::Flow::Global(put_context->trace_id));
@@ -2072,7 +2078,7 @@ void CacheStorageCache::PutDidWriteBlobToCache(
     int disk_cache_body_index,
     ScopedWritableEntry entry,
     bool success) {
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M158);
   TRACE_EVENT("CacheStorage", "CacheStorageCache::PutDidWriteBlobToCache",
               perfetto::Flow::Global(put_context->trace_id));
 
@@ -2088,7 +2094,7 @@ void CacheStorageCache::PutWriteBlobToCacheComplete(
     int disk_cache_body_index,
     ScopedWritableEntry entry,
     int rv) {
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M158);
 
   put_context->cache_entry = std::move(entry);
 
@@ -2111,9 +2117,9 @@ void CacheStorageCache::PutComplete(std::unique_ptr<PutContext> put_context,
                                     blink::mojom::CacheStorageError error) {
   if (error == CacheStorageError::kSuccess) {
     // Make sure we've written everything.
-    DCHECK(put_context->cache_entry);
-    DCHECK(!put_context->blob);
-    DCHECK(!put_context->side_data_blob);
+    CHECK(put_context->cache_entry, base::NotFatalUntil::M158);
+    CHECK(!put_context->blob, base::NotFatalUntil::M158);
+    CHECK(!put_context->side_data_blob, base::NotFatalUntil::M158);
 
     // Tell the WritableScopedEntry not to doom the entry since it was a
     // successful operation.
@@ -2140,7 +2146,7 @@ void CacheStorageCache::CalculateCacheSizePaddingGotSize(
     int64_t cache_size) {
   // Enumerating entries is only done during cache initialization and only if
   // necessary.
-  DCHECK_EQ(backend_state_, BACKEND_UNINITIALIZED);
+  CHECK_EQ(backend_state_, BACKEND_UNINITIALIZED, base::NotFatalUntil::M158);
   auto request = blink::mojom::FetchAPIRequest::New();
   blink::mojom::CacheQueryOptionsPtr options =
       blink::mojom::CacheQueryOptions::New();
@@ -2161,8 +2167,9 @@ void CacheStorageCache::PaddingDidQueryCache(
   int64_t cache_padding = 0;
   if (error == CacheStorageError::kSuccess) {
     for (const auto& result : *query_cache_results) {
-      DCHECK(!ShouldPadResourceSize(*result.response) ||
-             (result.padding + result.side_data_padding));
+      CHECK(!ShouldPadResourceSize(*result.response) ||
+                (result.padding + result.side_data_padding),
+            base::NotFatalUntil::M158);
       cache_padding += result.padding + result.side_data_padding;
     }
   }
@@ -2198,7 +2205,8 @@ void CacheStorageCache::UpdateCacheSizeGotSize(
     base::OnceClosure callback,
     int64_t current_cache_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(current_cache_size, CacheStorage::kSizeUnknown);
+  CHECK_NE(current_cache_size, CacheStorage::kSizeUnknown,
+           base::NotFatalUntil::M158);
   cache_size_ = current_cache_size;
   int64_t size_delta = PaddedCacheSize() - last_reported_size_;
   last_reported_size_ = PaddedCacheSize();
@@ -2250,7 +2258,7 @@ void CacheStorageCache::GetAllMatchedEntriesImpl(
     blink::mojom::CacheQueryOptionsPtr options,
     int64_t trace_id,
     CacheEntriesCallback callback) {
-  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
   TRACE_EVENT("CacheStorage", "CacheStorageCache::GetAllMatchedEntriesImpl",
               perfetto::Flow::Global(trace_id), "request",
               CacheStorageTracedValue(request), "options",
@@ -2310,8 +2318,10 @@ CacheStorageCache::InitState CacheStorageCache::GetInitState() const {
 
 void CacheStorageCache::Delete(blink::mojom::BatchOperationPtr operation,
                                ErrorCallback callback) {
-  DCHECK(BACKEND_OPEN == backend_state_ || initializing_);
-  DCHECK_EQ(blink::mojom::OperationType::kDelete, operation->operation_type);
+  CHECK(BACKEND_OPEN == backend_state_ || initializing_,
+        base::NotFatalUntil::M158);
+  CHECK_EQ(blink::mojom::OperationType::kDelete, operation->operation_type,
+           base::NotFatalUntil::M158);
 
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = operation->request->url;
@@ -2334,7 +2344,7 @@ void CacheStorageCache::DeleteImpl(
     blink::mojom::FetchAPIRequestPtr request,
     blink::mojom::CacheQueryOptionsPtr match_options,
     ErrorCallback callback) {
-  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
   if (backend_state_ != BACKEND_OPEN) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kDeleteImplBackendClosed));
@@ -2367,13 +2377,14 @@ void CacheStorageCache::DeleteDidQueryCache(
     return;
   }
 
-  DCHECK(scheduler_->IsRunningExclusiveOperation());
+  CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
 
   for (auto& result : *query_cache_results) {
     disk_cache::ScopedEntryPtr entry = std::move(result.entry);
     if (ShouldPadResourceSize(*result.response)) {
-      DCHECK(!ShouldPadResourceSize(*result.response) ||
-             (result.padding + result.side_data_padding));
+      CHECK(!ShouldPadResourceSize(*result.response) ||
+                (result.padding + result.side_data_padding),
+            base::NotFatalUntil::M158);
       cache_padding_ -= (result.padding + result.side_data_padding);
     }
     entry->Doom();
@@ -2387,7 +2398,7 @@ void CacheStorageCache::KeysImpl(blink::mojom::FetchAPIRequestPtr request,
                                  blink::mojom::CacheQueryOptionsPtr options,
                                  int64_t trace_id,
                                  RequestsCallback callback) {
-  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
   TRACE_EVENT("CacheStorage", "CacheStorageCache::KeysImpl",
               perfetto::Flow::Global(trace_id), "request",
               CacheStorageTracedValue(request), "options",
@@ -2431,23 +2442,23 @@ void CacheStorageCache::KeysDidQueryCache(
 }
 
 void CacheStorageCache::CloseImpl(base::OnceClosure callback) {
-  DCHECK_EQ(BACKEND_OPEN, backend_state_);
+  CHECK_EQ(BACKEND_OPEN, backend_state_, base::NotFatalUntil::M158);
 
-  DCHECK(scheduler_->IsRunningExclusiveOperation());
+  CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
   backend_.reset();
   post_backend_closed_callback_ = std::move(callback);
 }
 
 void CacheStorageCache::DeleteBackendCompletedIO() {
   if (!post_backend_closed_callback_.is_null()) {
-    DCHECK_NE(BACKEND_CLOSED, backend_state_);
+    CHECK_NE(BACKEND_CLOSED, backend_state_, base::NotFatalUntil::M158);
     backend_state_ = BACKEND_CLOSED;
     std::move(post_backend_closed_callback_).Run();
   }
 }
 
 void CacheStorageCache::SizeImpl(SizeCallback callback) {
-  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
 
   // TODO(cmumford): Can CacheStorage::kSizeUnknown be returned instead of zero?
   if (backend_state_ != BACKEND_OPEN) {
@@ -2468,7 +2479,7 @@ void CacheStorageCache::GetSizeThenCloseDidGetSize(SizeCallback callback,
 }
 
 void CacheStorageCache::CreateBackend(ErrorCallback callback) {
-  DCHECK(!backend_);
+  CHECK(!backend_, base::NotFatalUntil::M158);
 
   // Use APP_CACHE as opposed to DISK_CACHE to prevent cache eviction.
   net::CacheType cache_type = memory_only_ ? net::MEMORY_CACHE : net::APP_CACHE;
@@ -2482,7 +2493,7 @@ void CacheStorageCache::CreateBackend(ErrorCallback callback) {
       base::BindOnce(&CacheStorageCache::CreateBackendDidCreate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  DCHECK(scheduler_->IsRunningExclusiveOperation());
+  CHECK(scheduler_->IsRunningExclusiveOperation(), base::NotFatalUntil::M158);
   disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr, path_,
       max_bytes, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
@@ -2509,9 +2520,9 @@ void CacheStorageCache::CreateBackendDidCreate(
 
 void CacheStorageCache::InitBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(BACKEND_UNINITIALIZED, backend_state_);
-  DCHECK(!initializing_);
-  DCHECK(!scheduler_->ScheduledOperations());
+  CHECK_EQ(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
+  CHECK(!initializing_, base::NotFatalUntil::M158);
+  CHECK(!scheduler_->ScheduledOperations(), base::NotFatalUntil::M158);
   initializing_ = true;
 
   auto id = scheduler_->CreateId();
@@ -2608,7 +2619,7 @@ void CacheStorageCache::InitGotCacheSizeAndPadding(
 }
 
 int64_t CacheStorageCache::PaddedCacheSize() const {
-  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
   if (cache_size_ == CacheStorage::kSizeUnknown ||
       cache_padding_ == CacheStorage::kSizeUnknown) {
     return CacheStorage::kSizeUnknown;
@@ -2619,7 +2630,8 @@ int64_t CacheStorageCache::PaddedCacheSize() const {
 base::CheckedNumeric<uint64_t>
 CacheStorageCache::CalculateRequiredSafeSpaceForPut(
     const blink::mojom::BatchOperationPtr& operation) {
-  DCHECK_EQ(blink::mojom::OperationType::kPut, operation->operation_type);
+  CHECK_EQ(blink::mojom::OperationType::kPut, operation->operation_type,
+           base::NotFatalUntil::M158);
   base::CheckedNumeric<uint64_t> safe_space_required = 0;
   safe_space_required +=
       CalculateRequiredSafeSpaceForResponse(operation->response);
