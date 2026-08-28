@@ -2282,6 +2282,8 @@ source_set("browser") {
     "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/trusted_vault:impl",
+    "//chrome/browser/ttc",
+    "//chrome/browser/ttc:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:impl",
