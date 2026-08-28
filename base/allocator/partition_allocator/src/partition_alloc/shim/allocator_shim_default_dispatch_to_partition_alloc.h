@@ -30,13 +30,13 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
   // allocators are effectively set in stone.
   static bool AllocatorConfigurationFinalized();
 
-  // TODO(crbug.com/477186304): Remove default value for `alloc_token`, once all
-  // callers are updated and verified to make configuration for all roots.
+  // TODO(crbug.com/477186304): Remove default value for `partition_index`, once
+  // all callers are updated and verified to make configuration for all roots.
   static partition_alloc::PartitionRoot* Allocator(
-      AllocToken alloc_token = AllocToken(kDefaultPartitionIndex));
+      size_t partition_index = kDefaultPartitionIndex);
   // May return |nullptr|, will never return the same pointer as  |Allocator()|.
   static partition_alloc::PartitionRoot* OriginalAllocator(
-      AllocToken alloc_token = AllocToken(kDefaultPartitionIndex));
+      size_t partition_index = kDefaultPartitionIndex);
   // Returns the dedicated PartitionRoot for allocations that are intended to be
   // quarantined and leaked upon free. Will never return nullptr, and will never
   // return the same pointer as |Allocator()|. Allocations routed here are never

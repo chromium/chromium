@@ -15,6 +15,8 @@ namespace allocator_shim {
 using AllocToken =
     partition_alloc::internal::base::StrongAlias<class AllocTokenTag, size_t>;
 
+inline constexpr AllocToken kDefaultAllocToken = AllocToken(0);
+
 struct AllocatorDispatch {
   using AllocFn = void*(size_t size, AllocToken alloc_token, void* context);
   using AllocUncheckedFn = void*(size_t size,

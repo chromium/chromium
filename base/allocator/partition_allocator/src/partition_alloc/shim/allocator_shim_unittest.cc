@@ -2009,8 +2009,7 @@ TEST_F(AllocatorShimTest, IntendedLeakAllocator) {
   // Distinct from all malloc roots (note: with auto-partitioning disabled,
   // Allocator(token) defaults to the main root across all tokens).
   for (size_t i = 0; i < kNumPartitions; ++i) {
-    EXPECT_NE(intended_leak_root,
-              internal::PartitionAllocMalloc::Allocator(AllocToken(i)));
+    EXPECT_NE(intended_leak_root, internal::PartitionAllocMalloc::Allocator(i));
   }
 }
 #endif

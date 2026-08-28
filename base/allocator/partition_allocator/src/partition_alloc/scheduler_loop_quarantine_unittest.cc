@@ -251,8 +251,7 @@ TEST(SchedulerLoopQuarantineTest, ExclusionWithInvalidFirstPartition) {
     GTEST_SKIP() << "Test requires kNumPartitions >= 2";
   }
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-  auto* root1 = allocator_shim::internal::PartitionAllocMalloc::Allocator(
-      allocator_shim::AllocToken(1));
+  auto* root1 = allocator_shim::internal::PartitionAllocMalloc::Allocator(1);
   if (!root1) {
     GTEST_SKIP() << "Partition 1 is not initialized";
   }
