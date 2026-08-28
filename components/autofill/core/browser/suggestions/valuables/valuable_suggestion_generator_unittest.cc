@@ -214,7 +214,8 @@ TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomain) {
 TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomainAndFieldAutofilled) {
   set_last_committed_primary_main_frame_url(
       GURL("https://domain2.example/test"));
-  field_data().set_is_autofilled_according_to_renderer(true);
+  field().AddFieldModifier(FieldModifier::kAutofill);
+  field().set_filling_product(FillingProduct::kLoyaltyCard);
   std::vector<Suggestion> suggestions_with_matching_domain =
       GetSuggestionsForLoyaltyCards(form().ToFormData(), &form(), field(),
                                     &field(), PasswordFormClassification(),

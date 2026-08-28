@@ -1272,6 +1272,10 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       {.fields = {{.role = CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
                    .is_autofilled_according_to_renderer = true}},
        .url = "https://example.com"});
+  form_bundle.form_structure->field(0)->AddFieldModifier(
+      FieldModifier::kAutofill);
+  form_bundle.form_structure->field(0)->set_filling_product(
+      FillingProduct::kCreditCard);
 
   // Add Usage Data matching the card and origin.
   VirtualCardUsageData virtual_card_usage_data(
@@ -1670,6 +1674,10 @@ TEST_F(CreditCardSuggestionGeneratorTest,
   FormBundle form_bundle = GetFormWithTypes(
       {.fields = {{.role = CREDIT_CARD_NUMBER,
                    .is_autofilled_according_to_renderer = true}}});
+  form_bundle.form_structure->field(0)->AddFieldModifier(
+      FieldModifier::kAutofill);
+  form_bundle.form_structure->field(0)->set_filling_product(
+      FillingProduct::kCreditCard);
 
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
@@ -5191,6 +5199,10 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
                   {.role = CREDIT_CARD_NUMBER,
                    .value = u"1111",
                    .is_autofilled_according_to_renderer = true}}});
+  form_bundle.form_structure->field(1)->AddFieldModifier(
+      FieldModifier::kAutofill);
+  form_bundle.form_structure->field(1)->set_filling_product(
+      FillingProduct::kCreditCard);
 
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
@@ -5318,6 +5330,10 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
                   {.role = CREDIT_CARD_NUMBER,
                    .value = u"9999",
                    .is_autofilled_according_to_renderer = true}}});
+  form_bundle.form_structure->field(1)->AddFieldModifier(
+      FieldModifier::kAutofill);
+  form_bundle.form_structure->field(1)->set_filling_product(
+      FillingProduct::kCreditCard);
   const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),

@@ -44,6 +44,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -199,31 +200,6 @@ bool AllowPaymentSwapping(const AutofillField& trigger_field,
          has_relevant_cc_field_type(trigger_field) &&
          has_relevant_cc_field_type(field) && !is_refill &&
          IsPaymentsFieldSwappingEnabled();
-}
-
-// Returns whether a filling action for `filling_product` should be included in
-// the form autofill history.
-bool ShouldRecordFillingHistory(FillingProduct filling_product) {
-  switch (filling_product) {
-    case FillingProduct::kAddress:
-    case FillingProduct::kAutofillAi:
-    case FillingProduct::kCreditCard:
-    case FillingProduct::kLoyaltyCard:
-    case FillingProduct::kOneTimePassword:
-      return true;
-    case FillingProduct::kNone:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kIban:
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kPasskey:
-    case FillingProduct::kPassword:
-    case FillingProduct::kCompose:
-    case FillingProduct::kIdentityCredential:
-    case FillingProduct::kDataList:
-    case FillingProduct::kAtMemory:
-      return false;
-  }
-  NOTREACHED();
 }
 
 // Called by `FormFiller::MaybeScheduleAutomaticRefill()` and constructs a

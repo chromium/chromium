@@ -103,23 +103,30 @@ class AddressSuggestionGeneratorTest : public testing::Test {
   const std::string& app_locale() { return address_data().app_locale(); }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
-  AutofillField& field() { return *form_structure_->fields().front(); }
 
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FormFieldData& field_data,
       FieldType field_type) {
     FormData form_data;
     test_api(form_data).Append(field_data);
-    return GetSuggestionsForProfiles(form_data, field_data, {field_type}, 0);
+    return GetSuggestionsForProfiles(form_data, field_data.global_id(),
+                                     {field_type});
   }
 
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FormData& form_data,
-      const FormFieldData& triggering_field,
-      const std::vector<FieldType>& field_types,
-      size_t triggering_field_index) {
-    form_structure_ = std::make_unique<FormStructure>(form_data);
-    test_api(*form_structure_).SetFieldTypes(field_types);
+      FieldGlobalId trigger_field_id,
+      const std::vector<FieldType>& field_types) {
+    FormStructure form_structure(form_data);
+    return GetSuggestionsForProfiles(form_structure, trigger_field_id,
+                                     field_types);
+  }
+
+  std::vector<Suggestion> GetSuggestionsForProfiles(
+      FormStructure& form_structure,
+      FieldGlobalId trigger_field_id,
+      const std::vector<FieldType>& field_types) {
+    test_api(form_structure).SetFieldTypes(field_types);
     std::vector<Suggestion> suggestions;
     AddressSuggestionGenerator address_suggestion_generator(
         mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -128,10 +135,11 @@ class AddressSuggestionGeneratorTest : public testing::Test {
             SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
           suggestions = std::move(returned_suggestions.second);
         };
+    const AutofillField* trigger_field =
+        form_structure.GetFieldById(trigger_field_id);
     address_suggestion_generator.GenerateSuggestions(
-        form_data, triggering_field, form_structure_.get(),
-        form_structure_->field(triggering_field_index), autofill_client_,
-        on_suggestions_generated);
+        form_structure.ToFormData(), *trigger_field, &form_structure,
+        trigger_field, autofill_client_, on_suggestions_generated);
     return suggestions;
   }
 
@@ -153,7 +161,6 @@ class AddressSuggestionGeneratorTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<FormStructure> form_structure_;
 };
 
 // Tests that `SuggestionType::AddressEntryOnTyping` suggestions are returned
@@ -1178,15 +1185,21 @@ TEST_F(AddressSuggestionGeneratorTest,
   address_data().AddProfile(profile1);
   address_data().AddProfile(profile2);
 
-  // Create a triggering field that was autofilled with `profile1`.
-  FormFieldData triggering_field;
-  triggering_field.set_value(profile1.GetRawInfo(NAME_FULL));
-  triggering_field.set_is_autofilled_according_to_renderer(true);
+  // Create a form with a field that was autofilled with `profile1`.
+  const FormData form = test::GetFormData(
+      {.fields = {{.value = profile1.GetRawInfo(NAME_FULL),
+                   .is_autofilled_according_to_renderer = true}}});
+
+  FormStructure form_structure(form);
+  AutofillField* trigger_field = form_structure.field(0);
+  trigger_field->AddFieldModifier(FieldModifier::kAutofill);
+  trigger_field->set_filling_product(FillingProduct::kAddress);
 
   // Expect that only the second address yields a suggestion because the first
   // one would be removed for exactly matching the field's content.
   EXPECT_THAT(
-      GetSuggestionsForProfiles(triggering_field, NAME_FULL),
+      GetSuggestionsForProfiles(form_structure, trigger_field->global_id(),
+                                {NAME_FULL}),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
                                    profile2.GetRawInfo(NAME_FULL)),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -1201,7 +1214,8 @@ TEST_F(AddressSuggestionGeneratorTest,
   // otherwise there would be no address suggestions at all and we would not
   // show the popup, making the user unable to use the footer suggestions.
   EXPECT_THAT(
-      GetSuggestionsForProfiles(triggering_field, NAME_FULL),
+      GetSuggestionsForProfiles(form_structure, trigger_field->global_id(),
+                                {NAME_FULL}),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
                                    profile1.GetRawInfo(NAME_FULL)),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -1221,16 +1235,21 @@ TEST_F(
   address_data().AddProfile(profile1);
   address_data().AddProfile(profile2);
 
-  // Create a triggering field that was autofilled with `profile1`.
-  FormFieldData triggering_field;
-  triggering_field.set_value(profile1.GetRawInfo(NAME_FULL));
-  triggering_field.set_is_autofilled_according_to_renderer(true);
+  // Create a form with a field that was autofilled with `profile1`.
+  const FormData form = test::GetFormData(
+      {.fields = {{.value = profile1.GetRawInfo(NAME_FULL),
+                   .is_autofilled_according_to_renderer = true}}});
+  FormStructure form_structure(form);
+  AutofillField& trigger_field = *form_structure.field(0);
+  trigger_field.AddFieldModifier(FieldModifier::kAutofill);
+  trigger_field.set_filling_product(FillingProduct::kAddress);
 
   // Expect that only the second address yields a suggestion because the first
   // one would be removed for exactly matching the field's content, even though
   // the two values are equal up to normalization.
   EXPECT_THAT(
-      GetSuggestionsForProfiles(triggering_field, NAME_FULL),
+      GetSuggestionsForProfiles(form_structure, trigger_field.global_id(),
+                                {NAME_FULL}),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
                                    u"Tést Name"),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -1314,10 +1333,14 @@ TEST_F(AddressSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   address_data().AddProfile(test::GetFullProfile());
-  FormFieldData field;
-  field.set_is_autofilled_according_to_renderer(true);
-  std::vector<Suggestion> suggestions =
-      GetSuggestionsForProfiles(field, NAME_FIRST);
+  const FormData form = test::GetFormData(
+      {.fields = {{.is_autofilled_according_to_renderer = true}}});
+  FormStructure form_structure(form);
+  AutofillField& trigger_field = *form_structure.field(0);
+  trigger_field.AddFieldModifier(FieldModifier::kAutofill);
+  trigger_field.set_filling_product(FillingProduct::kAddress);
+  std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
+      form_structure, trigger_field.global_id(), {NAME_FIRST});
   EXPECT_THAT(
       suggestions,
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling),
@@ -1548,15 +1571,15 @@ TEST_F(AddressSuggestionGeneratorTest, UnrecognizedAttribute) {
            {.role = NAME_LAST, .autocomplete_attribute = "unrecognized"}}});
 
   std::vector<Suggestion> suggestions_given_name = GetSuggestionsForProfiles(
-      form, form.fields()[0], {NAME_FIRST, NAME_MIDDLE, NAME_LAST}, 0);
+      form, form.fields()[0].global_id(), {NAME_FIRST, NAME_MIDDLE, NAME_LAST});
   EXPECT_FALSE(suggestions_given_name.empty());
 
   std::vector<Suggestion> suggestions_middle_name = GetSuggestionsForProfiles(
-      form, form.fields()[1], {NAME_FIRST, NAME_MIDDLE, NAME_LAST}, 1);
+      form, form.fields()[1].global_id(), {NAME_FIRST, NAME_MIDDLE, NAME_LAST});
   EXPECT_FALSE(suggestions_middle_name.empty());
 
   std::vector<Suggestion> suggestions_unrecognized = GetSuggestionsForProfiles(
-      form, form.fields()[2], {NAME_FIRST, NAME_MIDDLE, NAME_LAST}, 2);
+      form, form.fields()[2].global_id(), {NAME_FIRST, NAME_MIDDLE, NAME_LAST});
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_FALSE(suggestions_unrecognized.empty());
 #else
@@ -1575,11 +1598,11 @@ TEST_F(AddressSuggestionGeneratorTest, BlockSuggestionsAfterStrikeLimit) {
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
 
   // Initially suggestions are returned.
-  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[0],
-                                         {NAME_FIRST, NAME_LAST}, 0)
+  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[0].global_id(),
+                                         {NAME_FIRST, NAME_LAST})
                    .empty());
-  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[1],
-                                         {NAME_FIRST, NAME_LAST}, 1)
+  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[1].global_id(),
+                                         {NAME_FIRST, NAME_LAST})
                    .empty());
 
   base::HistogramTester histogram_tester;
@@ -1592,15 +1615,15 @@ TEST_F(AddressSuggestionGeneratorTest, BlockSuggestionsAfterStrikeLimit) {
   }
 
   // Check that no suggestions are returned for the first field now.
-  EXPECT_TRUE(GetSuggestionsForProfiles(form, form.fields()[0],
-                                        {NAME_FIRST, NAME_LAST}, 0)
+  EXPECT_TRUE(GetSuggestionsForProfiles(form, form.fields()[0].global_id(),
+                                        {NAME_FIRST, NAME_LAST})
                   .empty());
   histogram_tester.ExpectBucketCount(
       "Autofill.Suggestion.StrikeSuppression.Address", 1, 1);
 
   // Suggestions are still returned for the second field.
-  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[1],
-                                         {NAME_FIRST, NAME_LAST}, 1)
+  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[1].global_id(),
+                                         {NAME_FIRST, NAME_LAST})
                    .empty());
 
   // Clear strikes on the first field.
@@ -1609,8 +1632,8 @@ TEST_F(AddressSuggestionGeneratorTest, BlockSuggestionsAfterStrikeLimit) {
       CalculateFieldSignatureForField(form.fields()[0]), form.url());
 
   // Suggestions are returned again.
-  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[0],
-                                         {NAME_FIRST, NAME_LAST}, 0)
+  EXPECT_FALSE(GetSuggestionsForProfiles(form, form.fields()[0].global_id(),
+                                         {NAME_FIRST, NAME_LAST})
                    .empty());
 }
 #endif
@@ -1698,20 +1721,16 @@ TEST_F(AddressSuggestionGeneratorTest, ForEmailFieldWithUserNameAutocomplete) {
   address_data().AddProfile(profile);
 
   // Create a form with two fields: NAME_FIRST and EMAIL_ADDRESS
-  FormFieldData name_field;
-  name_field.set_name(u"firstname");
-
-  FormFieldData triggering_field;
-  triggering_field.set_name(u"email");
-  triggering_field.set_autocomplete_attribute("username");
-  triggering_field.set_max_length(30);
-
-  FormData form;
-  test_api(form).Append(name_field);
-  test_api(form).Append(triggering_field);
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"firstname"},
+                                    {
+                                        .name = u"email",
+                                        .max_length = 30,
+                                        .autocomplete_attribute = "username",
+                                    }}});
 
   std::vector<Suggestion> address_suggestions = GetSuggestionsForProfiles(
-      form, triggering_field, {NAME_FIRST, EMAIL_ADDRESS}, 1);
+      form, form.fields()[1].global_id(), {NAME_FIRST, EMAIL_ADDRESS});
 
   // Verify that suggestions contain the email as main text, kEmail icon, and
   // full name as label
@@ -1801,14 +1820,18 @@ TEST_F(AddressSuggestionGeneratorTest, MatchCharacter) {
 TEST_F(AddressSuggestionGeneratorTest, FieldSwapping) {
   AutofillProfile p1 = test::GetFullProfile();
   address_data().AddProfile(p1);
-  // Create a triggering field that was already autofilled
-  FormFieldData triggering_field;
-  triggering_field.set_value(u"Full Name");
-  triggering_field.set_is_autofilled_according_to_renderer(true);
-  triggering_field.set_autocomplete_attribute("name");
-  // Retrieve suggestions directly from the generator
-  std::vector<Suggestion> address_suggestions =
-      GetSuggestionsForProfiles(triggering_field, NAME_FULL);
+  // Create a form with a field that was already autofilled.
+  const FormData form = test::GetFormData(
+      {.fields = {{.value = u"Full Name",
+                   .autocomplete_attribute = "name",
+                   .is_autofilled_according_to_renderer = true}}});
+  FormStructure form_structure(form);
+  AutofillField& trigger_field = *form_structure.field(0);
+  trigger_field.AddFieldModifier(FieldModifier::kAutofill);
+  trigger_field.set_filling_product(FillingProduct::kAddress);
+
+  std::vector<Suggestion> address_suggestions = GetSuggestionsForProfiles(
+      form_structure, trigger_field.global_id(), {NAME_FULL});
   // Verify that we get field-by-field filling suggestions, separator,
   // UndoOrClear and Manage
   EXPECT_THAT(address_suggestions,
@@ -1829,11 +1852,16 @@ TEST_F(AddressSuggestionGeneratorTest, AlreadyAutofilledNoLabels) {
   address_data().AddProfile(p1);
   address_data().AddProfile(p2);
   // First name is already autofilled
-  FormFieldData triggering_field;
-  triggering_field.set_value(u"J");
-  triggering_field.set_is_autofilled_according_to_renderer(true);
-  std::vector<Suggestion> address_suggestions =
-      GetSuggestionsForProfiles(triggering_field, NAME_FIRST);
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.value = u"J", .is_autofilled_according_to_renderer = true}}});
+  FormStructure form_structure(form);
+  AutofillField& trigger_field = *form_structure.field(0);
+  trigger_field.AddFieldModifier(FieldModifier::kAutofill);
+  trigger_field.set_filling_product(FillingProduct::kAddress);
+
+  std::vector<Suggestion> address_suggestions = GetSuggestionsForProfiles(
+      form_structure, trigger_field.global_id(), {NAME_FIRST});
   EXPECT_THAT(
       address_suggestions,
       testing::ElementsAre(

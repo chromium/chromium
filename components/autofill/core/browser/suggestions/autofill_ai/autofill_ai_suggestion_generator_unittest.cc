@@ -1615,7 +1615,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestions_Undo) {
 
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Not(Contains(EqualsSuggestion(SuggestionType::kUndo))));
-  field_data().set_is_autofilled_according_to_renderer(true);
+  field(0).AddFieldModifier(FieldModifier::kAutofill);
+  field(0).set_filling_product(FillingProduct::kAutofillAi);
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               Contains(EqualsSuggestion(SuggestionType::kUndo)));
 }

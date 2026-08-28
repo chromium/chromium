@@ -207,14 +207,13 @@ Suggestion CreateManageShoppingSuggestion() {
 }
 
 std::vector<Suggestion> GetFooterSuggestions(
-    const FormFieldData& trigger_field,
+    const AutofillField& trigger_field,
     const DenseSet<AutofillAiUiSection>& ui_sections) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(3);
 
   suggestions.emplace_back(SuggestionType::kSeparator);
-  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`.
-  if (trigger_field.is_autofilled_according_to_renderer()) {
+  if (ShouldOfferUndoOnField(trigger_field)) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
 

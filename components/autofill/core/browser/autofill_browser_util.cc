@@ -28,4 +28,27 @@ bool IsFormStructurePerfectlyFilled(const FormStructure& form) {
       });
 }
 
+bool ShouldRecordFillingHistory(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kOneTimePassword:
+      return true;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPasskey:
+    case FillingProduct::kPassword:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kAtMemory:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace autofill

@@ -132,13 +132,13 @@ std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
 }
 
 // Returns non loyalty cards suggestions which are displayed below loyalty cards
-// suggestions in the Autofill popup. `trigger_field_is_autofilled` is used to
-// conditionally add suggestion for clearing autofilled field.
+// suggestions in the Autofill popup. If supported, add a suggestion for undoing
+// the last Autofill operation on `trigger_field`.
 std::vector<Suggestion> GetLoyaltyCardsFooterSuggestions(
-    bool trigger_field_is_autofilled) {
+    const AutofillField& trigger_field) {
   std::vector<Suggestion> footer_suggestions;
   footer_suggestions.emplace_back(SuggestionType::kSeparator);
-  if (trigger_field_is_autofilled) {
+  if (ShouldOfferUndoOnField(trigger_field)) {
     footer_suggestions.push_back(CreateUndoSuggestion());
   }
   footer_suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
@@ -359,10 +359,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
         affiliated_cards, *client.GetValuablesDataManager());
     base::Extend(suggestions,
-                 GetLoyaltyCardsFooterSuggestions(
-                     // TODO(crbug.com/393114125): Change to use
-                     // `AutofillField::field_modifiers_`.
-                     trigger_field.is_autofilled_according_to_renderer()));
+                 GetLoyaltyCardsFooterSuggestions(*trigger_autofill_field));
     callback({SuggestionDataSource::kLoyaltyCard, std::move(suggestions)});
     return;
   }
@@ -391,10 +388,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
       client.GetValuablesDataManager()->GetLoyaltyCardsToSuggest(),
       *client.GetValuablesDataManager());
   base::Extend(suggestions,
-               GetLoyaltyCardsFooterSuggestions(
-                   // TODO(crbug.com/393114125): Change to use
-                   // `AutofillField::field_modifiers_`.
-                   trigger_field.is_autofilled_according_to_renderer()));
+               GetLoyaltyCardsFooterSuggestions(*trigger_autofill_field));
   callback({SuggestionDataSource::kLoyaltyCard, std::move(suggestions)});
 }
 

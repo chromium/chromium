@@ -54,6 +54,10 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
     std::vector<Suggestion> current_suggestions,
     const Suggestion& selected_suggestion);
 
+// Returns whether undoing the last filling operation on the given field is
+// supported.
+bool ShouldOfferUndoOnField(const AutofillField& field);
+
 // Returns the "Undo Autofill" suggestion.
 Suggestion CreateUndoSuggestion();
 
