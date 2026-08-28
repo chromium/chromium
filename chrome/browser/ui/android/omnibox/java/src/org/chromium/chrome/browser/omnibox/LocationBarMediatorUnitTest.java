@@ -5042,9 +5042,9 @@ public class LocationBarMediatorUnitTest {
         input.setInitialUserText("page.com");
         input.setUserText("page.com");
         input.setPreviewMatchUrl(new GURL("https://page.com"));
-
+        clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
         clearInvocations(mLocationBarLayout);
 
         input.setSiteSearchData(new SiteSearchData("test", "Test"));
@@ -5074,9 +5074,10 @@ public class LocationBarMediatorUnitTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setPreviewMatchUrl(null);
+        clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
         clearInvocations(mLocationBarLayout);
 
         mWindowHasFocusSupplier.set(false);
@@ -5093,9 +5094,10 @@ public class LocationBarMediatorUnitTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setPreviewMatchUrl(null);
+        clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
         clearInvocations(mLocationBarLayout);
 
         doReturn(123L).when(mProfile).getNativeBrowserContextPointer();
@@ -5209,10 +5211,10 @@ public class LocationBarMediatorUnitTest {
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setInitialUserText("page.com");
         input.setUserText("page.com");
-
+        clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
     }
 
     @Test
