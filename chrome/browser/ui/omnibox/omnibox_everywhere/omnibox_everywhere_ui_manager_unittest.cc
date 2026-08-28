@@ -464,12 +464,63 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_DemoteWidget) {
   EXPECT_FALSE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
+  // Calling Demote() again while already demoted is a safe no-op.
+  ui_manager->Demote();
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
   // Calling ShowForProfile again activates.
   ui_manager->ShowForProfile(&profile_, GetContext());
   EXPECT_TRUE(widget->IsVisible());
   views::test::WaitForWidgetActive(widget, true);
   EXPECT_TRUE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  ui_manager->Close();
+}
+
+// Tests that Demote() when OE is inactive does not deactivate other active
+// windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DemoteWhenInactiveDoesNotDeactivateOtherWidget \
+  DemoteWhenInactiveDoesNotDeactivateOtherWidget
+#else
+#define MAYBE_DemoteWhenInactiveDoesNotDeactivateOtherWidget \
+  DISABLED_DemoteWhenInactiveDoesNotDeactivateOtherWidget
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_DemoteWhenInactiveDoesNotDeactivateOtherWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* oe_widget = ui_manager->widget();
+  ASSERT_TRUE(oe_widget);
+  EXPECT_TRUE(oe_widget->IsVisible());
+  views::test::WaitForWidgetActive(oe_widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
+
+  // Create and activate a separate widget.
+  auto other_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  other_widget->Show();
+  views::test::WaitForWidgetActive(other_widget.get(), true);
+
+  // OE widget is visible but inactive.
+  EXPECT_TRUE(oe_widget->IsVisible());
+  EXPECT_FALSE(oe_widget->IsActive());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_TRUE(other_widget->IsActive());
+
+  // Demote() should demote OE without deactivating `other_widget`.
+  ui_manager->Demote();
+  EXPECT_TRUE(oe_widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_TRUE(other_widget->IsActive());
 
   ui_manager->Close();
 }
