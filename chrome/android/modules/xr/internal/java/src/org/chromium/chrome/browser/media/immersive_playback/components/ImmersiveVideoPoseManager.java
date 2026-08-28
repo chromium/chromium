@@ -50,7 +50,7 @@ public class ImmersiveVideoPoseManager implements ImmersiveVideoPoseStrategy {
     }
 
     private ImmersiveVideoPoseStrategy createStrategy(@XrSurfaceEntityShape int shape) {
-        if (shape == XrSurfaceEntityShape.QUAD) {
+        if (XrSurfaceEntityShape.Utils.isPlanar(shape)) {
             return new ImmersiveVideoPoseStrategyQuad(mDelegate);
         } else if (shape == XrSurfaceEntityShape.HEMISPHERE) {
             return new ImmersiveVideoPoseStrategyHemisphere(mDelegate);

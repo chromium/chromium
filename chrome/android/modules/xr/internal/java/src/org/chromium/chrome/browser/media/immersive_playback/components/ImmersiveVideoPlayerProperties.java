@@ -20,6 +20,8 @@ public class ImmersiveVideoPlayerProperties {
             new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<Float> DEFAULT_ASPECT_RATIO =
             new ReadableObjectPropertyKey<>();
+    public static final ReadableIntPropertyKey DEFAULT_CORNER_RADIUS_DP =
+            new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey DEFAULT_CURVE_RADIUS_DP =
             new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey DEFAULT_FEATHER_RADIUS_DP =
@@ -37,6 +39,7 @@ public class ImmersiveVideoPlayerProperties {
             new PropertyKey[] {
                 DEFAULT_PIXEL_DENSITY,
                 DEFAULT_ASPECT_RATIO,
+                DEFAULT_CORNER_RADIUS_DP,
                 DEFAULT_CURVE_RADIUS_DP,
                 DEFAULT_FEATHER_RADIUS_DP,
                 DEFAULT_MAX_WIDTH_DP,

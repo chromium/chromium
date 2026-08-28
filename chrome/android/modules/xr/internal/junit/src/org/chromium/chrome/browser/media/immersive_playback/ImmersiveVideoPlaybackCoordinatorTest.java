@@ -250,7 +250,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         mCoordinator.onFormatSelected(ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
         ShadowLooper.idleMainLooper();
 
-        verify(mSurfaceEntityHolder).setSurfaceShape(XrSurfaceEntityShape.QUAD);
+        verify(mSurfaceEntityHolder).setSurfaceShape(XrSurfaceEntityShape.ROUNDED_QUAD);
         verify(mSurfaceEntityHolder).setSurfaceStereoMode(XrSurfaceEntityStereoMode.MONO);
 
         verify(mSurfaceMovableComponent).setMovable(true, false);

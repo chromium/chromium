@@ -36,17 +36,16 @@ public class ImmersiveVideoPlayerViewBinder {
             view.setSurfaceStereoMode(model.get(ImmersiveVideoPlayerProperties.STEREO_MODE));
         } else if (propertyKey == ImmersiveVideoPlayerProperties.SHAPE) {
             int shape = model.get(ImmersiveVideoPlayerProperties.SHAPE);
-            boolean resizable = shape == XrSurfaceEntityShape.QUAD;
-            boolean movable = shape == XrSurfaceEntityShape.QUAD;
+            boolean isPlanar = XrSurfaceEntityShape.Utils.isPlanar(shape);
             view.setSurfaceShape(shape);
             view.removeEdgeFeathering();
-            view.getResizableComponent().setResizable(resizable, /* maintainAspectRatio= */ true);
-            view.getMovableComponent().setMovable(movable, /* scaleInZ= */ false);
+            view.getResizableComponent().setResizable(isPlanar, /* maintainAspectRatio= */ true);
+            view.getMovableComponent().setMovable(isPlanar, /* scaleInZ= */ false);
 
             XrPixelDensity pixelDensity =
                     model.get(ImmersiveVideoPlayerProperties.DEFAULT_PIXEL_DENSITY);
             if (pixelDensity != null) {
-                if (shape == XrSurfaceEntityShape.QUAD) {
+                if (isPlanar) {
                     Float aspectRatio =
                             model.get(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO);
                     int widthDp = model.get(ImmersiveVideoPlayerProperties.DEFAULT_WIDTH_DP);
@@ -55,6 +54,14 @@ public class ImmersiveVideoPlayerViewBinder {
                         float heightMeters = widthMeters / aspectRatio;
                         view.setEntitySize(widthMeters, heightMeters);
                     }
+
+                    int cornerRadiusDp =
+                            model.get(ImmersiveVideoPlayerProperties.DEFAULT_CORNER_RADIUS_DP);
+                    float cornerRadiusMeters =
+                            cornerRadiusDp > 0
+                                    ? pixelDensity.convertDpToMeters(cornerRadiusDp)
+                                    : 0f;
+                    view.setCornerRadius(cornerRadiusMeters);
                 } else if (shape == XrSurfaceEntityShape.HEMISPHERE) {
                     int featherRadiusDp =
                             model.get(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS_DP);
@@ -88,7 +95,7 @@ public class ImmersiveVideoPlayerViewBinder {
 
                 // Update the spatial panel dimensions to match the aspect ratio of the video.
                 float aspectRatio = (float) pixelWidth / pixelHeight;
-                if (view.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
+                if (XrSurfaceEntityShape.Utils.isPlanar(view.getSurfaceShape())) {
                     int widthDp = model.get(ImmersiveVideoPlayerProperties.DEFAULT_WIDTH_DP);
                     XrPixelDensity pixelDensity =
                             model.get(ImmersiveVideoPlayerProperties.DEFAULT_PIXEL_DENSITY);

@@ -172,10 +172,15 @@ public class ImmersiveVideoPlayerCoordinator {
                         .with(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS_DP, 5000)
                         .with(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO, 16f / 9f)
                         .with(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS_DP, 100)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_CORNER_RADIUS_DP, 24)
                         .with(
                                 ImmersiveVideoPlayerProperties.STEREO_MODE,
                                 XrSurfaceEntityStereoMode.MONO)
-                        .with(ImmersiveVideoPlayerProperties.SHAPE, XrSurfaceEntityShape.QUAD)
+                        .with(
+                                ImmersiveVideoPlayerProperties.SHAPE,
+                                // TODO(crbug.com/550356627): Switch back to the QUAD shape once
+                                // updated to the latest SceneCore version.
+                                XrSurfaceEntityShape.ROUNDED_QUAD)
                         .build();
 
         mMediator = new ImmersiveVideoPlayerMediator(mModel);
@@ -307,7 +312,7 @@ public class ImmersiveVideoPlayerCoordinator {
 
     /** Returns the layout height of the video surface. */
     public float getLayoutHeight() {
-        if (mHolder != null && mHolder.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
+        if (mHolder != null && XrSurfaceEntityShape.Utils.isPlanar(mHolder.getSurfaceShape())) {
             return mHolder.getEntitySize().getHeight();
         }
         return getDefaultLayoutHeight();
@@ -345,6 +350,6 @@ public class ImmersiveVideoPlayerCoordinator {
                 windowAndroid,
                 new ThinWebViewConstraints(),
                 sessionManager,
-                XrSurfaceEntityShape.QUAD);
+                XrSurfaceEntityShape.ROUNDED_QUAD);
     }
 }
