@@ -12,13 +12,15 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
+#include "chromeos/ash/components/boca/util.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 
 namespace ash::boca {
 namespace {
 
-inline static constexpr std::string_view kSenderId = "947897361853";
+inline static constexpr std::string_view kSenderIdProd = "947897361853";
+inline static constexpr std::string_view kSenderIdStaging = "55013907119";
 inline static constexpr std::string_view kApplicationId =
     "com.google.chrome.boca.fcm.invalidations";
 
@@ -238,7 +240,8 @@ void FCMHandlerImpl::StartTokenFetch(bool is_validation) {
   }
   instance_id_driver_->GetInstanceID(std::string(kApplicationId))
       ->GetToken(
-          std::string(kSenderId), instance_id::kGCMScope,
+          std::string(IsTestEnvironment() ? kSenderIdStaging : kSenderIdProd),
+          instance_id::kGCMScope,
           /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds),
           /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
           base::BindOnce(&FCMHandlerImpl::DidRetrieveToken,

@@ -11,6 +11,7 @@ namespace ash::boca {
 
 std::string GetSchoolToolsUrl();
 
+bool IsTestEnvironment();
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_UTIL_H_

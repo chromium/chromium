@@ -20,11 +20,16 @@ inline constexpr char kSchoolToolsServerSwitch[] = "st-server";
 
 }  // namespace
 
-std::string GetSchoolToolsUrl() {
+bool IsTestEnvironment() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (ash::GetChannel() != version_info::Channel::STABLE &&
-      ash::GetChannel() != version_info::Channel::BETA &&
-      command_line->HasSwitch(kSchoolToolsServerSwitch)) {
+  return ash::GetChannel() != version_info::Channel::STABLE &&
+         ash::GetChannel() != version_info::Channel::BETA &&
+         command_line->HasSwitch(kSchoolToolsServerSwitch);
+}
+
+std::string GetSchoolToolsUrl() {
+  if (IsTestEnvironment()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return command_line->GetSwitchValueASCII(kSchoolToolsServerSwitch);
   }
   return kSchoolToolsApiBaseProdUrl;
