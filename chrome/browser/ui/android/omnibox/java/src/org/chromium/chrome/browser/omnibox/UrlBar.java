@@ -1705,6 +1705,16 @@ public class UrlBar extends AutocompleteEditText {
         return fontMetrics.bottom - fontMetrics.top;
     }
 
+    /* package */ @Px
+    int getTextWidth() {
+        return (int) Math.ceil(getPaint().measureText(getText().toString()));
+    }
+
+    /* package */ @Px
+    int getWidthWithoutCompoundPadding() {
+        return getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
+    }
+
     /**
      * Span that displays ellipsis instead of the text. Used to hide portion of very large string to
      * get decent performance from TextView.

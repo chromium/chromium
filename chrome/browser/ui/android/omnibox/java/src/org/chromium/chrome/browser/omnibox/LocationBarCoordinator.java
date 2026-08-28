@@ -1022,10 +1022,11 @@ public class LocationBarCoordinator
         mUrlCoordinator.setAllowFocus(focusable);
     }
 
-    private void onTextWrappingChanged(boolean isWrapping) {
+    /* package */ void onTextWrappingChanged(boolean isWrapping) {
         if (mFuseboxCoordinator != null) {
             mFuseboxCoordinator.onFuseboxTextWrappingChanged(isWrapping);
         }
+        mLocationBarMediator.setIsTextWrapping(isWrapping);
         mLocationBarMediator.updateButtonVisibility();
     }
 

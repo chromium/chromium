@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -675,5 +676,24 @@ public class LocationBarLayout extends ConstraintLayout {
 
     View getFocusThief() {
         return mFocusThief;
+    }
+
+    /* package */ @Px
+    int getUrlBarTextWidth() {
+        return mUrlBar.getTextWidth();
+    }
+
+    /* package */ @Px
+    int getUrlBarWidth() {
+        return mUrlBar.getWidthWithoutCompoundPadding();
+    }
+
+    /* package */ @Px
+    int getActivationChipCompactWidthDelta() {
+        return mActivationChip.getCompactWidthDelta();
+    }
+
+    /* package */ boolean isActivationChipCompact() {
+        return mActivationChip.isCompact();
     }
 }

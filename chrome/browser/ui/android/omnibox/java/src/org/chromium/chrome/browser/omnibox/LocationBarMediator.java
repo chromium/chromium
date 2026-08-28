@@ -233,6 +233,13 @@ class LocationBarMediator
                 }
             };
 
+    private final View.OnLayoutChangeListener mOnLocationBarLayoutChange =
+            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                if ((right - left) != (oldRight - oldLeft)) {
+                    updateActivationChipCompact();
+                }
+            };
+
     private final LocationBarLayout mLocationBarLayout;
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final OmniboxResourceProvider mResourceProvider;
@@ -329,7 +336,6 @@ class LocationBarMediator
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
     private boolean mIsLocationBarFocusedFromNtpScroll;
     private boolean mAccessibilityFocusWorkaroundInProgress;
-    private boolean mAimChipShouldBeCompact;
     // Whether the client is eligible for AIM, i.e. AI Mode fulfillment for search queries.
     private boolean mIsAimEligible;
     // Whether the client is eligible for the fusebox; a set of UI tools for creating multimodal,
@@ -347,6 +353,7 @@ class LocationBarMediator
     private @Nullable Callback<Boolean> mOnSpecializedFuseboxModeActivatedCallback;
     private boolean mMiniOriginMode;
     private LocationBarSelectionController mSelectionController;
+    private boolean mIsTextWrapping;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -376,6 +383,7 @@ class LocationBarMediator
             NonNullObservableSupplier<Boolean> windowHasFocusSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
+        mLocationBarLayout.addOnLayoutChangeListener(mOnLocationBarLayoutChange);
         mLocationBarDataProvider = locationBarDataProvider;
         mResourceProvider = resourceProvider;
         mLocationBarEmbedder = locationBarEmbedder;
@@ -674,6 +682,7 @@ class LocationBarMediator
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
+        mLocationBarLayout.removeOnLayoutChangeListener(mOnLocationBarLayoutChange);
         mDeferredFocusCurrentTab = false;
     }
 
@@ -938,6 +947,7 @@ class LocationBarMediator
             listener.onResult(text);
         }
         updateButtonVisibility();
+        updateActivationChipCompact();
         if (mCurrentInput == null) return;
 
         if (mSelectionController.getSelectedView() == mActivationChipSelectableView) {
@@ -3464,13 +3474,6 @@ class LocationBarMediator
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        int screenWidthPx = ViewUtils.dpToPx(mContext, newConfig.screenWidthDp);
-        int maxCompactWidthPx =
-                mResourceProvider.getDimen(R.dimen.fusebox_compact_activation_chip_width);
-        mAimChipShouldBeCompact =
-                screenWidthPx <= maxCompactWidthPx && OmniboxCapabilities.isDesktopPlatform();
-        mLocationBarLayout.setActivationChipCompact(mAimChipShouldBeCompact);
-
         // If the user previously entered the STANDBY autocomplete state (no autocompletion), e.g.
         // by opening a NTP or by pressing physical ESC key (~desktop mode behavior) but upon
         // configuration change we detect we're no longer in desktop mode (e.g. keyboard has been
@@ -3575,6 +3578,36 @@ class LocationBarMediator
         DefaultBrowserPromoUtils.getInstance()
                 .maybeShowDefaultBrowserPromoMessages(
                         mContext, mWindowAndroid, assertNonNull(mProfileSupplier.get()));
+    }
+
+    /* package */ void updateActivationChipCompact() {
+        if (!OmniboxCapabilities.isDesktopPlatform()) return;
+        boolean shouldBeCompact =
+                isScreenTooNarrowForExpandedChip() || isUrlBarTextOverflowing() || mIsTextWrapping;
+        if (shouldBeCompact == mLocationBarLayout.isActivationChipCompact()) return;
+        mLocationBarLayout.setActivationChipCompact(shouldBeCompact);
+    }
+
+    private boolean isUrlBarTextOverflowing() {
+        int currentWidth = mLocationBarLayout.getUrlBarWidth();
+        int chipDelta = mLocationBarLayout.getActivationChipCompactWidthDelta();
+        boolean isCompact = mLocationBarLayout.isActivationChipCompact();
+        int expandedUrlBarWidth = isCompact ? (currentWidth - chipDelta) : currentWidth;
+        return mLocationBarLayout.getUrlBarTextWidth() > expandedUrlBarWidth;
+    }
+
+    private boolean isScreenTooNarrowForExpandedChip() {
+        Configuration config = mContext.getResources().getConfiguration();
+        int screenWidthPx = ViewUtils.dpToPx(mContext, config.screenWidthDp);
+        int minScreenWidthForExpandedActivationChip =
+                mResourceProvider.getDimen(R.dimen.fusebox_compact_activation_chip_width);
+        return screenWidthPx < minScreenWidthForExpandedActivationChip;
+    }
+
+    public void setIsTextWrapping(boolean isTextWrapping) {
+        if (mIsTextWrapping == isTextWrapping) return;
+        mIsTextWrapping = isTextWrapping;
+        updateActivationChipCompact();
     }
 
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumer() {

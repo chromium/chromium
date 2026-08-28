@@ -182,4 +182,12 @@ public class LocationBarCoordinatorUnitTest {
         mCoordinator.onPopupStateChange(PopupState.HIDDEN);
         verify(mUrlCoordinator, never()).clearTextSelection();
     }
+
+    @Test
+    public void testOnTextWrappingChanged() {
+        mCoordinator.onTextWrappingChanged(true);
+        verify(mFuseboxCoordinator).onFuseboxTextWrappingChanged(true);
+        verify(mLocationBarMediator).setIsTextWrapping(true);
+        verify(mLocationBarMediator).updateButtonVisibility();
+    }
 }
