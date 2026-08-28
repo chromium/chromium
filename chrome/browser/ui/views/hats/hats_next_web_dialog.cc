@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/common/chrome_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -383,8 +384,8 @@ HatsNextWebDialog::HatsNextWebDialog(
       failure_callback_(std::move(failure_callback)),
       product_specific_bits_data_(product_specific_bits_data),
       product_specific_string_data_(product_specific_string_data),
-      ukm_hats_builder_(browser->GetTabStripModel()
-                            ->GetActiveWebContents()
+      ukm_hats_builder_(browser->GetActiveTabInterface()
+                            ->GetContents()
                             ->GetPrimaryMainFrame()
                             ->GetPageUkmSourceId()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

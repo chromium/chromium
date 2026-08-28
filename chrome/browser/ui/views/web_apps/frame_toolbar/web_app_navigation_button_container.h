@@ -13,7 +13,7 @@
 
 class BackForwardButton;
 class ReloadButton;
-class Browser;
+class BrowserWindowInterface;
 class BrowserView;
 class ToolbarButtonProvider;
 
@@ -37,7 +37,7 @@ class WebAppNavigationButtonContainer : public views::View,
 
  private:
   // The containing browser.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // These members are owned by the views hierarchy.
   raw_ptr<BackForwardButton> back_button_ = nullptr;

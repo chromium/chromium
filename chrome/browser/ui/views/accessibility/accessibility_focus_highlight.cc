@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -223,7 +224,7 @@ void AccessibilityFocusHighlight::RemoveLayer() {
 }
 
 void AccessibilityFocusHighlight::AddOrRemoveObservers() {
-  Browser* browser = browser_view_->browser();
+  BrowserWindowInterface* browser = browser_view_->browser();
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
 

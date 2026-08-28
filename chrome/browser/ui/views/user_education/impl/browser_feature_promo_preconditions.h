@@ -22,7 +22,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 
@@ -59,7 +58,7 @@ class WindowActivePrecondition
 class ContentNotFullscreenPrecondition
     : public user_education::FeaturePromoPreconditionBase {
  public:
-  explicit ContentNotFullscreenPrecondition(Browser& browser);
+  explicit ContentNotFullscreenPrecondition(BrowserWindowInterface& browser);
   ~ContentNotFullscreenPrecondition() override;
 
   // FeaturePromoPreconditionBase:
@@ -67,7 +66,7 @@ class ContentNotFullscreenPrecondition
       user_education::UnownedTypedDataCollection& data) const override;
 
  private:
-  const raw_ref<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
 };
 
 // Precondition that the Omnibox isn't open.

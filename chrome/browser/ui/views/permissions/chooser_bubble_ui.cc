@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/permissions/chooser_controller.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -237,7 +238,8 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
     return base::DoNothing();
   }
 
-  if (browser->GetTabStripModel()->GetActiveWebContents() != contents) {
+  if (!browser->GetActiveTabInterface() ||
+      browser->GetActiveTabInterface()->GetContents() != contents) {
     return base::DoNothing();
   }
 
@@ -304,7 +306,8 @@ base::OnceClosure ShowDeviceChooserDialog(
     return base::DoNothing();
   }
 
-  if (browser->GetTabStripModel()->GetActiveWebContents() != contents) {
+  if (!browser->GetActiveTabInterface() ||
+      browser->GetActiveTabInterface()->GetContents() != contents) {
     return base::DoNothing();
   }
 

@@ -15,7 +15,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -95,7 +94,7 @@ void WebUIOverflowButton::ShowOverflowMenu(
     ui::mojom::MenuSourceType source,
     toolbar_ui_api::mojom::ToolbarUIService::ShowOverflowMenuCallback
         callback) {
-  Browser* browser = delegate_->GetBrowser()->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = delegate_->GetBrowser();
 
   std::map<OverflowableElementId, OverflowedElementInfo>
       new_overflowed_elements;

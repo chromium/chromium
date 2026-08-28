@@ -48,6 +48,8 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -447,7 +449,7 @@ DownloadToolbarUIController::DownloadToolbarUIController(
       scoped_unowned_user_data_(
           browser_view->browser()->GetUnownedUserDataHost(),
           *this) {
-  Browser* const browser = browser_view_->browser();
+  BrowserWindowInterface* const browser = browser_view_->browser();
   action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowDownloads, BrowserActions::From(browser)->root_action_item());
   CHECK(action_item_);
@@ -838,8 +840,9 @@ void DownloadToolbarUIController::ShowPendingDownloadStartedAnimation() {
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
   }
-  content::WebContents* const web_contents =
-      browser_view_->browser()->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* const tab =
+      browser_view_->browser()->GetActiveTabInterface();
+  content::WebContents* const web_contents = tab ? tab->GetContents() : nullptr;
   if (!web_contents ||
       !platform_util::IsVisible(web_contents->GetNativeView())) {
     return;
@@ -1148,9 +1151,9 @@ bool DownloadToolbarUIController::ShouldShowBubbleAsInactive() const {
 
   // Don't show as active if there is a running context menu, otherwise the
   // context menu will be closed.
-  if (content::WebContents* web_contents = browser_view_->browser()
-                                               ->GetTabStripModel()
-                                               ->GetActiveWebContents()) {
+  tabs::TabInterface* const tab =
+      browser_view_->browser()->GetActiveTabInterface();
+  if (content::WebContents* web_contents = tab ? tab->GetContents() : nullptr) {
     if (web_contents->IsShowingContextMenu()) {
       return true;
     }
@@ -1162,8 +1165,9 @@ bool DownloadToolbarUIController::ShouldShowBubbleAsInactive() const {
 }
 
 void DownloadToolbarUIController::CloseAutofillPopup() {
-  content::WebContents* web_contents =
-      browser_view_->browser()->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* const tab =
+      browser_view_->browser()->GetActiveTabInterface();
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
   if (!web_contents) {
     return;
   }

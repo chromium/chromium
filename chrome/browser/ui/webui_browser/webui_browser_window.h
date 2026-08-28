@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
@@ -27,7 +28,7 @@ class WebView;
 class Widget;
 }  // namespace views
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsContainer;
 class WebUIToolbarExtensionsContainer;
 class WebUIBrowserModalDialogHost;
@@ -46,7 +47,7 @@ class WebUIBrowserWindow : public BrowserWindow,
                            public BookmarkBarController::Delegate,
                            public webui_toolbar::IconTable::Delegate {
  public:
-  explicit WebUIBrowserWindow(Browser* browser);
+  explicit WebUIBrowserWindow(BrowserWindowInterface* browser);
   ~WebUIBrowserWindow() override;
 
   // Returns the containing browser window for a WebContents that hosts
@@ -220,7 +221,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   WebUIBrowserUI* GetWebUIBrowserUI() const;
   WebUIBrowserSidePanelUI* GetWebUIBrowserSidePanelUI();
 
-  Browser* browser() { return browser_.get(); }
+  BrowserWindowInterface* browser() { return browser_.get(); }
   views::Widget* widget() { return widget_.get(); }
 
   void PaintAsActiveChangedForTesting() { PaintAsActiveChanged(); }
@@ -284,7 +285,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   std::optional<gfx::Size> deferred_contents_size_;
   ui::ElementTracker::Subscription contents_element_shown_subscription_;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<WidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;

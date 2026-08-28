@@ -17,6 +17,7 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -180,9 +181,13 @@ ToolbarButton* CastBrowserController::GetToolbarButton() const {
 }
 
 void CastBrowserController::ToggleDialog() {
+  tabs::TabInterface* const tab = browser_->GetActiveTabInterface();
+  if (!tab || !tab->GetContents()) {
+    return;
+  }
   MediaRouterDialogController* dialog_controller =
       MediaRouterDialogController::GetOrCreateForWebContents(
-          browser_->GetTabStripModel()->GetActiveWebContents());
+          tab->GetContents());
   if (dialog_controller->IsShowingMediaRouterDialog()) {
     dialog_controller->HideMediaRouterDialog();
   } else {

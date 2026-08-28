@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -59,11 +60,10 @@ void WebUIBrowserClientView::OnLocationIconMoved(ui::TrackedElement* element) {
   BrowserWindowInterface* const browser =
       web_contents_delegate_->window()->browser();
   CHECK(browser);
-  content::WebContents* contents =
-      browser->GetTabStripModel()->GetActiveWebContents();
-  if (contents) {
-    auto* manager =
-        permissions::PermissionRequestManager::FromWebContents(contents);
+  tabs::TabInterface* const active_tab = browser->GetActiveTabInterface();
+  if (active_tab) {
+    auto* manager = permissions::PermissionRequestManager::FromWebContents(
+        active_tab->GetContents());
     CHECK(manager);
     manager->UpdateAnchor();
   }

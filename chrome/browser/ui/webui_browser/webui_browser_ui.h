@@ -28,7 +28,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class BrowserContext;
@@ -93,7 +93,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();
 
-  Browser* browser() { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
   WebUIBrowserWindow* browser_window() {
     return WebUIBrowserWindow::FromBrowser(browser_);
   }
@@ -164,7 +164,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   base::WeakPtrFactory<WebUIBrowserUI> weak_factory_{this};
 };

@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/feature_first_run/autofill_ai_first_run_dialog.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -75,6 +77,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/views/user_education/ios_promo_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -268,7 +271,7 @@ BrowserView& GetBrowserView(ContextPtr context) {
 }
 
 // Convenience method to get the browser from the context.
-Browser* GetBrowser(ContextPtr context) {
+BrowserWindowInterface* GetBrowser(ContextPtr context) {
   return GetBrowserView(context).browser();
 }
 
@@ -279,10 +282,8 @@ CreateNavigationAction(GURL target) {
       [](GURL url, ContextPtr ctx,
          user_education::FeaturePromoHandle promo_handle) {
         auto* browser = GetBrowser(ctx);
-        NavigateParams params(browser->GetProfile(), url,
-                              ui::PAGE_TRANSITION_LINK);
+        NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
         params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-        params.browser = browser;
         Navigate(&params);
       },
       std::move(target));
@@ -465,7 +466,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                Browser* const browser = GetBrowser(ctx);
+                BrowserWindowInterface* const browser = GetBrowser(ctx);
                 TabStripModel* const tab_strip_model =
                     browser->GetTabStripModel();
                 if (!tab_strip_model) {
@@ -675,7 +676,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                Browser* const browser = GetBrowser(ctx);
+                BrowserWindowInterface* const browser = GetBrowser(ctx);
                 if (!search::DefaultSearchProviderIsGoogle(
                         browser->GetProfile())) {
                   return;
@@ -694,7 +695,7 @@ void MaybeRegisterChromeFeaturePromos(
                       tab_strip_model->GetActiveWebContents();
                   if (web_contents &&
                       web_contents->GetURL() != chrome::GetNewTabURL(browser)) {
-                    NavigateParams params(browser->GetProfile(),
+                    NavigateParams params(browser,
                                           chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);
                     params.disposition =
@@ -783,7 +784,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                Browser* const browser = GetBrowser(ctx);
+                BrowserWindowInterface* const browser = GetBrowser(ctx);
                 if (browser) {
                   chrome::ShowExtensions(browser);
                 }
@@ -1222,7 +1223,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                Browser* const browser = GetBrowser(ctx);
+                BrowserWindowInterface* const browser = GetBrowser(ctx);
                 auto* service =
                     contextual_tasks::ContextualTasksUiServiceFactory::
                         GetForBrowserContext(browser->GetProfile());
@@ -1678,7 +1679,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                Browser* const browser = GetBrowser(ctx);
+                BrowserWindowInterface* const browser = GetBrowser(ctx);
                 if (!browser) {
                   return;
                 }
@@ -1704,7 +1705,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                if (Browser* const browser = GetBrowser(ctx)) {
+                if (BrowserWindowInterface* const browser = GetBrowser(ctx)) {
                   browser->GetProfile()->GetPrefs()->SetBoolean(
                       prefs::kTabScrollButtonsPinnedToTabstrip, false);
                 }
@@ -2084,7 +2085,7 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle /*promo_handle*/) {
-                Browser* browser = GetBrowser(ctx);
+                BrowserWindowInterface* browser = GetBrowser(ctx);
                 if (browser) {
                   // Delegate execution to the active SearchPromotionManager
                   // service to trigger the relevant promotion action

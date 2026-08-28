@@ -9,6 +9,7 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/window_icon_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -37,7 +38,8 @@ constexpr int kItemSpacing = 4;
 gfx::ImageSkia LoadDefaultIcon(aura::Window* window) {
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  Browser* browser = browser_view ? browser_view->browser() : nullptr;
+  BrowserWindowInterface* browser =
+      browser_view ? browser_view->browser() : nullptr;
 
   // Apps could be launched in a view other than BrowserView, so we count those
   // windows without Browser association as apps.

@@ -7,7 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-class Browser;
+class BrowserWindowInterface;
 @class BrowserWindowDefaultTouchBar;
 @class WebTextfieldTouchBarController;
 
@@ -19,7 +19,8 @@ class WebContents;
 // NSTouchBarDelegate and handles the items in the touch bar.
 @interface BrowserWindowTouchBarController : NSObject
 
-- (instancetype)initWithBrowser:(Browser*)browser window:(NSWindow*)window;
+- (instancetype)initWithBrowser:(BrowserWindowInterface*)browser
+                         window:(NSWindow*)window;
 
 // Creates and returns a touch bar for the browser window.
 - (NSTouchBar*)makeTouchBar;

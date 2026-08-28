@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/mac/mac_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,7 +27,8 @@
 
 @implementation BrowserWindowTouchBarController
 
-- (instancetype)initWithBrowser:(Browser*)browser window:(NSWindow*)window {
+- (instancetype)initWithBrowser:(BrowserWindowInterface*)browser
+                         window:(NSWindow*)window {
   if ((self = [super init])) {
     DCHECK(browser);
     _window = window;

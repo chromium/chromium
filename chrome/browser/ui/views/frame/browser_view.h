@@ -73,7 +73,7 @@
 class AccessibilityFocusHighlight;
 class BookmarkBarController;
 class BookmarkBarView;
-class Browser;
+class BrowserWindowInterface;
 class BrowserViewLayout;
 class ContentsContainerView;
 struct DropData;
@@ -145,7 +145,7 @@ class BrowserView : public BrowserWindow,
   // locate this object using just the handle.
   static constexpr char kBrowserViewKey[] = "__BROWSER_VIEW__";
 
-  explicit BrowserView(Browser* browser);
+  explicit BrowserView(BrowserWindowInterface* browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
@@ -178,9 +178,9 @@ class BrowserView : public BrowserWindow,
 
   bool IsLoadingAnimationRunning() const;
 
-  // Returns a Browser instance of this view.
-  Browser* browser() { return browser_; }
-  const Browser* browser() const { return browser_; }
+  // Returns a BrowserWindowInterface instance of this view.
+  BrowserWindowInterface* browser() { return browser_; }
+  const BrowserWindowInterface* browser() const { return browser_; }
 
   Profile* GetProfile() const;
 
@@ -1077,8 +1077,8 @@ class BrowserView : public BrowserWindow,
   // The BrowserWidget that owns this view.
   std::unique_ptr<BrowserWidget> browser_widget_;
 
-  // The owning Browser object. `browser_` will outlive this.
-  const raw_ptr<Browser> browser_;
+  // The owning BrowserWindowInterface object. `browser_` will outlive this.
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   base::CallbackListSubscription chip_visibility_subscription_;
 

@@ -25,6 +25,7 @@ source_set("webui_browser") {
     ":browser_mojo_bindings",
     ":headers",
     "//base",
+    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/side_panel",

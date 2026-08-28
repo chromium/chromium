@@ -58,8 +58,7 @@ void ShowIdleBubble(BrowserWindowInterface* bwi,
                     base::TimeDelta idle_threshold,
                     IdleDialog::ActionSet actions,
                     base::OnceClosure on_close) {
-  if (!bwi || !bwi->GetTabStripModel()->GetActiveWebContents() ||
-      GetIdleBubble(bwi)) {
+  if (!bwi || !bwi->GetActiveTabInterface() || GetIdleBubble(bwi)) {
     return;
   }
 

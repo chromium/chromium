@@ -170,12 +170,13 @@ API_AVAILABLE(macos(26.0))
 @end
 
 @implementation BrowserWindowTouchBarViewsDelegate {
-  raw_ptr<Browser> _browser;
+  raw_ptr<BrowserWindowInterface> _browser;
   NSWindow* __weak _window;
   BrowserWindowTouchBarController* __strong _touchBarController;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser window:(NSWindow*)window {
+- (instancetype)initWithBrowser:(BrowserWindowInterface*)browser
+                         window:(NSWindow*)window {
   if ((self = [super init])) {
     _browser = browser;
     _window = window;

@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -38,7 +39,6 @@
 #error This file should only be included on desktop.
 #endif
 
-class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class DownloadBubbleUIController;
@@ -53,10 +53,17 @@ class AutofillBubbleHandler;
 }  // namespace autofill
 
 namespace content {
+class EyeDropper;
+class EyeDropperListener;
+class RenderFrameHost;
 class WebContents;
-struct NativeWebKeyboardEvent;
+struct DropData;
 enum class KeyboardEventProcessingResult;
 }  // namespace content
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 namespace gfx {
 class Size;
@@ -414,7 +421,7 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Construct a BrowserWindow implementation for the specified |browser|.
   static std::unique_ptr<BrowserWindow, BrowserWindowDeleter>
-  CreateBrowserWindow(Browser* browser,
+  CreateBrowserWindow(BrowserWindowInterface* browser,
                       bool user_gesture,
                       bool in_tab_dragging);
 

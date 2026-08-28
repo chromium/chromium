@@ -18,7 +18,7 @@
 class AppMenu;
 class AppMenuModel;
 class BackForwardMenuModel;
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class MenuModelAdapter;
@@ -65,7 +65,7 @@ class WebUIBrowserPageHandler
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver,
       WebUIBrowserUI* controller);
 
-  Browser* GetBrowser();
+  BrowserWindowInterface* GetBrowser();
   WebUIBrowserWindow* GetBrowserWindow();
 
   std::unique_ptr<AppMenuModel> menu_model_;

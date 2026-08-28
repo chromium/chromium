@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class Browser;
+class BrowserWindowInterface;
 class BrowserView;
 class MediaNotificationService;
 class MediaToolbarButtonController;
@@ -54,7 +54,7 @@ class MediaToolbarButtonView : public ToolbarButton,
   void ButtonPressed();
   void ClosePromoBubble(bool engaged);
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   const raw_ptr<MediaNotificationService> service_;
 

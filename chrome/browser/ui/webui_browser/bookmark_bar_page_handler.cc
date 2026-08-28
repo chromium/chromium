@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -49,7 +49,7 @@ WebUIBrowserBookmarkBarPageHandler::WebUIBrowserBookmarkBarPageHandler(
     mojo::PendingReceiver<bookmark_bar::mojom::PageHandler> receiver,
     mojo::PendingRemote<bookmark_bar::mojom::Page> page,
     content::WebUI* web_ui,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_ui_(web_ui),

@@ -12,12 +12,13 @@
 #include "base/mac/mac_util.h"
 #endif
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -294,7 +295,7 @@ void WebUIBrowserPageHandler::ShowBackForwardMenu(bool is_back) {
   back_forward_menu_model_.reset();
 
   content::WebContents* web_contents =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser()->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return;
   }
@@ -344,7 +345,7 @@ WebUIBrowserPageHandler::WebUIBrowserPageHandler(
           std::move(receiver)),
       controller_(controller->GetWeakPtr()) {}
 
-Browser* WebUIBrowserPageHandler::GetBrowser() {
+BrowserWindowInterface* WebUIBrowserPageHandler::GetBrowser() {
   if (!controller_) {
     return nullptr;
   }

@@ -134,7 +134,8 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
   raw_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
 };
 
-WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
+WebUIBrowserWindow::WebUIBrowserWindow(BrowserWindowInterface* browser)
+    : browser_(browser) {
   // GuestContents is not approved for use in production. Restrict its
   // proxy content feature kAttachUnownedInnerWebContents to development,
   // canary, and test builds.

@@ -48,6 +48,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
@@ -683,7 +684,8 @@ void ExtensionsToolbarDesktop::CreateActionViewForId(
 }
 
 content::WebContents* ExtensionsToolbarDesktop::GetCurrentWebContents() {
-  return browser_->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* const tab = browser_->GetActiveTabInterface();
+  return tab ? tab->GetContents() : nullptr;
 }
 
 views::LabelButton* ExtensionsToolbarDesktop::GetOverflowReferenceView() const {

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -503,8 +504,8 @@ bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(
     content::WebContents* web_contents) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  return browser && browser->GetTabStripModel() &&
-         browser->GetTabStripModel()->GetActiveWebContents() == web_contents;
+  return browser && browser->GetActiveTabInterface() &&
+         browser->GetActiveTabInterface()->GetContents() == web_contents;
 }
 
 void WebAppUiManagerImpl::TriggerInstallDialog(
@@ -1048,13 +1049,12 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
   // window.
   if (&feature ==
       &feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab) {
-    content::WebContents* const active_contents =
-        browser->GetTabStripModel()->GetActiveWebContents();
-    if (!active_contents) {
+    tabs::TabInterface* const active_tab = browser->GetActiveTabInterface();
+    if (!active_tab || !active_tab->GetContents()) {
       return;
     }
     WebAppTabHelper* const tab_helper =
-        WebAppTabHelper::FromWebContents(active_contents);
+        WebAppTabHelper::FromWebContents(active_tab->GetContents());
     CHECK(tab_helper);
     tab_helper->SetCallbackToRunOnTabChanges(base::BindOnce(
         &WebAppUiManagerImpl::OnTabChangedDuringIph,

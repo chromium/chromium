@@ -57,7 +57,7 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
   back_button_ = AddChildView(std::make_unique<BackForwardButton>(
       BackForwardButton::Direction::kBack,
       base::BindRepeating(
-          [](Browser* browser, const ui::Event& event) {
+          [](BrowserWindowInterface* browser, const ui::Event& event) {
             chrome::ExecuteCommandWithDisposition(
                 browser, IDC_BACK,
                 ui::DispositionFromEventFlags(event.flags()));

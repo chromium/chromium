@@ -160,7 +160,7 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
     ui::TrackedElementHandlerDocumentSingleton::Register(
         this, GetKnownElementIdentifiers(),
         base::BindRepeating(
-            [](Browser* browser) {
+            [](BrowserWindowInterface* browser) {
               return BrowserElements::From(browser)->GetContext();
             },
             base::Unretained(browser_)));

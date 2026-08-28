@@ -111,13 +111,15 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   }
 
   auto InBrowser(base::OnceCallback<void(Browser*)> callback) {
-    return WithView(kBrowserViewElementId,
-                    base::BindOnce(
-                        [](base::OnceCallback<void(Browser*)> callback,
-                           BrowserView* browser_view) {
-                          std::move(callback).Run(browser_view->browser());
-                        },
-                        std::move(callback)))
+    return WithView(
+               kBrowserViewElementId,
+               base::BindOnce(
+                   [](base::OnceCallback<void(Browser*)> callback,
+                      BrowserView* browser_view) {
+                     std::move(callback).Run(
+                         browser_view->browser()->GetBrowserForMigrationOnly());
+                   },
+                   std::move(callback)))
         .SetDescription("InBrowser()");
   }
 
@@ -127,7 +129,8 @@ class FeaturePromoLifecycleUiTest : public TestBase {
                base::BindOnce(
                    [](base::OnceCallback<bool(Browser*)> callback,
                       BrowserView* browser_view) {
-                     return std::move(callback).Run(browser_view->browser());
+                     return std::move(callback).Run(
+                         browser_view->browser()->GetBrowserForMigrationOnly());
                    },
                    std::move(callback)))
         .SetDescription("CheckBrowser()");

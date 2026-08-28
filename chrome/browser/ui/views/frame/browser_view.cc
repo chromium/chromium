@@ -578,7 +578,7 @@ class OverlayViewTargeterDelegate : public views::ViewTargeterDelegate {
   }
 };
 
-bool ShouldShowWindowIcon(const Browser* browser,
+bool ShouldShowWindowIcon(const BrowserWindowInterface* browser,
                           bool app_uses_window_controls_overlay,
                           bool app_uses_tabbed) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -600,7 +600,7 @@ bool ShouldShowWindowIcon(const Browser* browser,
 
 #if BUILDFLAG(IS_MAC)
 
-void GetAnyTabAudioStates(const Browser* browser,
+void GetAnyTabAudioStates(const BrowserWindowInterface* browser,
                           bool* any_tab_playing_audio,
                           bool* any_tab_playing_muted_audio) {
   const TabStripModel* model = browser->GetTabStripModel();
@@ -882,7 +882,7 @@ class BrowserView::PipExclusionObserverImpl
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
-BrowserView::BrowserView(Browser* browser)
+BrowserView::BrowserView(BrowserWindowInterface* browser)
     : views::ClientView(nullptr, nullptr),
       exclusive_access_context_(
           std::make_unique<ExclusiveAccessContextImpl>(*this)),

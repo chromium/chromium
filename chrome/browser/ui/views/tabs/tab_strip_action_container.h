@@ -33,6 +33,7 @@ class GlicSplitButtonController;
 class ActorTaskListBubble;
 class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
+class ScopedTabStripModalUI;
 
 enum class LockedExpansionMode {
   kNone = 0,
