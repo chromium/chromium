@@ -269,6 +269,7 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // the focused view is about to change.
   void AddFocusChangeListener(FocusChangeListener* listener);
   void RemoveFocusChangeListener(FocusChangeListener* listener);
+  bool HasFocusChangeListener(const FocusChangeListener* listener) const;
 
   // Whether the given |accelerator| is registered.
   bool IsAcceleratorRegistered(const ui::Accelerator& accelerator) const;

@@ -579,6 +579,11 @@ void FocusManager::RemoveFocusChangeListener(FocusChangeListener* listener) {
   focus_change_listeners_.RemoveObserver(listener);
 }
 
+bool FocusManager::HasFocusChangeListener(
+    const FocusChangeListener* listener) const {
+  return focus_change_listeners_.HasObserver(listener);
+}
+
 bool FocusManager::ProcessArrowKeyTraversal(const ui::KeyEvent& event) {
   if (event.IsShiftDown() || event.IsControlDown() || event.IsAltDown() ||
       event.IsAltGrDown()) {
