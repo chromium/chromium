@@ -374,7 +374,8 @@ base::Value::Dict CreateShillConfiguration(
       &chromeos::onc::kNetworkConfigurationSignature, effective);
 
   base::Value::Dict shill_dictionary = onc::TranslateONCObjectToShill(
-      &chromeos::onc::kNetworkConfigurationSignature, effective);
+      &chromeos::onc::kNetworkConfigurationSignature, effective, onc_source);
+
   shill_dictionary.Set(shill::kProfileProperty, profile.path);
 
   // If AutoConnect is enabled by policy, set the ManagedCredentials property to
