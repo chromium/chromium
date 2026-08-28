@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_WEBRTC_RECORDING_H_
-#define CONTENT_PUBLIC_BROWSER_WEBRTC_RECORDING_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBRTC_DIAGNOSTICS_H_
+#define CONTENT_PUBLIC_BROWSER_WEBRTC_DIAGNOSTICS_H_
 
 #include <optional>
 #include <string>
@@ -33,15 +33,15 @@ class BrowserContext;
 // streams, and a profile's state is destroyed with the profile.
 //
 // All methods must be called on the UI thread.
-class CONTENT_EXPORT WebRtcRecording {
+class CONTENT_EXPORT WebRtcDiagnostics {
  public:
-  virtual ~WebRtcRecording() = default;
+  virtual ~WebRtcDiagnostics() = default;
 
-  // Maximum number of filter origins accepted by StartRecording and
-  // GetRecordingData.
+  // Maximum number of filter origins accepted by StartCaptureForClient and
+  // GetSnapshot.
   static constexpr size_t kMaxFilterOrigins = 128;
 
-  enum class StartRecordingResult {
+  enum class StartCaptureResult {
     kSuccess,
     kAlreadyCapturing,
     kInvalidOrigin,
@@ -51,7 +51,7 @@ class CONTENT_EXPORT WebRtcRecording {
     kUnavailable,
   };
 
-  enum class StopRecordingResult { kSuccess, kNotCapturing };
+  enum class StopCaptureResult { kSuccess, kNotCapturing };
 
   // Observes capture events for a single BrowserContext. An observer is
   // registered against one context and only ever receives events belonging to
@@ -59,16 +59,16 @@ class CONTENT_EXPORT WebRtcRecording {
   // Callbacks are invoked on the UI thread.
   class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
-    virtual void OnPeerConnectionAdded(std::string_view id,
+    virtual void OnPeerConnectionAdded(std::string_view pc_id,
                                        const base::Value& data) {}
-    virtual void OnPeerConnectionRemoved(std::string_view id) {}
+    virtual void OnPeerConnectionRemoved(std::string_view pc_id) {}
     virtual void OnSnapshotTruncated(int dropped_log,
                                      int dropped_stats,
                                      int dropped_media) {}
     virtual void OnCaptureStopped(std::string_view stopped_client_id) {}
   };
 
-  static WebRtcRecording* GetInstance();
+  static WebRtcDiagnostics* GetInstance();
 
   // Begins a capture session for `client_id` within `context`, optionally
   // filtered to `origins`. A session in one BrowserContext neither blocks nor
@@ -76,34 +76,33 @@ class CONTENT_EXPORT WebRtcRecording {
   //
   // `origins` is taken by value because the session stores it; callers that no
   // longer need their copy should std::move() into this call.
-  virtual StartRecordingResult StartRecording(
+  virtual StartCaptureResult StartCaptureForClient(
       BrowserContext* context,
       std::string_view client_id,
       std::vector<url::Origin> origins) = 0;
 
   // Terminates the capture session for a single client within `context`. Only
   // call with client IDs obtained from a trusted source.
-  virtual StopRecordingResult StopRecordingForClient(
+  virtual StopCaptureResult StopCaptureForClient(
       BrowserContext* context,
       std::string_view client_id) = 0;
 
-  // Delivers a snapshot of the data recorded for `context`, optionally further
+  // Delivers a snapshot of the data captured for `context`, optionally further
   // filtered to `origins`, by running `callback` before returning. Returns
   // false if the request is rejected (invalid origin, too many origins, or no
   // active session for `client_id`), in which case `callback` is not run.
   //
   // The result is always scoped to the caller's own session: `origins` can
   // narrow what the session already covers but can never widen it.
-  virtual bool GetRecordingData(
-      BrowserContext* context,
-      std::string_view client_id,
-      const std::vector<url::Origin>& origins,
-      base::OnceCallback<void(base::Value)> callback) = 0;
+  virtual bool GetSnapshot(BrowserContext* context,
+                           std::string_view client_id,
+                           const std::vector<url::Origin>& origins,
+                           base::OnceCallback<void(base::Value)> callback) = 0;
 
   // Whether `client_id` has an active capture session in `context`. This
   // reports the caller's own session, not whether any capture is running
   // anywhere in the process.
-  virtual bool IsRecordingForClient(BrowserContext* context,
+  virtual bool IsCapturingForClient(BrowserContext* context,
                                     std::string_view client_id) = 0;
 
   // The IDs of every client currently capturing in `context`. Returned by
@@ -114,19 +113,19 @@ class CONTENT_EXPORT WebRtcRecording {
   // The following methods expose capture metadata for trusted browser-process
   // callers only. Do not expose their results to renderers or untrusted IPC.
 
-  // The origin filter `client_id` registered in `context`, or nullopt if it has
-  // no session there. An empty (but present) vector means the session is
-  // unfiltered and matches every origin; nullopt means there is no session and
-  // nothing should be dispatched.
+  // Returns the origin filter that `client_id` registered in `context`, or
+  // nullopt if it has no session there. An empty (but present) vector means
+  // the session is unfiltered and matches every origin; nullopt means there is
+  // no session and nothing should be dispatched.
   virtual std::optional<std::vector<url::Origin>> GetFilterOriginsForClient(
       BrowserContext* context,
       std::string_view client_id) = 0;
   virtual std::optional<url::Origin> GetOriginForPeerConnection(
       BrowserContext* context,
-      std::string_view id) = 0;
+      std::string_view pc_id) = 0;
   virtual std::optional<ChildProcessId> GetRenderProcessIdForPeerConnection(
       BrowserContext* context,
-      std::string_view id) = 0;
+      std::string_view pc_id) = 0;
 
   virtual void AddObserver(BrowserContext* context, Observer* observer) = 0;
   virtual void RemoveObserver(BrowserContext* context, Observer* observer) = 0;
@@ -134,4 +133,4 @@ class CONTENT_EXPORT WebRtcRecording {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_WEBRTC_RECORDING_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBRTC_DIAGNOSTICS_H_

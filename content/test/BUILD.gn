@@ -2948,6 +2948,7 @@ test("content_unittests") {
     "../browser/webid/test/stub_digital_identity_provider.cc",
     "../browser/webid/test/stub_digital_identity_provider.h",
     "../browser/webid/user_info_request_unittest.cc",
+    "../browser/webrtc/webrtc_diagnostics_impl_unittest.cc",
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webtransport/web_transport_throttle_context_unittest.cc",
