@@ -310,6 +310,12 @@ class GraphBuilderOrt {
   base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
       constant_operands_;
 
+  // The output of logical operators is cast to uint8 to match the specified
+  // WebNN behavior however if these are passed as inputs to other logical
+  // operators the original uncast tensors, stored in this map, can be used
+  // directly.
+  base::flat_map<OperandId, std::string> operand_to_bool_name_;
+
   const ContextProperties context_properties_;
 
   ModelEditor model_editor_;

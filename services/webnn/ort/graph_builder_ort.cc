@@ -1323,15 +1323,27 @@ void GraphBuilderOrt::AddLogicalBinaryOperation(
       logical_binary.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
     CHECK_EQ(GetOperand(logical_binary.lhs_operand_id).descriptor.data_type(),
              OperandDataType::kUint8);
-    lhs = CreateCastNode(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    auto lhs_it = operand_to_bool_name_.find(logical_binary.lhs_operand_id);
+    if (lhs_it != operand_to_bool_name_.end()) {
+      lhs = lhs_it->second;
+    } else {
+      lhs = CreateCastNode(lhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    }
 
     CHECK_EQ(GetOperand(logical_binary.rhs_operand_id).descriptor.data_type(),
              OperandDataType::kUint8);
-    rhs = CreateCastNode(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    auto rhs_it = operand_to_bool_name_.find(logical_binary.rhs_operand_id);
+    if (rhs_it != operand_to_bool_name_.end()) {
+      rhs = rhs_it->second;
+    } else {
+      rhs = CreateCastNode(rhs, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    }
   }
   std::array<const char*, 2> inputs = {lhs.c_str(), rhs.c_str()};
 
   const std::string bool_output = GenerateOperandName();
+  operand_to_bool_name_[logical_binary.output_operand_id] = bool_output;
+
   std::array<const char*, 1> outputs = {bool_output.c_str()};
   model_editor_.AddNode(op_type, node_name, inputs, outputs);
 
@@ -1357,10 +1369,16 @@ void GraphBuilderOrt::AddLogicalUnaryOperation(
   if (op_type == kOpTypeLogicalNot) {
     CHECK_EQ(GetOperand(logical_unary.input_operand_id).descriptor.data_type(),
              OperandDataType::kUint8);
-    input = CreateCastNode(input, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    auto input_it = operand_to_bool_name_.find(logical_unary.input_operand_id);
+    if (input_it != operand_to_bool_name_.end()) {
+      input = input_it->second;
+    } else {
+      input = CreateCastNode(input, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    }
   }
 
   const std::string bool_output = GenerateOperandName();
+  operand_to_bool_name_[logical_unary.output_operand_id] = bool_output;
 
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {bool_output.c_str()};
@@ -1407,6 +1425,7 @@ void GraphBuilderOrt::AddLogicalNotEqualOperation(
       GetOperand(output_operand_id).descriptor.data_type();
   std::string output = GetOperandNameById(output_operand_id);
   CHECK_EQ(output_data_type, OperandDataType::kUint8);
+  operand_to_bool_name_[not_equal.output_operand_id] = not_output;
   InsertCastNode(not_output, output, WebnnToOnnxDataType(output_data_type));
 }
 
@@ -3175,7 +3194,12 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
 
   // ONNX where operation only supports bool condition input.
   CHECK_EQ(condition_descriptor.data_type(), OperandDataType::kUint8);
-  condition = CreateCastNode(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  auto condition_it = operand_to_bool_name_.find(where.condition_operand_id);
+  if (condition_it != operand_to_bool_name_.end()) {
+    condition = condition_it->second;
+  } else {
+    condition = CreateCastNode(condition, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  }
 
   std::array<const char*, 3> inputs = {condition.c_str(), true_value.c_str(),
                                        false_value.c_str()};
