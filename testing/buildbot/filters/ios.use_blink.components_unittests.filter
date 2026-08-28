@@ -473,3 +473,27 @@
 # TODO(crbug.com/517208683): The test is flaky on the ios-blink and tvos bots.
 # The test was updated by https://crrev.com/c/7676358.
 -SessionStorageImplFakeDbTest.TransientErrorsAfterRecovery
+
+# TODO(crbug.com/553479932): The tests below are failing on the ios-blink.
+# The tests were added by https://crrev.com/c/8279577.
+-AutofillAgentTest.DriverFillSpecificFormField_ReplaceSelectionForAtMemory
+-AutofillAgentTest.ScrollFieldIntoView
+-FillJsTest.InsertInputElementValueAtCursorCursorPosition
+-FillJsTest.InsertInputElementValueAtCursorInsertAtCursor
+-FillJsTest.InsertInputElementValueAtCursorReplaceSelection
+-All/FillContentEditableJsTest.FillContentEditableReplaceContent/0
+-All/FillContentEditableJsTest.FillContentEditableReplaceContent/1
+-All/FillContentEditableJsTest.FillContentEditableWithChildTags/0
+-All/FillContentEditableJsTest.FillContentEditableWithChildTags/1
+-All/FillContentEditableJsTest.FillContentEditableWithSibling/0
+-All/FillContentEditableJsTest.FillContentEditableWithSibling/1
+-All/FillContentEditableJsTest.FillNestedContentEditable/0
+-All/FillContentEditableJsTest.FillNestedContentEditable/1
+-All/FillContentEditableJsTest.FillSimpleContentEditable/0
+-All/FillContentEditableJsTest.FillSimpleContentEditable/1
+-All/FormContentEditableTest.FocusContentEditable/0
+-All/FormContentEditableTest.FocusContentEditable/1
+-All/FormContentEditableTest.FocusContentEditableChildElement/0
+-All/FormContentEditableTest.FocusContentEditableChildElement/1
+-All/FormContentEditableTest.FocusContentEditableSiblingElement/0
+-All/FormContentEditableTest.FocusContentEditableSiblingElement/1
