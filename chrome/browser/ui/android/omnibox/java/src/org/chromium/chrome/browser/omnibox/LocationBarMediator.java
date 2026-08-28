@@ -3782,6 +3782,7 @@ class LocationBarMediator
                         TimeUtils.uptimeMillis(),
                         AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
             }
+            return;
         }
 
         mCurrentInput.setAutocompleteState(AutocompleteState.ENABLED);
