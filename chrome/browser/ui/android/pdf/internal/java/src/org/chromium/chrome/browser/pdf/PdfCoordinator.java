@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -1359,9 +1360,18 @@ public class PdfCoordinator
             modalDialogManager = ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
         }
         if (modalDialogManager != null) {
-            showReloadModalDialog(modalDialogManager, onConfirmWithMetric);
+            showUnsavedChangesModalDialog(
+                    modalDialogManager,
+                    R.string.pdf_unsaved_changes_dialog_reload_title,
+                    R.string.pdf_unsaved_changes_dialog_reload_button,
+                    onConfirmWithMetric,
+                    /* onCancel= */ null);
         } else {
-            showReloadAlertDialog(onConfirmWithMetric);
+            showUnsavedChangesAlertDialog(
+                    R.string.pdf_unsaved_changes_dialog_reload_title,
+                    R.string.pdf_unsaved_changes_dialog_reload_button,
+                    onConfirmWithMetric,
+                    /* onCancel= */ null);
         }
     }
 
@@ -1404,89 +1414,6 @@ public class PdfCoordinator
 
         // Add new fragment and load document again.
         loadPdfInternal();
-    }
-
-    private void showReloadModalDialog(ModalDialogManager manager, Runnable onConfirm) {
-        ModalDialogProperties.Controller controller =
-                new ModalDialogProperties.Controller() {
-                    @Override
-                    public void onDismiss(
-                            PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                        if (mModalDialogModel == model) {
-                            mModalDialogModel = null;
-                        }
-                    }
-
-                    @Override
-                    public void onClick(PropertyModel model, int buttonType) {
-                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                            manager.dismissDialog(
-                                    model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                            onConfirm.run();
-                        } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
-                            manager.dismissDialog(
-                                    model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                        }
-                    }
-                };
-
-        PropertyModel model =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, controller)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(
-                                ModalDialogProperties.TITLE,
-                                mActivity.getString(
-                                        R.string.pdf_unsaved_changes_dialog_reload_title))
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                mActivity.getString(R.string.pdf_unsaved_changes_dialog_message))
-                        .with(
-                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mActivity.getResources(),
-                                R.string.pdf_unsaved_changes_dialog_reload_button)
-                        .with(
-                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mActivity.getResources(),
-                                R.string.pdf_unsaved_changes_dialog_cancel_button)
-                        .with(
-                                ModalDialogProperties.BUTTON_STYLES,
-                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                        .build();
-
-        mModalDialogModel = model;
-        manager.showDialog(model, ModalDialogType.APP);
-    }
-
-    private void showReloadAlertDialog(Runnable onConfirm) {
-        if (mAlertDialog != null) {
-            if (mAlertDialogCancelRunnable != null) {
-                Runnable cancelRunnable = mAlertDialogCancelRunnable;
-                mAlertDialogCancelRunnable = null;
-                cancelRunnable.run();
-            }
-            mAlertDialog.dismiss();
-        }
-        mAlertDialog =
-                new AlertDialog.Builder(mActivity)
-                        .setTitle(R.string.pdf_unsaved_changes_dialog_reload_title)
-                        .setMessage(R.string.pdf_unsaved_changes_dialog_message)
-                        .setPositiveButton(
-                                R.string.pdf_unsaved_changes_dialog_reload_button,
-                                (dialog, which) -> {
-                                    dialog.dismiss();
-                                    onConfirm.run();
-                                })
-                        .setNegativeButton(
-                                R.string.pdf_unsaved_changes_dialog_cancel_button,
-                                (dialog, which) -> dialog.dismiss())
-                        .setOnDismissListener(
-                                dialog -> {
-                                    if (mAlertDialog == dialog) {
-                                        mAlertDialog = null;
-                                    }
-                                })
-                        .show();
     }
 
     private void loadPdfInternal() {
@@ -2082,14 +2009,27 @@ public class PdfCoordinator
                     }
                 };
         if (modalDialogManager != null) {
-            showLeaveModalDialog(modalDialogManager, onProceedWithMetric, onCancel);
+            showUnsavedChangesModalDialog(
+                    modalDialogManager,
+                    R.string.pdf_unsaved_changes_dialog_leave_title,
+                    R.string.pdf_unsaved_changes_dialog_leave_button,
+                    onProceedWithMetric,
+                    onCancel);
         } else {
-            showLeaveAlertDialog(onProceedWithMetric, onCancel);
+            showUnsavedChangesAlertDialog(
+                    R.string.pdf_unsaved_changes_dialog_leave_title,
+                    R.string.pdf_unsaved_changes_dialog_leave_button,
+                    onProceedWithMetric,
+                    onCancel);
         }
     }
 
-    private void showLeaveModalDialog(
-            ModalDialogManager manager, Runnable onProceed, Runnable onCancel) {
+    private void showUnsavedChangesModalDialog(
+            ModalDialogManager manager,
+            @StringRes int titleResId,
+            @StringRes int positiveButtonResId,
+            Runnable onProceed,
+            @Nullable Runnable onCancel) {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -2098,7 +2038,8 @@ public class PdfCoordinator
                         if (mModalDialogModel == model) {
                             mModalDialogModel = null;
                         }
-                        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                        if (onCancel != null
+                                && dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                 && dismissalCause != DialogDismissalCause.ACTIVITY_DESTROYED
                                 && dismissalCause != DialogDismissalCause.TAB_DESTROYED
                                 && dismissalCause != DialogDismissalCause.WEB_CONTENTS_DESTROYED) {
@@ -2123,17 +2064,14 @@ public class PdfCoordinator
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(
-                                ModalDialogProperties.TITLE,
-                                mActivity.getString(
-                                        R.string.pdf_unsaved_changes_dialog_leave_title))
+                        .with(ModalDialogProperties.TITLE, mActivity.getString(titleResId))
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 mActivity.getString(R.string.pdf_unsaved_changes_dialog_message))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mActivity.getResources(),
-                                R.string.pdf_unsaved_changes_dialog_leave_button)
+                                positiveButtonResId)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 mActivity.getResources(),
@@ -2147,14 +2085,27 @@ public class PdfCoordinator
         manager.showDialog(model, ModalDialogType.APP);
     }
 
-    private void showLeaveAlertDialog(Runnable onProceed, Runnable onCancel) {
+    private void showUnsavedChangesAlertDialog(
+            @StringRes int titleResId,
+            @StringRes int positiveButtonResId,
+            Runnable onProceed,
+            @Nullable Runnable onCancel) {
+        if (mAlertDialog != null) {
+            if (mAlertDialogCancelRunnable != null) {
+                Runnable cancelRunnable = mAlertDialogCancelRunnable;
+                mAlertDialogCancelRunnable = null;
+                cancelRunnable.run();
+            }
+            mAlertDialog.dismiss();
+            mAlertDialog = null;
+        }
         mAlertDialogCancelRunnable = onCancel;
         mAlertDialog =
                 new AlertDialog.Builder(mActivity)
-                        .setTitle(R.string.pdf_unsaved_changes_dialog_leave_title)
+                        .setTitle(titleResId)
                         .setMessage(R.string.pdf_unsaved_changes_dialog_message)
                         .setPositiveButton(
-                                R.string.pdf_unsaved_changes_dialog_leave_button,
+                                positiveButtonResId,
                                 (dialog, which) -> {
                                     mAlertDialogCancelRunnable = null;
                                     dialog.dismiss();
@@ -2165,7 +2116,9 @@ public class PdfCoordinator
                                 (dialog, which) -> {
                                     mAlertDialogCancelRunnable = null;
                                     dialog.dismiss();
-                                    onCancel.run();
+                                    if (onCancel != null) {
+                                        onCancel.run();
+                                    }
                                 })
                         .setOnCancelListener(
                                 dialog -> {
