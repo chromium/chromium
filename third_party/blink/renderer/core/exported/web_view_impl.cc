@@ -3493,12 +3493,18 @@ void WebViewImpl::ConfigureAutoResizeMode() {
     return;
   }
 
+  PageScaleConstraints constraints =
+      GetPageScaleConstraintsSet().UserAgentConstraints();
   if (should_auto_resize_) {
     MainFrameImpl()->GetFrame()->View()->EnableAutoSizeMode(min_auto_size_,
                                                             max_auto_size_);
+    constraints.minimum_scale = 1.0f;
   } else {
     MainFrameImpl()->GetFrame()->View()->DisableAutoSizeMode();
+    constraints.minimum_scale = -1.0f;
   }
+  GetPageScaleConstraintsSet().SetNeedsReset(true);
+  GetPage()->SetUserAgentPageScaleConstraints(constraints);
 }
 
 void WebViewImpl::SetCompositorDeviceScaleFactorOverride(

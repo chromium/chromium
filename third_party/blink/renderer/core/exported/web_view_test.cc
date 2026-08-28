@@ -1203,6 +1203,57 @@ TEST_F(WebViewTest, AutoResizeShrinksFromMaximumWidth) {
   web_view_helper_.Reset();
 }
 
+TEST_F(WebViewTest, AutoResizeWithMinimumPageScale) {
+  AutoResizeWebViewClient client;
+  WebViewImpl* web_view = web_view_helper_.Initialize(nullptr, &client);
+  client.GetTestData().SetWebView(web_view);
+  web_view->SetDefaultPageScaleLimits(0.25f, 5.0f);
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<!DOCTYPE html><style>body { margin: 0; width: 400px; height: 300px; "
+      "}</style><div>content</div>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  UpdateAllLifecyclePhases();
+  web_view->EnableAutoResizeMode(gfx::Size(25, 25), gfx::Size(800, 600));
+  UpdateAllLifecyclePhases();
+
+  // In auto-resize mode, MainFrameSize should match the auto-sized content
+  // bounds (400x300), rather than being scaled by 1 / MinimumPageScaleFactor
+  // (which would be 1600x1200).
+  EXPECT_EQ(gfx::Size(400, 300), web_view->MainFrameSize());
+  EXPECT_EQ(400, client.GetTestData().Width());
+  EXPECT_EQ(300, client.GetTestData().Height());
+  EXPECT_FALSE(web_view->MainFrameImpl()->GetFrame()->View()->NeedsLayout());
+
+  web_view_helper_.Reset();
+}
+
+TEST_F(WebViewTest, AutoResizeWithViewportMetaDoesNotZoomOut) {
+  AutoResizeWebViewClient client;
+  WebViewImpl* web_view = web_view_helper_.Initialize(nullptr, &client);
+  client.GetTestData().SetWebView(web_view);
+  web_view->GetSettings()->SetViewportEnabled(true);
+  web_view->GetSettings()->SetViewportMetaEnabled(true);
+  web_view->SetDefaultPageScaleLimits(0.25f, 5.0f);
+  web_view->EnableAutoResizeMode(gfx::Size(25, 25), gfx::Size(800, 600));
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<!DOCTYPE html><meta name='viewport' content='width=device-width'>"
+      "<style>body { margin: 0; width: 450px; height: 500px; }</style>"
+      "<div>content</div>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  UpdateAllLifecyclePhases();
+
+  // In auto-resize mode, a page with <meta name="viewport"
+  // content="width=device-width"> (initial-scale undefined) should default to
+  // scale 1.0f rather than the minimum scale (0.25f).
+  EXPECT_EQ(1.0f, web_view->PageScaleFactor());
+  EXPECT_EQ(450, client.GetTestData().Width());
+  EXPECT_EQ(500, client.GetTestData().Height());
+
+  web_view_helper_.Reset();
+}
+
 void WebViewTest::TestTextInputType(WebTextInputType expected_type,
                                     const std::string& html_file) {
   RegisterMockedHttpURLLoad(html_file);
