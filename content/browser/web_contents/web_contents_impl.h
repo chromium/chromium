@@ -2340,6 +2340,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   void OnFocusSelectionBoundsChangedSubscriptionRemoved();
 
+  void UpdateVisibilityPreFocus();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2911,6 +2913,11 @@ class CONTENT_EXPORT WebContentsImpl
 #if BUILDFLAG(IS_ANDROID)
   bool supports_forward_transition_animation_ = true;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // True while any frame in this WebContents is changing RenderFrameHosts
+  // during a navigation commit. Notably, this will be true while
+  // dispatching RenderFrameHostChanged() and RenderViewHostChanged() events.
+  bool is_swapping_render_frame_hosts_ = false;
 
   void SetDragSource(const DragId& drag_id,
                      const GlobalRenderFrameHostToken& source_rfh_token);
