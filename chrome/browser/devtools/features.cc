@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace features {
 
@@ -200,8 +201,14 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
 BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allows starting remote debugging in a running Chrome instance.
+#if BUILDFLAG(IS_CHROMEOS)
+// Disabled on ChromeOS due to crbug.com/552883317.
+BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Whether the policy dialog should be shown instead of greying out the
 // Developer Tools toggle.
