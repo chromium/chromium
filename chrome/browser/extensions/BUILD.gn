@@ -3164,6 +3164,10 @@ source_set("browser_tests") {
       ]
     }
 
+    if (enable_background_mode) {
+      sources += [ "background_app_browsertest.cc" ]
+    }
+
     if (use_aura) {
       deps += [ "//chrome/browser/ui/aura/accessibility" ]
     }

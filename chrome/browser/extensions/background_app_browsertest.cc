@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 
 namespace extensions {
 
@@ -49,7 +50,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundAppBrowserTest, InstallBackgroundApp) {
   const ExtensionSet& extensions = extension_registry()->enabled_extensions();
   EXPECT_TRUE(std::ranges::contains(
       extensions, "A simple app with background permission set.",
-      &Extension::description));
+      [](const auto& extension) -> const std::string& {
+        return DescriptionInfo::GetDescription(*extension);
+      }));
   // Verify the installed extension did not pop up a background mode
   // notification.
   EXPECT_EQ(0, g_browser_process->background_mode_manager()
