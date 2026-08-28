@@ -702,10 +702,7 @@ std::vector<uint8_t> CreateMtcLandmarkGroupTrustAnchorID(
       CBB_add_asn1_oid_component(cbb.get(), 2) &&
       CBB_add_asn1_oid_component(cbb.get(), log_number) &&
       CBB_add_asn1_oid_component(cbb.get(), landmark_number));
-  // SAFETY: CBB_data(cbb) returns a pointer to the written data with length
-  // CBB_len(cbb).
-  return base::ToVector(UNSAFE_BUFFERS(
-      base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+  return base::ToVector(crypto::CbbAsSpan(cbb.get()));
 }
 
 std::vector<uint8_t> EncodeTlsRequestedTrustAnchorIDList(
