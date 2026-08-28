@@ -36,6 +36,10 @@ source_set("horizontal") {
   ]
 }
 
+# Not merged into a single source_set with :horizontal despite having no
+# circular dependency into ui:ui left: common:impl depends on :horizontal
+# (headers only), and this :impl needs common/common:impl back, so merging
+# would create a peer-target cycle (common:impl -> horizontal -> common:impl).
 source_set("impl") {
   sources = [
     "horizontal_tab_closing_helper.cc",

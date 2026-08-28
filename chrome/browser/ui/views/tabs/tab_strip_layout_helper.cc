@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"

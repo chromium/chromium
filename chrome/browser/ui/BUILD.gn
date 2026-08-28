@@ -3136,18 +3136,10 @@ static_library("ui") {
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/tabs/tab:impl",
 
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs/horizontal",
-
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following header gets componentized:
       # - c/b/ui/browser_commands.h
       "//chrome/browser/ui/views/tabs:new_tab_button_menu_model_impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs:tab_group_impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
@@ -3156,27 +3148,11 @@ static_library("ui") {
       # - c/b/ui/views/frame/themed_background.h
       "//chrome/browser/ui/views/tabs:tab_style_views_impl",
 
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs:tab_container",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs:tab_container_impl",
-
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/views/frame/browser_frame_view.h
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/tabs:tab_impl",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs/hovercard",
-
-      # TODO(crbug.com/451609048): Remove this circular dependency - no
-      # blockers.
-      "//chrome/browser/ui/views/tabs/dragging",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
