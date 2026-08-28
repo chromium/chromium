@@ -445,12 +445,6 @@ public class CustomTabToolbarButtonsViewBinder
         var titleUrlLp = ((ViewGroup.MarginLayoutParams) titleUrlContainer.getLayoutParams());
         titleUrlLp.leftMargin = 0;
         boolean omniboxEnabled = model.get(OMNIBOX_ENABLED);
-        if (omniboxEnabled) {
-            // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
-            // The security button is static when omnibox is enabled, so offset the url bar for it.
-            int buttonWidth = resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
-            titleUrlLp.leftMargin += buttonWidth;
-        }
         if (model.get(IS_INCOGNITO)) {
             int incognitoIconWidth =
                     resources.getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
@@ -459,18 +453,20 @@ public class CustomTabToolbarButtonsViewBinder
         titleUrlContainer.setLayoutParams(titleUrlLp);
 
         // Ensure correct spacing between the last start aligned button and the location bar.
-        int remainingSpace;
         if (omniboxEnabled) {
-            remainingSpace =
-                    resources.getDimensionPixelSize(
-                            R.dimen.custom_tabs_url_bar_bg_horizontal_padding);
+            setHorizontalPadding(locationBar, 0, 0);
         } else {
             int desiredSpace =
                     resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
-            remainingSpace =
+            int remainingSpace =
                     Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
+            int endPadding =
+                    model.get(IS_INCOGNITO)
+                            ? 0
+                            : resources.getDimensionPixelSize(
+                                    R.dimen.custom_tabs_location_bar_horizontal_padding);
+            setHorizontalPadding(locationBar, remainingSpace, endPadding);
         }
-        setHorizontalPadding(locationBar, remainingSpace, locationBar.getPaddingEnd());
     }
 
     /**
@@ -572,9 +568,7 @@ public class CustomTabToolbarButtonsViewBinder
             Resources resources, boolean omniboxEnabled, boolean titleVisible) {
         int locationBarMinWidth =
                 resources.getDimensionPixelSize(R.dimen.location_bar_min_url_width);
-        if (omniboxEnabled) {
-            locationBarMinWidth += resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
-        } else if (!titleVisible) {
+        if (omniboxEnabled || !titleVisible) {
             locationBarMinWidth +=
                     resources.getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
         }

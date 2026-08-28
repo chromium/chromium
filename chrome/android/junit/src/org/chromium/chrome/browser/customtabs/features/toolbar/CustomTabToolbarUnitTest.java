@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
@@ -117,6 +118,7 @@ public class CustomTabToolbarUnitTest {
     private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private SearchActivityClient mSearchActivityClient;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
     private Activity mActivity;
@@ -124,7 +126,6 @@ public class CustomTabToolbarUnitTest {
     private CustomTabLocationBar mLocationBar;
     private TextView mTitleBar;
     private TextView mUrlBar;
-    private ImageButton mSecurityButton;
     private ImageButton mSecurityIcon;
     private ToolbarProgressBar mToolbarProgressBar;
 
@@ -188,7 +189,6 @@ public class CustomTabToolbarUnitTest {
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
         mLocationBar.setIphControllerForTesting(mPageInfoIphController);
-        mSecurityButton = mToolbar.findViewById(R.id.security_button);
         mSecurityIcon = mToolbar.findViewById(R.id.security_icon);
     }
 
@@ -224,6 +224,16 @@ public class CustomTabToolbarUnitTest {
         verifyBrowserControlVisibleForRequiredDuration();
         // URL bar truncates trailing /.
         assertUrlBarShowingText(UrlUtilities.stripTrailingSlash(TEST_URL.getSpec()));
+    }
+
+    @Test
+    public void testOmniboxUrlBarVisibility() {
+        mLocationBar.showEmptyLocationBar();
+        CustomTabToolbar.OmniboxParams params =
+                new CustomTabToolbar.OmniboxParams(mSearchActivityClient, null, null, tab -> false);
+        mLocationBar.setOmniboxParams(params);
+        mLocationBar.showRegularToolbar();
+        assertUrlAndTitleVisible(/* titleVisible= */ false, /* urlVisible= */ true);
     }
 
     @Test
@@ -373,8 +383,7 @@ public class CustomTabToolbarUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_NESTED_SECURITY_ICON})
     public void testSecurityIconVisibility_nestedIcon() {
-        assertEquals(View.GONE, mSecurityButton.getVisibility());
-        assertEquals(View.INVISIBLE, mSecurityIcon.getVisibility());
+        assertEquals(View.GONE, mSecurityIcon.getVisibility());
     }
 
     @Test

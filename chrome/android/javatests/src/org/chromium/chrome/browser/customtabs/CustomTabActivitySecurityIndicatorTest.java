@@ -26,10 +26,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -86,22 +83,8 @@ public class CustomTabActivitySecurityIndicatorTest {
                             ChromeTabUtils.getUrlStringOnUiThread(currentTab), is(mTestPage));
                 });
 
-        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) {
-            ImageView securityIcon =
-                    mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_icon);
-            Assert.assertEquals(View.INVISIBLE, securityIcon.getVisibility());
-            return;
-        }
-
-        // Test that the security indicator is the tune icon.
-        ImageView securityButton =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
-        Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
-
-        CustomTabToolbar toolbar =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        CustomTabLocationBar locationBar = (CustomTabLocationBar) toolbar.getLocationBar();
-        Assert.assertEquals(locationBar.getSecurityIconResourceForTesting(),
-                            R.drawable.omnibox_https_valid_page_info);
+        ImageView securityIcon =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_icon);
+        Assert.assertEquals(View.GONE, securityIcon.getVisibility());
     }
 }

@@ -1174,41 +1174,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleUrlContainer = container.findViewById(R.id.title_url_container);
             mTitleUrlContainer.setOnLongClickListener(this);
 
-            int securityButtonId =
-                    shouldNestSecurityIcon() ? R.id.security_icon : R.id.security_button;
-            mSecurityButton = mLocationBarFrameLayout.findViewById(securityButtonId);
-            mSecurityButton.setVisibility(INVISIBLE);
+            mSecurityButton = mLocationBarFrameLayout.findViewById(R.id.security_icon);
+            mSecurityButton.setVisibility(GONE);
 
             // If the security icon is nested, only the url bar should be offset by it.
-            View securityButtonOffsetTarget =
-                    shouldNestSecurityIcon()
-                            ? mTitleUrlContainer.findViewById(R.id.url_bar)
-                            : mTitleUrlContainer;
+            View securityButtonOffsetTarget = mTitleUrlContainer.findViewById(R.id.url_bar);
 
             mAnimDelegate =
                     new CustomTabToolbarAnimationDelegate(
                             mSecurityButton,
                             securityButtonOffsetTarget,
                             this::adjustTitleUrlBarPadding,
-                            shouldNestSecurityIcon()
-                                    ? R.dimen.custom_tabs_security_icon_width
-                                    : R.dimen.location_bar_icon_width);
-
-            adjustLocationBarPadding();
-        }
-
-        private void adjustLocationBarPadding() {
-            if (shouldNestSecurityIcon() && !isIncognitoBranded()) {
-                int horizontalPadding =
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.custom_tabs_location_bar_horizontal_padding);
-                mLocationBarFrameLayout.setPadding(
-                        horizontalPadding,
-                        mLocationBarFrameLayout.getPaddingTop(),
-                        horizontalPadding,
-                        mLocationBarFrameLayout.getPaddingBottom());
-            }
+                            R.dimen.custom_tabs_security_icon_width);
         }
 
         @Initializer
@@ -1300,7 +1277,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> showPageInfo());
-            if (shouldNestSecurityIcon()) {
+            if (!mOmniboxEnabled) {
                 mTitleUrlContainer.setOnClickListener(v -> showPageInfo());
                 // The title and url are independently focusable for accessibility. Set
                 // AccessibilityNodeInfo on each to indicate they respond to clicks / long clicks
@@ -1473,12 +1450,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
             int securityIconResource = 0;
-            if (!shouldNestSecurityIcon() || !isSecureOrNeutralLevel()) {
+            if (mOmniboxEnabled || !isSecureOrNeutralLevel()) {
                 securityIconResource =
                         mLocationBarDataProvider.getSecurityIconResource(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
-                FrameLayout securityButtonWrapper = findViewById(R.id.security_button_wrapper);
-                securityButtonWrapper.setVisibility(View.VISIBLE);
             }
             if (securityIconResource != 0) {
                 ColorStateList colorStateList =
@@ -1549,15 +1524,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mUrlBar.setPadding(0, 0, 0, padding);
             mTitleBar.setPadding(0, padding, 0, 0);
 
-            // When the security icon is nested, it will be in the same container as the Url Bar.
-            // So, they should have the same bottom padding to keep it aligned.
-            if (shouldNestSecurityIcon()) {
-                mSecurityButton.setPaddingRelative(
-                        mSecurityButton.getPaddingStart(),
-                        mSecurityButton.getPaddingTop(),
-                        mSecurityButton.getPaddingEnd(),
-                        padding);
-            }
+            // The security icon is in the same container as the Url Bar.
+            // So, they should have the same bottom padding to keep them aligned.
+            mSecurityButton.setPaddingRelative(
+                    mSecurityButton.getPaddingStart(),
+                    mSecurityButton.getPaddingTop(),
+                    mSecurityButton.getPaddingEnd(),
+                    padding);
         }
 
         private void updateUrlBar() {
@@ -1676,38 +1649,56 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void setShowTitleIgnoreBranding(boolean showTitle) {
+            showTitle = !mOmniboxEnabled && showTitle;
             if (showTitle) {
                 if (mState == STATE_EMPTY) {
                     mState = STATE_TITLE_ONLY;
                 } else {
                     mState = STATE_DOMAIN_AND_TITLE;
                 }
-                if (shouldNestSecurityIcon()) {
-                    int width =
-                            getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.custom_tabs_security_icon_width_nested);
-                    mSecurityButton.getLayoutParams().width = width;
-                    int paddingLeft =
-                            getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.custom_tabs_security_icon_padding_left_nested);
-                    int paddingRight =
-                            getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.custom_tabs_security_icon_padding_right_nested);
-                    mSecurityButton.setPadding(
-                            paddingLeft,
-                            mSecurityButton.getPaddingTop(),
-                            paddingRight,
-                            mSecurityButton.getPaddingBottom());
-                    mAnimDelegate.setSecurityButtonWidth(width);
-                }
+                int width =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_security_icon_width_nested);
+                mSecurityButton.getLayoutParams().width = width;
+                int paddingLeft =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_security_icon_padding_left_nested);
+                int paddingRight =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_security_icon_padding_right_nested);
+                mSecurityButton.setPadding(
+                        paddingLeft,
+                        mSecurityButton.getPaddingTop(),
+                        paddingRight,
+                        mSecurityButton.getPaddingBottom());
+                mAnimDelegate.setSecurityButtonWidth(width);
                 mAnimDelegate.prepareTitleAnim(mUrlBar, mTitleBar);
                 setUrlBarVisuals(Gravity.BOTTOM, 0, R.dimen.custom_tabs_url_text_size);
             } else {
                 mState = STATE_DOMAIN_ONLY;
                 mTitleBar.setVisibility(View.GONE);
+
+                int width =
+                        getResources()
+                                .getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
+                mSecurityButton.getLayoutParams().width = width;
+                int paddingLeft =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_security_icon_padding_left);
+                int paddingRight =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_security_icon_padding_right);
+                mSecurityButton.setPadding(
+                        paddingLeft,
+                        mSecurityButton.getPaddingTop(),
+                        paddingRight,
+                        mSecurityButton.getPaddingBottom());
+                mAnimDelegate.setSecurityButtonWidth(mOmniboxEnabled ? 0 : width);
 
                 // URL bar height should be as big as the touch target size when shown alone.
                 // Update its minHeight and center it vertically.
@@ -1726,6 +1717,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(sizeId));
             mUrlBar.setMinimumHeight(minHeight);
             mTitleUrlContainer.setMinimumHeight(0);
+
+            View urlBarWrapper = findViewById(R.id.url_bar_wrapper);
+            var wrapperParams = (FrameLayout.LayoutParams) urlBarWrapper.getLayoutParams();
+            wrapperParams.gravity = gravity;
+            urlBarWrapper.setLayoutParams(wrapperParams);
         }
 
         @Override
@@ -1837,10 +1833,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             locationBarLayoutParams.gravity = Gravity.CENTER_VERTICAL;
             urlBarWrapper.setLayoutParams(locationBarLayoutParams);
 
-            mTitleUrlContainer.setPadding(
-                    mTitleUrlContainer.getPaddingLeft(),
+            int horizontalPadding =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.custom_tabs_location_bar_horizontal_padding);
+            int edgePadding = getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+            mTitleUrlContainer.setPaddingRelative(
+                    horizontalPadding,
                     mTitleUrlContainer.getPaddingTop(),
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding),
+                    horizontalPadding + edgePadding,
                     mTitleUrlContainer.getPaddingBottom());
 
             mTitleUrlContainer.setOnClickListener(
@@ -1882,15 +1883,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateAnimationsForOmnibox() {
-            mSecurityButton = mLocationBarFrameLayout.findViewById(R.id.security_button);
             mSecurityButton.setVisibility(VISIBLE);
-            mLocationBarFrameLayout.findViewById(R.id.security_icon).setVisibility(GONE);
-            mAnimDelegate.setSecurityButton(mSecurityButton);
             mAnimDelegate.setSecurityButtonWidth(0);
-        }
-
-        private boolean shouldNestSecurityIcon() {
-            return ChromeFeatureList.sCctNestedSecurityIcon.isEnabled() && !mOmniboxEnabled;
         }
     }
 
