@@ -811,6 +811,43 @@ public class FuseboxViewBinderUnitTest {
         assertNotNull(imageView.getDrawable());
     }
 
+    @Test
+    public void recentTabsEnabled_withFavicon() {
+        Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.BLUE);
+        PopupButtonData dataWithFavicon =
+                new PopupButtonDataBuilder()
+                        .withText("tab with favicon")
+                        .withType(PopupButtonType.RECENT_TAB)
+                        .withCustomIcon(favicon)
+                        .build();
+        PopupButtonData dataWithoutFavicon =
+                new PopupButtonDataBuilder()
+                        .withText("tab without favicon")
+                        .withType(PopupButtonType.RECENT_TAB)
+                        .build();
+        mModel.set(
+                FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST,
+                List.of(dataWithFavicon, dataWithoutFavicon));
+
+        View childWithFavicon = mPopup.mRecentTabsContainer.getChildAt(0);
+        View childWithoutFavicon = mPopup.mRecentTabsContainer.getChildAt(1);
+        ImageView imageWithFavicon = childWithFavicon.findViewById(R.id.start_icon);
+        ImageView imageWithoutFavicon = childWithoutFavicon.findViewById(R.id.start_icon);
+
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, true);
+        assertTrue(mPopup.mRecentTabsContainer.getChildAt(0).isEnabled());
+        assertTrue(mPopup.mRecentTabsContainer.getChildAt(1).isEnabled());
+        assertNotNull(imageWithFavicon.getDrawable().getColorFilter());
+        assertNull(imageWithoutFavicon.getDrawable().getColorFilter());
+
+        // Toggle disabled:
+        mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, false);
+        assertFalse(childWithFavicon.isEnabled());
+        assertFalse(childWithoutFavicon.isEnabled());
+        assertNotNull(imageWithFavicon.getDrawable().getColorFilter());
+        assertNull(imageWithoutFavicon.getDrawable().getColorFilter());
+    }
+
     private static class PopupButtonDataBuilder {
         private Runnable mOnClicked = CallbackUtils.emptyRunnable();
         private String mText = "test";
