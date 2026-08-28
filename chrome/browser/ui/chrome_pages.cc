@@ -500,8 +500,7 @@ void ShowSettingsSubPageInTabbedBrowser(BrowserWindowInterface* browser,
 void ShowPageWithPromoForProfile(Profile* profile,
                                  ShowPromoInPage::Params promo_params) {
   BrowserWindowInterface* browser = GetOrCreateBrowserForProfile(profile);
-  ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
-                         std::move(promo_params));
+  ShowPromoInPage::Start(browser, std::move(promo_params));
 }
 
 void ShowContentSettingsExceptions(BrowserWindowInterface* browser,
@@ -609,8 +608,7 @@ void ShowSafeBrowsingEnhancedProtectionWithIph(
   base::UmaHistogramEnumeration("SafeBrowsing.EsbPromotionFlow.IphShown",
                                 referral_method);
   safe_browsing::LogShowEnhancedProtectionAction();
-  ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
-                         std::move(params));
+  ShowPromoInPage::Start(browser, std::move(params));
 #endif
 }
 

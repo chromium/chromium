@@ -18,9 +18,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -120,8 +122,9 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
       if (help_bubble_) {
         if (auto* const bubble =
                 help_bubble_->AsA<user_education::HelpBubbleWebUI>()) {
-          if (browser_->tab_strip_model()->GetActiveWebContents() ==
-              bubble->GetWebContents()) {
+          if (browser_->GetActiveTabInterface() &&
+              browser_->GetActiveTabInterface()->GetContents() ==
+                  bubble->GetWebContents()) {
             BrowserFocusController::From(browser_.get())
                 ->FocusWebContentsPane();
           }

@@ -518,8 +518,8 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
     }
   }
 
-  Browser* browser = CreateBrowserWindow(std::move(*create_params))
-                         ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser =
+      CreateBrowserWindow(std::move(*create_params));
 
   return browser->GetFeatures().live_tab_context();
 }

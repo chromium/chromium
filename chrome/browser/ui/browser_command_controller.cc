@@ -236,7 +236,7 @@ void AppInfoDialogClosedCallback(SessionID session_id,
   }
 }
 
-bool CanOpenFile(Browser* browser) {
+bool CanOpenFile(BrowserWindowInterface* browser) {
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
@@ -256,7 +256,8 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
   actions::ActionManager::Get().FindAction(id, scope)->InvokeAction();
 }
 
-actions::ActionItem* FindAction(actions::ActionId action_id, Browser* browser) {
+actions::ActionItem* FindAction(actions::ActionId action_id,
+                                BrowserWindowInterface* browser) {
   actions::ActionItem* const root_action_item =
       BrowserActions::From(browser)->root_action_item();
   if (!root_action_item) {
@@ -317,7 +318,7 @@ const BrowserCommandController* BrowserCommandController::From(
 // TODO(crbug.com/434734349): Implement dependency injection for this class to
 // allow removing the Browser dependency.
 BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
-    : browser_(bwi->GetBrowserForMigrationOnly()),
+    : browser_(bwi),
       command_updater_(CreateCommandUpdater()),
       scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this) {
   browser_->tab_strip_model()->AddObserver(this);

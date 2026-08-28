@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class Browser;
 class TabStripModel;
 
 namespace content {
@@ -337,7 +336,7 @@ class UnloadController : public WebContentsCollection::Observer,
     return !on_close_confirmed_.is_null();
   }
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   ui::ScopedUnownedUserData<UnloadController> scoped_unowned_user_data_;
 

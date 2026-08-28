@@ -44,6 +44,8 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
@@ -443,7 +445,7 @@ bool BrowserWebContentsDelegate::CanDragEnter(
   // external navigation.
   if ((operations_allowed & blink::kDragOperationLink) &&
       chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
-          browser_->GetBrowserForMigrationOnly())) {
+          &browser_.get())) {
     return false;
   }
 #endif
@@ -762,8 +764,7 @@ void BrowserWebContentsDelegate::LoadingStateChanged(
 
 void BrowserWebContentsDelegate::CloseContents(content::WebContents* source) {
   if (unload_controller_->CanCloseContents(source)) {
-    chrome::CloseWebContents(browser_->GetBrowserForMigrationOnly(), source,
-                             true);
+    chrome::CloseWebContents(&browser_.get(), source, true);
   }
 }
 

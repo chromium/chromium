@@ -281,11 +281,10 @@ void CreateAndShowNewWindowWithContents(
   BrowserWindowInterface* new_browser = nullptr;
   DCHECK(original_browser->GetType() != BrowserWindowInterface::TYPE_APP_POPUP);
   if (original_browser->GetType() == BrowserWindowInterface::TYPE_APP) {
-    const Browser* browser = original_browser->GetBrowserForMigrationOnly();
     const bool is_trusted_source =
         WindowFeatureController::From(original_browser)->IsTrustedSource();
     new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-        BrowserInitState::From(browser)->create_params().app_name,
+        BrowserInitState::From(original_browser)->create_params().app_name,
         is_trusted_source, gfx::Rect(), original_browser->GetProfile(), true));
   } else {
     new_browser = CreateBrowserWindow(BrowserWindowCreateParams(
@@ -1348,8 +1347,7 @@ void CloseWindow(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(IS_WIN)
 void OpenMoveWindow(BrowserWindowInterface* browser) {
-  HWND hwnd = BrowserView::GetBrowserViewForBrowser(
-                  browser->GetBrowserForMigrationOnly())
+  HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser)
                   ->GetWidget()
                   ->GetNativeWindow()
                   ->GetHost()
@@ -1358,8 +1356,7 @@ void OpenMoveWindow(BrowserWindowInterface* browser) {
 }
 
 void OpenSizeWindow(BrowserWindowInterface* browser) {
-  HWND hwnd = BrowserView::GetBrowserViewForBrowser(
-                  browser->GetBrowserForMigrationOnly())
+  HWND hwnd = BrowserView::GetBrowserViewForBrowser(browser)
                   ->GetWidget()
                   ->GetNativeWindow()
                   ->GetHost()
@@ -1678,17 +1675,15 @@ bool CanMoveTabsToNewWindow(BrowserWindowInterface* browser,
 
 void MoveGroupToNewWindow(BrowserWindowInterface* browser,
                           tab_groups::TabGroupId group) {
-  Browser* current_browser = browser->GetBrowserForMigrationOnly();
   BrowserWindowInterface* new_browser;
-  if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
-      web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
-    auto* app_controller = web_app::AppBrowserController::From(current_browser);
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
+      web_app::AppBrowserController::From(browser)->has_tab_strip()) {
+    auto* app_controller = web_app::AppBrowserController::From(browser);
     new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-        BrowserInitState::From(current_browser)->create_params().app_name,
-        app_controller->IsTrustedSource(), gfx::Rect(),
-        current_browser->GetProfile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser->GetBrowserForMigrationOnly(),
-                                   app_controller->app_id());
+        BrowserInitState::From(browser)->create_params().app_name,
+        app_controller->IsTrustedSource(), gfx::Rect(), browser->GetProfile(),
+        true));
+    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(browser, true);
   }
@@ -1702,18 +1697,16 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
     return;
   }
 
-  Browser* current_browser = browser->GetBrowserForMigrationOnly();
   BrowserWindowInterface* new_browser;
   base::TimeTicks now = base::TimeTicks::Now();
-  if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
-      web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
-    auto* app_controller = web_app::AppBrowserController::From(current_browser);
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
+      web_app::AppBrowserController::From(browser)->has_tab_strip()) {
+    auto* app_controller = web_app::AppBrowserController::From(browser);
     new_browser = CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-        BrowserInitState::From(current_browser)->create_params().app_name,
-        app_controller->IsTrustedSource(), gfx::Rect(),
-        current_browser->GetProfile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser->GetBrowserForMigrationOnly(),
-                                   app_controller->app_id());
+        BrowserInitState::From(browser)->create_params().app_name,
+        app_controller->IsTrustedSource(), gfx::Rect(), browser->GetProfile(),
+        true));
+    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(browser, true);
   }
@@ -2697,8 +2690,7 @@ void OpenTaskManager(BrowserWindowInterface* browser,
                      task_manager::StartAction start_action) {
 #if !BUILDFLAG(IS_ANDROID)
   base::RecordAction(UserMetricsAction("TaskManager"));
-  chrome::ShowTaskManager(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, start_action);
+  chrome::ShowTaskManager(browser, start_action);
 #else
   NOTREACHED();
 #endif
@@ -2717,7 +2709,7 @@ void OpenFeedbackDialog(BrowserWindowInterface* browser,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void OpenReportUnsafeSiteDialog(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ReportUnsafeSite"));
-  feedback::ReportUnsafeSiteDialog::Show(browser->GetBrowserForMigrationOnly());
+  feedback::ReportUnsafeSiteDialog::Show(browser);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

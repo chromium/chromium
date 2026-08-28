@@ -14,7 +14,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 
 namespace tab_groups {
@@ -29,7 +29,7 @@ namespace chrome {
 
 class BrowserTabStripModelDelegate : public TabStripModelDelegate {
  public:
-  explicit BrowserTabStripModelDelegate(Browser* browser);
+  explicit BrowserTabStripModelDelegate(BrowserWindowInterface* browser);
 
   BrowserTabStripModelDelegate(const BrowserTabStripModelDelegate&) = delete;
   BrowserTabStripModelDelegate& operator=(const BrowserTabStripModelDelegate&) =
@@ -103,7 +103,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   // historical tabs or groups.
   bool BrowserSupportsHistoricalEntries();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // The following factory is used to close the frame at a later time.
   base::WeakPtrFactory<BrowserTabStripModelDelegate> weak_factory_{this};

@@ -26,7 +26,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
 class BrowserWindow;
 class BrowserWindowInterface;
 class Profile;
@@ -273,7 +272,7 @@ class BrowserCommandController : public CommandUpdater,
   BrowserWindow* window();
   Profile* profile();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // The CommandUpdater that manages the browser window commands
   // and optionally syncs state to ActionItems.

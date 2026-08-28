@@ -3695,8 +3695,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                  actions::ActionInvocationContext context) {
                 base::RecordAction(base::UserMetricsAction("CreateShortcut"));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-                chrome::CreateDesktopShortcutForActiveWebContents(
-                    bwi->GetBrowserForMigrationOnly());
+                chrome::CreateDesktopShortcutForActiveWebContents(bwi);
 #else
                 web_app::CreateWebAppFromCurrentWebContents(
                     bwi, web_app::WebAppInstallFlow::kCreateShortcut);
@@ -3757,8 +3756,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                ShowSyncPassphraseDialogAndDecryptData(
-                    *bwi->GetBrowserForMigrationOnly());
+                ShowSyncPassphraseDialogAndDecryptData(*bwi);
               },
               bwi))
           .SetActionId(kActionShowSyncPassphraseDialog)
@@ -4209,8 +4207,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                Browser* browser = bwi->GetBrowserForMigrationOnly();
-                auto* controller = web_app::AppBrowserController::From(browser);
+                auto* controller = web_app::AppBrowserController::From(bwi);
                 if (controller) {
                   chrome::ShowWebAppSettings(
                       bwi, controller->app_id(),
@@ -4537,8 +4534,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                                                       web_contents)) {
                   DevToolsPolicyDialog::Show(web_contents);
                 } else {
-                  chrome::ToggleJavaScriptFromAppleEventsAllowed(
-                      bwi->GetBrowserForMigrationOnly());
+                  chrome::ToggleJavaScriptFromAppleEventsAllowed(bwi);
                 }
               },
               bwi))
