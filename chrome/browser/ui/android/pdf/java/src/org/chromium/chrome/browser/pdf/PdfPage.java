@@ -110,6 +110,7 @@ public class PdfPage extends BasicNativePage {
     public void updateForUrl(String url) {
         super.updateForUrl(url);
         if (!PdfUtils.isReuseFragmentEnabled()) return;
+        if (TextUtils.equals(mUrl, url)) return;
 
         boolean localPdf = PdfUtils.isDownloadedPdf(url);
         boolean isReload = TextUtils.equals(mUrl, url);

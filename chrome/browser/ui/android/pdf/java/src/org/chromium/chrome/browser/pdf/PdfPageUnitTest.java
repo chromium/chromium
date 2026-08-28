@@ -640,7 +640,7 @@ public class PdfPageUnitTest {
                 "Pdf should be loaded after download complete and attached.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
-        pdfPage.updateForUrl(mPdfPageUrl);
+        pdfPage.updateForUrl(mPdfPageUrl + "&new=1");
 
         Assert.assertFalse(
                 "Pdf load state should be reset for non-local pdf in updateForUrl.",
@@ -680,7 +680,8 @@ public class PdfPageUnitTest {
                 "Pdf should be loaded when attached to window.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
-        pdfPage.updateForUrl(encodedUrl);
+        String newEncodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL + "5");
+        pdfPage.updateForUrl(newEncodedUrl);
         ShadowLooper.idleMainLooper();
 
         Assert.assertTrue(
