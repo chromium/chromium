@@ -375,8 +375,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // Image processor, if one is in use.
   std::unique_ptr<ImageProcessor> image_processor_;
-  // The color space of the input video frames.
-  gfx::ColorSpace input_color_space_;
+  // The color space of the input video frames. Defaults to BT.709 for
+  // multi-planar video frames.
+  gfx::ColorSpace input_color_space_ = gfx::ColorSpace::CreateREC709();
   // Video frames for image processor output / VideoEncodeAccelerator input.
   // Only accessed on child thread.
   std::vector<scoped_refptr<VideoFrame>> image_processor_output_buffers_;

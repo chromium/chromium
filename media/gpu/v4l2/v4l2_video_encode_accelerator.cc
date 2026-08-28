@@ -1039,18 +1039,24 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
                              frame.ColorSpace() != input_color_space_)) {
       color_space_changed = true;
     }
-    input_color_space_ = frame.ColorSpace();
   }
 
   if (!native_input_mode_) {
     // frame.coded_size() must be the size specified in
     // RequireBitstreamBuffers() in non native-input mode.
-    return frame.coded_size() == input_frame_size_;
+    if (frame.coded_size() != input_frame_size_) {
+      return false;
+    }
+    // For color space changes, we need to recreate the output buffers
+    // (SharedImage) with the correct color space.
+    if (!color_space_changed) {
+      return true;
+    }
   }
 
   if (!input_buffer_map_.empty()) {
     // ReconfigureFormatIfNeeded() has been called with the first VideoFrame.
-    // We checks here we need to (re)create ImageProcessor because the visible
+    // We check here if we need to (re)create ImageProcessor because the visible
     // rectangle of |frame| differs from the first VideoFrame.
     // |frame.natural_size()| must be unchanged during encoding in the same
     // VideoEncodeAccelerator  instance. When it is changed, a client has to
@@ -1109,6 +1115,15 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
   // efficiency loss is not a problem. Update |input_frame_size_| to check if
   // succeeding frames' dimensions are not different from the current one.
   input_frame_size_ = frame.coded_size();
+
+  // Store the color space of the input frame used later for allocating output
+  // buffers.
+  if (base::FeatureList::IsEnabled(kV4L2VEAUseCorrectColorSpace)) {
+    // TODO(crbug.com/425634684): Default to BT.709 if frame ColorSpace is
+    // invalid, as SharedImages should always have a valid ColorSpace on
+    // creation.
+    input_color_space_ = frame.ColorSpace();
+  }
   if (!CreateImageProcessor(frame.layout(), device_input_layout_->format(),
                             device_input_layout_->coded_size(),
                             frame.visible_rect(),
