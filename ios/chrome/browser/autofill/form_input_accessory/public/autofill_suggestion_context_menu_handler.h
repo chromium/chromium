@@ -18,6 +18,12 @@
 // Invoked when the user selects to edit the suggestion.
 - (void)openEditForSuggestion:(FormSuggestion*)suggestion;
 
+// Invoked when the user selects to view sources for the suggestion.
+- (void)openSourcesForSuggestion:(FormSuggestion*)suggestion;
+
+// Returns whether the suggestion has sources available to view.
+- (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion;
+
 // Returns whether the suggestion is from Autofill AI personal context.
 - (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion;
 

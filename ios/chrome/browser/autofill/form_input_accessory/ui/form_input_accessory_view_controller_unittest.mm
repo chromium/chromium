@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/public/autofill_suggestion_context_menu_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller+testing.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_label.h"
@@ -480,4 +481,39 @@ TEST_F(FormInputAccessoryViewControllerTest,
   // their default description "Passkey".
   EXPECT_NSEQ(desc1, kPasskeyLabel);
   EXPECT_NSEQ(desc2, kPasskeyLabel);
+}
+
+// Tests that FormInputAccessoryViewController forwards
+// hasSourcesForSuggestion: to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest, HasSourcesForSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMStub([context_menu_handler hasSourcesForSuggestion:suggestion])
+      .andReturn(YES);
+
+  EXPECT_TRUE([(id<FormSuggestionViewDelegate>)view_controller_
+      hasSourcesForSuggestion:suggestion]);
+}
+
+// Tests that FormInputAccessoryViewController forwards
+// openSourcesForSuggestion: to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest, OpenSourcesForSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMExpect([context_menu_handler openSourcesForSuggestion:suggestion]);
+
+  [(id<FormSuggestionViewDelegate>)view_controller_
+      openSourcesForSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(context_menu_handler);
 }

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h"
 
+#import <ranges>
+#import <variant>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -88,6 +90,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 // Delay between the time the view is shown, and the time the suggestion label
@@ -573,6 +576,39 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
 - (void)openEditForSuggestion:(FormSuggestion*)suggestion {
   [_formInputAccessoryMediator openEditForSuggestion:suggestion];
+}
+
+- (void)openSourcesForSuggestion:(FormSuggestion*)suggestion {
+  // TODO(crbug.com/551864564): Implement opening sources for the suggestion.
+}
+
+- (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofillSourceAttribution)) {
+    return NO;
+  }
+
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return NO;
+  }
+  base::optional_ref<const autofill::EntityInstance> entity =
+      autofill::GetEntityInstance(
+          ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()),
+          suggestion.payload);
+  if (!entity.has_value()) {
+    return NO;
+  }
+
+  const auto* payload =
+      std::get_if<autofill::EntityInstance::PersonalContextRecordTypePayload>(
+          &entity->record_type_data());
+  if (!payload) {
+    return NO;
+  }
+  return std::ranges::any_of(payload->sources, [](const auto& source) {
+    return GURL(source.url).is_valid();
+  });
 }
 
 - (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {

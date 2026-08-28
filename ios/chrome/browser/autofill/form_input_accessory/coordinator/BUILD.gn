@@ -74,6 +74,7 @@ source_set("coordinator") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//url",
   ]
 }
 

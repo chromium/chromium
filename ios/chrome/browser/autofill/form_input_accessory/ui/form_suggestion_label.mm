@@ -843,6 +843,27 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   return settingsAction;
 }
 
+// Handles the tap on the view sources context menu action.
+- (void)handleViewSourcesTap {
+  [_delegate openSourcesForSuggestion:self.suggestion];
+}
+
+// Returns the action to view sources.
+- (UIAction*)viewSourcesAction {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* viewSourcesAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_VIEW_SOURCES)
+                image:SymbolWithPointSize(SymbolLinkAction,
+                                          kSymbolActionPointSize)
+           identifier:nil
+              handler:^(__kindof UIAction* action) {
+                [weakSelf handleViewSourcesTap];
+              }];
+  viewSourcesAction.accessibilityIdentifier =
+      kFormSuggestionLabelViewSourcesAccessibilityIdentifier;
+  return viewSourcesAction;
+}
+
 // Returns the context menu for the suggestion.
 - (UIMenu*)contextMenu {
   NSMutableArray<UIMenuElement*>* children = [[NSMutableArray alloc] init];
@@ -850,6 +871,10 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     [children addObject:[self editAction]];
   }
   [children addObject:[self openSettingsAction]];
+
+  if ([_delegate hasSourcesForSuggestion:self.suggestion]) {
+    [children addObject:[self viewSourcesAction]];
+  }
 
   NSString* title = @"";
   if (self.suggestion.type == autofill::SuggestionType::kFillAutofillAi &&

@@ -804,6 +804,14 @@ UIImage* GetManualFillSymbol() {
   [self.contextMenuHandler openEditForSuggestion:suggestion];
 }
 
+- (void)openSourcesForSuggestion:(FormSuggestion*)suggestion {
+  [self.contextMenuHandler openSourcesForSuggestion:suggestion];
+}
+
+- (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
+  return [self.contextMenuHandler hasSourcesForSuggestion:suggestion];
+}
+
 - (NSString*)formSuggestionView:(FormSuggestionView*)formSuggestionView
           usernameForSuggestion:(FormSuggestion*)suggestion {
   return [self.formInputAccessoryViewControllerDelegate
