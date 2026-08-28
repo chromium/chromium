@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
@@ -132,6 +133,12 @@ void GlicNudgeControllerImpl::OnNudgeActivity(GlicNudgeActivity activity) {
   switch (activity) {
     case GlicNudgeActivity::kNudgeShown: {
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
+      if (base::FeatureList::IsEnabled(features::kGlicWarmOnNudge)) {
+        if (auto* glic_service = GlicKeyedService::Get(
+                browser_window_interface_->GetProfile())) {
+          glic_service->TryPreload(GlicWarmingTrigger::kNudge);
+        }
+      }
       if (!scoped_call_to_action_lock_) {
         // TODO(crbug.com/484037810): Once Android has BrowserWindowFeatures,
         // this shouldn't be nullable.

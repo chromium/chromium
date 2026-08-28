@@ -4,10 +4,17 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,5 +105,118 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerInteractiveUiTest,
   EXPECT_FALSE(tab_strip_action_container()->GetIsShowingGlicNudge());
 }
 
+class GlicNudgeControllerWarmingInteractiveUiTest
+    : public GlicNudgeControllerInteractiveUiTest {
+ public:
+  GlicNudgeControllerWarmingInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicWarmOnNudge,
+                              features::kGlicAnchorEntryPointForOnboardedUsers},
+        /*disabled_features=*/{contextual_cueing::kContextualCueingV2,
+                               features::kGlicWarming});
+  }
+
+  void SetUp() override {
+    ForceConnectionTypeForTesting(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    GlicNudgeControllerInteractiveUiTest::SetUp();
+  }
+
+  void TearDown() override {
+    GlicNudgeControllerInteractiveUiTest::TearDown();
+    ForceConnectionTypeForTesting(std::nullopt);
+  }
+
+  bool IsWarmed() {
+    auto* keyed_service = GlicKeyedService::Get(browser()->GetProfile());
+    auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
+        keyed_service->instance_coordinator());
+    return coordinator.GetWebContentsWarmingPoolForTesting()
+        .HasWarmedContainerForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNudgeControllerWarmingInteractiveUiTest,
+                       WarmsOnNudgeShownWhenFeatureEnabled) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_FALSE(IsWarmed());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  nudge_controller()->UpdateNudgeLabel(web_contents, "Nudge Label",
+                                       "Prompt Suggestion", std::nullopt,
+                                       base::DoNothing());
+
+  EXPECT_TRUE(tab_strip_action_container()->GetIsShowingGlicNudge());
+  EXPECT_TRUE(base::test::RunUntil([this]() { return IsWarmed(); }));
+
+  histogram_tester.ExpectBucketCount("Glic.Prewarming.ChecksResult.Nudge",
+                                     GlicPrewarmingChecksResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kNudge, 1);
+}
+
+class GlicNudgeControllerWarmingDisabledInteractiveUiTest
+    : public GlicNudgeControllerInteractiveUiTest {
+ public:
+  GlicNudgeControllerWarmingDisabledInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicAnchorEntryPointForOnboardedUsers},
+        /*disabled_features=*/{contextual_cueing::kContextualCueingV2,
+                               features::kGlicWarmOnNudge,
+                               features::kGlicWarming});
+  }
+
+  void SetUp() override {
+    ForceConnectionTypeForTesting(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    GlicNudgeControllerInteractiveUiTest::SetUp();
+  }
+
+  void TearDown() override {
+    GlicNudgeControllerInteractiveUiTest::TearDown();
+    ForceConnectionTypeForTesting(std::nullopt);
+  }
+
+  bool IsWarmed() {
+    auto* keyed_service = GlicKeyedService::Get(browser()->GetProfile());
+    auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
+        keyed_service->instance_coordinator());
+    return coordinator.GetWebContentsWarmingPoolForTesting()
+        .HasWarmedContainerForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNudgeControllerWarmingDisabledInteractiveUiTest,
+                       DoesNotWarmOnNudgeShownWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_FALSE(IsWarmed());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  nudge_controller()->UpdateNudgeLabel(web_contents, "Nudge Label",
+                                       "Prompt Suggestion", std::nullopt,
+                                       base::DoNothing());
+
+  EXPECT_TRUE(tab_strip_action_container()->GetIsShowingGlicNudge());
+
+  base::PlatformThread::Sleep(base::Milliseconds(200));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsWarmed());
+
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.Nudge", 0);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kNudge, 0);
+}
 
 }  // namespace glic
