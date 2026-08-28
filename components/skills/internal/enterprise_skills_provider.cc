@@ -4,6 +4,7 @@
 
 #include "components/skills/internal/enterprise_skills_provider.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 
@@ -316,6 +317,10 @@ void EnterpriseSkillsProvider::OnURLLoadComplete(
 }
 
 void EnterpriseSkillsProvider::OnAllFetchesComplete() {
+  std::sort(pending_skills_.begin(), pending_skills_.end(),
+            [](const std::unique_ptr<Skill>& a,
+               const std::unique_ptr<Skill>& b) { return a->name < b->name; });
+
   const size_t hosted_image_count = std::size(kEnterpriseSkillImages);
   for (size_t skill_index = 0; skill_index < pending_skills_.size();
        ++skill_index) {
