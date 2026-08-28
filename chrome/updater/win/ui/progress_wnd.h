@@ -170,6 +170,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   raw_ptr<ProgressWndEvents> events_sink_ = nullptr;
   std::vector<GURL> post_install_urls_;
   bool is_canceled_ = false;
+  std::optional<bool> is_marquee_;
 
   struct ControlState {
    private:

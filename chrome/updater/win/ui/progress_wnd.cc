@@ -725,7 +725,10 @@ void ProgressWnd::OnDownloading(
 
   CHECK(0 <= pos && pos <= 100);
 
-  cur_state_ = States::STATE_DOWNLOADING;
+  if (States::STATE_DOWNLOADING != cur_state_) {
+    cur_state_ = States::STATE_DOWNLOADING;
+    ChangeControlState();
+  }
 
   std::wstring s;
 
@@ -743,8 +746,6 @@ void ProgressWnd::OnDownloading(
   if (pos > 0) {
     ::SendDlgItemMessageW(hwnd(), IDC_PROGRESS, PBM_SETPOS, pos, 0);
   }
-
-  ChangeControlState();
 }
 
 void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
@@ -992,7 +993,17 @@ HRESULT ProgressWnd::ChangeControlState() {
 }
 
 HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
+  if (is_marquee == is_marquee_) {
+    return S_OK;
+  }
+
   HWND progress_bar = ::GetDlgItem(hwnd(), IDC_PROGRESS);
+  if (!progress_bar) {
+    return E_FAIL;
+  }
+
+  is_marquee_ = is_marquee;
+
   LONG_PTR style = ::GetWindowLongPtrW(progress_bar, GWL_STYLE);
   if (is_marquee) {
     style |= PBS_MARQUEE;
