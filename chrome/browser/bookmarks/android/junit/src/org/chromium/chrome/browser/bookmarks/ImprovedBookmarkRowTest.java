@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -24,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -431,5 +434,161 @@ public class ImprovedBookmarkRowTest {
                 "Drag handle should be VISIBLE when the item is selected and drag is enabled.",
                 View.VISIBLE,
                 dragHandle.getVisibility());
+    }
+
+    @Test
+    public void testAccessibilityNodeInfo_selectionDisabled() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mImprovedBookmarkRow.onInitializeAccessibilityNodeInfo(info);
+        assertFalse(info.isCheckable());
+        assertFalse(info.isChecked());
+    }
+
+    @Test
+    public void testAccessibilityNodeInfo_selectionActive_unselected() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mImprovedBookmarkRow.onInitializeAccessibilityNodeInfo(info);
+        assertTrue(info.isCheckable());
+        assertFalse(info.isChecked());
+    }
+
+    @Test
+    public void testAccessibilityNodeInfo_selectionActive_selected() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mImprovedBookmarkRow.onInitializeAccessibilityNodeInfo(info);
+        assertTrue(info.isCheckable());
+        assertTrue(info.isChecked());
+    }
+
+    @Test
+    public void testAccessibilityNodeInfo_visualRow() {
+        ImprovedBookmarkRow visualRow =
+                ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
+        PropertyModel model =
+                new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(model, visualRow, ImprovedBookmarkRowViewBinder::bind);
+
+        model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        visualRow.onInitializeAccessibilityNodeInfo(info);
+        assertFalse(info.isCheckable());
+        assertFalse(info.isChecked());
+
+        model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        model.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        info = AccessibilityNodeInfo.obtain();
+        visualRow.onInitializeAccessibilityNodeInfo(info);
+        assertTrue(info.isCheckable());
+        assertTrue(info.isChecked());
+    }
+
+    @Test
+    public void testAccessibilityNodeInfo_selectionDisabled_withStaleSelectedTrue() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mImprovedBookmarkRow.onInitializeAccessibilityNodeInfo(info);
+        assertFalse(info.isCheckable());
+        assertFalse(info.isChecked());
+    }
+
+    @Test
+    public void testSendAccessibilityEvent_onSelectionActiveChanged() {
+        View.AccessibilityDelegate delegate = mock(View.AccessibilityDelegate.class);
+        mImprovedBookmarkRow.setAccessibilityDelegate(delegate);
+
+        // Transition false -> true: event should be sent.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        verify(delegate, times(1))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Setting true -> true (!changed): event should NOT be sent again.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        verify(delegate, times(1))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Transition true -> false: event should be sent.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        verify(delegate, times(2))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Setting false -> false (!changed): event should NOT be sent again.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        verify(delegate, times(2))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    }
+
+    @Test
+    public void testSendAccessibilityEvent_onSelectedChanged() {
+        View.AccessibilityDelegate delegate = mock(View.AccessibilityDelegate.class);
+        mImprovedBookmarkRow.setAccessibilityDelegate(delegate);
+
+        // When SELECTION_ACTIVE is false, changing SELECTED should NOT send event.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        verify(delegate, never())
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Enable SELECTION_ACTIVE.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        verify(delegate, times(1))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Toggling SELECTED (true -> false) while SELECTION_ACTIVE is true should send event.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        verify(delegate, times(2))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Re-setting SELECTED to false (!changed) should NOT send event.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        verify(delegate, times(2))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+
+        // Toggling SELECTED (false -> true) should send event.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        verify(delegate, times(3))
+                .sendAccessibilityEvent(
+                        mImprovedBookmarkRow, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    }
+
+    @Test
+    public void testFocusable_enabledAndDisabled() {
+        assertTrue(mImprovedBookmarkRow.isFocusable());
+
+        mImprovedBookmarkRow.setRowEnabled(false);
+        assertFalse(mImprovedBookmarkRow.isFocusable());
+
+        mImprovedBookmarkRow.setRowEnabled(true);
+        assertTrue(mImprovedBookmarkRow.isFocusable());
+    }
+
+    @Test
+    public void testDefaultFocusHighlightEnabled_toggledOnSelection() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        assertFalse(mImprovedBookmarkRow.getDefaultFocusHighlightEnabled());
+
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        assertTrue(mImprovedBookmarkRow.getDefaultFocusHighlightEnabled());
+
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        assertFalse(mImprovedBookmarkRow.getDefaultFocusHighlightEnabled());
     }
 }

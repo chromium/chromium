@@ -15,7 +15,7 @@ found in the LICENSE file.
             <menu>
                 <!-- Groups with unique ids used to show a divider. -->
                 <group android:id="@+id/sort_opts"
-                       android:checkableBehavior="single">
+                       android:checkableBehavior="all">
                     <item android:id="@+id/sort_by_manual"
                         android:title="@string/sort_by_manual" />
                     <item android:id="@+id/sort_by_newest"
@@ -30,7 +30,7 @@ found in the LICENSE file.
                         android:title="@string/sort_by_reverse_alpha" />
                 </group>
                 <group android:id="@+id/view_opts"
-                       android:checkableBehavior="single">
+                       android:checkableBehavior="all">
                     <item android:id="@+id/visual_view"
                         android:title="@string/visual_view" />
                     <item android:id="@+id/compact_view"

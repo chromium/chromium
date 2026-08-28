@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewPropertyAnimator;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -116,6 +118,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         super(context, attrs);
         // The view from buildView should have a focus highlight, so avoid duplicate focus
         setDefaultFocusHighlightEnabled(false);
+        setFocusable(true);
     }
 
     public void setDragEnabled(boolean dragEnabled) {
@@ -242,6 +245,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     void setRowEnabled(boolean enabled) {
         setEnabled(enabled);
+        setFocusable(enabled);
         int alphaRes = enabled ? R.dimen.default_enabled_alpha : R.dimen.default_disabled_alpha;
         float alpha = ValueUtils.getFloat(getResources(), alphaRes);
         mContainer.setAlpha(alpha);
@@ -314,12 +318,24 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mMoreButton.addPopupListener(listener);
     }
 
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.setCheckable(mSelectionEnabled);
+        info.setChecked(mSelectionEnabled && mIsSelected);
+    }
+
     void setIsSelected(boolean selected) {
+        boolean changed = mIsSelected != selected;
         mIsSelected = selected;
         updateView();
+        if (changed && mSelectionEnabled) {
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        }
     }
 
     void setSelectionEnabled(boolean selectionEnabled) {
+        boolean changed = mSelectionEnabled != selectionEnabled;
         mSelectionEnabled = selectionEnabled;
         mMoreButton.setClickable(!selectionEnabled);
         mMoreButton.setEnabled(!selectionEnabled);
@@ -328,6 +344,9 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
         updateView();
+        if (changed) {
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        }
     }
 
     // TODO: Maybe this can be removed.
@@ -363,6 +382,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     void updateView() {
+        setDefaultFocusHighlightEnabled(mIsSelected);
         mContainer.setBackgroundResource(
                 mIsSelected
                         ? R.drawable.rounded_rectangle_surface_container_low

@@ -408,6 +408,7 @@ class BookmarkManagerMediator
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private @Nullable BookmarkId mHighlightedBookmark;
     private @Nullable PropertyModel mSearchBoxPropertyModel;
+    private RecyclerView.@Nullable OnChildAttachStateChangeListener mChildAttachListener;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -558,6 +559,11 @@ class BookmarkManagerMediator
         mBookmarkQueryHandler.destroy();
         mCallbackController.destroy();
         mBatchUploadCardCoordinator.destroy();
+
+        if (mChildAttachListener != null) {
+            mRecyclerView.removeOnChildAttachStateChangeListener(mChildAttachListener);
+            mChildAttachListener = null;
+        }
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
@@ -1958,7 +1964,28 @@ class BookmarkManagerMediator
 
     @VisibleForTesting
     void changeSelectionMode(boolean selectionEnabled) {
+        boolean wasSelectionEnabled = mIsSelectionEnabled;
         mIsSelectionEnabled = selectionEnabled;
+
+        if (!wasSelectionEnabled && selectionEnabled) {
+            int count = mSelectionDelegate.getSelectedItems().size();
+            String announcement =
+                    mContext.getString(
+                            R.string.accessibility_toolbar_screen_position,
+                            Integer.toString(count));
+            mSelectableListLayout.announceAccessibilityText(announcement);
+
+            List<BookmarkId> selectedList = mSelectionDelegate.getSelectedItemsAsList();
+            if (!selectedList.isEmpty()) {
+                BookmarkId primaryBookmarkId = selectedList.get(0);
+                mRecyclerView.post(
+                        mCallbackController.makeCancelable(
+                                () -> focusRowForBookmark(primaryBookmarkId)));
+            }
+        } else if (wasSelectionEnabled && !selectionEnabled) {
+            String announcement = mContext.getString(R.string.accessibility_toolbar_exit_select);
+            mSelectableListLayout.announceAccessibilityText(announcement);
+        }
 
         int startIndex = getBookmarkItemStartIndex();
         int endIndex = getBookmarkItemEndIndex();
@@ -1975,6 +2002,54 @@ class BookmarkManagerMediator
             model.set(
                     ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
             model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
+        }
+    }
+
+    @VisibleForTesting
+    void focusRowForBookmark(BookmarkId bookmarkId) {
+        if (!mIsSelectionEnabled || !mSelectionDelegate.isItemSelected(bookmarkId)) {
+            return;
+        }
+
+        int position = getPositionForBookmark(bookmarkId);
+        if (position < 0) return;
+
+        if (mChildAttachListener != null) {
+            mRecyclerView.removeOnChildAttachStateChangeListener(mChildAttachListener);
+            mChildAttachListener = null;
+        }
+
+        RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
+        if (holder == null) {
+            mChildAttachListener =
+                    new RecyclerView.OnChildAttachStateChangeListener() {
+                        @Override
+                        public void onChildViewAttachedToWindow(View view) {
+                            int pos = mRecyclerView.getChildAdapterPosition(view);
+                            if (pos == position) {
+                                mRecyclerView.removeOnChildAttachStateChangeListener(this);
+                                mChildAttachListener = null;
+                                view.post(
+                                        mCallbackController.makeCancelable(
+                                                () -> {
+                                                    if (mIsSelectionEnabled
+                                                            && mSelectionDelegate.isItemSelected(
+                                                                    bookmarkId)) {
+                                                        view.requestFocus();
+                                                    }
+                                                }));
+                            }
+                        }
+
+                        @Override
+                        public void onChildViewDetachedFromWindow(View view) {}
+                    };
+            mRecyclerView.addOnChildAttachStateChangeListener(mChildAttachListener);
+            mRecyclerView.scrollToPosition(position);
+            return;
+        }
+        if (holder.itemView != null) {
+            holder.itemView.requestFocus();
         }
     }
 

@@ -37,7 +37,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -47,15 +46,7 @@ class BookmarkToolbarMediator
         implements BookmarkUiObserver,
                 DragListener,
                 SelectionDelegate.SelectionObserver<BookmarkId> {
-    @VisibleForTesting
-    static final List<Integer> SORT_MENU_IDS =
-            Arrays.asList(
-                    R.id.sort_by_manual,
-                    R.id.sort_by_newest,
-                    R.id.sort_by_oldest,
-                    R.id.sort_by_last_opened,
-                    R.id.sort_by_alpha,
-                    R.id.sort_by_reverse_alpha);
+    @VisibleForTesting static final List<Integer> SORT_MENU_IDS = BookmarkToolbar.SORT_MENU_IDS;
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new Observer() {

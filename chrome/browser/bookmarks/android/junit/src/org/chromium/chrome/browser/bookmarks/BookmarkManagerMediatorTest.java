@@ -16,8 +16,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -34,6 +36,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
@@ -2269,6 +2272,221 @@ public class BookmarkManagerMediatorTest {
         assertFalse(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertFalse(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTED));
         assertFalse(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+    }
+
+    @Test
+    public void testChangeSelectionMode_announcesContextOnEnterAndExit() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Collections.singleton(mFolderId2));
+
+        mMediator.changeSelectionMode(true);
+        verify(mSelectableListLayout)
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_screen_position, "1"));
+
+        // Subsequent call while already in selection mode should not announce again.
+        mMediator.changeSelectionMode(true);
+        verify(mSelectableListLayout, times(1))
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_screen_position, "1"));
+
+        mMediator.changeSelectionMode(false);
+        verify(mSelectableListLayout)
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_exit_select));
+    }
+
+    @Test
+    public void testChangeSelectionMode_emptyFolder_announcesExit() {
+        finishLoading();
+        // Clear all items so model list has no bookmark items.
+        mModelList.clear();
+
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Collections.singleton(mFolderId2));
+        mMediator.changeSelectionMode(true);
+        verify(mSelectableListLayout)
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_screen_position, "1"));
+
+        mMediator.changeSelectionMode(false);
+        verify(mSelectableListLayout)
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_exit_select));
+    }
+
+    @Test
+    public void testChangeSelectionMode_multipleItems_announcesCount() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Set.of(mFolderId2, mFolderId3));
+
+        mMediator.changeSelectionMode(true);
+        verify(mSelectableListLayout)
+                .announceAccessibilityText(
+                        mActivity.getString(R.string.accessibility_toolbar_screen_position, "2"));
+    }
+
+    @Test
+    public void testChangeSelectionMode_alreadyDisabled_noAnnouncement() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        // Selection is already disabled (false -> false): should not make any announcement.
+        mMediator.changeSelectionMode(false);
+        verify(mSelectableListLayout, never()).announceAccessibilityText(any());
+    }
+
+    @Test
+    public void testChangeSelectionMode_focusesSelectedRow() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Collections.singleton(mFolderId2));
+        when(mSelectionDelegate.getSelectedItemsAsList())
+                .thenReturn(Collections.singletonList(mFolderId2));
+
+        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        mMediator.changeSelectionMode(true);
+
+        verify(mRecyclerView).post(postRunnableCaptor.capture());
+
+        int expectedPosition = mMediator.getPositionForBookmark(mFolderId2);
+        assertTrue(expectedPosition >= 0);
+
+        View mockRowView = mock(View.class);
+        RecyclerView.ViewHolder mockViewHolder = new RecyclerView.ViewHolder(mockRowView) {};
+        when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition))
+                .thenReturn(mockViewHolder);
+
+        postRunnableCaptor.getValue().run();
+
+        verify(mockRowView).requestFocus();
+    }
+
+    @Test
+    public void testFocusRowForBookmark_scrollsAndAttachesListenerWhenViewHolderNull() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        mMediator.changeSelectionMode(true);
+
+        int expectedPosition = mMediator.getPositionForBookmark(mFolderId2);
+        assertTrue(expectedPosition >= 0);
+
+        when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition)).thenReturn(null);
+
+        ArgumentCaptor<RecyclerView.OnChildAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(RecyclerView.OnChildAttachStateChangeListener.class);
+
+        mMediator.focusRowForBookmark(mFolderId2);
+
+        verify(mRecyclerView).addOnChildAttachStateChangeListener(attachListenerCaptor.capture());
+        verify(mRecyclerView).scrollToPosition(expectedPosition);
+
+        View mockRowView = mock(View.class);
+        when(mRecyclerView.getChildAdapterPosition(mockRowView)).thenReturn(expectedPosition);
+
+        attachListenerCaptor.getValue().onChildViewAttachedToWindow(mockRowView);
+
+        verify(mRecyclerView)
+                .removeOnChildAttachStateChangeListener(attachListenerCaptor.getValue());
+
+        ArgumentCaptor<Runnable> viewPostCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mockRowView).post(viewPostCaptor.capture());
+
+        viewPostCaptor.getValue().run();
+        verify(mockRowView).requestFocus();
+    }
+
+    @Test
+    public void testFocusRowForBookmark_invalidPosition_noScrollOrFocus() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        clearInvocations(mRecyclerView);
+
+        BookmarkId unknownId = new BookmarkId(9999, BookmarkType.NORMAL);
+        when(mSelectionDelegate.isItemSelected(unknownId)).thenReturn(true);
+        mMediator.changeSelectionMode(true);
+
+        mMediator.focusRowForBookmark(unknownId);
+
+        verify(mRecyclerView, never()).scrollToPosition(anyInt());
+        verify(mRecyclerView, never()).findViewHolderForAdapterPosition(anyInt());
+    }
+
+    @Test
+    public void testFocusRowForBookmark_selectionCancelledBeforeExecution_noFocus() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Collections.singleton(mFolderId2));
+        when(mSelectionDelegate.getSelectedItemsAsList())
+                .thenReturn(Collections.singletonList(mFolderId2));
+
+        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        mMediator.changeSelectionMode(true);
+
+        verify(mRecyclerView).post(postRunnableCaptor.capture());
+
+        // Cancel selection before runnable executes.
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(false);
+        mMediator.changeSelectionMode(false);
+
+        postRunnableCaptor.getValue().run();
+
+        verify(mRecyclerView, never()).findViewHolderForAdapterPosition(anyInt());
+    }
+
+    @Test
+    public void testChangeSelectionMode_emptySelectionList_doesNotPostFocus() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(Collections.singleton(mFolderId2));
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(Collections.emptyList());
+
+        mMediator.changeSelectionMode(true);
+
+        verify(mRecyclerView, never()).post(any());
+    }
+
+    @Test
+    public void testChangeSelectionMode_doesNotPostFocusWhenExiting() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        mMediator.changeSelectionMode(false);
+
+        verify(mRecyclerView, never()).post(any());
+    }
+
+    @Test
+    public void testDestroy_removesChildAttachListener() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        mMediator.changeSelectionMode(true);
+
+        int expectedPosition = mMediator.getPositionForBookmark(mFolderId2);
+        assertTrue(expectedPosition >= 0);
+        when(mRecyclerView.findViewHolderForAdapterPosition(expectedPosition)).thenReturn(null);
+
+        ArgumentCaptor<RecyclerView.OnChildAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(RecyclerView.OnChildAttachStateChangeListener.class);
+
+        mMediator.focusRowForBookmark(mFolderId2);
+        verify(mRecyclerView).addOnChildAttachStateChangeListener(attachListenerCaptor.capture());
+
+        mMediator.onDestroy();
+        verify(mRecyclerView)
+                .removeOnChildAttachStateChangeListener(attachListenerCaptor.getValue());
     }
 
     @Test

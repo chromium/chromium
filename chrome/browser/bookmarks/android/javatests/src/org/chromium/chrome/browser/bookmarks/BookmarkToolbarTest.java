@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.graphics.Color;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -562,5 +563,68 @@ public class BookmarkToolbarTest {
         assertEquals(
                 NavigationButton.NORMAL_VIEW_BACK, mBookmarkToolbar.getNavigationButtonForTests());
         assertNotNull(mBookmarkToolbar.getNavigationIcon());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetCheckedSortMenuId_mutuallyExclusive() {
+        initializeNormal();
+        for (@IdRes int targetId : BookmarkToolbar.SORT_MENU_IDS) {
+            mBookmarkToolbar.setCheckedSortMenuId(targetId);
+            for (@IdRes int sortId : BookmarkToolbar.SORT_MENU_IDS) {
+                MenuItem item = mBookmarkToolbar.getMenu().findItem(sortId);
+                assertNotNull(item);
+                assertEquals(
+                        "Sort item " + sortId + " checked state mismatch for target " + targetId,
+                        sortId == targetId,
+                        item.isChecked());
+            }
+        }
+
+        // Passing an unhandled ID should uncheck all items.
+        mBookmarkToolbar.setCheckedSortMenuId(View.NO_ID);
+        for (@IdRes int sortId : BookmarkToolbar.SORT_MENU_IDS) {
+            assertFalse(mBookmarkToolbar.getMenu().findItem(sortId).isChecked());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetCheckedSortMenuId_nullSortMenuIdsFallback() {
+        initializeNormal();
+        // Clear mSortMenuIds to test fallback to SORT_MENU_IDS.
+        mBookmarkToolbar.setSortMenuIds(null);
+        mBookmarkToolbar.setCheckedSortMenuId(R.id.sort_by_newest);
+        for (@IdRes int sortId : BookmarkToolbar.SORT_MENU_IDS) {
+            assertEquals(
+                    sortId == R.id.sort_by_newest,
+                    mBookmarkToolbar.getMenu().findItem(sortId).isChecked());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetCheckedViewMenuId_mutuallyExclusive() {
+        initializeNormal();
+        for (@IdRes int targetId : BookmarkToolbar.VIEW_MENU_IDS) {
+            mBookmarkToolbar.setCheckedViewMenuId(targetId);
+            for (@IdRes int viewId : BookmarkToolbar.VIEW_MENU_IDS) {
+                MenuItem item = mBookmarkToolbar.getMenu().findItem(viewId);
+                assertNotNull(item);
+                assertEquals(
+                        "View item " + viewId + " checked state mismatch for target " + targetId,
+                        viewId == targetId,
+                        item.isChecked());
+            }
+        }
+
+        // Passing an unhandled ID should uncheck all items.
+        mBookmarkToolbar.setCheckedViewMenuId(View.NO_ID);
+        for (@IdRes int viewId : BookmarkToolbar.VIEW_MENU_IDS) {
+            assertFalse(mBookmarkToolbar.getMenu().findItem(viewId).isChecked());
+        }
     }
 }

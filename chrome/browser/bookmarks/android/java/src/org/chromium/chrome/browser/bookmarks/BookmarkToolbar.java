@@ -52,6 +52,16 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mChromeIconVisible;
     private @NavigationButton int mNavigationButtonState = NavigationButton.NONE;
 
+    public static final List<Integer> SORT_MENU_IDS =
+            List.of(
+                    R.id.sort_by_manual,
+                    R.id.sort_by_newest,
+                    R.id.sort_by_oldest,
+                    R.id.sort_by_last_opened,
+                    R.id.sort_by_alpha,
+                    R.id.sort_by_reverse_alpha);
+    public static final List<Integer> VIEW_MENU_IDS = List.of(R.id.visual_view, R.id.compact_view);
+
     private @Nullable List<Integer> mSortMenuIds;
     private boolean mSortMenuIdsEnabled;
 
@@ -179,7 +189,13 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setCheckedSortMenuId(@IdRes int id) {
-        getMenu().findItem(id).setChecked(true);
+        List<Integer> sortIds = mSortMenuIds != null ? mSortMenuIds : SORT_MENU_IDS;
+        for (@IdRes int sortId : sortIds) {
+            MenuItem item = getMenu().findItem(sortId);
+            if (item != null) {
+                item.setChecked(sortId == id);
+            }
+        }
     }
 
     void setSortMenuIds(List<Integer> sortMenuIds) {
@@ -194,7 +210,12 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setCheckedViewMenuId(@IdRes int id) {
-        getMenu().findItem(id).setChecked(true);
+        for (@IdRes int viewId : VIEW_MENU_IDS) {
+            MenuItem item = getMenu().findItem(viewId);
+            if (item != null) {
+                item.setChecked(viewId == id);
+            }
+        }
     }
 
     void setNavigateBackRunnable(Runnable navigateBackRunnable) {
