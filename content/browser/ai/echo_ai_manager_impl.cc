@@ -82,17 +82,11 @@ bool HasUnsupportedType(
             blink::mojom::AILanguageModelPromptType::kText) {
           continue;
         }
-        // Reject kToolCall in expectedInputs - tool calls are model outputs,
-        // not inputs. Tool responses should be used to send results back.
-        // TODO(crbug.com/422803232): Maybe allow kToolCall expectedInputs.
-        if (expected_input->type ==
-            blink::mojom::AILanguageModelPromptType::kToolCall) {
-          has_unsupported_type = true;
-          break;
-        }
-        // Allow kToolResponse when tool use is enabled.
-        if (expected_input->type ==
-                blink::mojom::AILanguageModelPromptType::kToolResponse &&
+        // Allow tool types when tool use is enabled.
+        if ((expected_input->type ==
+                 blink::mojom::AILanguageModelPromptType::kToolCall ||
+             expected_input->type ==
+                 blink::mojom::AILanguageModelPromptType::kToolResponse) &&
             base::FeatureList::IsEnabled(
                 blink::features::kAIPromptAPIToolUse)) {
           continue;

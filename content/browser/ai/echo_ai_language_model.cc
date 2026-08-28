@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -351,17 +352,32 @@ std::optional<std::string> EchoAILanguageModel::PromptsToText(
           response += "<audio>";
           break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall:
-          // TODO(crbug.com/380461823): Support tool call input for session
-          // history and providing examples in the system prompt.
-          mojo::ReportBadMessage("Tool call input is not supported.");
-          return std::nullopt;
+          if (!input_types_.contains(
+                  blink::mojom::AILanguageModelPromptType::kToolCall)) {
+            mojo::ReportBadMessage("Tool call input is not supported.");
+            return std::nullopt;
+          }
+          if (std::optional<std::string> tool_call =
+                  ExtractToolCallText(content->get_tool_call())) {
+            response += *tool_call;
+          } else {
+            mojo::ReportBadMessage("Invalid tool call input.");
+            return std::nullopt;
+          }
+          break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse:
           if (!input_types_.contains(
                   blink::mojom::AILanguageModelPromptType::kToolResponse)) {
             mojo::ReportBadMessage("Tool response input is not supported.");
             return std::nullopt;
           }
-          response += ExtractToolResponseText(content->get_tool_response());
+          if (std::optional<std::string> tool_response =
+                  ExtractToolResponseText(content->get_tool_response())) {
+            response += *tool_response;
+          } else {
+            mojo::ReportBadMessage("Invalid tool response input.");
+            return std::nullopt;
+          }
           break;
         default:
           NOTIMPLEMENTED_LOG_ONCE();
@@ -372,70 +388,36 @@ std::optional<std::string> EchoAILanguageModel::PromptsToText(
   return response;
 }
 
-std::string EchoAILanguageModel::ExtractToolResponseText(
+std::optional<std::string> EchoAILanguageModel::ExtractToolCallText(
+    const base::DictValue& tool_call_dict) {
+  if (!tool_call_dict.FindString("callID") ||
+      !tool_call_dict.FindString("name") ||
+      !tool_call_dict.FindDict("arguments")) {
+    return std::nullopt;
+  }
+
+  std::string serialized_tool_call;
+  if (!base::JSONWriter::Write(tool_call_dict, &serialized_tool_call)) {
+    return std::nullopt;
+  }
+  return base::StrCat({"<tool-call>", serialized_tool_call, "</tool-call>"});
+}
+
+std::optional<std::string> EchoAILanguageModel::ExtractToolResponseText(
     const base::DictValue& tool_response_dict) {
-  // Extract common fields.
-  const std::string* call_id = tool_response_dict.FindString("callID");
-  const std::string* name = tool_response_dict.FindString("name");
-
-  // Check if this is a success (has "result") or error (has "errorMessage").
-  const base::ListValue* result_list = tool_response_dict.FindList("result");
-  const std::string* error_msg = tool_response_dict.FindString("errorMessage");
-
-  if (result_list) {
-    // Tool success output format. Example:
-    // <tool-success id='call_1' name='get_weather' result=[rainy, 52F]>
-    std::string result = "<tool-success";
-    if (call_id) {
-      base::StrAppend(&result, {" id='", *call_id, "'"});
-    }
-    if (name) {
-      base::StrAppend(&result, {" name='", *name, "'"});
-    }
-    base::StrAppend(&result, {" result=["});
-
-    for (size_t i = 0; i < result_list->size(); ++i) {
-      if (i > 0) {
-        base::StrAppend(&result, {", "});
-      }
-      const base::Value& result_item = (*result_list)[i];
-
-      if (result_item.is_dict()) {
-        const base::DictValue& item_dict = result_item.GetDict();
-        const std::string* type_str = item_dict.FindString("type");
-
-        // Extract value based on type.
-        if (type_str && *type_str == "text") {
-          const std::string* text_value = item_dict.FindString("value");
-          base::StrAppend(&result, {text_value ? *text_value : "<text>"});
-        } else {
-          // For other types (image, audio, object), just note the type.
-          base::StrAppend(&result,
-                          {"<", type_str ? *type_str : "unknown", ">"});
-        }
-      } else if (result_item.is_string()) {
-        base::StrAppend(&result, {result_item.GetString()});
-      }
-    }
-    base::StrAppend(&result, {"]>"});
-    return result;
+  if (!tool_response_dict.FindString("callID") ||
+      !tool_response_dict.FindString("name") ||
+      (!tool_response_dict.FindList("result") &&
+       !tool_response_dict.FindString("errorMessage"))) {
+    return std::nullopt;
   }
 
-  // Tool error output format. Example:
-  // <tool-error id='call_2' name='get_weather' message='Location Not Found'>
-  if (error_msg) {
-    std::string result = "<tool-error";
-    if (call_id) {
-      base::StrAppend(&result, {" id='", *call_id, "'"});
-    }
-    if (name) {
-      base::StrAppend(&result, {" name='", *name, "'"});
-    }
-    base::StrAppend(&result, {" message='", *error_msg, "'>"});
-    return result;
+  std::string serialized_tool_response;
+  if (!base::JSONWriter::Write(tool_response_dict, &serialized_tool_response)) {
+    return std::nullopt;
   }
-
-  return "<tool-response>";
+  return base::StrCat(
+      {"<tool-response>", serialized_tool_response, "</tool-response>"});
 }
 
 std::optional<base::Value> EchoAILanguageModel::ExtractJsonHint(

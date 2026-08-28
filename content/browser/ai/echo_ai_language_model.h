@@ -63,9 +63,12 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   std::optional<std::string> PromptsToText(
       const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts);
 
+  // Extract caller-supplied tool call text for echo behavior.
+  std::optional<std::string> ExtractToolCallText(
+      const base::DictValue& tool_call_dict);
+
   // Extract tool response text for echo behavior.
-  // Returns formatted string representation of tool success or error.
-  std::string ExtractToolResponseText(
+  std::optional<std::string> ExtractToolResponseText(
       const base::DictValue& tool_response_dict);
 
   // Generate simple tool calls using argument hints from descriptions.
