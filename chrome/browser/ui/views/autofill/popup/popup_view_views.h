@@ -213,12 +213,8 @@ class PopupViewViews : public PopupBaseView,
   // metadata.
   void ShowIPHFeaturePromos();
 
-  // Automatically selects the first interactive row in the popup (or
-  // clears/skips selection) if required by trigger source or suggestion type
-  // default.
-  void MaybeAutoSelectSuggestion(
-      AutoselectFirstSuggestion force_by_trigger_source =
-          AutoselectFirstSuggestion(false));
+  // Automatically selects the first interactive row in the popup.
+  void AutoSelectFirstSuggestion();
 
   // If the current suggestions are for password recovery, announces it to the
   // user.
