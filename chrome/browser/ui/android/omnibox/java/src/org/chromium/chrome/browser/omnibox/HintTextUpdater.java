@@ -29,6 +29,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -67,6 +68,8 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             (visible) -> updateHintText();
     private final Callback<Profile> mProfileObserver = (profile) -> updateHintText();
     private final Callback<String> mUserTextObserver = (text) -> updateHintText();
+    private final Callback<@DisplayState Integer> mDisplayStateObserver =
+            (state) -> updateHintText();
 
     private @Nullable SearchEngineService mSearchEngineService;
     private @Nullable AutocompleteInput mCurrentInput;
@@ -132,6 +135,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mCurrentInput.getRequestTypeSupplier().addSyncObserver(mAutocompleteRequestTypeObserver);
         mCurrentInput.getSiteSearchDataSupplier().addSyncObserver(mSiteSearchDataObserver);
         mCurrentInput.getUserTextSupplier().addSyncObserver(mUserTextObserver);
+        mCurrentInput.getDisplayStateSupplier().addSyncObserver(mDisplayStateObserver);
         updateHintText();
     }
 
@@ -141,6 +145,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
             mCurrentInput.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
             mCurrentInput.getUserTextSupplier().removeObserver(mUserTextObserver);
+            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
         }
         dismissAimHintIph();
         mCurrentInput = null;
@@ -184,6 +189,11 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             } else {
                 mUpdateHintTextCallback.onResult("");
             }
+            return;
+        }
+
+        if (isSuggestionsPopover() && isConventionalSearchFocused()) {
+            mUpdateHintTextCallback.onResult("");
             return;
         }
 
@@ -263,6 +273,14 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private boolean isSuggestionsPopover() {
         return mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
+    }
+
+    private boolean isConventionalSearchFocused() {
+        if (mCurrentInput == null) return false;
+        @DisplayState int displayState = mCurrentInput.getDisplayState();
+        boolean isFocused =
+                displayState == DisplayState.DRAFTING || displayState == DisplayState.SUGGESTIONS;
+        return isFocused && mCurrentInput.isConventionalRequestType();
     }
 
     private boolean triggerOrAlreadyShowingActivationHint() {

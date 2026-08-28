@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,6 +53,7 @@ import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -94,6 +96,8 @@ public class HintTextUpdaterUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Integer> mRequestTypeSupplier =
             ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+    private final SettableNonNullObservableSupplier<Integer> mDisplayStateSupplier =
+            ObservableSuppliers.createNonNull(DisplayState.DRAFTING);
     private final SettableNullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier =
             ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<SearchEngineService>
@@ -110,6 +114,8 @@ public class HintTextUpdaterUnitTest {
         when(mAutocompleteInput.getRequestTypeSupplier()).thenReturn(mRequestTypeSupplier);
         when(mAutocompleteInput.getSiteSearchDataSupplier()).thenReturn(mSiteSearchDataSupplier);
         when(mAutocompleteInput.getUserTextSupplier()).thenReturn(mUserTextSupplier);
+        when(mAutocompleteInput.getDisplayStateSupplier()).thenReturn(mDisplayStateSupplier);
+        when(mAutocompleteInput.getDisplayState()).thenAnswer(inv -> mDisplayStateSupplier.get());
         when(mAutocompleteInput.getRequestType()).thenAnswer(inv -> mRequestTypeSupplier.get());
         when(mAutocompleteInput.getSiteSearchData())
                 .thenAnswer(inv -> mSiteSearchDataSupplier.get());
@@ -121,6 +127,9 @@ public class HintTextUpdaterUnitTest {
         when(mFuseboxCoordinator.getFuseboxStateSupplier()).thenReturn(mFuseboxStateSupplier);
         when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
                 .thenReturn(mFuseboxLayoutModeSupplier);
+        lenient()
+                .when(mAutocompleteInput.isConventionalRequestType())
+                .thenAnswer(inv -> mRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH);
 
         FuseboxSessionState.setInstanceForTesting(mFuseboxSessionState);
         mProfileSupplier.set(mProfile);
@@ -399,16 +408,39 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
-    public void testAimActivationHint_FallbackToDefaultIfChipNotVisible() {
+    public void testAimActivationHint_FallbackToDefaultIfChipNotVisible_toolbarMode() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
-        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.TOOLBAR);
         mActivationChipVisibilitySupplier.set(false);
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mUserTextSupplier.set("");
 
         clearInvocations(mUpdateHintTextCallback);
         mUpdater.onTitleChanged();
+
+        verify(mUpdateHintTextCallback).onResult(eq("Search Google or type URL"));
+    }
+
+    @Test
+    public void testSuggestionsPopover_ConventionalSearchFocused_RemovesHintText() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        clearInvocations(mUpdateHintTextCallback);
+        mUpdater.onTitleChanged();
+
+        verify(mUpdateHintTextCallback).onResult(eq(""));
+    }
+
+    @Test
+    public void testSuggestionsPopover_DraftingNoFocus_ShowsHintText() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
+        mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        clearInvocations(mUpdateHintTextCallback);
+        mDisplayStateSupplier.set(DisplayState.DRAFTING_NO_FOCUS);
 
         verify(mUpdateHintTextCallback).onResult(eq("Search Google or type URL"));
     }
