@@ -499,7 +499,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 15, modelList.size());
 
         // List item 1
         assertEquals(
@@ -538,56 +538,61 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(3).model.get(COLOR_ID));
 
         // List item 5
+        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(5).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(6).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(DIVIDER, modelList.get(7).type);
+        assertEquals(
+                R.id.mute_site_menu_id,
+                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 9
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(8).type);
 
         // List item 10
         assertEquals(
-                R.id.send_to_your_device_menu_id,
+                R.id.add_tab_to_reading_list_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
-        assertEquals(DIVIDER, modelList.get(10).type);
+        assertEquals(
+                R.id.send_to_your_device_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 12
-        assertEquals(R.string.close, modelList.get(11).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(11).type);
 
         // List item 13
+        assertEquals(R.string.close, modelList.get(12).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 14
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 15
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(14).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -720,7 +725,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 15, modelList.size());
 
         // List item 1
         assertEquals(
@@ -739,56 +744,61 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(DIVIDER, modelList.get(3).type);
 
         // List item 5
+        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(5).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(6).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(DIVIDER, modelList.get(7).type);
+        assertEquals(
+                R.id.mute_site_menu_id,
+                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 9
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(8).type);
 
         // List item 10
         assertEquals(
-                R.id.send_to_your_device_menu_id,
+                R.id.add_tab_to_reading_list_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
-        assertEquals(DIVIDER, modelList.get(10).type);
+        assertEquals(
+                R.id.send_to_your_device_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 12
-        assertEquals(R.string.close, modelList.get(11).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(11).type);
 
         // List item 13
+        assertEquals(R.string.close, modelList.get(12).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 14
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 15
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(14).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -905,7 +915,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -946,12 +956,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(3).model.get(COLOR_ID));
 
         // List item 5
+        assertEquals(R.string.share, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
-                modelList.get(4).model.get(TITLE));
-        assertEquals(
-                R.id.duplicate_tab_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.share_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
                     + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
@@ -961,40 +968,54 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 6
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(5).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 7
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 8
-        assertEquals(DIVIDER, modelList.get(7).type);
-
-        // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
                     + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
                     + " incognito",
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                modelList.get(8).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+                modelList.get(5).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 7
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(6).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(
+                R.id.mute_site_menu_id,
+                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 9
+        assertEquals(DIVIDER, modelList.get(8).type);
 
         // List item 10
+        assertEquals(R.string.close, modelList.get(9).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                modelList.get(9).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 11
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -2398,6 +2419,18 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList,
                 new AnchorInfo(NON_URL_TAB_ID, Collections.singletonList(NON_URL_TAB_ID)));
+
+        assertNull(findItemByMenuId(modelList, R.id.share_tab));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS})
+    public void testShareTab_hiddenWhenFeatureDisabled() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertNull(findItemByMenuId(modelList, R.id.share_tab));
     }

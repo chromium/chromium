@@ -661,7 +661,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
-        if (!ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled()
+        if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled()
                 && ShareUtils.shouldEnableShare(tabs.get(0))) {
             // Share is only available for single tab selection.
             itemList.add(createShareItem(isIncognito));
