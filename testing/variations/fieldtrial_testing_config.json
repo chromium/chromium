@@ -349,24 +349,6 @@
             ]
         }
     ],
-    "AccountPickerDialog": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "form_factors": [
-                "tablet"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccountPickerDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "ActivitylessSigninAllEntryPointClank": [
         {
             "platforms": [
