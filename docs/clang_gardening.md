@@ -16,7 +16,8 @@ day. This means that things break frequently. Since Chromium is one of the
 largest open-source codebases, it's common for us to be the first to discover
 issues and corner cases that evaded the upstream CI. The
 [primary activity](#gardening-process) of gardening is to monitor our
-infrastructure to detect new issues. When you notice an issue, file a bug, then dig into it (or find someone else to do so).
+infrastructure to detect new issues. When you notice an issue, file a bug,
+then dig into it (or find someone else to do so).
 
 Should you find yourself in a position where there aren't any outstanding
 issues, you've got a roll candidate! Try out the current revision of the
@@ -57,7 +58,7 @@ automatically generated
 to package the latest version of Clang and Rust.
 
 The current gardener is responsible for creating the dry run CLs by running the
-(internal) [`clang_packaging_cron.sh`](https://cs/clang_packaging_cron.sh) script.
+(internal) [`clang_packaging_cron.sh`](http://cs/clang_packaging_cron.sh) script.
 The script essentially just runs
 [`upload_revision.py`](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/upload_revision.py).
 
