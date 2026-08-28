@@ -905,6 +905,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
   CHECK(suggestion.IsAcceptable());
+  // TODO(crbug.com/552871965): Extract the logging here to a separate function.
   base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
                                 suggestion.type);
 
@@ -913,6 +914,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     manager_->client().GetFormInteractionsUkmLogger().LogSuggestionAccepted(
         manager_->driver().GetPageUkmSourceId(), CHECK_DEREF(form_structure),
         CHECK_DEREF(autofill_field), suggestion.type, metadata.row());
+  }
+  if (autofill_field &&
+      autofill_field->Type().GetAddressType() == EMAIL_ADDRESS) {
+    autofill_metrics::LogMergedEmailAcceptedSuggestionType(
+        suggestion.type, shown_suggestion_types_);
   }
 
   switch (suggestion.type) {

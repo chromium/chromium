@@ -1803,6 +1803,17 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="LOYALTY_CARD: accepted"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillEmailSuggestionAcceptedStatus) -->
+
+<enum name="AutofillEmailSuggestionAcceptedStatus">
+  <int value="0" label="Only Addresses available and selected"/>
+  <int value="1" label="Only Autocomplete available and selected"/>
+  <int value="2" label="Both available, Address selected"/>
+  <int value="3" label="Both available, Autocomplete selected"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/suggestions_list_metrics.h:AutofillEmailSuggestionAcceptedStatus) -->
+
 <enum name="AutofillErrorDialogType">
   <int value="0" label="VIRTUAL_CARD_TEMPORARY_ERROR"/>
   <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>

@@ -44,6 +44,43 @@ void LogSuggestionsCount(base::span<const Suggestion> suggestions) {
   }
 }
 
+void LogMergedEmailSuggestionCounts(size_t num_address_suggestions,
+                                    size_t num_autocomplete_suggestions) {
+  base::UmaHistogramCounts100(
+      "Autofill.EmailPopup.SuggestionCount",
+      num_address_suggestions + num_autocomplete_suggestions);
+  base::UmaHistogramCounts100("Autofill.EmailPopup.SuggestionCount.Address",
+                              num_address_suggestions);
+  base::UmaHistogramCounts100(
+      "Autofill.EmailPopup.SuggestionCount.Autocomplete",
+      num_autocomplete_suggestions);
+}
+
+void LogMergedEmailAcceptedSuggestionType(
+    SuggestionType accepted_suggestion_type,
+    base::span<const SuggestionType> shown_suggestion_types) {
+  const FillingProduct accepted_product =
+      GetFillingProductFromSuggestionType(accepted_suggestion_type);
+  auto contains_product = [&](FillingProduct filling_product) {
+    return std::ranges::contains(shown_suggestion_types, filling_product,
+                                 &GetFillingProductFromSuggestionType);
+  };
+
+  if (accepted_product == FillingProduct::kAutocomplete) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AcceptedEmailSuggestion.Status",
+        contains_product(FillingProduct::kAddress)
+            ? EmailSuggestionAcceptedStatus::kMixedAutocompleteSelected
+            : EmailSuggestionAcceptedStatus::kAutocompleteOnly);
+  } else if (accepted_product == FillingProduct::kAddress) {
+    base::UmaHistogramEnumeration(
+        "Autofill.AcceptedEmailSuggestion.Status",
+        contains_product(FillingProduct::kAutocomplete)
+            ? EmailSuggestionAcceptedStatus::kMixedAddressSelected
+            : EmailSuggestionAcceptedStatus::kAddressOnly);
+  }
+}
+
 void LogSuggestionAcceptedIndex(
     int index,
     FillingProduct filling_product,

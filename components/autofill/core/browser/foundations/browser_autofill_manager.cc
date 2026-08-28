@@ -1440,6 +1440,16 @@ void BrowserAutofillManager::MergeAutocompleteAndAddressSuggestions(
                         autocomplete_suggestions.end()),
       autocomplete_suggestions.end());
 
+  autofill_metrics::LogMergedEmailSuggestionCounts(
+      /*num_address_suggestions=*/std::ranges::count_if(
+          suggestions,
+          [](const Suggestion& suggestion) {
+            return !IsManagementFooterOption(suggestion) &&
+                   GetFillingProductFromSuggestionType(suggestion.type) ==
+                       FillingProduct::kAddress;
+          }),
+      autocomplete_suggestions.size());
+
   InsertBeforeFooter(suggestions, std::move(autocomplete_suggestions));
 }
 

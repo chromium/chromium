@@ -934,6 +934,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Group" variants="Autofill.Ablation.Group"/>
 </histogram>
 
+<histogram name="Autofill.AcceptedEmailSuggestion.Status"
+    enum="AutofillEmailSuggestionAcceptedStatus" expires_after="2027-08-08">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the suggestion type that was used to fill an email field
+    (Autocomplete or Address) and what suggestions were shown to the user.
+    Emitted when a suggestion is accepted for a trigger field that is classified
+    as `EMAIL_ADDRESS`.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough"
     enum="Boolean" expires_after="2026-12-12">
   <owner>sygiet@google.com</owner>
@@ -4308,6 +4321,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
     This metric is experimental and may be removed in the future.
   </summary>
+</histogram>
+
+<histogram name="Autofill.EmailPopup.SuggestionCount{Product}"
+    units="suggestions" expires_after="2027-08-08">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of suggestion for email popups. Emitted when suggestions
+    are generated for a trigger field of type `EMAIL_ADDRESS`.
+
+    This histogram variant counts {Product} suggestions offered to the user.
+  </summary>
+  <token key="Product">
+    <variant name="" summary="total"/>
+    <variant name=".Address" summary="Address"/>
+    <variant name=".Autocomplete" summary="Autocomplete"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.EmailPredictionCorrectness.Precision"

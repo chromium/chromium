@@ -24,6 +24,8 @@
 namespace autofill::autofill_metrics {
 namespace {
 
+using test::CreateAutofillSuggestion;
+
 class SuggestionsListMetricsTest : public AutofillMetricsBaseTest,
                                    public testing::Test {
  public:
@@ -223,6 +225,209 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.Suggestion.AcceptanceFieldValueLength.CreditCard", 2, 1);
   }
+}
+
+// Tests that `Autofill.AcceptedEmailSuggestion.Status` logs the correct
+// type if only Autocomplete suggestions were shown and the user selected one.
+TEST_F(SuggestionsListMetricsTest,
+       LogMergedEmailAcceptedSuggestion_AutocompleteOnly) {
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+       }});
+  const FormFieldData& field = form.fields()[0];
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
+
+  external_delegate().OnSuggestionsReturned(
+      field,
+      {CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                u"user@example.com")},
+      /*prefilled_query=*/{});
+
+  base::HistogramTester histogram_tester;
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                               u"user@example.com"),
+      {.multi_index = {0}});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedEmailSuggestion.Status",
+      autofill_metrics::EmailSuggestionAcceptedStatus::kAutocompleteOnly, 1);
+}
+
+// Tests that `Autofill.AcceptedEmailSuggestion.Status` logs the correct
+// type if only Address suggestions were shown and the user selected one.
+TEST_F(SuggestionsListMetricsTest,
+       LogMergedEmailAcceptedSuggestion_AddressOnly) {
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+       }});
+  const FormFieldData& field = form.fields()[0];
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
+
+  external_delegate().OnSuggestionsReturned(
+      field,
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                u"user@example.com")},
+      /*prefilled_query=*/{});
+
+  base::HistogramTester histogram_tester;
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                               u"user@example.com"),
+      {.multi_index = {0}});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedEmailSuggestion.Status",
+      autofill_metrics::EmailSuggestionAcceptedStatus::kAddressOnly, 1);
+}
+
+// Tests that `Autofill.AcceptedEmailSuggestion.Status` logs the correct
+// type if both Address and Autocomplete suggestions were shown and the user
+// selected an autocomplete suggestion.
+TEST_F(SuggestionsListMetricsTest,
+       LogMergedEmailAcceptedSuggestion_MixedAutocompleteSelected) {
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+       }});
+  const FormFieldData& field = form.fields()[0];
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
+
+  external_delegate().OnSuggestionsReturned(
+      field,
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                u"address@example.com"),
+       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                u"auto@example.com")},
+      /*prefilled_query=*/{});
+
+  base::HistogramTester histogram_tester;
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                               u"auto@example.com"),
+      {.multi_index = {1}});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedEmailSuggestion.Status",
+      autofill_metrics::EmailSuggestionAcceptedStatus::
+          kMixedAutocompleteSelected,
+      1);
+}
+
+// Tests that `Autofill.AcceptedEmailSuggestion.Status` logs the correct
+// type if both Address and Autocomplete suggestions were shown and the user
+// selected an address suggestion.
+TEST_F(SuggestionsListMetricsTest,
+       LogMergedEmailAcceptedSuggestion_MixedAddressSelected) {
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+       }});
+  const FormFieldData& field = form.fields()[0];
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
+
+  external_delegate().OnSuggestionsReturned(
+      field,
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                u"address@example.com"),
+       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                u"auto@example.com")},
+      /*prefilled_query=*/{});
+
+  base::HistogramTester histogram_tester;
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                               u"address@example.com"),
+      {.multi_index = {0}});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedEmailSuggestion.Status",
+      autofill_metrics::EmailSuggestionAcceptedStatus::kMixedAddressSelected,
+      1);
+}
+
+// Tests that `Autofill.AcceptedEmailSuggestion.Status` is not logged
+// for non-email fields.
+TEST_F(SuggestionsListMetricsTest,
+       LogMergedEmailAcceptedSuggestion_NonEmailField) {
+  const FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "name"},
+           {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+       }});
+  const FormFieldData& field = form.fields()[0];
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
+  autofill_manager().OnAskForValuesToFillTest(form, field.global_id());
+
+  external_delegate().OnSuggestionsReturned(
+      field,
+      {CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                u"address@example.com"),
+       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                u"auto@example.com")},
+      /*prefilled_query=*/{});
+
+  base::HistogramTester histogram_tester;
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                               u"address@example.com"),
+      {.multi_index = {0}});
+
+  histogram_tester.ExpectTotalCount("Autofill.AcceptedEmailSuggestion.Status",
+                                    0);
+}
+
+// Tests that the `Autofill.EmailPopup.SuggestionCount*` metrics are correctly
+// emitted when merging address and autocomplete email suggestions.
+TEST_F(SuggestionsListMetricsTest, LogMergedEmailSuggestionCounts) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kAutofillNewSuggestionGeneration,
+       features::kAutofillMergeAddressAndAutocompleteEmailSuggestions});
+
+  const FormData form = test::GetFormData(
+      {.fields = {test::FieldDescription{
+           .label = u"Email",
+           .form_control_type = FormControlType::kInputText}}});
+  autofill_manager().AddSeenForm(form, {EMAIL_ADDRESS});
+
+  // 1 Address suggestion, 2 Autocomplete suggestions.
+  const std::vector<SuggestionGenerator::ReturnedSuggestions> input = {
+      {SuggestionGenerator::SuggestionDataSource::kAddress,
+       {Suggestion(u"address@example.com", SuggestionType::kAddressEntry)}},
+      {SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+       {test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"auto1@example.com"),
+        test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
+                                       u"auto2@example.com")}}};
+
+  base::HistogramTester histogram_tester;
+
+  test_api(autofill_manager())
+      .OnIndividualSuggestionsGenerated(
+          form, form.fields()[0],
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          base::TimeTicks::Now(), input);
+
+  histogram_tester.ExpectUniqueSample("Autofill.EmailPopup.SuggestionCount",
+                                      /*sample=*/3,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.EmailPopup.SuggestionCount.Address", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.EmailPopup.SuggestionCount.Autocomplete", /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace
