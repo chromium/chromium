@@ -59,9 +59,6 @@ public class ChromeTabSwitcherTest {
 
     private final IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
 
-    private final IUi2Locator mNewTabButton = Ui2Locators.withContentDesc("New tab");
-    private final IUi2Locator mNtpOmnibox = Ui2Locators.withAnyResEntry(R.id.search_box_text);
-
     private final FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
 
     public static final long TIMEOUT_MS = 20000L;

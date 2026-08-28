@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -120,7 +119,6 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private EmbeddedTestServer mTestServer;
-    private WebPageStation mPage;
 
     private ModalDialogButtonPresser mModalDialogObserver;
 
