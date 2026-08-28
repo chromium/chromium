@@ -21,10 +21,13 @@ wav = ["symphonia-metadata/riff-info"]
 [dependencies]
 extended = "0.1.0"
 log = { workspace = true }
-symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
+symphonia-core = { version = "0.6.1", path = "../symphonia-core" }
 
 [dependencies.symphonia-metadata]
-version = "0.6.0"
+version = "0.6.1"
 path = "../symphonia-metadata"
 default-features = false
 features = []
+
+[lints]
+workspace = true

@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "symphonia-format-riff"
-version = "0.6.0"
+version = "0.6.1"
 authors = [
     "Philip Deljanov <philip.deljanov@gmail.com>",
     "dedobbin <dedobbindedobbin@gmail.com>",
@@ -62,9 +62,17 @@ version = "0.1.0"
 version = "0.4"
 
 [dependencies.symphonia-core]
-version = "0.6.0"
+version = "0.6.1"
 
 [dependencies.symphonia-metadata]
-version = "0.6.0"
+version = "0.6.1"
 features = []
 default-features = false
+
+[lints.clippy]
+unwrap_used = "warn"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = ["cfg(fuzzing)"]

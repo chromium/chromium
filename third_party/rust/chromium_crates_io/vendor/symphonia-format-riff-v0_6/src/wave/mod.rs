@@ -103,11 +103,12 @@ impl<'s> WavReader<'s> {
 
             // The last chunk should always be a data chunk, if it is not, then the stream is
             // unsupported.
-            if chunk.is_none() {
+            let Some(chunk) = chunk
+            else {
                 return unsupported_error("wav: missing data chunk");
-            }
+            };
 
-            match chunk.unwrap() {
+            match chunk {
                 RiffWaveChunks::Format(fmt) => {
                     let format = fmt.parse(&mut mss)?;
 

@@ -374,7 +374,7 @@ impl PacketInfo {
 
         Ok(Self {
             block_size,
-            frames_per_block: NonZero::new(1).unwrap(),
+            frames_per_block: NonZero::new(1).expect("1 is non-zero"),
             max_blocks_per_packet: MAX_FRAMES_PER_PACKET,
             max_frames_per_packet: MAX_FRAMES_PER_PACKET,
         })
@@ -386,8 +386,8 @@ impl PacketInfo {
 
     pub fn get_actual_ts(&self, ts: Timestamp) -> Timestamp {
         let max_frames_per_packet = self.max_frames_per_packet.get();
-        // UNWRAP: Maximum frames/packet is non-zero 0.
-        ts.align_towards_zero(Duration::from(max_frames_per_packet)).unwrap()
+        ts.align_towards_zero(Duration::from(max_frames_per_packet))
+            .expect("max_frames_per_packet is non-zero")
     }
 }
 

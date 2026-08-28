@@ -136,7 +136,8 @@ impl<'s> AiffReader<'s> {
                     }
 
                     // The length of the sound data chunk must also be known.
-                    if let Some(len) = ssnd.as_ref().unwrap().len {
+                    let ssnd_ref = ssnd.as_ref().expect("ssnd assigned a few lines above");
+                    if let Some(len) = ssnd_ref.len {
                         mss.ignore_bytes(u64::from(len))?;
                     }
                     else {
@@ -265,8 +266,13 @@ fn process_markers(
             }
 
             // Add the chapter.
+            // marker.ts is u32; the result is seconds as i64, so overflow is impossible.
+            let start_time = tb
+                .calc_time(Timestamp::from(marker.ts))
+                .expect("aiff: chapter timestamp overflow is impossible");
+
             chapters.push(Chapter {
-                start_time: tb.calc_time(Timestamp::from(marker.ts)).unwrap(),
+                start_time,
                 end_time: None,
                 start_byte: None,
                 end_byte: None,

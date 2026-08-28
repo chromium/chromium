@@ -515,7 +515,7 @@ impl fmt::Display for WaveFormatChunk {
                 writeln!(f, "\t\tbits_per_sample: {},", ext.bits_per_sample)?;
                 writeln!(f, "\t\tvalid_bits_per_sample: {},", ext.valid_bits_per_sample)?;
                 writeln!(f, "\t\tchannels: {},", ext.channels)?;
-                writeln!(f, "\t\tsub_format_guid: {:?},", &ext.sub_format_guid)?;
+                writeln!(f, "\t\tsub_format_guid: {:?},", ext.sub_format_guid)?;
                 writeln!(f, "\t\tcodec: {},", ext.codec)?;
             }
             FormatData::ALaw(ref alaw) => {

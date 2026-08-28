@@ -444,7 +444,11 @@ impl ParseChunk for TextChunk {
             _ => unreachable!(),
         };
 
-        let tag = Tag::new_from_parts(str::from_utf8(&tag).unwrap(), value, Some(std_tag));
+        let tag_key = match str::from_utf8(&tag) {
+            Ok(s) => s,
+            Err(_) => return decode_error("aiff: tag key is not valid UTF-8"),
+        };
+        let tag = Tag::new_from_parts(tag_key, value, Some(std_tag));
 
         Ok(TextChunk { tag })
     }
