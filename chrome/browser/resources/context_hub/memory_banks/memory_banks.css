@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
  * #css_wrapper_metadata_end */
 
 :host {
@@ -138,6 +139,7 @@ cr-tabs {
   flex: 1;
   flex-direction: column;
   min-width: 0; /* allows text truncation */
+  padding-inline-end: 20px;
 }
 
 .card-title {
@@ -158,6 +160,25 @@ cr-tabs {
   font-weight: 500;
   line-height: 14px;
   margin-top: 2px;
+}
+
+.card-more-btn {
+  --cr-icon-button-color: var(--cr-secondary-text-color);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  bottom: 8px;
+  inset-inline-end: 8px;
+  margin: 0;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  transition: opacity 150ms ease-in-out;
+  z-index: 2;
+}
+
+.card:hover .card-more-btn,
+.card-more-btn:focus-visible {
+  opacity: 1;
 }
 
 .header-container {
@@ -294,10 +315,9 @@ cr-tabs {
 }
 
 .gemini-response p {
-  white-space: pre-wrap;
-  margin: 8px 0 0 0;
+  color: var(--cr-primary-text-color);
   font-family: 'Google Sans Text', sans-serif;
   font-size: 13px;
-  color: var(--cr-primary-text-color);
+  margin: 8px 0 0 0;
 }
 

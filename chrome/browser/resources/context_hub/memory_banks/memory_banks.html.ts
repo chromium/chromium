@@ -169,5 +169,11 @@ export function getHtml(this: MemoryBanksElement) {
             `}
         </section>
     </main>
+
+    <cr-action-menu id="actionMenu">
+      <button class="dropdown-item" @click="${this.onMenuDeleteClick_}">
+        Delete
+      </button>
+    </cr-action-menu>
   `;
 }

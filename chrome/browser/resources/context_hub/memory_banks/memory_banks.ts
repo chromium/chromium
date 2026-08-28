@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
+import '//resources/cr_elements/icons.html.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
@@ -36,6 +38,12 @@ function downloadFile(filename: string, content: string) {
 const FOLDER_TAB_ICON: string =
     'chrome://resources/images/icon_folder_open.svg';
 
+export interface MemoryBanksElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+  };
+}
+
 export class MemoryBanksElement extends CrLitElement {
   static get is() {
     return 'memory-banks';
@@ -55,9 +63,9 @@ export class MemoryBanksElement extends CrLitElement {
       selectedIds: {type: Object},
       searchQuery: {type: String},
       selectedCollection: {type: String},
-      geminiResponse_: {type: String},
-      isAskingGemini_: {type: Boolean},
-      showGeminiPanel_: {type: Boolean},
+      geminiResponse_: {type: String, state: true},
+      isAskingGemini_: {type: Boolean, state: true},
+      showGeminiPanel_: {type: Boolean, state: true},
     };
   }
 
@@ -68,7 +76,7 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
-
+  private activeMenuEntry_: MemoryBankEntry|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -144,6 +152,23 @@ export class MemoryBanksElement extends CrLitElement {
           this.getAvailableCollections_()[index - 1] || '';
     }
     this.selectedIds = new Set();
+  }
+
+  protected onMoreActionsClick_(entry: MemoryBankEntry, e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.activeMenuEntry_ = entry;
+    const target = e.currentTarget as HTMLElement;
+    this.$.actionMenu.showAt(target);
+  }
+
+  protected async onMenuDeleteClick_() {
+    this.$.actionMenu.close();
+    if (this.activeMenuEntry_) {
+      const id = this.activeMenuEntry_.id;
+      this.activeMenuEntry_ = null;
+      await this.deleteEntries_([id]);
+    }
   }
 
   convertMojoTimeToDate(mojoTime: {internalValue: bigint}): Date {
@@ -226,10 +251,16 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected async onDeleteClick_() {
-    const ids = Array.from(this.selectedIds);
+    await this.deleteEntries_(Array.from(this.selectedIds));
+  }
+
+  private async deleteEntries_(ids: bigint[]) {
     await browserProxyFactory.getInstance().handler.deleteMemoryBankEntries(
         ids);
-    this.selectedIds = new Set();
+    for (const id of ids) {
+      this.selectedIds.delete(id);
+    }
+    this.selectedIds = new Set(this.selectedIds);
     await this.fetchEntries();
   }
 
