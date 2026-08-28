@@ -1529,6 +1529,9 @@
   [self dismissNotificationsOptIn];
   [self hideComposeboxImmediately:YES completion:nil];
   [self dismissMultimodalActionsMenu];
+
+  [_readerModeCoordinator stop];
+  _readerModeCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
