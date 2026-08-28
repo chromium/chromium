@@ -320,8 +320,10 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
 
   daemon_process_->CreateDesktopSession(
       id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
-  EXPECT_TRUE(desktop_sessions().empty());
-  EXPECT_EQ(terminal_id_, 0);
+  // The first valid desktop session is retained across the network process
+  // crash.
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 }
 
 TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
@@ -397,6 +399,53 @@ TEST_F(DaemonProcessTest, DesktopSessionClosesOnReceiverDisconnect) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return desktop_sessions().empty(); }));
 #endif
+}
+
+TEST_F(DaemonProcessTest, DesktopSessionsPersistAcrossNetworkProcessRestart) {
+  InSequence s;
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+
+  StartDaemonProcess();
+
+  int id = terminal_id_++;
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
+
+  // Simulate network process stopped/killed.
+  daemon_process_->OnWorkerProcessStopped();
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+
+  // Simulate network process restart and channel re-connection.
+  daemon_process_->OnChannelConnected(12345);
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
+
+  // Verify next terminal ID allocation does not collide.
+  auto options = CreateSessionOptions();
+  options->client_id = "another_user@domain.com";
+  daemon_process_->GetDesktopSession(mojo::NullReceiver(), mojo::NullRemote(),
+                                     std::move(options));
+  EXPECT_EQ(desktop_sessions().size(), 2u);
+}
+
+TEST_F(DaemonProcessTest, DesktopSessionsPersistAcrossCrashNetworkProcess) {
+  InSequence s;
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+  EXPECT_CALL(*daemon_process_, DoCrashNetworkProcess(_));
+
+  StartDaemonProcess();
+
+  int id = terminal_id_++;
+  daemon_process_->CreateDesktopSession(
+      id, mojo::NullReceiver(), mojo::NullRemote(), CreateSessionOptions());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+
+  daemon_process_->CrashNetworkProcess(FROM_HERE);
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(id, desktop_sessions().begin()->second->id());
 }
 
 }  // namespace remoting

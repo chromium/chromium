@@ -74,12 +74,6 @@ void DaemonProcess::OnChannelConnected(int32_t peer_pid) {
 
   VLOG(1) << "IPC: daemon <- network (" << peer_pid << ")";
 
-  DeleteAllDesktopSessions();
-
-  // Reset the last known terminal ID because no IDs have been allocated
-  // by the the newly started process yet.
-  next_terminal_id_ = 0;
-
   BindAssociatedInterfaces();
 
   if (!OnInitAfterChannelConnected(peer_pid)) {
@@ -105,7 +99,6 @@ void DaemonProcess::OnWorkerProcessStopped() {
   // re-launched.
   remoting_host_control_.reset();
   peer_connection_launchers_.clear();
-  DeleteAllDesktopSessions();
 }
 
 void DaemonProcess::OnAssociatedInterfaceRequest(
@@ -364,7 +357,6 @@ void DaemonProcess::CrashNetworkProcess(const base::Location& location) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   DoCrashNetworkProcess(location);
-  DeleteAllDesktopSessions();
 }
 
 void DaemonProcess::DoCrashNetworkProcess(const base::Location& location) {
@@ -469,6 +461,7 @@ void DaemonProcess::Stop(int exit_code) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   OnWorkerProcessStopped();
+  DeleteAllDesktopSessions();
 
   if (stopped_callback_) {
     std::move(stopped_callback_).Run(exit_code);
