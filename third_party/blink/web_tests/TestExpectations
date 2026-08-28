@@ -9175,7 +9175,7 @@ crbug.com/539889938 [ Linux ] external/wpt/html/infrastructure/urls/resolving-ur
 crbug.com/539889938 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.https.html?target_hint=_blank [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/speculation-rules/prerender/local-storage.https.html?target_hint=_blank [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure Pass ]
-crbug.com/539889938 [ Linux ] external/wpt/html/interaction/focus/processing-model/focus-fixup-rule-one-no-dialogs.html [ Failure Pass ]
+crbug.com/539889938 crbug.com/542694493 external/wpt/html/interaction/focus/processing-model/focus-fixup-rule-one-no-dialogs.html [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?* [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?* [ Failure Pass ]
 
