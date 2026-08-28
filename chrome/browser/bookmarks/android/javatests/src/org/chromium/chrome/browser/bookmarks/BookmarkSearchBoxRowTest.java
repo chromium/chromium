@@ -67,10 +67,10 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Non-render tests for {@link BookmarkSearchBoxRow}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// TODO(crbug.com/428056054): The top content is blocked by system UI on B+.
+// TODO(crbug.com/428281174): The top content is blocked by system UI on B+.
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-        message = "crbug.com/428056054")
+        message = "crbug.com/428281174")
 public class BookmarkSearchBoxRowTest {
     /** Needed because CoreMatchers.equalTo does not correctly handle CharSequences. */
     private static Matcher<CharSequence> withText(CharSequence text) {

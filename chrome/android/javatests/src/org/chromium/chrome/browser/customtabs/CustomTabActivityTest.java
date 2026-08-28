@@ -506,10 +506,10 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Feature({"StatusBar"})
-    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    // TODO(crbug.com/428281172): Do not read color from system window bars on B+.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+            message = "crbug.com/428281172")
     public void testToolbarColor() {
         Intent intent = createMinimalCustomTabIntent();
         final int expectedColor = Color.RED;
@@ -2298,11 +2298,11 @@ public class CustomTabActivityTest {
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    // TODO(crbug.com/428056054): Test assume view hierarchy, does not work with e2e everywhere.
+    // TODO(crbug.com/428281172): Test assume view hierarchy, does not work with e2e everywhere.
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+            message = "crbug.com/428281172")
     public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         var token = SessionHolder.getSessionHolderFromIntent(intent);

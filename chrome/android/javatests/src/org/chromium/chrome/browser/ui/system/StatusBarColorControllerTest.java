@@ -84,10 +84,10 @@ import java.util.function.Supplier;
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
-// TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+// TODO(crbug.com/428281352): Do not read color from system window bars on B+.
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-        message = "crbug.com/428056054")
+        message = "crbug.com/428281352")
 public class StatusBarColorControllerTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

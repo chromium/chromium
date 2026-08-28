@@ -48,10 +48,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-// TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+// TODO(crbug.com/428281587): Do not read color from system window bars on B+.
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-        message = "crbug.com/428056054")
+        message = "crbug.com/428281587")
 @Batch(Batch.PER_CLASS)
 public class BrandColorTest {
     @Rule

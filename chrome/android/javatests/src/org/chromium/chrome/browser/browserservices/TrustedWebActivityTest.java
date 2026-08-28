@@ -158,10 +158,10 @@ public class TrustedWebActivityTest {
     @MediumTest
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE})
-    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    // TODO(crbug.com/428281344): Do not read color from system window bars on B+.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+            message = "crbug.com/428281344")
     // Customizing status bar color is disallowed for tablets.
     public void testStatusBarColorHasPageThemeColor() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
@@ -185,10 +185,10 @@ public class TrustedWebActivityTest {
     @MediumTest
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE})
-    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    // TODO(crbug.com/428281344): Do not read color from system window bars on B+.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+            message = "crbug.com/428281344")
     public void testStatusBarColorNoPageThemeColor() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule
@@ -222,10 +222,10 @@ public class TrustedWebActivityTest {
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "b/352624584")
-    // TODO(crbug.com/428056054): Do not read color from system window bars on B+.
+    // TODO(crbug.com/428281344): Do not read color from system window bars on B+.
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+            message = "crbug.com/428281344")
     public void testStatusBarColorCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule
