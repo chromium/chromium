@@ -309,7 +309,7 @@ BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
 // When enabled, HttpServerProperties will be persisted to disk across
 // app restarts.
 BASE_FEATURE(kWebViewPersistHttpServerProperties,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebViewPrefetchAheadOfPrerender,
              base::FEATURE_DISABLED_BY_DEFAULT);
