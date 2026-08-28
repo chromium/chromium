@@ -99,7 +99,7 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
     default;
 
-Browser* MediaRouterIntegrationBrowserTest::browser() {
+BrowserWindowInterface* MediaRouterIntegrationBrowserTest::browser() {
   return InProcessBrowserTest::browser();
 }
 
@@ -346,7 +346,7 @@ void MediaRouterIntegrationBrowserTest::CheckSessionValidity(
 }
 
 WebContents* MediaRouterIntegrationBrowserTest::GetActiveWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void MediaRouterIntegrationBrowserTest::RunBasicTest() {

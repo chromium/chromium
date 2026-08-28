@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchDialogBrowserTest,
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
   ASSERT_TRUE(content::WaitForLoadStop(popup_contents));
-  Browser* popup_browser = browser_observer.Wait();
+  BrowserWindowInterface* popup_browser = browser_observer.Wait();
   ASSERT_NE(popup_browser, nullptr);
 
   views::NamedWidgetShownWaiter widget_waiter(

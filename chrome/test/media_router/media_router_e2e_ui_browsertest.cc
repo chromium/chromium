@@ -24,7 +24,7 @@ class MediaRouterE2EUIBrowserTest : public MediaRouterE2EBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MediaRouterE2EUIBrowserTest, MANUAL_MirrorHTML5Video) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   test_ui_->ShowDialog();
 
   // Wait until the dialog finishes rendering.

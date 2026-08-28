@@ -30,6 +30,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/app_constants/constants.h"
@@ -802,7 +803,7 @@ class AppPlatformMetricsServiceBrowserTest
   BrowserWindowInterface* CreateBrowserWithAuraWindow() {
     BrowserWindowInterface* browser = CreateBrowser(profile());
     content::WaitForLoadStop(
-        browser->tab_strip_model()->GetActiveWebContents());
+        browser->GetTabStripModel()->GetActiveWebContents());
     return browser;
   }
 

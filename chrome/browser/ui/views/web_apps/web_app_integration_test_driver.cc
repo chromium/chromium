@@ -5138,15 +5138,17 @@ void WebAppIntegrationTest::SetUpCommandLine(base::CommandLine* command_line) {
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
-Browser* WebAppIntegrationTest::CreateBrowser(Profile* profile) {
+BrowserWindowInterface* WebAppIntegrationTest::CreateBrowser(Profile* profile) {
   return InProcessBrowserTest::CreateBrowser(profile);
 }
 
-void WebAppIntegrationTest::CloseBrowserSynchronously(Browser* browser) {
+void WebAppIntegrationTest::CloseBrowserSynchronously(
+    BrowserWindowInterface* browser) {
   InProcessBrowserTest::CloseBrowserSynchronously(browser);
 }
 
-void WebAppIntegrationTest::AddBlankTabAndShow(Browser* browser) {
+void WebAppIntegrationTest::AddBlankTabAndShow(
+    BrowserWindowInterface* browser) {
   InProcessBrowserTest::AddBlankTabAndShow(browser);
 }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,5 +140,5 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureHatsEnabledBrowserTest,
                                          _, _, _, _, _));
 
   autopip_hats_service->MaybeLaunchSurvey(
-      browser()->GetTabStripModel()->GetActiveWebContents());
+      browser()->GetActiveTabInterface()->GetContents());
 }

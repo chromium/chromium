@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -568,7 +569,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   BrowserActions* first_actions = BrowserActions::From(browser());
   EXPECT_TRUE(GetActionItemForExtension(extension.get(), first_actions));
 
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   BrowserActions* second_actions = BrowserActions::From(second_browser);
   EXPECT_FALSE(GetActionItemForExtension(extension.get(), second_actions));
 
@@ -592,7 +594,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
       test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
   ASSERT_TRUE(extension);
 
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   content::WebContents* second_contents =
       second_browser->GetTabStripModel()->GetActiveWebContents();
   {
@@ -721,7 +724,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
                                                         /*for_tab=*/true));
 
   BrowserActions* first_actions = BrowserActions::From(browser());
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   BrowserActions* second_actions = BrowserActions::From(second_browser);
 
   // Drag the showing tab out of its window and into the second window.
@@ -834,7 +838,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
 
   // Open a new browser window. The extension's SidePanelEntry should also be
   // registered for the new window's global SidePanelRegistry.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   BrowserActions* browser_actions_second_browser =
       BrowserActions::From(second_browser);
 
@@ -1458,7 +1463,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }
 
   // Open a new browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   TabStripModel* target_tab_strip = second_browser->GetTabStripModel();
 
   // Detach the second tab from `browser()` and add it to the new browser.
@@ -1818,10 +1824,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
                 /*enabled=*/true);
 
   // For clarity sake, use a named reference to the non-incognito browser.
-  Browser* non_incognito_browser = browser();
+  BrowserWindowInterface* non_incognito_browser = browser();
 
   // Open a tab in an incognito browser window to use.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_browser);
   int incognito_tab_id = ExtensionTabUtil::GetTabId(
@@ -2142,10 +2148,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
                 /*enabled=*/true);
 
   // For clarity sake, use a named reference to the non-incognito browser.
-  Browser* non_incognito_browser = browser();
+  BrowserWindowInterface* non_incognito_browser = browser();
 
   // Open an incognito browser window to use and get the window id.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_browser);
   int incognito_window_id = ExtensionTabUtil::GetWindowId(incognito_browser);
@@ -2280,7 +2286,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
                 /*enabled=*/true);
 
   // Open a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserDidBecomeActiveWaiter(second_browser).Wait();
 
@@ -3096,7 +3103,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   // The initial `browser()` will remain open to keep the process alive.
   // We create a new browser window to perform the test actions and then close.
   // Creating a new browser makes it the active one by default.
-  Browser* browser_to_close = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser_to_close =
+      CreateBrowser(browser()->GetProfile());
 
   extensions::ResultCatcher result_catcher;
 
@@ -3169,7 +3177,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   chrome::MoveTabsToNewWindow(browser(), {0});
 
   // Get the new browser window.
-  Browser* new_browser = observer.Wait();
+  BrowserWindowInterface* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
   EXPECT_NE(BrowserWindow::FromBrowser(browser()),
             BrowserWindow::FromBrowser(new_browser));

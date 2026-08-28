@@ -171,7 +171,7 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
 
   // Returns the superclass' browser(). Marked virtual so that it can
   // be overridden by MediaRouterIntegrationIncognitoBrowserTest.
-  virtual Browser* browser();
+  virtual BrowserWindowInterface* browser();
 
  private:
   std::unique_ptr<content::TestNavigationObserver> test_navigation_observer_;

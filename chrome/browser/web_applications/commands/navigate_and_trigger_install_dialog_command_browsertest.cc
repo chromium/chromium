@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -34,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
   // The browser should have one tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -46,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
           [&](NavigateAndTriggerInstallDialogResult result) { loop.Quit(); }));
   navigation_observer.Wait();
   // The browser should now have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   // The active tab should be the |test_url| we navigated to.
   EXPECT_EQ(test_url,
             chrome_test_utils::GetActiveWebContents(this)->GetVisibleURL());

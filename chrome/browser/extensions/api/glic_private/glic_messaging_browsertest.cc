@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 #include "chrome/browser/profiles/profile.h"

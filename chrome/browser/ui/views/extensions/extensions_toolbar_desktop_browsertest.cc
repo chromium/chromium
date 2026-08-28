@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
@@ -317,14 +318,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
                        PinnedExtensionAppearsInAnotherWindow) {
   const std::string& extension_id = InstallExtension("Extension")->id();
-  const auto is_action_visible_on_toolbar = [&extension_id](Browser* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->extensions_container()
-        ->IsActionVisibleOnToolbar(extension_id);
-  };
+  const auto is_action_visible_on_toolbar =
+      [&extension_id](BrowserWindowInterface* browser) {
+        return BrowserView::GetBrowserViewForBrowser(browser)
+            ->toolbar()
+            ->extensions_container()
+            ->IsActionVisibleOnToolbar(extension_id);
+      };
 
-  Browser* browser2 = CreateBrowser(profile());
+  BrowserWindowInterface* browser2 = CreateBrowser(profile());
 
   // Verify extension is unpinned in both windows.
   EXPECT_FALSE(is_action_visible_on_toolbar(browser()));
@@ -339,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
   EXPECT_TRUE(is_action_visible_on_toolbar(browser()));
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
 
-  Browser* browser3 = CreateBrowser(profile());
+  BrowserWindowInterface* browser3 = CreateBrowser(profile());
 
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));

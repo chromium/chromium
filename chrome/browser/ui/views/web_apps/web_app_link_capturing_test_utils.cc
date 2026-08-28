@@ -54,7 +54,7 @@ testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
 testing::AssertionResult WaitForIntentPickerToShow(
     BrowserWindowInterface* browser) {
   auto result = AwaitIntentPickerTabHelperIconUpdateComplete(
-      browser->GetTabStripModel()->GetActiveWebContents());
+      browser->GetActiveTabInterface()->GetContents());
   if (!result) {
     return result;
   }

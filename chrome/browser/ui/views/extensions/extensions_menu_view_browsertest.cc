@@ -297,14 +297,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
                        PinnedExtensionAppearsInAnotherWindow) {
   const extensions::ExtensionId extension_id =
       InstallExtension("Test Name")->id();
-  const auto is_action_visible_on_toolbar = [&extension_id](Browser* browser) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->extensions_container()
-        ->IsActionVisibleOnToolbar(extension_id);
-  };
+  const auto is_action_visible_on_toolbar =
+      [&extension_id](BrowserWindowInterface* browser) {
+        return BrowserView::GetBrowserViewForBrowser(browser)
+            ->toolbar()
+            ->extensions_container()
+            ->IsActionVisibleOnToolbar(extension_id);
+      };
 
-  Browser* browser2 = CreateBrowser(profile());
+  BrowserWindowInterface* browser2 = CreateBrowser(profile());
   views::test::ReduceAnimationDuration(
       BrowserView::GetBrowserViewForBrowser(browser2)
           ->toolbar()
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   // Window that was already open gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
 
-  Browser* browser3 = CreateBrowser(profile());
+  BrowserWindowInterface* browser3 = CreateBrowser(profile());
   views::test::ReduceAnimationDuration(
       BrowserView::GetBrowserViewForBrowser(browser3)
           ->toolbar()

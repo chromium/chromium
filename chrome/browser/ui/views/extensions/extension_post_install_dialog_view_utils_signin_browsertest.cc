@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
@@ -66,8 +67,8 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
     extensions::TriggerPostInstallDialog(
         profile(), extension, SkBitmap(),
         base::BindOnce(
-            [](Browser* b) {
-              return b->GetTabStripModel()->GetActiveWebContents();
+            [](BrowserWindowInterface* b) {
+              return b->GetActiveTabInterface()->GetContents();
             },
             browser()));
 
@@ -116,7 +117,7 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
 
     // Initiate a sign in from the promo.
     BubbleSignInPromoForSyncableDataTypeDelegate delegate(
-        *browser()->GetTabStripModel()->GetActiveWebContents(),
+        *browser()->GetActiveTabInterface()->GetContents(),
         signin_metrics::AccessPoint::kExtensionInstallBubble,
         syncer::LocalDataItemModel::DataId(extension->id()));
     delegate.OnSignIn(account_info);

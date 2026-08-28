@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -53,8 +54,8 @@ void ExtensionPostInstallDialogViewUtilsBrowserTest::ShowUi(
   extensions::TriggerPostInstallDialog(
       profile(), extension, SkBitmap(),
       base::BindOnce(
-          [](Browser* b) {
-            return b->GetTabStripModel()->GetActiveWebContents();
+          [](BrowserWindowInterface* b) {
+            return b->GetActiveTabInterface()->GetContents();
           },
           browser()));
 

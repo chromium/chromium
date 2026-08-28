@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   NavigateViaLinkClickToURLAndWait(browser(), start_url);
 
   // Install the site with the user display mode set to kTabbed.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser;
   webapps::AppId app_id;
   {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
 
   EXPECT_EQ(initial_browser_count + 1,
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   // Open a second app browser window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveTabsToNewWindow(app_browser, {1});
-  Browser* app_browser2 = browser_created_observer.Wait();
+  BrowserWindowInterface* app_browser2 = browser_created_observer.Wait();
   ASSERT_TRUE(app_browser2);
 
   EXPECT_EQ(app_browser->GetTabStripModel()->count(), 1);

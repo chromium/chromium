@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopUITest,
     ASSERT_TRUE(observer.WaitForExtensionLoaded());
   }
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarDesktop());
   views::test::WaitForAnimatingLayoutManager(
@@ -662,7 +662,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarDesktopUITest,
       LoadTestExtension("extensions/api_test/browser_action_with_icon",
                         /*allow_incognito=*/true);
   ASSERT_TRUE(extension);
-  Browser* second_browser = CreateBrowser(profile()->GetOriginalProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(profile()->GetOriginalProfile());
   EXPECT_FALSE(second_browser->GetProfile()->IsOffTheRecord());
 
   CloseBrowserSynchronously(browser());
@@ -1551,7 +1552,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarDesktopFeatureRolloutInteractiveTest,
         extensions::TriggerPostInstallDialog(
             browser()->GetProfile(), extension, SkBitmap(),
             base::BindOnce(
-                [](Browser* b) {
+                [](BrowserWindowInterface* b) {
                   return b->GetTabStripModel()->GetActiveWebContents();
                 },
                 browser()));

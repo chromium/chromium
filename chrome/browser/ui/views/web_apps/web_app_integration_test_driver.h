@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #endif
 
-class Browser;
+class BrowserWindowInterface;
 namespace page_actions {
 class PageActionViewInterface;
 }
@@ -245,9 +245,9 @@ class WebAppIntegrationTestDriver {
   class TestDelegate {
    public:
     // Exposing normal functionality of testing::InProcBrowserTest:
-    virtual Browser* CreateBrowser(Profile* profile) = 0;
-    virtual void CloseBrowserSynchronously(Browser* browser) = 0;
-    virtual void AddBlankTabAndShow(Browser* browser) = 0;
+    virtual BrowserWindowInterface* CreateBrowser(Profile* profile) = 0;
+    virtual void CloseBrowserSynchronously(BrowserWindowInterface* browser) = 0;
+    virtual void AddBlankTabAndShow(BrowserWindowInterface* browser) = 0;
     virtual const net::EmbeddedTestServer* EmbeddedTestServer() const = 0;
     virtual Profile* GetDefaultProfile() = 0;
 
@@ -602,9 +602,9 @@ class WebAppIntegrationTest : public InProcessBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // WebAppIntegrationTestDriver::TestDelegate:
-  Browser* CreateBrowser(Profile* profile) override;
-  void CloseBrowserSynchronously(Browser* browser) override;
-  void AddBlankTabAndShow(Browser* browser) override;
+  BrowserWindowInterface* CreateBrowser(Profile* profile) override;
+  void CloseBrowserSynchronously(BrowserWindowInterface* browser) override;
+  void AddBlankTabAndShow(BrowserWindowInterface* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
   Profile* GetDefaultProfile() override;
 

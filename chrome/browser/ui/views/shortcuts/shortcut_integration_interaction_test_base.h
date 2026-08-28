@@ -10,6 +10,7 @@
 
 #include "base/base_paths.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 namespace shortcuts {
@@ -86,7 +87,7 @@ class ShortcutIntegrationInteractionTestT
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
-    if (Browser* browser = T::browser()) {
+    if (BrowserWindowInterface* browser = T::browser()) {
       SetContextWidget(
           BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
     }

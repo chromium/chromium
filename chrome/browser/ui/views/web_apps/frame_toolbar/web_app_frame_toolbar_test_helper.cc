@@ -314,7 +314,7 @@ BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
     const std::string& window_open_script) {
   content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
                               window_open_script);
-  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_NE(app_browser_, popup);
   EXPECT_TRUE(popup);
 

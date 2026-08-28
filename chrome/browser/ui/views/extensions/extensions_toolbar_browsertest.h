@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -76,7 +77,7 @@ class ExtensionsToolbarBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() const {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
+    return browser()->GetActiveTabInterface()->GetContents();
   }
 
   // Adds the specified `extension`.

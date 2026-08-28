@@ -912,7 +912,7 @@ class UnframedIsolatedWebAppBrowserTest
   BrowserView* OpenPopup(const std::string& window_open_script) {
     content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
                                 window_open_script);
-    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+    BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(browser_, popup);
     EXPECT_TRUE(popup);
 
@@ -2156,7 +2156,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   webapps::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
-  Browser* non_app_browser = CreateBrowser(profile());
+  BrowserWindowInterface* non_app_browser = CreateBrowser(profile());
 
   // There should be no visible Downloads icon prior to the download, in either
   // the app browser or the non-app browser.
@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   webapps::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
-  Browser* non_app_browser = CreateBrowser(profile());
+  BrowserWindowInterface* non_app_browser = CreateBrowser(profile());
 
   // There should be no visible Downloads icon prior to the download, in either
   // the app browser or the non-app browser.

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include <array>
-
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -19,8 +17,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -142,7 +141,7 @@ struct TabInfo {
 
   void StartCapture() {
     // Bring the tab into focus. This avoids getDisplayMedia rejection.
-    browser->tab_strip_model()->ActivateTabAt(tab_strip_index);
+    browser->GetTabStripModel()->ActivateTabAt(tab_strip_index);
 
     EXPECT_EQ(
         content::EvalJs(web_contents->GetPrimaryMainFrame(), "startCapture();"),
@@ -151,7 +150,7 @@ struct TabInfo {
 
   void StartCaptureFromEmbeddedFrame() {
     // Bring the tab into focus. This avoids getDisplayMedia rejection.
-    browser->tab_strip_model()->ActivateTabAt(tab_strip_index);
+    browser->GetTabStripModel()->ActivateTabAt(tab_strip_index);
 
     EXPECT_EQ(content::EvalJs(web_contents->GetPrimaryMainFrame(),
                               "startCaptureFromEmbeddedFrame();"),
@@ -160,7 +159,7 @@ struct TabInfo {
 
   bool StartSecondCapture(Frame frame) {
     // Bring the tab into focus. This avoids getDisplayMedia rejection.
-    browser->tab_strip_model()->ActivateTabAt(tab_strip_index);
+    browser->GetTabStripModel()->ActivateTabAt(tab_strip_index);
 
     return content::EvalJs(
                web_contents->GetPrimaryMainFrame(),
@@ -267,7 +266,7 @@ struct TabInfo {
     return CreateNewElement(frame, "div", id);
   }
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser;
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents;
   int tab_strip_index;
 };
@@ -332,13 +331,13 @@ class SubCaptureBrowserTestBase : public WebRtcTestBase {
         top_level_document_server->GetURL(top_level_document_document)));
 
     WebContents* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     permissions::PermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(
             permissions::PermissionRequestManager::ACCEPT_ALL);
 
     *tab_info = {browser(), web_contents,
-                 browser()->tab_strip_model()->active_index()};
+                 browser()->GetTabStripModel()->active_index()};
     tab_info->StartEmbeddingFrame(
         embedded_iframe_server->GetURL(embedded_iframe_document));
 

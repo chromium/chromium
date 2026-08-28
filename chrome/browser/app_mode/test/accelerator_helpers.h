@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_APP_MODE_TEST_ACCELERATOR_HELPERS_H_
 #define CHROME_BROWSER_APP_MODE_TEST_ACCELERATOR_HELPERS_H_
 
-#include "chrome/browser/ui/browser.h"
+class BrowserWindowInterface;
 
 // Presses Ctrl + W using `browser`'s view as the accelerator target.
-[[nodiscard]] bool PressCloseTabAccelerator(Browser* browser);
+[[nodiscard]] bool PressCloseTabAccelerator(BrowserWindowInterface* browser);
 
 // Presses Ctrl + Shift + W using `browser`'s view as the accelerator target.
-[[nodiscard]] bool PressCloseWindowAccelerator(Browser* browser);
+[[nodiscard]] bool PressCloseWindowAccelerator(BrowserWindowInterface* browser);
 
 #endif  // CHROME_BROWSER_APP_MODE_TEST_ACCELERATOR_HELPERS_H_

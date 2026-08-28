@@ -40,19 +40,21 @@ base::FilePath PdfOwnerExtensionDir() {
       .AppendASCII("pdf/extension_with_pdf");
 }
 
-LocationIconView* GetLocationIconView(const Browser* browser) {
+LocationIconView* GetLocationIconView(const BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->GetLocationBarView()
       ->location_icon_view();
 }
 
-void ExpectExtensionChipShowing(Browser* browser, std::u16string_view name) {
+void ExpectExtensionChipShowing(BrowserWindowInterface* browser,
+                                std::u16string_view name) {
   LocationIconView* icon = GetLocationIconView(browser);
   EXPECT_TRUE(icon->GetShowText());
   EXPECT_EQ(name, icon->GetText());
 }
 
-void ExpectExtensionChipNotShowing(Browser* browser, std::u16string_view name) {
+void ExpectExtensionChipNotShowing(BrowserWindowInterface* browser,
+                                   std::u16string_view name) {
   LocationIconView* icon = GetLocationIconView(browser);
   EXPECT_NE(name, icon->GetText());
 }

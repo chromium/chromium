@@ -7,6 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -60,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest, UsesWebAppErrorPage) {
   BrowserWindowInterface* browser = LaunchIwaAndFailWithError(
       url_info.app_id(), url_info.origin(), net::ERR_INTERNET_DISCONNECTED);
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   // Expect that the error page is showing.
   EXPECT_TRUE(EvalJs(web_contents,
@@ -87,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest,
     BrowserWindowInterface* browser = LaunchIwaAndFailWithError(
         url_info.app_id(), url_info.origin(), error_code);
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
 
     EXPECT_EQ(
         expected_message,

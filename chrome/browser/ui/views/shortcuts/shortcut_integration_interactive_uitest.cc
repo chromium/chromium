@@ -158,7 +158,7 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
   Profile* profile1() { return browser()->GetProfile(); }
   Profile* profile2() { return profile2_.get(); }
-  Browser* profile1_browser() { return browser(); }
+  BrowserWindowInterface* profile1_browser() { return browser(); }
   BrowserWindowInterface* profile2_browser() { return profile2_browser_.get(); }
 
   GURL profile1_shortcut_url() {

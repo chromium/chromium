@@ -59,16 +59,18 @@ SyncTest::SetupSyncMode TwoClientWebAppsIntegrationTestBase::GetSetupSyncMode()
 }
 
 // WebAppIntegrationTestDriver::TestDelegate
-Browser* TwoClientWebAppsIntegrationTestBase::CreateBrowser(Profile* profile) {
+BrowserWindowInterface* TwoClientWebAppsIntegrationTestBase::CreateBrowser(
+    Profile* profile) {
   return InProcessBrowserTest::CreateBrowser(profile);
 }
 
 void TwoClientWebAppsIntegrationTestBase::CloseBrowserSynchronously(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   InProcessBrowserTest::CloseBrowserSynchronously(browser);
 }
 
-void TwoClientWebAppsIntegrationTestBase::AddBlankTabAndShow(Browser* browser) {
+void TwoClientWebAppsIntegrationTestBase::AddBlankTabAndShow(
+    BrowserWindowInterface* browser) {
   InProcessBrowserTest::AddBlankTabAndShow(browser);
 }
 

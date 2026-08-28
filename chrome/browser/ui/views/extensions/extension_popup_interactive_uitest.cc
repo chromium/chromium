@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
@@ -110,7 +112,7 @@ base::WeakPtr<views::Widget> WaitForLastExtensionPopupVisible() {
 }
 
 base::WeakPtr<views::Widget> OpenExtensionPopup(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const extensions::Extension* extension) {
   extensions::ExtensionHostTestHelper popup_waiter(browser->GetProfile(),
                                                    extension->id());

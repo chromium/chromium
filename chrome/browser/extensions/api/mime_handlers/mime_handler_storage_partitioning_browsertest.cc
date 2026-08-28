@@ -6,6 +6,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -61,7 +62,7 @@ class MimeHandlerStoragePartitioningBrowserTest : public ExtensionApiTest {
   // Finds the first chrome-extension:// frame in the active tab.
   content::RenderFrameHost* FindExtensionFrame() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::RenderFrameHost* result = nullptr;
     web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
       if (rfh->GetLastCommittedOrigin().scheme() == kExtensionScheme) {

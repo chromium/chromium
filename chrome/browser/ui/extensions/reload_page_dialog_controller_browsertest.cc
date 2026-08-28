@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 
@@ -22,8 +23,7 @@ class ReloadPageDialogControllerBrowserTest
 
     std::unique_ptr<extensions::ReloadPageDialogController> reload_page_dialog =
         std::make_unique<extensions::ReloadPageDialogController>(
-            browser()->GetTabStripModel()->GetActiveWebContents(),
-            GetProfile());
+            browser()->GetActiveTabInterface()->GetContents(), GetProfile());
     std::vector<const extensions::Extension*> extensions = {extension.get()};
     reload_page_dialog->TriggerShow(extensions);
   }

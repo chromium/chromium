@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/confirm_protocol_handler_dialog.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_test.h"

@@ -24,9 +24,9 @@ class TwoClientWebAppsIntegrationTestBase
   SyncTest::SetupSyncMode GetSetupSyncMode() const override;
 
   // WebAppIntegrationTestDriver::TestDelegate:
-  Browser* CreateBrowser(Profile* profile) override;
-  void CloseBrowserSynchronously(Browser* browser) override;
-  void AddBlankTabAndShow(Browser* browser) override;
+  BrowserWindowInterface* CreateBrowser(Profile* profile) override;
+  void CloseBrowserSynchronously(BrowserWindowInterface* browser) override;
+  void AddBlankTabAndShow(BrowserWindowInterface* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
   Profile* GetDefaultProfile() override;
   bool IsSyncTest() override;
