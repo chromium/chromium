@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -54,7 +55,10 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
-/** Integration tests for {@link SettingsPage} inside a native tab. */
+/**
+ * Integration tests for {@link SettingsPage} inside a native tab. Most tests use a mix of onView()
+ * and onViewWaiting() depending on whether they need to wait for a fragment or view to load.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -75,7 +79,7 @@ public class SettingsPageTest {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
         // Verify the settings page loads by checking for a top-level preference item.
-        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         // Click on a setting in the column on the left (e.g., Privacy and security).
         // Check the descendent because multi-column settings contains two recycler views.
@@ -83,11 +87,12 @@ public class SettingsPageTest {
                 allOf(
                         withId(R.id.recycler_view),
                         hasDescendant(withText(R.string.prefs_privacy_security)));
-        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.prefs_privacy_security))));
-        onView(withText(R.string.prefs_privacy_security)).perform(click());
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.prefs_privacy_security))));
+        onViewWaiting(withText(R.string.prefs_privacy_security)).perform(click());
 
         // Verify the detail page loads by checking an item in the detail preference screen.
-        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -95,7 +100,7 @@ public class SettingsPageTest {
     public void testSearchBoxMarginsOnContainerResized() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Measure initial container width before resizing. It may differ by emulator environment.
         final int originalWidth =
@@ -222,7 +227,7 @@ public class SettingsPageTest {
 
         // Verify MainSettings header fragment is displayed by checking for Search engine
         // preference.
-        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         // Click on "Search engine" in MainSettings header pane to open SearchEngineSettings detail
         // fragment.
@@ -230,20 +235,21 @@ public class SettingsPageTest {
                 allOf(
                         withId(R.id.recycler_view),
                         hasDescendant(withText(R.string.search_engine_settings)));
-        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
-        onView(withText(R.string.search_engine_settings)).perform(click());
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
+        onViewWaiting(withText(R.string.search_engine_settings)).perform(click());
 
         // Simulate theme switch / activity recreation.
         mActivityTestRule.recreateActivity();
 
         // 1. Verify Toolbar/Action Bar is restored and displayed.
-        onView(withId(R.id.action_bar)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.action_bar)).check(matches(isDisplayed()));
 
         // 2. Verify MainSettings header pane is restored (checking top-level preference item).
-        onView(withText(R.string.prefs_privacy_security)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.prefs_privacy_security)).check(matches(isDisplayed()));
 
         // 3. Verify SearchEngineSettings detail pane fragment is restored and displayed.
-        onView(withText("Microsoft Bing")).check(matches(isDisplayed()));
+        onViewWaiting(withText("Microsoft Bing")).check(matches(isDisplayed()));
     }
 
     /** Regression test for https://crbug.com/535695748. */
@@ -252,27 +258,28 @@ public class SettingsPageTest {
     public void testTwoSettingsTabsThemeSwitchRestoresDetailFragment() {
         // Tab 0: Open settings and navigate to Search engine detail fragment.
         mActivityTestRule.loadUrl("chrome-native://settings/");
-        onView(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         var matcher =
                 allOf(
                         withId(R.id.recycler_view),
                         hasDescendant(withText(R.string.search_engine_settings)));
-        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
-        onView(withText(R.string.search_engine_settings)).perform(click());
-        onView(withText("Microsoft Bing")).check(matches(isDisplayed()));
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
+        onViewWaiting(withText(R.string.search_engine_settings)).perform(click());
+        onViewWaiting(withText("Microsoft Bing")).check(matches(isDisplayed()));
 
         // Tab 1: Open a second settings tab at root MainSettings.
         mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
-        onView(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+        onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
                 .check(matches(isDisplayed()));
 
         // Simulate theme switch / activity recreation.
         mActivityTestRule.recreateActivity();
 
         // Verify Tab 1 (active tab): Action bar and MainSettings header pane are restored.
-        onView(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
-        onView(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+        onViewWaiting(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
                 .check(matches(isDisplayed()));
 
         // Switch to Tab 0.
@@ -304,11 +311,12 @@ public class SettingsPageTest {
                 allOf(
                         withId(R.id.recycler_view),
                         hasDescendant(withText(R.string.search_engine_settings)));
-        onView(matcher).perform(scrollTo(hasDescendant(withText(R.string.prefs_accessibility))));
-        onView(withText(R.string.prefs_accessibility)).perform(click());
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.prefs_accessibility))));
+        onViewWaiting(withText(R.string.prefs_accessibility)).perform(click());
 
         // Verify the Accessibility preference screen is displayed.
-        onView(withText(R.string.page_zoom_title)).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.page_zoom_title)).check(matches(isDisplayed()));
 
         // Verify the page zoom popup window is not permitted to show on the settings native page.
         ThreadUtils.runOnUiThreadBlocking(
@@ -340,7 +348,7 @@ public class SettingsPageTest {
         int autofillTitle = R.string.autofill_and_passwords_settings_title;
 
         // Verify the settings page loads by checking for a top-level preference item.
-        onView(withText(searchEngineTitle)).check(matches(isDisplayed()));
+        onViewWaiting(withText(searchEngineTitle)).check(matches(isDisplayed()));
 
         // Multi-column settings has multiple RecyclerViews. Disambiguate the header
         // RecyclerView by its parent layout rather than using hasDescendant(...), because
@@ -376,8 +384,8 @@ public class SettingsPageTest {
     public void testSearchBoxAutoFocus() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_box)).check(matches(isFocused()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isFocused()));
     }
 
     @Test
@@ -385,8 +393,8 @@ public class SettingsPageTest {
     public void testAutoFocusOnSettingsPageByTabSwitching() {
         // Load Settings in Tab 0.
         mActivityTestRule.loadUrl("chrome-native://settings/");
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_box)).check(matches(isFocused()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isFocused()));
 
         // Open a second tab (about:blank).
         mActivityTestRule.loadUrlInNewTab("about:blank");
@@ -395,8 +403,8 @@ public class SettingsPageTest {
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
 
         // Verify the search box is automatically focused on tab switch.
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_box)).check(matches(isFocused()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isFocused()));
     }
 
     /** Regression test for https://crbug.com/549509308. */
@@ -405,11 +413,11 @@ public class SettingsPageTest {
     public void testTwoSettingsTabs_themeChange_searchBoxRemainsVisibleOnFirstTab() {
         // Open Tab 0 with Settings.
         mActivityTestRule.loadUrl("chrome-native://settings/");
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Open Tab 1 with Settings.
         mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Recreate activity (simulating theme change or OS configuration change).
         mActivityTestRule.recreateActivity();
@@ -418,7 +426,7 @@ public class SettingsPageTest {
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
 
         // Verify the search box is displayed on Tab 0.
-        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
     }
 
     /**
