@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../loading_page.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from '//resources/js/util.js';
 
@@ -130,7 +132,11 @@ export class SkillsWebview implements SkillsPageV2Interface {
           this.handler.invokeSkill(skillId, skillName, skillIcon),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
       onCloseDialog: () => this.handler.closeDialog(null),
-      onHandshakeComplete: () => this.recordTotalInitLatencyMetric(),
+      onHandshakeStarted: () => this.showLoading(),
+      onHandshakeComplete: () => {
+        this.hideLoading();
+        this.recordTotalInitLatencyMetric();
+      },
       onSendPrompt: (prompt: string) => this.handler.sendPrompt(prompt),
       onCloseDialogAndOpenEditor: (data: PendingEditorData) =>
           this.handler.closeDialog(data),
@@ -171,7 +177,15 @@ export class SkillsWebview implements SkillsPageV2Interface {
     window.addEventListener('popstate', () => this.syncWebviewToPath());
   }
 
+  private setEditorStatus(path: string = window.location.pathname) {
+    const loadingPage = document.querySelector('loading-page');
+    if (loadingPage && !loadingPage.dialog) {
+      loadingPage.editor = path === '/editor';
+    }
+  }
+
   private syncWebviewToPath() {
+    this.setEditorStatus();
     const remoteUrl = getRemoteUrlForChromePath(window.location.pathname);
     if (this.webview && this.webview.getAttribute('src') !== remoteUrl) {
       this.webview.setAttribute('src', remoteUrl);
@@ -182,6 +196,7 @@ export class SkillsWebview implements SkillsPageV2Interface {
     this.recordInitialNavigationMetric();
 
     const chromePath = getChromePathForRemoteUrl(url);
+    this.setEditorStatus(chromePath);
     if (window.location.pathname === chromePath) {
       return;
     }
@@ -190,12 +205,28 @@ export class SkillsWebview implements SkillsPageV2Interface {
   }
 
   protected showError(errorType: ErrorType) {
+    this.hideLoading();
     const errorPage = document.querySelector('error-page');
     if (errorPage) {
       errorPage.errorType = errorType;
       errorPage.removeAttribute('hidden');
     }
     this.webview?.setAttribute('hidden', 'true');
+  }
+
+  protected showLoading() {
+    this.setEditorStatus();
+    const loadingPage = document.querySelector('loading-page');
+    if (loadingPage) {
+      loadingPage.removeAttribute('hidden');
+    }
+  }
+
+  protected hideLoading() {
+    const loadingPage = document.querySelector('loading-page');
+    if (loadingPage) {
+      loadingPage.setAttribute('hidden', 'true');
+    }
   }
 
   private async syncCookiesAndRecordMetric(): Promise<boolean> {

@@ -69,6 +69,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onUrlChanged: () => {},
       onCloseDialog: () => {},
       onCloseDialogAndOpenEditor: (_data: PendingEditorData) => {},
+      onHandshakeStarted: () => {},
       onHandshakeComplete: () => {},
       onSendPrompt: (_prompt: string) => {},
       onGetProvidedSkill: (_skillId: string) => {},

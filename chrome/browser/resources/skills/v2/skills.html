@@ -53,8 +53,10 @@
   </style>
 </head>
 <body>
-  <webview id="webview" partition="glicskillspart" autosize="on"></webview>
-  <script type="module" src="v2/skills.js"></script>
+  <webview id="webview" partition="glicskillspart" autosize="on"
+      hidden></webview>
+  <loading-page id="loading-page"></loading-page>
   <error-page id="error-page" hidden></error-page>
+  <script type="module" src="v2/skills.js"></script>
 </body>
 </html>

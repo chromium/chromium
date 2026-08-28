@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://skills/loading_page.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ErrorType} from 'chrome://skills/error_page.js';
 import {SkillsDialogType} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
 import {IS_SAVING_GEMINI_QUERY_PARAMETER, SkillSource, SOURCE_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 class TestSkillsWebview extends SkillsWebview {
   getRemoteUrlForTesting(): string {
@@ -104,6 +106,31 @@ suite('SkillsWebviewTest', () => {
     assertEquals(null, url.searchParams.get('hl'));
   });
 
+  test('SkillsWebview_ShowsLoadingPageUntilHandshake', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      isSkillsEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const webview = document.createElement('webview');
+    webview.id = 'webview';
+    webview.setAttribute('hidden', '');
+    const loadingPage = document.createElement('loading-page');
+    loadingPage.id = 'loading-page';
+    const errorPage = document.createElement('error-page');
+    errorPage.id = 'error-page';
+    errorPage.setAttribute('hidden', '');
+    document.body.appendChild(webview);
+    document.body.appendChild(loadingPage);
+    document.body.appendChild(errorPage);
+
+    new SkillsWebview();
+    assertFalse(loadingPage.hasAttribute('hidden'));
+    assertTrue(errorPage.hasAttribute('hidden'));
+    assertTrue(webview.hasAttribute('hidden'));
+  });
+
   test('SkillsWebview_Disabled_ShowsErrorPage', async () => {
     loadTimeData.overrideValues({
       devMode: true,
@@ -113,17 +140,53 @@ suite('SkillsWebviewTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const webview = document.createElement('webview');
     webview.id = 'webview';
+    const loadingPage = document.createElement('loading-page');
+    loadingPage.id = 'loading-page';
     const errorPage = document.createElement('error-page');
     errorPage.id = 'error-page';
     errorPage.setAttribute('hidden', '');
     document.body.appendChild(webview);
+    document.body.appendChild(loadingPage);
     document.body.appendChild(errorPage);
 
     const webviewApp = new SkillsWebview();
     await webviewApp.init();
 
+    assertTrue(loadingPage.hasAttribute('hidden'));
     assertFalse(errorPage.hasAttribute('hidden'));
     assertEquals(ErrorType.SKILLS_DISABLED, errorPage.errorType);
     assertEquals('true', webview.getAttribute('hidden'));
+  });
+
+  test('LoadingPage_RendersPageSkeletonByDefault', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const loadingPage = document.createElement('loading-page');
+    document.body.appendChild(loadingPage);
+    await loadingPage.updateComplete;
+
+    assertTrue(!!loadingPage.shadowRoot?.querySelector('.app-layout'));
+    assertEquals(null, loadingPage.shadowRoot?.querySelector('.dialog-layout'));
+  });
+
+  test('LoadingPage_RendersDialogSkeletonWhenDialogIsTrue', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const loadingPage = document.createElement('loading-page');
+    loadingPage.dialog = true;
+    document.body.appendChild(loadingPage);
+    await loadingPage.updateComplete;
+
+    assertTrue(!!loadingPage.shadowRoot?.querySelector('.dialog-layout'));
+  });
+
+  test('LoadingPage_RendersEditorSkeletonWhenEditorIsTrue', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const loadingPage = document.createElement('loading-page');
+    loadingPage.editor = true;
+    document.body.appendChild(loadingPage);
+    await loadingPage.updateComplete;
+
+    // Look for an editor specific element.
+    assertTrue(
+        !!loadingPage.shadowRoot?.querySelector('.skeleton-editor-card'));
   });
 });

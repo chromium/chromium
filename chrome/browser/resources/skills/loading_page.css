@@ -1,0 +1,364 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --skeleton-base-color: var(
+      --mat-sys-surface-container,
+      var(--color-sys-surface2, var(--color-sys-surface1)));
+  background-color:
+      var(--color-webui-page-background, var(--color-sys-base, white));
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+}
+
+div[role='status'] {
+  height: 100%;
+  width: 100%;
+}
+
+.app-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.sidebar-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 24px 12px;
+  width: 256px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 4px;
+}
+
+.main-content {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  isolation: isolate;
+  max-width: 100%;
+  overflow-y: auto;
+  position: relative;
+}
+
+.browse-skills-container,
+.editor-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0 auto;
+  max-width: 890px;
+  padding: 24px 48px;
+  width: 100%;
+}
+
+.header-actions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.skills-section {
+  margin-bottom: 48px;
+  width: 100%;
+}
+
+.skeleton-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.skills-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+}
+
+/* Dialog skeleton layout */
+.dialog-layout {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  max-width: 512px;
+  width: 100%;
+}
+
+.dialog-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  width: 100%;
+}
+
+.skeleton-dialog-title {
+  border-radius: 8px;
+  height: 20px;
+  width: 140px;
+}
+
+.skeleton-dialog-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialog-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-dialog-label {
+  border-radius: 4px;
+  height: 14px;
+  width: 48px;
+}
+
+.skeleton-dialog-label.wide {
+  width: 72px;
+}
+
+.skeleton-dialog-input {
+  align-items: center;
+  border: 1px solid
+      var(--color-sys-outline-variant, var(--skeleton-base-color));
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  height: 48px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.skeleton-dialog-icon {
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 24px;
+  width: 24px;
+}
+
+.skeleton-dialog-icon-small {
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 20px;
+  width: 20px;
+}
+
+.skeleton-dialog-textarea {
+  border: 1px solid
+      var(--color-sys-outline-variant, var(--skeleton-base-color));
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 175px;
+  padding: 12px;
+  position: relative;
+  width: 100%;
+}
+
+.skeleton-dialog-toolbar {
+  bottom: 8px;
+  display: flex;
+  gap: 8px;
+  left: 12px;
+  position: absolute;
+}
+
+.dialog-actions-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+.skeleton-dialog-btn {
+  border-radius: 100px;
+  height: 36px;
+  width: 64px;
+}
+
+.skeleton-dialog-btn.open-full-page {
+  width: 120px;
+}
+
+.dialog-footer-note {
+  border-top: 1px solid
+      var(--color-sys-outline-variant, var(--skeleton-base-color));
+  box-sizing: border-box;
+  padding: 16px 20px;
+  width: 100%;
+}
+
+/* Editor skeleton layout */
+.skeleton-editor-desc {
+  border-radius: 8px;
+  height: 40px;
+  margin-bottom: 16px;
+  max-width: 100%;
+  width: 680px;
+}
+
+.editor-metadata-row {
+  align-items: center;
+  display: flex;
+  height: 36px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.skeleton-file-info {
+  border-radius: 4px;
+  height: 20px;
+  width: 140px;
+}
+
+.skeleton-btn.save-btn {
+  border-radius: 100px;
+  flex-shrink: 0;
+  height: 36px;
+  width: 72px;
+}
+
+.skeleton-editor-card {
+  border-radius: 12px;
+  height: 480px;
+  width: 100%;
+}
+
+/* Skeleton placeholder elements */
+.skeleton-nav-item,
+.skeleton-search,
+.skeleton-section-title,
+.skeleton-chip,
+.skeleton-card,
+.skeleton-dialog-title,
+.skeleton-dialog-label,
+.skeleton-dialog-icon,
+.skeleton-dialog-icon-small,
+.skeleton-dialog-btn,
+.skeleton-line,
+.skeleton-editor-desc,
+.skeleton-btn,
+.skeleton-file-info,
+.skeleton-editor-card {
+  background-color: var(--skeleton-base-color);
+}
+
+.skeleton-line {
+  border-radius: 4px;
+  height: 12px;
+}
+
+.skeleton-line.full {
+  width: 100%;
+}
+
+.skeleton-line.half {
+  width: 50%;
+}
+
+.skeleton-line.medium {
+  width: 65%;
+}
+
+.skeleton-line.short {
+  width: 35%;
+}
+
+.skeleton-nav-item {
+  border-radius: 0 100px 100px 0;
+  height: 44px;
+  margin-left: -12px;
+  width: calc(100% + 12px);
+}
+
+.skeleton-search {
+  border-radius: 100px;
+  height: 36px;
+  max-width: 680px;
+  width: 100%;
+}
+
+.skeleton-section-title {
+  border-radius: 8px;
+  height: 20px;
+  margin-bottom: 20px;
+  width: 120px;
+}
+
+.skeleton-chip {
+  border-radius: 8px;
+  flex-shrink: 0;
+  height: 32px;
+  width: 72px;
+}
+
+.skeleton-card {
+  border-radius: 16px;
+  height: 312px;
+  width: 100%;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 1200px) {
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .browse-skills-container,
+  .editor-container {
+    padding: 24px;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 800px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}

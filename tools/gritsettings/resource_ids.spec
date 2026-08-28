@@ -825,7 +825,7 @@
     "includes": [4990],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/skills/resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [60],}},
     "includes": [4991],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/subresource_filter/resources.grd": {
