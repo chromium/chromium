@@ -2210,10 +2210,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stylus.Handwriting.RequestHandwritingForPointer"
-    enum="Hresult" expires_after="2026-09-06">
+    enum="Hresult" expires_after="2027-09-06">
   <owner>flackr@chromium.org</owner>
   <owner>johna@microsoft.com</owner>
-  <owner>gerchiko@microsoft.com</owner>
+  <owner>mjackson@microsoft.com</owner>
   <summary>
     Records the HRESULT returned by RequestHandwritingForPointer. This is only
     applicable to users on Windows.
@@ -2221,10 +2221,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stylus.Handwriting.TSFFocus" enum="Boolean"
-    expires_after="2026-09-06">
+    expires_after="2027-09-06">
   <owner>flackr@chromium.org</owner>
   <owner>johna@microsoft.com</owner>
-  <owner>gerchiko@microsoft.com</owner>
+  <owner>mjackson@microsoft.com</owner>
   <summary>
     Records whether the TSF focus was successfully set. This is only applicable
     to users on Windows.
