@@ -178,6 +178,11 @@ cr-input {
       var(--color-sys-on-surface-subtle, var(--color-sys-on-surface-variant));
 }
 
+.combobox-container {
+  position: relative;
+  width: 100%;
+}
+
 .collection-input {
   --cr-input-padding-bottom: 8px;
   --cr-input-padding-end: 12px;
@@ -190,6 +195,40 @@ cr-input {
   height: 36px;
   overflow: hidden;
   width: 100%;
+}
+
+/* Suggestions dropdown */
+.suggestions-dropdown {
+  background: var(--color-sys-surface);
+  border: 1px solid var(--color-sys-neutral-outline, var(--color-sys-outline));
+  border-radius: 8px;
+  box-shadow: var(--cr-elevation-2);
+  box-sizing: border-box;
+  inset-inline-start: 0;
+  max-height: 140px;
+  overflow-y: auto;
+  position: absolute;
+  top: calc(100% + 4px);
+  width: 100%;
+  z-index: 100;
+}
+
+.suggestion-item {
+  color: var(--color-sys-on-surface);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 16px;
+  overflow: hidden;
+  padding-block: 8px;
+  padding-inline: 12px;
+  text-overflow: ellipsis;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background-color: var(--color-sys-state-hover-on-subtle);
 }
 
 /* Tag Chips */
@@ -216,6 +255,9 @@ cr-input {
   font-size: 12px;
   font-weight: 500;
   line-height: 18px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -226,6 +268,11 @@ cr-input {
   --cr-icon-button-size: 16px;
   margin: 0;
   padding: 0;
+}
+
+.tag-input-container {
+  display: inline-block;
+  position: relative;
 }
 
 .tag-input {
@@ -240,6 +287,12 @@ cr-input {
   height: 32px;
   overflow: hidden;
   width: 105px;
+}
+
+.tag-suggestions {
+  max-width: 200px;
+  min-width: 130px;
+  width: max-content;
 }
 
 /* Note Textarea */
