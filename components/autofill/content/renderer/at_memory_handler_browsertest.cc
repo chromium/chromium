@@ -46,6 +46,7 @@ namespace {
 using ::blink::WebFormControlElement;
 using ::blink::WebString;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -56,6 +57,7 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
   AtMemoryHandlerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAutofillKeydownEditableElement,
+                              features::kAutofillAtMemoryDoubleCtrl,
                               features::kAutofillAtMemoryTriggerShortcut,
                               features::kAutofillAtMemory},
         /*disabled_features=*/{});
@@ -134,6 +136,63 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
       SimulateUserTypingAsciiCharacter(c, /*flush_message_loop=*/true);
       task_environment_.FastForwardBy(base::Milliseconds(100));
     }
+  }
+
+  enum class CtrlKey { kLeft, kRight };
+
+  // On Mac, we treat the Command (aka Windows aka Meta aka Super) key as the
+  // Ctrl key.
+  void SendCtrlKeyDown(CtrlKey key = CtrlKey::kLeft,
+                       bool is_auto_repeat = false) {
+    int modifiers = [] {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        return blink::WebInputEvent::kMetaKey;
+      } else {
+        return blink::WebInputEvent::kControlKey;
+      }
+    }();
+    if (is_auto_repeat) {
+      modifiers |= blink::WebInputEvent::kIsAutoRepeat;
+    }
+
+    blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
+                                  modifiers, base::TimeTicks::Now());
+
+    event.windows_key_code = [](CtrlKey key) {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        switch (key) {
+          case CtrlKey::kLeft:
+            return ui::VKEY_COMMAND;
+          case CtrlKey::kRight:
+            return ui::VKEY_RIGHT_COMMAND;
+        }
+      } else {
+        // The WebKeyboardEvent::windows_key_code does not distinguish between
+        // left and right Ctrl buttons.
+        return ui::VKEY_CONTROL;
+      }
+    }(key);
+
+    event.dom_code = static_cast<int>([&key] {
+      if constexpr (BUILDFLAG(IS_MAC)) {
+        switch (key) {
+          case CtrlKey::kLeft:
+            return ui::DomCode::META_LEFT;
+          case CtrlKey::kRight:
+            return ui::DomCode::META_RIGHT;
+        }
+      } else {
+        switch (key) {
+          case CtrlKey::kLeft:
+            return ui::DomCode::CONTROL_LEFT;
+          case CtrlKey::kRight:
+            return ui::DomCode::CONTROL_RIGHT;
+        }
+      }
+      NOTREACHED();
+    }());
+
+    SendWebKeyboardEvent(event);
   }
 
  private:
@@ -307,6 +366,41 @@ TEST_F(AtMemoryHandlerTest, AtMemoryShortcutTriggerRepeatBlocked) {
   event.windows_key_code = ui::VKEY_Y;
   SendWebKeyboardEvent(event);
 
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that setting a keyboard shortcut disables other triggers (trigger
+// string and double Ctrl).
+TEST_F(AtMemoryHandlerTest, ShortcutDisablesOtherTriggers) {
+  SetTrigger(ui::VKEY_Y, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          AllOf(Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+                Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl)),
+          _))
+      .Times(AnyNumber());
+
+  SimulateSlowTyping("@@");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
   task_environment_.RunUntilIdle();
 }
 
@@ -1123,75 +1217,8 @@ TEST_F(AtMemoryHandlerContentEditableTest, AtMemoryShortcutTrigger) {
   task_environment_.RunUntilIdle();
 }
 
-class AtMemoryHandlerDoubleCtrlTest : public AtMemoryHandlerTest {
- public:
-  enum class CommandKey { kLeft, kRight };
-
-  AtMemoryHandlerDoubleCtrlTest() {
-    feature_list_.InitAndEnableFeature(features::kAutofillAtMemoryDoubleCtrl);
-  }
-
-  // On Mac, we treat the Command (aka Windows aka Meta aka Super) key as the
-  // Ctrl key.
-  void SendCtrlKeyDown(CommandKey key = CommandKey::kLeft,
-                       bool is_auto_repeat = false) {
-    int modifiers = [] {
-      if constexpr (BUILDFLAG(IS_MAC)) {
-        return blink::WebInputEvent::kMetaKey;
-      } else {
-        return blink::WebInputEvent::kControlKey;
-      }
-    }();
-    if (is_auto_repeat) {
-      modifiers |= blink::WebInputEvent::kIsAutoRepeat;
-    }
-
-    blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
-                                  modifiers, base::TimeTicks::Now());
-
-    event.windows_key_code = [](CommandKey key) {
-      if constexpr (BUILDFLAG(IS_MAC)) {
-        switch (key) {
-          case CommandKey::kLeft:
-            return ui::VKEY_COMMAND;
-          case CommandKey::kRight:
-            return ui::VKEY_RIGHT_COMMAND;
-        }
-      } else {
-        // The WebKeyboardEvent::windows_key_code does not distinguish between
-        // left and right Ctrl buttons.
-        return ui::VKEY_CONTROL;
-      }
-    }(key);
-
-    event.dom_code = static_cast<int>([&key] {
-      if constexpr (BUILDFLAG(IS_MAC)) {
-        switch (key) {
-          case CommandKey::kLeft:
-            return ui::DomCode::META_LEFT;
-          case CommandKey::kRight:
-            return ui::DomCode::META_RIGHT;
-        }
-      } else {
-        switch (key) {
-          case CommandKey::kLeft:
-            return ui::DomCode::CONTROL_LEFT;
-          case CommandKey::kRight:
-            return ui::DomCode::CONTROL_RIGHT;
-        }
-      }
-      NOTREACHED();
-    }());
-
-    SendWebKeyboardEvent(event);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that pressing Ctrl twice triggers AtMemory in an <input>.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInInput) {
+TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInInput) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -1207,7 +1234,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInInput) {
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory in a <textarea>.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInTextArea) {
+TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInTextArea) {
   LoadHTML(R"(<textarea id="f"></textarea>)");
   WaitForFormsSeen();
   Focus("f");
@@ -1223,8 +1250,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, DoubleCtrlTriggersAtMemoryInTextArea) {
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory in a contenteditable.
-TEST_F(AtMemoryHandlerDoubleCtrlTest,
-       DoubleCtrlTriggersAtMemoryInContentEditable) {
+TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInContentEditable) {
   LoadHTML(R"(<div contenteditable id="f"></div>)");
   WaitForFormsSeen();
   Focus("f");
@@ -1240,7 +1266,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest,
 }
 
 // Tests that typing an intervening character cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, InterveningKeyCancelsDoubleCtrl) {
+TEST_F(AtMemoryHandlerTest, InterveningKeyCancelsDoubleCtrl) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -1263,7 +1289,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, InterveningKeyCancelsDoubleCtrl) {
 }
 
 // Tests that exceeding the timeout cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, TimeoutCancelsDoubleCtrl) {
+TEST_F(AtMemoryHandlerTest, TimeoutCancelsDoubleCtrl) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -1286,7 +1312,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, TimeoutCancelsDoubleCtrl) {
 }
 
 // Tests that an auto-repeat Ctrl keydown event does not trigger AtMemory.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, AutoRepeatDoesNotTrigger) {
+TEST_F(AtMemoryHandlerTest, AutoRepeatDoesNotTrigger) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -1303,12 +1329,12 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, AutoRepeatDoesNotTrigger) {
       .Times(AnyNumber());
 
   SendCtrlKeyDown();
-  SendCtrlKeyDown(CommandKey::kLeft, /*is_auto_repeat=*/true);
+  SendCtrlKeyDown(CtrlKey::kLeft, /*is_auto_repeat=*/true);
   task_environment_.RunUntilIdle();
 }
 
 // Tests that changing focus cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, FocusChangeCancelsDoubleCtrl) {
+TEST_F(AtMemoryHandlerTest, FocusChangeCancelsDoubleCtrl) {
   LoadHTML(R"(<input id="f1"><input id="f2">)");
   WaitForFormsSeen();
   Focus("f1");
@@ -1332,7 +1358,7 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, FocusChangeCancelsDoubleCtrl) {
 
 // Tests that Left Ctrl followed by Right Ctrl does not trigger AtMemory, but
 // Left Ctrl followed by two Right Ctrls does.
-TEST_F(AtMemoryHandlerDoubleCtrlTest, LeftCtrlFollowedByRightCtrl) {
+TEST_F(AtMemoryHandlerTest, LeftCtrlFollowedByRightCtrl) {
   LoadHTML(R"(<input id="f">)");
   WaitForFormsSeen();
   Focus("f");
@@ -1363,13 +1389,13 @@ TEST_F(AtMemoryHandlerDoubleCtrlTest, LeftCtrlFollowedByRightCtrl) {
       .Times(AnyNumber());
 
   // 1. Left Ctrl followed by Right Ctrl does not trigger.
-  SendCtrlKeyDown(CommandKey::kLeft);
-  SendCtrlKeyDown(CommandKey::kRight);
+  SendCtrlKeyDown(CtrlKey::kLeft);
+  SendCtrlKeyDown(CtrlKey::kRight);
   task_environment_.RunUntilIdle();
   check_point.Call(1);
 
   // 2. A second Right Ctrl completes the Right Ctrl pair and triggers.
-  SendCtrlKeyDown(CommandKey::kRight);
+  SendCtrlKeyDown(CtrlKey::kRight);
   task_environment_.RunUntilIdle();
   check_point.Call(2);
 }
