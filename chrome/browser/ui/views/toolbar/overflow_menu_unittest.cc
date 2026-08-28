@@ -30,6 +30,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/widget/widget.h"
@@ -169,6 +170,13 @@ class TestOverflowMenuDelegate : public OverflowMenu::Delegate {
     return !disabled_elements_.contains(GetOverflowableElementId(element));
   }
 
+  void OnMenuClosed() override {
+    LOG(INFO) << "TestOverflowMenuDelegate::OnMenuClosed called, this=" << this;
+    on_menu_closed_called_ = true;
+  }
+
+  bool on_menu_closed_called() const { return on_menu_closed_called_; }
+
   const std::vector<OverflowMenu::OverflowableElement>& executed_elements()
       const {
     return executed_elements_;
@@ -179,6 +187,7 @@ class TestOverflowMenuDelegate : public OverflowMenu::Delegate {
   std::set<OverflowableElementId> overflowed_elements_;
   std::set<OverflowableElementId> disabled_elements_;
   std::vector<OverflowMenu::OverflowableElement> executed_elements_;
+  bool on_menu_closed_called_ = false;
 };
 
 }  // namespace
@@ -779,4 +788,25 @@ TEST_F(OverflowMenuTest, StatusIndicatorVisibilityUpdates) {
       EXPECT_EQ(status_indicator->GetVisible(), true);
     }
   }
+}
+
+TEST_F(OverflowMenuTest, OnMenuClosed) {
+  auto element0 = ResponsiveElementInfoForDummyElementId(kDummyButton1);
+  delegate()->SetOverflowed(element0, true);
+
+  auto overflow_menu = CreateOverflowMenu({element0});
+  auto widget = CreateTestWidget(
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
+  views::View* anchor_view =
+      widget->SetContentsView(std::make_unique<views::View>());
+
+  overflow_menu->ShowMenu(widget.get(), nullptr,
+                          anchor_view->GetBoundsInScreen());
+  EXPECT_TRUE(overflow_menu->IsMenuRunning());
+  EXPECT_FALSE(delegate()->on_menu_closed_called());
+
+  overflow_menu->root_menu_item()->GetMenuController()->Cancel(
+      views::MenuController::ExitType::kAll);
+  EXPECT_TRUE(delegate()->on_menu_closed_called());
 }

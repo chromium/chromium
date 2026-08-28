@@ -88,6 +88,8 @@ bool WebUIOverflowButton::IsEnabled(
   return it->second.is_enabled;
 }
 
+void WebUIOverflowButton::OnMenuClosed() {}
+
 void WebUIOverflowButton::ShowOverflowMenu(
     const std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr>& controls,
     const gfx::Rect& screen_rect,

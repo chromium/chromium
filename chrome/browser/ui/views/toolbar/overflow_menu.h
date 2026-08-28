@@ -136,6 +136,10 @@ class OverflowMenu : public views::MenuDelegate,
         const OverflowableElement& element) const = 0;
     virtual bool IsEnabled(const OverflowableElement& element) const = 0;
 
+    // Called when the menu is closed, whether by clicking on an item, or by
+    // cancellation.
+    virtual void OnMenuClosed() = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -197,6 +201,9 @@ class OverflowMenu : public views::MenuDelegate,
   void set_menu_text_callback_for_testing(MenuTextCallback callback) {
     menu_text_callback_for_testing_ = std::move(callback);
   }
+
+  // views::MenuDelegate:
+  void OnMenuClosed(views::MenuItemView* menu) override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

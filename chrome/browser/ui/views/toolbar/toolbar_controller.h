@@ -135,11 +135,6 @@ class ToolbarController : public OverflowMenu::Delegate {
     std::unique_ptr<PopOutHandler> handler;
   };
 
-  // OverflowMenu::Delegate:
-  void ExecuteCommand(const OverflowableElement& element) override;
-  bool IsCurrentlyOverflowed(const OverflowableElement& element) const override;
-  bool IsEnabled(const OverflowableElement& element) const override;
-
   // Return the element list in desired overflow order. The list should contain
   // only the immediate children of toolbar i.e. those managed by
   // `toolbar_container_view_` layout manager. For those inside a child
@@ -170,6 +165,12 @@ class ToolbarController : public OverflowMenu::Delegate {
 
   // Return true if any buttons overflow.
   bool InOverflowMode() const;
+
+  // OverflowMenu::Delegate:
+  void ExecuteCommand(const OverflowableElement& element) override;
+  bool IsCurrentlyOverflowed(const OverflowableElement& element) const override;
+  bool IsEnabled(const OverflowableElement& element) const override;
+  void OnMenuClosed() override;
 
   OverflowButton* overflow_button() { return overflow_button_; }
 

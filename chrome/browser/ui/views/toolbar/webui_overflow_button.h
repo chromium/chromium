@@ -50,6 +50,7 @@ class WebUIOverflowButton : public OverflowMenu::Delegate {
       const OverflowMenu::OverflowableElement& element) const override;
   bool IsEnabled(
       const OverflowMenu::OverflowableElement& element) const override;
+  void OnMenuClosed() override;
 
  private:
   // Represents information about an element that has overflowed.

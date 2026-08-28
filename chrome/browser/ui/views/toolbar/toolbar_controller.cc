@@ -476,32 +476,6 @@ bool ToolbarController::IsOverflowed(
       element);
 }
 
-bool ToolbarController::IsCurrentlyOverflowed(
-    const OverflowableElement& element) const {
-  return IsOverflowed(element);
-}
-
-bool ToolbarController::IsEnabled(const OverflowableElement& element) const {
-  return std::visit(
-      absl::Overload{
-          [this](actions::ActionId id) {
-            return pinned_actions_delegate_->GetActionItemFor(id)->GetEnabled();
-          },
-          [this](const ToolbarController::ElementIdInfo& id) {
-            const views::View* view = FindToolbarElementWithId(
-                toolbar_container_view_, id.overflow_identifier);
-            if (view) {
-              return view->GetEnabled();
-            }
-            // If an element is on the overflow menu, but has no toolbar
-            // element, there must be a WebUI toolbar handling that element.
-            CHECK(webui_toolbar_controller_delegate_);
-            return webui_toolbar_controller_delegate_->IsEnabled(
-                id.overflow_identifier);
-          }},
-      element);
-}
-
 void ToolbarController::ExecuteCommand(const OverflowableElement& element) {
   std::variant<ui::ElementIdentifier, actions::ActionId> action_key;
   std::visit(
@@ -539,6 +513,34 @@ void ToolbarController::ExecuteCommand(const OverflowableElement& element) {
     base::RecordAction(base::UserMetricsAction(action_name.c_str()));
   }
 }
+
+bool ToolbarController::IsCurrentlyOverflowed(
+    const OverflowableElement& element) const {
+  return IsOverflowed(element);
+}
+
+bool ToolbarController::IsEnabled(const OverflowableElement& element) const {
+  return std::visit(
+      absl::Overload{
+          [this](actions::ActionId id) {
+            return pinned_actions_delegate_->GetActionItemFor(id)->GetEnabled();
+          },
+          [this](const ToolbarController::ElementIdInfo& id) {
+            const views::View* view = FindToolbarElementWithId(
+                toolbar_container_view_, id.overflow_identifier);
+            if (view) {
+              return view->GetEnabled();
+            }
+            // If an element is on the overflow menu, but has no toolbar
+            // element, there must be a WebUI toolbar handling that element.
+            CHECK(webui_toolbar_controller_delegate_);
+            return webui_toolbar_controller_delegate_->IsEnabled(
+                id.overflow_identifier);
+          }},
+      element);
+}
+
+void ToolbarController::OnMenuClosed() {}
 
 void ToolbarController::ShowMenu() {
   CHECK(overflow_button_->GetVisible());

@@ -539,6 +539,10 @@ bool OverflowMenu::IsMenuRunning() const {
   return menu_runner_ && menu_runner_->IsRunning();
 }
 
+void OverflowMenu::OnMenuClosed(views::MenuItemView* menu) {
+  delegate_->OnMenuClosed();
+}
+
 void OverflowMenu::CloseMenu() {
   root_menu_item_ = nullptr;
   menu_model_.reset();
