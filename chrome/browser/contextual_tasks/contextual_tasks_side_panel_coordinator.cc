@@ -410,6 +410,10 @@ void ContextualTasksSidePanelCoordinator::Close() {
       ContextualTasksPanelHost::AnimationStyle::kStandard);
   Observe(nullptr);
 
+  if (active_task_context_provider_) {
+    active_task_context_provider_->ClearAllLocalTabUnderlines();
+  }
+
   NotifyActiveTaskContextProvider();
 
   RecordSessionEndMetrics();
