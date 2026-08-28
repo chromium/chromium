@@ -19246,7 +19246,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Window
     </message>
     <message name="IDS_OMNIBOX_EVERYWHERE_REGION" desc="Label of the option to capture a region screenshot.">
-      Region
+      Select from screen
     </message>
     <message name="IDS_OMNIBOX_EVERYWHERE_REGION_SELECT_ACCESSIBLE_NAME" desc="Accessible name for the region screenshot capture overlay." is_accessibility_with_no_ui="true">
       Region select screenshot

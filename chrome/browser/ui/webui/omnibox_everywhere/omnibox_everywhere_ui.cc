@@ -558,8 +558,8 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
   screenshot_menu_model_->AddItemWithIcon(
       kScreenshotRegion,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_REGION),
-      ui::ImageModel::FromVectorIcon(kScreenshotRegionIcon, ui::kColorMenuIcon,
-                                     16));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCropFreeIcon,
+                                     ui::kColorMenuIcon, 16));
 
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
       screenshot_menu_model_.get(),
