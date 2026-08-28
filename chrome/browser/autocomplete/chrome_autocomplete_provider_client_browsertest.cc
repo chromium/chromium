@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -308,6 +309,24 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   ASSERT_TRUE(side_panel_contents);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return side_panel_contents->ContainsOrIsFocusedWebContents(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
+                       CreatesContextualSessionHandleWhenNoneExists) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+
+  GetAutocompleteProviderClient()->OpenCoBrowsePanel();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
+  ASSERT_TRUE(controller);
+  auto* session_handle = controller->GetContextualSearchSessionHandleForPanel();
+  ASSERT_TRUE(session_handle);
+  EXPECT_EQ(session_handle->invocation_source(),
+            lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
 
 class ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest
