@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.AutofillPolicyDataCategory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -997,10 +998,16 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * @return Whether the Autofill feature for Profiles (addresses) is enabled.
+     * This checks both the underlying user setting ({@link Pref#AUTOFILL_PROFILE_ENABLED}) and
+     * whether address / contact info autofill is blocked by the {@code AutofillSettings} enterprise
+     * policy ({@code autofill.types_blocked}).
+     *
+     * @return True if profile autofill is enabled and not blocked by policy, false otherwise.
      */
     public boolean isAutofillProfileEnabled() {
-        return mPrefService.getBoolean(Pref.AUTOFILL_PROFILE_ENABLED);
+        return mPrefService.getBoolean(Pref.AUTOFILL_PROFILE_ENABLED)
+                && !isAutofillTypeDisabledByEnterprisePolicy(
+                        AutofillPolicyDataCategory.CONTACT_INFO);
     }
 
     /**
@@ -1144,6 +1151,17 @@ public class PersonalDataManager implements Destroyable {
      */
     public boolean isAutofillProfileManaged() {
         return PersonalDataManagerJni.get().isAutofillProfileManaged(mPersonalDataManagerAndroid);
+    }
+
+    /**
+     * @param category The category of Autofill data.
+     * @return Whether the specified Autofill data category is blocked by the AutofillSettings
+     *     enterprise policy.
+     */
+    public boolean isAutofillTypeDisabledByEnterprisePolicy(
+            @AutofillPolicyDataCategory int category) {
+        return PersonalDataManagerJni.get()
+                .isAutofillTypeDisabledByEnterprisePolicy(mPersonalDataManagerAndroid, category);
     }
 
     /**
@@ -1312,6 +1330,9 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         boolean isAutofillProfileManaged(long nativePersonalDataManagerAndroid);
+
+        boolean isAutofillTypeDisabledByEnterprisePolicy(
+                long nativePersonalDataManagerAndroid, @AutofillPolicyDataCategory int category);
 
         boolean isAutofillCreditCardManaged(long nativePersonalDataManagerAndroid);
 

@@ -220,6 +220,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns whether the Autofill feature for profiles is managed.
   bool IsAutofillProfileManaged(JNIEnv* env);
 
+  // Returns whether the specified Autofill data category is disabled by the
+  // AutofillSettings enterprise policy.
+  bool IsAutofillTypeDisabledByEnterprisePolicy(JNIEnv* env, int category);
+
   // Returns whether the Autofill feature for credit cards is managed.
   bool IsAutofillCreditCardManaged(JNIEnv* env);
 

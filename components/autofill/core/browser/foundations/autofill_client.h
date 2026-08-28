@@ -181,6 +181,7 @@ class AutofillClient {
  public:
   // Categories of Autofill data that can be blocked or allowed on specific GURL
   // patterns by enterprise policies.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   // LINT.IfChange(AutofillPolicyDataCategory)
   enum class AutofillPolicyDataCategory {
     // Address, name, email, phone, and profile configuration details.

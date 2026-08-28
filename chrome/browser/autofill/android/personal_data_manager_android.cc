@@ -697,6 +697,14 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
                                                   type.obj());
 }
 
+bool PersonalDataManagerAndroid::IsAutofillTypeDisabledByEnterprisePolicy(
+    JNIEnv* env,
+    int category) {
+  return AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      *prefs_, GURL(),
+      static_cast<AutofillClient::AutofillPolicyDataCategory>(category));
+}
+
 bool PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
   // `prefs::IsAutofillProfileManaged` checks the legacy boolean policy.
   // `AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy` checks
@@ -704,9 +712,10 @@ bool PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
   // categories. Therefore, if this method returns true, Autofill profiles
   // setting will be disabled.
   return prefs::IsAutofillProfileManaged(prefs_) ||
-         AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
-             *prefs_, GURL(),
-             AutofillClient::AutofillPolicyDataCategory::kContactInfo);
+         IsAutofillTypeDisabledByEnterprisePolicy(
+             env,
+             static_cast<int>(
+                 AutofillClient::AutofillPolicyDataCategory::kContactInfo));
 }
 
 bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
@@ -716,9 +725,9 @@ bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
   // categories. Therefore, if this method returns true, Autofill payment
   // methods setting will be disabled.
   return prefs::IsAutofillCreditCardManaged(prefs_) ||
-         AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
-             *prefs_, GURL(),
-             AutofillClient::AutofillPolicyDataCategory::kPayments);
+         IsAutofillTypeDisabledByEnterprisePolicy(
+             env, static_cast<int>(
+                      AutofillClient::AutofillPolicyDataCategory::kPayments));
 }
 
 // Returns the issuer network string according to PaymentRequest spec, or an

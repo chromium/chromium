@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 
@@ -34,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.components.autofill.AutofillPolicyDataCategory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
@@ -64,6 +67,12 @@ public class PersonalDataManagerTest {
 
     @After
     public void tearDown() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager pdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    pdm.setAutofillProfileEnabled(true);
+                });
         mHelper.clearAllDataForTesting();
     }
 
@@ -1216,6 +1225,71 @@ public class PersonalDataManagerTest {
                     pdm.setAutofillProfileEnabled(true);
                     assertTrue(pdm.isAutofillProfileEnabled());
                     histogramExpectation.assertExpected();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillProfileEnabled_defaultEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager pdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    assertTrue(pdm.isAutofillProfileEnabled());
+                    assertFalse(pdm.isAutofillProfileManaged());
+                    assertFalse(
+                            pdm.isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.CONTACT_INFO));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillProfileEnabled_whenDisabledByEnterprisePolicy() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager realPdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    PersonalDataManager spyPdm = spy(realPdm);
+                    doReturn(true)
+                            .when(spyPdm)
+                            .isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.CONTACT_INFO);
+
+                    // When AutofillSettings policy blocks contact info, enabled is forced to false.
+                    spyPdm.setAutofillProfileEnabled(true);
+                    assertFalse(spyPdm.isAutofillProfileEnabled());
+
+                    spyPdm.setAutofillProfileEnabled(false);
+                    assertFalse(spyPdm.isAutofillProfileEnabled());
+
+                    spyPdm.setAutofillProfileEnabled(true);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testIsAutofillProfileEnabled_whenNotDisabledByEnterprisePolicy() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager realPdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    PersonalDataManager spyPdm = spy(realPdm);
+                    doReturn(false)
+                            .when(spyPdm)
+                            .isAutofillTypeDisabledByEnterprisePolicy(
+                                    AutofillPolicyDataCategory.CONTACT_INFO);
+
+                    spyPdm.setAutofillProfileEnabled(true);
+                    assertTrue(spyPdm.isAutofillProfileEnabled());
+
+                    spyPdm.setAutofillProfileEnabled(false);
+                    assertFalse(spyPdm.isAutofillProfileEnabled());
+
+                    spyPdm.setAutofillProfileEnabled(true);
                 });
     }
 }
