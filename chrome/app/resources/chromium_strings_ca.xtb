@@ -443,6 +443,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5977420883993828287">S'ha fixat. Torna a utilitzar les tasques contextuals des de la barra d'eines.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="5987687638152509985">Actualitza Chromium per iniciar la sincronització</translation>
+<translation id="5990360079535151574">Des del botó Tasques contextuals de la barra d'eines, pots tornar a obrir les tasques contextuals per fer preguntes mentre navegues</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
 <translation id="6009821354356307391">Fes una pregunta de seguiment</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -594,6 +595,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="7318036098707714271">El fitxer de preferències està malmès o no és vàlid.
 
 Chromium no pot recuperar la configuració.</translation>
+<translation id="7324051657739063017">Pots tornar a obrir les tasques contextuals per fer preguntes mentre navegues</translation>
 <translation id="734373864078049451">El vostre web, les adreces d'interès i altres coses de Chromium resideixen aquí.</translation>
 <translation id="7347827960336370838">Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, has de <ph name="BEGIN_LINK" />suprimir les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">L'administrador del sistema ha configurat Chromium perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -4978,7 +4978,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4831226137013573603">vypnúť zvuk mikrofónu</translation>
 <translation id="483262387981411190">Pozastaviť alebo obnoviť ovládanie tvárou</translation>
 <translation id="4833683849865011483">Na tlačovom serveri bola nájdená jedna tlačiareň</translation>
-<translation id="4834388789911023644">Napísať recenziu</translation>
 <translation id="4835598628985424375">Stlačte pery a našpúľte ich</translation>
 <translation id="4835677468087803981">Skryť PIN</translation>
 <translation id="4836504898754963407">Správa odtlačkov</translation>
@@ -8521,7 +8520,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7625823789272218216">Nová karta vľavo</translation>
 <translation id="762730429396410864">Manuálne nastavte úroveň výkonu procesora nahlasovanú webom</translation>
 <translation id="7627749368210392160">Weby môžu pomocou tejto funkcie získať prístup k iným zariadeniam vo vašej miestnej sieti</translation>
-<translation id="7628068697012244394">Napísať recenziu</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), úroveň <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vyberte akciu pre každý kláves</translation>
 <translation id="7629206210984165492">Utlmená</translation>
@@ -9520,6 +9518,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8383614331548401927">Zhrnutie na privítanie</translation>
 <translation id="8387157483437834731">Heslo bolo úspešne zmenené</translation>
 <translation id="8387361103813440603">Nemôže zobrazovať vašu polohu</translation>
+<translation id="8387617938027387193">Overte, že ste to vy</translation>
 <translation id="8389492867173948260">Umožniť tomuto rozšíreniu čítať a meniť všetky dáta na navštevovaných weboch:</translation>
 <translation id="8390449457866780408">Server je nedostupný.</translation>
 <translation id="8391172837960094276">Ak chcete zobraziť a spravovať svoje heslá, <ph name="BEGIN_LINK" />overte svoju totožnosť<ph name="END_LINK" />.</translation>
@@ -10620,7 +10619,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="942296794412775122">Zapnutie alebo vypnutie mikrofónu</translation>
 <translation id="942488123151518958">Pozastaviť (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> zdieľa kartu a zvuk Chromu.</translation>
-<translation id="943744232549395906">Hlasové zadávanie bolo zastavené</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
 <translation id="947329552760389097">&amp;Skontrolovať prvky</translation>

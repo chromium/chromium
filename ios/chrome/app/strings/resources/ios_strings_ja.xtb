@@ -498,7 +498,7 @@
 <translation id="2559843230610279254">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
 <translation id="257088987046510401">テーマ</translation>
 <translation id="2573117291489209663">完了</translation>
-<translation id="2577522251608256362">近隣地域</translation>
+<translation id="2577522251608256362">周辺エリア</translation>
 <translation id="2579713773888829241">共有ドライブ</translation>
 <translation id="2580306219079937316">翻訳の設定を開く</translation>
 <translation id="2583688836549072561">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ、新しいアクティビティ。</translation>
@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">価格をトラッキングします</translation>
 <translation id="3038136505713492417">このデバイスでパスキーを使用するには、本人確認を行ってください</translation>
 <translation id="3039671569659952257">フォルダを削除</translation>
+<translation id="3041835740069544003">Chrome でより高度なフォーム認識が可能になり、より多くのフォームを検出して入力できるようになりました。この機能では、ページのコンテンツと URL がクラウドのプライベート スペースで処理される場合があります。この機能は設定で管理できます。</translation>
 <translation id="3050988301648974170">パスワード チェックアップを開きます</translation>
 <translation id="3053332585453689122">アクセスした URL と、ページのコンテンツ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを Google セーフ ブラウジングに送信して、有害かどうか確認します。</translation>
 <translation id="3055102495753300780">情報容量</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 件のサイトまたはアプリ}other{{COUNT} 件のサイトとアプリ}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
+<translation id="3479552764303398839">後で</translation>
 <translation id="3485558910355485767">新規シークレット ウインドウ</translation>
 <translation id="3488501490964659223">タブを閉じて閲覧データを削除し、ログアウトしました</translation>
 <translation id="3490396108106323715">現在のタブを共有</translation>

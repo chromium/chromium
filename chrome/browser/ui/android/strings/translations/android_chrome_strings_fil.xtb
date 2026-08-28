@@ -152,6 +152,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1554532453982918912">Tumulong na pahusayin ang Chrome para sa mga taong ginagamit ito gaya ng paggamit mo</translation>
 <translation id="1568636008098739136">Makinig sa page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 nakompromisong password sa device na ito}one{# nakompromisong password sa device na ito}other{# na nakompromisong password sa device na ito}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> (na) iminumungkahing item sa listahan sa ibaba.</translation>
 <translation id="159689249463841786">Pumili ng folder, kasalukuyang <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2742373789128106053">Hindi available ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sa ngayon.</translation>
 <translation id="2751271371269891762">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / YY</translation>
+<translation id="2761162135224472056">Panoorin nang may immersive na pag-playback?</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="276378135349383280">Ipakita ang Gemini sa ibabang toolbar</translation>
 <translation id="276969039800130567">Naka-sign in bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -654,6 +656,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Lumabas sa immersive na pag-playback</translation>
 <translation id="3674208116086565128">Pumunta sa Home sa Google App</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
 <translation id="3684540848053703310">Isinara ang bottom sheet ng mga insight sa presyo</translation>
@@ -671,6 +674,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3718765429352682176">Puwede mong makita ang history mula sa iba pang app na nagbubukas ng mga link sa Chrome.</translation>
 <translation id="3721119614952978349">Ikaw at ang Google</translation>
 <translation id="3727000368239390918">Mag-sign in para makuha ang iyong mga tab at higit pa sa lahat ng device mo</translation>
+<translation id="3731865955999508196">Stereoscopic</translation>
 <translation id="3737319253362202215">Mga setting ng pagsasalin</translation>
 <translation id="3738139272394829648">Pindutin upang Hanapin</translation>
 <translation id="3739455665973395693">Walang nakompromisong password sa iyong Google Account</translation>
@@ -900,6 +904,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4606559747793337066">Kapag hiniling ng isang site o app na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Iha-hide nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
+<translation id="4628972300801601502">360° Stereoscopic</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{Mase-save ang 1 password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}one{Mase-save ang # password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang # na password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 nakompromisong password}one{# nakompromisong password}other{# na nakompromisong password}}</translation>
@@ -981,6 +986,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
 <translation id="4921224083091001889">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome bilang <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Hindi inirerekomenda ng iyong organisasyon ang pag-download</translation>
+<translation id="4924398189611529766">Kapag nagba-browse ka sa Incognito, hindi makikita ng iba pang gumagamit ng device na ito ang iyong aktibidad, kaya mas pribado kang makakapag-browse. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Puwede kang mag-save ng mga larawan at file na titingnan offline o ishe-share sa iba pang app</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{Mase-save ang 1 bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}one{Mase-save ang # bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang # na bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
@@ -1181,6 +1187,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ipakita ang notification}one{Ipakita ang mga notification}other{Ipakita ang mga notification}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Naka-mute na Tab</translation>
+<translation id="5814872768903482128">180° Stereoscopic</translation>
 <translation id="5823093032261493462">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" mula sa <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5825135637446025843">Pagkatapos mag-restart ng Chrome, gagamitin ang impormasyon mong na-save mula sa iyong bagong provider para mag-autofill ng mga password, passkey, address, paraan ng pagbabayad, at iba pang impormasyon.</translation>
 <translation id="5828921839638612740">Puwede mong i-delete ang data sa Mga Setting ng Chrome</translation>
@@ -1316,6 +1323,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="631839948975905034">I-lock ang mga incognito window kapag umalis ka sa Chrome</translation>
 <translation id="6321592572353357376">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chrome</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
+<translation id="632496644859442877">Pumili ng format ng video</translation>
 <translation id="6324977638108296054">Hindi makagawa ng link sa highlight</translation>
 <translation id="6331836477476466332">Isang mas ligtas at mas mahusay na browser para sa iyo</translation>
 <translation id="6333140779060797560">Ibahagi sa pamamagitan ng <ph name="APPLICATION" /></translation>
@@ -1496,6 +1504,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6918398787259831832">Kung patuloy na nangyayari ang isyung ito, <ph name="BEGIN_LINK" />kumuha ng higit pang impormasyon<ph name="END_LINK" /> mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6920262510368602827">Gumawa ng QR code para sa page na ito</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil hindi ka bumisita kamakailan</translation>
+<translation id="6923291640965724312">Immersive na format</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}one{<ph name="NUMBER_OF_TABS" /> tab}other{<ph name="NUMBER_OF_TABS" /> na tab}}</translation>
 <translation id="6929224077895306814">Made-delete ang lahat ng panseguridad na code na naka-save sa iyong device at sa Google Account mo</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, Piniling Naka-pin na Tab na May Naririnig na Audio</translation>
@@ -1740,6 +1749,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7851858861565204677">Iba pang device</translation>
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7859988229622350291">Huwag isalin kailanman</translation>
+<translation id="7862185352068345852">Umalis sa site?</translation>
 <translation id="7866213166286285359">Magsalin ng mga page dito</translation>
 <translation id="7875915731392087153">Gumawa ng email</translation>
 <translation id="7876243839304621966">Alisin lahat</translation>

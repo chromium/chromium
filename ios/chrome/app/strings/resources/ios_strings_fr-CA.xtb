@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Suivi du prix en cours…</translation>
 <translation id="3038136505713492417">Confirmez qu'il s'agit bien de vous pour utiliser vos clés d'accès sur cet appareil</translation>
 <translation id="3039671569659952257">Supprimer le dossier</translation>
+<translation id="3041835740069544003">Chrome peut désormais détecter et remplir davantage de formulaires grâce à une nouvelle fonctionnalité, la Compréhension plus intelligente des formulaires. Pour ce faire, le contenu et les URL des pages peuvent être traités dans un espace privé dans le nuage. Gérez cette fonction dans les paramètres.</translation>
 <translation id="3050988301648974170">Ouvrez la Vérification de mot de passe</translation>
 <translation id="3053332585453689122">Envoie les URL que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou application}one{pour {COUNT} sites ou applications}other{pour {COUNT} sites et applications}}</translation>
 <translation id="3474624961160222204">Contin. comme <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
+<translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
 <translation id="3490396108106323715">Partager l'onglet actuel</translation>

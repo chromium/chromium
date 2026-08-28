@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивный объект}one{<ph name="TABS_COUNT_MANY" /> неактивный объект}few{<ph name="TABS_COUNT_MANY" /> неактивных объекта}many{<ph name="TABS_COUNT_MANY" /> неактивных объектов}other{<ph name="TABS_COUNT_MANY" /> неактивных объекта}}</translation>
 <translation id="1568067597247500137">Отключить звук на сайте</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Переместить вкладку вниз}one{Переместить вкладки вниз}few{Переместить вкладки вниз}many{Переместить вкладки вниз}other{Переместить вкладки вниз}}</translation>
 <translation id="1645759014353344461">Вкладки (<ph name="TABS_COUNT_MANY" />) сгруппированы.</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1670942869417022142">Звук отключен</translation>
 <translation id="1697284962337958118">Куда добавить</translation>
 <translation id="1713541401465507417">Закрыть все вкладки и группы</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> группа вкладок больше не доступна.}one{<ph name="TAB_GROUPS_COUNT_MANY" /> группа вкладок больше не доступна.}few{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}many{<ph name="TAB_GROUPS_COUNT_MANY" /> групп вкладок больше не доступны.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}}</translation>
+<translation id="1759122978835002237">Переместить группу вкладок вверх</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Создана группа с <ph name="TABS_COUNT_ONE" /> вкладкой.</translation>
 <translation id="1844381456014878100">Через 7 дней</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". Вкладка инкогнито не сохранится.}one{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладка инкогнито не сохранится.}few{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладки инкогнито не сохранятся.}many{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладок инкогнито не сохранится.}other{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладки инкогнито не сохранится.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Включить звук на сайте}one{Включить звук на сайтах}few{Включить звук на сайтах}many{Включить звук на сайтах}other{Включить звук на сайтах}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Переместить группу вкладок вниз</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Удалить вкладку из группы}one{Удалить вкладки из группы}few{Удалить вкладки из группы}many{Удалить вкладки из группы}other{Удалить вкладки из группы}}</translation>
 <translation id="2271452184061378400">Здесь находятся группы вкладок</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Группа вкладок "<ph name="TAB_GROUP_NAME" />" больше не доступна.</translation>
 <translation id="7402375256128852434">Добавить недавние вкладки</translation>
 <translation id="7452985128687107478">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Переместить вкладку вверх}one{Переместить вкладки вверх}few{Переместить вкладки вверх}many{Переместить вкладки вверх}other{Переместить вкладки вверх}}</translation>
 <translation id="747459581954555080">Восстановить все</translation>
 <translation id="7489558427602531799">Переместить группу вкладок вправо</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> объект}one{<ph name="TABS_COUNT_MANY" /> объект}few{<ph name="TABS_COUNT_MANY" /> объекта}many{<ph name="TABS_COUNT_MANY" /> объектов}other{<ph name="TABS_COUNT_MANY" /> объекта}}</translation>

@@ -232,6 +232,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Newid i broffil Chromium presennol?</translation>
 <translation id="3412460710772753638">Yn Rheolwr Cyfrineiriau ar y ddyfais hon</translation>
+<translation id="3438772217992559640">Chwilio'r Tab Hwn gyda Chwilio Lluniau</translation>
 <translation id="3455907671758333080">Estyn Gwell Pori'n Ddiogel gyda Chromium ar eich ffôn</translation>
 <translation id="3461644266919055473">Yn gwneud Chromium yn eiddo i chi...</translation>
 <translation id="3474745554856756813">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
@@ -606,6 +607,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7376384068949534168">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Agor Chrome Web Store</translation>
 <translation id="7394275517973019558">Dangos Gemini yn Chromium yn yr hambwrdd system</translation>
+<translation id="7401687852903179959">Chwilio'r Fideo Hwn gyda Chwilio Lluniau</translation>
 <translation id="7407655596887111931">Mae Chromium bellach yn borwr diofyn i chi</translation>
 <translation id="7413153308467572558">Parhau lle gwnaethoch adael: Mae Chromium yn adfer eich tabiau bob tro y byddwch chi'n ailgychwyn. I ddiffodd hyn, ewch i</translation>
 <translation id="7427879960656355200">Mewnforio Cyfrineiriau i Chromium</translation>
@@ -686,6 +688,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="81770708095080097">Mae'r ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
 <translation id="8177472873527554730">Methu â dod o hyd i gynnwys ar y dudalen</translation>
 <translation id="8200109504272824693">Rhowch eich cyfrin-ymadrodd i ddefnyddio a chadw data Chromium yn eich cyfrif, <ph name="USER_EMAIL" /></translation>
+<translation id="820759916613250543">Chwilio'r Llun Hwn gyda Chwilio Lluniau</translation>
 <translation id="8221491193165283816">Rydych fel arfer yn rhwystro hysbysiadau. I ganiatáu i'r wefan hon eich hysbysu, cliciwch yma.</translation>
 <translation id="8223363452568144035">I ddefnyddio'ch camera, rhowch fynediad i Chromium yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod, ac mae'n bosib ei fod yn anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys gwybodaeth bersonol.</translation>

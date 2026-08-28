@@ -4991,7 +4991,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4831226137013573603">izklop zvok mikrofona</translation>
 <translation id="483262387981411190">Začasna zaustavitev ali nadaljevanje upravljanja z obrazom</translation>
 <translation id="4833683849865011483">V tiskalnem strežniku je bil najden 1 tiskalnik.</translation>
-<translation id="4834388789911023644">Napišite mnenje</translation>
 <translation id="4835598628985424375">Našobljenje ustnic</translation>
 <translation id="4835677468087803981">Skrivanje kode PIN</translation>
 <translation id="4836504898754963407">Upravljanje prstnih odtisov</translation>
@@ -8539,7 +8538,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7625823789272218216">Novi zavihek na levi</translation>
 <translation id="762730429396410864">Ročno nastavite raven zmogljivosti CPE, ki se poroča spletnim mestom</translation>
 <translation id="7627749368210392160">Spletna mesta lahko s to funkcijo dostopajo do drugih naprav v lokalnem omrežju</translation>
-<translation id="7628068697012244394">Napišite mnenje</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. raven</translation>
 <translation id="762917478230183172">Izberite dejanje za posamezno tipko</translation>
 <translation id="7629206210984165492">Umirjeno</translation>
@@ -9538,6 +9536,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8383614331548401927">Pozdravni povzetek</translation>
 <translation id="8387157483437834731">Geslo je bilo uspešno spremenjeno</translation>
 <translation id="8387361103813440603">Ni dovoljen ogled lokacije</translation>
+<translation id="8387617938027387193">Potrdite, da ste res vi</translation>
 <translation id="8389492867173948260">Omogočite to razširitev za branje in spreminjanje vseh podatkov na spletnih mestih, ki jih obiščete:</translation>
 <translation id="8390449457866780408">Strežnik ni na voljo.</translation>
 <translation id="8391172837960094276">Če si želite ogledati gesla in jih upravljati, <ph name="BEGIN_LINK" />potrdite, da ste to vi<ph name="END_LINK" />.</translation>
@@ -10638,7 +10637,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="942296794412775122">Vklop/izklop mikrofona</translation>
 <translation id="942488123151518958">Začasna zaustavitev (k)</translation>
 <translation id="942532530371314860">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala zavihek v Chromu in zvok.</translation>
-<translation id="943744232549395906">Glasovno tipkanje se je ustavilo</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="947329552760389097">&amp;Pregled elementov</translation>

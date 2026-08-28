@@ -4979,7 +4979,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4831226137013573603">micrófono silenciado</translation>
 <translation id="483262387981411190">Pausar o reanudar el control facial</translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
-<translation id="4834388789911023644">Escribir una opinión</translation>
 <translation id="4835598628985424375">Apretar los labios y fruncirlos</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Administrar huellas dactilares</translation>
@@ -8520,7 +8519,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="762730429396410864">Configura manualmente el nivel de rendimiento de la CPU que se informa a los sitios web</translation>
 <translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
-<translation id="7628068697012244394">Escribir una opinión</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -9519,6 +9517,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8383614331548401927">Inicio inteligente</translation>
 <translation id="8387157483437834731">Se cambió la contraseña correctamente</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
+<translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea y cambie todos tus datos en los sitios web que visitas:</translation>
 <translation id="8390449457866780408">El servidor no está disponible.</translation>
 <translation id="8391172837960094276">Para ver y administrar tus contraseñas, <ph name="BEGIN_LINK" />verifica tu identidad<ph name="END_LINK" />.</translation>
@@ -10619,7 +10618,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="942296794412775122">Micrófono activado/desactivado</translation>
 <translation id="942488123151518958">Pausar (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> comparte una pestaña de Chrome y audio.</translation>
-<translation id="943744232549395906">Se detuvo el dictado por voz</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="947329552760389097">Analizar elementos</translation>

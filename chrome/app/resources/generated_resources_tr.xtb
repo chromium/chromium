@@ -4977,7 +4977,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4831226137013573603">mikrofonun sesini kapat</translation>
 <translation id="483262387981411190">Yüz kontrolünü duraklat veya devam ettir</translation>
 <translation id="4833683849865011483">Yazdırma sunucusunda 1 yazıcı bulundu</translation>
-<translation id="4834388789911023644">Yorum yazın</translation>
 <translation id="4835598628985424375">Dudaklarınızı büzün</translation>
 <translation id="4835677468087803981">PIN'i gizle</translation>
 <translation id="4836504898754963407">Parmak izi yönetimi</translation>
@@ -8517,7 +8516,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7625823789272218216">Sola Yeni Sekme</translation>
 <translation id="762730429396410864">Web sitelerine bildirilen CPU performans katmanını manuel olarak ayarlayın</translation>
 <translation id="7627749368210392160">Siteler, yerel ağınızdaki diğer cihazlara erişmek için bu özelliği kullanabilir</translation>
-<translation id="7628068697012244394">Yorum Yazın</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. Derece</translation>
 <translation id="762917478230183172">Her tuş için bir işlem seçin</translation>
 <translation id="7629206210984165492">Dingin</translation>
@@ -8917,7 +8915,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7938881824185772026">Google Labs</translation>
 <translation id="793923212791838">Cihazınız bu sitede kullanılamaz</translation>
 <translation id="7939328347457537652">Cihaz sertifikalarını yönet</translation>
-<translation id="7939918959917132075">Uzantı tarafından bu değere değiştirildi</translation>
+<translation id="7939918959917132075">Uzantı tarafından ayarlandı</translation>
 <translation id="7940087892955752820">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. <ph name="SPECIFIC_NAME" /> kapatıldığında paylaşılan klasör geri alınacak.</translation>
 <translation id="7940265372707990269">Sıralama ölçütü: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering Hazırlık Durumu:</translation>
@@ -9516,6 +9514,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8383614331548401927">Karşılama Özeti</translation>
 <translation id="8387157483437834731">Şifre başarıyla değiştirildi</translation>
 <translation id="8387361103813440603">Konumunuzu görmesine izin verilmeyenler</translation>
+<translation id="8387617938027387193">Siz olduğunuzu doğrulayın</translation>
 <translation id="8389492867173948260">Bu uzantının ziyaret ettiğim web sitelerindeki tüm verilerimi okuması ve değiştirmesine izin ver:</translation>
 <translation id="8390449457866780408">Sunucu kullanılamıyor.</translation>
 <translation id="8391172837960094276">Şifrelerinizi göstermek ve yönetmek için <ph name="BEGIN_LINK" />kimliğinizi doğrulayın<ph name="END_LINK" />.</translation>
@@ -10616,7 +10615,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="942296794412775122">Mikrofon açık/kapalı</translation>
 <translation id="942488123151518958">Duraklat (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, bir Chrome sekmesini ve sesi paylaşıyor.</translation>
-<translation id="943744232549395906">Sesle yazma durduruldu</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="947329552760389097">Öğeleri &amp;İncele</translation>

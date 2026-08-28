@@ -2499,6 +2499,7 @@
 <translation id="2926708162326352948">В качестве темы установлено загруженное изображение</translation>
 <translation id="2927017729816812676">CacheStorage</translation>
 <translation id="2928030851119977280">Настройки сохранены. Они будут применены при входе в другие сервисы Google.</translation>
+<translation id="2928361271496576301">Принять сочетание клавиш</translation>
 <translation id="2928795416630981206">Разрешить сайтам отслеживать положение камеры</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{В Chrome отозваны разрешения у одного сайта}one{В Chrome отозваны разрешения у {NUM_SITES} сайта}few{В Chrome отозваны разрешения у {NUM_SITES} сайтов}many{В Chrome отозваны разрешения у {NUM_SITES} сайтов}other{В Chrome отозваны разрешения у {NUM_SITES} сайта}}</translation>
 <translation id="2931157624143513983">По области печати</translation>
@@ -2589,6 +2590,7 @@
 <translation id="2992754757708650257">Покинуть сайт и завершить задачу?</translation>
 <translation id="2992931425024192067">Показывать уведомления полностью</translation>
 <translation id="2993517869960930405">О приложении</translation>
+<translation id="2994495699095559601">Чтобы давать более подходящие ответы, Google использует содержимое и URL вкладок, которыми вы поделились. В новых чатах разрешен доступ к открытой вкладке. Этот параметр можно изменить в любой момент.</translation>
 <translation id="2994804273850542871">Уровень 4: ультра</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.}one{Вы сможете пользоваться ими в дальнейшем и добавлять вкладки. Если группы больше не нужны, выйдите из них.}few{Вы сможете пользоваться ими в дальнейшем и добавлять вкладки. Если группы больше не нужны, выйдите из них.}many{Вы сможете пользоваться ими в дальнейшем и добавлять вкладки. Если группы больше не нужны, выйдите из них.}other{Вы сможете пользоваться ими в дальнейшем и добавлять вкладки. Если группы больше не нужны, выйдите из них.}}</translation>
 <translation id="2996071302059856125">Узнайте больше о том, как ИИ помогает вам и как настроить его работу в Chrome</translation>
@@ -3107,6 +3109,7 @@
 <translation id="3394850431319394743">Сайты, которым разрешено использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="339722927132407568">Зависает</translation>
 <translation id="3399432415385675819">Уведомления будут отключены</translation>
+<translation id="3400036602686830681">Ваш пароль раскрыт из-за утечки данных. Измените его сейчас или посмотрите все проблемы в <ph name="BEGIN_LINK" />Проверке паролей<ph name="END_LINK" />.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Гц) – чересстрочная развертка</translation>
 <translation id="3401484564516348917">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО, значениях реестра и файлах.</translation>
 <translation id="3402255108239926910">Выберите аватар</translation>
@@ -3535,6 +3538,7 @@
 <translation id="3711945201266135623">Найдено принтеров на сервере печати: <ph name="NUM_PRINTERS" />.</translation>
 <translation id="3712143870407382523">Выберите окно для этой стороны.</translation>
 <translation id="3712897371525859903">Сохранить страницу &amp;как...</translation>
+<translation id="3712966523643024813">Что нового</translation>
 <translation id="371300529209814631">Назад/Вперед</translation>
 <translation id="371302509916403935">Подчеркнутый</translation>
 <translation id="3713047097299026954">На электронном ключе нет учетных данных.</translation>
@@ -3698,6 +3702,7 @@
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3813358687923336574">Язык, на который переводятся страницы и быстрые ответы</translation>
+<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
 <translation id="3816118180265633665">Цвета Chrome</translation>
 <translation id="3817524650114746564">Открыть настройки прокси-сервера для компьютера</translation>
@@ -4813,6 +4818,7 @@
 <translation id="4699172675775169585">Кешированные файлы и изображения</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4699473989647132421">Берег</translation>
+<translation id="4700734033170984447">Краткий пересказ этой страницы от Gemini</translation>
 <translation id="4701335814944566468">Просмотрено вчера</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{Введите новый PIN-код. Он должен состоять хотя бы из одного знака и может содержать буквы, цифры и другие символы.}one{Введите новый PIN-код. Он должен состоять хотя бы из # знака и может содержать буквы, цифры и другие символы.}few{Введите новый PIN-код. Он должен состоять хотя бы из # знаков и может содержать буквы, цифры и другие символы.}many{Введите новый PIN-код. Он должен состоять хотя бы из # знаков и может содержать буквы, цифры и другие символы.}other{Введите новый PIN-код. Он должен состоять хотя бы из # знака и может содержать буквы, цифры и другие символы.}}</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
@@ -4978,7 +4984,6 @@
 <translation id="4831226137013573603">Отключить микрофон</translation>
 <translation id="483262387981411190">Приостановить или возобновить отслеживание лица</translation>
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
-<translation id="4834388789911023644">Написать отзыв</translation>
 <translation id="4835598628985424375">Сложить губы трубочкой</translation>
 <translation id="4835677468087803981">Скрыть PIN-код</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
@@ -5595,6 +5600,7 @@
 <translation id="5298315677001348398">Хотите продолжить и разрешить этому ПО вносить изменения на устройстве?</translation>
 <translation id="5299109548848736476">Запрет отслеживания</translation>
 <translation id="5299558715747014286">Просмотр групп вкладок и управление ими</translation>
+<translation id="5300667117276823109">Ваши разговоры с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для улучшения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться.</translation>
 <translation id="5301398529256275325">Вы можете задать свой вопрос или, например, попросить составить краткий пересказ страницы.</translation>
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302032366299160685">Подождите, пока он откроется.</translation>
@@ -5993,6 +5999,7 @@
 <translation id="5625225435499354052">Редактировать в Google Pay</translation>
 <translation id="5627832140542566187">Ориентация дисплея</translation>
 <translation id="5628434207686266338">Задайте пароль устройства</translation>
+<translation id="5628652442614339066">Чтобы открыть, нажмите</translation>
 <translation id="562935524653278697">Ваш администратор отключил синхронизацию закладок, истории, паролей и настроек.</translation>
 <translation id="5631017369956619646">Использование процессора</translation>
 <translation id="5631272057151918206">На устройстве освободится <ph name="OFFLINE_STORAGE_SIZE" />. Некоторые файлы по-прежнему будут доступны в офлайн-режиме. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -6354,6 +6361,7 @@
 <translation id="5926936390113611560">Открыть все профили</translation>
 <translation id="592880897588170157">Скачивать файлы PDF, а не автоматически открывать их в Chrome</translation>
 <translation id="5930567261594625340">Ночное небо</translation>
+<translation id="5931292892421325763">&amp;Открыть менеджер закладок</translation>
 <translation id="5932194499818201827">Открыть ссылку в режиме инкогнито</translation>
 <translation id="5932224571077948991">Сайт показывает навязчивую или вводящую в заблуждение рекламу</translation>
 <translation id="59324397759951282">Устройство USB от поставщика <ph name="MANUFACTURER_NAME" /></translation>
@@ -6457,6 +6465,7 @@
 <translation id="6003143259071779217">Удалить мобильную сеть eSIM</translation>
 <translation id="6003479444341796444">Строка заголовка теперь видна.</translation>
 <translation id="6003582434972667631">Тема задана вашей организацией</translation>
+<translation id="6005010326905893430">создать свой вариант</translation>
 <translation id="6005045517426700202">Кирпичный дом</translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6007053304250788613">Во время дублирования можно исключить только один экран</translation>
@@ -6831,6 +6840,7 @@
 <translation id="6305627295927385295">Будет удалено следующее:</translation>
 <translation id="6305702903308659374">Не менять его громкость даже во время чтения ChromeVox</translation>
 <translation id="6307268917612054609">Камеру могут использовать приложения и сайты с разрешением на доступ к ней, а также системные сервисы</translation>
+<translation id="6307884029666635765">Создать &amp;QR-код</translation>
 <translation id="6307990684951724544">Система перегружена</translation>
 <translation id="6308778163698400658">Добавить на панель инструментов</translation>
 <translation id="6308937455967653460">Сохранить ссыл&amp;ку как...</translation>
@@ -7392,6 +7402,7 @@
 <translation id="6740234557573873150">Скачивание файла "<ph name="FILE_NAME" />" приостановлено</translation>
 <translation id="6743841972744298686">Настройки синхронизации</translation>
 <translation id="6744397361782514824">Поменять местами с левым окном</translation>
+<translation id="6745569635660688171">Скриншот выбранной области</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="67465227497040338">Показать пароль для <ph name="DOMAIN" /></translation>
 <translation id="6746834324024491643">Чтобы синхронизировать пароли и другие данные на всех устройствах, войдите в аккаунт <ph name="EMAIL" />.</translation>
@@ -7468,6 +7479,7 @@
 <translation id="6801435275744557998">Откалибровать сенсорный экран</translation>
 <translation id="6801920212017470190">Узнавайте о скидках на интересующие вас товары, где бы вы ни были.</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
+<translation id="6802825994120702390">Добавьте контекст к вопросу, выбрав область или весь экран.</translation>
 <translation id="6803766346203101854">Этому сайту разрешено сохранять данные на вашем устройстве</translation>
 <translation id="6805236548654699520">Восстановить безопасные настройки, чтобы убрать нежелательные всплывающие окна, исправить проблемы с сетевым подключением и устранить другие неполадки</translation>
 <translation id="6805478749741295868">Это экспериментальная ИИ-функция, и она не всегда дает правильный результат.</translation>
@@ -8524,7 +8536,6 @@
 <translation id="7625823789272218216">Новая вкладка слева</translation>
 <translation id="762730429396410864">Вручную установить уровень производительности ЦП, сообщаемый сайтам</translation>
 <translation id="7627749368210392160">Сайты могут использовать эту функцию для доступа к другим устройствам в локальной сети</translation>
-<translation id="7628068697012244394">Написать отзыв</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), уровень <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Выберите действие для каждой клавиши</translation>
 <translation id="7629206210984165492">Подавленное</translation>
@@ -8737,6 +8748,7 @@
 <translation id="7777624210360383048">Сочетание клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="777852709704682967">&amp;Открыть менеджер закладок</translation>
 <translation id="7779840061887151693">дисплей</translation>
+<translation id="7780716468751073938">Ваши разговоры с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для улучшения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться. Некоторый контент может не подходить для определенных пользователей.</translation>
 <translation id="7782102568078991263">Подсказок от Google больше нет</translation>
 <translation id="7782717250816686129">Хранить неизменные данные на экране входа и вводить учетные данные в начале сеанса.</translation>
 <translation id="7784020347632229094">Подробнее об этом сочетании клавиш</translation>
@@ -8800,6 +8812,7 @@
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
 <translation id="7834832693620032149">Если вы хотите транслировать аудио, нужно поделиться вкладкой или окном.</translation>
 <translation id="7836850009646241041">Прикоснитесь к сканеру отпечатков пальцев на электронном ключе ещё раз.</translation>
+<translation id="7837994938322273689">Добавить название окна…</translation>
 <translation id="7838838951812478896">Не удалось сохранить сеть "<ph name="NETWORK_NAME" />" с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}one{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}few{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}many{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}other{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}}</translation>
 <translation id="7839696104613959439">Показать выбор сети</translation>
@@ -9523,6 +9536,7 @@
 <translation id="8383614331548401927">Двигаемся дальше?</translation>
 <translation id="8387157483437834731">Пароль изменен</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
+<translation id="8387617938027387193">Подтвердите личность</translation>
 <translation id="8389492867173948260">Разрешить расширению просмотр и изменение ваших данных на посещаемых сайтах</translation>
 <translation id="8390449457866780408">Сервер недоступен.</translation>
 <translation id="8391172837960094276">Чтобы посмотреть пароли и управлять ими, <ph name="BEGIN_LINK" />подтвердите свою личность<ph name="END_LINK" />.</translation>
@@ -10415,6 +10429,7 @@
 <translation id="9071664234353284876">Без аутентификации</translation>
 <translation id="9072220108592671115">Установлена версия: <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Вы разрешили Gemini входить на эти сайты для выполнения задач.</translation>
+<translation id="9074190188883314952">Чтобы поделиться содержимым экрана, используйте кнопку Объектива</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 ядро}one{{CORE_COUNT} ядро}few{{CORE_COUNT} ядра}many{{CORE_COUNT} ядер}other{{CORE_COUNT} ядра}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9075413375877487220">Это расширение не отвечает стандартам улучшенного Безопасного просмотра.</translation>
@@ -10567,6 +10582,7 @@
 <translation id="9195969368671142407">Это значит, что вы не можете делиться группами вкладок и присоединяться к ним.</translation>
 <translation id="9197456336762295195">Отсканируйте этот QR-код с помощью камеры устройства с ключом доступа для google.com.</translation>
 <translation id="919840898042157087">Без движения</translation>
+<translation id="9198797990125364460">Спрашивайте Google в любой момент</translation>
 <translation id="9199503643457729322">Нажмите, чтобы вернуться в настройки Chrome.</translation>
 <translation id="9199695835892108985">Сбросить все разрешения для последовательных портов?</translation>
 <translation id="9200339982498053969">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
@@ -10623,7 +10639,6 @@
 <translation id="942296794412775122">Включить или отключить микрофон</translation>
 <translation id="942488123151518958">Приостановить (K)</translation>
 <translation id="942532530371314860">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome и к аудио.</translation>
-<translation id="943744232549395906">Голосовой ввод остановлен.</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947156494302904893">Сайты, которые вы посещаете, могут получать данные о том, что вы реальный человек</translation>
 <translation id="947329552760389097">&amp;Проверить элементы</translation>

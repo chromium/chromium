@@ -1944,7 +1944,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Las tarjetas que no acepta este comercio están inhabilitadas</translation>
-<translation id="4278390842282768270">Permitida</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Abrir archivo confidencial?}other{¿Abrir archivos confidenciales?}}</translation>
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>

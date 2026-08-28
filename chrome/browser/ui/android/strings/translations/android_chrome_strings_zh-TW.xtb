@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
 <translation id="1568636008098739136">請讓系統朗讀這頁內容。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 組密碼外洩}other{這部裝置上有 # 組密碼外洩}}</translation>
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
 <translation id="159689249463841786">選擇資料夾，目前為「<ph name="FOLDER_NAME" />」</translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2751271371269891762">如要在所有裝置上存取書籤和其他資料，請以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="2760805590727089264">MM/YY</translation>
+<translation id="2761162135224472056">要以沉浸模式觀看嗎？</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276378135349383280">在底部工具列顯示 Gemini</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">結束沉浸模式</translation>
 <translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3684540848053703310">價格分析底部功能表已關閉</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">你可以查看透過其他應用程式在 Chrome 中開啟連結的歷史記錄。</translation>
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3727000368239390918">只要在裝置上登入帳戶，即可存取分頁和其他資訊</translation>
+<translation id="3731865955999508196">立體</translation>
 <translation id="3737319253362202215">翻譯設定</translation>
 <translation id="3738139272394829648">輕觸搜尋</translation>
 <translation id="3739455665973395693">你的 Google 帳戶沒有密碼外洩</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">網站或應用程式要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器加密網頁並預先載入，且不會使用 Cookie。這麼做可在預先載入網站中隱藏你的身分。</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
+<translation id="4628972300801601502">360° 立體</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 # 組密碼和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">停止重新整理</translation>
 <translation id="4921224083091001889">如要在所有裝置上存取密碼和其他資料，請以「<ph name="EMAIL" />」身分登入 Chrome</translation>
 <translation id="4923173329789776645">貴機構不建議下載</translation>
+<translation id="4924398189611529766">如果使用無痕模式上網，這部裝置的其他使用者就看不到你的活動，隱私更有保障。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">你可以儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 # 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{顯示通知}other{顯示通知}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />，多選的固定分頁，已設為靜音</translation>
+<translation id="5814872768903482128">180° 立體</translation>
 <translation id="5823093032261493462">仍要從 <ph name="DOWNLOAD_DOMAIN" /> 下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="5825135637446025843">Chrome 重新啟動後，會使用從新供應商儲存的資訊，自動填入密碼、密碼金鑰、地址、付款方式和其他資訊。</translation>
 <translation id="5828921839638612740">你可以在 Chrome 設定中刪除資料</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">退出 Chrome 時鎖定無痕視窗</translation>
 <translation id="6321592572353357376">擴充功能「<ph name="EXTENSION_NAME" />」要求你登入 Chrome</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
+<translation id="632496644859442877">選取影片格式</translation>
 <translation id="6324977638108296054">無法建立醒目顯示文字的連結</translation>
 <translation id="6331836477476466332">更安全、更強大的瀏覽器</translation>
 <translation id="6333140779060797560">透過 <ph name="APPLICATION" /> 分享</translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">如果這個問題持續發生，請洽「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="6920262510368602827">為這個頁面建立 QR 圖碼</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 你最近未造訪這個網站，因此 Chrome 已移除這項權限</translation>
+<translation id="6923291640965724312">沉浸模式格式</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
 <translation id="6929224077895306814">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />，選取的固定分頁，正在播放音訊</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">其他裝置</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7859988229622350291">一律不翻譯</translation>
+<translation id="7862185352068345852">要離開網站嗎？</translation>
 <translation id="7866213166286285359">翻譯這裡的頁面</translation>
 <translation id="7875915731392087153">建立電子郵件</translation>
 <translation id="7876243839304621966">全部移除</translation>
@@ -1954,7 +1964,7 @@
 <translation id="867914734596684889">顯示或隱藏書籤列</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，選取的分頁</translation>
-<translation id="8696297579102085705">傳送到你的裝置</translation>
+<translation id="8696297579102085705">傳送到裝置</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
 <translation id="8700565880437506364">隆重推出 Chrome 內建 Gemini</translation>
 <translation id="8712637175834984815">知道了</translation>

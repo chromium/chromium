@@ -4976,7 +4976,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4831226137013573603">Mikrofon stummschalten</translation>
 <translation id="483262387981411190">Gesichtssteuerung pausieren oder fortsetzen</translation>
 <translation id="4833683849865011483">Auf dem Druckserver wurde 1 Drucker gefunden</translation>
-<translation id="4834388789911023644">Rezension schreiben</translation>
 <translation id="4835598628985424375">Kussmund machen</translation>
 <translation id="4835677468087803981">PIN ausblenden</translation>
 <translation id="4836504898754963407">Fingerabdrücke verwalten</translation>
@@ -7222,7 +7221,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6619243162837544323">Netzwerkstatus</translation>
 <translation id="6619801788773578757">Kioskanwendung hinzufügen</translation>
 <translation id="6619990499523117484">PIN bestätigen</translation>
-<translation id="6621282332208609777">Google fragen oder eine URL eingeben</translation>
+<translation id="6621282332208609777">Frage oder URL eingeben</translation>
 <translation id="6621391692573306628">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an</translation>
 <translation id="6622980291894852883">Bilder weiterhin blockieren</translation>
 <translation id="6624036901798307345">Tippe im Tablet-Modus auf den Tab-Zähler-Button in der Symbolleiste, um die neue Tableiste zu öffnen, die Miniaturansichten der einzelnen Tabs anzeigt.</translation>
@@ -8513,7 +8512,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7625823789272218216">Neuer Tab links</translation>
 <translation id="762730429396410864">CPU-Leistungsstufe, die Websites gemeldet wird, manuell festlegen</translation>
 <translation id="7627749368210392160">Websites können diese Funktion verwenden, um auf andere Geräte in deinem lokalen Netzwerk zuzugreifen</translation>
-<translation id="7628068697012244394">Rezension schreiben</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Aktion für die jeweilige Taste auswählen</translation>
 <translation id="7629206210984165492">Dezent</translation>
@@ -8913,7 +8911,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7938881824185772026">Labs</translation>
 <translation id="793923212791838">Dein Gerät kann für diese Website nicht verwendet werden</translation>
 <translation id="7939328347457537652">Gerätezertifikate verwalten</translation>
-<translation id="7939918959917132075">Von der Erweiterung hierzu geändert</translation>
+<translation id="7939918959917132075">Von der Erweiterung zu dieser geändert</translation>
 <translation id="7940087892955752820">Freigabe kann nicht zurückgenommen werden, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird beim nächsten Herunterfahren von <ph name="SPECIFIC_NAME" /> zurückgenommen.</translation>
 <translation id="7940265372707990269">Sortieren nach: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering-Bereitschaft:</translation>
@@ -9512,6 +9510,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8383614331548401927">Willkommen zurück</translation>
 <translation id="8387157483437834731">Passwort geändert</translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
+<translation id="8387617938027387193">Deine Identität bestätigen</translation>
 <translation id="8389492867173948260">Dieser Erweiterung erlauben, alle meine Daten auf von mir besuchten Websites zu lesen und zu ändern:</translation>
 <translation id="8390449457866780408">Der Server ist nicht verfügbar.</translation>
 <translation id="8391172837960094276">Wenn du deine Passwörter aufrufen und verwalten möchtest, <ph name="BEGIN_LINK" />bestätige deine Identität<ph name="END_LINK" />.</translation>
@@ -10612,7 +10611,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="942296794412775122">Mikrofon ein/aus</translation>
 <translation id="942488123151518958">Pausieren (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> hat einen Chrome-Tab und Audio freigegeben.</translation>
-<translation id="943744232549395906">Spracheingabe angehalten</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist.</translation>
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>

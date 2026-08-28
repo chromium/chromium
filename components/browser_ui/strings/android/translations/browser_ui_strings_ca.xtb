@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Canvia la posició per personalitzar la teva experiència de navegació</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
+<translation id="1861244985839668297">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius HID. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius HID.</translation>
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1881806992065048905">Full inferior de l'aparença de la pàgina Pestanya nova</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

@@ -152,6 +152,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="1554532453982918912">Chrome браузерін өзіңіз сияқты пайдаланушылар үшін жақсартуға көмектесіңіз.</translation>
 <translation id="1568636008098739136">Осы бетті тыңдаңыз. Бұл пернелер тіркесімін өзгерту үшін оны түртіп, ұстап тұрыңыз.</translation>
 <translation id="1571041387761170095">Әлсіз немесе бұрын қолданылған құпия сөздер жоқ.</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Бұл құрылғыда 1 құпия сөз ұрланды}other{Бұл құрылғыда # құпия сөз ұрланды}}</translation>
 <translation id="1594635596540195766">Төмендегі тізімде <ph name="SUGGESTIONS_COUNT" /> ұсынылған элемент бар.</translation>
 <translation id="159689249463841786">Қалта таңдаңыз. Қазіргі қалта: <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> қазір қолжетімді емес.</translation>
 <translation id="2751271371269891762">Бетбелгілер мен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="2760805590727089264">АА/ЖЖ</translation>
+<translation id="2761162135224472056">Иммерсивтік ойнатумен көргіңіз келе ме?</translation>
 <translation id="2762000892062317888">жаңа ғана</translation>
 <translation id="276378135349383280">Gemini: төменгі құралдар тақтасы</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ретінде кірген.</translation>
@@ -654,6 +656,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3637744895182738742">Құпия фразаны ұмытып қалған болсаңыз немесе осы параметрді өзгерту керек болса, <ph name="BEGIN_LINK" />аккаунтыңыздағы Chrome деректерін жойыңыз<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Иммерсивтік ойнатудан шығу</translation>
 <translation id="3674208116086565128">Google қолданбасының негізгі бетіне өту</translation>
 <translation id="368329460027487650">Аккаунттан шыққансыз. Аккаунтқа кіру опцияларын ашады.</translation>
 <translation id="3684540848053703310">Баға статистикасының төменгі парақшасы жабылды.</translation>
@@ -671,6 +674,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3718765429352682176">Сілтемелерді Chrome-нан ашатын кейбір қолданбалардың тарихы көрсетілуі ықтимал.</translation>
 <translation id="3721119614952978349">Сіз және Google</translation>
 <translation id="3727000368239390918">Барлық құрылғыда қойындылар және т.б. ақпарат алу үшін аккаунтқа кіріңіз</translation>
+<translation id="3731865955999508196">Стереоскоптық</translation>
 <translation id="3737319253362202215">Аударма параметрлері</translation>
 <translation id="3738139272394829648">Түртіп іздеу</translation>
 <translation id="3739455665973395693">Google аккаунтыңызда ұрланған құпия сөздер жоқ</translation>
@@ -900,6 +904,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4606559747793337066">Сайт немесе қолданба беттегі сілтемелерді құпия түрде алдын ала жүктеуді сұрағанда, Chrome беттерді шифрлап, оларды Google серверлері арқылы cookie файлдарынсыз алдын ала жүктейді. Осылайша сіздің жеке деректеріңіз алдын ала жүктелетін сайттан жасырылады.</translation>
 <translation id="4619615317237390068">Басқа құрылғылардағы қойындылар</translation>
 <translation id="4624065194742029982">Chrome-ның инкогнито режимі</translation>
+<translation id="4628972300801601502">360° стереоскоптық</translation>
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{# құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 құпия сөз ұрланды.}other{# құпия сөз ұрланды.}}</translation>
@@ -981,6 +986,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4913169188695071480">Жаңартуды тоқтату</translation>
 <translation id="4921224083091001889">Құпия сөздер мен басқа ақпаратты барлық құрылғыдан алу үшін Chrome аккаунтына <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="4923173329789776645">Ұйымыңыз жүктеп алуға кеңес бермейді</translation>
+<translation id="4924398189611529766">Инкогнито режимінде болғанда, бұл құрылғыны пайдаланатын басқа адамдар әрекеттеріңізді көрмейді, сол себепті браузерді құпия пайдалана аласыз. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Офлайн көру немесе басқа қолданбаларда бөлісу үшін суреттер мен файлдарды сақтауға болады</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 бетбелгі және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{# бетбелгі және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
@@ -1181,6 +1187,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Барлық құқықтары қорғалған.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Хабарландыруды көрсету}other{Хабарландыруларды көрсету}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, көп рет таңдалған, бекітілген, дыбысы өшірілген қойынды</translation>
+<translation id="5814872768903482128">180° стереоскоптық</translation>
 <translation id="5823093032261493462">"<ph name="FILE_NAME" />" файлын <ph name="DOWNLOAD_DOMAIN" /> сайтынан сонда да жүктеп алу қажет пе?</translation>
 <translation id="5825135637446025843">Chrome өшіп қосылғаннан кейін, құпия сөздерді, кіру кілттерін, мекенжайларды, төлеу әдістері мен басқа ақпаратты автоматты түрде толтыру үшін жаңа провайдерде сақталған ақпаратыңыз қолданылады.</translation>
 <translation id="5828921839638612740">Деректерді Chrome параметрлерінде жоюға болады.</translation>
@@ -1316,6 +1323,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="631839948975905034">Chrome-нан шығу кезінде инкогнито терезелерін құлыптау</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" кеңейтімін қолдану үшін Chrome-ға кіруіңіз керек</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
+<translation id="632496644859442877">Бейне форматын таңдаңыз.</translation>
 <translation id="6324977638108296054">Ерекшеленген мәтіннің сілтемесі жасалмады.</translation>
 <translation id="6331836477476466332">Сізге арналған бұрынғыдан да қауіпсіз әрі қуатты браузер</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
@@ -1469,7 +1477,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6858893072923394368">Бет қосу…</translation>
 <translation id="6864459304226931083">Суретті жүктеп алу</translation>
 <translation id="686490460830618322">Қолданба бойынша іріктеу парағы</translation>
-<translation id="6865313869410766144">Нысан деректерін автотолтыру</translation>
+<translation id="6865313869410766144">Үлгілерді автоматты түрде толтыру дерегі</translation>
 <translation id="6867400383614725881">Жаңа инкогнито қойындысы</translation>
 <translation id="686899695320434745">Мекенжайлар құпия фразаңызбен шифрланбады. Бұл оларды басқа Google қызметтерінде пайдалануға мүмкіндік береді.</translation>
 <translation id="6870625088374152862"><ph name="USER_EMAIL_ADDRESS" /> ретінде кірдіңіз.</translation>
@@ -1496,6 +1504,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6918398787259831832">Бұл мәселе қайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерінен <ph name="BEGIN_LINK" />қосымша ақпарат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="6920262510368602827">Осы бетке QR код жасау</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі сіз соңғы уақытта бұл сайтқа кірмегенсіз.</translation>
+<translation id="6923291640965724312">Иммерсивтік формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 қойынды}other{<ph name="NUMBER_OF_TABS" /> қойынды}}</translation>
 <translation id="6929224077895306814">Құрылғы мен Google аккаунтында сақталған барлық қауіпсіздік коды жойылады.</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, таңдалған, бекітілген дыбыстық қойынды</translation>
@@ -1740,6 +1749,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7851858861565204677">Басқа құрылғылар</translation>
 <translation id="7853202427316060426">Әрекет</translation>
 <translation id="7859988229622350291">Ешқашан аудармау</translation>
+<translation id="7862185352068345852">Сайттан шыққыңыз келе ме?</translation>
 <translation id="7866213166286285359">Беттерді осы жерде аударыңыз.</translation>
 <translation id="7875915731392087153">Электрондық пошта жасау</translation>
 <translation id="7876243839304621966">Барлығын алып тастау</translation>

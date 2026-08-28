@@ -4992,7 +4992,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4831226137013573603">desativar o microfone</translation>
 <translation id="483262387981411190">Pausar ou retomar o controle de rosto</translation>
 <translation id="4833683849865011483">Uma impressora encontrada no servidor de impressão.</translation>
-<translation id="4834388789911023644">Avaliar</translation>
 <translation id="4835598628985424375">Fazer bico com os lábios</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Gerenciar impressões digitais</translation>
@@ -8536,7 +8535,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7625823789272218216">Nova guia à esquerda</translation>
 <translation id="762730429396410864">Definir manualmente o nível de desempenho da CPU informado aos sites</translation>
 <translation id="7627749368210392160">Os sites podem usar esse recurso para acessar outros dispositivos na sua rede local</translation>
-<translation id="7628068697012244394">Avaliar</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecione uma ação para cada tecla</translation>
 <translation id="7629206210984165492">Suave</translation>
@@ -9535,6 +9533,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8383614331548401927">Início inteligente</translation>
 <translation id="8387157483437834731">Senha alterada</translation>
 <translation id="8387361103813440603">Bloquear o acesso à localização</translation>
+<translation id="8387617938027387193">Confirme que é você</translation>
 <translation id="8389492867173948260">Permitir que a extensão leia e modifique todos os seus dados nos sites que você visitar:</translation>
 <translation id="8390449457866780408">Servidor não disponível.</translation>
 <translation id="8391172837960094276">Para ver e gerenciar suas senhas, <ph name="BEGIN_LINK" />confirme sua identidade<ph name="END_LINK" />.</translation>
@@ -10635,7 +10634,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="942296794412775122">Microfone ativado/desativado</translation>
 <translation id="942488123151518958">Pausar (k)</translation>
 <translation id="942532530371314860">O app <ph name="APP_NAME" /> está compartilhando áudio e uma guia do Chrome.</translation>
-<translation id="943744232549395906">Digitação por voz interrompida</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="947156494302904893">Os sites que você visita podem verificar que você é uma pessoa real, e não um bot</translation>
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>

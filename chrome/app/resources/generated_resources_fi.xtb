@@ -4988,7 +4988,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4831226137013573603">mikrofonin mykistys</translation>
 <translation id="483262387981411190">Keskeytä kasvojen ohjaus tai jatka sitä</translation>
 <translation id="4833683849865011483">Tulostuspalvelimelta löytyi yksi tulostin</translation>
-<translation id="4834388789911023644">Kirjoita arvostelu</translation>
 <translation id="4835598628985424375">Purista huulet yhteen</translation>
 <translation id="4835677468087803981">Piilota PIN-koodi</translation>
 <translation id="4836504898754963407">Sormenjälkien ylläpito</translation>
@@ -8529,7 +8528,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7625823789272218216">Uusi välilehti vasemmalle</translation>
 <translation id="762730429396410864">Aseta verkkosivustoille ilmoitettava CPU:n suorituskykytaso manuaalisesti</translation>
 <translation id="7627749368210392160">Sivustot voivat käyttää tätä ominaisuutta päästäkseen muille paikallisessa verkossa oleville laitteille</translation>
-<translation id="7628068697012244394">Kirjoita arvostelu</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), tyyppi <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Valitse toiminto kullekin näppäimelle</translation>
 <translation id="7629206210984165492">Hillitty</translation>
@@ -9528,6 +9526,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8383614331548401927">Tervetuloa taas</translation>
 <translation id="8387157483437834731">Salasana vaihdettu</translation>
 <translation id="8387361103813440603">Sijainnin tarkastelu kielletty</translation>
+<translation id="8387617938027387193">Todenna henkilöllisyytesi</translation>
 <translation id="8389492867173948260">Salli tämän laajennuksen lukea ja muuttaa kaikkea dataasi avatuilla verkkosivustoilla:</translation>
 <translation id="8390449457866780408">Palvelin ei ole käytettävissä.</translation>
 <translation id="8391172837960094276">Jos haluat nähdä salasanat ja muuttaa niitä, <ph name="BEGIN_LINK" />vahvista henkilöllisyytesi<ph name="END_LINK" />.</translation>
@@ -10628,7 +10627,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="942296794412775122">Mikrofoni päälle/pois</translation>
 <translation id="942488123151518958">Keskeytä (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> jakaa Chrome-välilehden ja ääntä.</translation>
-<translation id="943744232549395906">Puhekirjoitus lopetettu</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="947329552760389097">Tutk&amp;i elementtejä</translation>

@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">നിങ്ങളെപ്പോലെ Chrome ഉപയോഗിക്കുന്ന ആളുകൾക്കായി Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നു</translation>
 <translation id="1568636008098739136">ഈ പേജ് കേൾക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="1571041387761170095">ദുർബലമായതോ ആവർത്തിച്ച് ഉപയോഗിക്കുന്നതോ ആയ പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ഈ ഉപകരണത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡുണ്ട്}other{ഈ ഉപകരണത്തിൽ അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകളുണ്ട്}}</translation>
 <translation id="1594635596540195766">ചുവടെയുള്ള ലിസ്റ്റിൽ <ph name="SUGGESTIONS_COUNT" /> ഇനങ്ങൾ നിർദ്ദേശിച്ചിരിക്കുന്നു.</translation>
 <translation id="159689249463841786">ഫോൾഡർ തിരഞ്ഞെടുക്കുക, നിലവിൽ <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഇപ്പോൾ ലഭ്യമല്ല.</translation>
 <translation id="2751271371269891762">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ, <ph name="EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2760805590727089264">MM / YY</translation>
+<translation id="2761162135224472056">ഇമേഴ്‌സീവ് പ്ലേബാക്ക് ഉപയോഗിച്ച് കാണണോ?</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
 <translation id="276378135349383280">താഴെ ടൂൾബാറിൽ Gemini കാണിക്കുക</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നാലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">ഇമേഴ്‌സീവ് പ്ലേബാക്കിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="3674208116086565128">Google ആപ്പ് ഹോമിലേക്ക് പോകുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
 <translation id="3684540848053703310">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് അടച്ചു</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം.</translation>
 <translation id="3721119614952978349">നിങ്ങളും Google-ഉം</translation>
 <translation id="3727000368239390918">ടാബുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="3731865955999508196">സ്റ്റീരിയോസ്കോപിക്</translation>
 <translation id="3737319253362202215">വിവർത്തന ക്രമീകരണം</translation>
 <translation id="3738139272394829648">തിരയാൻ സ്‌പർശിക്കുക</translation>
 <translation id="3739455665973395693">നിങ്ങളുടെ Google Account-ൽ അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">ഒരു സൈറ്റ് അല്ലെങ്കിൽ ആപ്പ് അവരുടെ പേജിലെ ലിങ്കുകൾ സ്വകാര്യമായി മുൻകൂട്ടി ലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടുമ്പോൾ, കുക്കികളില്ലാതെ Google സെർവറുകൾ മുഖേന പേജുകൾ Chrome എൻക്രിപ്റ്റും മുൻകൂട്ടി ലോഡും ചെയ്യുന്നു. മുൻകൂട്ടി ലോഡ് ചെയ്ത സൈറ്റിൽ നിന്ന് ഇത് നിങ്ങളുടെ ഐഡന്റിറ്റി മറയ്ക്കുന്നു.</translation>
 <translation id="4619615317237390068">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ</translation>
 <translation id="4624065194742029982">Chrome അദൃശ്യ മോഡ്</translation>
+<translation id="4628972300801601502">360° സ്റ്റീരിയോസ്കോപിക്</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{ഒരു പാസ്‌വേഡും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}other{# പാസ്‌വേഡുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">പുതുക്കിയെടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="4921224083091001889">പാസ്‌വേഡുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ലഭിക്കാൻ <ph name="EMAIL" /> എന്നയാളായി Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4923173329789776645">നിങ്ങളുടെ സ്ഥാപനം ഡൗൺലോഡ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്നില്ല</translation>
+<translation id="4924398189611529766">നിങ്ങൾ അദൃശ്യ മോഡിൽ ബ്രൗസ് ചെയ്യുമ്പോൾ, ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റുള്ളവർക്ക് നിങ്ങളുടെ ആക്റ്റിവിറ്റി കാണാനാകില്ല, അതിനാൽ നിങ്ങൾക്ക് കൂടുതൽ സ്വകാര്യതയോടെ ബ്രൗസ് ചെയ്യാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">സ്‌ക്രീൻഷോട്ട് <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ഓഫ്‌ലൈനിൽ കാണാനോ മറ്റ് ആപ്പുകളിൽ പങ്കിടാനോ നിങ്ങൾക്ക് ചിത്രങ്ങളും ഫയലുകളും സംരക്ഷിക്കാനാകും</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ഒരു ബുക്ക്‌മാർക്കും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}other{# ബുക്ക്‌മാർക്കുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{അറിയിപ്പ് കാണിക്കുക}other{അറിയിപ്പുകൾ കാണിക്കുക}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത് പിൻ ചെയ്ത മ്യൂട്ട് ചെയ്ത ടാബ്</translation>
+<translation id="5814872768903482128">180° സ്റ്റീരിയോസ്കോപ്പിക്</translation>
 <translation id="5823093032261493462">നിങ്ങൾക്ക് <ph name="DOWNLOAD_DOMAIN" /> എന്നതിൽ നിന്ന് "<ph name="FILE_NAME" />" എന്തായാലും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="5825135637446025843">Chrome റീസ്റ്റാർട്ട് ചെയ്ത് കഴിഞ്ഞാൽ, പാസ്‌വേഡുകളും പാസ്‌കീകളും വിലാസങ്ങളും പേയ്മെന്റ് രീതികളും മറ്റ് വിവരങ്ങളും സ്വയമേവ പൂരിപ്പിക്കാൻ നിങ്ങളുടെ പുതിയ സേവനദാതാവിൽ നിന്നുള്ള സംരക്ഷിച്ച വിവരങ്ങൾ ഉപയോഗിക്കും.</translation>
 <translation id="5828921839638612740">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ ഡാറ്റ ഇല്ലാതാക്കാം</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">Chrome-ൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ അദൃശ്യ വിൻഡോകൾ ലോക്ക് ചെയ്യുക</translation>
 <translation id="6321592572353357376">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ "<ph name="EXTENSION_NAME" />" എന്ന വിപുലീകരണം നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
 <translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="632496644859442877">വീഡിയോ ഫോർമാറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="6331836477476466332">നിങ്ങൾക്കായി കൂടുതൽ സുരക്ഷിതവും കൂടുതൽ കരുത്തുറ്റതുമായ ബ്രൗസർ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് <ph name="BEGIN_LINK" />കൂടുതൽ വിവരങ്ങൾ നേടുക<ph name="END_LINK" />.</translation>
 <translation id="6920262510368602827">ഈ പേജിന് QR കോഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
+<translation id="6923291640965724312">ഇമേഴ്‌സീവ് ഫോർമാറ്റ്</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{ഒരു ടാബ്}other{<ph name="NUMBER_OF_TABS" /> ടാബുകൾ}}</translation>
 <translation id="6929224077895306814">നിങ്ങളുടെ ഉപകരണത്തിലും Google Account-ലും സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ സുരക്ഷാ കോഡുകളും ഇല്ലാതാക്കും</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, ഓഡിയോ പ്ലേ ചെയ്യുന്ന ടാബ്</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">മറ്റ് ഉപകരണങ്ങൾ</translation>
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
+<translation id="7862185352068345852">സൈറ്റ് വിടണോ?</translation>
 <translation id="7866213166286285359">ഇവിടെ പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="7875915731392087153">ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7876243839304621966">എല്ലാം നീക്കംചെയ്യുക</translation>

@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3038136505713492417">Confirmez votre identité pour utiliser vos clés d'accès sur cet appareil</translation>
 <translation id="3039671569659952257">Supprimer le dossier</translation>
+<translation id="3041835740069544003">Chrome peut désormais détecter et remplir plus de formulaires grâce à une analyse plus intelligente de ceux-ci. Pour ce faire, le contenu et les URL des pages peuvent être traités dans un espace privé dans le cloud. Pour gérer cette fonctionnalité, accédez aux paramètres.</translation>
 <translation id="3050988301648974170">Ouvrir le Check-up Mots de passe</translation>
 <translation id="3053332585453689122">Envoie les URL que vous consultez et un petit échantillon du contenu des pages, les téléchargements, l'activité des extensions et des informations système à la navigation sécurisée Google pour vérifier s'ils sont dangereux.</translation>
 <translation id="3055102495753300780">Stockage des informations</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applis.</translation>
+<translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
 <translation id="3490396108106323715">Partager l'onglet actuel</translation>
@@ -1946,7 +1948,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
 <translation id="7367530036083223701">Accédez à vos mots de passe de manière sécurisée depuis l'écran d'accueil avec le widget Gestionnaire de mots de passe.</translation>
-<translation id="73750335798090836">Pour plus de sécurité, utilisez toujours votre empreinte digitale, votre visage ou une autre méthode de déverrouillage de l'écran lorsque vous utilisez des informations sensibles comme des documents de voyage et d'identité</translation>
+<translation id="73750335798090836">Pour plus de sécurité, utilisez toujours votre empreinte digitale, votre visage ou un autre moyen de déverrouiller l'écran lorsque vous utilisez des informations sensibles comme des documents de voyage et d'identité</translation>
 <translation id="7380220816562673297">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> réunissant jusqu'à six personnes, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="7380698179418029202">Sélectionnez votre fichier d'exportation <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> Safari</translation>
 <translation id="739101637685146669">Quelle URL souhaitez-vous ajouter à vos favoris ?</translation>
@@ -2150,7 +2152,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="798299424881500862">Thème orange</translation>
-<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
+<translation id="7987685713885608670">Pour plus de sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas disponibles</translation>
 <translation id="7993170188789685695">Appuyer deux fois pour fermer cette notification.</translation>
 <translation id="7996239959906074962">Configurer…</translation>

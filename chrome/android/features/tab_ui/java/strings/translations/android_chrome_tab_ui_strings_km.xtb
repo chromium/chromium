@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">លុបក្រុម</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{ធាតុ​អសកម្ម <ph name="TABS_COUNT_ONE" />}other{ធាតុ​អសកម្ម <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="1568067597247500137">បិទសំឡេង​ទំព័រ</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ផ្លាស់ទីផ្ទាំងចុះក្រោម}other{ផ្លាស់ទីផ្ទាំងចុះក្រោម}}</translation>
 <translation id="1645759014353344461">បានដាក់ <ph name="TABS_COUNT_MANY" /> ផ្ទាំងជាក្រុម</translation>
 <translation id="1657719826150349398">ផ្លាស់ទី​ផ្ទាំង​ចុះក្រោម</translation>
 <translation id="1670942869417022142">បានបិទ​សំឡេង</translation>
 <translation id="1697284962337958118">បញ្ចូល​ទៅ</translation>
 <translation id="1713541401465507417">បិទផ្ទាំង និងក្រុមទាំងអស់</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{លែង​អាចប្រើ​ក្រុមផ្ទាំង <ph name="TAB_GROUPS_COUNT_ONE" /> បាន​ទៀតហើយ}other{លែង​អាចប្រើ​ក្រុមផ្ទាំង <ph name="TAB_GROUPS_COUNT_MANY" /> បាន​ទៀតហើយ}}</translation>
+<translation id="1759122978835002237">ផ្លាស់ទីក្រុមផ្ទាំងឡើងលើ</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែម<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">បានដាក់ <ph name="TABS_COUNT_ONE" /> ផ្ទាំងជាក្រុម</translation>
 <translation id="1844381456014878100">បន្ទាប់ពី​អសកម្ម​រយៈពេល 7 ថ្ងៃ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ផ្ទាំង និងក្រុមដែលអ្នកបានបិទអាចត្រូវបានបើកឡើងវិញពីផ្នែកផ្ទាំងថ្មីៗ និងផ្នែកក្រុមផ្ទាំង។ នឹងមិនមានផ្ទាំងឯកជន​របស់អ្នកទេ។}other{ផ្ទាំង និងក្រុមដែលអ្នកបានបិទអាចត្រូវបានបើកឡើងវិញពីផ្នែកផ្ទាំងថ្មីៗ និងផ្នែកក្រុមផ្ទាំង។ នឹងមិនមានផ្ទាំង​ឯកជន​ចំនួន # របស់អ្នក​ទេ។}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{បើកសំឡេង​គេហទំព័រ}other{បើកសំឡេង​គេហទំព័រ}}</translation>
 <translation id="2162620598375156287">ឥឡូវនេះ <ph name="CURRENT_PRICE" /> នៅលើ <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">ផ្លាស់ទី​ក្រុមផ្ទាំង​ចុះក្រោម</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង}other{បំបែក​ក្រុម​ផ្ទាំង}}</translation>
 <translation id="2271452184061378400">ក្រុមផ្ទាំងរបស់អ្នកត្រូវបានរក្សាទុកនៅទីនេះ</translation>
 <translation id="2277224997687551299">កែ​ឈ្មោះក្រុម</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">លែងអាច​ប្រើក្រុមផ្ទាំង "<ph name="TAB_GROUP_NAME" />" បាន​ទៀតហើយ</translation>
 <translation id="7402375256128852434">បញ្ចូល​ផ្ទាំងថ្មីៗ</translation>
 <translation id="7452985128687107478">ក្រុមផ្ទាំងរក្សាទុក និងធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិនៅលើគ្រប់ឧបករណ៍របស់អ្នក</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ផ្លាស់ទីផ្ទាំងឡើងលើ}other{ផ្លាស់ទីផ្ទាំងឡើងលើ}}</translation>
 <translation id="747459581954555080">ស្តារទាំងអស់</translation>
 <translation id="7489558427602531799">ផ្លាស់ទី​ក្រុមផ្ទាំង​ទៅស្ដាំ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{ធាតុ <ph name="TABS_COUNT_ONE" />}other{ធាតុ <ph name="TABS_COUNT_MANY" />}}</translation>

@@ -4992,7 +4992,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4831226137013573603">redam mikrofon</translation>
 <translation id="483262387981411190">Jeda atau sambung semula kawalan wajah</translation>
 <translation id="4833683849865011483">Menjumpai 1 pencetak daripada pelayan cetak</translation>
-<translation id="4834388789911023644">Tulis ulasan</translation>
 <translation id="4835598628985424375">Muncungkan bibir dengan merapatkan bibir</translation>
 <translation id="4835677468087803981">Sembunyikan PIN</translation>
 <translation id="4836504898754963407">Urus cap jari</translation>
@@ -8533,7 +8532,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7625823789272218216">Tab Baharu ke Kiri</translation>
 <translation id="762730429396410864">Tetapkan peringkat prestasi CPU yang dilaporkan kepada laman web secara manual</translation>
 <translation id="7627749368210392160">Laman boleh menggunakan ciri ini untuk mengakses peranti lain pada rangkaian setempat anda</translation>
-<translation id="7628068697012244394">Tulis Ulasan</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Gred <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Pilih tindakan untuk setiap kekunci</translation>
 <translation id="7629206210984165492">Sugul</translation>
@@ -9533,6 +9531,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8383614331548401927">Ringkasan Alu-aluan</translation>
 <translation id="8387157483437834731">Kata laluan berjaya ditukar</translation>
 <translation id="8387361103813440603">Tidak dibenarkan untuk melihat lokasi anda</translation>
+<translation id="8387617938027387193">Sahkan itu anda</translation>
 <translation id="8389492867173948260">Benarkan sambungan ini membaca dan mengubah semua data anda di laman web yang anda lawati:</translation>
 <translation id="8390449457866780408">Pelayan tidak tersedia.</translation>
 <translation id="8391172837960094276">Untuk melihat dan mengurus kata laluan anda, <ph name="BEGIN_LINK" />sahkan identiti anda<ph name="END_LINK" />.</translation>
@@ -10633,7 +10632,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="942296794412775122">Hidupkan/matikan mikrofon</translation>
 <translation id="942488123151518958">Jeda (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> berkongsi tab dan audio Chrome.</translation>
-<translation id="943744232549395906">Penaipan suara dihentikan</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
 <translation id="947329552760389097">&amp;Periksa Unsur</translation>

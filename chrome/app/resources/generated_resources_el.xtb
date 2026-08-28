@@ -4992,7 +4992,6 @@
 <translation id="4831226137013573603">σίγαση μικροφώνου</translation>
 <translation id="483262387981411190">Παύση ή συνέχιση ελέγχου με το πρόσωπο</translation>
 <translation id="4833683849865011483">Βρέθηκε ένας εκτυπωτής από τον διακομιστή εκτύπωσης.</translation>
-<translation id="4834388789911023644">Γράψτε μια αξιολόγηση</translation>
 <translation id="4835598628985424375">Σφίξτε τα χείλη σας</translation>
 <translation id="4835677468087803981">Απόκρυψη PIN</translation>
 <translation id="4836504898754963407">Διαχείριση δακτυλικών αποτυπωμάτων</translation>
@@ -8534,7 +8533,6 @@
 <translation id="7625823789272218216">Νέα καρτέλα αριστερά</translation>
 <translation id="762730429396410864">Ορίστε με μη αυτόματο τρόπο το επίπεδο απόδοσης της CPU που δηλώνεται στους ιστότοπους</translation>
 <translation id="7627749368210392160">Οι ιστότοποι μπορούν να χρησιμοποιούν αυτή τη λειτουργία, για να έχουν πρόσβαση σε άλλες συσκευές στο τοπικό δίκτυο</translation>
-<translation id="7628068697012244394">Γράψτε μια αξιολόγηση</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), βαθμός <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Επιλέξτε μια ενέργεια για κάθε κλειδί</translation>
 <translation id="7629206210984165492">Απαλά</translation>
@@ -9533,6 +9531,7 @@
 <translation id="8383614331548401927">Καλωσόρισμα Recap</translation>
 <translation id="8387157483437834731">Η αλλαγή του κωδικού πρόσβασης ήταν επιτυχής</translation>
 <translation id="8387361103813440603">Δεν επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
+<translation id="8387617938027387193">Επαλήθευση ταυτότητας</translation>
 <translation id="8389492867173948260">Να επιτρέπεται σε αυτή την επέκταση να διαβάζει και να αλλάζει όλα τα δεδομένα σας στους ιστοτόπους που επισκέπτεστε:</translation>
 <translation id="8390449457866780408">Ο διακομιστής δεν είναι διαθέσιμος.</translation>
 <translation id="8391172837960094276">Για να δείτε και να διαχειριστείτε τους κωδικούς πρόσβασής σας, <ph name="BEGIN_LINK" />επαληθεύστε την ταυτότητά σας<ph name="END_LINK" />.</translation>
@@ -10631,7 +10630,6 @@
 <translation id="942296794412775122">Ενεργοποίηση/απενεργοποίηση μικροφώνου</translation>
 <translation id="942488123151518958">Παύση (k)</translation>
 <translation id="942532530371314860">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται μια καρτέλα Chrome και ήχο.</translation>
-<translation id="943744232549395906">Η φωνητική πληκτρολόγηση διακόπηκε</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="947156494302904893">Οι ιστότοποι που επισκέπτεστε μπορούν να επαληθεύσουν ότι είστε πραγματικό άτομο και όχι bot</translation>
 <translation id="947329552760389097">&amp;Inspect Elements</translation>

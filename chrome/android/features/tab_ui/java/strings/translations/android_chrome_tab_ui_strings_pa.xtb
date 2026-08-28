@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">ਗਰੁੱਪ ਮਿਟਾਓ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਅਕਿਰਿਆਸ਼ੀਲ ਆਈਟਮ}one{<ph name="TABS_COUNT_MANY" /> ਅਕਿਰਿਆਸ਼ੀਲ ਆਈਟਮ}other{<ph name="TABS_COUNT_MANY" /> ਅਕਿਰਿਆਸ਼ੀਲ ਆਈਟਮਾਂ}}</translation>
 <translation id="1568067597247500137">ਸਾਈਟ ਮਿਊਟ ਕਰੋ</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਗਰੁੱਪਬੱਧ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="1657719826150349398">ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="1670942869417022142">ਮਿਊਟ ਕੀਤੀ ਆਡੀਓ</translation>
 <translation id="1697284962337958118">ਇਸ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1713541401465507417">ਸਾਰੀਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪ ਬੰਦ ਕਰੋ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ}one{<ph name="TAB_GROUPS_COUNT_MANY" /> ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ}other{<ph name="TAB_GROUPS_COUNT_MANY" /> ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ}}</translation>
+<translation id="1759122978835002237">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ਟੈਬ ਗਰੁੱਪਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="1844381456014878100">7 ਦਿਨ ਅਕਿਰਿਆਸ਼ੀਲ ਰਹਿਣ ਤੋਂ ਬਾਅਦ</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ਤੁਹਾਡੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਹਾਲੀਆ ਟੈਬਾਂ ਸੈਕਸ਼ਨ ਅਤੇ ਟੈਬ ਗਰੁੱਪ ਸੈਕਸ਼ਨ ਤੋਂ ਮੁੜ-ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਹਾਡੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਉਪਲਬਧ ਨਹੀਂ ਹੋਵੇਗੀ।}one{ਤੁਹਾਡੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਹਾਲੀਆ ਟੈਬਾਂ ਸੈਕਸ਼ਨ ਅਤੇ ਟੈਬ ਗਰੁੱਪ ਸੈਕਸ਼ਨ ਤੋਂ ਮੁੜ-ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਹਾਡੀ # ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਉਪਲਬਧ ਨਹੀਂ ਹੋਵੇਗੀ।}other{ਤੁਹਾਡੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਹਾਲੀਆ ਟੈਬਾਂ ਸੈਕਸ਼ਨ ਅਤੇ ਟੈਬ ਗਰੁੱਪ ਸੈਕਸ਼ਨ ਤੋਂ ਮੁੜ-ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਹਾਡੀਆਂ # ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹੋਣਗੀਆਂ।}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{ਸਾਈਟ ਅਣਮਿਊਟ ਕਰੋ}one{ਸਾਈਟ ਅਣਮਿਊਟ ਕਰੋ}other{ਸਾਈਟਾਂ ਅਣਮਿਊਟ ਕਰੋ}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 'ਤੇ ਹੁਣ <ph name="CURRENT_PRICE" /></translation>
+<translation id="2164232689984783657">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}}</translation>
 <translation id="2271452184061378400">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="2277224997687551299">ਗਰੁੱਪ ਦੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7402375256128852434">ਹਾਲੀਆ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7452985128687107478">ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ}}</translation>
 <translation id="747459581954555080">ਸਾਰੇ ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="7489558427602531799">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਆਈਟਮ}one{<ph name="TABS_COUNT_MANY" /> ਆਈਟਮ}other{<ph name="TABS_COUNT_MANY" /> ਆਈਟਮਾਂ}}</translation>

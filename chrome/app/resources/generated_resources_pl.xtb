@@ -4966,7 +4966,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4831226137013573603">wyciszenie mikrofonu</translation>
 <translation id="483262387981411190">Wstrzymaj lub wznów kontrolę twarzy</translation>
 <translation id="4833683849865011483">Znaleziono jedną drukarkę na serwerze druku</translation>
-<translation id="4834388789911023644">Napisz opinię</translation>
 <translation id="4835598628985424375">Zaciśnięcie i zmarszczenie warg</translation>
 <translation id="4835677468087803981">Ukryj kod PIN</translation>
 <translation id="4836504898754963407">Zarządzaj odciskami palców</translation>
@@ -8506,7 +8505,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7625823789272218216">Nowa karta po lewej</translation>
 <translation id="762730429396410864">Ręcznie ustaw poziom wydajności procesora zgłaszany witrynom</translation>
 <translation id="7627749368210392160">Strony mogą korzystać z tej funkcji, aby uzyskiwać dostęp do innych urządzeń w sieci lokalnej</translation>
-<translation id="7628068697012244394">Napisz opinię</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klasa <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Wybierz działanie dla każdego klawisza</translation>
 <translation id="7629206210984165492">Przygaszony</translation>
@@ -9505,6 +9503,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8383614331548401927">Podsumowanie ostatnich działań</translation>
 <translation id="8387157483437834731">Hasło zostało zmienione</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
+<translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8389492867173948260">Zezwól temu rozszerzeniu na odczytywanie i zmienianie wszystkich Twoich danych w witrynach, które otwierasz:</translation>
 <translation id="8390449457866780408">Serwer jest niedostępny.</translation>
 <translation id="8391172837960094276">Aby wyświetlać hasła i nimi zarządzać, <ph name="BEGIN_LINK" />potwierdź swoją tożsamość<ph name="END_LINK" />.</translation>
@@ -10598,7 +10597,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="942296794412775122">Włącz/wyłącz mikrofon</translation>
 <translation id="942488123151518958">Wstrzymaj (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> udostępnia kartę i dźwięk z Chrome.</translation>
-<translation id="943744232549395906">Pisanie głosowe zatrzymało się</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="947329552760389097">&amp;Sprawdź elementy</translation>

@@ -4982,7 +4982,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4831226137013573603">silenciar o micrófono</translation>
 <translation id="483262387981411190">Pór en pausa ou retomar o control facial</translation>
 <translation id="4833683849865011483">Atopouse 1 impresora no servidor de impresión</translation>
-<translation id="4834388789911023644">Escribir unha recensión</translation>
 <translation id="4835598628985424375">Facer o xesto de bicar</translation>
 <translation id="4835677468087803981">Ocultar o PIN</translation>
 <translation id="4836504898754963407">Xestionar impresións dixitais</translation>
@@ -8519,7 +8518,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7625823789272218216">Pestana nova á esquerda</translation>
 <translation id="762730429396410864">Define manualmente o nivel de rendemento da CPU que se lles comunicará aos sitios web</translation>
 <translation id="7627749368210392160">Os sitios poden usar esta función para acceder a outros dispositivos da túa rede local</translation>
-<translation id="7628068697012244394">Escribir unha recensión</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grao <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Seleccionar unha acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -9518,6 +9516,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8383614331548401927">Recapitulación de benvida</translation>
 <translation id="8387157483437834731">O contrasinal cambiouse correctamente</translation>
 <translation id="8387361103813440603">Permiso denegado para ver a túa localización</translation>
+<translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea e cambie todos os datos dos sitios web que visites:</translation>
 <translation id="8390449457866780408">Servidor non dispoñible.</translation>
 <translation id="8391172837960094276">Para ver e xestionar os teus contrasinais, <ph name="BEGIN_LINK" />verifica a túa identidade<ph name="END_LINK" />.</translation>
@@ -10618,7 +10617,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="942296794412775122">Activar ou desactivar micrófono</translation>
 <translation id="942488123151518958">Pór en pausa (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome.</translation>
-<translation id="943744232549395906">Detívose a escritura por voz</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>

@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3038136505713492417">Verifica la teva identitat per utilitzar les claus d'accés en aquest dispositiu</translation>
 <translation id="3039671569659952257">Suprimeix la carpeta</translation>
+<translation id="3041835740069544003">Ara Chrome pot detectar i emplenar més formularis amb la comprensió de formularis més intel·ligent. Per fer-ho, el contingut i els URL de les pàgines es poden processar en un espai privat al núvol. Gestiona-ho a la configuració.</translation>
 <translation id="3050988301648974170">Obre Comprovació de contrasenya</translation>
 <translation id="3053332585453689122">Envia a Navegació segura de Google els URL que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="3055102495753300780">Emmagatzematge d'informació</translation>
@@ -695,6 +696,7 @@
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
 <translation id="3259451381796379533">Aquest compte no funcionarà amb Gemini. Inicia la sessió amb un altre Compte de Google.</translation>
 <translation id="3265736395246760288">Inicia la sessió més ràpidament des de qualsevol dels teus dispositius sincronitzats.</translation>
+<translation id="3268166994745151153">Això vol dir que perdràs el progrés actual</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3272955648592358996">Les teves dades milloren la IA de Google</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
@@ -750,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{per a {COUNT} lloc web o aplicació}other{per a {COUNT} llocs web i aplicacions}}</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accedeix a les teves contrasenyes en altres aplicacions.</translation>
+<translation id="3479552764303398839">Ara no</translation>
 <translation id="3485558910355485767">Finestra d'incògnit nova</translation>
 <translation id="3488501490964659223">Les pestanyes s'han tancat i les dades de navegació s'han suprimit. S'ha tancat la teva sessió</translation>
 <translation id="3490396108106323715">Comparteix la pestanya actual</translation>
@@ -1101,6 +1104,7 @@
 <translation id="4652817563047461855">Assegura't que les teves contrasenyes siguin segures, esbrina si estan en perill i obtén consells per protegir-te en línia. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Activa la compartició de pestanyes</translation>
 <translation id="4658335131052370646">Desa</translation>
+<translation id="465947902531722727">Canvia de perfil</translation>
 <translation id="466307903888586355">La teva organització ha bloquejat l'opció de desar fitxers</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">La teva organització requereix que naveguis de manera privada. Els grups de pestanyes no se sincronitzen en mode d'incògnit.
@@ -1212,6 +1216,7 @@
 <translation id="4985921635659180565">Un cop programada, la supressió d'un fitxer no es pot cancel·lar.</translation>
 <translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
 <translation id="4986428648020277392">Indicació: Quins hauria de comprar? 2 de 3</translation>
+<translation id="498768198683310172">Comença a utilitzar Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
@@ -2158,6 +2163,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifica la teva identitat per emplenar automàticament la informació sensible</translation>
 <translation id="8015826420689927262">Suprimeix el fitxer adjunt</translation>
+<translation id="8016869623424294549">Estàs a punt de canviar de perfil</translation>
 <translation id="8017015647846870183">Del gestor de contrasenyes de Google, incloses les contrasenyes i les claus d'accés</translation>
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8023170444051056234">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>

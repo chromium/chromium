@@ -4992,7 +4992,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4831226137013573603">slökkva á hljóðnema</translation>
 <translation id="483262387981411190">Gera hlé á eða halda áfram með andlitsstýringu</translation>
 <translation id="4833683849865011483">Einn prentari fannst á prentþjóninum</translation>
-<translation id="4834388789911023644">Skrifa umsögn</translation>
 <translation id="4835598628985424375">Gerðu stút á varirnar</translation>
 <translation id="4835677468087803981">Fela PIN-númer</translation>
 <translation id="4836504898754963407">Stjórna fingraförum</translation>
@@ -8534,7 +8533,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7625823789272218216">Nýr flipi vinstra megin</translation>
 <translation id="762730429396410864">Stilla afkastaflokk örgjörva sem vefsvæðum er tilkynnt um handvirkt</translation>
 <translation id="7627749368210392160">Vefsvæði geta notað þennan eiginleika til að fá aðgang að öðrum tækjum á staðarnetinu þínu</translation>
-<translation id="7628068697012244394">Skrifa umsögn</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), gráða <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Veldu aðgerð fyrir hvern lykil</translation>
 <translation id="7629206210984165492">Dempað</translation>
@@ -9533,6 +9531,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8383614331548401927">Velkomin(n) aftur</translation>
 <translation id="8387157483437834731">Aðgangsorði var breytt</translation>
 <translation id="8387361103813440603">Mega ekki sjá staðsetningu þína</translation>
+<translation id="8387617938027387193">Staðfestu hver þú ert</translation>
 <translation id="8389492867173948260">Leyfa þessari viðbót að lesa og breyta öllum gögnum á vefsvæðum sem þú heimsækir:</translation>
 <translation id="8390449457866780408">Ekki næst í netþjóninn.</translation>
 <translation id="8391172837960094276"><ph name="BEGIN_LINK" />Staðfestu auðkenni þitt<ph name="END_LINK" /> til að skoða og stjórna aðgangsorðunum þínum.</translation>
@@ -10633,7 +10632,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="942296794412775122">Kveikt/slökkt á hljóðnema</translation>
 <translation id="942488123151518958">Gera hlé (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deilir flipa og hljóði í Chrome.</translation>
-<translation id="943744232549395906">Raddinnsláttur stöðvaðist</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="947329552760389097">&amp;Kanna einingar</translation>

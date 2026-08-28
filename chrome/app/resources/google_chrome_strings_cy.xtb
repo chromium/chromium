@@ -380,6 +380,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="475321580758063259">Diweddarwch Chrome i barhau i ddefnyddio'r data Chrome yn eich Cyfrif Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Yn cyflymu gwefannau gydag injan V8 Chrome ond yn lleihau gallu Chrome i wrthsefyll ymosodiadau ychydig</translation>
+<translation id="4768676935374695498">Chwilio'r Fideo Hwn gyda Google Lens</translation>
 <translation id="479167709087336770">Mae hwn yn defnyddio'r un gwiriwr sillafu â'r un sy'n cael ei ddefnyddio yn Google Search. Anfonir testun rydych yn ei deipio yn y porwr at Google. Gallwch newid yr ymddygiad hwn yn y gosodiadau ar unrhyw adeg.</translation>
 <translation id="4793679854893018356">Dysgu sut mae Chrome yn eich cadw'n ddiogel</translation>
 <translation id="4799870290441980300">Yn troi nodweddion ychwanegol ymlaen i ddarparu amddiffyniadau cryfaf Chrome</translation>
@@ -774,10 +775,12 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="848851325211467878">Wedi mewngofnodi fel <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, aelodaeth Google. Agorwch y ddewislen cyfrif</translation>
 <translation id="8496177819998570653">Rheolwr C&amp;yfrineiriau Google</translation>
 <translation id="8498858610309223613">Cymhwyswyd diweddariad diogelwch arbennig ar gyfer Google Chrome yn unig. Ailgychwynnwch nawr a byddwn yn adfer eich tabiau.</translation>
+<translation id="8502181052659370">Chwilio'r Tab Hwn gyda Google Lens</translation>
 <translation id="8521348052903287641">Rheol dod i mewn ar gyfer Google Chrome Dev i ganiatáu traffig mDNS.</translation>
 <translation id="852529348814672339">Arddangos Chrome yn yr iaith hon</translation>
 <translation id="8525579356836940628">Wedi Stopio Gosod</translation>
 <translation id="8533056045953418157">Gosod Google Chrome fel eich dangosydd PDF diofyn</translation>
+<translation id="854593887324189900">Chwilio'r Llun Hwn gyda Google Lens</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Chwilio rhestr iaith</translation>
 <translation id="8575047640889685742">Defnyddiwch eich <ph name="BEGIN_LINK" />cyfrinymadrodd eich hun<ph name="END_LINK" /> i amgryptio'r holl ddata Chrome yn eich Cyfrif Google. Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.</translation>

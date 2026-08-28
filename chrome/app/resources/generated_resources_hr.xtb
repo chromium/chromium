@@ -4978,7 +4978,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4831226137013573603">mikrofon isključen</translation>
 <translation id="483262387981411190">Pauziranje ili nastavljanje upravljanja licem</translation>
 <translation id="4833683849865011483">Pronađen je jedan pisač s poslužitelja za ispis</translation>
-<translation id="4834388789911023644">Napišite recenziju</translation>
 <translation id="4835598628985424375">Stiskanje usana</translation>
 <translation id="4835677468087803981">Sakrij PIN</translation>
 <translation id="4836504898754963407">Upravljanje otiscima prstiju</translation>
@@ -8519,7 +8518,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7625823789272218216">Nova kartica s lijeve strane</translation>
 <translation id="762730429396410864">Ručno postavite razinu izvedbe procesora koja se prijavljuje web-lokacijama</translation>
 <translation id="7627749368210392160">Web-lokacije mogu upotrebljavati tu značajku za pristup drugim uređajima na vašoj lokalnoj mreži</translation>
-<translation id="7628068697012244394">Napišite recenziju</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), stupanj <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Odaberite radnju za svaki ključ</translation>
 <translation id="7629206210984165492">Prigušeno</translation>
@@ -9518,6 +9516,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8383614331548401927">Sažetak dobrodošlice</translation>
 <translation id="8387157483437834731">Zaporka je uspješno promijenjena</translation>
 <translation id="8387361103813440603">Nije dopušten pregled vaše lokacije</translation>
+<translation id="8387617938027387193">Potvrdite da ste to vi</translation>
 <translation id="8389492867173948260">Dopustite ovom proširenju da čita i mijenja sve vaše podatke na web-lokacijama koje posjećujete:</translation>
 <translation id="8390449457866780408">Poslužitelj nije dostupan.</translation>
 <translation id="8391172837960094276">Da biste pregledali svoje zaporke i upravljali njima, <ph name="BEGIN_LINK" />potvrdite svoj identitet<ph name="END_LINK" />.</translation>
@@ -10618,7 +10617,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="942296794412775122">Uključivanje/isključivanje mikrofona</translation>
 <translation id="942488123151518958">Pauziranje (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> dijeli Chromeovu karticu i zvuk.</translation>
-<translation id="943744232549395906">Unos teksta govorom je zaustavljen</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947156494302904893">Web-lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="947329552760389097">&amp;Provjeri elemente</translation>

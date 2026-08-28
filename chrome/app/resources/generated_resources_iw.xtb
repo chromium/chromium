@@ -4992,7 +4992,6 @@
 <translation id="4831226137013573603">השתקת המיקרופון</translation>
 <translation id="483262387981411190">השהיה או המשך של שליטה באמצעות תנועות הפנים</translation>
 <translation id="4833683849865011483">נמצאה מדפסת אחת המשויכת לשרת ההדפסה</translation>
-<translation id="4834388789911023644">כתיבת ביקורת</translation>
 <translation id="4835598628985424375">מצמידים ומכווצים את השפתיים</translation>
 <translation id="4835677468087803981">הסתרת קוד האימות</translation>
 <translation id="4836504898754963407">ניהול של טביעות אצבעות</translation>
@@ -8537,7 +8536,6 @@
 <translation id="7625823789272218216">כרטיסייה חדשה מצד שמאל</translation>
 <translation id="762730429396410864">הגדרה ידנית של רמת הביצועים של המעבד שדווחה לאתרים</translation>
 <translation id="7627749368210392160">אתרים יכולים להשתמש בתכונה הזו כדי להתחבר למכשירים אחרים ברשת המקומית</translation>
-<translation id="7628068697012244394">כתיבת ביקורת</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), רמה <ph name="GRADE" /></translation>
 <translation id="762917478230183172">צריך לבחור פעולה לכל מקש</translation>
 <translation id="7629206210984165492">מאופק</translation>
@@ -9536,6 +9534,7 @@
 <translation id="8383614331548401927">איפה היינו?</translation>
 <translation id="8387157483437834731">הסיסמה שונתה בהצלחה</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
+<translation id="8387617938027387193">אימות הזהות שלך</translation>
 <translation id="8389492867173948260">מתן הרשאה לתוסף הזה לקרוא ולשנות את כל הנתונים שלך באתרים שאליהם נכנסת:</translation>
 <translation id="8390449457866780408">השרת אינו זמין.</translation>
 <translation id="8391172837960094276">כדי לראות ולנהל את הסיסמאות, עליך <ph name="BEGIN_LINK" />לאמת את הזהות שלך<ph name="END_LINK" />.</translation>
@@ -10636,7 +10635,6 @@
 <translation id="942296794412775122">הפעלה או השבתה של המיקרופון</translation>
 <translation id="942488123151518958">‏השהיה (k)</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> משתף כרטיסייה ואודיו של Chrome.</translation>
-<translation id="943744232549395906">ההכתבה נעצרה</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="947329552760389097">&amp;בדיקת רכיבים</translation>

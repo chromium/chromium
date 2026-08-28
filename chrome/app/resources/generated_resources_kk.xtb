@@ -4976,7 +4976,6 @@
 <translation id="4831226137013573603">микрофон дыбысын өшіру</translation>
 <translation id="483262387981411190">"Бет-әлпетімен басқару" функциясын кідірту не жалғастыру</translation>
 <translation id="4833683849865011483">Басып шығару серверінен 1 принтер табылды.</translation>
-<translation id="4834388789911023644">Пікір жазу</translation>
 <translation id="4835598628985424375">Ерніңізді дүрдитіңіз.</translation>
 <translation id="4835677468087803981">PIN кодын жасыру</translation>
 <translation id="4836504898754963407">Саусақ іздерін басқару</translation>
@@ -7553,7 +7552,7 @@
 <translation id="6863496016067551393">Барлық кеңейтімге рұқсет етілген.</translation>
 <translation id="686366188661646310">Құпия сөз жойылсын ба?</translation>
 <translation id="6863925886424789941">Колизей</translation>
-<translation id="6865313869410766144">Нысан деректерін автотолтыру</translation>
+<translation id="6865313869410766144">Үлгілерді автоматты түрде толтыру дерегі</translation>
 <translation id="6865708901122695652">WebRTC оқиға журналдары (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Тыныш</translation>
 <translation id="686664946474413495">Түс температурасы</translation>
@@ -8511,7 +8510,6 @@
 <translation id="7625823789272218216">Сол жақтан жаңа қойынды ашу</translation>
 <translation id="762730429396410864">Веб-сайттарға хабарланатын орталық процессордың өнімділік деңгейін қолмен орнату</translation>
 <translation id="7627749368210392160">Сайттар бұл функцияны жергілікті желідегі басқа құрылғыларды пайдалану үшін қолдана алады.</translation>
-<translation id="7628068697012244394">Пікір жазу</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> дәрежесі</translation>
 <translation id="762917478230183172">Әрбір перне үшін әрекетті таңдаңыз</translation>
 <translation id="7629206210984165492">Бәсеңдетілген</translation>
@@ -9510,6 +9508,7 @@
 <translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8387157483437834731">Құпия сөз өзгертілді.</translation>
 <translation id="8387361103813440603">Геодеректеріңізді көруге рұқсаты жоқтар</translation>
+<translation id="8387617938027387193">Жеке басыңызды растаңыз</translation>
 <translation id="8389492867173948260">Бұл кеңейтімге сіз кіретін веб-сайттардағы барлық деректерді оқуға және өзгертуге рұқсат беру:</translation>
 <translation id="8390449457866780408">Сервер қолжетімсіз.</translation>
 <translation id="8391172837960094276">Құпия сөздерді көру және басқару үшін <ph name="BEGIN_LINK" />жеке басыңызды растаңыз<ph name="END_LINK" />.</translation>
@@ -10610,7 +10609,6 @@
 <translation id="942296794412775122">Микрофонды қосу/өшіру</translation>
 <translation id="942488123151518958">Кідірту (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын және аудионы бөлісуде.</translation>
-<translation id="943744232549395906">Дауыспен теру тоқтатылды.</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="947156494302904893">Сіз кірген сайттар бот емес, шынайы адам екеніңізді растай алады.</translation>
 <translation id="947329552760389097">&amp;Элементтерді тексеру</translation>

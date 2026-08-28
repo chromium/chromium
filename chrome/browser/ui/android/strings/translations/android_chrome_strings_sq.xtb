@@ -152,6 +152,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1554532453982918912">Ndihmo në përmirësimin e Chrome për njerëzit që e përdorin si ti</translation>
 <translation id="1568636008098739136">Dëgjoje këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="1571041387761170095">Nuk ka fjalëkalime të dobëta ose të ripërdorura</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar në këtë pajisje}other{# fjalëkalime të komprometuara në këtë pajisje}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> artikuj të sugjeruar në listën e mëposhtme.</translation>
 <translation id="159689249463841786">Zgjidh dosjen, aktualisht "<ph name="FOLDER_NAME" />"</translation>
@@ -434,6 +435,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nuk ofrohet për momentin.</translation>
 <translation id="2751271371269891762">Për t'i marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / VV</translation>
+<translation id="2761162135224472056">Dëshiron të shikosh me luajtjen gjithëpërfshirëse?</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="276378135349383280">Shfaq Gemini në shiritin e poshtëm të veglave</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -654,6 +656,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3637744895182738742">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Dil nga luajtja gjithëpërfshirëse</translation>
 <translation id="3674208116086565128">Shko te faqja bazë e aplikacionit të Google</translation>
 <translation id="368329460027487650">Ke dalë. Hap opsionet për t'u identifikuar.</translation>
 <translation id="3684540848053703310">Fleta e poshtme e statistikave të çmimeve e mbyllur</translation>
@@ -671,6 +674,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3718765429352682176">Mund të shikosh historikun nga aplikacionet e tjera që hapin lidhjet në Chrome.</translation>
 <translation id="3721119614952978349">Ti dhe Google</translation>
 <translation id="3727000368239390918">Identifikohu për të marrë skedat e tua etj. në të gjitha pajisjet e tua</translation>
+<translation id="3731865955999508196">Stereoskopik</translation>
 <translation id="3737319253362202215">Cilësimet e përkthimit</translation>
 <translation id="3738139272394829648">Prek për të kërkuar</translation>
 <translation id="3739455665973395693">Nuk ka fjalëkalime të komprometuara në "Llogarinë tënde të Google"</translation>
@@ -900,6 +904,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4606559747793337066">Kur një sajt ose aplikacion kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome i enkripton dhe i ngarkon paraprakisht faqet nëpërmjet serverëve të Google pa kuki. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht.</translation>
 <translation id="4619615317237390068">Skedat nga pajisjet e tjera</translation>
 <translation id="4624065194742029982">Modaliteti "i fshehtë" i Chrome</translation>
+<translation id="4628972300801601502">Stereoskopik 360°</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 fjalëkalim dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}other{# fjalëkalime dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar}other{# fjalëkalime të komprometuara}}</translation>
@@ -1181,6 +1186,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5810288467834065221">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Shfaq njoftimin}other{Shfaq njoftimet}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, skeda e gozhduar e vendosur në heshtje dhe e zgjedhur me shumë të tjera</translation>
+<translation id="5814872768903482128">Stereoskopik 180°</translation>
 <translation id="5823093032261493462">Dëshiron që ta shkarkosh "<ph name="FILE_NAME" />" nga <ph name="DOWNLOAD_DOMAIN" /> gjithsesi?</translation>
 <translation id="5825135637446025843">Pasi Chrome të riniset, informacionet e tua të ruajtura nga ofruesi yt i ri do të përdoren për të plotësuar automatikisht fjalëkalimet, çelësat e kalimit, adresat, mënyrat e pagesës dhe informacione të tjera.</translation>
 <translation id="5828921839638612740">Mund t'i fshish të dhënat në "Cilësimet" e Chrome</translation>
@@ -1316,6 +1322,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="631839948975905034">Kyçi dritaret e fshehta kur të largohesh nga Chrome</translation>
 <translation id="6321592572353357376">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chrome</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
+<translation id="632496644859442877">Zgjidh formatin e videos</translation>
 <translation id="6324977638108296054">Nuk mund të krijohet një lidhje për te teksti i theksuar</translation>
 <translation id="6331836477476466332">Një shfletues më i sigurt dhe më i fuqishëm për ty</translation>
 <translation id="6333140779060797560">Ndaje nëpërmjet <ph name="APPLICATION" /></translation>
@@ -1496,6 +1503,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6918398787259831832">Nëse ky problem vazhdon të ndodhë, <ph name="BEGIN_LINK" />merr më shumë informacione<ph name="END_LINK" /> nga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6920262510368602827">Krijo kodin QR për këtë faqe</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse nuk e ke vizituar së fundi</translation>
+<translation id="6923291640965724312">Format gjithëpërfshirës</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 skedë}other{<ph name="NUMBER_OF_TABS" /> skeda}}</translation>
 <translation id="6929224077895306814">Të gjitha kodet e sigurisë të ruajtura në pajisjen tënde dhe në "Llogarinë e Google" do të fshihen</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, skeda e zgjedhur e gozhduar duke luajtur audion</translation>
@@ -1740,6 +1748,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7851858861565204677">Pajisjet e tjera</translation>
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
+<translation id="7862185352068345852">Dëshiron të largohesh nga sajti?</translation>
 <translation id="7866213166286285359">Përkthe faqet këtu</translation>
 <translation id="7875915731392087153">Krijo mail</translation>
 <translation id="7876243839304621966">Hiqi të gjitha</translation>

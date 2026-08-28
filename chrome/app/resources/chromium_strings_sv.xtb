@@ -232,6 +232,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vill du byta till befintlig Chromium-profil?</translation>
 <translation id="3412460710772753638">I Lösenordshantering på den här enheten</translation>
+<translation id="3438772217992559640">Sök på den här fliken med bildsökning</translation>
 <translation id="3455907671758333080">Förbättrad säker webbsökning når längre med Chromium på telefonen</translation>
 <translation id="3461644266919055473">Anpassar Chromium …</translation>
 <translation id="3474745554856756813"><ph name="ITEMS_COUNT" /> objekt tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
@@ -606,6 +607,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7376384068949534168">Du har inte besökt webbplatsen på sistone. Chromium har tagit bort <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Öppna Chrome Web Store</translation>
 <translation id="7394275517973019558">Visa Gemini i Chromium i systemfältet</translation>
+<translation id="7401687852903179959">Sök i den här videon med bildsökning</translation>
 <translation id="7407655596887111931">Chromium är nu din standardwebbläsare</translation>
 <translation id="7413153308467572558">Fortsätt där du slutade: Chromium återställer dina flikar varje gång du startar om. Inaktivera detta genom att öppna</translation>
 <translation id="7427879960656355200">Importera lösenord till Chromium</translation>
@@ -686,6 +688,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
 <translation id="8177472873527554730">Det gick inte att hitta innehåll på sidan</translation>
 <translation id="8200109504272824693">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt konto, <ph name="USER_EMAIL" /></translation>
+<translation id="820759916613250543">Sök i den här bilden med bildsökning</translation>
 <translation id="8221491193165283816">Du blockerar aviseringar. Klicka här om du vill tillåta aviseringar från webbplatsen.</translation>
 <translation id="8223363452568144035">Ge Chromium åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda kameran</translation>
 <translation id="8232193495299001329">Chromium kan inte verifiera var tillägget kommer från. Det kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive personliga uppgifter, på webbplatser du besöker.</translation>

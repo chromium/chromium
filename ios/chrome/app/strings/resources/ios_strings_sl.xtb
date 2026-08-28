@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3038136505713492417">Če želite uporabljati ključe za dostop v tej napravi, potrdite, da ste to res vi</translation>
 <translation id="3039671569659952257">Izbriši mapo</translation>
+<translation id="3041835740069544003">Chrome lahko zdaj zazna in izpolni več obrazcev s pametnejšim razumevanjem obrazcev. V ta namen se lahko vsebina strani in URL-ji obdelujejo v zasebnem prostoru v oblaku. To možnost upravljate v nastavitvah.</translation>
 <translation id="3050988301648974170">Odprite pregled gesel</translation>
 <translation id="3053332585453689122">V Google Varno brskanje pošilja URL-je, ki jih obiščete, in majhen vzorec vsebine strani, prenose, dejavnost razširitve in podatke o sistemu, da preveri, ali so škodljivi.</translation>
 <translation id="3055102495753300780">Količina podatkov</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{za {COUNT} spletno mesto ali aplikacijo}one{za {COUNT} spletno mesto ali aplikacijo}two{za {COUNT} spletni mesti ali aplikaciji}few{za {COUNT} spletna mesta ali aplikacije}other{za {COUNT} spletnih mest ali aplikacij}}</translation>
 <translation id="3474624961160222204">Nadaljuj kot <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Dostopajte do gesel v drugih aplikacijah.</translation>
+<translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3485558910355485767">Novo anonimno &amp;okno</translation>
 <translation id="3488501490964659223">Zavihki so bili zaprti in podatki brskanja so bili izbrisani. Bili ste odjavljeni.</translation>
 <translation id="3490396108106323715">Deli trenutni zavihek</translation>

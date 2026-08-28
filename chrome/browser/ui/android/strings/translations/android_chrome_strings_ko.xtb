@@ -986,6 +986,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4913169188695071480">새로고침 중지</translation>
 <translation id="4921224083091001889">모든 기기에서 비밀번호 등을 사용하려면 Chrome에 <ph name="EMAIL" /> 계정을 사용하여 로그인하세요.</translation>
 <translation id="4923173329789776645">조직에서 다운로드를 권장하지 않습니다</translation>
+<translation id="4924398189611529766">시크릿 모드로 탐색하면 이 기기를 사용하는 다른 사용자가 내 활동을 볼 수 없으므로, 비공개로 탐색할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">스크린샷 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">이미지와 파일을 저장하여 오프라인으로 보거나 다른 앱에서 공유할 수 있습니다.</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{북마크 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
@@ -1748,6 +1749,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7851858861565204677">다른 기기</translation>
 <translation id="7853202427316060426">활동</translation>
 <translation id="7859988229622350291">번역 안 함</translation>
+<translation id="7862185352068345852">사이트에서 나가시겠습니까?</translation>
 <translation id="7866213166286285359">여기에 페이지 번역하기</translation>
 <translation id="7875915731392087153">이메일 작성</translation>
 <translation id="7876243839304621966">모두 삭제</translation>

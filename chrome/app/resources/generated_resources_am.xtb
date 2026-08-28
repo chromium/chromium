@@ -4985,7 +4985,6 @@
 <translation id="4831226137013573603">የማይክሮፎን ድምፀ-ከል ማድረጊያ</translation>
 <translation id="483262387981411190">የመልክ መቆጣጠሪያን ባለበት ያቁሙ እና ከቆመበት ይቀጥሉ</translation>
 <translation id="4833683849865011483">ከህትመት አገልጋዩ 1 አታሚ ተገኝቷል</translation>
-<translation id="4834388789911023644">ግምገማ ጻፍ</translation>
 <translation id="4835598628985424375">ከንፈሮችን አንድ ላይ በመጭመቅ ያጨማድዱ</translation>
 <translation id="4835677468087803981">ፒን ደብቅ</translation>
 <translation id="4836504898754963407">የጣት አሻራዎችን ያስተዳድሩ</translation>
@@ -8528,7 +8527,6 @@
 <translation id="7625823789272218216">በግራ በኩል አዲስ ትር</translation>
 <translation id="762730429396410864">ወደ ድር ጣቢያዎች ሪፖርት የተደረገውን የሲፒዩ አፈጻጸም እርከን በእጅ ያቀናብሩ</translation>
 <translation id="7627749368210392160">ጣቢያዎች በአካባቢያዊ አውታረ መረብዎ ላይ ያሉ ሌሎች መሣሪያዎችን ለመድረስ ይህን ባህሪ መጠቀም ይችላሉ</translation>
-<translation id="7628068697012244394">ግምገማ ጻፍ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)፣ ደረጃ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ለእያንዳንዱ ቁልፍ እርምጃ ይምረጡ</translation>
 <translation id="7629206210984165492">ጸጥ ያለ</translation>
@@ -9532,6 +9530,7 @@ nil</translation>
 <translation id="8383614331548401927">እንኳን ወደ Recap በደህና መጡ</translation>
 <translation id="8387157483437834731">የይለፍ ቃል በተሳካ ሁኔታ ተለውጧል</translation>
 <translation id="8387361103813440603">አካባቢዎን ለማየት አልተፈቀደም</translation>
+<translation id="8387617938027387193">እርስዎን መሆንዎን ያረጋግጡ</translation>
 <translation id="8389492867173948260">ይህ ቅጥያ በሚጎበኟቸው ድር ጣቢያዎች ላይ ያለው ሁሉም ውሂብዎን እንዲያነብብ እና እንዲቀይር ይፍቀዱ፦</translation>
 <translation id="8390449457866780408">አገልጋይ አይገኝም።</translation>
 <translation id="8391172837960094276">የይለፍ ቃላትዎን ለማየት እና ለማስተዳደር <ph name="BEGIN_LINK" />እርስዎ መሆንዎን ያረጋግጡ<ph name="END_LINK" />።</translation>
@@ -10632,7 +10631,6 @@ nil</translation>
 <translation id="942296794412775122">ማይክሮፎን አብራ/አጥፋ</translation>
 <translation id="942488123151518958">ባለበት አቁም (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> የChrome ትር እና ኦዲዮ እያጋራ ነው።</translation>
-<translation id="943744232549395906">የድምፅ ትየባ ቆሟል</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="947329552760389097">&amp;አባለ ነገሮችን መርምር</translation>

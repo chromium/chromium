@@ -4991,7 +4991,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4831226137013573603">заглушаване на микрофона</translation>
 <translation id="483262387981411190">Поставяне на пауза или възобновяване на контролирането с лице</translation>
 <translation id="4833683849865011483">В сървъра за отпечатване бе открит 1 принтер</translation>
-<translation id="4834388789911023644">Писане на отзив</translation>
 <translation id="4835598628985424375">Събиране на устните</translation>
 <translation id="4835677468087803981">Скриване на ПИН кода</translation>
 <translation id="4836504898754963407">Управление на отпечатъците</translation>
@@ -8533,7 +8532,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7625823789272218216">Нов раздел отляво</translation>
 <translation id="762730429396410864">Ръчно задаване на нивото на производителност на процесора, което се съобщава на уебсайтовете</translation>
 <translation id="7627749368210392160">Сайтовете могат да използват тази функция, за да осъществяват достъп до други устройства в локалната ви мрежа</translation>
-<translation id="7628068697012244394">Писане на отзив</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), клас <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Изберете действие за всеки клавиш</translation>
 <translation id="7629206210984165492">Приглушено</translation>
@@ -9532,6 +9530,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8383614331548401927">Приветствен обзор</translation>
 <translation id="8387157483437834731">Паролата е променена успешно</translation>
 <translation id="8387361103813440603">Сайтове без разрешение за преглед на местоположението ви</translation>
+<translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8389492867173948260">Разрешаване на това разширение да чете и променя всичките ви данни в посещаваните от вас уебсайтове:</translation>
 <translation id="8390449457866780408">Няма достъп до сървъра.</translation>
 <translation id="8391172837960094276">За да преглеждате и управлявате паролите си, <ph name="BEGIN_LINK" />потвърдете, че сте вие<ph name="END_LINK" />.</translation>
@@ -10632,7 +10631,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="942296794412775122">Включване/изключване на микрофона</translation>
 <translation id="942488123151518958">Пауза (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделя раздел в Chrome и звук.</translation>
-<translation id="943744232549395906">Функцията за печатане с глас спря</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="947156494302904893">Сайтовете, които посещавате, могат да потвърдят, че сте истински човек, а не робот</translation>
 <translation id="947329552760389097">&amp;Инспектиране на елементите</translation>

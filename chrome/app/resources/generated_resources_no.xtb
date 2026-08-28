@@ -164,7 +164,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114525161406758033">Gå i hvilemodus når maskinen lukkes</translation>
 <translation id="1116639326869298217">Kunne ikke bekrefte identiteten din</translation>
-<translation id="1116694919640316211">Info</translation>
+<translation id="1116694919640316211">Om</translation>
 <translation id="1116779635164066733">Denne innstillingen håndheves av «<ph name="NAME" />»-utvidelsen.</translation>
 <translation id="111897705806685148">Bruk passnøkkel fra en annen enhet</translation>
 <translation id="1119447706177454957">Intern feil</translation>
@@ -4986,7 +4986,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4831226137013573603">slå av mikrofonen</translation>
 <translation id="483262387981411190">Sett ansiktskontroll på pause eller gjenoppta den</translation>
 <translation id="4833683849865011483">Fant én skriver på utskriftstjeneren</translation>
-<translation id="4834388789911023644">Skriv en anmeldelse</translation>
 <translation id="4835598628985424375">Snurp leppene sammen</translation>
 <translation id="4835677468087803981">Skjul PIN-koden</translation>
 <translation id="4836504898754963407">Administrer fingeravtrykk</translation>
@@ -8525,7 +8524,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="762730429396410864">Angi ytelsesnivået for prosessoren som rapporteres til nettsteder, manuelt</translation>
 <translation id="7627749368210392160">Nettsteder kan bruke denne funksjonen for å få tilgang til andre enheter på det lokale nettverket ditt</translation>
-<translation id="7628068697012244394">Skriv en anmeldelse</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Velg en handling for hver tast</translation>
 <translation id="7629206210984165492">Dempet</translation>
@@ -9524,6 +9522,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8383614331548401927">Velkomstoppsummering</translation>
 <translation id="8387157483437834731">Passordet er endret</translation>
 <translation id="8387361103813440603">Nettsteder som ikke har lov til å se posisjonen din</translation>
+<translation id="8387617938027387193">Bekreft at det er deg</translation>
 <translation id="8389492867173948260">La denne utvidelsen lese og endre alle dataene dine på nettsteder du besøker:</translation>
 <translation id="8390449457866780408">Tjeneren er ikke tilgjengelig.</translation>
 <translation id="8391172837960094276">For å se og administrere passordene dine, <ph name="BEGIN_LINK" />må du bekrefte at det er deg<ph name="END_LINK" />.</translation>
@@ -10624,7 +10623,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="942296794412775122">Mikrofon på/av</translation>
 <translation id="942488123151518958">Sett på pause (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler lyd og en fane fra Chrome.</translation>
-<translation id="943744232549395906">Stemmestyrt skriving er stoppet</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="947329552760389097">&amp;Undersøk elementer</translation>

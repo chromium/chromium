@@ -380,6 +380,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="475321580758063259">Uppdatera Chrome för att fortsätta använda Chrome-data i Google-kontot, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Detta gör webbplatser snabbare med Chromes V8-motor men Chrome blir något mindre motståndskraftigt mot attacker</translation>
+<translation id="4768676935374695498">Sök i den här videon med Google Lens</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4793679854893018356">Läs mer om hur du skyddas i Chrome</translation>
 <translation id="4799870290441980300">Aktiverar ytterligare funktioner för att tillhandahålla Chromes starkaste skydd</translation>
@@ -774,10 +775,12 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="848851325211467878">Inloggad som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-medlemskap. Öppna kontomenyn</translation>
 <translation id="8496177819998570653">Googles Lösenordshantering</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>
+<translation id="8502181052659370">Sök i den här fliken med Google Lens</translation>
 <translation id="8521348052903287641">Regel som tillåter inkommande mDNS-trafik för Google Chrome Dev.</translation>
 <translation id="852529348814672339">Visa Chrome på det här språket</translation>
 <translation id="8525579356836940628">Installationen avbröts</translation>
 <translation id="8533056045953418157">Ställ in Google Chrome som standard PDF-läsare</translation>
+<translation id="854593887324189900">Sök i den här bilden med Google Lens</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8575047640889685742">Använd din <ph name="BEGIN_LINK" />egen lösenfras<ph name="END_LINK" /> för att kryptera all Chrome-data i Google-kontot. Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.</translation>

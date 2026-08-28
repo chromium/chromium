@@ -379,6 +379,7 @@
 <translation id="475321580758063259">तुमच्या <ph name="ACCOUNT_EMAIL" /> Google खाते मध्ये Chrome डेटा वापरणे कायम ठेवण्यासाठी Chrome अपडेट करा</translation>
 <translation id="4754614261631455953">Google Chrome कॅनरी (mDNS-मध्ये)</translation>
 <translation id="4756182432527369254">Chrome चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता किंचित कमी होते</translation>
+<translation id="4768676935374695498">Google Lens वापरून हा व्हिडिओ शोधा</translation>
 <translation id="479167709087336770">Google Search मध्ये वापरत असेलेले समान स्पेल चेकर हे वापरते. तुम्ही ब्राउझरमध्ये टाइप करत असलेला मजकूर Google कडे पाठवला जातो. तुम्ही हे वर्तन कधीही सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="4793679854893018356">Chrome तुम्हाला सुरक्षित कसे ठेवते याबद्दल जाणून घ्या</translation>
 <translation id="4799870290441980300">Chrome ची सर्वात मजबूत संरक्षणे पुरवण्यासाठी अतिरिक्त वैशिष्ट्ये सुरू करते</translation>
@@ -773,10 +774,12 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google सदस्यत्व म्हणून साइन इन केले आहे. खाते मेनू उघडा</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome साठी आत्ताच एक विशिष्ट सुरक्षितता अपडेट लागू करण्यात आला. आता रीस्टार्ट करा आणि आम्ही तुमचे टॅब रिस्टोअर करू.</translation>
+<translation id="8502181052659370">Google Lens वापरून हा टॅब शोधा</translation>
 <translation id="8521348052903287641">Google Chrome विकासकाने mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="852529348814672339">Chrome या भाषेमध्ये दाखवा</translation>
 <translation id="8525579356836940628">इंस्टॉलेशन थांबवले</translation>
 <translation id="8533056045953418157">Google Chrome ला तुमचा डीफॉल्ट PDF व्ह्यूअर म्हणून सेट करा</translation>
+<translation id="854593887324189900">Google Lens वापरून ही इमेज शोधा</translation>
 <translation id="8555465886620020932">सेवेशी संबंधित एरर: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">भाषा सूचीमध्ये शोधा</translation>
 <translation id="8575047640889685742">तुमच्या Google खाते मधील सर्व Chrome डेटा एन्क्रिप्ट करण्यासाठी तुमचा <ph name="BEGIN_LINK" />स्वतःचा पासफ्रेज<ph name="END_LINK" /> वापरा. Google Pay वरील पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.</translation>

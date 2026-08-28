@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">A preparar os ficheiros</translation>
 <translation id="1014509239502131234">A anular o resultado</translation>
 <translation id="1015730422737071372">Forneça mais detalhes</translation>
+<translation id="1016671033299705843">Adicione uma carta de condução em segurança</translation>
 <translation id="1019413721762100891">Desativado</translation>
 <translation id="1021753677514347426">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chromium. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chromium quer certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="1024111578869940408">Por vezes, os atacantes imitam sites ao efetuarem alterações difíceis de detetar no endereço Web.</translation>
@@ -238,6 +239,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1392813880755413602">Apresentação OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> não enviou quaisquer dados.</translation>
 <translation id="1393071644879491291">Os atacantes no site que tentou visitar podem tentar enganar o utilizador para que instale software ou revele informações como as suas palavras-passe, número de telefone ou números de cartões de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Adicione um cartão de identificação em segurança à Carteira do Google</translation>
 <translation id="1398743098754840707">Os sites que adicionar aqui não são referenciados para respostas, mesmo que o separador esteja aberto. Se um site que adicionar estiver a ser usado numa conversa, esta pode demorar até 30 minutos a deixar de o referenciar.</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1406370515365284486">Os seus métodos de pagamento continuam guardados</translation>
@@ -771,6 +773,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2288422996159078444">Tudo o que escreve, todas as páginas que visualiza ou quaisquer outras atividades que realiza na Web estão a ser monitorizadas. O conteúdo dos sites pode ser alterado sem o seu conhecimento.</translation>
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O acesso à Internet está bloqueado</translation>
+<translation id="2294150501457238325">Adicione um passaporte em segurança</translation>
 <translation id="2295831393422400053">Ative a definição Melhorar as pesquisas e a navegação para usar a funcionalidade Ajuda-me a escrever</translation>
 <translation id="2296244067976588032">Chave de acesso • Porta-chaves iCloud</translation>
 <translation id="2296331629987861142">Pagar em prestações suaves (sujeito a elegibilidade, aplicam-se taxas)</translation>
@@ -1131,6 +1134,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2931453528659195355">Gerir informações de compras</translation>
 <translation id="2933624813161016821">Folha de alumínio</translation>
 <translation id="2935726091208500473">partilhar os seus separadores</translation>
+<translation id="2936698630976431647">Selecione o campo de código promocional para preencher automaticamente ofertas da Carteira do Google</translation>
 <translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – Para mostrar o cursor, mude de app, atualize a página ou retroceda</translation>
@@ -1283,6 +1287,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente dados no seu dispositivo.</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Adicione uma carta de condução à Carteira do Google</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3196374699162453920">Código de reserva</translation>
 <translation id="3196902089458890316">Partilhar sempre os separadores relevantes para receber melhores respostas?</translation>
@@ -1390,6 +1395,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3380864720620200369">ID do Cliente:</translation>
 <translation id="3383566085871012386">Ordem de prevalência atual</translation>
 <translation id="3383713837163550889">Os seus ficheiros locais vão ser eliminados dentro de 1 minuto</translation>
+<translation id="33837817515081754">Adicione um Known Traveler Number à Carteira do Google</translation>
 <translation id="3384522979010096022">A sua organização não lhe permite ver este site</translation>
 <translation id="3391030046425686457">Endereço de entrega</translation>
 <translation id="3391482648489541560">edição de ficheiros</translation>
@@ -1463,6 +1469,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3517264445792388751">O sistema de ficheiros foi desativado pelo seu administrador</translation>
 <translation id="3518941727116570328">Processamento de vários objetos</translation>
 <translation id="3519670528214225835">Pergunte ao <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3520762308733579540">Adicione um veículo à Carteira do Google</translation>
 <translation id="3525130752944427905">10 x 14 pol.</translation>
 <translation id="3525435918300186947">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="3527624163937328588">Remover anexo</translation>
@@ -1816,6 +1823,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4103249731201008433">Número de série do dispositivo é inválido</translation>
 <translation id="4103592298805904008">Cartão (parede única)</translation>
 <translation id="4104702906064390950">A guardar as informações do IBAN</translation>
+<translation id="4104995898379951162">Adicione um Known Traveler Number em segurança</translation>
 <translation id="4106101218644797743">definições de sincronização</translation>
 <translation id="4106887816571530227">Conteúdo incorporado não permitido</translation>
 <translation id="4107047499377819067">A instalação dos serviços em segundo plano da VPN foi iniciada. Esta operação pode demorar alguns minutos.</translation>
@@ -1873,6 +1881,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4195459680867822611">Botão Ver sugestões do Chrome; ative para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4196861286325780578">&amp;Refazer movimentação</translation>
+<translation id="4199131764832701740">Adicione um passaporte à Carteira do Google</translation>
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Rever as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
@@ -2238,6 +2247,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">Atualize o cartão de identificação em segurança</translation>
 <translation id="4807098396393229769">Nome no cartão</translation>
+<translation id="4808598252755230865">Adicione um Known Traveler Number em segurança à Carteira do Google</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4811450222531576619">Saiba mais sobre a respetiva origem e tópico</translation>
 <translation id="4811696127853690432">Guarde o veículo em segurança na Carteira do Google</translation>
@@ -2267,6 +2277,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4855395119669662878">O seu administrador vai começar a carregar os seus ficheiros para o <ph name="CLOUD_PROVIDER" /> à(s) <ph name="DATE_TIME" />. Mantenha o dispositivo ligado até o carregamento de ficheiros estar concluído. Durante o carregamento, só vai poder ler os ficheiros locais.</translation>
 <translation id="485902285759009870">A validar o código…</translation>
 <translation id="4860260582253463350">Para continuares a aceder ao YouTube, temos de validar a tua identidade. Vais ter as definições que os teus pais ou tutor configuraram no Family Link.</translation>
+<translation id="4861514638281352187">Adicione um número de reparação em segurança</translation>
 <translation id="4862642413395066333">Respostas OCSP de assinatura</translation>
 <translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
 <translation id="486459320933704969">O teu adulto responsável ou tutor tem de indicar que podes visitar este Website.</translation>
@@ -2698,6 +2709,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="55635442646131152">Contorno do documento</translation>
 <translation id="5563589142503817291">Para usar a localização, dê acesso ao Chrome nas <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Abrir separador de navegação anónima</translation>
+<translation id="5565613377956908865">Adicione um cartão de identificação à Carteira do Google</translation>
 <translation id="5565735124758917034">Ativo</translation>
 <translation id="5570825185877910964">Proteger conta</translation>
 <translation id="5571083550517324815">Não é possível recolher a partir deste endereço. Selecione um diferente.</translation>
@@ -2885,6 +2897,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5895694128043506580">O Google Chrome está a tentar mostrar informações confidenciais</translation>
 <translation id="5898767305816764989">Botão Gosto, prima Enter para enviar feedback a indicar que gosta, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Amarelo</translation>
+<translation id="5902204772823742902">Adicione uma carta de condução em segurança à Carteira do Google</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5905671155741555195">A sua morada do trabalho pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
@@ -3304,6 +3317,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6613866251791999074">Saber mais sobre o seu motor de pesquisa no Chrome</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6619496928666593220">IBAN não preenchido</translation>
+<translation id="662009501953240458">Adicione um veículo em segurança à Carteira do Google</translation>
 <translation id="6624427990725312378">Informações de contacto</translation>
 <translation id="6625629379283886932">Ensina-me a programar</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Pesquisar</translation>
@@ -3674,6 +3688,7 @@ Detalhes adicionais:
 <translation id="7261463765917514051">Faça pagamentos em segurança com o preenchimento automático</translation>
 <translation id="7265608370113700582">A morada só está disponível neste dispositivo</translation>
 <translation id="7266094331715305887">apps no dispositivo</translation>
+<translation id="7268742523336093718">Adicione um passaporte em segurança à Carteira do Google</translation>
 <translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Os ficheiros que transfere são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="7275334191706090484">Marcadores Geridos</translation>
@@ -4242,6 +4257,7 @@ Detalhes adicionais:
 <translation id="8241707690549784388">A página que procura utilizou informações introduzidas por si. Regressar a essa página poderá originar a repetição de qualquer ação que tenha efetuado. Quer continuar?</translation>
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="824620968958405573">Tarefa de navegação automática</translation>
+<translation id="8247824837030847066">Adicione um cartão de identificação em segurança</translation>
 <translation id="8248406213705193919">Guardar o cartão de forma segura?</translation>
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="8250094606476360498">Este morada está atualmente guardada neste dispositivo. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="ACCOUNT" />.</translation>
@@ -4662,6 +4678,7 @@ Detalhes adicionais:
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">Sessão de RV em curso</translation>
 <translation id="9005998258318286617">Falha ao carregar o documento PDF.</translation>
+<translation id="900686221526305417">Adicione um veículo em segurança</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9010187979699879769">Cria um plano de estudo para mim</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nenhum}=1{De 1 site}other{De # sites}}</translation>
@@ -4816,6 +4833,7 @@ Detalhes adicionais:
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo site no Google Sites</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membros aderiram ao grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pediste para visitar este site. O teu adulto responsável pode responder no Family Link.</translation>
+<translation id="949484466204182817">Adicione um número de reparação à Carteira do Google</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gestor de Palavras-passe da Google</translation>
 <translation id="952165179818196872">Adicione o fornecedor <ph name="PROVIDER" /> para fazer pagamentos sem mudar de app</translation>
@@ -4830,6 +4848,7 @@ Detalhes adicionais:
 <translation id="962484866189421427">Este conteúdo poderá tentar instalar aplicações fraudulentas que se fazem passar por algo diferente ou que recolhem dados que podem ser utilizados para o monitorizar. <ph name="BEGIN_LINK" />Mostrar, mesmo assim<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Com base numa lei na sua região, o Chromium pede-lhe para escolher o seu motor de pesquisa predefinido. Estes motores de pesquisa são populares na sua região e são apresentados por ordem aleatória.</translation>
 <translation id="963837307749850257">Todos os utilizadores</translation>
+<translation id="963988220224168636">Adicione um número de reparação em segurança à Carteira do Google</translation>
 <translation id="964050462028070434">Gerir palavras-passe e chaves de acesso…</translation>
 <translation id="964681140808832181">Sim, quero cancelar</translation>
 <translation id="969892804517981540">Compilação oficial</translation>

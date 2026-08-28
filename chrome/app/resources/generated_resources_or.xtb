@@ -4979,7 +4979,6 @@
 <translation id="4831226137013573603">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
 <translation id="483262387981411190">ଫେସ ନିୟନ୍ତ୍ରଣକୁ ବିରତ କରନ୍ତୁ କିମ୍ବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4833683849865011483">ପ୍ରିଣ୍ଟ ସର୍ଭରରୁ 1ଟି ପ୍ରିଣ୍ଟର୍ ମିଳିଲା</translation>
-<translation id="4834388789911023644">ଏକ ରିଭ୍ୟୁ ଲେଖନ୍ତୁ</translation>
 <translation id="4835598628985424375">ଓଠକୁ ଏକତ୍ର ସ୍କୁଇଜ କରି ଭିତରକୁ ଟାଣନ୍ତୁ</translation>
 <translation id="4835677468087803981">PIN ଲୁଚାନ୍ତୁ</translation>
 <translation id="4836504898754963407">ଟିପଚିହ୍ନଗୁଡ଼ିକର ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -8518,7 +8517,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7625823789272218216">ବାମ ପଟେ ଥିବା ନୂଆ ଟାବ</translation>
 <translation id="762730429396410864">ୱେବସାଇଟଗୁଡ଼ିକୁ ରିପୋର୍ଟ କରାଯାଇଥିବା CPU ପରଫରମାନ୍ସ ଟାୟରକୁ ମାନୁଆଲୀ ସେଟ କରନ୍ତୁ</translation>
 <translation id="7627749368210392160">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଏହି ଫିଚରକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
-<translation id="7628068697012244394">ଏକ ରିଭ୍ୟୁ ଲେଖନ୍ତୁ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ଗ୍ରେଡ୍ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ପ୍ରତ୍ୟେକ କୀ ପାଇଁ ଏକ କାର୍ଯ୍ୟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7629206210984165492">ସବଡ୍ୟୁଡ</translation>
@@ -9516,6 +9514,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8383614331548401927">Recapକୁ ସ୍ୱାଗତ</translation>
 <translation id="8387157483437834731">ସଫଳତାର ସହିତ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ ହୋଇଛି</translation>
 <translation id="8387361103813440603">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="8387617938027387193">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8389492867173948260">ୱେବ୍‌ସାଇଟ୍‌ରେ ଆପଣ ଦେଖିଥିବା ସମସ୍ତ ଡାଟାକୁ ପଢିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="8390449457866780408">ସର୍ଭର୍‌ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="8391172837960094276">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଭ୍ୟୁ ଏବଂ ପରିଚାଳନା କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -10616,7 +10615,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="942296794412775122">ମାଇକ୍ରୋଫୋନ ଚାଲୁ/ବନ୍ଦ ଅଛି</translation>
 <translation id="942488123151518958">ବିରତ କରନ୍ତୁ (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ଏକ ଟାବ୍‍ ଏବଂ ଅଡ଼ିଓ ସେୟାର୍‌ କରୁଛି।</translation>
-<translation id="943744232549395906">ଭଏସ ଟାଇପିଂ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947156494302904893">ଆପଣ ଜଣେ ପ୍ରକୃତ ବ୍ୟକ୍ତି ଏବଂ ଏକ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="947329552760389097">&amp;ଉପାଦାନଗୁଡ଼ିକ ନିରୀକ୍ଷଣ କରନ୍ତୁ</translation>

@@ -1033,7 +1033,6 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 如果此政策设为 False 或未设置，则不会捕获任何事件。</translation>
 <translation id="1692990221685273468">确定内置证书验证程序是否会强制执行从平台可信存储区加载的信任锚中经过编码的限制条件。</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
-<translation id="169509902091359310">不允许使用“语音输入”功能。</translation>
 <translation id="1696501581280568361">建议进行资料分离</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
 
@@ -2777,17 +2776,6 @@ PAC 样式的字符串：
       如果停用此设置，网页就无法使用 JavaScript，用户也无法更改该设置。
 
       如果启用或不设定此设置，网页就可以使用 JavaScript，但用户可以更改该设置。</translation>
-<translation id="2746385336260438202">“语音输入”功能依托 AI 技术，让用户可以通过语音输入和编辑文字。该功能由生成式 AI 模型提供支持，可提供高质量的转写文本和格式编排。
-
-0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
-
-1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示不允许使用此功能。
-
-如果未设置此政策，相关行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="274769314493317695">如果为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。</translation>
@@ -4702,7 +4690,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
-<translation id="4042229154265896020">允许使用“语音输入”功能。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4047633048700722778">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
@@ -7254,7 +7241,6 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
           如果您停用了此设置，密码管理工具将不允许在密码管理工具窗口中以明文形式显示存储的密码。
 
           如果您启用了此政策或未设置此政策，用户将可以在密码管理工具中查看以明文形式显示的密码。</translation>
-<translation id="561873855783619782">允许使用“语音输入”功能，但不允许收集数据。</translation>
 <translation id="5620392548325769024">在操作系统升级后，允许该浏览器首次启动时显示欢迎页面</translation>
 <translation id="5621503441067774084">允许在登录屏幕上使用光标突出显示</translation>
 <translation id="5622590774455244290">Android 应用可能会主动选择采纳该列表，但您无法强制它们这样做。</translation>
@@ -11992,7 +11978,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8634062512783775032">使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密（若支持）</translation>
 <translation id="8637566476051166626">明确允许使用的网络端口</translation>
 <translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>
-<translation id="8644225074581442734">“语音输入”功能设置</translation>
 <translation id="864611373241249369"><ph name="LACROS_NAME" /> 停用后，系统会尝试迁移所有数据。</translation>
 <translation id="8648844602494595665">此政策旨在控制多功能框中的锁形图标处理方式。
        自 Chrome M93 起，多功能框中会有一个新的“安全连接”图标。

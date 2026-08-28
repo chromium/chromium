@@ -4975,7 +4975,6 @@
 <translation id="4831226137013573603">マイクのミュート</translation>
 <translation id="483262387981411190">顔コントロールを一時停止または再開する</translation>
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
-<translation id="4834388789911023644">レビューを書く</translation>
 <translation id="4835598628985424375">唇をくっつけてすぼめる</translation>
 <translation id="4835677468087803981">PIN を非表示</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
@@ -8513,7 +8512,6 @@
 <translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="762730429396410864">ウェブサイトに報告される CPU のパフォーマンス ティアを手動で設定します</translation>
 <translation id="7627749368210392160">サイトはこの機能を使用して、ローカル ネットワーク上の他のデバイスにアクセスできます</translation>
-<translation id="7628068697012244394">レビューを書く</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
 <translation id="762917478230183172">キーごとに操作を選択</translation>
 <translation id="7629206210984165492">控え目</translation>
@@ -9511,6 +9509,7 @@
 <translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="8387157483437834731">パスワードを変更しました</translation>
 <translation id="8387361103813440603">位置情報の取得を許可しないサイト</translation>
+<translation id="8387617938027387193">本人確認</translation>
 <translation id="8389492867173948260">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します。</translation>
 <translation id="8390449457866780408">サーバーを使用できません。</translation>
 <translation id="8391172837960094276">パスワードを表示、管理するには、<ph name="BEGIN_LINK" />本人確認を行ってください<ph name="END_LINK" />。</translation>
@@ -10611,7 +10610,6 @@
 <translation id="942296794412775122">マイクのオン / オフ</translation>
 <translation id="942488123151518958">一時停止（K）</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> が Chrome タブと音声を共有しています。</translation>
-<translation id="943744232549395906">音声入力を停止しました</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>

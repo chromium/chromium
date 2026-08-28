@@ -1074,7 +1074,6 @@ Mulai <ph name="PRODUCT_NAME" /> 147, kebijakan ini tidak akan digunakan lagi. A
 Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada peristiwa yang akan direkam.</translation>
 <translation id="1692990221685273468">Menentukan apakah pemverifikasi sertifikat bawaan akan menerapkan batasan yang dienkode ke trust anchor yang dimuat dari penyimpanan trust platform.</translation>
 <translation id="169467210981344373">Nonaktifkan cache autentikasi HTTP yang tercakup secara global</translation>
-<translation id="169509902091359310">Jangan izinkan fitur Dikte.</translation>
 <translation id="1696501581280568361">Menyarankan pemisahan profil</translation>
 <translation id="1698810555265314018">Mengontrol resolusi gambar cetak saat <ph name="PRODUCT_NAME" /> mencetak PDF dengan rasterisasi.
 
@@ -2112,7 +2111,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan mengubah daftar aplika
 <translation id="2294382669900758280">Pemutaran video di aplikasi Android tidak dipertimbangkan, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
 <translation id="2299815818824242485">Jangan izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
-<translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>
+<translation id="2303795211377219696">Mengaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="2304009805995145854">Sejak <ph name="PRODUCT_NAME" /> 67, isolasi situs telah diaktifkan secara default di semua platform Desktop, yang menyebabkan setiap situs berjalan dalam prosesnya sendiri. Situs adalah skema plus eTLD+1 (misalnya, https://example.com). Menyetel kebijakan ke Aktif tidak mengubah perilaku tersebut; hanya mencegah pengguna menonaktifkannya (misalnya, menggunakan Nonaktifkan isolasi situs di chrome://flags). Sejak <ph name="PRODUCT_NAME" /> 76, menyetel kebijakan ini ke Nonaktif atau membiarkannya tanpa disetel tidak akan menonaktifkan isolasi situs, tetapi memungkinkan pengguna untuk menonaktifkannya.
 
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> mungkin juga berguna untuk mengisolasi asal tertentu pada tingkat perincian yang lebih baik daripada situs (misalnya, https://a.example.com).
@@ -2908,17 +2907,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
       Jika setelan ini dinonaktifkan, halaman web tidak dapat menggunakan JavaScript dan pengguna tidak dapat mengubah setelan ini.
 
       Jika setelan ini diaktifkan atau tidak disetel, halaman web dapat menggunakan JavaScript, namun pengguna dapat mengubah setelan tersebut.</translation>
-<translation id="2746385336260438202">Fitur Dikte adalah fitur berbasis AI yang memungkinkan pengguna memasukkan dan mengedit teks menggunakan suara mereka, yang didukung oleh model AI generatif untuk memberikan transkripsi dan pemformatan berkualitas tinggi.
-
-Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="274769314493317695">Jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -4895,7 +4883,6 @@ Pertimbangan:
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
 <translation id="4030152268425532846">Nonaktifkan pembatalan login otomatis</translation>
-<translation id="4042229154265896020">Izinkan fitur Dikte.</translation>
 <translation id="4043796890723386527">Cegah pengguna membuat dan menggunakan profil sekunder serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Menyetel kebijakan akan mengontrol filter URL SafeSites, yang menggunakan Google Safe Search API untuk mengklasifikasikan URL bersifat pornografi atau bukan.
 
@@ -5955,7 +5942,7 @@ Setelah penyiapan awal, pengguna dapat mengaktifkan atau menonaktifkan layanan l
 <translation id="467449052039111439">Buka daftar URL</translation>
 <translation id="4674542060943819878">Aktifkan penutupan notifikasi sandi yang telah dibobol</translation>
 <translation id="4674871290487541952">Mengizinkan algoritme tidak aman dalam pemeriksaan integritas selama penginstalan dan update ekstensi</translation>
-<translation id="4680961954980851756">Aktifkan IsiOtomatis</translation>
+<translation id="4680961954980851756">Aktifkan Isi Otomatis</translation>
 <translation id="46845898956959634">Izinkan Bantu Tulis dan tingkatkan kualitas model AI.</translation>
 <translation id="4685721728282448265">Perjanjian kunci pasca-kuantum CECPQ2 diaktifkan untuk TLS</translation>
 <translation id="468822697351680932">Gunakan kebijakan SiteList Internet Explorer sebagai sumber aturan</translation>
@@ -7585,7 +7572,6 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
           Jika setelan ini dinonaktifkan, pengelola sandi tidak mengizinkan sandi yang disimpan untuk ditampilkan dalam teks jelas di jendela pengelola sandi.
 
           Jika kebijakan ini diaktifkan atau tidak ditetapkan, pengguna dapat melihat sandi dalam teks jelas di pengelola sandi.</translation>
-<translation id="561873855783619782">Izinkan fitur Dikte tanpa pengumpulan data.</translation>
 <translation id="5620392548325769024">Mengaktifkan kebijakan yang menampilkan halaman sambutan saat browser pertama kali diluncurkan setelah upgrade OS</translation>
 <translation id="5621503441067774084">Aktifkan sorotan kursor di layar login</translation>
 <translation id="5622590774455244290">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela dan tidak dapat dipaksa untuk melakukannya.</translation>
@@ -9000,7 +8986,7 @@ Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, sandi SAML tidak akan dapat diubah di chrome://password-change dan tidak akan ada notifikasi saat masa berlaku sandi SAML hampir habis.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Jika kebijakan disetel ke Aktif atau tidak disetel, semua pengguna dapat menggunakan <ph name="PRODUCT_CROSTINI_NAME" />, selama ketiga kebijakan, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" />, dan <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />, disetel ke Aktif. Jika kebijakan disetel ke Nonaktif, pengguna yang tidak terafiliasi tidak dapat menggunakan <ph name="PRODUCT_CROSTINI_NAME" />. Jika setelan diubah ke Nonaktif, kebijakan mulai diterapkan ke penampung <ph name="PRODUCT_CROSTINI_NAME" /> baru yang akan dijalankan, bukan yang sudah berjalan.</translation>
-<translation id="6464074037294098618">Mengaktifkan IsiOtomatis untuk alamat</translation>
+<translation id="6464074037294098618">Mengaktifkan Isi Otomatis untuk alamat</translation>
 <translation id="6464564464230511695">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> akan diizinkan di semua halaman web.
 
 Jika kebijakan disetel ke Nonaktif, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> tidak akan tersedia di halaman web mana pun.
@@ -12592,7 +12578,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8634062512783775032">Gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna, jika didukung</translation>
 <translation id="8637566476051166626">Secara eksplisit mengizinkan port jaringan</translation>
 <translation id="8643838501942693770">Izinkan cookie pihak ketiga, tetapi izinkan pengguna mengubah setelan ini</translation>
-<translation id="8644225074581442734">Setelan untuk fitur Dikte</translation>
 <translation id="864611373241249369">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba memigrasikan semua data.</translation>
 <translation id="8648844602494595665">Kebijakan ini mengontrol perlakuan terhadap ikon gembok di omnibox.
        Mulai Chrome M93, akan ada ikon omnibox baru untuk koneksi aman.

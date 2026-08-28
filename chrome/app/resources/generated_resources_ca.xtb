@@ -353,6 +353,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}other{{BOOKMARK_COUNT} adreces d'interès i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google. Amb aquesta acció, també s'eliminaran els duplicats que hi hagi.}}</translation>
 <translation id="125220115284141797">Predeterminats</translation>
 <translation id="1252219782845132919">Amaga el grup</translation>
+<translation id="1252597096488926946">Deixa de fixar els botons de desplaçament</translation>
 <translation id="1252987234827889034">S'ha produït un error amb el perfil</translation>
 <translation id="1254034280040157728">Gran Canyó</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
@@ -971,6 +972,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1755601632425835748">Mida del text</translation>
 <translation id="1756963401828337401">Tria una pantalla per capturar-la</translation>
 <translation id="17584710573359123">Mostra a Chrome Web Store</translation>
+<translation id="176013700366797492">Visita Google Wallet per controlar les <ph name="BEGIN_LINK1" />preferències de dades i privadesa<ph name="END_LINK1" /> o gestionar les <ph name="BEGIN_LINK2" />formes de pagament<ph name="END_LINK2" /> i els <ph name="BEGIN_LINK3" />passis<ph name="END_LINK3" />, com ara les targetes de fidelització i els documents d'identitat</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> s'ha remapat a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Comptes de: <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggeriments de compra</translation>
@@ -1949,6 +1951,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2508747373511408451">L'aplicació <ph name="APPLICATION_NAME" /> requereix que Google Drive estigui disponible.</translation>
 <translation id="2509495747794740764">El valor de l'escala ha d'oscil·lar entre 10 i 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionat)</translation>
 <translation id="2513904627589542105">Prova automàtica</translation>
 <translation id="251425554130284360">Estàs veient les pàgines que has visitat i les cerques suggerides per ajudar-te a tornar fàcilment a la teva activitat més recent.
@@ -8933,6 +8936,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7949038991703929816">No s'ha pogut carregar l'historial. Assegura't que els fitxers continguin registres de l'actualitzador vàlids.</translation>
 <translation id="7950629216186736592">Motiu: LBS només admet els URL http://, https://, i file://.</translation>
 <translation id="7950814699499457511">Activada • Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades</translation>
+<translation id="7951159420392892566">Deixa de fixar els botons de desplaçament</translation>
 <translation id="795130320946928025">Desactiva la targeta virtual</translation>
 <translation id="7952708427581814389">Els llocs web poden demanar permís per veure el text i les imatges del teu porta-retalls</translation>
 <translation id="7953236668995583915">Torna a carregar aquesta pàgina per aplicar la configuració actualitzada en aquest lloc web</translation>
@@ -9507,6 +9511,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8383614331548401927">Resum de benvinguda</translation>
 <translation id="8387157483437834731">La contrasenya s'ha canviat correctament</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
+<translation id="8387617938027387193">Verifica la teva identitat</translation>
 <translation id="8389492867173948260">Permet que aquesta extensió llegeixi i modifiqui totes les dades dels llocs web que visitis.</translation>
 <translation id="8390449457866780408">El servidor no està disponible.</translation>
 <translation id="8391172837960094276">Per veure i gestionar les contrasenyes, <ph name="BEGIN_LINK" />verifica la teva identitat<ph name="END_LINK" />.</translation>
@@ -10607,7 +10612,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="942296794412775122">Micròfon activat/desactivat</translation>
 <translation id="942488123151518958">Posa en pausa (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> està compartint una pestanya de Chrome i l'àudio.</translation>
-<translation id="943744232549395906">L'escriptura per veu s'ha aturat</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="947329552760389097">&amp;Inspecciona els elements</translation>

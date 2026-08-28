@@ -4993,7 +4993,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4831226137013573603">slå mikrofonens lyd fra</translation>
 <translation id="483262387981411190">Sæt ansigtsstyring på pause, eller genoptag</translation>
 <translation id="4833683849865011483">Der blev fundet 1 printer på printerserveren</translation>
-<translation id="4834388789911023644">Skriv en anmeldelse</translation>
 <translation id="4835598628985424375">Lav trutmund ved at klemme læberne sammen</translation>
 <translation id="4835677468087803981">Skjul pinkode</translation>
 <translation id="4836504898754963407">Administrer fingeraftryk</translation>
@@ -8536,7 +8535,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="762730429396410864">Angiv manuelt det niveau for CPU-ydeevne, der rapporteres til websites</translation>
 <translation id="7627749368210392160">Websites kan bruge denne funktion til at få adgang til andre enheder på dit lokale netværk</translation>
-<translation id="7628068697012244394">Skriv en anmeldelse</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vælg en handling for hver nøgle</translation>
 <translation id="7629206210984165492">Afdæmpet</translation>
@@ -9535,6 +9533,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8383614331548401927">Velkomstoversigt</translation>
 <translation id="8387157483437834731">Adgangskoden blev ændret</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din lokation</translation>
+<translation id="8387617938027387193">Verificer din identitet</translation>
 <translation id="8389492867173948260">Tillad, at denne udvidelse læser og ændrer alle dine data på websites, du besøger:</translation>
 <translation id="8390449457866780408">Serveren er utilgængelig.</translation>
 <translation id="8391172837960094276"><ph name="BEGIN_LINK" />Verificer din identitet<ph name="END_LINK" /> for at se og administrere dine adgangskoder.</translation>
@@ -10636,7 +10635,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="942296794412775122">Mikrofon til/fra</translation>
 <translation id="942488123151518958">Sæt på pause (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler en Chrome-fane og lyd.</translation>
-<translation id="943744232549395906">Indtaling er stoppet</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="947329552760389097">&amp;Inspect Elements (Undersøg elementer)</translation>

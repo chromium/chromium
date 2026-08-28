@@ -4977,7 +4977,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4831226137013573603">disattivazione dell'audio del microfono</translation>
 <translation id="483262387981411190">Metti in pausa o riprendi il controllo del volto</translation>
 <translation id="4833683849865011483">1 stampante trovata sul server di stampa</translation>
-<translation id="4834388789911023644">Scrivi una recensione</translation>
 <translation id="4835598628985424375">Protendi insieme le labbra</translation>
 <translation id="4835677468087803981">Nascondi il PIN</translation>
 <translation id="4836504898754963407">Gestisci impronte</translation>
@@ -8515,7 +8514,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7625823789272218216">Posizionamento nuova scheda a sinistra</translation>
 <translation id="762730429396410864">Imposta manualmente il livello di prestazioni della CPU segnalato ai siti web</translation>
 <translation id="7627749368210392160">I siti possono usare questa funzionalità per accedere ad altri dispositivi connessi alla rete locale</translation>
-<translation id="7628068697012244394">Scrivi una recensione</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Seleziona un'azione per ogni tasto</translation>
 <translation id="7629206210984165492">Tenue</translation>
@@ -9514,6 +9512,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8383614331548401927">Riepilogo di benvenuto</translation>
 <translation id="8387157483437834731">Password modificata correttamente</translation>
 <translation id="8387361103813440603">Non possono accedere alla tua posizione</translation>
+<translation id="8387617938027387193">Verifica la tua identità</translation>
 <translation id="8389492867173948260">Permetti a questa estensione di leggere e modificare tutti i dati relativi ai siti web che visiti:</translation>
 <translation id="8390449457866780408">Server non disponibile.</translation>
 <translation id="8391172837960094276">Per visualizzare e gestire le tue password, <ph name="BEGIN_LINK" />verifica la tua identità<ph name="END_LINK" />.</translation>
@@ -10614,7 +10613,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="942296794412775122">Microfono on/off</translation>
 <translation id="942488123151518958">Metti in pausa (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> condivide l'audio e una scheda Chrome.</translation>
-<translation id="943744232549395906">Digitazione vocale interrotta</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>

@@ -4990,7 +4990,6 @@
 <translation id="4831226137013573603">మైక్రోఫోన్ మ్యూట్</translation>
 <translation id="483262387981411190">ఫేస్ కంట్రోల్‌ను పాజ్ చేయండి లేదా కొనసాగించండి</translation>
 <translation id="4833683849865011483">ప్రింట్ సర్వర్ నుండి 1 ప్రింటర్ కనుగొనబడింది</translation>
-<translation id="4834388789911023644">రివ్యూను రాయండి</translation>
 <translation id="4835598628985424375">పెదవులను కలిపి నొక్కడం ద్వారా మూతి ముడవటం</translation>
 <translation id="4835677468087803981">PINను దాచండి</translation>
 <translation id="4836504898754963407">వేలిముద్రలను నిర్వహించండి</translation>
@@ -8530,7 +8529,6 @@
 <translation id="7625823789272218216">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="762730429396410864">వెబ్‌సైట్‌లకు రిపోర్ట్ చేసే CPU పనితీరు టయర్‌ను మీరే స్వయంగా సెట్ చేయండి</translation>
 <translation id="7627749368210392160">మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయడానికి సైట్‌లు ఈ ఫీచర్‌ను ఉపయోగించవచ్చు</translation>
-<translation id="7628068697012244394">రివ్యూను రాయండి</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), గ్రేడ్ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ఒక్కో 'కీ'కి ఒక చర్యను ఎంచుకోండి</translation>
 <translation id="7629206210984165492">నిస్తేజం</translation>
@@ -9526,6 +9524,7 @@
 <translation id="8383614331548401927">Recapకు స్వాగతం</translation>
 <translation id="8387157483437834731">పాస్‌వర్డ్ విజయవంతంగా మారింది</translation>
 <translation id="8387361103813440603">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడలేదు</translation>
+<translation id="8387617938027387193">ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8389492867173948260">మీరు సందర్శించే వెబ్‌సైట్‌లలో ఉన్న మీ డేటా మొత్తాన్ని చదవడం లేదా మార్చడం కోసం ఈ ఎక్స్‌టెన్షన్‌ను అనుమతించండి:</translation>
 <translation id="8390449457866780408">సర్వర్ అందుబాటులో లేదు.</translation>
 <translation id="8391172837960094276">మీ పాస్‌వర్డ్‌లను చూడటానికి, మేనేజ్ చేయడానికి, <ph name="BEGIN_LINK" />ఇది మీరేనని వెరిఫై చేయండి<ph name="END_LINK" />.</translation>
@@ -10626,7 +10625,6 @@
 <translation id="942296794412775122">మైక్రోఫోన్ ఆన్/ఆఫ్</translation>
 <translation id="942488123151518958">పాజ్ చేయండి (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను మరియు ఆడియోను షేర్ చేస్తోంది.</translation>
-<translation id="943744232549395906">వాయిస్ టైపింగ్ ఆపివేయబడింది</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="947156494302904893">మీరు ఏ సైట్‌లకు అయితే వెళ్తారో, అవి మీరు నిజమైన వ్యక్తి అని, బాట్ కాదు అని వెరిఫై చేయగలవు</translation>
 <translation id="947329552760389097">&amp;మూలకాలను పర్యవేక్షించు</translation>

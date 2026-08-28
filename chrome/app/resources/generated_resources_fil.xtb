@@ -4992,7 +4992,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4831226137013573603">pang-mute ng mikropono</translation>
 <translation id="483262387981411190">I-pause o ituloy ang pagkontrol gamit ang mukha</translation>
 <translation id="4833683849865011483">May nakitang 1 printer mula sa server sa pag-print</translation>
-<translation id="4834388789911023644">Magsulat ng review</translation>
 <translation id="4835598628985424375">Ngumuso gamit ang iyong mga labi</translation>
 <translation id="4835677468087803981">I-hide ang PIN</translation>
 <translation id="4836504898754963407">Pamahalaan ang mga fingerprint</translation>
@@ -8535,7 +8534,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7625823789272218216">Bagong Tab sa Kaliwa</translation>
 <translation id="762730429396410864">Manual na itakda ang tier ng performance ng CPU na iniuulat sa mga website</translation>
 <translation id="7627749368210392160">Puwedeng gamitin ng mga site ang feature na ito para i-access ang iba pang device sa iyong lokal na network</translation>
-<translation id="7628068697012244394">Magsulat ng Review</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Antas <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Pumili ng pagkilos para sa bawat key</translation>
 <translation id="7629206210984165492">Subdued</translation>
@@ -9534,6 +9532,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8387157483437834731">Matagumpay na napalitan ang password</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
+<translation id="8387617938027387193">I-verify na ikaw ito</translation>
 <translation id="8389492867173948260">Pahintulutan ang extension na ito na i-read at baguhin ang lahat ng iyong data sa mga website na binibisita mo:</translation>
 <translation id="8390449457866780408">Hindi available ang server.</translation>
 <translation id="8391172837960094276">Para tingnan at pamahalaan ang iyong mga password, <ph name="BEGIN_LINK" />i-verify na ikaw ito<ph name="END_LINK" />.</translation>
@@ -10636,7 +10635,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="942296794412775122">I-on/i-off ang mikropono</translation>
 <translation id="942488123151518958">I-pause (k)</translation>
 <translation id="942532530371314860">Nagbabahagi ng tab ng Chrome at audio ang <ph name="APP_NAME" />.</translation>
-<translation id="943744232549395906">Huminto ang voice typing</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
 <translation id="947329552760389097">&amp;Siyasatin ang Mga Element</translation>

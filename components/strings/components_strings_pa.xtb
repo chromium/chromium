@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">ਫ਼ਾਈਲਾਂ ਤਿਆਰ ਹੋ ਰਹੀਆਂ ਹਨ</translation>
 <translation id="1014509239502131234">ਨਤੀਜੇ ਨੂੰ ਅਣਕੀਤਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1015730422737071372">ਵਾਧੂ ਵੇਰਵੇ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
+<translation id="1016671033299705843">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1019413721762100891">ਬੰਦ</translation>
 <translation id="1021753677514347426">ਇਹ ਸਮੱਸਿਆ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਜਾਂ ਕਿਸੇ ਹੋਰ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤੇ ਕਿਸੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਕਰਕੇ ਆਈ। ਇਹ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੈੱਟਵਰਕਾਂ 'ਤੇ ਨਿਗਰਾਨੀ ਰੱਖਣ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਰੋਕਣ ਲਈ ਜਾਣਿਆ ਜਾਂਦਾ ਹੈ, ਅਤੇ Chromium ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਹਾਲਾਂਕਿ ਕੁਝ ਵੈਧ ਮਾਮਲਿਆਂ ਵਿੱਚ ਵੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿਵੇਂ ਕਿ ਸਕੂਲ ਜਾਂ ਕੰਪਨੀ ਦੇ ਨੈੱਟਵਰਕ 'ਤੇ, Chromium ਇਹ ਪੱਕਾ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਇਸ ਗੱਲ ਦੀ ਜਾਣਕਾਰੀ ਹੈ ਕਿ ਇਸ ਤਰ੍ਹਾਂ ਹੋ ਰਿਹਾ ਹੈ, ਭਾਵੇਂ ਤੁਸੀਂ ਇਸਨੂੰ ਰੋਕ ਨਹੀਂ ਸਕਦੇ। ਵੈੱਬ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਲੇ ਕਿਸੇ ਵੀ ਬ੍ਰਾਊਜ਼ਰ ਜਾਂ ਐਪਲੀਕੇਸ਼ਨ 'ਤੇ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1024111578869940408">ਹਮਲਾਵਰ ਕਦੇ-ਕਦਾਈਂ ਵੈੱਬ ਪਤੇ ਵਿੱਚ ਮੁਸ਼ਕਲ ਨਾਲ ਪਤਾ ਲੱਗਣ ਵਾਲੀਆਂ ਨਿੱਕੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਕੇ ਸਾਈਟਾਂ ਦੀ ਨਕਲ ਤਿਆਰ ਕਰਦੇ ਹਨ।</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument ਪੇਸ਼ਕਾਰੀ</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1393071644879491291">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਉਸ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਨੂੰ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਫ਼ੋਨ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰਾਂ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੇ ਹਨ। Chrome ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਨਾ ਜਾਣ ਦੀ ਜ਼ੋਰਦਾਰ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Google Wallet ਵਿੱਚ ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1398743098754840707">ਜਵਾਬਾਂ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਥੇ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦਾ ਹਵਾਲਾ ਨਹੀਂ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਭਾਵੇਂ ਟੈਬ ਖੁੱਲ੍ਹੀ ਹੋਵੇ। ਜੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ ਸਾਈਟ ਵਰਤਮਾਨ ਵਿੱਚ ਕਿਸੇ ਥ੍ਰੈੱਡ ਵਿੱਚ ਵਰਤੀ ਜਾ ਰਹੀ ਹੈ, ਤਾਂ ਥ੍ਰੈੱਡ ਨੂੰ ਇਸਦਾ ਹਵਾਲਾ ਦੇਣਾ ਬੰਦ ਕਰਨ ਵਿੱਚ 30 ਮਿੰਟ ਤੱਕ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
 <translation id="1406370515365284486">ਤੁਹਾਡੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਾਲੇ ਵੀ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">ਤੁਸੀਂ ਜੋ ਵੀ ਟਾਈਪ ਕਰਦੇ ਹੋ, ਤੁਸੀਂ ਜੋ ਵੀ ਪੰਨੇ ਦੇਖਦੇ ਹੋ ਜਾਂ ਵੈੱਬ 'ਤੇ ਕੋਈ ਵੀ ਹੋਰ ਸਰਗਰਮੀ ਕਰਦੇ ਹੋ, ਉਸ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾਂਦੀ ਹੈ। ਸਾਈਟਾਂ 'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2289385804009217824">ਕਟਾਈ</translation>
 <translation id="2292556288342944218">ਤੁਹਾਡੀ ਇੰਟਰਨੈੱਟ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="2294150501457238325">ਪਾਸਪੋਰਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2295831393422400053">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਨੂੰ ਵਰਤਣ ਲਈ 'ਖੋਜਾਂ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ' ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2296244067976588032">ਪਾਸਕੀ • iCloud Keychain</translation>
 <translation id="2296331629987861142">ਆਸਾਨ ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ (ਯੋਗਤਾ ਦੇ ਅਧੀਨ, ਫ਼ੀਸਾਂ ਲਾਗੂ)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">ਖਰੀਦਦਾਰੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2933624813161016821">ਐਮਬੌਸਿੰਗ ਫ਼ੋਇਲ</translation>
 <translation id="2935726091208500473">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="2936698630976431647">Google Wallet ਤੋਂ ਪੇਸ਼ਕਸ਼ਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨ ਲਈ ਪ੍ਰੋਮੋ ਕੋਡ ਖੇਤਰ ਚੁਣੋ</translation>
 <translation id="293796669683825859">ਟਿੱਪਣੀਆਂ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – ਆਪਣਾ ਕਰਸਰ ਦਿਖਾਉਣ ਲਈ, ਐਪਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰੋ, ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ ਜਾਂ ਵਾਪਸ ਜਾਓ</translation>
@@ -1281,6 +1285,7 @@
 <translation id="3190736958609431397">ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਈ ਤੌਰ 'ਤੇ ਡਾਟਾ ਸਟੋਰ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Google Wallet ਵਿੱਚ ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 'ਤੇ <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">ਬੁਕਿੰਗ CODE</translation>
 <translation id="3196902089458890316">ਕੀ ਬਿਹਤਰ ਜਵਾਬਾਂ ਲਈ ਢੁਕਵੀਆਂ ਟੈਬਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
@@ -1388,6 +1393,7 @@
 <translation id="3380864720620200369">ਕਲਾਇੰਟ ਆਈਡੀ:</translation>
 <translation id="3383566085871012386">ਮੌਜੂਦਾ ਤਰਜੀਹ ਕ੍ਰਮ</translation>
 <translation id="3383713837163550889">ਤੁਹਾਡੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਨੂੰ 1 ਮਿੰਟ ਵਿੱਚ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="33837817515081754">Google Wallet ਵਿੱਚ ਯਾਤਰਾ ਆਈਡੀ ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3384522979010096022">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਨੂੰ ਦੇਖਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ</translation>
 <translation id="3391030046425686457">ਡਿਲੀਵਰੀ ਪਤਾ</translation>
 <translation id="3391482648489541560">ਫ਼ਾਈਲ ਸੰਪਾਦਨ</translation>
@@ -1461,6 +1467,7 @@
 <translation id="3517264445792388751">ਫ਼ਾਈਲ ਸਿਸਟਮ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3518941727116570328">ਬਹੁ-ਗਿਣਤੀ ਵਸਤੂ ਸਾਂਭ-ਸੰਭਾਲ</translation>
 <translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> ਨੂੰ ਪੁੱਛੋ</translation>
+<translation id="3520762308733579540">Google Wallet ਵਿੱਚ ਵਾਹਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3525130752944427905">10 x 14 ਇੰਚ</translation>
 <translation id="3525435918300186947">ਕੀ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3527624163937328588">ਨੱਥੀ ਫ਼ਾਈਲ ਹਟਾਓ</translation>
@@ -1813,6 +1820,7 @@
 <translation id="4103249731201008433">ਡੀਵਾਈਸ ਦਾ ਸੀਰੀਅਲ ਨੰਬਰ ਅਵੈਧ ਹੈ</translation>
 <translation id="4103592298805904008">ਕਾਰਡਬੋਰਡ (ਸਿੰਗਲ ਵਾਲ)</translation>
 <translation id="4104702906064390950">IBAN ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="4104995898379951162">ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਯਾਤਰੀ ਨੰਬਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4106101218644797743">ਸਿੰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4106887816571530227">ਪਰੋਈ ਗਈ ਸਮੱਗਰੀ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="4107047499377819067">VPN ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾਵਾਂ ਸੰਬੰਧੀ ਸਥਾਪਨਾ ਸ਼ੁਰੂ ਹੋ ਗਈ ਹੈ, ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
@@ -1870,6 +1878,7 @@
 <translation id="4195459680867822611">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਦੇਖੋ' ਬਟਨ, Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4196861286325780578">&amp;ਮੂਵ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
+<translation id="4199131764832701740">Google Wallet ਵਿੱਚ ਪਾਸਪੋਰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4202554117186904723">ਪੰਜਵਾਂ ਰੋਲ</translation>
 <translation id="4203769790323223880">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ਫ਼ਾਇਰਵਾਲ ਅਤੇ ਐਂਟੀਵਾਇਰਸ ਸੰਰੂਪਣਾਂ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -2235,6 +2244,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">ਪਛਾਣ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
+<translation id="4808598252755230865">Google Wallet ਵਿੱਚ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਯਾਤਰੀ ਨੰਬਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4809079943450490359">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਿਦਾਇਤਾਂ:</translation>
 <translation id="4811450222531576619">ਇਸਦੇ ਸ੍ਰੋਤ ਅਤੇ ਵਿਸ਼ੇ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="4811696127853690432">Google Wallet ਵਿੱਚ ਵਾਹਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -2264,6 +2274,7 @@
 <translation id="4855395119669662878">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ <ph name="DATE_TIME" /> ਵਜੇ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਅੱਪਲੋਡ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਦੇਵੇਗਾ। ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਹੋਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੱਕ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਕਨੈਕਟ ਕਰ ਕੇ ਰੱਖੋ। ਅੱਪਲੋਡ ਦੀ ਪ੍ਰਕਿਰਿਆ ਦੇ ਦੌਰਾਨ, ਤੁਸੀਂ ਸਿਰਫ਼ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪੜ੍ਹ ਸਕੋਗੇ।</translation>
 <translation id="485902285759009870">ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4860260582253463350">YouTube 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਸਾਨੂੰ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਉਹ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਹੋਣਗੀਆਂ, ਜਿਨ੍ਹਾਂ ਦਾ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੇ Family Link ਵਿੱਚ ਸੈੱਟਅੱਪ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="4861514638281352187">ਰਿਡਰੈੱਸ ਨੰਬਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4862642413395066333">OCSP ਜਵਾਬ ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="4864406669374375262">ਵਰਜਨ ਸਟ੍ਰਿੰਗ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="486459320933704969">ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਇਹ ਕਹਿਣਾ ਹੋਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ</translation>
@@ -2695,6 +2706,7 @@
 <translation id="55635442646131152">ਦਸਤਾਵੇਜ਼ ਰੂਪ-ਰੇਖਾ</translation>
 <translation id="5563589142503817291">ਆਪਣੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, <ph name="LINK" /> ਵਿੱਚ ਜਾ ਕੇ Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="5565613213060953222">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
+<translation id="5565613377956908865">Google Wallet ਵਿੱਚ ਆਈਡੀ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5565735124758917034">ਸਕਿਰਿਆ</translation>
 <translation id="5570825185877910964">ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰੋ</translation>
 <translation id="5571083550517324815">ਇਸ ਪਤੇ ਤੋਂ ਪਿੱਕਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਸੇ ਵੱਖਰੇ ਪਤੇ ਨੂੰ ਚੁਣੋ।</translation>
@@ -2882,6 +2894,7 @@
 <translation id="5895694128043506580">Google Chrome ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5898767305816764989">'ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ਪਸੰਦ ਆਇਆ, ਇਸ ਬਾਰੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
+<translation id="5902204772823742902">Google Wallet ਵਿੱਚ ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5903264686717710770">ਸਿਰਲੇਖ:</translation>
 <translation id="5905671155741555195">ਤੁਹਾਡੇ ਕਾਰਜ-ਸਥਾਨ ਦਾ ਪਤਾ Google ਸੇਵਾਵਾਂ 'ਤੇ ਚੀਜ਼ਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਢੁਕਵੇਂ ਖੋਜ ਨਤੀਜੇ ਅਤੇ Google Maps 'ਤੇ ਦਿਸ਼ਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ। ਤੁਸੀਂ ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ <ph name="ACCOUNT" /><ph name="END_LINK" /> ਵਿੱਚ ਆਪਣੇ ਪਤੇ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਉਸਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ਸਿੰਕ ਕੀਤਾ)</translation>
@@ -3300,6 +3313,7 @@
 <translation id="6613866251791999074">Chrome ਵਿੱਚ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6615297766614333076">ਸਟੈਕਰ 2</translation>
 <translation id="6619496928666593220">IBAN ਭਰਿਆ ਨਹੀਂ ਗਿਆ ਸੀ</translation>
+<translation id="662009501953240458">Google Wallet ਵਿੱਚ ਵਾਹਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6624427990725312378">ਸੰਪਰਕ ਜਾਣਕਾਰੀ</translation>
 <translation id="6625629379283886932">ਮੈਨੂੰ ਕੋਡਿੰਗ ਕਰਨ ਦਾ ਤਰੀਕਾ ਸਿਖਾਓ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ਖੋਜ</translation>
@@ -3669,6 +3683,7 @@
 <translation id="7261463765917514051">ਆਟੋਫਿਲ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰੋ</translation>
 <translation id="7265608370113700582">ਪਤਾ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="7266094331715305887">ਡੀਵਾਈਸ 'ਤੇ ਐਪਾਂ</translation>
+<translation id="7268742523336093718">Google Wallet ਵਿੱਚ ਪਾਸਪੋਰਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7269151392155523061">ਸ਼ਾਰਟਕੱਟ ਅਤੇ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਖੋਜ ਇਕੱਤਰਕ ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ ਇੱਕੋ ਜਿਹੇ ਨਹੀਂ ਹੋ ਸਕਦੇ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7275334191706090484">ਵਿਵਸਥਿਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ</translation>
@@ -4238,6 +4253,7 @@
 <translation id="8241707690549784388">ਪੰਨਾ ਜੋ ਤੁਸੀਂ ਵਰਤੀ ਗਈ ਜਾਣਕਾਰੀ ਲਈ ਖੋਜ ਰਹੇ ਹੋ, ਉਹ ਤੁਸੀਂ ਦਰਜ ਕੀਤਾ ਸੀ। ਉਸ ਪੰਨਾ 'ਤੇ ਵਾਪਸ ਜਾਣ ਨਾਲ ਤੁਹਾਡੇ ਵੱਲੋਂ ਕੀਤੀ ਗਈ ਕੋਈ ਵੀ ਕਾਰਵਾਈ ਦੁਹਰਾਈ ਜਾ ਸਕਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8242426110754782860">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="824620968958405573">ਆਟੋ ਬ੍ਰਾਊਜ਼ ਕਾਰਜ</translation>
+<translation id="8247824837030847066">ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8248406213705193919">ਕੀ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8249296373107784235">ਰੋਕੋ</translation>
 <translation id="8250094606476360498">ਇਹ ਪਤਾ ਫ਼ਿਲਹਾਲ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਹੈ। ਇਸਨੂੰ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ, <ph name="ACCOUNT" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
@@ -4657,6 +4673,7 @@
 <translation id="9003639428623471314">ਕਾਹੂ ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="9004367719664099443">VR ਸੈਸ਼ਨ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="9005998258318286617">PDF ਦਸਤਾਵੇਜ਼ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
+<translation id="900686221526305417">ਵਾਹਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="9008201768610948239">ਅਣਡਿੱਠ ਕਰੋ</translation>
 <translation id="9010187979699879769">ਮੇਰੇ ਲਈ ਪੜ੍ਹਾਈ ਦੀ ਸਮਾਂ-ਸੂਚੀ ਬਣਾਓ</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ ਤੋਂ}other{# ਸਾਈਟਾਂ ਤੋਂ}}</translation>
@@ -4811,6 +4828,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ ਸਾਈਟ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> ਮੈਂਬਰ "<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ</translation>
 <translation id="949314938206378263">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>
+<translation id="949484466204182817">Google Wallet ਵਿੱਚ ਰਿਡਰੈੱਸ ਨੰਬਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="950736567201356821">ਉੱਪਰ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
 <translation id="950926967802086924">ਪਾਸਕੀ • Google Password Manager</translation>
 <translation id="952165179818196872">ਐਪਾਂ ਨੂੰ ਸਵਿੱਚ ਕੀਤੇ ਬਿਨਾਂ ਭੁਗਤਾਨ ਕਰਨ ਲਈ <ph name="PROVIDER" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -4825,6 +4843,7 @@
 <translation id="962484866189421427">ਇਹ ਸਮੱਗਰੀ ਭਰਮਾਊ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰ ਸਕਦੀ ਹੈ, ਜੋ ਕੁਝ ਹੋਰ ਹੋਣ ਦਾ ਦਾਅਵਾ ਕਰਦੀਆਂ ਹਨ ਜਾਂ ਅਜਿਹਾ ਡਾਟਾ ਇਕੱਠਾ ਕਰਦੀਆਂ ਹਨ ਜਿਸਦੀ ਵਰਤੋਂ ਨਾਲ ਤੁਹਾਡੇ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">ਤੁਹਾਡੇ ਖੇਤਰ ਦੇ ਕਨੂੰਨ ਦੇ ਆਧਾਰ 'ਤੇ, Chromium ਤੁਹਾਨੂੰ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਚੁਣਨ ਲਈ ਕਹਿੰਦਾ ਹੈ। ਇਹ ਖੋਜ ਇੰਜਣ ਤੁਹਾਡੇ ਖੇਤਰ ਵਿੱਚ ਪ੍ਰਸਿੱਧ ਹਨ ਅਤੇ ਬੇਤਰਤੀਬਵਾਰ ਕ੍ਰਮ ਵਿੱਚ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="963837307749850257">ਸਾਰੇ ਵਰਤੋਂਕਾਰ</translation>
+<translation id="963988220224168636">Google Wallet ਵਿੱਚ ਰਿਡਰੈੱਸ ਨੰਬਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="964050462028070434">ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
 <translation id="964681140808832181">ਹਾਂ, ਮੇਰੀ ਇਸਨੂੰ ਰੱਦ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="969892804517981540">ਅਧਿਕਾਰਿਤ ਬਿਲਡ</translation>

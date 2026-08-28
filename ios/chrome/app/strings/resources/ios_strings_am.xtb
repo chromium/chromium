@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">ዋጋዎችን በመከታተል ላይ</translation>
 <translation id="3038136505713492417">የይለፍ ቁልፎችዎን በዚህ መሣሪያ ላይ ለመጠቀም እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="3039671569659952257">አቃፊ ሰርዝ</translation>
+<translation id="3041835740069544003">Chrome አሁን በበለጠ ዘመናዊ የቅጽ መረዳት ተጨማሪ ቅጾችን መለየት እና መሙላት ይችላል። ይህን ለማድረግ የገፅ ይዘት እና ዩአርኤሎች በደመና ውስጥ ባለ የግል ቦታ ውስጥ ሊሰናዱ ይችላሉ። በቅንብሮች ውስጥ ያስተዳድሩ።</translation>
 <translation id="3050988301648974170">የይለፍ ቃል ፍተሻን ይክፈቱ</translation>
 <translation id="3053332585453689122">ጎጂ መሆናቸውን ለመፈተሽ የሚጎበኟቸው ዩአርሎችን እና የገፅ ይዘት ትንሽ ናሙናን፣ ውርዶችን፣ የቅጥያ እንቅስቃሴን እና የሥርዓት መረጃን ወደ የGoogle ጥንቃቄ አሰሳ ይልካል።</translation>
 <translation id="3055102495753300780">የመረጃ ማከማቻ</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{ለ{COUNT} ጣቢያ ወይም መተግበሪያ}one{ለ{COUNT} ጣቢያ ወይም መተግበሪያ}other{ለ{COUNT} ጣቢያዎች ወይም መተግበሪያዎች}}</translation>
 <translation id="3474624961160222204">እንደ <ph name="NAME" /> ይቀጥሉ</translation>
 <translation id="3476450923187944815">የይለፍ ቃላትዎን በሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
+<translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3485558910355485767">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
 <translation id="3488501490964659223">ትሮች ተዘግተዋል እና የአሰሳ ውሂብ ተሰርዟል። እርስዎ ዘግተው ወጥተዋል</translation>
 <translation id="3490396108106323715">የአሁኑን ትር አጋራ</translation>

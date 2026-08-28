@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3038136505713492417">Pokud na tomto zařízení chcete používat své přístupové klíče, ověřte svou totožnost</translation>
 <translation id="3039671569659952257">Smazat složku</translation>
+<translation id="3041835740069544003">Chrome teď díky chytřejšímu vyplňování formulářů dokáže rozpoznat a vyplnit ještě více formulářů. Aby to bylo možné, můžou se obsah stránek a adresy URL zpracovávat v soukromém prostoru v cloudu. Tuto funkci můžete spravovat v nastavení.</translation>
 <translation id="3050988301648974170">Otevřít kontrolu hesel</translation>
 <translation id="3053332585453689122">Odesílá navštívené adresy URL a malý vzorek obsahu stránek, stažených souborů, aktivity rozšíření a systémových informací do Bezpečného prohlížení Google k ověření, zda nejsou škodlivé.</translation>
 <translation id="3055102495753300780">Úložiště informací</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{pro {COUNT} web nebo aplikaci}few{pro {COUNT} weby nebo aplikace}many{pro {COUNT} webu nebo aplikací}other{pro {COUNT} webů nebo aplikací}}</translation>
 <translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Získejte přístup ke svým heslům v jiných aplikacích.</translation>
+<translation id="3479552764303398839">Teď ne</translation>
 <translation id="3485558910355485767">Nové anonymní okno</translation>
 <translation id="3488501490964659223">Karty byly zavřeny a byly vymazány údaje o prohlížení. Byli jste odhlášeni</translation>
 <translation id="3490396108106323715">Sdílet aktuální kartu</translation>

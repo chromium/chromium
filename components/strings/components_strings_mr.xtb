@@ -9,6 +9,7 @@
 <translation id="1011206368273183593">फाइल तयार करत आहे</translation>
 <translation id="1014509239502131234">परिणाम पहिल्यासारखे करत आहे</translation>
 <translation id="1015730422737071372">अतिरिक्त तपशील प्रदान करा</translation>
+<translation id="1016671033299705843">ड्रायव्हरचा परवाना सुरक्षितपणे जोडा</translation>
 <translation id="1019413721762100891">बंद करा</translation>
 <translation id="1021753677514347426">तुम्ही किंवा इतर कोणीतरी तुमच्या डिव्हाइसवर इंस्टॉल केलेल्या सर्टिफिकेटमुळे ही समस्या येते. हे सर्टिफिकेट नेटवर्कचे नियंत्रण करण्यासाठी आणि व्यत्यय आणण्यासाठी वापरले जाते आणि Chromium ला यावर विश्वास नाही. दरम्यान नियंत्रण करण्यासाठी काही कायदेशीर प्रकरणे अस्तित्त्वात आहेत, जसे की शाळा किंवा कंपनीच्या नेटवर्कवर, तुम्ही हे थांबवू शकत नसलात तरीही तुम्हाला याची जाणीव आहे याची Chromium ला खात्री करायची आहे. वेबचा ॲक्सेस असणाऱ्या कोणत्याही ब्राउझर किंवा ॲप्लिकेशनचे नियंत्रण केले जाऊ शकते.</translation>
 <translation id="1024111578869940408">हल्लेखोर कधीकधी वेब पत्त्यामध्ये पटकन लक्षात न येणारे बदल करून साइटची नक्कल करतात.</translation>
@@ -238,6 +239,7 @@
 <translation id="1392813880755413602">OpenDocument प्रेझेंटेशन</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> नी कोणताही डेटा पाठविला नाही.</translation>
 <translation id="1393071644879491291">तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवरील हल्लेखोर तुम्हाला सॉफ्टवेअर इंस्टॉल करण्यासाठी किंवा तुमचा पासवर्ड, फोन अथवा क्रेडिट कार्ड नंबर यांसारख्या गोष्टी उघड करून फसवण्याचा प्रयत्न करू शकतात. Chrome हे सुरक्षिततेकडे परतण्याची आवर्जून शिफारस करते. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1397342126322860141">Google Wallet मध्ये ओळखपत्र सुरक्षितपणे जोडा</translation>
 <translation id="1398743098754840707">तुम्ही इथे जोडलेल्या साइटचा टॅब उघडा असला, तरीही प्रतिसादांसाठी संदर्भ दिला जाणार नाही. तुम्ही जोडलेली साइट सध्या थ्रेडमध्ये वापरली जात असल्यास, थ्रेडने तिचा संदर्भ देणे थांबवण्यासाठी ३० मिनिटे लागू शकतात.</translation>
 <translation id="1405567553485452995">फिकट हिरवा</translation>
 <translation id="1406370515365284486">तुमची पेमेंट पद्धत तरीही सेव्ह केली जाईल</translation>
@@ -771,6 +773,7 @@
 <translation id="2288422996159078444">तुम्ही टाइप करत असलेले काहीही, तुम्ही पाहत असलेली कोणतीही पेज किंवा वेबवरील इतर कोणत्याही अ‍ॅक्टिव्हिटीवर नजर ठेवली जाते. साइटवरचा आशय कदाचित तुमच्या नकळत बदलला जाऊ शकतो.</translation>
 <translation id="2289385804009217824">ट्रिम करा</translation>
 <translation id="2292556288342944218">तुमचा इंटरनेट ॲक्सेस ब्लॉक केला आहे</translation>
+<translation id="2294150501457238325">पासपोर्ट सुरक्षितपणे जोडा</translation>
 <translation id="2295831393422400053">मला लिहिण्यात मदत करा वापरण्यासाठी शोधा व ब्राउझिंगमध्ये सुधारणा करा सेटिंग सुरू करा</translation>
 <translation id="2296244067976588032">पासकी • iCloud Keychain</translation>
 <translation id="2296331629987861142">सुलभ हप्त्यांमध्ये पेमेंट करा (पात्रतेच्या अधीन आहे, शुल्क लागू)</translation>
@@ -1131,6 +1134,7 @@
 <translation id="2931453528659195355">खरेदीविषयक माहिती व्यवस्थापित करा</translation>
 <translation id="2933624813161016821">एम्बॉसिंग फॉइल</translation>
 <translation id="2935726091208500473">तुमचे टॅब शेअर करणे</translation>
+<translation id="2936698630976431647">Google Wallet मधील ऑफर ऑटोफिल करण्यासाठी प्रोमो कोड फील्ड निवडा</translation>
 <translation id="293796669683825859">टिप्पण्या</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="2938370569652058706"><ph name="ORIGIN" /> – तुमचा कर्सर दाखवण्यासाठी, अ‍ॅप्स स्विच करा, पेज रीलोड करा किंवा परत जा</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="3194765668709099364">Klarna</translation>
+<translation id="3194768112587954116">Google Wallet मध्ये ड्रायव्हरचा परवाना जोडा</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3196374699162453920">बुकिंग कोड</translation>
 <translation id="3196902089458890316">आणखी चांगल्या प्रतिसादांसाठी नेहमी सुसंबद्ध टॅब शेअर करायचे का?</translation>
@@ -1390,6 +1395,7 @@
 <translation id="3380864720620200369">क्लायंट आयडी:</translation>
 <translation id="3383566085871012386">सध्याचा अग्रक्रम</translation>
 <translation id="3383713837163550889">तुमच्या स्थानिक फाइल एका मिनिटामध्ये हटवल्या जातील</translation>
+<translation id="33837817515081754">Google Wallet मध्ये नोन ट्रॅव्हलर नंबर जोडा</translation>
 <translation id="3384522979010096022">तुमची संस्था तुम्हाला ही साइट पाहण्याची अनुमती देत नाही</translation>
 <translation id="3391030046425686457">वितरण पत्ता</translation>
 <translation id="3391482648489541560">फाइलचे संपादन</translation>
@@ -1462,6 +1468,7 @@
 <translation id="3517264445792388751">तुमच्या अ‍ॅडमिनिस्ट्रेटरने फाइल सिस्टीम बंद केली आहे</translation>
 <translation id="3518941727116570328">एकापेक्षा अधिक ऑब्जेक्ट हाताळणी</translation>
 <translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> ला विचारा</translation>
+<translation id="3520762308733579540">Google Wallet मध्ये वाहन जोडा</translation>
 <translation id="3525130752944427905">१० x १४ इं</translation>
 <translation id="3525435918300186947">MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करायची आहेत का?</translation>
 <translation id="3527624163937328588">अटॅचमेंट काढून टाका</translation>
@@ -1815,6 +1822,7 @@
 <translation id="4103249731201008433">डिव्हाइस सिरीयल क्रमांक चुकीचा आहे</translation>
 <translation id="4103592298805904008">कार्डबोर्ड (सिंगल वॉल)</translation>
 <translation id="4104702906064390950">IBAN संबंधी माहिती सेव्ह करत आहे</translation>
+<translation id="4104995898379951162">नोन ट्रॅव्हलर नंबर सुरक्षितपणे जोडा</translation>
 <translation id="4106101218644797743">सिंक सेटिंग्ज</translation>
 <translation id="4106887816571530227">एंबेड केलेल्या आशयाला अनुमती नाही</translation>
 <translation id="4107047499377819067">VPN बॅकग्राउंड सेवांचे इंस्टॉलेशन सुरू झाले आहे, यासाठी काही मिनिटे लागू शकतात.</translation>
@@ -1872,6 +1880,7 @@
 <translation id="4195459680867822611">Chrome शी संबंधित टिपा पहा बटण, Chrome च्या वैशिष्‍ट्यांविषयी जाणून घेण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4196861286325780578">&amp;हलवा पुन्हा करा</translation>
+<translation id="4199131764832701740">Google Wallet मध्ये पासपोर्ट जोडा</translation>
 <translation id="4202554117186904723">पाचवा रोल</translation>
 <translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल आणि अँटीव्हायरस कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
@@ -2237,6 +2246,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4805128460707321168">ओळखपत्र सुरक्षितपणे अपडेट करा</translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
+<translation id="4808598252755230865">Google Wallet मध्ये नोन ट्रॅव्हलर नंबर सुरक्षितपणे जोडा</translation>
 <translation id="4809079943450490359">तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरकडून सूचना:</translation>
 <translation id="4811450222531576619">त्याचे स्रोत आणि विषय यांबद्दल जाणून घ्या</translation>
 <translation id="4811696127853690432">Google Wallet मध्ये वाहनासंबंधित माहिती सुरक्षितपणे सेव्ह करा</translation>
@@ -2266,6 +2276,7 @@
 <translation id="4855395119669662878">तुमचा ॲडमिनिस्ट्रेटर तुमच्या फाइल <ph name="CLOUD_PROVIDER" /> मध्ये अपलोड करण्यास <ph name="DATE_TIME" /> रोजी सुरुवात करेल. तुमचा फाइल अपलोड पूर्ण होईपर्यंत तुमचे डिव्हाइस कनेक्ट केलेले ठेवा. अपलोडदरम्यान, तुम्ही फक्त स्थानिक फाइल रीड करू शकाल.</translation>
 <translation id="485902285759009870">कोडची पडताळणी करत आहे...</translation>
 <translation id="4860260582253463350">YouTube वर पुढे सुरू ठेवण्यासाठी, आम्हाला हे तुम्हीच असल्याची खात्री करायची आहे. तुमच्या आई-वडिलांनी किंवा पालकांनी Family Link मध्ये सेट केलेली सेटिंग्ज तुम्हाला मिळतील.</translation>
+<translation id="4861514638281352187">रिड्रेस नंबर सुरक्षितपणे जोडा</translation>
 <translation id="4862642413395066333">OCSP प्रतिसाद साइन करत आहे</translation>
 <translation id="4864406669374375262">आवृत्तीची स्ट्रिंग क्लिपबोर्डवर कॉपी केली</translation>
 <translation id="486459320933704969">तुम्ही या वेबसाइटला भेट देऊ शकता अशी पालकांनी मंजुरी देणे आवश्यक आहे</translation>
@@ -2697,6 +2708,7 @@
 <translation id="55635442646131152">दस्तऐवज आउटलाइन</translation>
 <translation id="5563589142503817291">तुमचे स्थान वापरण्यासाठी, Chrome ला <ph name="LINK" /> मध्ये अ‍ॅक्सेस द्या.</translation>
 <translation id="5565613213060953222">गुप्त टॅब उघडा</translation>
+<translation id="5565613377956908865">Google Wallet मध्ये ओळखपत्र जोडा</translation>
 <translation id="5565735124758917034">ॲक्टिव्ह</translation>
 <translation id="5570825185877910964">खात्याचे संरक्षण करा</translation>
 <translation id="5571083550517324815">या पत्त्यावरून पिक अप करू शकत नाही. वेगळा पत्ता निवडा.</translation>
@@ -2884,6 +2896,7 @@
 <translation id="5895694128043506580">Google Chrome संवेदनशील माहिती दाखवण्याचा प्रयत्न करत आहे</translation>
 <translation id="5898767305816764989">थंब्स अप बटण, तुम्हाला हे आवडले आहे असा फीडबॅक सबमिट करण्यासाठी एंटर प्रेस करा, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">पिवळा</translation>
+<translation id="5902204772823742902">Google Wallet मध्ये ड्रायव्हरचा परवाना सुरक्षितपणे जोडा</translation>
 <translation id="5903264686717710770">शीर्षक:</translation>
 <translation id="5905671155741555195">तुमच्या ऑफिसच्या पत्त्यामुळे तुम्हाला संपूर्ण Google सेवांवर कामे पूर्ण करण्यात मदत होऊ शकते, जसे की सर्वात सुसंबद्ध Search परिणाम आणि Google Maps मध्ये दिशानिर्देश. तुम्ही तुमचे <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /> यामध्ये<ph name="END_LINK" /> तुमचा पत्ता संपादित करू किंवा हटवू शकता.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक केलेले)</translation>
@@ -3304,6 +3317,7 @@
 <translation id="6613866251791999074">Chrome मध्ये तुमच्या शोध इंजीनबद्दल अधिक जाणून घ्या</translation>
 <translation id="6615297766614333076">स्टॅकर २</translation>
 <translation id="6619496928666593220">IBAN भरलेला नाही</translation>
+<translation id="662009501953240458">Google Wallet मध्ये वाहन सुरक्षितपणे जोडा</translation>
 <translation id="6624427990725312378">संपर्क माहिती</translation>
 <translation id="6625629379283886932">मला कोडिंग कसे करावे हे शिकव</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> शोध</translation>
@@ -3674,6 +3688,7 @@
 <translation id="7261463765917514051">ऑटोफिल वापरून सुरक्षितपणे चेक आउट करा</translation>
 <translation id="7265608370113700582">पत्ता फक्त या डिव्हाइसवर उपलब्ध आहे</translation>
 <translation id="7266094331715305887">डिव्हाइसवरील ॲप्स</translation>
+<translation id="7268742523336093718">Google Wallet मध्ये पासपोर्ट सुरक्षितपणे जोडा</translation>
 <translation id="7269151392155523061">शॉर्टकट हा <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> नुसार परिभाषित केलेल्या शोध अ‍ॅग्रिगेटर कीवर्डसारखा असू शकत नाही: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">तुम्ही डाउनलोड केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केल्या जाऊ शकतात व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात.</translation>
 <translation id="7275334191706090484">व्यवस्थापित केलेले बुकमार्क</translation>
@@ -4243,6 +4258,7 @@
 <translation id="8241707690549784388">तुम्ही जे पेज शोधत आहत ते तुम्ही एंटर केलेली माहिती वापरत आहे. त्या पेजकडे परत गेल्यास कदाचित तुम्ही केलेल्या कोणत्याही क्रियेची पुनरावृत्ती होईल. तुम्ही सुरू ठेवू इच्छिता?</translation>
 <translation id="8242426110754782860">पुढे जा</translation>
 <translation id="824620968958405573">टास्क ऑटोमॅटिक ब्राउझ करा</translation>
+<translation id="8247824837030847066">ओळखपत्र सुरक्षितपणे जोडा</translation>
 <translation id="8248406213705193919">कार्ड सुरक्षितपणे सेव्ह करायचे आहे का?</translation>
 <translation id="8249296373107784235">रद्द करा</translation>
 <translation id="8250094606476360498">हा पत्ता या डिव्हाइसवर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह करा.</translation>
@@ -4662,6 +4678,7 @@
 <translation id="9003639428623471314">एन्व्हलप काकू</translation>
 <translation id="9004367719664099443">VR सेशन प्रगतीपथावर आहे</translation>
 <translation id="9005998258318286617">पीडीएफ दस्तऐवज लोड करण्यात अपयश आले.</translation>
+<translation id="900686221526305417">वाहन सुरक्षितपणे जोडा</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
 <translation id="9010187979699879769">माझ्यासाठी अभ्यासाचे शेड्यूल तयार कर</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{काहीही नाही}=1{१ साइटकडून}other{# साइटकडून}}</translation>
@@ -4816,6 +4833,7 @@
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> सदस्य "<ph name="GROUP_NAME" />" टॅग गटामध्ये सामील झाले आहेत</translation>
 <translation id="949314938206378263">तुम्हाला या साइटला भेट देण्यास सांगितले आहे. तुमचे पालक Family Link मध्ये उत्तर देऊ शकतात.</translation>
+<translation id="949484466204182817">Google Wallet मध्ये रिड्रेस नंबर जोडा</translation>
 <translation id="950736567201356821">ट्रिपल पंच टॉप</translation>
 <translation id="950926967802086924">पासकी • Google Password Manager</translation>
 <translation id="952165179818196872">अ‍ॅप्स स्विच न करता पेमेंट करण्यासाठी <ph name="PROVIDER" /> जोडा</translation>
@@ -4830,6 +4848,7 @@
 <translation id="962484866189421427">हा आशय काहीतरी दुसरे असण्याची बतावणी करणारी फसवी ॲप्स इंस्टॉल करण्याचा किंवा तुमचा माग ठेवण्यासाठी वापरला जाऊ शकणारा डेटा गोळा करण्याचा प्रयत्न करू शकतो. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">तुमच्या प्रदेशामधील कायद्याच्या आधारावर, Chromium तुम्हाला तुमचे डीफॉल्ट शोध इंजीन निवडण्यास सांगते. ही शोध इंजीन तुमच्या प्रदेशात लोकप्रिय असून, रँडम क्रमाने दाखवली आहेत.</translation>
 <translation id="963837307749850257">सर्व वापरकर्ते</translation>
+<translation id="963988220224168636">Google Wallet मध्ये रिड्रेस नंबर सुरक्षितपणे जोडा</translation>
 <translation id="964050462028070434">पासवर्ड आणि पासकी व्यवस्थापित करा…</translation>
 <translation id="964681140808832181">होय, मला रद्द करायचे आहे</translation>
 <translation id="969892804517981540">अधिकृत बिल्ड</translation>

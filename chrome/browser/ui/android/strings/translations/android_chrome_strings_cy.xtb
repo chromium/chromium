@@ -1118,6 +1118,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5465437530117042974">Newidiadau Dalen Waelod Tab wedi cau.</translation>
 <translation id="5469852975082458401">Gallwch lywio tudalennau gyda chyrchwr testun. Pwyswch F7 i'w ddiffodd.</translation>
 <translation id="5471273988133666918">Ni ellir symud y tab <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Mae angen mynediad at ddyfais rhyngwyneb dynol</translation>
 <translation id="548278423535722844">Agor yn ap mapiau</translation>
 <translation id="5489222148748465285">Gadael i Chrome ddal i chwilio?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, Tab Llun-mewn-Llun a Aml-ddewiswyd</translation>
@@ -1750,6 +1751,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7851858861565204677">Dyfeisiau eraill</translation>
 <translation id="7853202427316060426">Gweithgarwch</translation>
 <translation id="7859988229622350291">Peidio byth â chyfieithu</translation>
+<translation id="7862185352068345852">Gadael y wefan?</translation>
 <translation id="7866213166286285359">Cyfieithwch dudalennau yma</translation>
 <translation id="7875915731392087153">Creu e-bost</translation>
 <translation id="7876243839304621966">Tynnu pob un</translation>
@@ -1964,6 +1966,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="867914734596684889">Dangos neu guddio bar Nodau Tudalen</translation>
 <translation id="8683039184091909753">llun</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab a Ddewisir</translation>
+<translation id="8694622119922491927">Mae angen caniatâd ar <ph name="APP_NAME" /> i gael mynediad at ddyfeisiau rhyngwyneb dynol (HIDs) ar gyfer y wefan hon. Gallwch newid y gosodiad hwn yn nes ymlaen yn Gosodiadau &gt; Apiau &gt; Mynediad ap arbennig.</translation>
 <translation id="8696297579102085705">Anfon at eich dyfais</translation>
 <translation id="8699120352855309748">Peidiwch â chynnig cyfieithu'r ieithoedd hyn</translation>
 <translation id="8700565880437506364">Cyflwyno Gemini yn Chrome</translation>

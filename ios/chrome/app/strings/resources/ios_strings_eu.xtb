@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Prezioaren jarraipena egiten ari zara</translation>
 <translation id="3038136505713492417">Egiaztatu zeu zarela sarbide-gakoak gailu honetan erabiltzeko</translation>
 <translation id="3039671569659952257">Ezabatu karpeta</translation>
+<translation id="3041835740069544003">Orain, inprimakien ulermen adimentsuagoari esker, Chrome-k inprimaki gehiago hauteman eta bete ditzake. Horretarako, orrien edukia eta URLak hodeiko eremu pribatu batean prozesa daitezke. Kudeatu ezarpenetan.</translation>
 <translation id="3050988301648974170">Ireki Pasahitz-egiaztapena</translation>
 <translation id="3053332585453689122">Bisitatzen dituzun URLak eta orrien edukiaren, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txiki bat bidaltzen dizkio Google-ren Arakatze segurua eginbideari, kaltegarriak diren egiaztatzeko.</translation>
 <translation id="3055102495753300780">Informazioaren biltegiratzea</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} webgune edo aplikaziorako}other{{COUNT} webgune edo aplikaziotarako}}</translation>
 <translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3476450923187944815">Lortu zure pasahitzak beste aplikazioetatik.</translation>
+<translation id="3479552764303398839">Orain ez</translation>
 <translation id="3485558910355485767">Ireki ezkutuko leiho bat</translation>
 <translation id="3488501490964659223">Fitxak itxi dira, eta arakatze-datuak ezabatu dira. Zure saioa amaitu da.</translation>
 <translation id="3490396108106323715">Partekatu oraingo fitxa</translation>

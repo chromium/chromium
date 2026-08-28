@@ -1010,7 +1010,6 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 このポリシーを False に設定するか未設定のままにした場合、イベントはキャプチャされません。</translation>
 <translation id="1692990221685273468">組み込みの証明書確認機能で、プラットフォームのトラストストアから読み込まれたトラスト アンカーに、エンコードされた制約を適用するかどうかを指定します。</translation>
 <translation id="169467210981344373">グローバル スコープを持つ HTTP 認証キャッシュを無効にする</translation>
-<translation id="169509902091359310">音声入力を許可しない。</translation>
 <translation id="1696501581280568361">プロファイル分離を提案する</translation>
 <translation id="1698810555265314018"><ph name="PRODUCT_NAME" /> で PDF をラスタライズして印刷する際の、印刷画像の解像度を制御します。
 
@@ -2697,17 +2696,6 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
       この設定が無効になっている場合は、ウェブページで JavaScript を使用できず、ユーザーはその設定を変更できません。
 
       この設定が有効または未設定の場合、ウェブページで JavaScript を使用できますが、ユーザーはこの設定を変更できます。</translation>
-<translation id="2746385336260438202">音声入力は、生成 AI モデルを活用して高品質な音声文字変換と書式設定を提供し、ユーザーが音声でテキストの入力や編集を行えるようにする AI ベースの機能です。
-
-0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。AI モデルを改善するため、人間のレビュアーが確認する場合もあります。以下に記載している場合を除き、0 がデフォルト値です。
-
-1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
-
-2 = この機能を許可しません。
-
-このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
-
-生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="274769314493317695"><ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_WHITELIST" /> が選択されている場合、<ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> を使用してください。</translation>
@@ -4616,7 +4604,6 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="402759845255257575">すべてのサイトに対して JavaScript の実行を許可しない</translation>
 <translation id="4027608872760987929">デフォルトの検索プロバイダを有効にする</translation>
 <translation id="4030152268425532846">自動ログインの回避を無効にする</translation>
-<translation id="4042229154265896020">音声入力を許可する。</translation>
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4047633048700722778">このポリシーでは、セーフサイトの URL フィルタを制御できます。このフィルタは、Google Safe Search API を使用して URL をポルノとそれ以外に分類します。
 
@@ -7082,7 +7069,6 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
           この設定を無効にした場合、保存したパスワードをパスワード マネージャー ウィンドウで平文表示することはできません。
 
           このポリシーが有効または未設定の場合、ユーザーはパスワード マネージャーでパスワードを平文表示できます。</translation>
-<translation id="561873855783619782">データ収集なしで音声入力を許可する。</translation>
 <translation id="5620392548325769024">OS のアップグレード後に初めてブラウザを起動したときのウェルカム ページの表示を有効にする</translation>
 <translation id="5621503441067774084">ログイン画面でカーソルによるハイライト表示を有効にする</translation>
 <translation id="5622590774455244290">このリストを使用するかどうかは Android アプリ側の選択となります。Android アプリにリストの使用を強制することはできません。</translation>
@@ -11691,7 +11677,6 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="8634062512783775032">サポートされている場合にユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> を暗号化アルゴリズムとして使用する</translation>
 <translation id="8637566476051166626">明示的に許可するネットワーク ポートを指定する</translation>
 <translation id="8643838501942693770">サードパーティ Cookie を許可し、ユーザーはこの設定を変更できる</translation>
-<translation id="8644225074581442734">音声入力を設定する</translation>
 <translation id="864611373241249369"><ph name="LACROS_NAME" /> が無効になった後、すべてのデータの移行を試みる。</translation>
 <translation id="8648844602494595665">このポリシーでは、アドレスバーでの鍵アイコンの表示を管理します。
        Chrome M93 より、安全な接続を示すアドレスバーのアイコンが新しくなりました。

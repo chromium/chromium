@@ -28,6 +28,7 @@
 <translation id="1074827084851510304">Quyidagilar oʻchiriladi: {password_count} ta parol va hisob maʼlumotlari hech qachon saqlanmasligi tanlangan sayt va ilovalar roʻyxati. Sayt va ilovalarda yaratilgan hisoblar oʻchirilmaydi.</translation>
 <translation id="1076421457278169141">Kod skanerlandi</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ta varaq}other{{count} ta varaq}}</translation>
+<translation id="1081948304372277788">Darajalar oshmasin</translation>
 <translation id="1082554859195167538">Siz uchun mahsulot sharhlari</translation>
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
 <translation id="108485301461714610">Google Qidiruv AI rejimi va ulanadigan ilovalar</translation>
@@ -752,6 +753,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ta sayt yoki ilova uchun}other{{COUNT} ta sayt yoki ilova uchun}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
 <translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
+<translation id="3479552764303398839">Hozir emas</translation>
 <translation id="3485558910355485767">Yangi inkognito oyna</translation>
 <translation id="3488501490964659223">Varaqlar yopiladi va brauzer tarixi tozalanadi. Hisobingizdan chiqasiz</translation>
 <translation id="3490396108106323715">Joriy varaqni ulashish</translation>

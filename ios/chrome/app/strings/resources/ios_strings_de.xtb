@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3038136505713492417">Bestätige deine Identität, um deine Passkeys auf diesem Gerät verwenden zu können</translation>
 <translation id="3039671569659952257">Ordner löschen</translation>
+<translation id="3041835740069544003">Chrome kann jetzt dank der optimierten Formularbearbeitung noch mehr Formulare erkennen und ausfüllen. Dazu können Seiteninhalte und URLs in einem vertraulichen Profil in der Cloud verarbeitet werden. Du kannst diese Funktion in den Einstellungen verwalten.</translation>
 <translation id="3050988301648974170">Passwortcheck öffnen</translation>
 <translation id="3053332585453689122">Sendet die URLs der von dir besuchten Websites sowie eine kleine Auswahl an Seiteninhalten, Downloads, Erweiterungsaktivitäten und Systeminformationen an Google Safe Browsing, um zu prüfen, ob die URLs schädlich sind.</translation>
 <translation id="3055102495753300780">Datenspeicherung</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{für {COUNT} Website oder App}other{für {COUNT} Websites oder Apps}}</translation>
 <translation id="3474624961160222204">Als <ph name="NAME" /> fortfahren</translation>
 <translation id="3476450923187944815">In anderen Apps auf deine Passwörter zugreifen.</translation>
+<translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3485558910355485767">Neues Inkognitofenster</translation>
 <translation id="3488501490964659223">Tabs wurden geschlossen und Browserdaten gelöscht. Du wurdest abgemeldet.</translation>
 <translation id="3490396108106323715">Aktuellen Tab teilen</translation>
@@ -1241,7 +1243,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} von {count} Zahlungsmethode}other{{position} von {count} Zahlungsmethoden}}</translation>
 <translation id="5075939510584558547">Ohne Verschlüsselung speichern</translation>
 <translation id="5076534614343816664">Preis-Tracking</translation>
-<translation id="507762438756999615">Die Datei kann aufgrund der Richtlinien deiner Organisation nicht geteilt werden</translation>
+<translation id="507762438756999615">Die Datei kann nicht geteilt werden, da sie nicht den Richtlinien deiner Organisation entspricht</translation>
 <translation id="5078303485429639424">„<ph name="FEATURE_NAME" />“-Benachrichtigungen aktivieren</translation>
 <translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
@@ -2478,7 +2480,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8976414606286374109">Karten werden in deinem Google-Konto gespeichert.</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
-<translation id="8990960056509724223">Die Datei konnte aufgrund der Richtlinien deiner Organisation nicht gespeichert werden</translation>
+<translation id="8990960056509724223">Die Datei konnte nicht gespeichert werden, da sie nicht den Richtlinien deiner Organisation entspricht</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
 <translation id="9003263770394939629">Von Gemini vorgeschlagen. Du kannst die Funktion „Erweitertes Autofill“ in den Einstellungen verwalten.</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>

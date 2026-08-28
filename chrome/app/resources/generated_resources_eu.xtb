@@ -4975,7 +4975,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4831226137013573603">mikrofonoa desaktibatzeko botoia</translation>
 <translation id="483262387981411190">Aurpegi-keinuen bidez kontrolatzeko eginbidea pausatzea edo hura erabiltzeari berrekitea</translation>
 <translation id="4833683849865011483">Inprimagailu bat aurkitu da inprimatze-zerbitzarian</translation>
-<translation id="4834388789911023644">Idatzi iritzia</translation>
 <translation id="4835598628985424375">Muxu emateko keinua egitea</translation>
 <translation id="4835677468087803981">Ezkutatu PINa</translation>
 <translation id="4836504898754963407">Kudeatu hatz-markak</translation>
@@ -8510,7 +8509,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7625823789272218216">Fitxa berria ezkerrean</translation>
 <translation id="762730429396410864">Ezarri webguneetan adierazitako PUZaren errendimendu-maila eskuz</translation>
 <translation id="7627749368210392160">Webguneek sare lokaleko beste gailu batzuk erabiltzeko balia dezakete eginbide hau</translation>
-<translation id="7628068697012244394">Idatzi iritzia</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
 <translation id="762917478230183172">Hautatu ekintza bat tekla bakoitzerako</translation>
 <translation id="7629206210984165492">Ahula</translation>
@@ -9509,6 +9507,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8383614331548401927">Ongietorria egiteko laburpena</translation>
 <translation id="8387157483437834731">Aldatu da pasahitza</translation>
 <translation id="8387361103813440603">Ezin dute ikusi zure kokapena</translation>
+<translation id="8387617938027387193">Egiaztatu zeu zarela</translation>
 <translation id="8389492867173948260">Bisitatzen dituzun webguneetan dituzun datu guztiak irakurri eta aldatzeko, baimendu luzapen hau:</translation>
 <translation id="8390449457866780408">Zerbitzaria ez dago erabilgarri.</translation>
 <translation id="8391172837960094276">Pasahitzak ikusi eta kudeatzeko, <ph name="BEGIN_LINK" />egiaztatu zeu zarela<ph name="END_LINK" />.</translation>
@@ -10609,7 +10608,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="942296794412775122">Aktibatu/Desaktibatu mikrofonoa</translation>
 <translation id="942488123151518958">Pausatu (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome-ko fitxa bat eta audioa partekatzen ari da.</translation>
-<translation id="943744232549395906">Ahozko idazketa gelditu egin da</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947156494302904893">Bisitatzen dituzun webguneek benetako pertsona bat zarela eta robot bat ez zarela egiazta dezakete</translation>
 <translation id="947329552760389097">&amp;Aztertu elementuak</translation>

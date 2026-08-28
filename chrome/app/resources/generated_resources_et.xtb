@@ -4983,7 +4983,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4831226137013573603">mikrofoni vaigistamine</translation>
 <translation id="483262387981411190">Näoga juhtimise peatamine või jätkamine</translation>
 <translation id="4833683849865011483">Prindiserverist leiti 1 printer</translation>
-<translation id="4834388789911023644">Kirjutage arvustus</translation>
 <translation id="4835598628985424375">Huulte kortsutamine neid kokku surudes</translation>
 <translation id="4835677468087803981">Peida PIN-kood</translation>
 <translation id="4836504898754963407">Sõrmejälgede haldamine</translation>
@@ -8524,7 +8523,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7625823789272218216">Uus vaheleht vasakul</translation>
 <translation id="762730429396410864">Määrake veebisaitidele edastatava protsessori jõudlustase käsitsi.</translation>
 <translation id="7627749368210392160">Saidid saavad selle funktsiooni abil teie kohaliku võrgu teistele seadmetele juurdepääsu.</translation>
-<translation id="7628068697012244394">Kirjutage arvustus</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klass <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Valige iga klahvi jaoks toiming</translation>
 <translation id="7629206210984165492">Vaikne</translation>
@@ -9523,6 +9521,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8383614331548401927">Tervituskokkuvõte</translation>
 <translation id="8387157483437834731">Parooli muutmine õnnestus</translation>
 <translation id="8387361103813440603">Pole lubatud teie asukohta näha</translation>
+<translation id="8387617938027387193">Kinnitage oma isik</translation>
 <translation id="8389492867173948260">Lubage sellel laiendusel lugeda ja muuta külastatavate veebisaitide andmeid:</translation>
 <translation id="8390449457866780408">Server ei ole saadaval.</translation>
 <translation id="8391172837960094276">Paroolide vaatamiseks ja haldamiseks <ph name="BEGIN_LINK" />kinnitage oma isik<ph name="END_LINK" />.</translation>
@@ -10623,7 +10622,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="942296794412775122">Mikrofon sees/väljas</translation>
 <translation id="942488123151518958">Peata (k)</translation>
 <translation id="942532530371314860">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte ja heli.</translation>
-<translation id="943744232549395906">Häälsisestus on lõpetatud.</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="947329552760389097">&amp;Elementide uurimine</translation>

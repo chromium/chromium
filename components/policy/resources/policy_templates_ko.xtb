@@ -1047,7 +1047,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 정책을 설정하지 않거나 False로 설정하면 이벤트가 캡처되지 않습니다.</translation>
 <translation id="1692990221685273468">내장된 인증서 확인 기능이 플랫폼 신뢰 저장소에서 로드된 신뢰 앵커에 인코딩된 제약조건을 적용하게 할지 결정합니다.</translation>
 <translation id="169467210981344373">전역적으로 범위가 지정된 HTTP 인증 캐시 사용 중지</translation>
-<translation id="169509902091359310">음성 입력을 허용하지 않습니다.</translation>
 <translation id="1696501581280568361">프로필 분리 제안</translation>
 <translation id="1698810555265314018"><ph name="PRODUCT_NAME" />에서 래스터화한 PDF를 인쇄할 때 인쇄 이미지 해상도를 관리합니다.
 
@@ -2822,17 +2821,6 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
       이 설정을 사용 중지하면 웹 페이지에서 자바스크립트를 사용할 수 없으며, 사용자는 해당 설정을 변경할 수 없습니다.
 
       이 설정을 사용하도록 설정하거나 설정을 지정하지 않는 경우 웹 페이지에서 자바스크립트를 사용할 수 있지만, 사용자는 해당 설정을 변경할 수 있습니다.</translation>
-<translation id="2746385336260438202">음성 입력은 사용자가 자신의 음성을 사용하여 텍스트를 입력하고 수정할 수 있는 AI 기반 기능으로, 생성형 AI 모델을 기반으로 고품질의 스크립트 작성 및 형식 지정 기능을 제공합니다.
-
-0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. AI 모델을 개선하기 위해 사람이 데이터를 검토할 수도 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
-
-1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
-
-2 = 기능을 허용하지 않습니다.
-
-정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
-
-생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="274769314493317695"><ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />에 <ph name="PRINTERS_WHITELIST" />를 선택할 경우 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" />를 설정하면 사용자가 사용할 수 있는 프린터가 지정됩니다. ID가 이 정책의 값과 일치하는 프린터만 사용자에게 제공됩니다. ID는 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />에 지정된 파일의 <ph name="ID_FIELD" /> 또는 <ph name="GUID_FIELD" /> 필드와 일치해야 합니다.
 
       이 정책은 지원 중단되었으므로 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
@@ -4780,7 +4768,6 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="402759845255257575">모든 사이트에서 자바스크립트 실행 허용 안함</translation>
 <translation id="4027608872760987929">기본 검색 공급자 사용</translation>
 <translation id="4030152268425532846">자동 로그인 취소 사용 중지</translation>
-<translation id="4042229154265896020">음성 입력을 허용합니다.</translation>
 <translation id="4043796890723386527">사용자가 <ph name="LACROS_NAME" /> 브라우저에서 보조 프로필을 만들어 사용하거나 게스트 모드를 사용하지 못하도록 차단</translation>
 <translation id="4047633048700722778">이 정책을 설정하면 SafeSites URL 필터를 제어할 수 있습니다. 이 필터는 Google Safe Search API를 사용하여 음란물이 포함된 URL을 분류합니다.
 
@@ -7425,7 +7412,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
           이 설정을 사용 중지하면 비밀번호 관리자에 저장된 비밀번호를 비밀번호 관리자 창에서 일반 텍스트로 표시할 수 없습니다.
 
           이 설정을 사용하거나 이 정책을 설정하지 않으면 사용자가 비밀번호 관리자에서 일반 텍스트로 비밀번호를 볼 수 있습니다.</translation>
-<translation id="561873855783619782">데이터 수집 없이 음성 입력을 허용합니다.</translation>
 <translation id="5620392548325769024">OS를 업그레이드한 후 브라우저가 처음 실행될 때 시작 페이지가 표시되도록 합니다.</translation>
 <translation id="5621503441067774084">로그인 화면에서 커서 강조표시 사용</translation>
 <translation id="5622590774455244290">Android 앱에서 이 목록을 자발적으로 선택할 수도 있으나 이를 강제할 수는 없습니다.</translation>
@@ -12305,7 +12291,6 @@ false로 설정되면 정책 데이터 및 정책을 가져오는 시간이 수�
 <translation id="8634062512783775032">지원되는 경우 사용자 저장용량 암호화로 <ph name="AES_KL_NAME" /> 알고리즘 사용</translation>
 <translation id="8637566476051166626">명시적으로 허용된 네트워크 포트</translation>
 <translation id="8643838501942693770">타사 쿠키를 허용하되 사용자에게 설정 변경 허용</translation>
-<translation id="8644225074581442734">음성 입력 설정</translation>
 <translation id="864611373241249369"><ph name="LACROS_NAME" />가 사용 중지되면 모든 데이터 이전을 시도합니다.</translation>
 <translation id="8648844602494595665">이 정책은 검색주소창에서 자물쇠 아이콘이 처리되는 방식을 제어합니다.
        Chrome M93부터 보안 연결일 경우 새로운 검색주소창 아이콘이 표시됩니다.

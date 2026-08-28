@@ -4978,7 +4978,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4831226137013573603">isključivanje zvuka mikrofona</translation>
 <translation id="483262387981411190">Pauzirajte ili nastavite kontrolu lica</translation>
 <translation id="4833683849865011483">Pronađen je 1 štampač sa servera za štampanje</translation>
-<translation id="4834388789911023644">Napiši recenziju</translation>
 <translation id="4835598628985424375">Napućite usne tako što ćete ih stisnuti zajedno</translation>
 <translation id="4835677468087803981">Sakrij PIN</translation>
 <translation id="4836504898754963407">Upravljajte otiscima prstiju</translation>
@@ -8522,7 +8521,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7625823789272218216">Nova kartica na levoj strani</translation>
 <translation id="762730429396410864">Ručno podesite nivo učinka procesora koji se prijavljuje veb-sajtovima</translation>
 <translation id="7627749368210392160">Sajtovi mogu da koriste ovu funkciju da bi pristupali drugim uređajima na lokalnoj mreži</translation>
-<translation id="7628068697012244394">Napiši recenziju</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. nivo</translation>
 <translation id="762917478230183172">Izaberite radnju za svaki taster</translation>
 <translation id="7629206210984165492">Utučeno</translation>
@@ -9521,6 +9519,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8383614331548401927">Rezime dobrodošlice</translation>
 <translation id="8387157483437834731">Lozinka je promenjena</translation>
 <translation id="8387361103813440603">Nije im dozvoljeno da vide vašu lokaciju</translation>
+<translation id="8387617938027387193">Potvrdite identitet</translation>
 <translation id="8389492867173948260">Dozvolite da ovaj dodatak čita i menja sve podatke na veb-sajtovima koje posećujete:</translation>
 <translation id="8390449457866780408">Server je nedostupan.</translation>
 <translation id="8391172837960094276">Da biste pregledali lozinke i upravljali njima, <ph name="BEGIN_LINK" />potvrdite identitet<ph name="END_LINK" />.</translation>
@@ -10621,7 +10620,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="942296794412775122">Uključi/isključi mikrofon</translation>
 <translation id="942488123151518958">Pauziraj (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deli Chrome karticu i zvuk.</translation>
-<translation id="943744232549395906">Unos teksta glasom je zaustavljen</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="947329552760389097">&amp;Proveri elemente</translation>

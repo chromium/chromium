@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">તમે જે રીતે કરો છો, તે રીતે Chromeનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="1568636008098739136">આ પેજનું કન્ટેન્ટ સાંભળો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="1571041387761170095">કોઈ નબળો કે ફરીથી ઉપયોગમાં લેવાયેલો પાસવર્ડ નથી</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{આ ડિવાઇસ પર ચેડાં કરાયેલો 1 પાસવર્ડ છે}one{આ ડિવાઇસ પર ચેડાં કરાયેલો # પાસવર્ડ છે}other{આ ડિવાઇસ પર ચેડાં કરાયેલા # પાસવર્ડ છે}}</translation>
 <translation id="1594635596540195766">નીચે આપેલી સૂચિમાં સૂચવેલી <ph name="SUGGESTIONS_COUNT" /> આઇટમ છે.</translation>
 <translation id="159689249463841786">ફોલ્ડર પસંદ કરો, હાલમાં <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> અત્યારે ઉપલબ્ધ નથી.</translation>
 <translation id="2751271371269891762">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="2760805590727089264">MM / YY</translation>
+<translation id="2761162135224472056">ઇમર્સિવ પ્લેબૅક સાથે જોઈએ?</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="276378135349383280">સૌથી નીચેના ટૂલબારમાં Gemini બતાવો</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">ઇમર્સિવ પ્લેબૅકમાંથી બહાર નીકળો</translation>
 <translation id="3674208116086565128">Google ઍપના હોમ ટૅબ પર જાઓ</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
 <translation id="3684540848053703310">કિંમત વિશે જાણકારીની બોટમ શીટ બંધ છે</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">તમે Chromeમાં લિંક ખોલતી અન્ય ઍપનો ઇતિહાસ જોઈ શકો છો.</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
 <translation id="3727000368239390918">તમારા બધા ડિવાઇસ પર ટૅબ અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
+<translation id="3731865955999508196">ત્રિપરિમાણીય</translation>
 <translation id="3737319253362202215">અનુવાદ માટેના સેટિંગ</translation>
 <translation id="3738139272394829648">શોધવા માટે ટચ કરો</translation>
 <translation id="3739455665973395693">તમારા Google એકાઉન્ટમાં કોઈ ચેડાં કરાયેલા પાસવર્ડ નથી</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">જ્યારે કોઈ સાઇટ કે ઍપ દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
 <translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
 <translation id="4624065194742029982">Chrome છૂપો મોડ</translation>
+<translation id="4628972300801601502">360° ત્રિપરિમાણીય</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{# પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{# પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">તાજું કરવાનું રોકો</translation>
 <translation id="4921224083091001889">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, Chromeમાં <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="4923173329789776645">તમારી સંસ્થા દ્વારા ડાઉનલોડ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
+<translation id="4924398189611529766">જ્યારે તમે છૂપા મોડમાં બ્રાઉઝ કરી રહ્યાં હો, ત્યારે આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારી ઍક્ટિવિટી જોઈ શકશે નહીં, જેથી તમે વધુ ખાનગી રીતે બ્રાઉઝ કરી શકશો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">સ્ક્રીનશૉટ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">તમે ઑફલાઇન જોવા અથવા અન્ય ઍપમાં શેર કરવા માટે છબીઓ અને ફાઇલોને સાચવી શકો છો</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{નોટિફિકેશન બતાવો}one{નોટિફિકેશન બતાવો}other{નોટિફિકેશન બતાવો}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું મ્યૂટ કરેલું ટૅબ</translation>
+<translation id="5814872768903482128">180° ત્રિપરિમાણીય</translation>
 <translation id="5823093032261493462">શું તેમ છતાં તમે <ph name="DOWNLOAD_DOMAIN" />માંથી "<ph name="FILE_NAME" />" ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="5825135637446025843">Chrome ફરી શરૂ થયા પછી, તમારા નવા પ્રદાતા પાસેથી સાચવેલી તમારી માહિતીનો ઉપયોગ પાસવર્ડ, પાસકી, સરનામાં, ચુકવણી પદ્ધતિઓ અને અન્ય માહિતી ઑટોમૅટિક રીતે ભરવા માટે થશે.</translation>
 <translation id="5828921839638612740">તમે Chrome સેટિંગમાં જઈને ડેટા ડિલીટ કરી શકો છો</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">જ્યારે તમે Chromeમાંથી બહાર નીકળો, ત્યારે છૂપી વિન્ડો લૉક કરો</translation>
 <translation id="6321592572353357376">\"<ph name="EXTENSION_NAME" />\" એક્સ્ટેન્શન ઇચ્છે છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
+<translation id="632496644859442877">વીડિયોનું ફૉર્મેટ પસંદ કરો</translation>
 <translation id="6324977638108296054">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકતા નથી</translation>
 <translation id="6331836477476466332">તમારા માટે વધુ સલામત, વધુ સશક્ત બ્રાઉઝર</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> મારફતે શેર કરો</translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માંથી <ph name="BEGIN_LINK" />વધુ માહિતી મેળવો<ph name="END_LINK" />.</translation>
 <translation id="6920262510368602827">આ પેજ માટે QR કોડ બનાવો</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે તમે તાજેતરમાં મુલાકાત લીધી ન હતી</translation>
+<translation id="6923291640965724312">ઇમર્સિવ ફૉર્મેટ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ટૅબ}one{<ph name="NUMBER_OF_TABS" /> ટૅબ}other{<ph name="NUMBER_OF_TABS" /> ટૅબ}}</translation>
 <translation id="6929224077895306814">તમારા ડિવાઇસ અને તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલા બધા સુરક્ષા કોડ ડિલીટ કરવામાં આવશે</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું સાંભળી શકાય તેવું ટૅબ</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">અન્ય ઉપકરણો</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="7862185352068345852">સાઇટ છોડવી છે?</translation>
 <translation id="7866213166286285359">અહીં પેજનો અનુવાદ કરો</translation>
 <translation id="7875915731392087153">ઇમેઇલ બનાવો</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>

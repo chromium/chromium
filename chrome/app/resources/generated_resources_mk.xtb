@@ -4992,7 +4992,6 @@
 <translation id="4831226137013573603">исклучување звук на микрофон</translation>
 <translation id="483262387981411190">Паузирајте или продолжете го контролирањето лице</translation>
 <translation id="4833683849865011483">Најден е 1 печатач од серверот за печатење</translation>
-<translation id="4834388789911023644">Напишете рецензија</translation>
 <translation id="4835598628985424375">Соберете ги усните така што ќе ги стиснете заедно</translation>
 <translation id="4835677468087803981">Скриј го PIN-кодот</translation>
 <translation id="4836504898754963407">Управувајте со отпечатоците</translation>
@@ -8534,7 +8533,6 @@
 <translation id="7625823789272218216">Нова картичка налево</translation>
 <translation id="762730429396410864">Рачно поставете го нивото на изведба на CPU што се пријавува до вебсајтовите</translation>
 <translation id="7627749368210392160">Сајтовите може да ја користат функцијава за да пристапуваат до други уреди во вашата локална мрежа</translation>
-<translation id="7628068697012244394">Напишете рецензија</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Степен <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Изберете дејство за секое копче</translation>
 <translation id="7629206210984165492">Прикриено</translation>
@@ -9533,6 +9531,7 @@
 <translation id="8383614331548401927">Резиме за добредојде</translation>
 <translation id="8387157483437834731">Лозинката е успешно променета</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
+<translation id="8387617938027387193">Потврдете дека сте вие</translation>
 <translation id="8389492867173948260">Дозволете екстензијава да ги чита и менува сите ваши податоци на веб-сајтовите што ги посетувате:</translation>
 <translation id="8390449457866780408">Серверот не е достапен.</translation>
 <translation id="8391172837960094276">За да ги прегледувате и да управувате со вашите лозинки, <ph name="BEGIN_LINK" />потврдете дека сте вие<ph name="END_LINK" />.</translation>
@@ -10633,7 +10632,6 @@
 <translation id="942296794412775122">Микрофонот е вклучен/исклучен</translation>
 <translation id="942488123151518958">Паузирај (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделува картичка на Chrome и аудио.</translation>
-<translation id="943744232549395906">„Гласовно пишување“ е сопрена</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947156494302904893">Сајтовите што ги отворате може да потврдат дека сте вистинска личност, а не бот</translation>
 <translation id="947329552760389097">&amp;Проверете ги елементите</translation>

@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1150989369772528668">Calendário</translation>
 <translation id="1158134713295836892">Gemini no Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Verificou 1 palavra-passe}other{Verificou # palavras-passe}}</translation>
 <translation id="1161444134753003495">Iniciar sessão</translation>
 <translation id="1161663161838091892">Sincronize os separadores e o histórico para continuar</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} cartão de crédito}other{{count} cartões de crédito}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Copiar URL do link</translation>
 <translation id="199425419756152024">Ver a palavra-passe</translation>
 <translation id="1996318269856535896">Continua a poder usar os seus dados de navegação existentes neste dispositivo. Para os usar, termine sessão na sua conta gerida.</translation>
+<translation id="2002971615187574739">Use a IA para fazer mais</translation>
 <translation id="2010008505735295285">Atualizar</translation>
 <translation id="2012723204723845092">Olá novamente!</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Marcar como não lida</translation>
 <translation id="2922210239002704889">Aceda à página inicial ou ao teclado</translation>
 <translation id="2924940770243654951">Abrir num novo separador de navegação anónima</translation>
+<translation id="2934607171563543600">desde que concluiu a ação "Verifique as suas palavras-passe"</translation>
 <translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
 <translation id="2953821385349876107">Escolha uma Conta Google diferente</translation>
 <translation id="2962516096219646456">Ver todos os dados de preenchimento automático</translation>
@@ -628,6 +631,7 @@
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3038136505713492417">Valide a sua identidade para usar as suas chaves de acesso neste dispositivo</translation>
 <translation id="3039671569659952257">Eliminar pasta</translation>
+<translation id="3041835740069544003">Agora, o Chrome pode detetar e preencher mais formulários com a Compreensão de formulários mais inteligente. Para o fazer, o conteúdo e os URLs das páginas podem ser tratados num espaço privado na nuvem. Faça a gestão nas definições.</translation>
 <translation id="3050988301648974170">Abra a Verificação de Palavra-passe</translation>
 <translation id="3053332585453689122">Envia os URLs que visita e uma pequena amostra de conteúdo de páginas, transferências, atividade de extensões e informações do sistema para a Navegação Segura do Google de forma a verificar se são prejudiciais.</translation>
 <translation id="3055102495753300780">Armazenamento de informações</translation>
@@ -751,6 +755,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{para {COUNT} site ou app}other{para {COUNT} sites e apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Aceda às suas palavras-passe noutras apps.</translation>
+<translation id="3479552764303398839">Agora não</translation>
 <translation id="3485558910355485767">Nova janela de navegação anónima</translation>
 <translation id="3488501490964659223">Os separadores foram fechados e os dados de navegação foram eliminados. A sua sessão foi terminada</translation>
 <translation id="3490396108106323715">Partilhar separador atual</translation>
@@ -807,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {email}.}other{{count} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {email}.}}</translation>
 <translation id="3659297405161482746">Não foram encontrados métodos de pagamento</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 selecionado}other{# selecionados}}</translation>
+<translation id="3668035568083954765">Proteja a sua privacidade e mantenha-se em segurança</translation>
 <translation id="3668816008081204991">A Lista de leitura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3672283986707092811">Selecionar tudo</translation>
@@ -1235,6 +1241,7 @@
 <translation id="5056446788882570708">Problemas encontrados <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Melhore a sua navegação</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5067540696062462445">Transferências</translation>
 <translation id="5070314445039955096">As autorizações de "<ph name="SITE_DOMAIN" />" serão repostas para desativadas quando sair deste site</translation>
@@ -1684,6 +1691,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6454311990702999318">Dados inválidos</translation>
 <translation id="6459411599807878608">Detalhes ocultados</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">A Google usa os seus dados de utilização de funcionalidades para recomendar tarefas e atualizar o progresso. Pode desativar o Level Up em qualquer altura.</translation>
 <translation id="6472069383518492189">As suas transferências são apresentadas aqui</translation>
 <translation id="6476253015009698798">O acompanhamento de preços não está disponível para esta página.</translation>
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
@@ -1923,6 +1931,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7233006041370588369">Selecione uma palavra-passe para preencher.</translation>
 <translation id="723874023660911012">Mudar de perfil</translation>
 <translation id="7241135764990439166">O Modo de navegação anónima está indisponível</translation>
+<translation id="7245288034498365666">Organize-se e poupe tempo</translation>
 <translation id="7253951228444156601">A verificar palavras-passe…</translation>
 <translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>

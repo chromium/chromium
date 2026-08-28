@@ -380,6 +380,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="475321580758063259">Sasisha Chrome ili iendelee kutumia data ya Chrome katika Akaunti yako ya Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini huifanya Chrome iwe na uwezo mdogo wa kustahimili mashambulio</translation>
+<translation id="4768676935374695498">Tafuta Video Hii ukitumia Lenzi ya Google</translation>
 <translation id="479167709087336770">Huduma hii hutumia kikagua tahajia sawa na kinachotumika kwenye Huduma ya Tafuta na Google. Maandishi unayoandika kwenye kivinjari yanatumwa kwa Google. Unaweza kubadilisha hali hii katika mipangilio wakati wowote.</translation>
 <translation id="4793679854893018356">Pata maelezo ya jinsi Chrome inavyohakikisha usalama wako</translation>
 <translation id="4799870290441980300">Huwasha vipengele vya ziada ili kutoa ulinzi thabiti zaidi wa Chrome</translation>
@@ -774,10 +775,12 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="848851325211467878">Umeingia ukitumia akaunti ya <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, uanachama kwenye Google. Fungua menyu ya akaunti</translation>
 <translation id="8496177819998570653">Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="8498858610309223613">Sasisho maalum la usalama wa Google Chrome limewekwa sasa hivi. Ifunge kisha uifungue sasa na tutarejesha vichupo vyako.</translation>
+<translation id="8502181052659370">Tafuta Kichupo Hiki ukitumia Lenzi ya Google</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="852529348814672339">Onyesha Chrome katika lugha hii</translation>
 <translation id="8525579356836940628">Uwekaji Umesimamishwa</translation>
 <translation id="8533056045953418157">Weka Google Chrome iwe kitazamaji chako chaguomsingi cha PDF</translation>
+<translation id="854593887324189900">Tafuta Picha Hii ukitumia Lenzi ya Google</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tafuta orodha ya lugha</translation>
 <translation id="8575047640889685742">Tumia <ph name="BEGIN_LINK" />kauli yako ya siri<ph name="END_LINK" /> ili usimbe data yote ya Chrome kwa njia fiche katika Akaunti yako ya Google. Njia za kulipa na anwani katika Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.</translation>

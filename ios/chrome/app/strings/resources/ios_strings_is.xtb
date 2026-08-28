@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Vaktar verð</translation>
 <translation id="3038136505713492417">Staðfestu að þetta sért þú til að nota aðgangslyklana þína í þessu tæki</translation>
 <translation id="3039671569659952257">Eyða möppu</translation>
+<translation id="3041835740069544003">Chrome getur nú greint og fyllt út fleiri eyðublöð með betri skilningi á eyðublöðum. Til að gera þetta er hægt að vinna efni og vefslóðir síðna í lokuðu rými í skýinu. Þú getur haft umsjón með þessu í stillingunum.</translation>
 <translation id="3050988301648974170">Opna aðgangsorðatékk</translation>
 <translation id="3053332585453689122">Sendir vefslóðirnar sem þú heimsækir og sýnishorn af efni á síðu, niðurhal, virkni viðbótar og kerfisupplýsingum til öruggrar vefskoðunar Google til að athuga hvort þær séu skaðlegar.</translation>
 <translation id="3055102495753300780">Upplýsingageymsla</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{fyrir {COUNT} vefsvæði eða forrit}one{fyrir {COUNT} vefsvæði eða forrit}other{fyrir {COUNT} vefsvæði eða forrit}}</translation>
 <translation id="3474624961160222204">Halda áfram sem <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Opnaðu aðgangsorðin þín í öðrum forritum.</translation>
+<translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3485558910355485767">Nýr huliðsgluggi</translation>
 <translation id="3488501490964659223">Flipum var lokað og vefskoðunargögnum eytt. Þú skráðist út</translation>
 <translation id="3490396108106323715">Deila núverandi flipa</translation>

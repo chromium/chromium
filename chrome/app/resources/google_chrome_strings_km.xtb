@@ -379,6 +379,7 @@
 <translation id="475321580758063259">ដំឡើង​កំណែ Chrome ដើម្បី​បន្តប្រើ​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">បង្កើន​ល្បឿន​គេហទំព័រ​ដោយប្រើ​ម៉ាស៊ីន V8 របស់ Chrome ប៉ុន្តែ​ធ្វើឱ្យ Chrome មិនសូវធន់នឹង​ការវាយប្រហារ​បន្តិច</translation>
+<translation id="4768676935374695498">ស្វែងរក​នៅក្នុង​វីដេអូនេះ​ដោយប្រើ Google Lens</translation>
 <translation id="479167709087336770">វាប្រើមុខងារ​ពិនិត្យអក្ខរាវិរុទ្ធ​ដូចគ្នា ដែលប្រើ​ក្នុងការស្វែងរក​នៅលើ Google ។ អក្សរដែល​អ្នកវាយបញ្ចូល​នៅក្នុង​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ត្រូវបានផ្ញើ​ទៅ Google ។ អ្នកអាចផ្លាស់​​ប្ដូរសកម្មភាពនេះ​នៅក្នុងការកំណត់​បានជានិច្ច។</translation>
 <translation id="4793679854893018356">ស្វែងយល់​អំពីរបៀបដែល Chrome រក្សាសុវត្ថិភាព​របស់អ្នក</translation>
 <translation id="4799870290441980300">បើកមុខងារបន្ថែម ដើម្បីផ្ដល់ការការពារខ្លាំងបំផុតរបស់ Chrome</translation>
@@ -773,10 +774,12 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="848851325211467878">បានចូលគណនីជា <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, សមាជិកភាព Google។ បើកម៉ឺនុយគណនី</translation>
 <translation id="8496177819998570653">កម្មវិធី​គ្រប់គ្រង&amp;​ពាក្យសម្ងាត់</translation>
 <translation id="8498858610309223613">ការធ្វើបច្ចុប្បន្នភាព​ផ្នែកសុវត្ថិភាព​ពិសេសសម្រាប់ Google Chrome ទើបតែ​ត្រូវបានអនុវត្ត។ សូមចាប់ផ្ដើម​ឡើងវិញឥឡូវនេះ នោះយើងនឹង​ស្ដារផ្ទាំង​របស់អ្នក។</translation>
+<translation id="8502181052659370">ស្វែងរក​លើផ្ទាំងនេះ​ដោយប្រើ Google Lens</translation>
 <translation id="8521348052903287641">ក្បួនត្រលប់ចូលសម្រាប់ Google Chrome Dev ដែលត្រូវអនុញ្ញាតលើការធ្វើចរាចររបស់ mDNS ។</translation>
 <translation id="852529348814672339">បង្ហាញ Chrome ជាភាសានេះ</translation>
 <translation id="8525579356836940628">ការដំឡើង​ត្រូវបាន​បញ្ឈប់</translation>
 <translation id="8533056045953418157">កំណត់ Google Chrome ជា​កម្មវិធី​មើល PDF លំនាំដើម​របស់អ្នក</translation>
+<translation id="854593887324189900">ស្វែងរកនៅក្នុងរូបភាពនេះដោយប្រើ Google Lens</translation>
 <translation id="8555465886620020932">បញ្ហា​សេវាកម្ម៖ <ph name="SERVICE_ERROR" />។</translation>
 <translation id="856656450041460113">ស្វែងរក​ក្នុងបញ្ជី​ភាសា</translation>
 <translation id="8575047640889685742">ប្រើ<ph name="BEGIN_LINK" />ឃ្លា​សម្ងាត់​ផ្ទាល់ខ្លួន<ph name="END_LINK" />របស់អ្នក ដើម្បី​អ៊ីនគ្រីប​ទិន្នន័យ Chrome ទាំងអស់​នៅក្នុង​គណនី Google របស់អ្នក។ វិធីបង់ប្រាក់ និង​អាសយដ្ឋាន​មក​ពី Google Pay នឹង​មិន​ត្រូវ​បានអ៊ីនគ្រីបទេ។ ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតពី Chrome នឹង​មិន​ធ្វើ​សមកាលកម្មទេ។</translation>

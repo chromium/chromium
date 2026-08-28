@@ -4977,7 +4977,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4831226137013573603">mikrofona izslēgšana</translation>
 <translation id="483262387981411190">Pārtraukt vai atsākt sejas vadību</translation>
 <translation id="4833683849865011483">Atrasts 1 printeris no drukas servera.</translation>
-<translation id="4834388789911023644">Rakstīt atsauksmi</translation>
 <translation id="4835598628985424375">Izstiepiet kopā savilktas lūpas</translation>
 <translation id="4835677468087803981">Slēpt PIN</translation>
 <translation id="4836504898754963407">Pirkstu nospiedumu pārvaldība</translation>
@@ -8518,7 +8517,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7625823789272218216">Jauna cilne pa kreisi</translation>
 <translation id="762730429396410864">Manuāli iestatīt tīmekļa vietnēm ziņoto centrālā procesora veiktspējas līmeni</translation>
 <translation id="7627749368210392160">Vietnes var izmantot šo funkciju, lai piekļūtu citām ierīcēm jūsu lokālajā tīklā.</translation>
-<translation id="7628068697012244394">Rakstīt atsauksmi</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. līmenis</translation>
 <translation id="762917478230183172">Atlasiet darbību katram taustiņam</translation>
 <translation id="7629206210984165492">Maigs</translation>
@@ -9517,6 +9515,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8383614331548401927">Kopsavilkums sākumam</translation>
 <translation id="8387157483437834731">Parole ir sekmīgi nomainīta</translation>
 <translation id="8387361103813440603">Nedrīkst skatīt jūsu atrašanās vietu</translation>
+<translation id="8387617938027387193">Apstipriniet, ka tas esat jūs</translation>
 <translation id="8389492867173948260">Ļaut šim paplašinājumam lasīt un mainīt visus jūsu datus jūsu apmeklētajās vietnēs:</translation>
 <translation id="8390449457866780408">Serveris nav pieejams.</translation>
 <translation id="8391172837960094276">Lai skatītu un pārvaldītu paroles, <ph name="BEGIN_LINK" />apstipriniet savu identitāti<ph name="END_LINK" />.</translation>
@@ -10617,7 +10616,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="942296794412775122">Ieslēgt/izslēgt mikrofonu</translation>
 <translation id="942488123151518958">Pārtraukt (k)</translation>
 <translation id="942532530371314860">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni un audio.</translation>
-<translation id="943744232549395906">Rakstīšana ar balsi ir apturēta</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="947329552760389097">&amp;Pārbaudīt elementus</translation>

@@ -4978,7 +4978,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4831226137013573603">heqja e zërit të mikrofonit</translation>
 <translation id="483262387981411190">Vendos në pauzë ose vazhdo me kontrollin me anë të fytyrës</translation>
 <translation id="4833683849865011483">U gjet 1 printer nga serveri i printimit</translation>
-<translation id="4834388789911023644">Shkruaj një koment</translation>
 <translation id="4835598628985424375">Rrudh buzët me njëra-tjetrën</translation>
 <translation id="4835677468087803981">Fshihe kodin PIN</translation>
 <translation id="4836504898754963407">Menaxho gjurmët e gishtave</translation>
@@ -8517,7 +8516,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7625823789272218216">Skedë e re në të majtë</translation>
 <translation id="762730429396410864">Cakto manualisht nivelin e performancës së CPU-së që raportohet te uebsajtet</translation>
 <translation id="7627749368210392160">Sajtet mund ta përdorin këtë veçori për t'u qasur në pajisjet e tjera në rrjetin tënd lokal</translation>
-<translation id="7628068697012244394">Shkruaj një koment</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Klasa <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Zgjidh një veprim për çdo tast</translation>
 <translation id="7629206210984165492">Modeste</translation>
@@ -9516,6 +9514,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8383614331548401927">Përmbledhja e mirëseardhjes</translation>
 <translation id="8387157483437834731">Fjalëkalimi u ndryshua me sukses</translation>
 <translation id="8387361103813440603">Nuk lejohen të shikojnë vendndodhjen tënde</translation>
+<translation id="8387617938027387193">Verifiko që je ti</translation>
 <translation id="8389492867173948260">Lejo që kjo shtesë të lexojë dhe të ndryshojë të gjitha të dhënat në faqet që viziton:</translation>
 <translation id="8390449457866780408">Serveri është jashtë shërbimit.</translation>
 <translation id="8391172837960094276">Për të shikuar dhe menaxhuar fjalëkalimet e tua, <ph name="BEGIN_LINK" />verifiko që je ti<ph name="END_LINK" />.</translation>
@@ -10616,7 +10615,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="942296794412775122">Mikrofoni aktiv/joaktiv</translation>
 <translation id="942488123151518958">Vendos në pauzë (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion.</translation>
-<translation id="943744232549395906">Shkrimi me zë ndaloi</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>

@@ -1934,7 +1934,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2498539833203011245">Réduire</translation>
 <translation id="2498765460639677199">Très grande</translation>
 <translation id="2500471369733289700">Bloquée pour protéger la confidentialité de vos données</translation>
-<translation id="2500915336169200382">Demander à Gemini à propos de "<ph name="SELECTION" />"</translation>
+<translation id="2500915336169200382">Interroger Gemini sur "<ph name="SELECTION" />"</translation>
 <translation id="2501173422421700905">Certificat en attente</translation>
 <translation id="2501797496290880632">Tapez un raccourci</translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
@@ -4976,7 +4976,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4831226137013573603">couper le son du micro</translation>
 <translation id="483262387981411190">Mettre en pause ou reprendre la commande par le visage</translation>
 <translation id="4833683849865011483">1 imprimante trouvée sur le serveur d'impression</translation>
-<translation id="4834388789911023644">Rédiger un avis</translation>
 <translation id="4835598628985424375">Faire la moue en pinçant les lèvres</translation>
 <translation id="4835677468087803981">Masquer le code</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
@@ -8519,7 +8518,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7625823789272218216">Nouvel onglet à gauche</translation>
 <translation id="762730429396410864">Définir manuellement le niveau de performances du processeur signalé aux sites Web</translation>
 <translation id="7627749368210392160">Les sites peuvent utiliser cette fonctionnalité pour accéder à d'autres appareils sur votre réseau local</translation>
-<translation id="7628068697012244394">Rédiger un avis</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Sélectionnez une action pour chaque touche</translation>
 <translation id="7629206210984165492">Discret</translation>
@@ -9518,6 +9516,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8383614331548401927">Récap de bienvenue</translation>
 <translation id="8387157483437834731">Le mot de passe a bien été modifié</translation>
 <translation id="8387361103813440603">Non autorisé à connaître votre position</translation>
+<translation id="8387617938027387193">Confirmez votre identité</translation>
 <translation id="8389492867173948260">Autorisez cette extension à lire et à modifier toutes vos données sur les sites Web que vous consultez :</translation>
 <translation id="8390449457866780408">Serveur indisponible.</translation>
 <translation id="8391172837960094276">Pour afficher et gérer vos mots de passe, <ph name="BEGIN_LINK" />confirmez votre identité<ph name="END_LINK" />.</translation>
@@ -10618,7 +10617,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="942296794412775122">Activer/Désactiver le micro</translation>
 <translation id="942488123151518958">Pause (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio.</translation>
-<translation id="943744232549395906">Saisie vocale interrompue</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="947156494302904893">Les sites auxquels vous accédez peuvent vérifier que vous êtes une personne et non un robot</translation>
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>

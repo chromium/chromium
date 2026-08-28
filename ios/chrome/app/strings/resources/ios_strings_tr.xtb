@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Fiyat takip ediliyor</translation>
 <translation id="3038136505713492417">Geçiş anahtarlarınızı bu cihazda kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="3039671569659952257">Klasörü sil</translation>
+<translation id="3041835740069544003">Chrome artık akıllı form anlama özelliğiyle daha fazla formu algılayıp doldurabilir. Bunun için sayfa içeriği ve URL'ler buluttaki özel bir alanda işlenebilir. Ayarlarda yönetin.</translation>
 <translation id="3050988301648974170">Şifre Güvenliği'ni açın</translation>
 <translation id="3053332585453689122">Ziyaret ettiğiniz URL'lerin yanı sıra sayfa içeriği, indirmeler, uzantı etkinliği ve sistem bilgilerinin küçük bir örneğini Google Güvenli Tarama'ya göndererek bunların zararlı olup olmadığını kontrol eder.</translation>
 <translation id="3055102495753300780">Bilgi depolama</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} site veya uygulama için}other{{COUNT} site ve uygulama için}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
 <translation id="3476450923187944815">Başka uygulamalardaki şifrelerinize erişin.</translation>
+<translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3485558910355485767">Yeni Gizli Pencere</translation>
 <translation id="3488501490964659223">Sekmeler kapatıldı ve tarama verileri silindi. Oturumunuz kapatıldı</translation>
 <translation id="3490396108106323715">Mevcut sekmeyi paylaş</translation>
@@ -2272,7 +2274,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8366466717204352506">Kontrol hiç yapılmadı</translation>
 <translation id="8367705492654390392">Soru sorun</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
-<translation id="8368198938968349418">Otomatik doldurmayı aç…</translation>
+<translation id="8368198938968349418">Otomatik doldurmayı etkinleştir…</translation>
 <translation id="8370406443343902172">Ayarlar'a git...</translation>
 <translation id="8370929854657845191">Orta yüksekliğe genişletin</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adresi sil}other{Adresleri sil}}</translation>
@@ -2308,7 +2310,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8490629238792920282">Bağlantı oluşturulamadı</translation>
 <translation id="8501469528283376592">İndirilenler otomatik silinsin</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
-<translation id="8505361906966222822">Şuraya kaydet…</translation>
+<translation id="8505361906966222822">Kayıt yerini seçin</translation>
 <translation id="850600235656508448">Gizli Sekmede Aç</translation>
 <translation id="8515534223594179607">Tarama Verilerini Dışa Aktar</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} şifre ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}other{{count} şifre ve diğer öğeler yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}}</translation>

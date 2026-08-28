@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Notiek cenas izsekošana</translation>
 <translation id="3038136505713492417">Apstipriniet savu identitāti, lai varētu izmantot piekļuves atslēgas šajā ierīcē</translation>
 <translation id="3039671569659952257">Dzēst mapi</translation>
+<translation id="3041835740069544003">Tagad Chrome var noteikt un aizpildīt vairāk veidlapu, izmantojot viedās veidlapu aizpildes funkciju. Lai to paveiktu, lapu saturs un vietrāži URL var tikt apstrādāti privātā telpā mākonī. Šo funkciju varat pārvaldīt iestatījumos.</translation>
 <translation id="3050988301648974170">Atvērt paroļu pārbaudi</translation>
 <translation id="3053332585453689122">Uz funkciju “Google droša pārlūkošana” tiek sūtīti jūsu apmeklētie vietrāži URL, nelieli lapu satura paraugi, informācija par lejupielādēm un paplašinājumu darbību, kā arī sistēmas informācija, lai pārbaudītu, vai šie vietrāži, lejupielādes un paplašinājumi nav kaitīgi.</translation>
 <translation id="3055102495753300780">Informācijas glabāšana</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} vietnei vai lietotnei}zero{{COUNT} vietnēm un lietotnēm}one{{COUNT} vietnei un lietotnei}other{{COUNT} vietnēm un lietotnēm}}</translation>
 <translation id="3474624961160222204">Turpināt kā: <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Piekļūstiet savām parolēm citās lietotnēs.</translation>
+<translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3485558910355485767">Jauns inkognito režīma logs</translation>
 <translation id="3488501490964659223">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti. Jūs tikāt izrakstīts.</translation>
 <translation id="3490396108106323715">Kopīgot pašreizējo cilni</translation>

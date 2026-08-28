@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Je hebt 1 wachtwoord gecontroleerd}other{Je hebt # wachtwoorden gecontroleerd}}</translation>
 <translation id="1161444134753003495">Inloggen</translation>
 <translation id="1161663161838091892">Tabbladen en geschiedenis synchroniseren om door te gaan</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} creditcard}other{{count} creditcards}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Link-URL kopiëren</translation>
 <translation id="199425419756152024">Wachtwoord bekijken</translation>
 <translation id="1996318269856535896">Je kunt je bestaande browsegegevens nog steeds gebruiken op dit apparaat. Als je die wilt gebruiken, log je uit van je beheerde account.</translation>
+<translation id="2002971615187574739">Gebruik AI om meer gedaan te krijgen</translation>
 <translation id="2010008505735295285">Opnieuw laden</translation>
 <translation id="2012723204723845092">Welkom terug.</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Markeren als ongelezen</translation>
 <translation id="2922210239002704889">Ga naar je homepage of toetsenbord</translation>
 <translation id="2924940770243654951">Openen op nieuw incognitotabblad</translation>
+<translation id="2934607171563543600">sinds je 'Je wachtwoorden controleren' hebt afgerond</translation>
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2953821385349876107">Ander Google-account kiezen</translation>
 <translation id="2962516096219646456">Alle gegevens voor automatisch invullen bekijken</translation>
@@ -628,6 +631,7 @@
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3038136505713492417">Laten verifiëren dat jij het bent om je toegangssleutels op dit apparaat te gebruiken</translation>
 <translation id="3039671569659952257">Map verwijderen</translation>
+<translation id="3041835740069544003">Chrome kan nu meer formulieren herkennen en invullen met Slimmer formulieren invullen. Hiervoor kunnen paginacontent en URL's worden verwerkt in een privégedeelte in de cloud. Je beheert dit in de instellingen.</translation>
 <translation id="3050988301648974170">Wachtwoordcheck openen</translation>
 <translation id="3053332585453689122">Stuurt de URL's die je bezoekt en een klein gedeelte van de paginacontent, downloads, extensie-activiteit en systeeminformatie naar Google Safe Browsing om te checken of de URL's schadelijk zijn.</translation>
 <translation id="3055102495753300780">Informatieopslag</translation>
@@ -751,6 +755,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{voor {COUNT} site of app}other{voor {COUNT} sites en apps}}</translation>
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Krijg toegang tot je wachtwoorden in andere apps.</translation>
+<translation id="3479552764303398839">Niet nu</translation>
 <translation id="3485558910355485767">Nieuw incognitovenster</translation>
 <translation id="3488501490964659223">Tabbladen zijn gesloten en browsegegevens zijn verwijderd. Je bent uitgelogd.</translation>
 <translation id="3490396108106323715">Huidig tabblad delen</translation>
@@ -807,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account, {email}.}other{{count} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}}</translation>
 <translation id="3659297405161482746">Geen betaalmethoden gevonden</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
+<translation id="3668035568083954765">Bescherm je privacy en blijf veilig</translation>
 <translation id="3668816008081204991">Leeslijst is verborgen</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Alles selecteren</translation>
@@ -1235,6 +1241,7 @@
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
 <translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Browse op een hoger niveau</translation>
 <translation id="5062321486222145940">Google Drive installeren</translation>
 <translation id="5067540696062462445">Downloads</translation>
 <translation id="5070314445039955096">De rechten voor <ph name="SITE_DOMAIN" /> worden weer uitgezet als je deze site verlaat.</translation>
@@ -1684,6 +1691,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6454311990702999318">Ongeldige gegevens</translation>
 <translation id="6459411599807878608">Gegevens verborgen</translation>
 <translation id="646394917185284261">Bestanden</translation>
+<translation id="6470721056280836221">Google gebruikt je gegevens over functiegebruik om taken aan te bevelen en de voortgang te updaten. Je kunt Level Up op elk moment uitzetten.</translation>
 <translation id="6472069383518492189">Hier vind je je downloads</translation>
 <translation id="6476253015009698798">Prijzen volgen is niet beschikbaar voor deze pagina.</translation>
 <translation id="6476284679642588870">Betaalmethoden beheren</translation>
@@ -1923,6 +1931,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7233006041370588369">Selecteer een wachtwoord om in te vullen.</translation>
 <translation id="723874023660911012">Van profiel wisselen</translation>
 <translation id="7241135764990439166">Incognitomodus is niet beschikbaar</translation>
+<translation id="7245288034498365666">Houd overzicht en bespaar tijd</translation>
 <translation id="7253951228444156601">Wachtwoorden checken…</translation>
 <translation id="7261217796641151584">Groep delen</translation>
 <translation id="7266578100016339897">Zo blijft alles overzichtelijk. Je kunt dit altijd wijzigen in de instellingen.</translation>

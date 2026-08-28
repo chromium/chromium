@@ -22,12 +22,14 @@
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item inativo}other{<ph name="TABS_COUNT_MANY" /> itens inativos}}</translation>
 <translation id="1568067597247500137">Desativar som do site</translation>
+<translation id="1639330215535800445">{TAB_COUNT,plural, =1{Mover separador para baixo}other{Mover separadores para baixo}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> separadores agrupados</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1670942869417022142">Áudio desativado</translation>
 <translation id="1697284962337958118">Adicionar a</translation>
 <translation id="1713541401465507417">Fechar todos os separadores e grupos</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grupo de separadores já não está disponível}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupos de separadores já não estão disponíveis}}</translation>
+<translation id="1759122978835002237">Mover grupo de separadores para cima</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> separador agrupado</translation>
 <translation id="1844381456014878100">Após 7 dias de inatividade</translation>
@@ -44,6 +46,7 @@
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. O separador de navegação anónima não vai estar disponível.}other{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Reativar o som do site}other{Reativar o som dos sites}}</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2164232689984783657">Mover grupo de separadores para baixo</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar separador}other{Desagrupar separadores}}</translation>
 <translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
@@ -194,6 +197,7 @@
 <translation id="7369451074646620503">Grupo de separadores "<ph name="TAB_GROUP_NAME" />" indisponível</translation>
 <translation id="7402375256128852434">Adicione separadores recentes</translation>
 <translation id="7452985128687107478">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
+<translation id="746137824927359035">{TAB_COUNT,plural, =1{Mover separador para cima}other{Mover separadores para cima}}</translation>
 <translation id="747459581954555080">Restaurar tudo</translation>
 <translation id="7489558427602531799">Mover grupo de separadores para a direita</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item}other{<ph name="TABS_COUNT_MANY" /> itens}}</translation>

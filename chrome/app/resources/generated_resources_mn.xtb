@@ -4990,7 +4990,6 @@
 <translation id="4831226137013573603">микрофоны дууг хаах</translation>
 <translation id="483262387981411190">Царайн хяналтыг түр зогсоох эсвэл үргэлжлүүлэх</translation>
 <translation id="4833683849865011483">Хэвлэх серверээс 1 хэвлэгч олдлоо</translation>
-<translation id="4834388789911023644">Шүүмж бичих</translation>
 <translation id="4835598628985424375">Уруулаа цорвойлгох</translation>
 <translation id="4835677468087803981">ПИН-г нуух</translation>
 <translation id="4836504898754963407">Хурууны хээг удирдах</translation>
@@ -8530,7 +8529,6 @@
 <translation id="7625823789272218216">Шинэ табыг зүүн тийш нь</translation>
 <translation id="762730429396410864">Вебсайтуудад мэдээлсэн CPU-н гүйцэтгэлийн зэрэглэлийг гар аргаар тохируулах</translation>
 <translation id="7627749368210392160">Сайтууд энэ онцлогийг таны дотоод сүлжээн дээрх бусад төхөөрөмжид хандахад ашиглах боломжтой</translation>
-<translation id="7628068697012244394">Шүүмж бичих</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Зэрэглэл <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Товч тус бүрд үйлдэл сонгоно уу</translation>
 <translation id="7629206210984165492">Дүнсгэр</translation>
@@ -9528,6 +9526,7 @@
 <translation id="8383614331548401927">Угтах тойм</translation>
 <translation id="8387157483437834731">Нууц үгийг амжилттай өөрчилсөн</translation>
 <translation id="8387361103813440603">Таны байршлыг харахыг зөвшөөрөөгүй</translation>
+<translation id="8387617938027387193">Өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="8389492867173948260">Энэ өргөтгөлд таны зочилдог веб сайтын бүх өгөгдлийг унших болон өөрчлөхийг зөвшөөрнө үү:</translation>
 <translation id="8390449457866780408">Серверүүд ажиллах боломжгүй байна.</translation>
 <translation id="8391172837960094276">Нууц үгнүүдээ харж, удирдахын тулд <ph name="BEGIN_LINK" />өөрийгөө мөн болохыг баталгаажуулна уу<ph name="END_LINK" />.</translation>
@@ -10626,7 +10625,6 @@
 <translation id="942296794412775122">Микрофоныг асаах/унтраах</translation>
 <translation id="942488123151518958">Түр зогсоох (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> нь Chrome-н таб болон дууг хуваалцаж байна.</translation>
-<translation id="943744232549395906">Дуу хоолойгоор бичих онцлогийг зогсоосон</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="947156494302904893">Сайтууд таныг жинхэнэ хүн бөгөөд бот биш болохыг баталгаажуулах боломжтой</translation>
 <translation id="947329552760389097">&amp;Элементүүдийг шалгах</translation>

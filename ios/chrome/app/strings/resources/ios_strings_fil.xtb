@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3038136505713492417">I-verify na ikaw ito para magamit ang iyong mga passkey sa device na ito</translation>
 <translation id="3039671569659952257">Tanggalin ang folder</translation>
+<translation id="3041835740069544003">Makaka-detect at mapupunan na ng Chrome ang higit pang form gamit ang mas matalinong pag-unawa sa form. Para magawa ito, puwedeng iproseso ang content ng page at mga URL sa isang pribadong space sa cloud. Pamahalaan sa mga setting.</translation>
 <translation id="3050988301648974170">Buksan ang Password Checkup</translation>
 <translation id="3053332585453689122">Ipapadala sa Ligtas na Pag-browse sa Google ang mga URL na binibisita mo at maliit na sample ng content ng page, mga download, aktibidad ng extension, at impormasyon ng system para suriin kung mapaminsala ang mga ito.</translation>
 <translation id="3055102495753300780">Storage ng impormasyon</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{para sa {COUNT} site o app}one{para sa {COUNT} site at app}other{para sa {COUNT} na site at app}}</translation>
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3476450923187944815">I-access ang iyong mga password sa iba pang app.</translation>
+<translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3485558910355485767">Bagong Incognito Window</translation>
 <translation id="3488501490964659223">Isinara ang mga tab at na-delete ang data mula sa pag-browse. Na-sign out ka</translation>
 <translation id="3490396108106323715">I-share ang kasalukuyang tab</translation>

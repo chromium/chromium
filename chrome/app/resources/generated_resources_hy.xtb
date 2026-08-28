@@ -4974,7 +4974,6 @@
 <translation id="4831226137013573603">անջատել խոսափողը</translation>
 <translation id="483262387981411190">Դադարեցնել կամ վերսկսել դեմքի հետագծումը</translation>
 <translation id="4833683849865011483">Տպման սերվերում գտնվել է 1 տպիչ։</translation>
-<translation id="4834388789911023644">Գրել կարծիք</translation>
 <translation id="4835598628985424375">Շրթունքները սեղմեք իրար</translation>
 <translation id="4835677468087803981">Թաքցնել PIN կոդը</translation>
 <translation id="4836504898754963407">Մատնահետքերի կառավարում</translation>
@@ -8513,7 +8512,6 @@
 <translation id="7625823789272218216">Նոր ներդիր ձախ կողմում</translation>
 <translation id="762730429396410864">Ձեռքով սահմանել պրոցեսորի արտադրողականության մակարդակը, որը հաղորդվում է կայքերին</translation>
 <translation id="7627749368210392160">Կայքերը կարող են օգտագործել այս գործառույթը՝ ձեր լոկալ ցանցի մյուս սարքերի հասանելիություն ստանալու համար</translation>
-<translation id="7628068697012244394">Գրել կարծիք</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), մակարդակ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Ընտրեք գործողություն յուրաքանչյուր ստեղնի համար</translation>
 <translation id="7629206210984165492">Զուսպ</translation>
@@ -9512,6 +9510,7 @@
 <translation id="8383614331548401927">Բարի վերադարձ</translation>
 <translation id="8387157483437834731">Գաղտնաբառը փոխվեց</translation>
 <translation id="8387361103813440603">Չի թույլատրվում տեսնել ձեր տեղադրությունը</translation>
+<translation id="8387617938027387193">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="8389492867173948260">Թույլատրեք այս ընդլայնմանը կարդալ և փոխել ձեր այցելած կայքերի բոլոր տվյալները՝</translation>
 <translation id="8390449457866780408">Սերվերը մատչելի չէ:</translation>
 <translation id="8391172837960094276">Ձեր գաղտնաբառերը դիտելու և կառավարելու համար <ph name="BEGIN_LINK" />հաստատեք ձեր ինքնությունը<ph name="END_LINK" />։</translation>
@@ -10612,7 +10611,6 @@
 <translation id="942296794412775122">Միացնել/անջատել խոսափողը</translation>
 <translation id="942488123151518958">Դադարեցնել (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով ու ձայնով:</translation>
-<translation id="943744232549395906">Ձայնային մուտքագրումը կանգնեցված է</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947156494302904893">Կայքերը, որոնք այցելում եք, կարող են ստուգել՝ արդյոք դուք իրական օգտատեր եք, թե՝ ռոբոտ</translation>
 <translation id="947329552760389097">&amp;Ստուգել տարրերը</translation>

@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3038136505713492417">Bekreft at det er deg, for å bruke passnøklene dine på denne enheten</translation>
 <translation id="3039671569659952257">Slett mappen</translation>
+<translation id="3041835740069544003">Nå kan Chrome gjenkjenne og fylle ut flere skjemaer med smartere skjemaforståelse. For å gjøre dette kan sideinnhold og nettadresser behandles i et privat område i skyen. Administrer dette i innstillingene.</translation>
 <translation id="3050988301648974170">Åpne passordsjekken</translation>
 <translation id="3053332585453689122">Sender nettadressene du besøker, samt et lite utvalg av sideinnhold, nedlastinger, utvidelsesaktivitet og systeminformasjon, til Google Safe Browsing for å sjekke om nettadressene er skadelige.</translation>
 <translation id="3055102495753300780">Informasjonslagring</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{For {COUNT} nettsted eller app}other{for {COUNT} nettsteder og apper}}</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få tilgang til passordene dine i andre apper.</translation>
+<translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3485558910355485767">Nytt inkognitovindu</translation>
 <translation id="3488501490964659223">Faner ble lukket, og nettlesingsdata ble slettet. Du ble logget av</translation>
 <translation id="3490396108106323715">Del den aktive fanen</translation>

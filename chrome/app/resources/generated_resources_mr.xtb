@@ -2512,6 +2512,7 @@
 <translation id="2926708162326352948">थीम ही अपलोड केलेल्या इमेजवर अपडेट केली आहे</translation>
 <translation id="2927017729816812676">कॅशे स्टोरेज</translation>
 <translation id="2928030851119977280">निवड सेव्ह केली आहे. तुम्ही इतर Google सेवांमध्ये साइन इन करता, तेव्हा तुमची निवड लागू होईल.</translation>
+<translation id="2928361271496576301">हॉटकी स्वीकारा</translation>
 <translation id="2928795416630981206">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती आहे</translation>
 <translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ने १ साइटवरून परवानग्या काढून टाकल्या}other{Chrome ने {NUM_SITES} साइटवरून परवानग्या काढून टाकल्या}}</translation>
 <translation id="2931157624143513983">प्रिंट करण्यायोग्य भागात बसवा</translation>
@@ -2602,6 +2603,7 @@
 <translation id="2992754757708650257">साइट सोडून टास्क संपवायची आहे का?</translation>
 <translation id="2992931425024192067">सर्व सूचना आशय दाखवा</translation>
 <translation id="2993517869960930405">ॲप माहिती</translation>
+<translation id="2994495699095559601">आणखी सुसंबद्ध उत्तरांसाठी, Google हे शेअर केलेल्या टॅबचा आशय आणि URL वापरते. तुमचा सद्य टॅब नवीन चॅटमध्ये शेअर केला जातो. तुम्ही हे सेटिंग कधीही बदलू शकता.</translation>
 <translation id="2994804273850542871">टिएर ४: अल्ट्रा</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा}other{नंतर टॅब जोडण्यासाठी हे गट कायम ठेवा किंवा तुम्हाला यापुढे त्यांचा अ‍ॅक्सेस नको असल्यास, त्यांमधून बाहेर पडा}}</translation>
 <translation id="2996071302059856125">AI तुमच्या अनुभवाला कसे आकार देते आणि Chrome ने देऊ केलेली नियंत्रणे याबद्दल अधिक जाणून घ्या</translation>
@@ -3120,6 +3122,7 @@
 <translation id="3394850431319394743">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती आहे</translation>
 <translation id="339722927132407568">थांबतो</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
+<translation id="3400036602686830681">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. तो आता बदला किंवा <ph name="BEGIN_LINK" />पासवर्ड तपासणी<ph name="END_LINK" /> मध्ये सर्व समस्यांचे पुनरावलोकन करा.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - हस्तक्षेप केला</translation>
 <translation id="3401484564516348917">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, नोंदणी मूल्ये आणि फाइल याविषयीची माहिती वाचा</translation>
 <translation id="3402255108239926910">अवतार निवडा</translation>
@@ -3548,6 +3551,7 @@
 <translation id="3711945201266135623">प्रिंट सर्व्हरवरील <ph name="NUM_PRINTERS" /> प्रिंटर आढळले</translation>
 <translation id="3712143870407382523">या बाजूची विंडो निवडा</translation>
 <translation id="3712897371525859903">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
+<translation id="3712966523643024813">नवीन काय आहे</translation>
 <translation id="371300529209814631">मागे/पुढे</translation>
 <translation id="371302509916403935">अधोरेखित</translation>
 <translation id="3713047097299026954">या सिक्युरिटी कीमध्ये कोणताही साइन इन डेटा नाही</translation>
@@ -3711,6 +3715,7 @@
 <translation id="3812525830114410218">खराब सर्टिफिकेट</translation>
 <translation id="3813296892522778813">तुम्ही जे शोधत आहात ते तुम्हाला सापडले नसेल तर <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome मदत<ph name="END_LINK_CHROMIUM" /> वर जा</translation>
 <translation id="3813358687923336574">पेजचे भाषांतर आणि क्विक आन्सर्स साठी वापरली जाणारी भाषा</translation>
+<translation id="381485723922188688">Option</translation>
 <translation id="3815668647912194650">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा.</translation>
 <translation id="3816118180265633665">Chrome रंग</translation>
 <translation id="3817524650114746564">तुमच्या कॉंप्युटरच्या प्रॉक्सी सेटिंग्ज उघडा</translation>
@@ -4824,6 +4829,7 @@
 <translation id="4699172675775169585">कॅशे   इमेज आणि फाइल</translation>
 <translation id="4699357559218762027">(स्वयं-लाँच केलेले)</translation>
 <translation id="4699473989647132421">किनारपट्टी</translation>
+<translation id="4700734033170984447">Gemini वापरून या पेजचा सारांश द्या</translation>
 <translation id="4701335814944566468">काल पाहिला होता</translation>
 <translation id="4705082603944362042">{MIN_PIN_LENGTH,plural, =1{तुमचा नवीन पिन एंटर करा. पिन किमान एका वर्णाचा असणे आवश्यक आहे आणि त्यामध्ये अक्षरे, अंक व इतर वर्ण असू शकतात.}other{तुमचा नवीन पिन एंटर करा. पिन किमान # वर्णांचा असणे आवश्यक आहे आणि त्यामध्ये अक्षरे, अंक व इतर वर्ण असू शकतात.}}</translation>
 <translation id="470644585772471629">कलर इन्व्हर्जन</translation>
@@ -4990,7 +4996,6 @@
 <translation id="4831226137013573603">मायक्रोफोन म्यूट करा</translation>
 <translation id="483262387981411190">फेस नियंत्रण थांबवा किंवा पुन्‍हा सुरू करा</translation>
 <translation id="4833683849865011483">प्रिंट सर्व्हरवरील एक प्रिंटर आढळला</translation>
-<translation id="4834388789911023644">पुनरावलोकन लिहा</translation>
 <translation id="4835598628985424375">ओठ एकत्र आकसून चंबू करा</translation>
 <translation id="4835677468087803981">पिन लपवा</translation>
 <translation id="4836504898754963407">फिंगरप्रिंट व्यवस्‍थापित करा</translation>
@@ -5607,6 +5612,7 @@
 <translation id="5298315677001348398">तुम्ही पुढे सुरू ठेवून या सॉफ्टवेअरला तुमच्या डिव्हाइसवर बदल करण्याची अनुमती देऊ इच्छिता का?</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">तुमचे टॅब गट पहा आणि व्यवस्थापित करा</translation>
+<translation id="5300667117276823109">Gemini सोबतची तुमची संभाषणे किंवा तुमचा <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace डेटा<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> यांचे पुनरावलोकन केले जाणार नाही अथवा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी त्यांचा वापर केला जाणार नाही. Gemini हे AI आहे आणि ते चुका करू शकते.</translation>
 <translation id="5301398529256275325">“या पेजचा सारांश द्या” यांसारख्या गोष्टी किंवा तुमचा स्वतःचा प्रश्न विचारून पहा.</translation>
 <translation id="5301954838959518834">ठीक आहे, समजले</translation>
 <translation id="5302032366299160685">पुन्हा प्रयत्न करण्यापूर्वी फाइल उघडण्याची प्रतीक्षा करा</translation>
@@ -6005,6 +6011,7 @@
 <translation id="5625225435499354052">Google Pay मध्ये संपादित करा</translation>
 <translation id="5627832140542566187">डिस्प्ले ओरिएंटेशन</translation>
 <translation id="5628434207686266338">डिव्हाइसचा पासवर्ड सेट करा</translation>
+<translation id="5628652442614339066">याचा वापर करून सहजपणे उघडा</translation>
 <translation id="562935524653278697">तुमच्या ॲडमिनिस्ट्रेटरने तुमचे बुकमार्क, इतिहास, संंकेतशब्द आणि अन्य सेटिंग्ज सिंक करणे अक्षम केले आहे.</translation>
 <translation id="5631017369956619646">CPU वापर</translation>
 <translation id="5631272057151918206">हे तुमच्या ऑफलाइन फाइलद्वारे वापरली जाणारी कमाल <ph name="OFFLINE_STORAGE_SIZE" /> जागा काढून टाकेल. काही फाइल तरीही ऑफलाइन उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -6366,6 +6373,7 @@
 <translation id="5926936390113611560">सर्व प्रोफाइल उघडा</translation>
 <translation id="592880897588170157">पीडीएफ फाइल Chromeमध्ये आपोआप उघडण्यापेक्षा त्या डाउनलोड करा</translation>
 <translation id="5930567261594625340">रात्रीचे आकाश</translation>
+<translation id="5931292892421325763">&amp;बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="5932194499818201827">गुप्त विंडोमध्ये लिंक उघडा</translation>
 <translation id="5932224571077948991">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />चे USB डिव्हाइस</translation>
@@ -6469,6 +6477,7 @@
 <translation id="6003143259071779217">eSIM मोबाइल नेटवर्क काढून टाका</translation>
 <translation id="6003479444341796444">टायटल बार आता दिसत आहे</translation>
 <translation id="6003582434972667631">थीम तुमच्या संस्थेने सेट केली आहे</translation>
+<translation id="6005010326905893430">स्वतःचा संपादित करा</translation>
 <translation id="6005045517426700202">वीट बांधणी
 
 I feel - विटांची इमारत</translation>
@@ -6845,6 +6854,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6305627295927385295">पुढील आयटम हटवा:</translation>
 <translation id="6305702903308659374">ChromeVox बोलत असताना देखील सामान्य व्हॉल्यूममध्ये प्ले करा</translation>
 <translation id="6307268917612054609">कॅमेराची परवानगी असणारी अ‍ॅप्स आणि वेबसाइट, त्याचप्रमाणे सिस्टीम सेवा तुमचा कॅमेरा वापरू शकतात</translation>
+<translation id="6307884029666635765">&amp;QR कोड तयार करा</translation>
 <translation id="6307990684951724544">सिस्‍टीम व्यस्त</translation>
 <translation id="6308778163698400658">टूलबारमध्ये जोडा</translation>
 <translation id="6308937455967653460">या फॉरमॅटमध्ये लिंक सेव्ह करा...</translation>
@@ -7400,6 +7410,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> ला विराम दिला</translation>
 <translation id="6743841972744298686">सेटिंग्ज सिंक करा</translation>
 <translation id="6744397361782514824">डावीकडील दृश्यासह बदला</translation>
+<translation id="6745569635660688171">प्रदेश निवडीचा स्क्रीनशॉट</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> चा पासवर्ड दाखवा</translation>
 <translation id="6746834324024491643">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
@@ -7476,6 +7487,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6801435275744557998">टचस्क्रीन कॅलिब्रेट करा</translation>
 <translation id="6801920212017470190">फिरतीवर असताना तुमच्याकिमतीतील सर्व घटीबाबत माहिती मिळवत रहा</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
+<translation id="6802825994120702390">एखादा भाग किंवा तुमची संपूर्ण स्क्रीन निवडून तुमच्या प्रश्नासाठी संदर्भ जोडा</translation>
 <translation id="6803766346203101854">या साइटला तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती आहे.</translation>
 <translation id="6805236548654699520">तुमची सेटिंग्ज सुरक्षितता डीफॉल्टवर रिस्टोअर करून नको असलेली पॉप-अप काढून टाका, नेटवर्कसंबंधित समस्यांचे निराकरण करा आणि आणखी बरेच काही करा.</translation>
 <translation id="6805478749741295868">हे AI चे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
@@ -8533,7 +8545,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7625823789272218216">डावीकडील नवीन टॅब</translation>
 <translation id="762730429396410864">वेबसाइटना अहवाल दिलेला सीपीयू परफॉर्मन्स टिएर मॅन्युअली सेट करा</translation>
 <translation id="7627749368210392160">तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करण्यासाठी साइट हे वैशिष्ट्य वापरू शकतात</translation>
-<translation id="7628068697012244394">पुनरावलोकन लिहा</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> ( <ph name="VARIANT" /> ), ग्रेड <ph name="GRADE" /></translation>
 <translation id="762917478230183172">प्रत्येक कीसाठी कृती निवडा</translation>
 <translation id="7629206210984165492">फिकट</translation>
@@ -8746,6 +8757,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> साठी शॉर्टकट <ph name="SHORTCUT" /></translation>
 <translation id="777852709704682967">&amp;बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="7779840061887151693">डिस्प्ले</translation>
+<translation id="7780716468751073938">Gemini सोबतची तुमची संभाषणे किंवा तुमचा <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace डेटा<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> यांचे पुनरावलोकन केले जाणार नाही अथवा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी त्यांचा वापर केला जाणार नाही. Gemini हे AI आहे आणि ते चुका करू शकते. काही आशय प्रत्येकासाठी योग्य नसू शकतो.</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>
 <translation id="7784020347632229094">कीबोर्ड शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
@@ -8809,6 +8821,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7833720883933317473">सेव्ह केलेले कस्टम शब्द येथे दिसून येतील</translation>
 <translation id="7834832693620032149">ऑडिओ शेअर करण्यासाठी, त्याऐवजी टॅब किंवा विंडो शेअर करा</translation>
 <translation id="7836850009646241041">तुमच्या सिक्युरिटी कीला पुन्हा स्पर्श करून पहा</translation>
+<translation id="7837994938322273689">विंडोला नाव द्या...</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> वरील '<ph name="NETWORK_NAME" />' सेव्ह करता आले नाही</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> वर <ph name="ATTACHMENTS" /> पाठवली}other{<ph name="DEVICE_NAME" /> वर <ph name="ATTACHMENTS" /> पाठवल्या}}</translation>
 <translation id="7839696104613959439">नेटवर्कची निवड रेंडर करा</translation>
@@ -9532,6 +9545,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8383614331548401927">स्वागत Recap</translation>
 <translation id="8387157483437834731">पासवर्ड यशस्वीरीत्या बदलला आहे</translation>
 <translation id="8387361103813440603">तुमचे स्थान पाहण्याची अनुमती नाही</translation>
+<translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8389492867173948260">तुम्ही भेट देता त्या वेबसाइटवरील तुमचा सर्व डेटा वाचण्यासाठी आणि बदलण्यासाठी या एक्स्टेंशनला अनुमती द्या:</translation>
 <translation id="8390449457866780408">सर्व्हर अनुपलब्ध.</translation>
 <translation id="8391172837960094276">तुमचे पासवर्ड पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी, <ph name="BEGIN_LINK" />हे तुम्हीच असल्याची पडताळणी करणे<ph name="END_LINK" /> हे करा.</translation>
@@ -10424,6 +10438,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9071664234353284876">कोणतेही ऑथेंटिकेशन नाही</translation>
 <translation id="9072220108592671115">इंस्टॉल केलेली आवृत्ती <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">तुम्ही Gemini ला तुमच्यासाठी टास्क पूर्ण करण्याकरिता या साइटमध्ये साइन इन करण्याची परवानगी दिली आहे</translation>
+<translation id="9074190188883314952">तुमच्या स्क्रीनवरील गोष्टी शेअर करण्यासाठी Lens बटण वापरा</translation>
 <translation id="9074618195273027322">{CORE_COUNT,plural, =1{१ कोअर}other{{CORE_COUNT} कोअर}}</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9075413375877487220">वर्धित सुरक्षित ब्राउझिंग याला या एक्स्टेंशनवर विश्वास नाही.</translation>
@@ -10576,6 +10591,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="9197456336762295195">google.com साठी तुमची पासकी असलेल्या डिव्हाइसवरील कॅमेरा वापरून हा QR कोड स्कॅन करा</translation>
 <translation id="919840898042157087">हालचाल - स्थिर</translation>
+<translation id="9198797990125364460">Google ला कुठूनही विचारा</translation>
 <translation id="9199503643457729322">गोपनीयता मार्गदर्शक यामधून बाहेर पडण्यासाठी क्लिक करा.</translation>
 <translation id="9199695835892108985">सर्व सिरीअल पोर्ट परवानग्या रीसेट करायच्या का?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल संपादित करता येतील</translation>
@@ -10632,7 +10648,6 @@ I feel - विटांची इमारत</translation>
 <translation id="942296794412775122">मायक्रोफोन सुरू/बंद करा</translation>
 <translation id="942488123151518958">थांबवा (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome टॅब आणि ऑडिओ शेअर करीत आहे.</translation>
-<translation id="943744232549395906">व्हॉइस टायपिंग थांबवले आहे</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="947329552760389097">&amp;तपासणी घटक</translation>

@@ -152,6 +152,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1554532453982918912">Jūs varat palīdzēt uzlabot Chrome darbību citiem lietotājiem, kuri to izmanto līdzīgā veidā.</translation>
 <translation id="1568636008098739136">Klausīties šīs lapas saturu. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
 <translation id="1571041387761170095">Nav nedrošu vai atkārtoti izmantotu paroļu.</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Šajā ierīcē ir 1 uzlauzta parole}zero{Šajā ierīcē ir # uzlauztas paroles}one{Šajā ierīcē ir # uzlauzta parole}other{Šajā ierīcē ir # uzlauztas paroles}}</translation>
 <translation id="1594635596540195766">Tālāk sniegtajā sarakstā ir <ph name="SUGGESTIONS_COUNT" /> ieteiktie vienumi.</translation>
 <translation id="159689249463841786">Izvēlieties mapi; pašlaik tiek izmantota mape <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2742373789128106053">Identitātes nodrošinātājs <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> pašlaik nav pieejams.</translation>
 <translation id="2751271371269891762">Pierakstieties ar kontu <ph name="EMAIL" />, lai varētu piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2760805590727089264">MM/GG</translation>
+<translation id="2761162135224472056">Vai skatīties iekļaujošajā atskaņošanas režīmā?</translation>
 <translation id="2762000892062317888">tikko</translation>
 <translation id="276378135349383280">Rādīt Gemini apakšējā rīkjoslā</translation>
 <translation id="276969039800130567">Pierakstīts ar adresi <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -654,6 +656,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3637744895182738742">Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> — <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Iziet no iekļaujošā atskaņošanas režīma</translation>
 <translation id="3674208116086565128">Pāriet uz Google lietotnes sākumlapu</translation>
 <translation id="368329460027487650">Jūs esat izrakstījies. Tiek atvērtas pierakstīšanās opcijas.</translation>
 <translation id="3684540848053703310">Cenu ieskatu ekrāna apakšdaļas lapa ir aizvērta</translation>
@@ -671,6 +674,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3718765429352682176">Var būt redzama vēsture no citām lietotnēm, kuru saites tiek atvērtas pārlūkā Chrome.</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
 <translation id="3727000368239390918">Pierakstieties, lai piekļūtu cilnēm un citiem datiem visās savās ierīcēs</translation>
+<translation id="3731865955999508196">Stereoskopisks</translation>
 <translation id="3737319253362202215">Tulkošanas iestatījumi</translation>
 <translation id="3738139272394829648">Meklēšana pieskaroties</translation>
 <translation id="3739455665973395693">Jūsu Google kontā nav uzlauztu paroļu</translation>
@@ -900,6 +904,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4606559747793337066">Kad vietnē vai lietotnē tiek piedāvāts privāti iepriekš ielādēt saites tās lapā, Chrome bez sīkfailiem šifrē un iepriekš ielādē lapas, izmantojot Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem.</translation>
 <translation id="4619615317237390068">Cilnes no citām ierīcēm</translation>
 <translation id="4624065194742029982">Chrome inkognito režīms</translation>
+<translation id="4628972300801601502">360° stereoskopisks</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 parole un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}zero{# paroles un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}one{# parole un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}other{# paroles un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 uzlauzta parole}zero{# uzlauztu paroļu}one{# uzlauzta parole}other{# uzlauztas paroles}}</translation>
@@ -981,6 +986,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4913169188695071480">Pārtraukt atsvaidzināšanu</translation>
 <translation id="4921224083091001889">Pierakstieties pārlūkā Chrome ar kontu <ph name="EMAIL" />, lai varētu piekļūt parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="4923173329789776645">Jūsu organizācija neiesaka lejupielādi</translation>
+<translation id="4924398189611529766">Veicot pārlūkošanu inkognito režīmā, citiem lietotājiem, kuri izmanto šo ierīci, netiks rādītas jūsu darbības, tādējādi varat veikt pārlūkošanu ar augstāku privātuma līmeni. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Ekrānuzņēmums: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Varat saglabāt attēlus un failus, lai tos skatītu bezsaistē vai kopīgotu citās lietotnēs.</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{Viena grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}zero{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}one{# grāmatzīme un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}other{# grāmatzīmes un citi vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}}</translation>
@@ -1181,6 +1187,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5810288467834065221">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Rādīt paziņojumu}zero{Rādīt paziņojumus}one{Rādīt paziņojumus}other{Rādīt paziņojumus}}</translation>
 <translation id="5811144606237321538">Piespraustā cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tās skaņa ir izslēgta</translation>
+<translation id="5814872768903482128">180° stereoskopisks</translation>
 <translation id="5823093032261493462">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” no vietnes <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5825135637446025843">Pēc Chrome restartēšanas tiks izmantota jūsu saglabātā informācija no jūsu jaunā pakalpojumu sniedzēja, lai automātiski aizpildītu paroles, piekļuves atslēgas, adreses, maksājumu veidus un citu informāciju.</translation>
 <translation id="5828921839638612740">Varat dzēst datus Chrome iestatījumos</translation>
@@ -1316,6 +1323,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="631839948975905034">Inkognito logu bloķēšana, aizverot pārlūku Chrome</translation>
 <translation id="6321592572353357376">Paplašinājums “<ph name="EXTENSION_NAME" />” pieprasa, lai jūs pierakstītos pārlūkā Chrome</translation>
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
+<translation id="632496644859442877">Atlasiet video formātu</translation>
 <translation id="6324977638108296054">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="6331836477476466332">Jums ir pieejams drošāks un efektīvāks pārlūks</translation>
 <translation id="6333140779060797560">Kopīgot, izmantojot <ph name="APPLICATION" /></translation>
@@ -1496,6 +1504,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6918398787259831832">Ja šī problēma atkārtojas, <ph name="BEGIN_LINK" />iegūstiet plašāku informāciju<ph name="END_LINK" /> no uzņēmuma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6920262510368602827">Izveidot kvadrātkodu šai lapai</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>
+<translation id="6923291640965724312">Iekļaujošs formāts</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 cilne}zero{<ph name="NUMBER_OF_TABS" /> cilnes}one{<ph name="NUMBER_OF_TABS" /> cilne}other{<ph name="NUMBER_OF_TABS" /> cilnes}}</translation>
 <translation id="6929224077895306814">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
 <translation id="6933180670536678127">Atlasīta piesprausta cilne <ph name="TAB_TITLE" />, kurā tiek atskaņots audio</translation>
@@ -1740,6 +1749,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7851858861565204677">Citas ierīces</translation>
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7859988229622350291">Nekad netulkot</translation>
+<translation id="7862185352068345852">Vai aizvērt vietni?</translation>
 <translation id="7866213166286285359">Šeit varat tulkot lapas</translation>
 <translation id="7875915731392087153">Izveidojiet e-pasta ziņojumu.</translation>
 <translation id="7876243839304621966">Noņemt visu</translation>

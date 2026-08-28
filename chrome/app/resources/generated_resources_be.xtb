@@ -4976,7 +4976,6 @@
 <translation id="4831226137013573603">выключыць мікрафон</translation>
 <translation id="483262387981411190">Прыпыніць ці ўзнавіць кіраванне з дапамогай мімікі</translation>
 <translation id="4833683849865011483">На серверы друку знойдзены 1 прынтар</translation>
-<translation id="4834388789911023644">Напісаць водгук</translation>
 <translation id="4835598628985424375">Складзіце вусны трубачкай</translation>
 <translation id="4835677468087803981">Схаваць PIN-код</translation>
 <translation id="4836504898754963407">Кіраваць адбіткамі пальцаў</translation>
@@ -8521,7 +8520,6 @@
 <translation id="7625823789272218216">Новая ўкладка злева</translation>
 <translation id="762730429396410864">Уручную задаць узровень прадукцыйнасці ЦП, які паведамляецца вэб-сайтам</translation>
 <translation id="7627749368210392160">Сайты могуць выкарыстоўваць гэту функцыю, каб атрымліваць доступ да іншых прылад у лакальнай сетцы</translation>
-<translation id="7628068697012244394">Напісаць водгук</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), узровень <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Выберыце дзеянне для кожнай клавішы</translation>
 <translation id="7629206210984165492">Прыгнечаны</translation>
@@ -9520,6 +9518,7 @@
 <translation id="8383614331548401927">Кароткі агляд</translation>
 <translation id="8387157483437834731">Пароль зменены</translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
+<translation id="8387617938027387193">Прайдзіце спраўджанне асобы</translation>
 <translation id="8389492867173948260">Дазволіць гэтаму пашырэнню чытаць і змяняць любыя вашы даныя на вэб-сайтах, якія вы наведваеце:</translation>
 <translation id="8390449457866780408">Сервер недаступны.</translation>
 <translation id="8391172837960094276">Каб праглядаць паролі і кіраваць імі, <ph name="BEGIN_LINK" />пацвердзіце сваю асобу<ph name="END_LINK" />.</translation>
@@ -10617,7 +10616,6 @@
 <translation id="942296794412775122">Уключыць ці выключыць мікрафон</translation>
 <translation id="942488123151518958">Прыпыніць (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> абагульвае гук і ўкладку Chrome.</translation>
-<translation id="943744232549395906">Галасавы ўвод спынены</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947156494302904893">Наведаныя вамі сайты могуць правяраць, ці вы не бот</translation>
 <translation id="947329552760389097">&amp;Праверыць элементы</translation>

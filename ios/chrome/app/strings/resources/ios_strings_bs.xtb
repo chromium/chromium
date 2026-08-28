@@ -628,7 +628,7 @@
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3038136505713492417">Potvrdite identitet da koristite pristupne ključeve na uređaju</translation>
 <translation id="3039671569659952257">Izbriši mapu</translation>
-<translation id="3041835740069544003">Chrome sada može otkriti i popuniti više obrazaca uz pametnije razumijevanje obrazaca. U tu se svrhu sadržaj i URL-ovi stranica mogu obraditi u privatnom prostoru u oblaku. Upravljajte u postavkama.</translation>
+<translation id="3041835740069544003">Chrome sada može otkrivati i popunjavati više obrazaca uz pametnije razumijevanje obrazaca. Da to uradi, sadržaj stranice i URL-ovi se mogu obrađivati u privatnom prostoru u oblaku. Upravljajte ovom opcijom u postavkama.</translation>
 <translation id="3050988301648974170">Otvorite Provjeru lozinke</translation>
 <translation id="3053332585453689122">Šalje URL-ove koje posjetite i mali uzorak sadržaja stranice, preuzimanja, aktivnosti ekstenzija i sistemskih informacija Sigurnom pregledanju na Googleu radi provjere jesu li štetni.</translation>
 <translation id="3055102495753300780">Pohrana informacija</translation>
@@ -752,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{za {COUNT} web lokaciju ili aplikaciju}one{za {COUNT} web lokaciju i aplikaciju}few{za {COUNT} web lokacije i aplikacije}other{za {COUNT} web lokacija i aplikacija}}</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Pristupite lozinkama u drugim aplikacijama.</translation>
+<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3485558910355485767">Novi anonimni prozor</translation>
 <translation id="3488501490964659223">Kartice su zatvorene i podaci o pregledanju su izbrisani. Odjavljeni ste</translation>
 <translation id="3490396108106323715">Dijeli trenutnu karticu</translation>

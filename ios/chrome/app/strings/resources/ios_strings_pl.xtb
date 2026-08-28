@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3038136505713492417">Aby używać kluczy dostępu na tym urządzeniu, potwierdź swoją tożsamość</translation>
 <translation id="3039671569659952257">Usuń folder</translation>
+<translation id="3041835740069544003">Chrome może teraz wykrywać i wypełniać więcej formularzy dzięki inteligentniejszemu rozpoznawaniu formularzy. W tym celu zawartość i adresy URL stron mogą być przetwarzane w przestrzeni prywatnej w chmurze. Zarządzaj w ustawieniach.</translation>
 <translation id="3050988301648974170">Otwórz Sprawdzanie haseł</translation>
 <translation id="3053332585453689122">Wysyła adresy URL, które odwiedzasz, oraz niewielką próbkę zawartości, pobieranych plików, aktywności rozszerzeń i informacji o systemie do Bezpiecznego przeglądania Google w celu sprawdzenia, czy nie są szkodliwe.</translation>
 <translation id="3055102495753300780">Przechowywanie informacji</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{do {COUNT} witryny lub aplikacji}few{do {COUNT} witryn i aplikacji}many{do {COUNT} witryn i aplikacji}other{do {COUNT} witryny i aplikacji}}</translation>
 <translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
+<translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3485558910355485767">Nowe okno incognito</translation>
 <translation id="3488501490964659223">Karty zostały zamknięte, a dane przeglądania usunięte. Nastąpiło wylogowanie</translation>
 <translation id="3490396108106323715">Udostępnij bieżącą kartę</translation>

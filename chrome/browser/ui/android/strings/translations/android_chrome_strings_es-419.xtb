@@ -152,6 +152,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1554532453982918912">Ayúdanos a mejorar Chrome para quienes lo usan como tú.</translation>
 <translation id="1568636008098739136">Escuchar esta página. Para editar este acceso directo, mantenlo presionado.</translation>
 <translation id="1571041387761170095">No tienes contraseñas poco seguras o reutilizadas</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Hay 1 contraseña hackeada en este dispositivo}other{Hay # contraseñas hackeadas en este dispositivo}}</translation>
 <translation id="1594635596540195766">Hay <ph name="SUGGESTIONS_COUNT" /> elementos sugeridos en la siguiente lista.</translation>
 <translation id="159689249463841786">Elegir carpeta, actualmente <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> no está disponible en este momento.</translation>
 <translation id="2751271371269891762">Para ver tus favoritos y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
+<translation id="2761162135224472056">¿Quieres mirar con reproducción envolvente?</translation>
 <translation id="2762000892062317888">recién</translation>
 <translation id="276378135349383280">Mostrar Gemini en la barra de herramientas inferior</translation>
 <translation id="276969039800130567">Accediste como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -654,6 +656,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3637744895182738742">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Salir de la reproducción envolvente</translation>
 <translation id="3674208116086565128">Ir a la página principal de la app de Google</translation>
 <translation id="368329460027487650">Saliste de tu cuenta. Abre las opciones de acceso.</translation>
 <translation id="3684540848053703310">La hoja inferior de información sobre precios está cerrada</translation>
@@ -671,6 +674,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3718765429352682176">Es posible que veas el historial de otras apps que abren vínculos en Chrome.</translation>
 <translation id="3721119614952978349">Tú y Google</translation>
 <translation id="3727000368239390918">Accede para obtener tus pestañas y más en todos tus dispositivos</translation>
+<translation id="3731865955999508196">Estereoscópico</translation>
 <translation id="3737319253362202215">Configuración de traducción</translation>
 <translation id="3738139272394829648">Tocar para buscar</translation>
 <translation id="3739455665973395693">No hay contraseñas hackeadas en tu Cuenta de Google</translation>
@@ -900,6 +904,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4606559747793337066">Cuando un sitio o app te pregunta si quieres precargar de forma privada los vínculos de su página, Chrome encripta y precarga las páginas por medio de los servidores de Google sin cookies. De esta forma, se oculta tu identidad del sitio precargado.</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
+<translation id="4628972300801601502">Estereoscópico de 360°</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 contraseña y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}other{# contraseñas y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
@@ -981,6 +986,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4913169188695071480">Detener actualización</translation>
 <translation id="4921224083091001889">Para acceder a tus contraseñas y más en todos tus dispositivos, accede a Chrome como <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Tu organización no recomienda esta descarga</translation>
+<translation id="4924398189611529766">Cuando navegas en el modo Incógnito, las demás personas que usen este dispositivo no verán tu actividad, por lo que puedes navegar de forma más privada. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Captura de pantalla del <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras apps</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 favorito y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}other{# favoritos y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google.}}</translation>
@@ -1181,6 +1187,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostrar notificación}other{Mostrar notificaciones}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, pestaña silenciada y fijada con selección múltiple</translation>
+<translation id="5814872768903482128">Estereoscópico de 180°</translation>
 <translation id="5823093032261493462">¿Quieres descargar "<ph name="FILE_NAME" />" de <ph name="DOWNLOAD_DOMAIN" /> de todos modos?</translation>
 <translation id="5825135637446025843">Después de que se reinicie Chrome, se usará la información guardada de tu nuevo proveedor para autocompletar contraseñas, llaves de acceso, direcciones, formas de pago y otra información.</translation>
 <translation id="5828921839638612740">Puedes borrar los datos en la Configuración de Chrome</translation>
@@ -1316,6 +1323,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="631839948975905034">Bloquear las ventanas de incógnito cuando abandonas Chrome</translation>
 <translation id="6321592572353357376">La extensión "<ph name="EXTENSION_NAME" />" quiere que accedas a Chrome</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
+<translation id="632496644859442877">Seleccionar formato de video</translation>
 <translation id="6324977638108296054">No se puede crear el vínculo al texto destacado</translation>
 <translation id="6331836477476466332">Un navegador más seguro y potente para ti</translation>
 <translation id="6333140779060797560">Compartir mediante <ph name="APPLICATION" /></translation>
@@ -1496,6 +1504,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6918398787259831832">Si el problema persiste, <ph name="BEGIN_LINK" />obtén más información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6920262510368602827">Crear un código QR para esta página</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>
+<translation id="6923291640965724312">Formato envolvente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>
 <translation id="6929224077895306814">Se borrarán todos los códigos de seguridad guardados en tu dispositivo y en tu Cuenta de Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, pestaña con audio fijada y seleccionada</translation>
@@ -1726,7 +1735,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura completa</translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
-<translation id="7819605256207059717">Tu organización lo bloqueó.</translation>
+<translation id="7819605256207059717">Tu organización lo bloqueó</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en el alternador de pestañas</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
 <translation id="7824665136384946951">Tu organización desactivó la Navegación segura</translation>
@@ -1740,6 +1749,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7851858861565204677">Otros dispositivos</translation>
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7859988229622350291">Nunca traducir</translation>
+<translation id="7862185352068345852">¿Deseas abandonar el sitio?</translation>
 <translation id="7866213166286285359">Presiona aquí para mostrar la opción "Traducir páginas"</translation>
 <translation id="7875915731392087153">Crear correo electrónico</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>

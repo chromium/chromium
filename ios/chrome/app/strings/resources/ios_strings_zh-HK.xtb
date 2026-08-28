@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3038136505713492417">驗證你的身分，以在此裝置上使用密鑰</translation>
 <translation id="3039671569659952257">刪除資料夾</translation>
+<translation id="3041835740069544003">Chrome 現可透過更智能的表格理解能力，偵測並填寫更多表格。為此，系統可能會在雲端私人空間處理網頁內容和網址。這可以在設定中管理。</translation>
 <translation id="3050988301648974170">開啟「密碼安全檢查」</translation>
 <translation id="3053332585453689122">將你瀏覽的網址和少量網頁內容、下載檔案、擴充程式活動和系統資料的樣本傳送給「Google 安全瀏覽」，檢查是否有害。</translation>
 <translation id="3055102495753300780">資料儲存空間</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{來自 {COUNT} 個網站或應用程式}other{來自 {COUNT} 個網站或應用程式}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
+<translation id="3479552764303398839">略過</translation>
 <translation id="3485558910355485767">新增無痕式視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
 <translation id="3490396108106323715">分享目前分頁</translation>

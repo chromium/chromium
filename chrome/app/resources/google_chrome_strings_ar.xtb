@@ -378,6 +378,7 @@
 <translation id="475321580758063259">‏يُرجى تحديث متصفّح Chrome لمواصلة استخدام بياناته في حسابك على Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">‏يعمل هذا الإعداد على زيادة سرعة المواقع الإلكترونية باستخدام محرّك V8 في Chrome، ولكنه يحد قليلاً من قدرة Chrome على مقاومة الهجمات</translation>
+<translation id="4768676935374695498">‏البحث في هذا الفيديو باستخدام "عدسة Google"</translation>
 <translation id="479167709087336770">‏يستخدم ذلك المدقق الإملائي نفسه الذي يتم استخدامه في "بحث Google". ويتم إرسال النص الذي تكتبه في المتصفّح إلى Google. يمكنك دائمًا تغيير هذا السلوك في الإعدادات.</translation>
 <translation id="4793679854893018356">‏كيف يحافظ Chrome على أمانك؟</translation>
 <translation id="4799870290441980300">‏يفعِّل هذا الخيار ميزات إضافية لتوفير أعلى مستويات الحماية في Chrome</translation>
@@ -770,10 +771,12 @@
 <translation id="848851325211467878">‏تم تسجيل الدخول باسم <ph name="USER_NAME" />، باستخدام الحساب <ph name="USER_EMAIL" />، ولديك اشتراك Google. يمكنك فتح قائمة الحسابات</translation>
 <translation id="8496177819998570653">‏مدير كلمات المرور في Google</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
+<translation id="8502181052659370">‏البحث في علامة التبويب هذه باستخدام "عدسة Google"</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="852529348814672339">‏عرض Chrome بهذه اللغة</translation>
 <translation id="8525579356836940628">تم إيقاف التثبيت</translation>
 <translation id="8533056045953418157">‏ضبط Google Chrome كعارض PDF التلقائي</translation>
+<translation id="854593887324189900">‏البحث عن هذه الصورة باستخدام "عدسة Google"</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
 <translation id="8575047640889685742">‏لتشفير جميع بيانات Chrome في حسابك على Google، يمكنك استخدام <ph name="BEGIN_LINK" />عبارة المرور الخاصة بك<ph name="END_LINK" />. لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.</translation>

@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3038136505713492417">Verifiko që je ti për të përdorur çelësat e kalimit në këtë pajisje</translation>
 <translation id="3039671569659952257">Fshi dosjen</translation>
+<translation id="3041835740069544003">Chrome tani mund të zbulojë dhe të plotësojë më shumë formularë me kuptimin më inteligjent të formularëve. Për ta bërë këtë, përmbajtjet e faqeve dhe URL-të mund të përpunohen në një hapësirë private në renë kompjuterike. Menaxhoje te cilësimet.</translation>
 <translation id="3050988301648974170">Hap "Kontrollin e fjalëkalimit"</translation>
 <translation id="3053332585453689122">Dërgon URL-të që viziton ti dhe një kampion të vogël të përmbajtjes së faqes, shkarkimeve, aktivitetit të shtesës dhe informacioneve të sistemit te "Shfletimi i sigurt i Google" për të kontrolluar nëse janë të dëmshme.</translation>
 <translation id="3055102495753300780">Hapësira ruajtëse e informacioneve</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{për {COUNT} sajt ose aplikacion}other{për {COUNT} sajte dhe aplikacione}}</translation>
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Qasu te fjalëkalimet e tua në aplikacione të tjera.</translation>
+<translation id="3479552764303398839">Jo tani</translation>
 <translation id="3485558910355485767">Dritare e re "e fshehtë"</translation>
 <translation id="3488501490964659223">Skedat janë mbyllur dhe të dhënat e shfletimit janë fshirë. Ke dalë nga llogaria</translation>
 <translation id="3490396108106323715">Ndaj skedën aktuale</translation>

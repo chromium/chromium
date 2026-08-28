@@ -1118,6 +1118,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5465437530117042974">Ändringar för arket för flikar på nedre delen av skärmen har stängts.</translation>
 <translation id="5469852975082458401">Du kan navigera på sidor med en textmarkör. Tryck på F7 om du vill inaktivera detta.</translation>
 <translation id="5471273988133666918">Det går inte att flytta fliken <ph name="TAB_TITLE" /></translation>
+<translation id="5478718673237429220">Åtkomst till styrdon krävs</translation>
 <translation id="548278423535722844">Öppna i kartapp</translation>
 <translation id="5489222148748465285">Ska Chrome fortsätta leta?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, flik med bild-i-bild som har valts tillsammans med andra</translation>
@@ -1750,6 +1751,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7851858861565204677">Andra enheter</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7859988229622350291">Översätt aldrig</translation>
+<translation id="7862185352068345852">Vill du lämna webbplatsen?</translation>
 <translation id="7866213166286285359">Översätt sidor här</translation>
 <translation id="7875915731392087153">Skapa ett e-postmeddelande</translation>
 <translation id="7876243839304621966">Ta bort alla</translation>
@@ -1964,6 +1966,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="867914734596684889">Visa eller dölj bokmärkesfältet</translation>
 <translation id="8683039184091909753">bild</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vald flik</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> behöver behörighet att komma åt styrdon för den här webbplatsen. Du kan ändra inställningen senare i Inställningar &gt; Appar &gt; Särskild appåtkomst.</translation>
 <translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8700565880437506364">Vi presenterar Gemini i Chrome</translation>

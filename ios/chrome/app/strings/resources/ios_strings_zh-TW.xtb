@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3038136505713492417">如要在這部裝置上使用密碼金鑰，請驗證身分</translation>
 <translation id="3039671569659952257">刪除資料夾</translation>
+<translation id="3041835740069544003">Chrome 現在具有「智慧型表單理解」功能，可以偵測更多表單及填寫相關內容。這項功能會透過雲端私人空間處理網頁內容與網址，你可以前往「設定」管理這項功能。</translation>
 <translation id="3050988301648974170">開啟密碼安全檢查</translation>
 <translation id="3053332585453689122">將你造訪的網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
 <translation id="3055102495753300780">資訊儲存空間</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 個網站或應用程式}other{{COUNT} 個網站和應用程式}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
+<translation id="3479552764303398839">現在不要</translation>
 <translation id="3485558910355485767">新增無痕視窗</translation>
 <translation id="3488501490964659223">已關閉分頁並刪除瀏覽資料。系統已將你登出</translation>
 <translation id="3490396108106323715">分享目前的分頁</translation>
@@ -1241,7 +1243,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} 個付款方式，共 {count} 個}other{{position} 個付款方式，共 {count} 個}}</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5076534614343816664">價格追蹤</translation>
-<translation id="507762438756999615">根據貴機構的政策，你無法共用檔案</translation>
+<translation id="507762438756999615">根據貴機構的政策，無法共用檔案</translation>
 <translation id="5078303485429639424">開啟「<ph name="FEATURE_NAME" />」的通知</translation>
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>

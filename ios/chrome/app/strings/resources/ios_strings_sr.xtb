@@ -752,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сајт или апликацију}one{за {COUNT} сајт и апликацију}few{за {COUNT} сајта и апликације}other{за {COUNT} сајтова и апликација}}</translation>
 <translation id="3474624961160222204">Настави као <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Приступајте лозинкама у другим апликацијама.</translation>
+<translation id="3479552764303398839">Не сада</translation>
 <translation id="3485558910355485767">Нови прозор без архивирања</translation>
 <translation id="3488501490964659223">Картице су затворене и подаци прегледања су избрисани. Одјављени сте</translation>
 <translation id="3490396108106323715">Дели актуелну картицу</translation>

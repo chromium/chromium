@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Siguiendo precio</translation>
 <translation id="3038136505713492417">Verifica que eres tú para usar tus llaves de acceso en este dispositivo</translation>
 <translation id="3039671569659952257">Eliminar carpeta</translation>
+<translation id="3041835740069544003">Ahora, Chrome puede detectar y rellenar más formularios con Comprensión de formularios más inteligente. Para ello, el contenido y las URLs de las páginas se pueden procesar en un espacio privado en la nube. Puedes gestionar esta función en la configuración.</translation>
 <translation id="3050988301648974170">Abrir Revisión de contraseñas</translation>
 <translation id="3053332585453689122">Envía las URLs que visitas y una pequeña muestra del contenido de la página, de las descargas, de la actividad de las extensiones y de la información del sistema a Navegación segura de Google para comprobar si son dañinas.</translation>
 <translation id="3055102495753300780">Almacenamiento de información</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{de {COUNT} sitio o aplicación}other{de {COUNT} sitios o aplicaciones}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accede a tus contraseñas en otras aplicaciones.</translation>
+<translation id="3479552764303398839">Ahora no</translation>
 <translation id="3485558910355485767">Nueva ventana de Incógnito</translation>
 <translation id="3488501490964659223">Se han cerrado las pestañas y eliminado los datos de navegación. Se ha cerrado tu sesión.</translation>
 <translation id="3490396108106323715">Compartir pestaña actual</translation>

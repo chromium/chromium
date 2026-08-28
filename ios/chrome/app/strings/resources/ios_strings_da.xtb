@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3038136505713492417">Verificer din identitet for at bruge dine adgangsnøgler på denne enhed</translation>
 <translation id="3039671569659952257">Slet mappe</translation>
+<translation id="3041835740069544003">Chrome kan nu registrere og udfylde flere formularer med Intelligent formularforståelse. For at gøre dette kan sideindhold og webadresser blive behandlet i et privat område i skyen. Du kan administrere funktionen i Indstillinger.</translation>
 <translation id="3050988301648974170">Åbn Adgangskodetjek</translation>
 <translation id="3053332585453689122">Sender de webadresser, du besøger, samt et lille uddrag af sideindhold, downloads, udvidelsesaktivitet og systemoplysninger til Google Beskyttet browsing for at tjekke, om indholdet er skadeligt.</translation>
 <translation id="3055102495753300780">Datamængde</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{til {COUNT} website eller app}one{til {COUNT} website og app}other{til {COUNT} websites og apps}}</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få adgang til dine adgangskoder i andre apps.</translation>
+<translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3485558910355485767">Nyt inkognitovindue</translation>
 <translation id="3488501490964659223">Fanerne er blevet lukket, og browserdataene er blevet slettet. Du er blevet logget ud</translation>
 <translation id="3490396108106323715">Del aktuel fane</translation>

@@ -4976,7 +4976,6 @@
 <translation id="4831226137013573603">ปิดเสียงไมโครโฟน</translation>
 <translation id="483262387981411190">หยุดการควบคุมใบหน้าชั่วคราวหรือใช้ต่อ</translation>
 <translation id="4833683849865011483">พบเครื่องพิมพ์ 1 เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
-<translation id="4834388789911023644">เขียนรีวิว</translation>
 <translation id="4835598628985424375">ทำปากจู๋โดยบีบริมฝีปากเข้าหากัน</translation>
 <translation id="4835677468087803981">ซ่อน PIN</translation>
 <translation id="4836504898754963407">จัดการลายนิ้วมือ</translation>
@@ -8512,7 +8511,6 @@
 <translation id="7625823789272218216">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="762730429396410864">ตั้งค่าระดับประสิทธิภาพของ CPU ที่รายงานไปยังเว็บไซต์ด้วยตนเอง</translation>
 <translation id="7627749368210392160">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณ</translation>
-<translation id="7628068697012244394">เขียนรีวิว</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />) ระดับ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">เลือกการดำเนินการสำหรับแต่ละแป้น</translation>
 <translation id="7629206210984165492">ข่มอารมณ์</translation>
@@ -9511,6 +9509,7 @@
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="8387157483437834731">เปลี่ยนรหัสผ่านเรียบร้อยแล้ว</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
+<translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8389492867173948260">อนุญาตให้ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8390449457866780408">เซิร์ฟเวอร์ไม่พร้อมใช้งาน</translation>
 <translation id="8391172837960094276">หากต้องการดูและจัดการรหัสผ่าน โปรด<ph name="BEGIN_LINK" />ยืนยันว่าเป็นคุณ<ph name="END_LINK" /></translation>
@@ -10611,7 +10610,6 @@
 <translation id="942296794412775122">เปิด/ปิดไมโครโฟน</translation>
 <translation id="942488123151518958">หยุดชั่วคราว (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> กำลังแชร์แท็บและเสียงใน Chrome</translation>
-<translation id="943744232549395906">หยุดการพิมพ์ด้วยเสียงแล้ว</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="947329552760389097">&amp;ตรวจสอบองค์ประกอบ</translation>

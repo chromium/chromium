@@ -4270,7 +4270,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4276390967705106170">Abrir en una nueva pestaña del navegador</translation>
 <translation id="4276598757692536305">PPD de impresora</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
-<translation id="4278390842282768270">Permitida</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para añadir otro perfil, quita primero uno que ya esté creado.</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4280325816108262082">El dispositivo se desconectará automáticamente cuando se apague o no se esté usando</translation>
@@ -4978,7 +4978,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4831226137013573603">silenciar micrófono</translation>
 <translation id="483262387981411190">Pausar o reanudar el control facial</translation>
 <translation id="4833683849865011483">Se ha encontrado 1 impresora en el servidor de impresión</translation>
-<translation id="4834388789911023644">Escribir una reseña</translation>
 <translation id="4835598628985424375">Poner los labios como para dar un beso</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Gestionar huellas dactilares</translation>
@@ -8518,7 +8517,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="762730429396410864">Define manualmente el nivel de rendimiento de la CPU que se comunica a los sitios web</translation>
 <translation id="7627749368210392160">Los sitios pueden usar esta función para acceder a otros dispositivos de tu red local</translation>
-<translation id="7628068697012244394">Escribir una reseña</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -8918,7 +8916,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7938881824185772026">Labs</translation>
 <translation id="793923212791838">Tu dispositivo no se puede usar con este sitio</translation>
 <translation id="7939328347457537652">Gestionar los certificados del dispositivo</translation>
-<translation id="7939918959917132075">La extensión ha cambiado esto</translation>
+<translation id="7939918959917132075">La extensión lo ha cambiado a este</translation>
 <translation id="7940087892955752820">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. Se dejará de compartir la próxima vez que se apague <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación de la conexión compartida:</translation>
@@ -9517,6 +9515,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8383614331548401927">Hola de nuevo</translation>
 <translation id="8387157483437834731">Contraseña cambiada correctamente</translation>
 <translation id="8387361103813440603">No pueden ver tu ubicación</translation>
+<translation id="8387617938027387193">Demuestra que eres tú</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea y cambie todos los datos de los sitios web que visites:</translation>
 <translation id="8390449457866780408">Servidor no disponible</translation>
 <translation id="8391172837960094276">Para ver y gestionar tus contraseñas, <ph name="BEGIN_LINK" />verifica tu identidad<ph name="END_LINK" />.</translation>
@@ -10617,7 +10616,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="942296794412775122">Activar o desactivar micrófono</translation>
 <translation id="942488123151518958">Pausar (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartiendo audio y una pestaña de Chrome.</translation>
-<translation id="943744232549395906">Se ha detenido Escribir por voz</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>

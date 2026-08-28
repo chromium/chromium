@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">ช่วยปรับปรุง Chrome ให้ดีขึ้นสำหรับคนที่ใช้งานในลักษณะเดียวกับคุณ</translation>
 <translation id="1568636008098739136">ฟังหน้านี้ หากต้องการแก้ไขแป้นพิมพ์ลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="1571041387761170095">ไม่มีรหัสผ่านที่ไม่รัดกุมหรือรหัสผ่านที่ใช้ซ้ำ</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการในอุปกรณ์นี้}other{มีรหัสผ่านที่ถูกละเมิด # รายการในอุปกรณ์นี้}}</translation>
 <translation id="1594635596540195766">มี <ph name="SUGGESTIONS_COUNT" /> รายการที่แนะนำในลิสต์ด้านล่าง</translation>
 <translation id="159689249463841786">เลือกโฟลเดอร์ ซึ่งปัจจุบันคือ <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="2751271371269891762">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="2760805590727089264">ดด/ปป</translation>
+<translation id="2761162135224472056">รับชมด้วยโหมดใหญ่พิเศษไหม</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
 <translation id="276378135349383280">แสดง Gemini ในแถบเครื่องมือด้านล่าง</translation>
 <translation id="276969039800130567">ลงชื่อเข้าใช้โดยใช้ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">ออกจากการเล่นในโหมดใหญ่พิเศษ</translation>
 <translation id="3674208116086565128">ไปที่หน้าแรกของแอป Google</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3684540848053703310">Bottom Sheet ข้อมูลเชิงลึกด้านราคาปิดอยู่</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">คุณอาจเห็นประวัติการเข้าชมจากแอปอื่นๆ ที่เปิดลิงก์ใน Chrome</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
 <translation id="3727000368239390918">ลงชื่อเข้าใช้เพื่อรับแท็บและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="3731865955999508196">สามมิติ</translation>
 <translation id="3737319253362202215">การตั้งค่าการแปล</translation>
 <translation id="3738139272394829648">แตะเพื่อค้นหา</translation>
 <translation id="3739455665973395693">ไม่มีรหัสผ่านที่ถูกละเมิดในบัญชี Google</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">เมื่อเว็บไซต์หรือแอปขอโหลดลิงก์ล่วงหน้าแบบส่วนตัว Chrome จะเข้ารหัสและโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google โดยไม่มีคุกกี้ การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า</translation>
 <translation id="4619615317237390068">แท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="4624065194742029982">โหมดไม่ระบุตัวตนของ Chrome</translation>
+<translation id="4628972300801601502">สามมิติ 360°</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{ระบบบันทึกรหัสผ่าน 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}other{ระบบบันทึกรหัสผ่าน # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด # รายการ}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
 <translation id="4921224083091001889">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์ด้วย <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">องค์กรของคุณไม่แนะนำให้ดาวน์โหลด</translation>
+<translation id="4924398189611529766">เมื่อท่องเว็บในโหมดไม่ระบุตัวตน ผู้อื่นที่ใช้อุปกรณ์นี้จะไม่เห็นกิจกรรมของคุณ คุณจึงท่องเว็บได้แบบส่วนตัวมากขึ้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">คุณบันทึกรูปภาพและไฟล์เพื่อดูแบบออฟไลน์หรือแชร์ในแอปอื่นๆ ได้</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}other{ระบบบันทึกบุ๊กมาร์ก # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{แสดงการแจ้งเตือน}other{แสดงการแจ้งเตือน}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, แท็บที่ปักหมุดซึ่งเลือกไว้หลายแท็บและปิดเสียงอยู่</translation>
+<translation id="5814872768903482128">สามมิติ 180°</translation>
 <translation id="5823093032261493462">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" จาก <ph name="DOWNLOAD_DOMAIN" /> ต่อไปไหม</translation>
 <translation id="5825135637446025843">หลังจากรีสตาร์ท Chrome ระบบจะใช้ข้อมูลที่บันทึกไว้จากผู้ให้บริการรายใหม่เพื่อป้อนรหัสผ่าน พาสคีย์ ที่อยู่ วิธีการชำระเงิน และข้อมูลอื่นๆ โดยอัตโนมัติ</translation>
 <translation id="5828921839638612740">คุณลบข้อมูลได้ในการตั้งค่า Chrome</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">ล็อกหน้าต่างที่ไม่ระบุตัวตนเมื่อออกจาก Chrome</translation>
 <translation id="6321592572353357376">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ต้องการให้คุณลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>
+<translation id="632496644859442877">เลือกรูปแบบวิดีโอ</translation>
 <translation id="6324977638108296054">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
 <translation id="6331836477476466332">เบราว์เซอร์ที่ปลอดภัยและทรงพลังมากขึ้นสำหรับคุณ</translation>
 <translation id="6333140779060797560">แชร์ผ่าน <ph name="APPLICATION" /></translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">หากปัญหานี้ยังเกิดขึ้นอยู่ โปรด<ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />จาก <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="6920262510368602827">สร้างคิวอาร์โค้ดสำหรับหน้านี้</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากคุณไม่ได้เข้าชมเมื่อเร็วๆ นี้</translation>
+<translation id="6923291640965724312">รูปแบบใหญ่พิเศษ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 แท็บ}other{<ph name="NUMBER_OF_TABS" /> แท็บ}}</translation>
 <translation id="6929224077895306814">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google ของคุณ</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, แท็บที่เลือกที่ปักหมุดซึ่งมีเสียง</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">อุปกรณ์อื่นๆ</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7859988229622350291">ไม่ต้องแปล</translation>
+<translation id="7862185352068345852">ออกจากเว็บไซต์ไหม</translation>
 <translation id="7866213166286285359">ดูข้อความแจ้งเกี่ยวกับการแปลหน้าเว็บที่นี่</translation>
 <translation id="7875915731392087153">สร้างอีเมล</translation>
 <translation id="7876243839304621966">ลบทั้งหมด</translation>

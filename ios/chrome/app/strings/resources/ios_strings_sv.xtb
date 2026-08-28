@@ -51,6 +51,7 @@
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
+<translation id="1159484622358475170">{count,plural, =1{Du har kontrollerat 1 lösenord}other{Du har kontrollerat # lösenord}}</translation>
 <translation id="1161444134753003495">Logga in</translation>
 <translation id="1161663161838091892">Synkronisera flikar och historik för att fortsätta</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kreditkort}other{{count} kreditkort}}</translation>
@@ -334,6 +335,7 @@
 <translation id="1993126639825654370">Kopiera länkens webbadress</translation>
 <translation id="199425419756152024">Visa lösenord</translation>
 <translation id="1996318269856535896">Du kan fortfarande använda befintlig webbinformation på den här enheten. Logga ut från ditt hanterade konto för att använda den.</translation>
+<translation id="2002971615187574739">Få mer gjort med AI</translation>
 <translation id="2010008505735295285">Läs in igen</translation>
 <translation id="2012723204723845092">Välkommen tillbaka!</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
@@ -604,6 +606,7 @@
 <translation id="2918688092312652908">Markera som oläst</translation>
 <translation id="2922210239002704889">Öppna startsidan eller tangentbordet</translation>
 <translation id="2924940770243654951">Öppna i ny inkognitoflik</translation>
+<translation id="2934607171563543600">sedan du slutförde Kontrollera dina lösenord</translation>
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2953821385349876107">Välj ett annat Google-konto</translation>
 <translation id="2962516096219646456">Se all data för Autofyll</translation>
@@ -752,6 +755,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{för {COUNT} webbplats eller app}other{för {COUNT} webbplatser och appar}}</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få tillgång till dina lösenord i andra appar.</translation>
+<translation id="3479552764303398839">Inte nu</translation>
 <translation id="3485558910355485767">Nytt inkognitofönster</translation>
 <translation id="3488501490964659223">Flikarna stängdes och webbinformationen rensades. Du loggades ut</translation>
 <translation id="3490396108106323715">Dela aktuell flik</translation>
@@ -808,6 +812,7 @@
 <translation id="3643338347976071250">{count,plural, =1{{count} lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {email}.}other{{count} lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}}</translation>
 <translation id="3659297405161482746">Inga betalningsmetoder hittades</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 har valts}other{# har valts}}</translation>
+<translation id="3668035568083954765">Skydda din integritet och förbli säker</translation>
 <translation id="3668816008081204991">Läslistan har dolts</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3672283986707092811">Markera alla</translation>
@@ -1236,6 +1241,7 @@
 <translation id="5056446788882570708">Problem hittades för <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Skapa bild</translation>
 <translation id="5059136629401106827">OK</translation>
+<translation id="5061202435354361813">Ta surfandet till nästa nivå</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
 <translation id="5067540696062462445">Nedladdningar</translation>
 <translation id="5070314445039955096">Behörigheterna för <ph name="SITE_DOMAIN" /> inaktiveras igen när du lämnar webbplatsen</translation>
@@ -1685,6 +1691,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6454311990702999318">Ogiltig data</translation>
 <translation id="6459411599807878608">Informationen har dolts</translation>
 <translation id="646394917185284261">Files</translation>
+<translation id="6470721056280836221">Google använder din data om funktionsanvändning för att rekommendera uppgifter och uppdatera förloppet. Du kan inaktivera Level Up när som helst.</translation>
 <translation id="6472069383518492189">Du hittar dina nedladdningar här</translation>
 <translation id="6476253015009698798">Prisbevakning är inte tillgänglig för den här sidan.</translation>
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
@@ -1924,6 +1931,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7233006041370588369">Välj ett lösenord att fylla i.</translation>
 <translation id="723874023660911012">Byt profil</translation>
 <translation id="7241135764990439166">Inkognitoläget är inte tillgängligt</translation>
+<translation id="7245288034498365666">Få ordning och spara tid</translation>
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7266578100016339897">Detta hjälper dig att hålla ordning. Du kan ändra detta i inställningarna när som helst.</translation>

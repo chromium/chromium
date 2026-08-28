@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">Помогнете да го подобриме Chrome за тие што го користат исто како вас</translation>
 <translation id="1568636008098739136">Слушајте ја страницава. За да ја измените кратенкава, допрете и задржете.</translation>
 <translation id="1571041387761170095">Нема слаби или повторно употребени лозинки</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка на уредов}one{# компромитирана лозинка на уредов}other{# компромитирани лозинки на уредов}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> предложени ставки во списокот долу.</translation>
 <translation id="159689249463841786">Изберете папка, во моментов <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> не е достапен во моментов.</translation>
 <translation id="2751271371269891762">За да ги добиете обележувачите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">ММ/ГГ</translation>
+<translation id="2761162135224472056">Сакате да гледате во имерзивен режим?</translation>
 <translation id="2762000892062317888">пред малку</translation>
 <translation id="276378135349383280">Прикажи го Gemini во долниот алатник</translation>
 <translation id="276969039800130567">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Излези од имерзивен режим</translation>
 <translation id="3674208116086565128">Одете на почетната картичка во апликацијата Google</translation>
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
 <translation id="3684540848053703310">Долниот лист со увиди во цените е затворен</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">Можеби ќе ја гледате историјата од други апликации што отвораат линкови во Chrome.</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3727000368239390918">Најавете се за да ги добиете картичките и друго на сите ваши уреди</translation>
+<translation id="3731865955999508196">Стереоскопски</translation>
 <translation id="3737319253362202215">Поставки за превод</translation>
 <translation id="3738139272394829648">Допри за пребарување</translation>
 <translation id="3739455665973395693">Нема компромитирани лозинки во вашата сметка на Google</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">Кога некој сајт или апликација ќе ви побара приватно вчитување однапред на линковите на нејзината страница, Chrome ги шифрира и ги вчитува страниците однапред преку серверите на Google без колачиња. Вака се крие вашиот идентитет од однапред вчитаниот сајт.</translation>
 <translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4624065194742029982">„Инкогнито“ на Chrome</translation>
+<translation id="4628972300801601502">Стереоскопски од 360°</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 лозинка и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}one{# лозинка и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}other{# лозинки и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">Сопри го освежувањето</translation>
 <translation id="4921224083091001889">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chrome како <ph name="EMAIL" /></translation>
 <translation id="4923173329789776645">Вашата организација не препорачува преземање</translation>
+<translation id="4924398189611529766">Кога прелистувате во „Инкогнито“, другите што го користат уредов нема да ја гледаат вашата активност, па може да прелистувате поприватно. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">Слика од екранот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Може да зачувувате слики и датотеки за да ги прегледувате офлајн или да ги споделувате со други апликации</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 обележувач и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}one{# обележувач и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}other{# обележувачи и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google.}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Прикажи го известувањето}one{Прикажи ги известувањата}other{Прикажи ги известувањата}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка со исклучен звук</translation>
+<translation id="5814872768903482128">Стереоскопски од 180°</translation>
 <translation id="5823093032261493462">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ од <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5825135637446025843">Откако Chrome ќе се рестартира, податоците зачувани од новиот давател на услуги ќе се користат за автоматско пополнување лозинки, криптографски клучеви, адреси, начини на плаќање и други податоци.</translation>
 <translation id="5828921839638612740">Податоците може да ги избришете во „Поставки за Chrome“</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">Заклучувај ги прозорците „Инкогнито“ кога ќе го напуштам Chrome</translation>
 <translation id="6321592572353357376">Екстензијата „<ph name="EXTENSION_NAME" />“ сака да се најавите на Chrome</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
+<translation id="632496644859442877">Изберете формат на видеото</translation>
 <translation id="6324977638108296054">Не може да се создаде линк до нагласената ставка</translation>
 <translation id="6331836477476466332">Побезбеден и помоќен прелистувач за вас</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">Ако и натаму се соочувате со проблемов, <ph name="BEGIN_LINK" />добијте повеќе информации<ph name="END_LINK" /> од <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6920262510368602827">Создајте QR-код за страницава</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи не сте го отвориле сајтот неодамна</translation>
+<translation id="6923291640965724312">Имерзивен формат</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картичка}one{<ph name="NUMBER_OF_TABS" /> картичка}other{<ph name="NUMBER_OF_TABS" /> картички}}</translation>
 <translation id="6929224077895306814">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и во сметката на Google</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, избрана прикачена картичка со пуштен звук</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">Други уреди</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
+<translation id="7862185352068345852">Да се напушти ли сајтот?</translation>
 <translation id="7866213166286285359">Преведувајте страници овде</translation>
 <translation id="7875915731392087153">Создајте е-пошта</translation>
 <translation id="7876243839304621966">Отстрани ги сите</translation>

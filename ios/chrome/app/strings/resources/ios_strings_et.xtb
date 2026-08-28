@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Jälgite hinda</translation>
 <translation id="3038136505713492417">Kinnitage oma isik, et oma pääsuvõtit selles seadmes kasutada</translation>
 <translation id="3039671569659952257">Kustuta kaust</translation>
+<translation id="3041835740069544003">Chrome suudab nüüd tänu nutikamale vormide mõistmisele tuvastada ja täita rohkem vorme. Selleks võidakse lehtede sisu ja URL-e töödelda privaatses pilveruumis. Saate seda seadetes hallata.</translation>
 <translation id="3050988301648974170">Avage Paroolikontroll</translation>
 <translation id="3053332585453689122">Saadab teie külastatavad URL-id ning lehesisu, allalaadimiste, laienduste tegevuse ja süsteemiteabe väikeseid näidiseid Google'i ohutu sirvimise teenusele, et kontrollida, kas need on ohutud.</translation>
 <translation id="3055102495753300780">Infoühikud</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} saidi või rakenduse puhul}other{{COUNT} saidi või rakenduse puhul}}</translation>
 <translation id="3474624961160222204">Jätka kasutajana <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Juurdepääs oma paroolidele teistes rakendustes.</translation>
+<translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3485558910355485767">Uus inkognito aken</translation>
 <translation id="3488501490964659223">Vahelehed suleti ja sirvimisandmed kustutati. Teid logiti välja</translation>
 <translation id="3490396108106323715">Praeguse vahelehe jagamine</translation>

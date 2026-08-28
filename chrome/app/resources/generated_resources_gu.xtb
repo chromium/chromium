@@ -4980,7 +4980,6 @@
 <translation id="4831226137013573603">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
 <translation id="483262387981411190">ચહેરાથી નિયંત્રિત કરવાની સુવિધા થોભાવો અથવા ફરી શરૂ કરો</translation>
 <translation id="4833683849865011483">પ્રિન્ટ સર્વરમાંથી 1 પ્રિન્ટર મળ્યું</translation>
-<translation id="4834388789911023644">રિવ્યૂ લખો</translation>
 <translation id="4835598628985424375">હોઠ દબાવીને મોઢું વાંકું કરો</translation>
 <translation id="4835677468087803981">પિન છુપાવો</translation>
 <translation id="4836504898754963407">ફિંગરપ્રિન્ટને મેનેજ કરો</translation>
@@ -8525,7 +8524,6 @@ USB ડિવાઇસ</translation>
 <translation id="7625823789272218216">ડાબી બાજુએ નવી ટૅબ</translation>
 <translation id="762730429396410864">વેબસાઇટને જાણ કરવામાં આવેલા CPU પર્ફોર્મન્સ ટિયરને મેન્યુઅલી સેટ કરો</translation>
 <translation id="7627749368210392160">સાઇટ તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસને ઍક્સેસ કરવા માટે આ સુવિધાનો ઉપયોગ કરી શકે છે</translation>
-<translation id="7628068697012244394">રિવ્યૂ લખો</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ગ્રેડ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">દરેક કી માટે કોઈ ક્રિયા પસંદ કરો</translation>
 <translation id="7629206210984165492">વશમાં થયેલું</translation>
@@ -9519,6 +9517,7 @@ USB ડિવાઇસ</translation>
 <translation id="8383614331548401927">Recapમાં સ્વાગત છે</translation>
 <translation id="8387157483437834731">પાસવર્ડ સફળતાપૂર્વક બદલવામાં આવ્યો</translation>
 <translation id="8387361103813440603">તમારું સ્થાન જોવાની મંજૂરી નથી</translation>
+<translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>
 <translation id="8389492867173948260">આ એક્સટેંશનને તમે મુલાકાત લો તે વેબસાઇટ પરનો તમારો બધો ડેટા વાંચવાની અને બદલવાની મંજૂરી આપો:</translation>
 <translation id="8390449457866780408">સર્વર અનુપલબ્ધ.</translation>
 <translation id="8391172837960094276">તમારા પાસવર્ડ જોવા અને મેનેજ કરવા માટે, <ph name="BEGIN_LINK" />આ તમે જ છો તેની ચકાસણી કરો<ph name="END_LINK" />.</translation>
@@ -10619,7 +10618,6 @@ USB ડિવાઇસ</translation>
 <translation id="942296794412775122">માઇક્રોફોન ચાલુ/બંધ કરો</translation>
 <translation id="942488123151518958">થોભાવો (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, Chrome ટૅબ અને ઑડિઓને શેર કરી રહી છે.</translation>
-<translation id="943744232549395906">વૉઇસ ટાઇપિંગની સુવિધા રોકી</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="947329552760389097">&amp;ઘટકોની તપાસ કરો</translation>

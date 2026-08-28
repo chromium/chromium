@@ -4991,7 +4991,6 @@
 <translation id="4831226137013573603">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="483262387981411190">মুখাৱয়বৰ জৰিয়তে নিয়ন্ত্ৰণ কৰাটো পজ কৰক বা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4833683849865011483">প্ৰিণ্ট ছার্ভাৰটোৰ পৰা ১ টা প্ৰিণ্টাৰ বিচাৰি পোৱা গৈছে</translation>
-<translation id="4834388789911023644">এটা পৰ্যালোচনা লিখক</translation>
 <translation id="4835598628985424375">ওঁঠ দুটা একেলগে চপাই আনি কোঁচ খুৱাওক</translation>
 <translation id="4835677468087803981">পিন লুকুৱাওক</translation>
 <translation id="4836504898754963407">ফিংগাৰপ্ৰিণ্টবোৰ পৰিচালনা কৰক</translation>
@@ -8533,7 +8532,6 @@
 <translation id="7625823789272218216">বাওঁফালৰ নতুন টেব</translation>
 <translation id="762730429396410864">ৱেবছাইটসমূহক ৰিপ’ৰ্ট কৰা চিপিইউৰ কাৰ্যদক্ষতাৰ স্তৰ মেনুৱেলী ছেট কৰক</translation>
 <translation id="7627749368210392160">আপোনাৰ স্থানীয় নেটৱৰ্কৰ অন্য ডিভাইচ এক্সেছ কৰিবলৈ ছাইটসমূহে এই সুবিধাটো ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="7628068697012244394">এটা পৰ্যালোচনা লিখক</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্ৰে’ড <ph name="GRADE" /></translation>
 <translation id="762917478230183172">প্ৰতিটো কীৰ বাবে এটা কাৰ্য বাছনি কৰক</translation>
 <translation id="7629206210984165492">নিৰ্জু</translation>
@@ -9532,6 +9530,7 @@
 <translation id="8383614331548401927">স্বাগতম ৰিকেপ</translation>
 <translation id="8387157483437834731">পাছৱৰ্ড সফলতাৰে সলনি কৰা হৈছে</translation>
 <translation id="8387361103813440603">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি নাই</translation>
+<translation id="8387617938027387193">এইয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="8389492867173948260">এই এক্সটেনশ্বনটোক আপুনি খোলা প্রতিটো ৱেবছাইটৰ সকলো ডেটা পঢ়িবলৈ আৰু সালসলনি কৰিবলৈ দিয়ক:</translation>
 <translation id="8390449457866780408">ছার্ভাৰ নাই।</translation>
 <translation id="8391172837960094276">আপোনাৰ পাছৱৰ্ডসমূহ চাবলৈ আৰু পৰিচালনা কৰিবলৈ, <ph name="BEGIN_LINK" />এয়া আপুনিয়েই বুলি সত্যাপন কৰক<ph name="END_LINK" />।</translation>
@@ -10632,7 +10631,6 @@
 <translation id="942296794412775122">মাইক্ৰ’ফ’ন অন আছে/অফ আছে</translation>
 <translation id="942488123151518958">পজ কৰক (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />এ এটা Chrome টেব আৰু অডিঅ' শ্বেয়াৰ কৰি আছে।</translation>
-<translation id="943744232549395906">ভইচ টাইপিং বন্ধ হৈছে</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="947156494302904893">আপুনি চোৱা ছাইটসমূহে আপুনি এগৰাকী প্ৰকৃত ব্যক্তি আৰু ব’ট নহয় বুলি সত্যাপন কৰিব পাৰে</translation>
 <translation id="947329552760389097">উপাদানসমূহ  &amp;পৰীক্ষা কৰক</translation>

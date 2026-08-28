@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3038136505713492417">Igazolja személyazonosságát, hogy használhassa az azonosítókulcsait ezen az eszközön</translation>
 <translation id="3039671569659952257">Mappa törlése</translation>
+<translation id="3041835740069544003">A Chrome mostantól több űrlapot tud észlelni és kitölteni az űrlapok okosabb értelmezésével. Ehhez az oldalak tartalmát és URL-jeit feldolgozhatjuk a felhőben lévő privát területen. Ezt a beállítások között kezelheti.</translation>
 <translation id="3050988301648974170">A Jelszóvizsgálat megnyitása</translation>
 <translation id="3053332585453689122">Elküldi az Ön által meglátogatott URL-címeket és egy kis mintát az oldaltartalomból, a letöltésekből, a bővítménytevékenységekből és a rendszer-információkból a Google Biztonságos Böngészésnek, hogy ellenőrizze, nem ártalmasak-e.</translation>
 <translation id="3055102495753300780">Adattárolás</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} webhelynél vagy alkalmazásnál}other{{COUNT} webhelynél vagy alkalmazásnál}}</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Más alkalmazásokban is hozzáférhet a jelszavaihoz.</translation>
+<translation id="3479552764303398839">Ne most</translation>
 <translation id="3485558910355485767">Új inkognitó ablak</translation>
 <translation id="3488501490964659223">A lapok bezáródtak, a böngészési adatok pedig törlődtek. A rendszer kijelentkeztette Önt</translation>
 <translation id="3490396108106323715">Aktuális lap megosztása</translation>

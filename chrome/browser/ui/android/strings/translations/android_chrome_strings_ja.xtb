@@ -152,6 +152,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1554532453982918912">同じように Chrome を使用する他のユーザーの利便性向上に役立てられます</translation>
 <translation id="1568636008098739136">このページを読み上げます。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="1571041387761170095">脆弱なパスワードや使い回されているパスワードはありません</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{このデバイスに不正使用されたパスワードが 1 件あります}other{このデバイスに不正使用されたパスワードが # 件あります}}</translation>
 <translation id="1594635596540195766">下のリストに <ph name="SUGGESTIONS_COUNT" /> 件の候補があります。</translation>
 <translation id="159689249463841786">フォルダを選択、現在 <ph name="FOLDER_NAME" /> を選択しています</translation>
@@ -434,6 +435,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> は現在使用できません。</translation>
 <translation id="2751271371269891762">すべてのデバイスで同じブックマークやその他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="2760805590727089264">MM/YY</translation>
+<translation id="2761162135224472056">没入モードで再生しますか？</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="276378135349383280">下部のツールバーに Gemini を表示</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。</translation>
@@ -654,6 +656,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3637744895182738742">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" />～<ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">没入モード再生を終了</translation>
 <translation id="3674208116086565128">Google アプリのホームに移動</translation>
 <translation id="368329460027487650">ログアウトしています。ログインのオプションを開きます。</translation>
 <translation id="3684540848053703310">価格分析情報のボトムシートが閉じられています</translation>
@@ -671,6 +674,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3718765429352682176">Chrome でリンクを開く他のアプリの履歴が表示されることがあります。</translation>
 <translation id="3721119614952978349">Google の設定</translation>
 <translation id="3727000368239390918">ログインすると、すべてのデバイスで同じタブやその他の設定を使用できます</translation>
+<translation id="3731865955999508196">立体画像</translation>
 <translation id="3737319253362202215">翻訳設定</translation>
 <translation id="3738139272394829648">タップして検索</translation>
 <translation id="3739455665973395693">Google アカウントに不正使用されたパスワードはありません</translation>
@@ -900,6 +904,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4606559747793337066">ページのリンクを非公開でプリロードするように求めるメッセージがサイトまたはアプリに表示された場合、Chrome は Cookie を使用せずに Google サーバーを経由してページを暗号化し、プリロードします。その結果、プリロードされたサイトでユーザーの ID が非表示になります。</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
+<translation id="4628972300801601502">360° 立体画像</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{# 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: # 件}}</translation>
@@ -981,6 +986,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4913169188695071480">更新を停止</translation>
 <translation id="4921224083091001889">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome に <ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="4923173329789776645">ダウンロードは組織で推奨されていません</translation>
+<translation id="4924398189611529766">シークレット モードでのブラウジング中は、このデバイスを使用する他のユーザーに自分のアクティビティが表示されないため、プライバシーを守りながらブラウジングできます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">スクリーンショット <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">画像やファイルを保存してオフラインで表示したり、他のアプリで共有したりできます</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{# 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
@@ -1181,6 +1187,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{通知を表示}other{通知を表示}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />、複数選択されたミュート中の固定のタブ</translation>
+<translation id="5814872768903482128">180° 立体画像</translation>
 <translation id="5823093032261493462">このまま <ph name="DOWNLOAD_DOMAIN" /> から「<ph name="FILE_NAME" />」をダウンロードしますか？</translation>
 <translation id="5825135637446025843">Chrome を再起動すると、新しいプロバイダで保存した情報がパスワード、パスキー、住所、お支払い方法などの自動入力に使用されます。</translation>
 <translation id="5828921839638612740">Chrome の設定でデータを削除できます</translation>
@@ -1316,6 +1323,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="631839948975905034">Chrome を終了するときにシークレット ウィンドウをロックする</translation>
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
+<translation id="632496644859442877">動画フォーマットを選択</translation>
 <translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
 <translation id="6331836477476466332">より安全で強力なブラウザ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> で共有します</translation>
@@ -1496,6 +1504,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6918398787259831832">問題が解消しない場合は、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の<ph name="BEGIN_LINK" />詳細情報をご確認ください<ph name="END_LINK" />。</translation>
 <translation id="6920262510368602827">このページの QR コードを作成</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 最近アクセスしていないため、サイトから権限を削除しました</translation>
+<translation id="6923291640965724312">没入型フォーマット</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個のタブ}other{<ph name="NUMBER_OF_TABS" /> 個のタブ}}</translation>
 <translation id="6929224077895306814">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />、選択された音声ありの固定のタブ</translation>
@@ -1740,6 +1749,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7851858861565204677">他のデバイス</translation>
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7859988229622350291">翻訳しない</translation>
+<translation id="7862185352068345852">このサイトを離れますか？</translation>
 <translation id="7866213166286285359">ここでページを翻訳できます</translation>
 <translation id="7875915731392087153">メールを作成</translation>
 <translation id="7876243839304621966">すべて削除</translation>
@@ -1954,7 +1964,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="867914734596684889">ブックマーク バーの表示と非表示を切り替える</translation>
 <translation id="8683039184091909753">画像</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />、選択したタブ</translation>
-<translation id="8696297579102085705">お使いのデバイスに送信</translation>
+<translation id="8696297579102085705">デバイスに送信</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8700565880437506364">Gemini in Chrome のご紹介</translation>
 <translation id="8712637175834984815">理解しました</translation>

@@ -230,6 +230,7 @@
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3406848076815591792">‏هل تريد الانتقال إلى الملف الشخصي الحالي على Chromium؟</translation>
 <translation id="3412460710772753638">في "مدير كلمات المرور" على هذا الجهاز</translation>
+<translation id="3438772217992559640">البحث في علامة التبويب هذه باستخدام ميزة "البحث بالصور"</translation>
 <translation id="3455907671758333080">‏بتنزيل Chromium، ستكون "الحماية المحّسنة للتصفح الآمن" متاحة على هاتفك أيضًا</translation>
 <translation id="3461644266919055473">‏جارٍ تخصيص Chromium…</translation>
 <translation id="3474745554856756813">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
@@ -604,6 +605,7 @@
 <translation id="7376384068949534168">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">‏فتح سوق Chrome الإلكتروني</translation>
 <translation id="7394275517973019558">‏عرض "Gemini في Chromium" في لوحة النظام</translation>
+<translation id="7401687852903179959">البحث عن هذا الفيديو باستخدام ميزة "البحث بالصور"</translation>
 <translation id="7407655596887111931">‏تم ضبط Chromium كمتصفّحك التلقائي</translation>
 <translation id="7413153308467572558">‏المتابعة من حيث توقفت: يمكن لمتصفّح Chromium استعادة علامات التبويب كلما أعدت تشغيله. لإيقاف هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7427879960656355200">‏استيراد كلمات المرور إلى Chromium</translation>
@@ -684,6 +686,7 @@
 <translation id="81770708095080097">‏هذا الملف ضار، لذلك فقد حظره Chromium.</translation>
 <translation id="8177472873527554730">يتعذّر العثور على المحتوى في الصفحة</translation>
 <translation id="8200109504272824693">‏يجب إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="USER_EMAIL" />)</translation>
+<translation id="820759916613250543">البحث عن هذه الصورة باستخدام ميزة "البحث بالصور"</translation>
 <translation id="8221491193165283816">أنت تحظر الإشعارات عادةً. للسماح لهذا الموقع الإلكتروني بإرسال إشعارات لك، انقر هنا.</translation>
 <translation id="8223363452568144035">‏لاستخدام الكاميرا، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">‏لا يمكن لمتصفّح Chromium معرفة مصدر هذه الإضافة، وقد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>

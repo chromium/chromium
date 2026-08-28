@@ -231,6 +231,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Overschakelen naar bestaand Chromium-profiel?</translation>
 <translation id="3412460710772753638">In Wachtwoordmanager op dit apparaat</translation>
+<translation id="3438772217992559640">Dit tabblad doorzoeken met Afbeeldingen zoeken</translation>
 <translation id="3455907671758333080">Gebruik de uitgebreide versie van Safe Browsing met Chromium op je telefoon</translation>
 <translation id="3461644266919055473">Chromium personaliseren...</translation>
 <translation id="3474745554856756813">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
@@ -605,6 +606,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7376384068949534168">Je bent hier niet recent geweest. Chromium heeft <ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> verwijderd.</translation>
 <translation id="73786666777299047">Open de Chrome Web Store</translation>
 <translation id="7394275517973019558">Gemini in Chromium tonen in het systeemvak</translation>
+<translation id="7401687852903179959">Deze video doorzoeken met Afbeeldingen zoeken</translation>
 <translation id="7407655596887111931">Chromium is nu je standaardbrowser</translation>
 <translation id="7413153308467572558">Ga verder waar je gebleven was: Chromium herstelt je tabbladen elke keer dat je opnieuw opstart. Als je dit wilt uitzetten, ga je naar</translation>
 <translation id="7427879960656355200">Wachtwoorden importeren in Chromium</translation>
@@ -685,6 +687,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="81770708095080097">Dit bestand is gevaarlijk en is daarom door Chromium geblokkeerd.</translation>
 <translation id="8177472873527554730">Kan content niet vinden op pagina</translation>
 <translation id="8200109504272824693">Voer je wachtwoordzin in om Chromium-gegevens in je account <ph name="USER_EMAIL" /> te gebruiken en op te slaan</translation>
+<translation id="820759916613250543">Deze afbeelding doorzoeken met Afbeeldingen zoeken</translation>
 <translation id="8221491193165283816">Meestal blokkeer je meldingen. Klik hier om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="8223363452568144035">Geef Chromium toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je camera te gebruiken</translation>
 <translation id="8232193495299001329">Chromium kan niet verifiëren waar deze extensie vandaan komt en de extensie is misschien onveilig. Verwijder de extensie uit Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>

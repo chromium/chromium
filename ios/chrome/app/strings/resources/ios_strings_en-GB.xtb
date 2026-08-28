@@ -628,6 +628,7 @@
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3038136505713492417">Verify that it's you to use your passkeys on this device</translation>
 <translation id="3039671569659952257">Delete folder</translation>
+<translation id="3041835740069544003">Chrome can now detect and fill more forms with Smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.</translation>
 <translation id="3050988301648974170">Open Password Checkup</translation>
 <translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="3055102495753300780">Information storage</translation>
@@ -751,6 +752,7 @@
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Access your passwords across other apps.</translation>
+<translation id="3479552764303398839">Not now</translation>
 <translation id="3485558910355485767">New incognito window</translation>
 <translation id="3488501490964659223">Tabs were closed and browsing data was deleted. You were signed out</translation>
 <translation id="3490396108106323715">Share current tab</translation>

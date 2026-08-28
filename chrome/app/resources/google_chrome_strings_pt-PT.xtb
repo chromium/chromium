@@ -376,6 +376,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="475321580758063259">Atualize o Chrome para continuar a usar os dados do Chrome na sua Conta Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Acelera os sites com o motor V8 do Chrome, mas torna o Chrome ligeiramente menos resistente a ataques</translation>
+<translation id="4768676935374695498">Pesquisar este vídeo com o Google Lens</translation>
 <translation id="479167709087336770">Utiliza o mesmo corretor ortográfico utilizado na Pesquisa Google. O texto que introduzir no navegador é enviado à Google. Pode alterar este comportamento nas definições.</translation>
 <translation id="4793679854893018356">Saiba como o Chrome mantém a sua segurança</translation>
 <translation id="4799870290441980300">Ativa funcionalidades adicionais para oferecer as proteções mais avançadas do Chrome</translation>
@@ -766,10 +767,12 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="848851325211467878">Sessão iniciada como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subscrição da Google. Abrir menu da conta</translation>
 <translation id="8496177819998570653">Gestor de P&amp;alavras-passe da Google</translation>
 <translation id="8498858610309223613">Acabou de ser instalada uma atualização de segurança especial para o Google Chrome. Reinicie agora e iremos restaurar os seus separadores.</translation>
+<translation id="8502181052659370">Pesquisar este separador com o Google Lens</translation>
 <translation id="8521348052903287641">Regra de importação para o Google Chrome Dev permitir o tráfego mDNS.</translation>
 <translation id="852529348814672339">Apresentar o Chrome neste idioma</translation>
 <translation id="8525579356836940628">Instalação interrompida</translation>
 <translation id="8533056045953418157">Defina o Google Chrome como o seu visualizador de PDFs predefinido</translation>
+<translation id="854593887324189900">Pesquisar esta imagem com o Google Lens</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8575047640889685742">Use a sua <ph name="BEGIN_LINK" />própria frase de acesso<ph name="END_LINK" /> para encriptar todos os dados do Chrome na sua Conta Google. Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.</translation>

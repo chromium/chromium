@@ -4975,7 +4975,6 @@
 <translation id="4831226137013573603">麦克风静音</translation>
 <translation id="483262387981411190">暂停或恢复面部控制</translation>
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
-<translation id="4834388789911023644">撰写评价</translation>
 <translation id="4835598628985424375">撅起嘴唇</translation>
 <translation id="4835677468087803981">隐藏 PIN 码</translation>
 <translation id="4836504898754963407">管理指纹</translation>
@@ -8512,7 +8511,6 @@
 <translation id="7625823789272218216">在左侧新增标签页</translation>
 <translation id="762730429396410864">手动设置向网站报告的 CPU 性能层级</translation>
 <translation id="7627749368210392160">网站可以使用此功能访问本地网络中的其他设备</translation>
-<translation id="7628068697012244394">撰写评价</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
 <translation id="762917478230183172">为每个键选择一项操作</translation>
 <translation id="7629206210984165492">冷清</translation>
@@ -9511,6 +9509,7 @@
 <translation id="8383614331548401927">欢迎来到 Recap</translation>
 <translation id="8387157483437834731">密码已成功更改</translation>
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
+<translation id="8387617938027387193">请验证是您本人在操作</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您访问网站时留存的所有数据：</translation>
 <translation id="8390449457866780408">服务器无法使用。</translation>
 <translation id="8391172837960094276">如需查看和管理您的密码，请<ph name="BEGIN_LINK" />验证身份<ph name="END_LINK" />。</translation>
@@ -10611,7 +10610,6 @@
 <translation id="942296794412775122">麦克风开/关</translation>
 <translation id="942488123151518958">暂停 (K)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
-<translation id="943744232549395906">语音输入已停止</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="947329552760389097">检查元素(&amp;I)</translation>

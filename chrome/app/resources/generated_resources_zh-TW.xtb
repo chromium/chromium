@@ -4971,7 +4971,6 @@
 <translation id="4831226137013573603">將麥克風設為靜音</translation>
 <translation id="483262387981411190">暫停或繼續使用臉部控制功能</translation>
 <translation id="4833683849865011483">在印表機伺服器上找到 1 台印表機</translation>
-<translation id="4834388789911023644">撰寫評論</translation>
 <translation id="4835598628985424375">噘嘴</translation>
 <translation id="4835677468087803981">隱藏 PIN 碼</translation>
 <translation id="4836504898754963407">管理指紋</translation>
@@ -8507,7 +8506,6 @@
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="762730429396410864">手動設定提供給網站的 CPU 效能級別</translation>
 <translation id="7627749368210392160">網站可透過這項功能存取區域網路上的其他裝置</translation>
-<translation id="7628068697012244394">撰寫評論</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
 <translation id="762917478230183172">選取各個按鍵的動作</translation>
 <translation id="7629206210984165492">柔和</translation>
@@ -9506,6 +9504,7 @@
 <translation id="8383614331548401927">歡迎頁面要事回顧</translation>
 <translation id="8387157483437834731">密碼已成功變更</translation>
 <translation id="8387361103813440603">禁止以下網站查看你的位置資訊</translation>
+<translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更已造訪網站的所有相關資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391172837960094276">如要查看及管理密碼，請<ph name="BEGIN_LINK" />驗證身分<ph name="END_LINK" />。</translation>
@@ -10606,7 +10605,6 @@
 <translation id="942296794412775122">開啟/關閉麥克風</translation>
 <translation id="942488123151518958">暫停 (K 鍵)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音訊。</translation>
-<translation id="943744232549395906">語音輸入已停止</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>

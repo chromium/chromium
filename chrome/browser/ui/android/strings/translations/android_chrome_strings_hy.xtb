@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">Օգնեք ավելի լավը դարձնել Chrome-ը ձեզ նման օգտատերերի համար</translation>
 <translation id="1568636008098739136">Հնչեցնել այս էջը։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1571041387761170095">Թույլ կամ կրկնվող գաղտնաբառեր չեն հայտնաբերվել</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ այս սարքում}one{# կոտրված գաղտնաբառ այս սարքում}other{# կոտրված գաղտնաբառ այս սարքում}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> առաջարկվող տարր ներքևի ցուցակում։</translation>
 <translation id="159689249463841786">Ընտրել պանակ, ընթացիկ պանակը՝ <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ն այս պահին հասանելի չէ։</translation>
 <translation id="2751271371269891762">Էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="2760805590727089264">ԱԱ/ՏՏ</translation>
+<translation id="2761162135224472056">Միացնե՞լ վիրտուալ իրականության ռեժիմը</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
 <translation id="276378135349383280">Ցույց տալ Gemini-ը ներքևի գործիքագոտում</translation>
 <translation id="276969039800130567">Դուք մուտք եք գործել <ph name="USER_EMAIL_ADDRESS" /> հաշիվ:</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />՝ <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">Դուրս գալ վիրտուալ իրականությամբ նվագարկումից</translation>
 <translation id="3674208116086565128">Բացել Google հավելվածի «Գլխավոր էջ» ներդիրը</translation>
 <translation id="368329460027487650">Դուք դուրս եք եկել հաշվից։ Բացում է մուտք գործելու եղանակները։</translation>
 <translation id="3684540848053703310">Գների վիճակագրության ներքևի էկրանը փակված է</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">Դուք կարող եք տեսնել պատմությունն այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
 <translation id="3727000368239390918">Մուտք գործեք՝ ներդիրները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
+<translation id="3731865955999508196">Ստերեոսկոպիկ</translation>
 <translation id="3737319253362202215">Թարգմանության կարգավորումներ</translation>
 <translation id="3738139272394829648">Հպեք` որոնելու համար</translation>
 <translation id="3739455665973395693">Ձեր Google հաշվում կոտրված գաղտնաբառեր չկան</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">Երբ որևէ կայք կամ հավելված հայցում է էջերի անանուն նախաբեռնում իր էջում առկա հղումների միջոցով, Chrome-ը գաղտնագրում և նախապես բեռնում է էջերը Google-ի սերվերների միջոցով առանց քուքիների։ Այդպիսով ձեր ինքնության մասին տվյալները չեն փոխանցվում։</translation>
 <translation id="4619615317237390068">Ներդիրներ այլ սարքերից</translation>
 <translation id="4624065194742029982">Chrome ինկոգնիտո</translation>
+<translation id="4628972300801601502">360° ստերեոսկոպիկ</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 գաղտնաբառ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}one{# գաղտնաբառ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}other{# գաղտնաբառ և այլ տարրեր հասանելի են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ}one{# կոտրված գաղտնաբառ}other{# կոտրված գաղտնաբառ}}</translation>
@@ -1182,6 +1187,7 @@
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ցույց տալ ծանուցումը}one{Ցույց տալ ծանուցումը}other{Ցույց տալ ծանուցումները}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որն ամրացված է, և որի ձայնն անջատված է</translation>
+<translation id="5814872768903482128">180° ստերեոսկոպիկ</translation>
 <translation id="5823093032261493462">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
 <translation id="5825135637446025843">Chrome-ի վերագործարկումից հետո նոր ծառայության կողմից պահված տեղեկությունները կօգտագործվեն գաղտնաբառերի, մուտքի բանալիների, հասցեների, վճարման եղանակների և այլ տեղեկությունների ինքնալրացման համար։</translation>
 <translation id="5828921839638612740">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>
@@ -1317,6 +1323,7 @@
 <translation id="631839948975905034">Կողպել ինկոգնիտո պատուհանները Chrome-ը փակելուց հետո</translation>
 <translation id="6321592572353357376">«<ph name="EXTENSION_NAME" />» ընդլայնումն ուզում է, որ դուք մուտք գործեք Chrome</translation>
 <translation id="6324916366299863871">Փոփոխել դյուրանցումը</translation>
+<translation id="632496644859442877">Ընտրել տեսանյութի ձևաչափը</translation>
 <translation id="6324977638108296054">Չհաջողվեց ստեղծել ընդգծված տեքստի հղում։</translation>
 <translation id="6331836477476466332">Ավելի անվտանգ, ավելի հզոր դիտարկիչ ձեզ համար</translation>
 <translation id="6333140779060797560">Կիսվել <ph name="APPLICATION" />-ի միջոցով</translation>
@@ -1497,6 +1504,7 @@
 <translation id="6918398787259831832">Եթե խնդիրը չվերանա, <ph name="BEGIN_LINK" />ստացեք լրացուցիչ տեղեկություններ<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից։</translation>
 <translation id="6920262510368602827">Ստեղծել QR կոդ այս էջի համար</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
+<translation id="6923291640965724312">Վիրտուալ իրականություն</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ներդիր}one{<ph name="NUMBER_OF_TABS" /> ներդիր}other{<ph name="NUMBER_OF_TABS" /> ներդիր}}</translation>
 <translation id="6929224077895306814">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ընտրված ներդիր, որն ամրացված է, և որում ձայն է նվագարկվում</translation>
@@ -1741,6 +1749,7 @@
 <translation id="7851858861565204677">Այլ սարքեր</translation>
 <translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7859988229622350291">Երբեք չթարգմանել</translation>
+<translation id="7862185352068345852">Փակե՞լ կայքը</translation>
 <translation id="7866213166286285359">Թարգմանեք էջերն այստեղ</translation>
 <translation id="7875915731392087153">Ստեղծեք նամակ</translation>
 <translation id="7876243839304621966">Հեռացնել բոլորը</translation>

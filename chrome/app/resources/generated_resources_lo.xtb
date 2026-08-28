@@ -4991,7 +4991,6 @@
 <translation id="4831226137013573603">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="483262387981411190">ຢຸດການຄວບຄຸມໃບໜ້າຊົ່ວຄາວ ຫຼື ໃຊ້ຕໍ່</translation>
 <translation id="4833683849865011483">ພົບເຄື່ອງພິມ 1 ລາຍການຈາກເຊີບເວີການພິມ</translation>
-<translation id="4834388789911023644">ຂຽນຄຳຕິຊົມ</translation>
 <translation id="4835598628985424375">ເຮັດປາກຈູບໂດຍບີບຮີມປາກເຂົ້າຫາກັນ</translation>
 <translation id="4835677468087803981">ເຊື່ອງ PIN</translation>
 <translation id="4836504898754963407">ຈັດການລາຍນິ້ວມື</translation>
@@ -8529,7 +8528,6 @@
 <translation id="7625823789272218216">ແຖບໃໝ່ຢູ່ທາງຊ້າຍ</translation>
 <translation id="762730429396410864">ຕັ້ງຄ່າລະດັບປະສິດທິພາບ CPU ທີ່ລາຍງານໄປຫາເວັບໄຊດ້ວຍຕົນເອງ</translation>
 <translation id="7627749368210392160">ເວັບໄຊສາມາດໃຊ້ຄຸນສົມບັດນີ້ເພື່ອເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້</translation>
-<translation id="7628068697012244394">ຂຽນຄຳຕິຊົມ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ເກ​ຣດ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ເລືອກຄຳສັ່ງສຳລັບແຕ່ລະປຸ່ມ</translation>
 <translation id="7629206210984165492">ຂົ່ມອາລົມ</translation>
@@ -9528,6 +9526,7 @@
 <translation id="8383614331548401927">ສະຫຼຸບຂໍ້ມູນກິດຈະກຳຫຼ້າສຸດ</translation>
 <translation id="8387157483437834731">ປ່ຽນລະຫັດຜ່ານສຳເລັດແລ້ວ</translation>
 <translation id="8387361103813440603">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນສະຖານທີ່ຂອງທ່ານ</translation>
+<translation id="8387617938027387193">ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="8389492867173948260">ອະນຸຍາດໃຫ້ສ່ວນຂະຫຍາຍນີ້ອ່ານ ແລະ ປ່ຽນຂໍ້ມູນຂອງທ່ານທັງໝົດໃນເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ:</translation>
 <translation id="8390449457866780408">ບໍ່ມີເຊີບເວີຢູ່</translation>
 <translation id="8391172837960094276">ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ຢັ້ງຢືນວ່າແມ່ນທ່ານ<ph name="END_LINK" />.</translation>
@@ -10628,7 +10627,6 @@
 <translation id="942296794412775122">ເປີດ/ປິດ ໄມໂຄຣໂຟນ</translation>
 <translation id="942488123151518958">ຢຸດຊົ່ວຄາວ (k)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome ແລະ ສຽງ.</translation>
-<translation id="943744232549395906">ຢຸດການພິມດ້ວຍສຽງແລ້ວ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="947156494302904893">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຢັ້ງຢືນໄດ້ວ່າທ່ານແມ່ນບຸກຄົນທີ່ແທ້ຈິງ ແລະ ບໍ່ແມ່ນບັອດ</translation>
 <translation id="947329552760389097">&amp;ກວດກາອົງປະກອບ</translation>

@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">Chromeକୁ ଆପଣ ବ୍ୟବହାର କରିବା ଅନୁସାରେ ବ୍ୟବହାର କରୁଥିବା ଲୋକମାନଙ୍କ ପାଇଁ, ଏହାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="1568636008098739136">ଏହି ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁକୁ ଶୁଣନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="1571041387761170095">କୌଣସି ଦୁର୍ବଳ କିମ୍ବା ପୁଣି ବ୍ୟବହାର କରାଯାଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ଏହି ଡିଭାଇସରେ 1 ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି}other{ଏହି ଡିଭାଇସରେ # ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି}}</translation>
 <translation id="1594635596540195766">ନିମ୍ନୋକ୍ତ ତାଲିକାରେ <ph name="SUGGESTIONS_COUNT" />ଟି ପ୍ରସ୍ତାବିତ ଆଇଟମ।</translation>
 <translation id="159689249463841786">ଫୋଲ୍ଡର ବାଛନ୍ତୁ, ବର୍ତ୍ତମାନ <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="2751271371269891762">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2760805590727089264">MM / YY</translation>
+<translation id="2761162135224472056">ଇମର୍ସିଭ ପ୍ଲେବେକ ସହ ଦେଖିବେ?</translation>
 <translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
 <translation id="276378135349383280">ନିମ୍ନ ଟୁଲବାରରେ Gemini ଦେଖାନ୍ତୁ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">ଇମର୍ସିଭ ପ୍ଲେବେକରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3674208116086565128">Google ଆପର ହୋମ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="368329460027487650">ସାଇନ ଆଉଟ କରାଯାଇଛି। ସାଇନ ଇନ କରିବାକୁ ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
 <translation id="3684540848053703310">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ ବନ୍ଦ ଅଛି</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">Chromeରେ ଲିଙ୍କ ଖୋଲୁଥିବା ଅନ୍ୟ ଆପ୍ସରୁ ଇତିହାସ ଆପଣ ଦେଖିପାରନ୍ତି।</translation>
 <translation id="3721119614952978349">ଆପଣ ଏବଂ Google</translation>
 <translation id="3727000368239390918">ଆପଣଙ୍କର ସମସ୍ତ ଟାବରେ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="3731865955999508196">ଷ୍ଟେରିଓସ୍କୋପିକ</translation>
 <translation id="3737319253362202215">ଅନୁବାଦ ସେଟିଂସ୍</translation>
 <translation id="3738139272394829648">ଟଚ୍ ଟୁ ସର୍ଚ୍ଚ</translation>
 <translation id="3739455665973395693">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ କୌଣସି ଚୋରି ହୋଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">ଯେତେବେଳେ କୌଣସି ସାଇଟ କିମ୍ବା ଆପ ଏହାର ପୃଷ୍ଠାରେ ଲିଙ୍କଗୁଡ଼ିକୁ ପ୍ରାଇଭେଟ ଭାବେ ପ୍ରିଲୋଡ କରିବାକୁ କୁହେ, Chrome କୁକୀଗୁଡ଼ିକ ବିନା Google ସର୍ଭର ମାଧ୍ୟମରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରି ପ୍ରିଲୋଡ କରେ। ଏହା ପ୍ରିଲୋଡ କରାଯାଇଥିବା ସାଇଟରୁ ଆପଣଙ୍କ ପରିଚୟକୁ ଲୁଚାଇଥାଏ।</translation>
 <translation id="4619615317237390068">ଅନ୍ୟ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରୁ ଟାବ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4624065194742029982">Chrome ଇନକଗ୍ନିଟୋ</translation>
+<translation id="4628972300801601502">360° ଷ୍ଟେରିଓସ୍କୋପିକ</translation>
 <translation id="4634124774493850572">ପାସ୍‌ୱର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}other{# ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}other{#ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">ରିଫ୍ରେସ୍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4921224083091001889">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4923173329789776645">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଡାଉନଲୋଡ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
+<translation id="4924398189611529766">ଆପଣ ଇନକଗ୍ନିଟୋରେ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟମାନେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବେ ନାହିଁ, ତେଣୁ ଆପଣ ଅଧିକ ପ୍ରାଇଭେଟ ଭାବେ ବ୍ରାଉଜ କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">ସ୍କ୍ରିନସଟ୍ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ଅଫଲାଇନରେ ଭ୍ୟୁ କରିବାକୁ କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରେ ସେୟାର କରିବା ପାଇଁ ଆପଣ ଇମେଜ ଏବଂ ଫାଇଲଗୁଡ଼ିକୁ ସେଭ କରିପାରିବେ</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}other{# ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
@@ -1181,6 +1187,7 @@
 <translation id="5810288467834065221">କପିରାଇଟ୍ <ph name="YEAR" /> Google LLC। ସର୍ବସ୍ୱତ୍ୱ ସଂରକ୍ଷିତ।</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ}other{ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଟାବ</translation>
+<translation id="5814872768903482128">180° ଷ୍ଟେରିଓସ୍କୋପିକ</translation>
 <translation id="5823093032261493462">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ <ph name="DOWNLOAD_DOMAIN" />ରୁ "<ph name="FILE_NAME" />"କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="5825135637446025843">Chrome ରିଷ୍ଟାର୍ଟ ହେବା ପରେ, ଆପଣଙ୍କ ନୂଆ ପ୍ରଦାନକାରୀଠାରୁ ସେଭ କରାଯାଇଥିବା ଆପଣଙ୍କର ସୂଚନାକୁ ପାସୱାର୍ଡ, ପାସକୀ, ଠିକଣା, ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଅନ୍ୟ ସୂଚନା ଅଟୋଫିଲ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ।</translation>
 <translation id="5828921839638612740">ଆପଣ Chrome ସେଟିଂସରେ ଡାଟାକୁ ଡିଲିଟ କରିପାରିବେ</translation>
@@ -1316,6 +1323,7 @@
 <translation id="631839948975905034">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="6321592572353357376">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
 <translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
+<translation id="632496644859442877">ଭିଡିଓ ଫର୍ମାଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6324977638108296054">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6331836477476466332">ଆପଣଙ୍କ ପାଇଁ ଏକ ସୁରକ୍ଷିତ, ଅଧିକ ଶକ୍ତିଶାଳୀ ବ୍ରାଉଜର</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -1496,6 +1504,7 @@
 <translation id="6918398787259831832">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ <ph name="BEGIN_LINK" />ଅଧିକ ସୂଚନା ପାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6920262510368602827">ଏହି ପୃଷ୍ଠା ପାଇଁ QR କୋଡ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
+<translation id="6923291640965724312">ଇମର୍ସିଭ ଫର୍ମାଟ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ଟାବ}other{<ph name="NUMBER_OF_TABS" /> ଟାବ}}</translation>
 <translation id="6929224077895306814">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସୁରକ୍ଷା କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ଶୁଣିହେଉଥିବା ଟାବ</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7851858861565204677">ଅନ୍ୟ ଡିଭାଇସ୍‌</translation>
 <translation id="7853202427316060426">କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="7859988229622350291">କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
+<translation id="7862185352068345852">ସାଇଟ୍ ଛାଡ଼ିବେ?</translation>
 <translation id="7866213166286285359">ଏଠାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରାଯାଇଛି</translation>
 <translation id="7875915731392087153">ଇମେଲ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7876243839304621966">ସବୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>

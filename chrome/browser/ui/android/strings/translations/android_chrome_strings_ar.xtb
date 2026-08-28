@@ -421,7 +421,7 @@
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2664252182805397291">عرض المواقع الإلكترونية</translation>
 <translation id="2666092431469916601">أعلى</translation>
-<translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
+<translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها</translation>
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2687009626279857299">توقَّف عن العمل على هذا الجهاز</translation>
 <translation id="2693387519545954740">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشغِّل صوتًا</translation>
@@ -1118,6 +1118,7 @@
 <translation id="5465437530117042974">تم إغلاق البطاقة السفلية لعلامة التبويب.</translation>
 <translation id="5469852975082458401">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على F7 لإيقافه.</translation>
 <translation id="5471273988133666918">تعذَّر نقل علامة التبويب "<ph name="TAB_TITLE" />"</translation>
+<translation id="5478718673237429220">إذن الوصول إلى جهاز الواجهة البشرية مطلوب</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
 <translation id="5489222148748465285">‏السماح لمتصفّح Chrome بمواصلة البحث؟</translation>
 <translation id="5490848366863949315">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها في وضع "نافذة ضمن النافذة" مع علامات تبويب أخرى</translation>
@@ -1752,6 +1753,7 @@
 <translation id="7851858861565204677">أجهزة أخرى</translation>
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
+<translation id="7862185352068345852">هل تريد مغادرة الموقع؟</translation>
 <translation id="7866213166286285359">يمكنك ترجمة الصفحات هنا.</translation>
 <translation id="7875915731392087153">إنشاء رسالة إلكترونية</translation>
 <translation id="7876243839304621966">إزالة الكل</translation>
@@ -1967,6 +1969,7 @@
 <translation id="867914734596684889">إظهار شريط الإشارات أو إخفاؤه</translation>
 <translation id="8683039184091909753">صورة</translation>
 <translation id="8688183792442786085">تم تحديد علامة التبويب "<ph name="TAB_TITLE" />"</translation>
+<translation id="8694622119922491927">‏يحتاج التطبيق <ph name="APP_NAME" /> إلى منح هذا الموقع الإلكتروني إذنًا للوصول إلى أجهزة الواجهة البشرية (HID). ويمكنك تغيير هذا الإعداد لاحقًا من خلال "الإعدادات" &gt; "التطبيقات" &gt; "أذونات خاصة للتطبيقات".</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
 <translation id="8700565880437506364">‏إليك "Gemini في Chrome"</translation>

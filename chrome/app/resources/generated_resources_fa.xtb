@@ -327,7 +327,7 @@
 <translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1233497634904001272">برای تکمیل درخواست، دوباره کلید امنیتی را لمس کنید.</translation>
 <translation id="1233721473400465416">زبان و کشور</translation>
-<translation id="1233835246554936745">{0,plural, =1{ذخیره کردن ۱ مورد در حساب}one{ذخیره کردن # مورد در حساب}other{ذخیره کردن # مورد در حساب}}</translation>
+<translation id="1233835246554936745">{0,plural, =1{ذخیره کردن ۱ مورد در «حساب»}one{ذخیره کردن # مورد در «حساب»}other{ذخیره کردن # مورد در «حساب»}}</translation>
 <translation id="1234736487471201993">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
 <translation id="1234808891666923653">کارمندان سرویس</translation>
 <translation id="1235458158152011030">شبکه‌های شناخته‌شده</translation>
@@ -4991,7 +4991,6 @@
 <translation id="4831226137013573603">صامت کردن میکروفون</translation>
 <translation id="483262387981411190">موقتاً متوقف کردن یا ازسر گرفتن کنترل چهره</translation>
 <translation id="4833683849865011483">۱ چاپگر از این سرور چاپ پیدا شد</translation>
-<translation id="4834388789911023644">نوشتن مرور</translation>
 <translation id="4835598628985424375">غنچه کردن لب‌ها با فشردن آن‌ها به هم</translation>
 <translation id="4835677468087803981">پنهان کردن پین</translation>
 <translation id="4836504898754963407">مدیریت اثر انگشت</translation>
@@ -5123,7 +5122,7 @@
 <translation id="4918844574251943176">تصویر کپی شد</translation>
 <translation id="4921348630401250116">نوشتار به گفتار</translation>
 <translation id="4922104989726031751">‏برای استفاده از «مدیر گذرواژه» در سیستم‌عامل خود، برنامه Chromium را مجدداً راه‌اندازی کنید و دسترسی به مدیر گذرواژه رایانه‌تان را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
-<translation id="4923561999941435531">{0,plural, =1{ذخیره کردن ۱ مورد در حساب}one{ذخیره کردن # مورد در حساب}other{ذخیره کردن # مورد در حساب}}</translation>
+<translation id="4923561999941435531">{0,plural, =1{ذخیره کردن ۱ مورد در «حساب»}one{ذخیره کردن # مورد در «حساب»}other{ذخیره کردن # مورد در «حساب»}}</translation>
 <translation id="4923977675318667854">نمایش گروه‌های زبانه</translation>
 <translation id="4924002401726507608">ارسال بازخورد</translation>
 <translation id="4924352752174756392">۱۲ برابر</translation>
@@ -8534,7 +8533,6 @@
 <translation id="7625823789272218216">زبانه جدید در سمت چپ</translation>
 <translation id="762730429396410864">تنظیم دستی سطح عملکرد واحد پردازش مرکزی گزارش‌شده به وب‌سایت‌ها</translation>
 <translation id="7627749368210392160">سایت‌ها می‌توانند از این ویژگی برای دسترسی به دستگاه‌های دیگر در شبکه محلی‌تان استفاده کنند</translation>
-<translation id="7628068697012244394">نوشتن مرور</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، درجه <ph name="GRADE" /></translation>
 <translation id="762917478230183172">کنشی برای هر کلید انتخاب کنید</translation>
 <translation id="7629206210984165492">تسکین‌یافته</translation>
@@ -9533,6 +9531,7 @@
 <translation id="8383614331548401927">‏به Recap خوش آمدید</translation>
 <translation id="8387157483437834731">گذرواژه باموفقیت تغییر کرد</translation>
 <translation id="8387361103813440603">اجازه ندارد مکانتان را ببیند</translation>
+<translation id="8387617938027387193">درستی‌سنجی کردن هویت</translation>
 <translation id="8389492867173948260">به این افزونه اجازه دهید همه داده‌هایتان را در وب‌سایت‌هایی که بازدید می‌کنید بخواند و تغییر دهد:</translation>
 <translation id="8390449457866780408">سرور در دسترس نیست.</translation>
 <translation id="8391172837960094276">برای مشاهده و مدیریت گذرواژه‌ها، <ph name="BEGIN_LINK" />هویتتان را درستی‌سنجی کنید<ph name="END_LINK" />.</translation>
@@ -10633,7 +10632,6 @@
 <translation id="942296794412775122">روشن/ خاموش کردن میکروفون</translation>
 <translation id="942488123151518958">‏مکث کردن (k)</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> در حال اشتراک‌گذاری یک برگه Chrome و صوت است.</translation>
-<translation id="943744232549395906">«تایپ گفتاری» متوقف شد</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند درستی‌سنجی کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="947329552760389097">&amp;بازرسی عناصر</translation>

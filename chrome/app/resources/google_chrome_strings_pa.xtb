@@ -380,6 +380,7 @@
 <translation id="475321580758063259">ਆਪਣੇ Google ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ Chrome ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">ਇਸ ਨਾਲ Chrome ਦੇ V8 ਇੰਜਣ ਨਾਲ ਸਾਈਟਾਂ ਦੀ ਗਤੀ ਵਧ ਜਾਂਦੀ ਹੈ, ਪਰ Chrome 'ਤੇ ਅਟੈਕਾਂ ਤੋਂ ਸੁਰੱਖਿਆ ਘਟ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="4768676935374695498">Google Lens ਨਾਲ ਇਸ ਵੀਡੀਓ ਨੂੰ ਖੋਜੋ</translation>
 <translation id="479167709087336770">ਇਹ Google Search ਵੇਲੇ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਸਪੈੱਲ-ਚੈਕਰ ਨੂੰ ਹੀ ਵਰਤਦਾ ਹੈ। ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ। ਤੁਸੀਂ ਹਮੇਸ਼ਾਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸ ਵਤੀਰੇ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4793679854893018356">ਜਾਣੋ ਕਿ Chrome ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="4799870290441980300">Chrome ਦੀਆਂ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, ਵਧੀਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰਦਾ ਹੈ</translation>
@@ -774,10 +775,12 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google ਮੈਂਬਰਸ਼ਿਪ ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome ਲਈ ਇੱਕ ਖਾਸ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਹੁਣੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਸੀ। ਹੁਣ ਇਸਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਾਂਗੇ।</translation>
+<translation id="8502181052659370">Google Lens ਨਾਲ ਇਸ ਟੈਬ ਨੂੰ ਖੋਜੋ</translation>
 <translation id="8521348052903287641">mDNS ਟ੍ਰੈਫਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ Google Chrome Dev ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>
 <translation id="852529348814672339">Chrome ਨੂੰ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="8525579356836940628">ਸਥਾਪਨਾ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="8533056045953418157">Google Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ ਨਿਰਧਾਰਿਤ PDF ਵਿਊਅਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
+<translation id="854593887324189900">Google Lens ਨਾਲ ਇਸ ਚਿੱਤਰ ਨੂੰ ਖੋਜੋ</translation>
 <translation id="8555465886620020932">ਸੇਵਾ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ਭਾਸ਼ਾ ਸੂਚੀ ਖੋਜੋ</translation>
 <translation id="8575047640889685742">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਰੇ Chrome ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਆਪਣੇ <ph name="BEGIN_LINK" />ਖੁਦ ਦੇ ਪਾਸਫਰੇਜ਼<ph name="END_LINK" /> ਦੀ ਵਰਤੋਂ ਕਰੋ। Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>

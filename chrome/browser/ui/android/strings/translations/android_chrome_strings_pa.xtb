@@ -152,6 +152,7 @@
 <translation id="1554532453982918912">ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਲਈ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ ਜੋ ਇਸਨੂੰ ਤੁਹਾਡੇ ਤਰੀਕੇ ਨਾਲ ਵਰਤਦੇ ਹਨ</translation>
 <translation id="1568636008098739136">ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>
 <translation id="1571041387761170095">ਕੋਈ ਵੀ ਕਮਜ਼ੋਰ ਜਾਂ ਮੁੜ-ਵਰਤਿਆ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
+<translation id="1574831985137643109">360°</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ 1 ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ # ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ # ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਹਨ}}</translation>
 <translation id="1594635596540195766">ਹੇਠਾਂ ਦਿੱਤੀ ਸੂਚੀ ਵਿੱਚ <ph name="SUGGESTIONS_COUNT" /> ਸੁਝਾਈਆਂ ਗਈਆਂ ਆਈਟਮਾਂ।</translation>
 <translation id="159689249463841786">ਫੋਲਡਰ ਚੁਣੋ, ਫ਼ਿਲਹਾਲ <ph name="FOLDER_NAME" /></translation>
@@ -434,6 +435,7 @@
 <translation id="2742373789128106053">ਫ਼ਿਲਹਾਲ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2751271371269891762">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ</translation>
 <translation id="2760805590727089264">MM / YY</translation>
+<translation id="2761162135224472056">ਕੀ ਇਮਰਸਿਵ ਪਲੇਬੈਕ ਨਾਲ ਦੇਖਣਾ ਹੈ?</translation>
 <translation id="2762000892062317888">ਹੁਣੇ ਹੀ</translation>
 <translation id="276378135349383280">Gemini ਨੂੰ ਹੇਠਲੇ ਟੂਲਬਾਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ਦੇ ਤੌਰ ਤੇ ਸਾਈਨ ਇਨ ਕੀਤਾ।</translation>
@@ -654,6 +656,7 @@
 <translation id="3637744895182738742">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਮਿਟਾਓ<ph name="END_LINK" />।</translation>
 <translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
+<translation id="3662363748131724714">ਇਮਰਸਿਵ ਪਲੇਬੈਕ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="3674208116086565128">Google ਐਪ ਦੀ ਹੋਮ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="368329460027487650">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਇਹ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="3684540848053703310">ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਬੰਦ ਕੀਤੀ ਗਈ</translation>
@@ -671,6 +674,7 @@
 <translation id="3718765429352682176">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਹੋਰ ਐਪਾਂ ਦਾ ਇਤਿਹਾਸ ਦੇਖ ਸਕਦੇ ਹੋ, ਜਿਨ੍ਹਾਂ ਦੇ ਲਿੰਕ Chrome ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ।</translation>
 <translation id="3721119614952978349">ਤੁਸੀਂ ਅਤੇ Google</translation>
 <translation id="3727000368239390918">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="3731865955999508196">ਸਟੀਰੀਓਸਕੋਪਿਕ</translation>
 <translation id="3737319253362202215">ਅਨੁਵਾਦ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3738139272394829648">ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="3739455665973395693">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਕੋਈ ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ</translation>
@@ -900,6 +904,7 @@
 <translation id="4606559747793337066">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਜਾਂ ਐਪ ਆਪਣੇ ਪੰਨੇ 'ਤੇ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਲਿੰਕਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਕਹਿੰਦੀ ਹੈ, ਤਾਂ Chrome ਕੁਕੀਜ਼ ਤੋਂ ਬਿਨਾਂ Google ਸਰਵਰਾਂ ਰਾਹੀਂ ਪੰਨਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ। ਇਹ ਪ੍ਰੀਲੋਡ ਕੀਤੀ ਸਾਈਟ ਤੋਂ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਲੁਕਾਉਂਦਾ ਹੈ।</translation>
 <translation id="4619615317237390068">ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ</translation>
 <translation id="4624065194742029982">Chrome ਇਨਕੋਗਨਿਟੋ</translation>
+<translation id="4628972300801601502">360° ਸਟੀਰੀਓਸਕੋਪਿਕ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{# ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{# ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}one{# ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{# ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
@@ -981,6 +986,7 @@
 <translation id="4913169188695071480">ਮੁੜ-ਤਾਜ਼ਾ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4921224083091001889">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4923173329789776645">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
+<translation id="4924398189611529766">ਜਦੋਂ ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ ਕਰ ਰਹੇ ਹੁੰਦੇ ਹੋ, ਤਾਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤਣ ਵਾਲੇ ਹੋਰ ਲੋਕ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨਹੀਂ ਦੇਖ ਸਕਣਗੇ, ਇਸ ਲਈ ਤੁਸੀਂ ਜ਼ਿਆਦਾ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="4925120120285606924">ਸਕ੍ਰੀਨਸ਼ਾਟ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ਆਫ਼ਲਾਈਨ ਦੇਖਣ ਜਾਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਸਾਂਝਾ ਕਰਨ ਲਈ ਤੁਸੀਂ ਚਿੱਤਰ ਅਤੇ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{# ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{# ਬੁੱਕਮਾਰਕਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
@@ -1111,6 +1117,7 @@
 <translation id="5465437530117042974">ਟੈਬ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਵਿੱਚ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਤਬਦੀਲੀਆਂ ਬੰਦ ਹੋ ਗਈਆਂ ਹਨ।</translation>
 <translation id="5469852975082458401">ਤੁਸੀਂ ਲਿਖਤ ਕਰਸਰ ਦੇ ਨਾਲ ਪੰਨਿਆਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰ ਸਕਦੇ ਹੋ। ਬੰਦ ਕਰਨ ਲਈ F7 ਦਬਾਓ।</translation>
 <translation id="5471273988133666918">ਟੈਬ <ph name="TAB_TITLE" /> ਨੂੰ ਹਿਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
+<translation id="5478718673237429220">ਮਨੁੱਖੀ ਇੰਟਰਫ਼ੇਸ ਡੀਵਾਈਸ ਪਹੁੰਚ ਲੋੜੀਂਦੀ ਹੈ</translation>
 <translation id="548278423535722844">'ਨਕਸ਼ੇ ਐਪ' ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5489222148748465285">ਕੀ Chrome ਨੂੰ ਖੋਜਣਾ ਜਾਰੀ ਰੱਖਣ ਦੇਣਾ ਹੈ?</translation>
 <translation id="5490848366863949315"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬਾਂ</translation>
@@ -1181,6 +1188,7 @@
 <translation id="5810288467834065221">ਕਾਪੀਰਾਈਟ <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ਸੂਚਨਾ ਦਿਖਾਓ}one{ਸੂਚਨਾ ਦਿਖਾਓ}other{ਸੂਚਨਾਵਾਂ ਦਿਖਾਓ}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਅਤੇ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="5814872768903482128">180° ਸਟੀਰੀਓਸਕੋਪਿਕ</translation>
 <translation id="5823093032261493462">ਕੀ ਤੁਸੀਂ ਫਿਰ ਵੀ <ph name="DOWNLOAD_DOMAIN" /> ਤੋਂ "<ph name="FILE_NAME" />" ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5825135637446025843">Chrome ਦੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡੇ ਨਵੇਂ ਪ੍ਰਦਾਨਕ ਤੋਂ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਪਾਸਵਰਡਾਂ, ਪਾਸਕੀਆਂ, ਪਤਿਆਂ, ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਹੋਰ ਜਾਣਕਾਰੀ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨ ਲਈ ਵਰਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="5828921839638612740">ਤੁਸੀਂ ਡਾਟੇ ਨੂੰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
@@ -1316,6 +1324,7 @@
 <translation id="631839948975905034">ਤੁਹਾਡੇ Chrome ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
 <translation id="6321592572353357376">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6324916366299863871">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="632496644859442877">ਵੀਡੀਓ ਫਾਰਮੈਟ ਚੁਣੋ</translation>
 <translation id="6324977638108296054">ਉਜਾਗਰ ਕੀਤੀ ਲਿਖਤ ਲਈ ਲਿੰਕ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="6331836477476466332">ਤੁਹਾਡੇ ਲਈ ਜ਼ਿਆਦਾ ਸੁਰੱਖਿਅਤ ਅਤੇ ਸ਼ਾਨਦਾਰ ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
@@ -1496,6 +1505,7 @@
 <translation id="6918398787259831832">ਜੇ ਇਹ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੋਂ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="6920262510368602827">ਇਸ ਪੰਨੇ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਇਨ੍ਹਾਂ 'ਤੇ ਨਹੀਂ ਗਏ</translation>
+<translation id="6923291640965724312">ਇਮਰਸਿਵ ਫਾਰਮੈਟ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ਟੈਬ}one{<ph name="NUMBER_OF_TABS" /> ਟੈਬ}other{<ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ}}</translation>
 <translation id="6929224077895306814">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਅਤੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਸਾਰੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਅਜਿਹੀ ਸੁਣਨਯੋਗ ਟੈਬ, ਜਿਸਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -1740,6 +1750,7 @@
 <translation id="7851858861565204677">ਹੋਰ ਡਿਵਾਈਸਾਂ</translation>
 <translation id="7853202427316060426">ਸਰਗਰਮੀ</translation>
 <translation id="7859988229622350291">ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
+<translation id="7862185352068345852">ਕੀ ਸਾਈਟ ਛੱਡਣੀ ਹੈ?</translation>
 <translation id="7866213166286285359">ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਇੱਥੇ ਕਰੋ</translation>
 <translation id="7875915731392087153">ਈਮੇਲ ਬਣਾਓ</translation>
 <translation id="7876243839304621966">ਸਾਰੇ ਹਟਾਓ</translation>
@@ -1954,6 +1965,7 @@
 <translation id="867914734596684889">ਬੁੱਕਮਾਰਕ ਬਾਰ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="8683039184091909753">ਚਿੱਤਰ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਟੈਬ</translation>
+<translation id="8694622119922491927"><ph name="APP_NAME" /> ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਮਨੁੱਖੀ ਇੰਟਰਫ਼ੇਸ ਡੀਵਾਈਸਾਂ (HID) ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਸਤੇ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ। ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ &gt; ਐਪਾਂ &gt; ਖਾਸ ਐਪ ਪਹੁੰਚ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8696297579102085705">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="8700565880437506364">ਪੇਸ਼ ਹੈ Chrome ਵਿੱਚ Gemini</translation>
