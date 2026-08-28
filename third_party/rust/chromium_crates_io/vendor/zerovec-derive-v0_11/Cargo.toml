@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "zerovec-derive"
-version = "0.11.5"
+version = "0.11.6"
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 build = false
 autolib = false
@@ -67,6 +67,10 @@ harness = false
 [[test]]
 name = "derive_ule_test"
 path = "tests/derive_ule_test.rs"
+
+[[test]]
+name = "make_varule_miri_test"
+path = "tests/make_varule_miri_test.rs"
 
 [[test]]
 name = "sparse_enum_test"

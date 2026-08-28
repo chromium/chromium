@@ -1,7 +1,7 @@
 Name: zerovec-derive
 URL: https://crates.io/crates/zerovec-derive
-Version: 0.11.5
-Revision: 0f28a034f7ef4cc8327ed753cbfa62a357e0ffd5
+Version: 0.11.6
+Revision: 898d79c69f37da7b45a15a5714663c9b59b3d928
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/zerovec-derive-v0_11/LICENSE

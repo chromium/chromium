@@ -121,7 +121,7 @@ pub fn derive_impl(
                 // We should use the pointer metadata APIs here when they are stable: https://github.com/rust-lang/rust/issues/81513
                 // For now we rely on all DST metadata being a usize to extract it via a fake slice pointer
                 let (_ptr, metadata) = ::core::mem::transmute::<&#unsized_field, (usize, usize)>(unsized_ref);
-                let entire_struct_as_slice: *const [u8] = ::core::slice::from_raw_parts(bytes.as_ptr(), metadata);
+                let entire_struct_as_slice: *const [u8] = ::core::ptr::slice_from_raw_parts(bytes.as_ptr(), metadata);
                 &*(entire_struct_as_slice as *const Self)
             }
         }
