@@ -74,7 +74,11 @@ constexpr base::FeatureParam<std::string> kClientSideDetectionBypassTiersList{
     /*default_value=*/""};
 
 BASE_FEATURE(kClientSideDetectionClipboardCopyApi,
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 constexpr base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate{
     &kClientSideDetectionClipboardCopyApi, "HCAcceptanceRate",
     /*default_value=*/1.0};
