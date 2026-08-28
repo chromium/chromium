@@ -163,9 +163,10 @@ suite('<iwa-dev-app>', () => {
             /*devModeEnabled=*/ false, /*devToolsRestrictedByAdmin=*/ true);
         await microtasksFinished();
 
-        const errorMessage = app.shadowRoot.querySelector('#error-message');
-        assertTrue(!!errorMessage);
-        assertTrue(errorMessage.textContent.includes(
+        const message =
+            app.shadowRoot.querySelector('#dev-mode-disabled-message');
+        assertTrue(!!message);
+        assertTrue(message.textContent.includes(
             'Isolated Web App Developer Mode is disabled by your administrator.'));
       });
 
@@ -177,11 +178,11 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
-    const errorMessage = app.shadowRoot.querySelector('#error-message');
-    assertTrue(!!errorMessage);
-    assertTrue(errorMessage.textContent.includes(
+    const message = app.shadowRoot.querySelector('#dev-mode-disabled-message');
+    assertTrue(!!message);
+    assertTrue(message.textContent.includes(
         'Isolated Web App Developer Mode is disabled.'));
-    const link = errorMessage.querySelector('a');
+    const link = message.querySelector('a');
     assertTrue(!!link);
     assertEquals('chrome://flags/#enable-isolated-web-app-dev-mode', link.href);
   });
@@ -197,7 +198,7 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
-    assertFalse(!!app.shadowRoot.querySelector('#error-message'));
+    assertFalse(!!app.shadowRoot.querySelector('#dev-mode-disabled-message'));
   });
 
   test('display message when no IWAs installed', async () => {
@@ -700,32 +701,43 @@ suite('<iwa-dev-app>', () => {
             'Installation successful!', app.$.toast.textContent?.trim());
       });
 
-  test('display update options button only for manifest apps', async () => {
-    const apps = [
-      createBundleInstalledAppInfo(),
-      createProxyInstalledAppInfo(),
-      createManifestInstalledAppInfo(),
-    ];
-    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps}));
+  test(
+      'display split button with update options only for manifest apps',
+      async () => {
+        const apps = [
+          createBundleInstalledAppInfo(),
+          createProxyInstalledAppInfo(),
+          createManifestInstalledAppInfo(),
+        ];
+        handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps}));
 
-    createApp(/*devModeEnabled=*/ true);
-    await handler.whenCalled('getInstalledAppsInfo');
-    await microtasksFinished();
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
 
-    const items = getListItems();
-    assertEquals(3, items.length);
+        const items = getListItems();
+        assertEquals(3, items.length);
 
-    // Local Bundle App: no update options button
-    assertFalse(!!items[0]!.shadowRoot.querySelector('#update-options-btn'));
+        // Local Bundle App: no split button or update options button
+        assertFalse(!!items[0]!.shadowRoot.querySelector('#split-button'));
+        assertFalse(
+            !!items[0]!.shadowRoot.querySelector('#update-options-btn'));
+        assertTrue(!!items[0]!.shadowRoot.querySelector('#update-btn'));
 
-    // Proxy App: no update options button
-    assertFalse(!!items[1]!.shadowRoot.querySelector('#update-options-btn'));
+        // Proxy App: no split button or update options button
+        assertFalse(!!items[1]!.shadowRoot.querySelector('#split-button'));
+        assertFalse(
+            !!items[1]!.shadowRoot.querySelector('#update-options-btn'));
+        assertTrue(!!items[1]!.shadowRoot.querySelector('#update-btn'));
 
-    // Manifest App: update options button present
-    const optionsBtn = items[2]!.shadowRoot.querySelector<HTMLButtonElement>(
-        '#update-options-btn');
-    assertTrue(!!optionsBtn);
-  });
+        // Manifest App: split button and update options button present
+        const splitButton = items[2]!.shadowRoot.querySelector('#split-button');
+        assertTrue(!!splitButton);
+        const optionsBtn =
+            items[2]!.shadowRoot.querySelector<HTMLButtonElement>(
+                '#update-options-btn');
+        assertTrue(!!optionsBtn);
+      });
 
   function getUpdateOptionsDialog(): IwaDevUpdateOptionsDialogElement|null {
     return app.shadowRoot.querySelector<IwaDevUpdateOptionsDialogElement>(

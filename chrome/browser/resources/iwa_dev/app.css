@@ -27,14 +27,23 @@ h1 {
 }
 
 #learn-more a,
-#error-message a {
+#dev-mode-disabled-message a {
   color: var(--cr-link-color);
   text-decoration: none;
 }
 
 #learn-more a:hover,
-#error-message a:hover {
+#dev-mode-disabled-message a:hover {
   text-decoration: underline;
+}
+
+#dev-mode-disabled-message {
+  font-size: 14px;
+  margin-top: 32px;
+}
+
+#dev-mode-disabled-message p {
+  margin: 6px 0;
 }
 
 .header-row {
@@ -68,18 +77,4 @@ h2 {
   margin-inline-end: 21px;
   min-width: 81px;
   gap: 4px;
-}
-
-.icon-16 {
-  height: 16px;
-  width: 16px;
-}
-
-#error-message {
-  font-size: 14px;
-  margin-top: 32px;
-}
-
-#error-message p {
-  margin: 6px 0;
 }

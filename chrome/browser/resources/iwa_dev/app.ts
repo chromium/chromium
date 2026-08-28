@@ -24,6 +24,7 @@ import {getHtml} from './app.html.js';
 import type {IwaDevInstallDialogElement} from './install_dialog.js';
 import type {BrowserProxy, IwaDevModeAppInfo, UpdateInfo, UpdateManifest, UpdateManifestOptions} from './iwa_dev.mojom-webui.js';
 import {browserProxyFactory} from './iwa_dev.mojom-webui.js';
+import {getCss as getSharedCss} from './shared_style.css.js';
 import type {UpdateOptionsSavedEventDetail} from './update_options_dialog.js';
 
 export const MIN_UPDATE_DELAY_MS = 750;
@@ -75,7 +76,10 @@ export class IwaDevAppElement extends CrLitElement {
   }
 
   static override get styles() {
-    return getCss();
+    return [
+      getSharedCss(),
+      getCss(),
+    ];
   }
 
   override render() {

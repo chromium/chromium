@@ -31,15 +31,54 @@
 
 /* Allow action buttons to wrap when the viewport becomes narrower than the
    main container's max-width (defined in app.css). */
-@media (max-width: 960px) {
+@media (max-width: 800px) {
   #actions {
     flex-shrink: 1;
     flex-wrap: wrap;
   }
 }
 
-#actions cr-button {
+#actions > cr-button {
   min-width: 81px;
+}
+
+#split-button {
+  align-items: center;
+  border: 1px solid var(--cr-fallback-color-tonal-outline);
+  border-radius: 100px;
+  box-sizing: border-box;
+  display: inline-flex;
+  height: var(--cr-button-height, 32px);
+  overflow: hidden;
+}
+
+#split-button cr-button {
+  --cr-button-border: none;
+  border-radius: 0;
+  height: 100%;
+}
+
+#split-button #update-btn {
+  padding-inline-end: 12px;
+  padding-inline-start: 16px;
+}
+
+#split-button #update-options-btn {
+  border-inline-start: 1px solid var(--cr-fallback-color-tonal-outline);
+  min-width: 0;
+  padding-inline-start: 4px;
+  padding-inline-end: 8px;
+  width: 36px;
+}
+
+#split-button cr-button:focus-visible {
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.icon-16 {
+  height: 16px;
+  width: 16px;
 }
 
 #details {

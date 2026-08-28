@@ -15,14 +15,12 @@ cr-input {
   --cr-input-width: 100%;
 }
 
-#error-message,
 .error-message {
   color: var(--google-red-700);
   font-size: 0.85rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  #error-message,
   .error-message {
     color: var(--google-red-300);
   }
@@ -92,4 +90,9 @@ select.dropdown-select {
 .dropdown-select:focus {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
+}
+
+.icon-16 {
+  height: 16px;
+  width: 16px;
 }

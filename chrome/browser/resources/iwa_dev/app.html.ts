@@ -17,7 +17,7 @@ export function getHtml(this: IwaDevAppElement) {
       aria-label="Learn more about Isolated Web Apps">Learn more</a>
 </div>
 ${!this.devModeEnabled_ ? html`
-  <div id="error-message">
+  <div id="dev-mode-disabled-message">
     ${this.devToolsRestrictedByAdmin_ ? html`
       <p>Isolated Web App Developer Mode is disabled by your administrator.</p>
     ` : html`

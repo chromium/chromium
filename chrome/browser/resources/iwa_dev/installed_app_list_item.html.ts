@@ -26,14 +26,25 @@ export function getHtml(this: InstalledAppListItemElement) {
 </div>
 <div id="actions">
   ${this.isManifestApp_() ? html`
-    <cr-button id="update-options-btn" @click="${this.onUpdateOptionsClick}">
-      Update options
+    <div id="split-button">
+      <cr-button id="update-btn" ?disabled="${this.isUpdating}"
+          @click="${this.onUpdateClick}">
+        Update
+      </cr-button>
+      <cr-button id="update-options-btn"
+          aria-label="Update options"
+          title="Update options"
+          ?disabled="${this.isUpdating}"
+          @click="${this.onUpdateOptionsClick}">
+        <cr-icon class="icon-16" icon="cr:settings-filled"></cr-icon>
+      </cr-button>
+    </div>
+  ` : html`
+    <cr-button id="update-btn" ?disabled="${this.isUpdating}"
+        @click="${this.onUpdateClick}">
+      Update
     </cr-button>
-  ` : ''}
-  <cr-button id="update-btn" ?disabled="${this.isUpdating}"
-      @click="${this.onUpdateClick}">
-    Update
-  </cr-button>
+  `}
   <cr-button id="uninstall-btn" @click="${this.onUninstallClick}">
     Uninstall
   </cr-button>
