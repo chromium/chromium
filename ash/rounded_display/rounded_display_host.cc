@@ -32,8 +32,8 @@ std::unique_ptr<viz::CompositorFrame> RoundedDisplayHost::CreateCompositorFrame(
   get_resource_generator_callback_.Run(gutters);
 
   auto frame = frame_factory_->CreateCompositorFrame(
-      begin_frame_ack, *host_window(), resource_manager,
-      client_resource_provider, resource_pool, gutters);
+      begin_frame_ack, *host_window(), client_resource_provider, resource_pool,
+      gutters);
 
   // A change in the size of the compositor frame means we need to identify a
   // new surface to submit the compositor frame to since the surface size is now

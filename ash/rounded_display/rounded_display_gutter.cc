@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/frame_sink/ui_resource.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
@@ -94,29 +93,12 @@ RoundedDisplayGutter::RoundedDisplayGutter(std::vector<RoundedCorner>&& corners,
   // A gutter must paint at least one rounded corner and at most four corners.
   DCHECK(corners_.size() > 0 && corners_.size() <= 4);
 
-  // Since the corners of the gutter cannot be changed, both gutter bounds and
-  // ui_source_id do not change either.
+  // Since the corners of the gutter cannot be changed, gutter bounds do not
+  // change either.
   bounds_in_pixels_ = CalculateGutterBounds();
-  ui_source_id_ = CalculateUiSourceId();
-  DCHECK(ui_source_id_ != kInvalidUiSourceId);
 }
 
 RoundedDisplayGutter::~RoundedDisplayGutter() = default;
-
-UiSourceId RoundedDisplayGutter::ui_source_id() const {
-  return ui_source_id_;
-}
-
-UiSourceId RoundedDisplayGutter::CalculateUiSourceId() const {
-  UiSourceId ui_source_id = kInvalidUiSourceId;
-  // Value of the position mask of the gutter will give a unique value for any
-  // combination of RoundedDisplayCorners.
-  for (const auto& corner : corners_) {
-    ui_source_id |= corner.position();
-  }
-
-  return ui_source_id;
-}
 
 gfx::Rect RoundedDisplayGutter::CalculateGutterBounds() const {
   gfx::Rect gutter_bounds;

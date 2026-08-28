@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/frame_sink/ui_resource.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -89,21 +88,11 @@ class ASH_EXPORT RoundedDisplayGutter {
 
   bool NeedsOverlays() const { return is_overlay_; }
 
-  // Returns a unique identifier that can be used to consistently map a
-  // texture back to the type of gutter.
-  // For example, texture generated for gutter for top-left rounded corner and a
-  // texture generated for gutter with bottom-left rounded corner are identical
-  // in terms of size, buffer format etc but will have unique ui_source_id.
-  UiSourceId ui_source_id() const;
-
   // Paints all the corner's mask textures on the canvas.
   void Paint(gfx::Canvas* canvas) const;
 
  private:
   gfx::Rect CalculateGutterBounds() const;
-  UiSourceId CalculateUiSourceId() const;
-
-  UiSourceId ui_source_id_ = kInvalidUiSourceId;
 
   // The rounded display corners that the gutter draws.
   const std::vector<RoundedCorner> corners_;
