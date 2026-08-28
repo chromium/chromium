@@ -74,6 +74,9 @@ class GmailOtpBackend : public KeyedService {
   virtual void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) = 0;
 
+  // Returns true if there are cached notifications or any in-flight requests.
+  virtual bool HasPendingRequests() const = 0;
+
   using FetchUserDataProcessingConsentCallback =
       base::OnceCallback<void(std::optional<UserDataProcessingConsentStates>)>;
   // Fetches the user data processing consent states from the backend.
@@ -101,6 +104,8 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
 
   void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) override;
+
+  bool HasPendingRequests() const override;
 
   void FetchUserDataProcessingConsent(
       FetchUserDataProcessingConsentCallback callback) override;

@@ -252,13 +252,12 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     std::vector<OneTimeToken> cached_tokens,
     size_t index,
     std::optional<affiliations::MatchType> match_type) {
-  // If a racing check found a match already it would have invalidated
-  // all weak pointers for other checks so this wouldn't be called.
+  // If the retriever had already completed, all weak pointers would have been
+  // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
 
   // Decrement early to ensure the counter stays reliably accurate regardless of
-  // whether the match succeeds or fails. If a match is found, weak pointers are
-  // synchronously invalidated below, preventing any artificial timeout races.
+  // whether the match succeeds or fails.
   pending_sender_domain_checks_--;
 
   bool allowed = IsMatchTypeAllowed(match_type);
@@ -267,29 +266,44 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
       << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
       << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
-    subscription_ = {};
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(retrieve_otp_callback_)
-        .Run(Result{
-            .otp = cached_tokens.at(index).value(),
-            .source = Source::kCache,
-        });
+    const OneTimeToken& matched_token = cached_tokens.at(index);
+    if (!best_candidate_.has_value() ||
+        matched_token.on_device_arrival_time() >=
+            best_candidate_->arrival_time) {
+      best_candidate_ = Candidate{
+          .otp = matched_token.value(),
+          .source = Source::kCache,
+          .arrival_time = matched_token.on_device_arrival_time(),
+      };
+    }
+    MaybeCompleteOrWaitForPendingRequests();
     return;
   }
 
   RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
                                          /*is_cached=*/true);
-  CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
-  MaybeFail();
+
+  // Since `cached_tokens` is sorted descending by arrival time in Start(),
+  // only check the next cached token if we don't already have a candidate
+  // with an arrival time >= the remaining cached tokens.
+  if (index + 1 < cached_tokens.size()) {
+    base::TimeTicks next_arrival_time =
+        cached_tokens.at(index + 1).on_device_arrival_time();
+    if (!best_candidate_.has_value() ||
+        next_arrival_time > best_candidate_->arrival_time) {
+      CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
+    }
+  }
+
+  MaybeCompleteOrWaitForPendingRequests();
 }
 
 void GmailOtpRetriever::OnOneTimeTokenReceived(
     OneTimeTokenSource source,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
   CHECK_EQ(source, OneTimeTokenSource::kGmail);
-  // If a racing check found a match already it would have invalidated
-  // the weak pointer for the on-token-received callback and this wouldn't be
-  // called.
+  // If the retriever had already completed, all weak pointers would have been
+  // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
 
   if (!result.has_value()) {
@@ -297,8 +311,7 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
         << "GmailOtpRetriever received error from service: error="
         << static_cast<int>(result.error());
     error_ = result.error();
-    subscription_ = {};
-    MaybeFail();
+    MaybeCompleteOrWaitForPendingRequests();
     return;
   }
 
@@ -316,13 +329,12 @@ void GmailOtpRetriever::OnOneTimeTokenReceived(
 void GmailOtpRetriever::OnReceivedTokenMatchChecked(
     OneTimeToken token,
     std::optional<affiliations::MatchType> match_type) {
-  // If a previous check found a match already it would have invalidated
-  // the weak pointer for this callback, so this wouldn't be called.
+  // If the retriever had already completed, all weak pointers would have been
+  // invalidated, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
 
   // Decrement early to ensure the counter stays reliably accurate regardless of
-  // whether the match succeeds or fails. If a match is found, weak pointers are
-  // synchronously invalidated below, preventing any artificial timeout races.
+  // whether the match succeeds or fails.
   pending_sender_domain_checks_--;
 
   bool allowed = IsMatchTypeAllowed(match_type);
@@ -331,19 +343,20 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
       << ", match_type=" << (match_type ? static_cast<int>(*match_type) : -1)
       << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
-    subscription_ = {};
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(retrieve_otp_callback_)
-        .Run(Result{
-            .otp = token.value(),
-            .source = Source::kReceived,
-        });
-    return;
+    if (!best_candidate_.has_value() ||
+        token.on_device_arrival_time() >= best_candidate_->arrival_time) {
+      best_candidate_ = Candidate{
+          .otp = token.value(),
+          .source = Source::kReceived,
+          .arrival_time = token.on_device_arrival_time(),
+      };
+    }
+  } else {
+    RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
+                                           /*is_cached=*/false);
   }
 
-  RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
-                                         /*is_cached=*/false);
-  MaybeFail();
+  MaybeCompleteOrWaitForPendingRequests();
 }
 
 void GmailOtpRetriever::OnOneTimeTokenTimeout() {
@@ -353,13 +366,41 @@ void GmailOtpRetriever::OnOneTimeTokenTimeout() {
   // The retriever will no longer be called after timeout anyway, but
   // clean up the state nonetheless to make it clearer.
   subscription_ = {};
-  error_ = OneTimeTokenRetrievalError::kSubscriptionExpired;
-  MaybeFail();
+  if (!error_.has_value()) {
+    error_ = OneTimeTokenRetrievalError::kSubscriptionExpired;
+  }
+  MaybeCompleteOrWaitForPendingRequests();
 }
 
-void GmailOtpRetriever::MaybeFail() {
-  if (pending_sender_domain_checks_ == 0 && error_.has_value()) {
-    CHECK(retrieve_otp_callback_);
+void GmailOtpRetriever::MaybeCompleteOrWaitForPendingRequests() {
+  CHECK(retrieve_otp_callback_);
+
+  // Always wait for in-flight domain checks (initiated before timeout or from
+  // cache).
+  if (pending_sender_domain_checks_ > 0) {
+    return;
+  }
+
+  // Only wait for pending backend requests if the subscription is still alive,
+  // which has a timeout of its own.
+  if (subscription_.IsAlive() &&
+      one_time_token_service_->HasPendingRequests(OneTimeTokenSource::kGmail)) {
+    return;
+  }
+
+  if (best_candidate_.has_value()) {
+    subscription_ = {};
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    std::move(retrieve_otp_callback_)
+        .Run(Result{
+            .otp = std::move(best_candidate_->otp),
+            .source = best_candidate_->source,
+        });
+    return;
+  }
+
+  if (error_.has_value()) {
+    subscription_ = {};
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::move(retrieve_otp_callback_).Run(base::unexpected(*error_));
   }

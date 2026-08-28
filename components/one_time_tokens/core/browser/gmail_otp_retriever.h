@@ -48,7 +48,8 @@ enum class OneTimeTokenSource;
 // It queries cached tokens and listens for incoming ones from
 // `OneTimeTokenService`. Only tokens whose sender matches the target frame
 // origin are accepted. The retriever keeps listening for incoming tokens
-// either until it finds a match or the subbscription times out.
+// either until it finds a match (and all pending backend requests complete) or
+// the subscription times out.
 //
 // This is a single-use object. On destruction, it cancels pending domain
 // checks, unsubscribes from `OneTimeTokenService`, and discards any pending
@@ -91,6 +92,12 @@ class GmailOtpRetriever {
   GmailOtpRetriever& operator=(const GmailOtpRetriever&) = delete;
 
  private:
+  struct Candidate {
+    std::string otp;
+    Source source;
+    base::TimeTicks arrival_time;
+  };
+
   GmailOtpRetriever(OneTimeTokenService& service,
                     std::unique_ptr<affiliations::DomainRelationChecker>
                         domain_relation_checker,
@@ -119,7 +126,7 @@ class GmailOtpRetriever {
       OneTimeToken token,
       std::optional<affiliations::MatchType> match_type);
   void OnOneTimeTokenTimeout();
-  void MaybeFail();
+  void MaybeCompleteOrWaitForPendingRequests();
   void OnOpaqueOriginDetected();
 
   const raw_ref<OneTimeTokenService> one_time_token_service_;
@@ -130,6 +137,7 @@ class GmailOtpRetriever {
   std::optional<OneTimeTokenRetrievalError> error_;
   ExpiringSubscription subscription_;
   ResultCallback retrieve_otp_callback_;
+  std::optional<Candidate> best_candidate_;
 
   base::WeakPtrFactory<GmailOtpRetriever> weak_ptr_factory_{this};
 };

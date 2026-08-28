@@ -59,6 +59,10 @@ void EmailOneTimeTokenFetchCoordinator::InformOfNetworkRequestFinished(
   ProcessQueue();
 }
 
+bool EmailOneTimeTokenFetchCoordinator::HasPendingRequests() const {
+  return !active_requests_.empty() || !pending_queue_.empty();
+}
+
 void EmailOneTimeTokenFetchCoordinator::ProcessQueue() {
   if (is_processing_queue_) {
     return;

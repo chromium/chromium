@@ -22,6 +22,10 @@ class MockOneTimeTokenService : public OneTimeTokenService {
               GetCachedOneTimeTokens,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              HasPendingRequests,
+              (OneTimeTokenSource source),
+              (const, override));
   MOCK_METHOD(ExpiringSubscription,
               Subscribe,
               (OneTimeTokenSource source,

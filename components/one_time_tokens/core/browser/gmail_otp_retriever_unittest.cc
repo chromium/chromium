@@ -90,6 +90,14 @@ class FakeOneTimeTokenService : public OneTimeTokenService {
     cached_tokens_ = std::move(tokens);
   }
 
+  bool HasPendingRequests(OneTimeTokenSource source) const override {
+    return has_pending_requests_;
+  }
+
+  void SetHasPendingRequests(bool has_pending_requests) {
+    has_pending_requests_ = has_pending_requests;
+  }
+
   template <typename... Args>
   void NotifySubscribers(Args&&... args) {
     subscription_manager_.Notify(std::forward<Args>(args)...);
@@ -100,6 +108,7 @@ class FakeOneTimeTokenService : public OneTimeTokenService {
   ExpiringSubscriptionManager<void(OneTimeTokenSource)>
       tickle_subscription_manager_;
   std::vector<OneTimeToken> cached_tokens_;
+  bool has_pending_requests_ = false;
 };
 
 class GmailOtpRetrieverTest : public testing::Test {
@@ -751,6 +760,276 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
   histogram_tester.ExpectTotalCount(
       "OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached",
       0);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedMatch_WithPendingBackendRequests_PrefersNewerReceivedToken) {
+  const std::string kCachedOtp = "111111";
+  const std::string kReceivedOtp = "222222";
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kCachedOtp, now - base::Seconds(10),
+        "sender@example.com"}});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Cached match is found, but retriever should wait because backend has
+  // pending requests.
+  EXPECT_FALSE(future.IsReady());
+
+  // Newer token arrives from subscription.
+  otp_service().SetHasPendingRequests(false);
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kReceivedOtp, now,
+                   "sender@example.com"));
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kReceivedOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedMatch_WithPendingBackendRequests_FallbackToCachedOnUnrelatedReceivedToken) {
+  const std::string kCachedOtp = "111111";
+  const std::string kUnrelatedOtp = "999999";
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kCachedOtp, now - base::Seconds(10),
+        "sender@example.com"}});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Unrelated token arrives from subscription.
+  otp_service().SetHasPendingRequests(false);
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kUnrelatedOtp, now,
+                   "sender@unrelated.com"));
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedMatch_WithPendingBackendRequests_FallbackToCachedOnBackendError) {
+  const std::string kCachedOtp = "111111";
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kCachedOtp, now - base::Seconds(10),
+        "sender@example.com"}});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Backend encounters an error.
+  otp_service().SetHasPendingRequests(false);
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      base::unexpected(
+          OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError));
+
+  // Should fall back to the cached match instead of failing.
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_CachedMatch_WithPendingBackendRequests_FallbackToCachedOnTimeout) {
+  const std::string kCachedOtp = "111111";
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  otp_service().SetCachedTokens(
+      {{OneTimeTokenType::kGmail, kCachedOtp, now - base::Seconds(10),
+        "sender@example.com"}});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast-forward past timeout.
+  task_environment().FastForwardBy(base::Minutes(1) + base::Seconds(1));
+
+  // Should fall back to the cached candidate.
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kCachedOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
+}
+
+TEST_F(GmailOtpRetrieverTest,
+       RetrieveOtp_MultipleReceivedTokens_PrefersNewestReceivedToken) {
+  const std::string kOlderOtp = "111111";
+  const std::string kNewerOtp = "222222";
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  otp_service().SetCachedTokens({});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Notify with first (older) matching token while still having pending
+  // requests.
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kOlderOtp, now - base::Seconds(5),
+                   "sender@example.com"));
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Notify with second (newer) matching token and mark pending requests done.
+  otp_service().SetHasPendingRequests(false);
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kNewerOtp, now,
+                   "sender@example.com"));
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kNewerOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+}
+
+TEST_F(GmailOtpRetrieverTest,
+       RetrieveOtp_TimeoutWhenFetchingDidNotFinish_ReturnsTimeoutError) {
+  otp_service().SetCachedTokens({});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward past timeout while backend requests remain pending.
+  task_environment().FastForwardBy(base::Minutes(1) + base::Seconds(1));
+
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_TimeoutWhileCheckPending_WithPendingBackendRequests_ResolvesMatchCorrectly) {
+  affiliation_service().AddAffiliationGroup(
+      {affiliations::Facet(
+           affiliations::FacetURI::FromCanonicalSpec("https://example.com")),
+       affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(
+           "https://different.com"))});
+
+  otp_service().SetCachedTokens({});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Token arrives before timeout.
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
+                   "sender@different.com"));
+
+  // Timeout fires while domain check is pending and backend requests are
+  // pending.
+  task_environment().FastForwardBy(base::Minutes(1) + base::Seconds(1));
+
+  // The in-flight domain check finishes and matches. Because subscription timed
+  // out, it should complete with the matched token without waiting on pending
+  // backend requests.
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, "111111");
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_TimeoutWhileCheckPending_NotAMatch_ResolvesTimeoutOnError) {
+  otp_service().SetCachedTokens({});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Token arrives before timeout with non-matching sender.
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
+                   "sender@nomatch.com"));
+
+  // Timeout fires while domain check is pending and backend requests are
+  // pending.
+  task_environment().FastForwardBy(base::Minutes(1) + base::Seconds(1));
+
+  // Domain check finishes and does not match. Because subscription timed out,
+  // it should complete with timeout error without waiting on pending backend
+  // requests.
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
 }
 
 }  // namespace

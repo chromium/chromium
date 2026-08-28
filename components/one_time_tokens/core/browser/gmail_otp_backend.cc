@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -122,6 +123,11 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
   ProcessCachedNotifications();
 }
 
+bool GmailOtpBackendImpl::HasPendingRequests() const {
+  return !notification_cache_.GetItems().empty() ||
+         (coordinator_ && coordinator_->HasPendingRequests());
+}
+
 void GmailOtpBackendImpl::FetchUserDataProcessingConsent(
     FetchUserDataProcessingConsentCallback callback) {
   LOG_OTT(log_sink_) << "Fetching user data processing consent.";
@@ -146,7 +152,7 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
   auto items = notification_cache_.TakeItems();
   LOG_OTT(log_sink_) << "Processing " << items.size()
                      << " cached notification(s) for active subscribers.";
-  for (const auto& notification : items) {
+  for (const auto& notification : base::Reversed(items)) {
     base::UmaHistogramMediumTimes(
         "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
         base::TimeTicks::Now() - notification.notification_received_timeticks);
@@ -175,9 +181,12 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
   CHECK(inserted);
 
   LOG_OTT(log_sink_) << "Starting EmailOneTimeTokenFetcher for notification.";
+  // TODO(b/543374607): Consider using email_received_timestamp as the source of
+  // truth instead.
   it->second = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
-      notification.encrypted_message_reference.value(), log_sink_);
+      notification.encrypted_message_reference.value(),
+      notification.notification_received_timeticks, log_sink_);
 
   it->second->Start(base::BindOnce(
       &GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,

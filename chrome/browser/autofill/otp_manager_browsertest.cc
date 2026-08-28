@@ -109,6 +109,8 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
     std::move(callback).Run(/*consent_states=*/std::nullopt);
   }
 
+  bool HasPendingRequests() const override { return false; }
+
   // Simulates the reception of a Gmail OTP.
   void ProcessCallbacks(
       base::expected<one_time_tokens::OneTimeToken,

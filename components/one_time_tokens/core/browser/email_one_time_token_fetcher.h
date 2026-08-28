@@ -42,6 +42,7 @@ class EmailOneTimeTokenFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager& identity_manager,
       std::string encrypted_message_reference,
+      base::TimeTicks notification_received_timeticks,
       OneTimeTokenLogSink* log_sink = nullptr);
   ~EmailOneTimeTokenFetcher();
 
@@ -99,6 +100,14 @@ class EmailOneTimeTokenFetcher {
 
   // Retain internal copy of encrypted_message_reference.
   std::string encrypted_message_reference_;
+
+  // The timestamp when the GCM push notification was received on-device.
+  // Using this timestamp ensures that candidate OTP tokens deterministically
+  // reflect notification arrival order even if concurrent network requests
+  // finish out of order.
+  // TODO(b/543374607): Consider using email_received_timestamp as the source of
+  // truth instead.
+  base::TimeTicks notification_received_timeticks_;
 
   // Owned by `OneTimeTokenServiceImpl`.
   raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;

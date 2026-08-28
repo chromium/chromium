@@ -55,6 +55,10 @@ class OneTimeTokenService : public KeyedService {
   // Returns the cached one-time tokens.
   virtual std::vector<OneTimeToken> GetCachedOneTimeTokens() const = 0;
 
+  // Returns true if the backend for `source` has pending requests or queued
+  // notifications.
+  virtual bool HasPendingRequests(OneTimeTokenSource source) const = 0;
+
   using TickleCallback = base::RepeatingCallback<void(OneTimeTokenSource)>;
 
   // Creates a subscription for new incoming one time tokens. It's possible that

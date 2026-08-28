@@ -55,6 +55,7 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
       base::Time expiration,
       TickleCallback callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
+  bool HasPendingRequests(OneTimeTokenSource source) const override;
   void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) override;

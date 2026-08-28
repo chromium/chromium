@@ -51,6 +51,9 @@ class EmailOneTimeTokenFetchCoordinator {
   void InformOfNetworkRequestFinished(
       const OneTimeTokenBackendNotification& notification);
 
+  // Returns true if there are active network requests or queued requests.
+  bool HasPendingRequests() const;
+
  private:
   void ProcessQueue();
 

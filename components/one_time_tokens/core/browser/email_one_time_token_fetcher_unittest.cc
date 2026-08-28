@@ -71,7 +71,7 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
     return std::make_unique<EmailOneTimeTokenFetcher>(
         test_url_loader_factory_->GetSafeWeakWrapper(),
         *identity_test_env_->identity_manager(), kEncryptedMessageReference,
-        &log_sink_);
+        base::TimeTicks::Now(), &log_sink_);
   }
 
   void WaitForAccessTokenRequestAndRespondWithSuccess() {
@@ -166,6 +166,32 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.OneTimeTokens.Backend.Gmail.AuthLatency",
       base::Milliseconds(123), 1);
+}
+
+TEST_F(EmailOneTimeTokenFetcherTest,
+       SuccessPreservesNotificationReceivedTime) {
+  base::TimeTicks notification_time =
+      base::TimeTicks::Now() - base::Seconds(42);
+  auto fetcher = std::make_unique<EmailOneTimeTokenFetcher>(
+      test_url_loader_factory_->GetSafeWeakWrapper(),
+      *identity_test_env_->identity_manager(), kEncryptedMessageReference,
+      notification_time, &log_sink_);
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  const network::ResourceRequest* pending_request =
+      &test_url_loader_factory_->GetPendingRequest(0)->request;
+  test_url_loader_factory_->AddResponse(pending_request->url.spec(),
+                                        CreateValidResponseString());
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->on_device_arrival_time(), notification_time);
 }
 
 // Tests that an error is returned when user authentication fails.

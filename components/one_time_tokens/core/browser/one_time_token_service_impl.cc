@@ -118,6 +118,18 @@ std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
   return base::ToVector(cache_.GetItems());
 }
 
+bool OneTimeTokenServiceImpl::HasPendingRequests(
+    OneTimeTokenSource source) const {
+  switch (source) {
+    case OneTimeTokenSource::kGmail:
+      return gmail_.backend && gmail_.backend->HasPendingRequests();
+    case OneTimeTokenSource::kOnDeviceSms:
+      return sms_.has_pending_request;
+    default:
+      return false;
+  }
+}
+
 void OneTimeTokenServiceImpl::RequestOneTimeToken(
     base::TimeDelta timeout,
     base::OnceCallback<void(std::optional<OneTimeToken>)> callback) {

@@ -81,10 +81,15 @@ EmailOneTimeTokenFetcher::EmailOneTimeTokenFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager,
     std::string encrypted_message_reference,
+    base::TimeTicks notification_received_timeticks,
     OneTimeTokenLogSink* log_sink)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
       encrypted_message_reference_(std::move(encrypted_message_reference)),
+      notification_received_timeticks_(
+          notification_received_timeticks.is_null()
+              ? base::TimeTicks::Now()
+              : notification_received_timeticks),
       log_sink_(log_sink) {}
 
 EmailOneTimeTokenFetcher::~EmailOneTimeTokenFetcher() = default;
@@ -289,7 +294,7 @@ EmailOneTimeTokenFetcher::ExtractOneTimeTokenValueFromResponse(
   LOG_OTT(log_sink_) << "Token extraction succeeded.";
   return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
                                response.one_time_password().one_time_password(),
-                               base::TimeTicks::Now(),
+                               notification_received_timeticks_,
                                response.sender_address()));
 }
 
