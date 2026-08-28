@@ -10,7 +10,9 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace mojo_base {
@@ -49,7 +51,12 @@ void TryCreateSharedMemory(
     BigBuffer::StorageType* storage_type,
     std::optional<internal::BigBufferSharedMemoryRegion>* shared_memory) {
   if (size > BigBuffer::kMaxInlineBytes) {
-    auto buffer = mojo::SharedBufferHandle::Create(size);
+    // `SharedBufferHandle::Create()` returns a writable shared memory region,
+    // but this costs an extra FD and potentially an extra IPC on Posix. Since
+    // this region is never downgraded to read-only, just directly create an
+    // unsafe (and always writable) region instead.
+    auto buffer = mojo::WrapUnsafeSharedMemoryRegion(
+        base::UnsafeSharedMemoryRegion::Create(size));
     if (buffer.is_valid()) {
       internal::BigBufferSharedMemoryRegion shm_region(std::move(buffer), size);
       if (shm_region.memory()) {
