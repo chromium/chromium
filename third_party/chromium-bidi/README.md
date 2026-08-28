@@ -291,9 +291,16 @@ To run the browser in headful mode:
 
 ## Running
 
+Testing in Chromium uses GN `script_test` targets:
+
+- `third_party/chromium-bidi:webdriver_bidi_unittests`
+- `third_party/chromium-bidi:webdriver_bidi_e2e_tests`
+
+When built, these targets produce executable runner wrappers in the build directory (`out/Default/bin/`).
+
 ### Unit tests
 
-First, build the test target:
+First, build the unit test target:
 
 ```sh
 autoninja -C ../../out/Default third_party/chromium-bidi:webdriver_bidi_unittests
@@ -305,11 +312,20 @@ Run all unit tests:
 ../../out/Default/bin/run_webdriver_bidi_unittests
 ```
 
-Filter unit tests by name:
+Filter unit tests by test name:
 
 ```sh
 ../../out/Default/bin/run_webdriver_bidi_unittests -- --test-name-pattern="<test_name>"
 ```
+
+Filter unit tests by file path:
+
+```sh
+../../out/Default/bin/run_webdriver_bidi_unittests -- --test-path-pattern="<path_pattern>"
+```
+
+> [!NOTE]
+> When running from the Chromium repository root (`src/`), use `out/Default/bin/run_webdriver_bidi_unittests`.
 
 ### E2E tests
 
@@ -341,7 +357,11 @@ Run all E2E tests:
 Additionally the output is recorded under `./logs/<DATE>.e2e.log`, which will contain
 both the PyTest logs and in the event of `FAILED` test all the Chromium-BiDi logs.
 
-If you need to see the logs for all tests run the command with `VERBOSE=true`.
+If you need to see the logs for all tests run the command with `VERBOSE=true`:
+
+```sh
+VERBOSE=true ../../out/Default/bin/run_webdriver_bidi_e2e_tests
+```
 
 Pass a test file path to run only the selected file:
 
@@ -373,6 +393,9 @@ Values: `true`, `old`, `false`, default: `true`.
 ```sh
 HEADLESS=true ../../out/Default/bin/run_webdriver_bidi_e2e_tests
 ```
+
+> [!NOTE]
+> When running from the Chromium repository root (`src/`), use `out/Default/bin/run_webdriver_bidi_e2e_tests`.
 
 #### Updating snapshots
 
@@ -453,8 +476,9 @@ new command, add it to `_processCommand`, write and call the module processor fo
    - Or update within semver ranges: `npm update --ignore-scripts`
 2. Build and run tests to ensure dependencies work properly:
    ```sh
-   autoninja -C ../../out/Default third_party/chromium-bidi:default third_party/chromium-bidi:webdriver_bidi_unittests
+   autoninja -C ../../out/Default third_party/chromium-bidi:default third_party/chromium-bidi:webdriver_bidi_unittests third_party/chromium-bidi:webdriver_bidi_e2e_tests
    ../../out/Default/bin/run_webdriver_bidi_unittests
+   ../../out/Default/bin/run_webdriver_bidi_e2e_tests
    ```
 3. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
    ```sh
@@ -549,6 +573,13 @@ Call your new module processor method from `CommandProcessor.#processCommand`, p
 #### Add e2e tests
 
 Write end-to-end tests for your command, including the happy path and any edge cases that might trip things up. Focus on testing the code in the mapper.
+
+Build the E2E test target and run your test:
+
+```sh
+autoninja -C ../../out/Default third_party/chromium-bidi:webdriver_bidi_e2e_tests
+../../out/Default/bin/run_webdriver_bidi_e2e_tests -- -k <TestName>
+```
 
 #### Update WPT expectations
 

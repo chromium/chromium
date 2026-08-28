@@ -109,10 +109,10 @@ When comparing two runs (e.g., BiDi vs. CDP), they are treated as independent sa
 
 ### Preparation
 
-Ensure you have installed the project dependencies and built the project:
+Ensure you have generated the build configuration and built the project:
 
 ```bash
-npm run build
+autoninja -C ../../out/Default third_party/chromium-bidi:default third_party/chromium-bidi:webdriver_bidi_e2e_tests
 ```
 
 ### Puppeteer Benchmark
@@ -123,14 +123,14 @@ To run the Puppeteer benchmark locally:
 npm install puppeteer@24.36.0
 npm link
 npm link chromium-bidi
-node tools/benchmark-puppeteer.mjs
+./tools/node.py tools/benchmark-puppeteer.mjs
 ```
 
 You can customize the number of runs and iterations using `--runs` and `--iterations`
 arguments:
 
 ```bash
-node tools/benchmark-puppeteer.mjs --runs=5 --iterations=100
+./tools/node.py tools/benchmark-puppeteer.mjs --runs=5 --iterations=100
 ```
 
 ### Selenium Benchmark
@@ -138,13 +138,19 @@ node tools/benchmark-puppeteer.mjs --runs=5 --iterations=100
 To run the Selenium benchmark:
 
 ```bash
-node tools/benchmark-selenium.mjs --runs=5 --iterations=100
+./tools/node.py tools/benchmark-selenium.mjs --runs=5 --iterations=100
 ```
 
 ### E2E Benchmark
 
+Build the E2E test target:
+
+```bash
+autoninja -C ../../out/Default third_party/chromium-bidi:webdriver_bidi_e2e_tests
+```
+
 Run the e2e tests with the `-rP` option to get the performance metrics in the output:
 
 ```bash
-PYTEST_ADDOPTS="-rP" npm run e2e -- tests/performance | grep "PERF_METRIC"
+PYTEST_ADDOPTS="-rP" ../../out/Default/bin/run_webdriver_bidi_e2e_tests -- tests/performance | grep "PERF_METRIC"
 ```

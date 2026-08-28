@@ -44,7 +44,9 @@ from the previous step.
 
 ## 4. Verify the new certificate works
 
-Run this e2e tests to verify the configuration works as expected:
-```bash
-npm run e2e -- -k test_browsing_context_navigate_ssl
+Build the E2E test target and run the test to verify the configuration works as expected (from the `third_party/chromium-bidi` directory):
+
+```sh
+autoninja -C ../../out/Default third_party/chromium-bidi:webdriver_bidi_e2e_tests
+../../out/Default/bin/run_webdriver_bidi_e2e_tests -- -k test_browsing_context_navigate_ssl
 ```
