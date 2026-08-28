@@ -72,6 +72,7 @@ source_set("browser_tests") {
   sources = [
     "start_tutorial_in_page_browsertest.cc",
     "user_education_configuration_provider_browsertest.cc",
+    "user_education_service_browsertest.cc",
   ]
   deps = [
     ":user_education",

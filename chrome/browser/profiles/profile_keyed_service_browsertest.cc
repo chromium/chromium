@@ -529,6 +529,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
 #if !BUILDFLAG(IS_ANDROID)
+    "UserEducationService",
     "WaapUIMetricsService",
 #endif  // !BUILDFLAG(IS_ANDROID)
     "sct_reporting::Factory",

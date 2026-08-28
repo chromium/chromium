@@ -35,7 +35,6 @@ const TutorialDescription* TutorialRegistry::GetTutorialDescription(
 
 const std::vector<TutorialIdentifier> TutorialRegistry::GetTutorialIdentifiers()
     const {
-  DCHECK(tutorial_registry_.size() > 0);
   std::vector<TutorialIdentifier> id_strings;
   std::ranges::transform(tutorial_registry_, std::back_inserter(id_strings),
                          &Registry::value_type::first);

@@ -72,10 +72,8 @@ UserEducationServiceFactory::UserEducationServiceFactory()
     : ProfileKeyedServiceFactory(
           "UserEducationService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               // The service is needed by the System Profile OTR (that manages
               // the Profile Picker) to control the IPHs displayed in the
               // Profile Picker.
