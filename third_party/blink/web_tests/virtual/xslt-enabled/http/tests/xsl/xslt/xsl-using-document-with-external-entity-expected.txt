@@ -3,4 +3,6 @@ CONSOLE ERROR: Unsafe attempt to load URL xsl-using-document-with-external-entit
 
 CONSOLE ERROR: Unsafe attempt to load URL http://example.com/ from frame with URL http://127.0.0.1:8000/xsl/xslt/xsl-using-document-with-external-entity.xml. Domains, protocols and ports must match.
 
+This site uses XSLT; that functionality is being removed from this browser very soon. When that happens, this page will likely no longer display correctly. You might be able to install a browser extension that allows you to continue viewing it. Otherwise, you should contact the maintainer of the site for further information.
+
 Test that loading external entities from an XML document created by the XSL document() function are denied. On success, there will be two console errors that the load attempt was denied.

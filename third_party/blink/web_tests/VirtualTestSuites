@@ -4835,7 +4835,8 @@
       "http/tests/origin_trials/xslt-deprecation-trial-disabled.html",
       "http/tests/origin_trials/xslt-deprecation-trial-enabled.html",
       "fast/parser/xml-cap-alert-xslt-use-counter.html",
-      "fast/parser/xml-cap-alert-xslt-enabled.html"
+      "fast/parser/xml-cap-alert-xslt-enabled.html",
+      "fast/parser/xml-xslt-warning-banner.html"
     ],
     "exclusive_tests": [
       "http/tests/xsl/xslt/xsltpi-issue.js",
@@ -4862,7 +4863,8 @@
       "inspector-protocol/debugger/unpause-after-xslt-commit.js",
       "http/tests/origin_trials/xslt-deprecation-trial-disabled.html",
       "http/tests/origin_trials/xslt-deprecation-trial-enabled.html",
-      "fast/parser/xml-cap-alert-xslt-enabled.html"
+      "fast/parser/xml-cap-alert-xslt-enabled.html",
+      "fast/parser/xml-xslt-warning-banner.html"
     ],
     "args": ["--disable-blink-features=XSLTSpecialTrial"],
     "owners": [

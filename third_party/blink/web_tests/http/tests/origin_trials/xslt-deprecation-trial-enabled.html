@@ -37,4 +37,36 @@ test(() => {
   assert_not_equals(div, null, 'Result should contain a div element');
   assert_equals(div.textContent, 'Hello World', 'Result div should contain the node content');
 }, 'XSLT deprecation trial - enabled');
+
+test(() => {
+  const parser = new DOMParser();
+  const xslDoc = parser.parseFromString(
+    `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:template match="/">
+        <html>
+          <body>
+            <p id="result"><xsl:value-of select="//node"/></p>
+          </body>
+        </html>
+      </xsl:template>
+    </xsl:stylesheet>`,
+    'text/xml'
+  );
+
+  const xmlDoc = parser.parseFromString(
+    '<root><node>Hello World</node></root>',
+    'text/xml'
+  );
+
+  const xsltProcessor = new XSLTProcessor();
+  xsltProcessor.importStylesheet(xslDoc);
+  const resultDoc = xsltProcessor.transformToDocument(xmlDoc);
+
+  assert_not_equals(resultDoc, null, 'transformToDocument should succeed');
+  assert_equals(resultDoc.getElementById('result').textContent, 'Hello World');
+  assert_false(resultDoc.documentElement.textContent.includes('This site uses XSLT'),
+      'Deprecation warning banner should not be present when origin trial is enabled');
+  assert_false(resultDoc.documentElement.textContent.includes('This CAP alert'),
+      'CAP deprecation warning banner should not be present when origin trial is enabled');
+}, 'XSLT deprecation trial - warning banner is not shown when origin trial is enabled');
 </script>

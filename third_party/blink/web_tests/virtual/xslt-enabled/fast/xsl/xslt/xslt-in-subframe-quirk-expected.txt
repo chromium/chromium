@@ -4,4 +4,5 @@ Make sure that XSLT works in a subframe.
 --------
 Frame: '<!--framePath //<!--frame0-->-->'
 --------
+This site uses XSLT; that functionality is being removed from this browser very soon. When that happens, this page will likely no longer display correctly. You might be able to install a browser extension that allows you to continue viewing it. Otherwise, you should contact the maintainer of the site for further information.
 Hello

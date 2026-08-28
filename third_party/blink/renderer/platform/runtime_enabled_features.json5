@@ -3301,6 +3301,12 @@
       status: "experimental",
     },
     {
+      // Killswitch for the visible deprecation warning banner shown on
+      // XSLT-transformed documents.
+      name: "GenerateXSLTWarningBanner",
+      status: "stable",
+    },
+    {
       // Tracking bug for the implementation: https://crbug.com/430204832
       name: "GeolocationElement",
       status: "stable",

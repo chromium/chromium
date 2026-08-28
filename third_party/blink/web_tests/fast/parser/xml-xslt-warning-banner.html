@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://chromestatus.com/feature/4709671889534976">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+function createFrame(src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement('iframe');
+    iframe.onload = () => {
+      // Give time for any XSLT commit navigation to settle.
+      setTimeout(() => resolve(iframe), 50);
+    };
+    iframe.src = src;
+    (document.body || document.documentElement).appendChild(iframe);
+  });
+}
+
+promise_test(async () => {
+  // This test is only for XSLT enabled, since the warning banner only shows up for XSLT transforms.
+  if (!internals.runtimeFlags.xsltEnabled) {
+    return;
+  }
+
+  const capFrame = await createFrame("resources/cap-alert-transform.xml");
+  const nonCapFrame = await createFrame("resources/non-cap-transform.xml");
+
+  const nonCapDoc = nonCapFrame.contentDocument;
+  assert_not_equals(nonCapDoc, null, "Non-CAP frame contentDocument should exist");
+  const nonCapTransformed = nonCapDoc.getElementById('transformed');
+  assert_not_equals(nonCapTransformed, null, "Non-CAP XML document should be transformed when XSLT is enabled");
+  assert_true(nonCapDoc.documentElement.textContent.includes("This site uses XSLT"),
+      "General XSLT transformed document should contain the general deprecation warning banner");
+  assert_false(nonCapDoc.documentElement.textContent.includes("This CAP alert"),
+      "General XSLT document should not contain the CAP alert deprecation message");
+
+  const capDoc = capFrame.contentDocument;
+  assert_not_equals(capDoc, null, "CAP frame contentDocument should exist");
+  const capTransformed = capDoc.getElementById('transformed');
+  assert_not_equals(capTransformed, null, "CAP alert XML document should be transformed via XSLT");
+  assert_true(capDoc.documentElement.textContent.includes("This CAP alert"),
+      "CAP Alert transformed page should contain the CAP deprecation warning banner");
+  assert_false(capDoc.documentElement.textContent.includes("This site uses XSLT"),
+      "CAP Alert page should not contain the general deprecation warning message");
+}, "XSLT deprecation warning banner on declarative XML stylesheets");
+
+test(() => {
+  // This test is only for XSLT enabled, since the warning banner only shows up for XSLT transforms.
+  if (!internals.runtimeFlags.xsltEnabled) {
+    return;
+  }
+
+  const xmlStr = `<?xml version="1.0" encoding="utf-8"?><data><item>Hello</item></data>`;
+  const xslStr = `<?xml version="1.0" encoding="utf-8"?>
+    <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:template match="/">
+        <html>
+          <body>
+            <p id="result"><xsl:value-of select="data/item"/></p>
+          </body>
+        </html>
+      </xsl:template>
+    </xsl:stylesheet>`;
+
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlStr, "application/xml");
+  const xslDoc = parser.parseFromString(xslStr, "application/xml");
+
+  const processor = new XSLTProcessor();
+  processor.importStylesheet(xslDoc);
+  const resultDoc = processor.transformToDocument(xmlDoc);
+
+  assert_not_equals(resultDoc, null, "transformToDocument should succeed");
+  assert_equals(resultDoc.getElementById('result').textContent, "Hello");
+  assert_true(resultDoc.documentElement.textContent.includes("This site uses XSLT"),
+      "Document produced by transformToDocument should contain the deprecation warning banner");
+}, "XSLT deprecation warning banner on XSLTProcessor.transformToDocument");
+</script>

@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -166,7 +167,8 @@ static Element* CreateBannerLink(Document& document,
   return link;
 }
 
-static void InjectCAPAlertXSLTBanner(Document& document) {
+template <typename Callback>
+static void CreateAndAppendBanner(Document& document, Callback build_banner) {
   Element* target = document.body();
   if (!target) {
     target = document.documentElement();
@@ -184,22 +186,62 @@ static void InjectCAPAlertXSLTBanner(Document& document) {
           "margin-bottom: 20px; font-size: 16px; font-weight: bold; "
           "text-align: center; font-family: sans-serif; position: relative; "
           "z-index: 2147483647;"));
-  banner->appendChild(
-      document.createTextNode("This CAP alert uses technology called XSLT; "
-                              "that functionality is being "));
-  banner->appendChild(CreateBannerLink(
-      document, "https://chromestatus.com/feature/4709671889534976",
-      "removed from this browser"));
-  banner->appendChild(
-      document.createTextNode(". When that happens, this alert will be shown "
-                              "as raw XML data. You might "
-                              "be able to "));
-  banner->appendChild(CreateBannerLink(
-      document, "https://chromewebstore.google.com/search/XSLT%20Polyfill",
-      "install a browser extension"));
-  banner->appendChild(
-      document.createTextNode(" that allows you to continue viewing it."));
+  build_banner(banner);
   target->insertBefore(banner, target->firstChild());
+}
+
+static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
+                                    Document& document) {
+  ExecutionContext* context = document.GetExecutionContext();
+  if (!RuntimeEnabledFeatures::GenerateXSLTWarningBannerEnabled(context)) {
+    return;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kXSLTEnabledPolicy) &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kXSLTEnabledPolicy) == "true") {
+    return;
+  }
+  if (context &&
+      context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT)) {
+    return;
+  }
+  if (is_cap_alert_xslt) {
+    CreateAndAppendBanner(document, [&document](Element* banner) {
+      banner->appendChild(
+          document.createTextNode("This CAP alert uses technology called XSLT; "
+                                  "that functionality is being "));
+      banner->appendChild(CreateBannerLink(
+          document, "https://chromestatus.com/feature/4709671889534976",
+          "removed from this browser"));
+      banner->appendChild(document.createTextNode(
+          ". When that happens, this alert will be shown "
+          "as raw XML data. You might "
+          "be able to "));
+      banner->appendChild(CreateBannerLink(
+          document, "https://chromewebstore.google.com/search/XSLT%20Polyfill",
+          "install a browser extension"));
+      banner->appendChild(
+          document.createTextNode(" that allows you to continue viewing it."));
+    });
+  } else {
+    CreateAndAppendBanner(document, [&document](Element* banner) {
+      banner->appendChild(document.createTextNode(
+          "This site uses XSLT; that functionality is being "));
+      banner->appendChild(CreateBannerLink(
+          document, "https://chromestatus.com/feature/4709671889534976",
+          "removed from this browser very soon"));
+      banner->appendChild(document.createTextNode(
+          ". When that happens, this page will likely no longer display "
+          "correctly. You might be able to "));
+      banner->appendChild(CreateBannerLink(
+          document, "https://chromewebstore.google.com/search/XSLT%20Polyfill",
+          "install a browser extension"));
+      banner->appendChild(document.createTextNode(
+          " that allows you to continue viewing it. Otherwise, you should "
+          "contact the maintainer of the site for further information."));
+    });
+  }
 }
 }  // namespace
 
@@ -250,8 +292,8 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     frame->Loader().CommitNavigation(std::move(params), nullptr,
                                      CommitReason::kXSLT);
     Document* new_doc = frame->GetDocument();
-    if (new_doc && is_cap_alert_xslt) {
-      InjectCAPAlertXSLTBanner(*new_doc);
+    if (new_doc) {
+      InjectXSLTWarningBanner(is_cap_alert_xslt, *new_doc);
     }
     return new_doc;
   }
@@ -276,9 +318,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
         StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
-  if (is_cap_alert_xslt) {
-    InjectCAPAlertXSLTBanner(*document);
-  }
+  InjectXSLTWarningBanner(is_cap_alert_xslt, *document);
   return document;
 }
 
