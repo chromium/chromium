@@ -274,7 +274,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
       invalidate_matched_properties_cache = true;
     }
   }
-  if (mutation == Mutation::kRules) {
+  if (mutation == Mutation::kRules || mutation == Mutation::kContents) {
     if (invalidate_matched_properties_cache) {
       document->GetStyleResolver().InvalidateMatchedPropertiesCache();
     }
@@ -670,7 +670,7 @@ void CSSStyleSheet::SetText(const String& text, CSSImportRules import_rules) {
             OwnerDocument()->GetStyleEngine().FindStyleSheetContents(
                 text, contents_->ParserContext())) {
       SetContents(cached);
-      DidMutate(Mutation::kSheet);
+      DidMutate(Mutation::kContents);
       return;
     }
     SetContents(MakeGarbageCollected<StyleSheetContents>(
@@ -685,7 +685,7 @@ void CSSStyleSheet::SetText(const String& text, CSSImportRules import_rules) {
           "https://github.com/WICG/construct-stylesheets/issues/"
           "119#issuecomment-588352418."));
     }
-    DidMutate(Mutation::kSheet);
+    DidMutate(Mutation::kContents);
     if (parse_result == ParseSheetResult::kSucceeded &&
         contents_->IsCacheableForStyleElement()) {
       OwnerDocument()->GetStyleEngine().AddStyleSheetContents(text, contents_);

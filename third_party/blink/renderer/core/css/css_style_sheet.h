@@ -225,6 +225,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
     kSheet,
     // Rules in the CSSStyleSheet changed.
     kRules,
+    // StyleSheetContents changed.
+    kContents,
   };
   void DidMutate(Mutation mutation);
 
