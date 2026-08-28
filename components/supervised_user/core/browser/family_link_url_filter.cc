@@ -334,18 +334,17 @@ bool FamilyLinkUrlFilter::HostMatchesPattern(const std::string& canonical_host,
   }
 
   if (base::EndsWith(pattern, ".*", base::CompareCase::SENSITIVE)) {
-    size_t registry_length =
+    std::optional<size_t> registry_length =
         GetCanonicalHostRegistry(trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES,
                                  EXCLUDE_PRIVATE_REGISTRIES)
-            .transform(&std::string_view::size)
-            .value_or(std::string_view::npos);
+            .transform(&std::string_view::size);
     // A host without a known registry part does not match.
-    if (registry_length == 0) {
+    if (!registry_length || registry_length == 0) {
       return false;
     }
 
     trimmed_pattern.erase(trimmed_pattern.length() - 2);
-    trimmed_host.erase(trimmed_host.length() - (registry_length + 1));
+    trimmed_host.erase(trimmed_host.length() - (*registry_length + 1));
   }
 
   if (base::StartsWith(trimmed_pattern, "*.", base::CompareCase::SENSITIVE)) {

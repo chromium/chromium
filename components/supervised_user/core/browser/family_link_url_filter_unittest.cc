@@ -166,6 +166,8 @@ TEST_F(FamilyLinkUrlFilterTest, HostMatchesPattern) {
       FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*google*"));
   EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com",
                                                        "www.*.google.com"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("", ".*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.", ".*"));
 }
 
 TEST_F(FamilyLinkUrlFilterTest, Reason) {
