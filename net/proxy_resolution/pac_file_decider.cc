@@ -106,7 +106,6 @@ int PacFileDecider::Start(const ProxyConfigWithAnnotation& config,
                           CompletionOnceCallback callback) {
   DCHECK_EQ(STATE_NONE, next_state_);
   DCHECK(!callback.is_null());
-  DCHECK(config.value().HasAutomaticSettings());
 
   net_log_.BeginEvent(NetLogEventType::PAC_FILE_DECIDER);
 
@@ -122,7 +121,10 @@ int PacFileDecider::Start(const ProxyConfigWithAnnotation& config,
   proxy_override_rules_ = config.value().proxy_override_rules();
 
   pac_sources_ = BuildPacSourcesFallbackList(config.value());
-  DCHECK(!pac_sources_.empty());
+  if (pac_sources_.empty()) {
+    DidComplete();
+    return ERR_PAC_SCRIPT_FAILED;
+  }
 
   traffic_annotation_ =
       net::MutableNetworkTrafficAnnotationTag(config.traffic_annotation());

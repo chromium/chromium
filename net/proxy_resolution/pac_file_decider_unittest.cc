@@ -872,5 +872,27 @@ TEST(PacFileDeciderTest, DhcpCancelledByDestructor) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST(PacFileDeciderTest, EmptyPacSourcesDoesNotCrash) {
+  base::test::TaskEnvironment task_environment;
+
+  Rules rules;
+  RuleBasedPacFileFetcher fetcher(&rules);
+  DoNothingDhcpPacFileFetcher dhcp_fetcher;
+
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, nullptr);
+
+  // Configuration with no auto-detect and no valid PAC URL.
+  ProxyConfig config = ProxyConfig::CreateDirect();
+
+  TestCompletionCallback callback;
+  int rv = decider.Start(
+      ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS),
+      base::TimeDelta(), /*fetch_pac_bytes=*/true, callback.callback());
+
+  EXPECT_THAT(rv, IsError(ERR_PAC_SCRIPT_FAILED));
+  EXPECT_FALSE(decider.script_data().data);
+  EXPECT_FALSE(decider.effective_config().value().has_pac_url());
+}
+
 }  // namespace
 }  // namespace net
