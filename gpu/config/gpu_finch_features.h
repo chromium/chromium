@@ -70,6 +70,10 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteUsePersistentCache);
 GPU_CONFIG_EXPORT bool SkiaGraphiteUsesPersistentCache();
 
+// Enables switching Graphite from the sort-based draw ordering to the
+// layer-based system.
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDrawListLayer);
+
 struct GPU_CONFIG_EXPORT SkiaGraphiteFeatureParams {
   // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
   bool dawn_skip_validation = !DCHECK_IS_ON();

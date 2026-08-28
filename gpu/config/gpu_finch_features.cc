@@ -450,6 +450,10 @@ bool SkiaGraphiteUsesPersistentCache() {
   return base::FeatureList::IsEnabled(kSkiaGraphiteUsePersistentCache);
 }
 
+// Enables switching Graphite from the sort-based draw ordering to the
+// layer-based system.
+BASE_FEATURE(kSkiaGraphiteDrawListLayer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConditionallySkipGpuChannelFlush,
 // To enable on ChromeOS, test failures must be investigated
 // (crrev.com/c/5435673).

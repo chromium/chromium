@@ -168,6 +168,9 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
         features::kSkiaGraphiteMinPathSizeForMsaa.Get();
   }
 
+  options.fUseDrawListLayer =
+      base::FeatureList::IsEnabled(features::kSkiaGraphiteDrawListLayer);
+
   // Always emit labels in Skia. For Dawn, we have a toggle that controls
   // whether labels are emitted to the underlying backend, which is currently
   // only enabled on Windows or DCHECK builds on other platforms. For Metal,
