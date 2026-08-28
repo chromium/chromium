@@ -175,20 +175,13 @@ RecentSessionPolicyImpl::GetDefaultConstraints() {
   static constexpr int kShortTermDays = 7;
   static constexpr int kLongTermWeeks = 4;
   static constexpr int kLongTermDays = kLongTermWeeks * 7;
-  const int max_active_weeks = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_active_weeks", 0);
-  const int max_active_days = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_active_days", 0);
-  const int super_active_days = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "super_active_days", 4);
-  const int max_monthly_active_days = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_monthly_active_days", 2);
-  const int max_super_active_weeks = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_super_active_weeks", 0);
-  const int max_weekly_sessions = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_weekly_sessions", 0);
-  const int max_monthly_sessions = base::GetFieldTrialParamByFeatureAsInt(
-      kAllowRecentSessionTracking, "max_monthly_sessions", 0);
+  const int max_active_weeks = 0;
+  const int max_active_days = 0;
+  const int super_active_days = 4;
+  const int max_monthly_active_days = 2;
+  const int max_super_active_weeks = 0;
+  const int max_weekly_sessions = 0;
+  const int max_monthly_sessions = 0;
   ConstraintInfos result;
   result.emplace_back(std::make_unique<ActiveDaysConstraint>(kShortTermDays),
                       "UserEducation.Session.RecentActiveDays", kShortTermDays,

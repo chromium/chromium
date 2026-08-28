@@ -79,18 +79,10 @@ class RecentSessionPolicyTest : public testing::Test {
   ~RecentSessionPolicyTest() override = default;
 
   void SetUp() override {
-    // Default setup is to initialize right away, but this can be skipped in
-    // other tests by overriding and replacing this behavior.
-    Init();
+    policy_ = std::make_unique<RecentSessionPolicyImpl>();
   }
 
   void TearDown() override { policy_.reset(); }
-
-  void Init(const base::FieldTrialParams& params = {}) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kAllowRecentSessionTracking, params);
-    policy_ = std::make_unique<RecentSessionPolicyImpl>();
-  }
 
   void EnsureBucketCounts(const std::string& name,
                           std::map<int, int> counts) const {
@@ -121,9 +113,6 @@ class RecentSessionPolicyTest : public testing::Test {
  protected:
   base::HistogramTester histograms_;
   std::unique_ptr<RecentSessionPolicyImpl> policy_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecentSessionPolicyTest,
@@ -532,84 +521,4 @@ TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_DailyLimit) {
   EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks",
                      {{2, 1}, {4, 1}});
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 2}});
-}
-
-class RecentSessionPolicyFinchTest : public RecentSessionPolicyTest {
- public:
-  RecentSessionPolicyFinchTest() = default;
-  ~RecentSessionPolicyFinchTest() override = default;
-
-  // Don't initialize during setup.
-  void SetUp() override {}
-};
-
-TEST_F(RecentSessionPolicyFinchTest, ChangeExistingThresholds) {
-  Init({{"max_active_weeks", "1"}, {"max_active_days", "2"}});
-
-  // Two days, one week.
-  auto data = CreateSessionData({base::Days(2)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Two days, one week, but more entries.
-  data = CreateSessionData({base::Days(2), base::Days(2) + base::Minutes(5)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three days, one week.
-  data = CreateSessionData({base::Days(2), base::Days(4)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Two days, two weeks.
-  data = CreateSessionData({base::Days(2), base::Days(8)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
-}
-
-TEST_F(RecentSessionPolicyFinchTest, SwitchToNewThresholds) {
-  Init({{"max_active_weeks", "0"},
-        {"max_active_days", "0"},
-        {"max_monthly_active_days", "0"},
-        {"max_weekly_sessions", "2"},
-        {"max_monthly_sessions", "5"}});
-
-  // Two sessions.
-  auto data = CreateSessionData({base::Days(2)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three sessions, two days.
-  data = CreateSessionData({base::Days(2), base::Days(2) + base::Minutes(5)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three sessions spread over three active weeks.
-  data = CreateSessionData({base::Days(8), base::Days(16)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Six sessions in two active weeks.
-  data = CreateSessionData({base::Days(2), base::Days(8), base::Days(9),
-                            base::Days(10), base::Days(11)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
-}
-
-TEST_F(RecentSessionPolicyFinchTest, EnableSuperActiveThreshold) {
-  Init({{"max_active_days", "0"},
-        {"max_active_weeks", "0"},
-        {"max_monthly_active_days", "0"},
-        {"super_active_days", "3"},
-        {"max_super_active_weeks", "1"}});
-
-  // Two sessions.
-  auto data = CreateSessionData({base::Days(2)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three sessions, two weeks.
-  data = CreateSessionData({base::Days(2), base::Days(12)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three weeks, one super active week.
-  data = CreateSessionData({base::Days(8), base::Days(9), base::Days(10),
-                            base::Days(11), base::Days(16)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Two super active weeks by minimum definition.
-  data = CreateSessionData({base::Days(8), base::Days(9), base::Days(10),
-                            base::Days(15), base::Days(16), base::Days(17)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
 }

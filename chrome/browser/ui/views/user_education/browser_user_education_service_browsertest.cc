@@ -687,42 +687,6 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
       incog->GetProfile(), user_education::features::kNewBadgeTestFeature));
 }
 
-// Tests for the presence or absence of the recent sessions logic based on
-// the enabling flag.
-class BrowserUserEducationServiceRecentSessionsTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  BrowserUserEducationServiceRecentSessionsTest() = default;
-  ~BrowserUserEducationServiceRecentSessionsTest() override = default;
-
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kAllowRecentSessionTracking);
-    } else {
-      feature_list_.InitAndDisableFeature(kAllowRecentSessionTracking);
-    }
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         BrowserUserEducationServiceRecentSessionsTest,
-                         testing::Bool());
-
-// Ensure that the recent sessions logic only gets created if the flag is
-// enabled.
-IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceRecentSessionsTest,
-                       RecentSessionTrackerDependsOnFlag) {
-  auto* const result =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->GetProfile())
-          ->recent_session_tracker();
-  EXPECT_EQ(GetParam(), result != nullptr);
-}
-
 // Verify that the "disable rate limiting" command line arg works.
 class BrowserUserEducationServiceCommandLineTest
     : public BrowserUserEducationServiceBrowserTest,

@@ -29,9 +29,6 @@
 #include "components/user_education/product_messaging/product_messaging_controller.h"
 #include "content/public/browser/browser_context.h"
 
-// Kill switch for recent session tracking. Enabled by default.
-BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
-
 class BrowserHelpBubble;
 class BrowserUserEducationInterfaceImpl;
 class ToolbarButtonMenuHighlighter;
@@ -83,11 +80,8 @@ class UserEducationService : public KeyedService {
   user_education::NewBadgeController* new_badge_controller() {
     return new_badge_controller_.get();
   }
-  RecentSessionTracker* recent_session_tracker() {
-    return recent_session_tracker_.get();
-  }
-  RecentSessionObserver* recent_session_observer() {
-    return recent_session_observer_.get();
+  RecentSessionTracker& recent_session_tracker() {
+    return *recent_session_tracker_;
   }
   user_education::NtpPromoRegistry* ntp_promo_registry() {
     return ntp_promo_registry_.get();

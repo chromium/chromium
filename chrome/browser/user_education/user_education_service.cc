@@ -24,8 +24,6 @@
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/product_messaging/product_messaging_policy_impl.h"
 
-BASE_FEATURE(kAllowRecentSessionTracking, base::FEATURE_ENABLED_BY_DEFAULT);
-
 UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
     : profile_(*profile),
       tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
@@ -47,16 +45,9 @@ UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
             std::make_unique<user_education::NewBadgePolicy>());
   }
 
-  if (base::FeatureList::IsEnabled(kAllowRecentSessionTracking)) {
-    // Only create the recent session tracker if recent session tracking is
-    // allowed (default).
-    recent_session_tracker_ = std::make_unique<RecentSessionTracker>(
-        user_education_session_manager_, *user_education_storage_service_,
-        *user_education_storage_service_);
-  } else {
-    // If the feature is disabled, ensure that we clear any old data.
-    user_education_storage_service_->ResetRecentSessionData();
-  }
+  recent_session_tracker_ = std::make_unique<RecentSessionTracker>(
+      user_education_session_manager_, *user_education_storage_service_,
+      *user_education_storage_service_);
 
   if (allows_promos &&
       user_education::features::GetNtpBrowserPromoType() !=
