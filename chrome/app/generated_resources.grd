@@ -19251,6 +19251,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OMNIBOX_EVERYWHERE_REGION_SELECT_ACCESSIBLE_NAME" desc="Accessible name for the region screenshot capture overlay." is_accessibility_with_no_ui="true">
       Region select screenshot
     </message>
+    <message name="IDS_OMNIBOX_EVERYWHERE_SCREENSHOT_DISCLOSURE_TITLE" desc="Title of the screenshot sharing disclosure dialog in Omnibox Everywhere.">
+      How screenshot sharing works
+    </message>
+    <message name="IDS_OMNIBOX_EVERYWHERE_SCREENSHOT_DISCLOSURE_BODY" desc="Body text explaining how screenshot sharing works in Omnibox Everywhere.">
+      You can share a screenshot with Google to reference its content in your search. When you share a screenshot of your entire screen, Google will only see what’s visible to you.
+    </message>
 
     <!-- Responsive Toolbar -->
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE" desc="Overflow menu item text of profile button">
