@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -212,7 +213,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     ComposeboxInputItemCollectionDelegate,
     ComposeboxQueryContextualizerDelegate,
     SearchEngineObserving,
-    WebStateDeferredExecutorDelegate>
+    WebStateDeferredExecutorDelegate,
+    WebStateListObserving>
 
 @end
 
@@ -234,6 +236,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   ComposeboxModeHolder* _modeHolder;
   // The web state list.
   raw_ptr<WebStateList> _webStateList;
+  // The observer bridge for the WebStateList.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
   // A browser agent for retrieving APC from the cache.
@@ -359,6 +363,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                object:nil];
     }
     _webStateList = webStateList;
+    if (_entrypoint == ComposeboxEntrypoint::kCobrowse && _webStateList) {
+      _webStateListObserver =
+          std::make_unique<WebStateListObserverBridge>(self);
+      _webStateList->AddObserver(_webStateListObserver.get());
+    }
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
     _webStateDeferredExecutor.delegate = self;
@@ -433,7 +442,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _contextualSearchSession.reset();
   }
   _inNavigation = NO;
-  _webStateList = nil;
+  if (_webStateList && _webStateListObserver) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver.reset();
+  }
+  _webStateList = nullptr;
   _items = nil;
   _URLLoader = nil;
   _consumer = nil;
@@ -1635,6 +1648,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
 - (void)reloadSuggestions {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+
   [self updateAwaitingAttachmentSignalsState];
 
   BOOL shouldRestartAutocomplete = _items.count <= 1;
@@ -2367,6 +2384,41 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       withTitle:base::SysUTF16ToNSString(webState->GetTitle())
           tabID:webState->GetUniqueIdentifier().identifier()];
   [self.debugLogger logEvent:event];
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+
+  switch (change.type()) {
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      web::WebState* detachedWebState = detachChange.detached_web_state();
+      if (!detachedWebState) {
+        return;
+      }
+      [self removeDeselectedIDs:{detachedWebState->GetUniqueIdentifier()}];
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_webStateList && _webStateListObserver) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver.reset();
+  }
+  _webStateList = nullptr;
 }
 
 @end

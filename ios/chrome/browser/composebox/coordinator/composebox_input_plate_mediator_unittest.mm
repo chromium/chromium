@@ -8,6 +8,7 @@
 
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,6 +20,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/contextual_search/internal/test_composebox_query_controller.h"
+#import "components/contextual_search/mock_contextual_search_context_controller.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -79,6 +81,9 @@
 @interface ComposeboxInputPlateMediator (Testing)
 - (void)setState:(ComposeboxInputItemState)state
           onItem:(ComposeboxInputItem*)item;
+- (base::UnguessableToken)createInputItemForWebState:(web::WebState*)webState
+                                              source:(ComposeboxInputItemSource)
+                                                         source;
 @end
 
 // Mock consumer for the mediator.
@@ -1185,6 +1190,72 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
 
   [test_mediator disconnect];
+}
+
+// Tests that an attached tab is removed and DeleteFile is invoked when the tab
+// is closed and composebox is in cobrowse mode.
+TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  ON_CALL(*raw_mock_session, CreateContextToken()).WillByDefault([]() {
+    return base::UnguessableToken::Create();
+  });
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:std::move(mock_session)
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+
+  ASSERT_EQ(consumer.items.count, 1U);
+  EXPECT_EQ(consumer.items.firstObject.type,
+            ComposeboxInputItemType::kComposeboxInputItemTypeTab);
+
+  base::UnguessableToken server_token = base::UnguessableToken::Create();
+  consumer.items.firstObject.serverToken = server_token;
+
+  contextual_search::FileInfo file_info;
+  file_info.file_token = server_token;
+  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token)))
+      .WillByDefault(testing::Return(&file_info));
+
+  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token))).Times(1);
+
+  // Close the attached tab.
+  web_state_list_->CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
+
+  // In cobrowse mode, the attached tab must be removed.
+  EXPECT_EQ(consumer.items.count, 0U);
 }
 
 }  // namespace
