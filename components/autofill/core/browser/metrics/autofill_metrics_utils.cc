@@ -294,6 +294,7 @@ bool ShouldLogAutofillSuggestionShown(
     // Initial trigger of AtMemory shows a search bar rather than actual
     // suggestions. Logging it would skew the standard Autofill funnel metrics.
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return false;

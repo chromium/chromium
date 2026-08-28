@@ -611,6 +611,8 @@ enum AutofillSuggestionTriggerSource {
   kAtMemoryInactivityNudge = 24,
   // Suggestions triggered by the AtMemory keyboard shortcut.
   kAtMemoryKeyboardShortcut = 25,
+  // Suggestions triggered by the AtMemory double Ctrl press.
+  kAtMemoryDoubleCtrl = 26,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionTriggerSource)
 

@@ -438,6 +438,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
@@ -467,6 +468,7 @@ bool CanReplaceCurrentSuggestions(AutofillSuggestionTriggerSource source) {
     case mojom::AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case mojom::AutofillSuggestionTriggerSource::kGlic:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case mojom::AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return true;
@@ -525,6 +527,7 @@ FillingProductSet GetFillingProductsToSuggest(
       return {FillingProduct::kAddress, FillingProduct::kCreditCard,
               FillingProduct::kPassword};
     case kAtMemoryContextMenu:
+    case kAtMemoryDoubleCtrl:
     case kAtMemoryKeyboardShortcut:
     case kAtMemoryTriggerString:
       return {FillingProduct::kAtMemory};

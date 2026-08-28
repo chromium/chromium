@@ -28,6 +28,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return true;
@@ -52,6 +53,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return true;
@@ -89,6 +91,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
@@ -122,6 +125,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:

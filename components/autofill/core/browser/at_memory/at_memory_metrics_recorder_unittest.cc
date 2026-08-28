@@ -69,7 +69,7 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
       uploader_service_;
 };
 
-// Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
+// Tests that `OnPopupShown` correctly logs the "SearchBarDisplayed" metric when
 // triggered by typing the invocation sequence.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
@@ -83,7 +83,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
 }
 
-// Tests that `OnPopupShown` correctly logs the "PopupDisplayed" metric when
+// Tests that `OnPopupShown` correctly logs the "SearchBarDisplayed" metric when
 // triggered via the context menu.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
@@ -95,6 +95,20 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
+}
+
+// Tests that `OnPopupShown` correctly logs the "SearchBarDisplayed" metric when
+// triggered via double Ctrl.
+TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_DoubleCtrl) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                       std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.SearchBarDisplayed",
+      AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
 }
 
 // Tests that `OnPopupShown` is idempotent and only logs a metric for the

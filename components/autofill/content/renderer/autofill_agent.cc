@@ -1290,6 +1290,7 @@ void AutofillAgent::TriggerSuggestions(
       case kComposeDialogLostFocus:
       case kComposeDelayedProactiveNudge:
       case kAtMemoryContextMenu:
+      case kAtMemoryDoubleCtrl:
       case kAtMemoryKeyboardShortcut:
       case kAtMemoryTriggerString:
         return true;
@@ -1525,6 +1526,7 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(
     using enum AutofillSuggestionTriggerSource;
     switch (trigger_source) {
       case kAtMemoryContextMenu:
+      case kAtMemoryDoubleCtrl:
       case kAtMemoryInactivityNudge:
       case kAtMemoryKeyboardShortcut:
       case kAtMemoryTriggerString:

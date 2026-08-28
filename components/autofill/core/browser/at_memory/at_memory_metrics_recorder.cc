@@ -295,6 +295,9 @@ void AtMemoryMetricsRecorder::OnPopupShown(
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
       source_ = AutofillMetrics::AtMemoryTriggerSource::kContextMenu;
       break;
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
+      source_ = AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl;
+      break;
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
       source_ = AutofillMetrics::AtMemoryTriggerSource::kKeyboardShortcut;
       break;

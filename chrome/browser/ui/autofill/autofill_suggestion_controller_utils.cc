@@ -253,6 +253,7 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
 bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:

@@ -686,6 +686,7 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Typed trigger"/>
   <int value="1" label="Context menu"/>
   <int value="2" label="Keyboard shortcut"/>
+  <int value="3" label="Double Ctrl"/>
 </enum>
 
 <!-- LINT.IfChange(AutofillAtMemoryUiSessionOutcome) -->
@@ -4530,6 +4531,7 @@ Called by update_autofill_enums.py.-->
   <int value="23" label="AtMemory context menu"/>
   <int value="24" label="AtMemory inactivity nudge"/>
   <int value="25" label="AtMemory keyboard shortcut"/>
+  <int value="26" label="AtMemory double Ctrl"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/common/mojom/autofill_types.mojom:AutofillSuggestionTriggerSource) -->

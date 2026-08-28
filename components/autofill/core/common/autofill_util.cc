@@ -178,6 +178,7 @@ IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
 bool IsAtMemoryTriggerSource(AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return true;

@@ -80,6 +80,7 @@ namespace {
 bool ShouldEnforcePaintChecks(AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
@@ -107,9 +108,10 @@ std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
     AutofillSuggestionTriggerSource trigger_source,
     const std::u16string& search_bar_initial_value) {
   switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
@@ -228,6 +230,7 @@ std::optional<AutofillPopupView::SubPopupConfig> GetSubPopupConfig(
     AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
     case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:

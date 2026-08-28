@@ -472,7 +472,8 @@ class AutofillMetrics {
     kTypedTrigger = 0,
     kContextMenu = 1,
     kKeyboardShortcut = 2,
-    kMaxValue = kKeyboardShortcut
+    kDoubleCtrl = 3,
+    kMaxValue = kDoubleCtrl
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
