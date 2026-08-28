@@ -108,8 +108,14 @@ bool IsAllowedToastWithNoTimeout(const base::Feature& promo_feature) {
 }
 
 bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
+  // LINT.IfChange(LegacyPromoMessage)
+  // ----------------------------------------------------------------
   // NOTE: LEGACY PROMOS ARE DEPRECATED.
   // NO NEW ITEMS SHOULD BE ADDED TO THIS LIST, EVER.
+  // ----------------------------------------------------------------
+  // LINT.ThenChange(:LegacyPromoList)
+
+  // LINT.IfChange(LegacyPromoList)
   static constexpr auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_AutofillExternalAccountProfileSuggestion",
@@ -122,6 +128,8 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
           "IPH_ReadingListInSidePanel",
           "IPH_TabSearch",
       });
+  // LINT.ThenChange(:LegacyPromoMessage)
+
   return kAllowedPromoNames.contains(promo_feature.name);
 }
 
