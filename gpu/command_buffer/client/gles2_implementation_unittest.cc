@@ -810,6 +810,31 @@ TEST_F(GLES2ImplementationTest, GetShaderSource) {
   EXPECT_EQ(buf[sizeof(kString)], kBad);
 }
 
+// Check that for GETn functions (like glShaderiv) the writes to the result
+// pointer are clamped even if the service side returns more data. See
+// http://issues.chromium.org/issues/551593376.
+TEST_F(GLES2ImplementationTest, GetShaderiv_OversizeReturn) {
+  // Make the SizedResult hold two GLints instead of the single one for
+  // GL_SHADER_TYPE.
+  struct TwoInts {
+    GLint first = 0xBEEF;
+    GLint second = 0xCAFE;
+  };
+
+  ExpectedMemoryInfo resultBuffer =
+      GetExpectedResultMemory(sizeof(uint32_t) + sizeof(TwoInts));
+  EXPECT_CALL(*command_buffer(), OnFlush())
+      .WillOnce(SetMemory(resultBuffer.ptr, SizedResultHelper<TwoInts>({})))
+      .RetiresOnSaturation();
+
+  std::array<GLint, 2> resultAndGuard = {{0, 0}};
+  gl_->GetShaderiv(123, GL_SHADER_TYPE, resultAndGuard.data());
+
+  // Only the first GLint should be written to the output.
+  EXPECT_EQ(0xBEEF, resultAndGuard[0]);
+  EXPECT_EQ(0, resultAndGuard[1]);
+}
+
 TEST_F(GLES2ImplementationTest, ReadPixels2Reads) {
   struct Cmds {
     cmds::ReadPixels read1;

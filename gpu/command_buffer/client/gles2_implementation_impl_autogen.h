@@ -884,6 +884,12 @@ void GLES2Implementation::GetBooleanv(GLenum pname, GLboolean* params) {
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -915,6 +921,12 @@ void GLES2Implementation::GetBufferParameteri64v(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -947,6 +959,12 @@ void GLES2Implementation::GetBufferParameteriv(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -974,6 +992,12 @@ void GLES2Implementation::GetFloatv(GLenum pname, GLfloat* params) {
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1011,6 +1035,12 @@ void GLES2Implementation::GetFramebufferAttachmentParameteriv(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1038,6 +1068,12 @@ void GLES2Implementation::GetInteger64v(GLenum pname, GLint64* params) {
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1068,6 +1104,12 @@ void GLES2Implementation::GetIntegeri_v(GLenum pname,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(data);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1097,6 +1139,12 @@ void GLES2Implementation::GetInteger64i_v(GLenum pname,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(data);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1125,6 +1173,12 @@ void GLES2Implementation::GetIntegerv(GLenum pname, GLint* params) {
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1155,6 +1209,12 @@ void GLES2Implementation::GetProgramiv(GLuint program,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1214,6 +1274,12 @@ void GLES2Implementation::GetRenderbufferParameteriv(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1245,6 +1311,12 @@ void GLES2Implementation::GetSamplerParameterfv(GLuint sampler,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1277,6 +1349,12 @@ void GLES2Implementation::GetSamplerParameteriv(GLuint sampler,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1307,6 +1385,12 @@ void GLES2Implementation::GetShaderiv(GLuint shader,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1398,6 +1482,12 @@ void GLES2Implementation::GetSynciv(GLsync sync,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(values);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1431,6 +1521,12 @@ void GLES2Implementation::GetTexParameterfv(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -1462,6 +1558,12 @@ void GLES2Implementation::GetTexParameteriv(GLenum target,
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -3751,10 +3853,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterfvANGLE(
     GLenum pname,
     GLfloat* params) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glGetFramebufferPixelLocalStorageParameterfvANGLE("
-                     << plane << ", " << GLES2Util::GetStringEnum(pname) << ", "
-                     << static_cast<const void*>(params) << ")");
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix()
+          << "] glGetFramebufferPixelLocalStorageParameterfvANGLE(" << plane
+          << ", "
+          << GLES2Util::GetStringFramebufferPixelLocalStorageParameter(pname)
+          << ", " << static_cast<const void*>(params) << ")");
   TRACE_EVENT0(
       "gpu",
       "GLES2Implementation::GetFramebufferPixelLocalStorageParameterfvANGLE");
@@ -3773,6 +3877,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterfvANGLE(
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -3787,10 +3897,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLE(
     GLint* params) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_VALIDATE_DESTINATION_INITALIZATION(GLint, params);
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glGetFramebufferPixelLocalStorageParameterivANGLE("
-                     << plane << ", " << GLES2Util::GetStringEnum(pname) << ", "
-                     << static_cast<const void*>(params) << ")");
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix()
+          << "] glGetFramebufferPixelLocalStorageParameterivANGLE(" << plane
+          << ", "
+          << GLES2Util::GetStringFramebufferPixelLocalStorageParameter(pname)
+          << ", " << static_cast<const void*>(params) << ")");
   TRACE_EVENT0(
       "gpu",
       "GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLE");
@@ -3809,6 +3921,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLE(
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -3822,10 +3940,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLE(
     GLenum pname,
     GLuint* params) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glGetFramebufferPixelLocalStorageParameteruivANGLE("
-                     << plane << ", " << GLES2Util::GetStringEnum(pname) << ", "
-                     << static_cast<const void*>(params) << ")");
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix()
+          << "] glGetFramebufferPixelLocalStorageParameteruivANGLE(" << plane
+          << ", "
+          << GLES2Util::GetStringFramebufferPixelLocalStorageParameter(pname)
+          << ", " << static_cast<const void*>(params) << ")");
   TRACE_EVENT0(
       "gpu",
       "GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLE");
@@ -3844,6 +3964,12 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameteruivANGLE(
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+      std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(params);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {

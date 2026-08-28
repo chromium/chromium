@@ -110,6 +110,8 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_LINE_WIDTH:
       return 1;
+    case GL_MAJOR_VERSION:
+      return 1;
     case GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:
       return 1;
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
@@ -132,7 +134,11 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_MAX_VIEWPORT_DIMS:
       return 2;
+    case GL_MINOR_VERSION:
+      return 1;
     case GL_NUM_COMPRESSED_TEXTURE_FORMATS:
+      return 1;
+    case GL_NUM_PROGRAM_BINARY_FORMATS:
       return 1;
     case GL_NUM_SHADER_BINARY_FORMATS:
       return 1;
@@ -150,9 +156,13 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_SAMPLE_BUFFERS:
       return 1;
+    case GL_SAMPLE_COVERAGE:
+      return 1;
     case GL_SAMPLE_COVERAGE_INVERT:
       return 1;
     case GL_SAMPLE_COVERAGE_VALUE:
+      return 1;
+    case GL_SAMPLE_ALPHA_TO_COVERAGE:
       return 1;
     case GL_SAMPLES:
       return 1;
@@ -202,6 +212,10 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_TEXTURE_BINDING_2D:
       return 1;
+    case GL_TEXTURE_BINDING_2D_ARRAY:
+      return 1;
+    case GL_TEXTURE_BINDING_3D:
+      return 1;
     case GL_TEXTURE_BINDING_CUBE_MAP:
       return 1;
     case GL_TEXTURE_BINDING_EXTERNAL_OES:
@@ -222,11 +236,15 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_MAX_ARRAY_TEXTURE_LAYERS:
       return 1;
+    case GL_MAX_COLOR_ATTACHMENTS_EXT:
+      return 1;
     case GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS:
       return 1;
     case GL_MAX_COMBINED_UNIFORM_BLOCKS:
       return 1;
     case GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS:
+      return 1;
+    case GL_MAX_DRAW_BUFFERS:
       return 1;
     case GL_MAX_ELEMENT_INDEX:
       return 1;
@@ -266,9 +284,31 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_MIN_PROGRAM_TEXEL_OFFSET:
       return 1;
+    case GL_NUM_EXTENSIONS:
+      return 1;
+    case GL_PACK_ROW_LENGTH:
+      return 1;
+    case GL_PACK_SKIP_PIXELS:
+      return 1;
+    case GL_PACK_SKIP_ROWS:
+      return 1;
     case GL_PIXEL_PACK_BUFFER_BINDING:
       return 1;
     case GL_PIXEL_UNPACK_BUFFER_BINDING:
+      return 1;
+    case GL_PRIMITIVE_RESTART_FIXED_INDEX:
+      return 1;
+    case GL_RASTERIZER_DISCARD:
+      return 1;
+    case GL_READ_BUFFER:
+      return 1;
+    case GL_READ_FRAMEBUFFER_BINDING:
+      return 1;
+    case GL_SAMPLER_BINDING:
+      return 1;
+    case GL_TRANSFORM_FEEDBACK_ACTIVE:
+      return 1;
+    case GL_TRANSFORM_FEEDBACK_BINDING:
       return 1;
     case GL_TRANSFORM_FEEDBACK_BUFFER_BINDING:
       return 1;
@@ -278,6 +318,8 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_TRANSFORM_FEEDBACK_BUFFER_START:
       return 1;
+    case GL_TRANSFORM_FEEDBACK_PAUSED:
+      return 1;
     case GL_UNIFORM_BUFFER_BINDING:
       return 1;
     case GL_UNIFORM_BUFFER_SIZE:
@@ -285,6 +327,16 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
     case GL_UNIFORM_BUFFER_START:
       return 1;
     case GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT:
+      return 1;
+    case GL_UNPACK_ROW_LENGTH:
+      return 1;
+    case GL_UNPACK_IMAGE_HEIGHT:
+      return 1;
+    case GL_UNPACK_SKIP_PIXELS:
+      return 1;
+    case GL_UNPACK_SKIP_ROWS:
+      return 1;
+    case GL_UNPACK_SKIP_IMAGES:
       return 1;
 
     // ES31
@@ -326,6 +378,8 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_NUM_WINDOW_RECTANGLES_EXT:
       return 1;
+    case GL_WINDOW_RECTANGLE_EXT:
+      return 4;
 
     // -- glGetBufferParameteriv
     case GL_BUFFER_SIZE:
@@ -508,6 +562,98 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
 
     // -- glHint with GL_OES_standard_derivatives
     case GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES:
+      return 1;
+
+    // -- GL_ANGLE_shader_pixel_local_storage
+    case GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE:
+    case GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE:
+    case GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE:
+    case GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE:
+    case GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE:
+    case GL_PIXEL_LOCAL_USAGE_ANGLE:
+      return 1;
+    case GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE:
+    case GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE:
+    case GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE:
+      return 4;
+
+    // -- GL_EXT_clip_control
+    case GL_CLIP_ORIGIN_EXT:
+    case GL_CLIP_DEPTH_MODE_EXT:
+      return 1;
+
+    // -- GL_EXT_depth_clamp
+    case GL_DEPTH_CLAMP_EXT:
+      return 1;
+
+    // -- GL_EXT_polygon_offset_clamp
+    case GL_POLYGON_OFFSET_CLAMP_EXT:
+      return 1;
+
+    // -- GL_KHR_parallel_shader_compile
+    case GL_COMPLETION_STATUS_KHR:
+      return 1;
+
+    // -- GL_ANGLE_polygon_mode
+    case GL_POLYGON_MODE_ANGLE:
+    case GL_POLYGON_OFFSET_LINE_ANGLE:
+      return 1;
+
+    // -- GL_OES_shader_multisample_interpolation
+    case GL_MIN_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_MAX_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_FRAGMENT_INTERPOLATION_OFFSET_BITS_OES:
+      return 1;
+
+    // -- GL_EXT_clip_cull_distance
+    case GL_MAX_CLIP_DISTANCES_ANGLE:
+    case GL_MAX_CULL_DISTANCES_ANGLE:
+    case GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_ANGLE:
+    case GL_CLIP_DISTANCE0_ANGLE:
+    case GL_CLIP_DISTANCE1_ANGLE:
+    case GL_CLIP_DISTANCE2_ANGLE:
+    case GL_CLIP_DISTANCE3_ANGLE:
+    case GL_CLIP_DISTANCE4_ANGLE:
+    case GL_CLIP_DISTANCE5_ANGLE:
+    case GL_CLIP_DISTANCE6_ANGLE:
+    case GL_CLIP_DISTANCE7_ANGLE:
+      return 1;
+
+    // -- GL_ANGLE_provoking_vertex
+    case GL_PROVOKING_VERTEX_ANGLE:
+      return 1;
+
+    // -- GL_ANGLE_stencil_texturing
+    case GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE:
+      return 1;
+
+    // -- GL_EXT_framebuffer_sRGB
+    case GL_FRAMEBUFFER_SRGB_EXT:
+      return 1;
+
+    // -- GL_EXT_disjoint_timer_query
+    case GL_GPU_DISJOINT_EXT:
+      return 1;
+
+    // -- GL_EXT_blend_func_extended
+    case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:
+      return 1;
+
+    // -- GL_EXT_multisample_compatibility
+    case GL_MULTISAMPLE_EXT:
+    case GL_SAMPLE_ALPHA_TO_ONE_EXT:
+      return 1;
+
+    // -- GL_OES_vertex_array_object
+    case GL_VERTEX_ARRAY_BINDING_OES:
+      return 1;
+
+    // -- GL_OVR_multiview2
+    case GL_MAX_VIEWS_OVR:
+    case GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR:
+    case GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR:
       return 1;
 
     // bad enum
