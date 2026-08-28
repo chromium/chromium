@@ -16,6 +16,7 @@ package omnibox;
 // This enum can switch the inventory of suggestions that are shown dynamically
 // based on the SBS entry point.
 // Next ID: 16
+// LINT.IfChange(SuggestInventory)
 enum SuggestInventory {
   SUGGEST_INVENTORY_DEFAULT = 0;
 
@@ -43,3 +44,4 @@ enum SuggestInventory {
   SUGGEST_INVENTORY_ADD_TAB = 14;
   SUGGEST_INVENTORY_AIM_IMAGES = 15;
 }
+// LINT.ThenChange(//components/omnibox/browser/fusebox_action.mojom:SuggestInventory)
