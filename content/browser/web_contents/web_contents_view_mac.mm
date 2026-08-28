@@ -68,7 +68,7 @@ namespace {
 // is responsible for opening the file. It takes the drop data and an open file
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
-  DCHECK(file.IsValid());
+  CHECK(file.IsValid(), base::NotFatalUntil::M158);
   file.WriteAtCurrentPos(drop_data.file_contents);
 }
 
@@ -125,7 +125,7 @@ WebContentsViewMac::WebContentsViewMac(
 WebContentsViewMac::~WebContentsViewMac() {
   if (views_host_)
     views_host_->OnHostableViewDestroying();
-  DCHECK(!views_host_);
+  CHECK(!views_host_, base::NotFatalUntil::M158);
   in_process_ns_view_bridge_.reset();
 }
 
@@ -431,7 +431,7 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
     // this actually is happening (and somebody isn't accidentally creating the
     // view twice), we check for the RVH Factory, which will be set when we're
     // making special ones (which go along with the special views).
-    DCHECK(RenderViewHostFactory::has_factory());
+    CHECK(RenderViewHostFactory::has_factory(), base::NotFatalUntil::M158);
     return static_cast<RenderWidgetHostViewBase*>(
         render_widget_host->GetView());
   }
@@ -799,6 +799,8 @@ void WebContentsViewMac::ViewsHostableAttach(
 }
 
 void WebContentsViewMac::ViewsHostableDetach() {
+  // TODO(crbug.com/553428210): CHECK-exclusion: Convert to a CHECK once
+  // we are confident it won't be triggered.
   DCHECK(views_host_);
   // Disconnect from the remote bridge, if it exists. This will have the effect
   // of destroying the associated bridge instance with its NSView.

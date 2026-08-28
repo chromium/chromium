@@ -37,8 +37,8 @@ class BackgroundFetchRequestInfo::BlobDataOnIO {
       const base::FilePath& file_path,
       uint64_t file_size,
       uint64_t expected_response_size) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    DCHECK(!blob_data_handle_);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
+    CHECK(!blob_data_handle_, base::NotFatalUntil::M158);
 
     // In Incognito mode, |blob_handle| will be populated.
     if (blob_handle) {
@@ -55,12 +55,13 @@ class BackgroundFetchRequestInfo::BlobDataOnIO {
 
     blob_data_handle_ = GetBlobStorageContext(blob_storage_context.get())
                             ->AddFinishedBlob(std::move(blob_builder));
-    DCHECK_EQ(expected_response_size,
-              blob_data_handle_ ? blob_data_handle_->size() : 0);
+    CHECK_EQ(expected_response_size,
+             blob_data_handle_ ? blob_data_handle_->size() : 0,
+             base::NotFatalUntil::M158);
   }
 
   std::unique_ptr<storage::BlobDataHandle> TakeBlobDataHandle() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
     return std::move(blob_data_handle_);
   }
 
@@ -83,15 +84,15 @@ BackgroundFetchRequestInfo::~BackgroundFetchRequestInfo() {
 }
 
 void BackgroundFetchRequestInfo::InitializeDownloadGuid() {
-  DCHECK(download_guid_.empty());
+  CHECK(download_guid_.empty(), base::NotFatalUntil::M158);
 
   download_guid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 void BackgroundFetchRequestInfo::SetDownloadGuid(
     const std::string& download_guid) {
-  DCHECK(!download_guid.empty());
-  DCHECK(download_guid_.empty());
+  CHECK(!download_guid.empty(), base::NotFatalUntil::M158);
+  CHECK(download_guid_.empty(), base::NotFatalUntil::M158);
 
   download_guid_ = download_guid;
 }
@@ -99,7 +100,7 @@ void BackgroundFetchRequestInfo::SetDownloadGuid(
 void BackgroundFetchRequestInfo::SetResult(
     std::unique_ptr<BackgroundFetchResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M158);
 
   result_ = std::move(result);
   // The BackgroundFetchResponse was extracted when the download started.
@@ -119,7 +120,7 @@ void BackgroundFetchRequestInfo::SetResult(
 
 void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
     BackgroundFetchResult::FailureReason failure_reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
 
   result_ = std::make_unique<BackgroundFetchResult>(
       /* response= */ nullptr, base::Time::Now(), failure_reason);

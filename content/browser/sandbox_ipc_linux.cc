@@ -41,7 +41,7 @@ void SandboxIPCHandler::Run() {
     const int r =
         HANDLE_EINTR(poll(pfds, std::size(pfds), -1 /* no timeout */));
     // '0' is not a possible return value with no timeout.
-    DCHECK_NE(0, r);
+    CHECK_NE(0, r, base::NotFatalUntil::M158);
     if (r < 0) {
       PLOG(WARNING) << "poll";
       if (failed_polls++ == 3) {
