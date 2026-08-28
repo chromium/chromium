@@ -70,7 +70,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -99,7 +98,6 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
     @Mock private Profile mProfile;
-    @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private HomeModulesMediator mMediator;
     @Mock private ModelList mModel;
@@ -107,7 +105,6 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
-    @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
     @Captor private ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListener;
     @Captor private ArgumentCaptor<Callback<ClassificationResult>> mClassificationResultCaptor;
     @Captor private ArgumentCaptor<OnLongClickListener> mLongClickListenerCaptor;
