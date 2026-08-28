@@ -33,7 +33,6 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
-#include "ui/gfx/icc_profile.h"
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)

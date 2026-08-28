@@ -68,7 +68,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/icc_profile.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/switches.h"

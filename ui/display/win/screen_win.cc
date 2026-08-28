@@ -47,7 +47,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/icc_profile.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 

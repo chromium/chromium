@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
-#include "ui/gfx/icc_profile.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8/include/v8-initialization.h"

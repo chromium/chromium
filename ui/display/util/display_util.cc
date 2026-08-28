@@ -19,7 +19,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
-#include "ui/gfx/icc_profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/display_features.h"

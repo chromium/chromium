@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/icc_profile.h"
 
 namespace display {
 
