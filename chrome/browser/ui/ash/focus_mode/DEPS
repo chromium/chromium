@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/policy/policy_test_utils.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/web_view",
   "+chrome/test",
 

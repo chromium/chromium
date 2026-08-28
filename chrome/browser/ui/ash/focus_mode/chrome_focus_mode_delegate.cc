@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/system/focus_mode/sounds/youtube_music/request_signer.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -15,8 +16,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/focus_mode/signature_builder.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -38,15 +40,21 @@ constexpr base::TimeDelta kCertificateBuffer = base::Hours(36);
 // generate `google_apis::RequestSender`. The request sender class implements
 // the OAuth 2.0 protocol, so we do not need to do anything extra for
 // authentication and authorization.
+//   `account_id`:
+//     The fixed user this YouTubeMusicClient instance was created for; bound
+//     by CreateYouTubeMusicClient() below.
 //   `traffic_annotation_tag`:
 //     It documents the network request for system admins and regulators.
 std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForYouTubeMusic(
+    const AccountId& account_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(account_id);
+  Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id)));
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetURLLoaderFactory();
+      profile.GetURLLoaderFactory();
 
   std::unique_ptr<google_apis::AuthService> auth_service =
       std::make_unique<google_apis::AuthService>(
@@ -126,7 +134,7 @@ ChromeFocusModeDelegate::CreateYouTubeMusicClient(
     const AccountId& account_id,
     const std::string& device_id) {
   return std::make_unique<ash::youtube_music::YouTubeMusicClient>(
-      base::BindRepeating(&CreateRequestSenderForYouTubeMusic),
+      base::BindRepeating(&CreateRequestSenderForYouTubeMusic, account_id),
       std::make_unique<RequestSignerImpl>(account_id, device_id));
 }
 
@@ -135,18 +143,23 @@ const std::string& ChromeFocusModeDelegate::GetLocale() {
 }
 
 bool ChromeFocusModeDelegate::IsMinorUser() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  // TODO(crbug.com/546860700): ash::FocusModeDelegate::IsMinorUser() takes no
+  // AccountId, so this assumes the active user; plumb an AccountId through
+  // from the caller instead once one is available there.
+  user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  if (!active_user) {
+    return false;
+  }
+  const AccountId& account_id = active_user->GetAccountId();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager) {
     // Identity manager is not available (e.g:guest mode).
     return false;
   }
 
-  GaiaId gaia_id = user_manager::UserManager::Get()
-                       ->GetActiveUser()
-                       ->GetAccountId()
-                       .GetGaiaId();
+  GaiaId gaia_id = account_id.GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   // TODO(b/366042251): Update minor targeting to use a better signal.
