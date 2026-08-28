@@ -4,10 +4,13 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/touch_ui_controller_stats_tracker.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
@@ -47,6 +50,8 @@ const char TouchUIControllerStatsTracker::kSessionTouchDurationHistogramName[] =
 const char
     TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName[] =
         "Session.TotalDuration.TabletMode";
+const char TouchUIControllerStatsTracker::kSessionTabletPercentHistogramName[] =
+    "Session.PercentDurationInTabletModeOnWindows";
 #endif  // BUILDFLAG(IS_WIN)
 
 void TouchUIControllerStatsTracker::TouchModeChanged() {
@@ -132,6 +137,18 @@ void TouchUIControllerStatsTracker::OnSessionEnded(
 #if BUILDFLAG(IS_WIN)
   base::UmaHistogramLongTimes(kSessionTabletDurationHistogramName,
                               tablet_mode_duration_in_session_);
+  // The share of this session spent in tablet mode. Summing the duration
+  // histogram over the population gives the aggregate proportion of browsing
+  // time in tablet mode; this says how that time is distributed across
+  // sessions, which distinguishes many users occasionally rotating a
+  // convertible from a segment that browses in tablet mode all the time.
+  if (session_length.is_positive()) {
+    base::UmaHistogramPercentage(
+        kSessionTabletPercentHistogramName,
+        std::clamp(base::ClampRound(100 * tablet_mode_duration_in_session_ /
+                                    session_length),
+                   0, 100));
+  }
   last_tablet_mode_switch_in_session_ = base::TimeTicks();
   tablet_mode_duration_in_session_ = base::TimeDelta();
 #endif  // BUILDFLAG(IS_WIN)

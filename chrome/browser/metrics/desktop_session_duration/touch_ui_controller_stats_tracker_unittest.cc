@@ -200,6 +200,9 @@ TEST_F(DevicePostureModeStatsTrackerTest, TabletSession) {
   histograms.ExpectUniqueTimeSample(
       TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
       base::Minutes(1), 1);
+  histograms.ExpectUniqueSample(
+      TouchUIControllerStatsTracker::kSessionTabletPercentHistogramName, 100,
+      1);
 }
 
 // The tablet duration logged should be 0 for a non-tablet session.
@@ -220,6 +223,8 @@ TEST_F(DevicePostureModeStatsTrackerTest, NonTabletSession) {
   histograms.ExpectUniqueTimeSample(
       TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
       base::TimeDelta(), 1);
+  histograms.ExpectUniqueSample(
+      TouchUIControllerStatsTracker::kSessionTabletPercentHistogramName, 0, 1);
 }
 
 // If the tablet mode changes during a session, the logged duration
@@ -252,6 +257,10 @@ TEST_F(DevicePostureModeStatsTrackerTest, TabletModeChangesDuringSession) {
     histograms.ExpectUniqueTimeSample(
         TouchUIControllerStatsTracker::kSessionTabletDurationHistogramName,
         base::Seconds(30), 1);
+    // 30s of tablet mode out of a 75s session.
+    histograms.ExpectUniqueSample(
+        TouchUIControllerStatsTracker::kSessionTabletPercentHistogramName, 40,
+        1);
   }
 
   posture_mode_override.UpdateTabletMode(true);

@@ -32,6 +32,7 @@ class TouchUIControllerStatsTracker
   static const char kSessionTouchDurationHistogramName[];
 #if BUILDFLAG(IS_WIN)
   static const char kSessionTabletDurationHistogramName[];
+  static const char kSessionTabletPercentHistogramName[];
 #endif  // BUILDFLAG(IS_WIN)
 
  private:

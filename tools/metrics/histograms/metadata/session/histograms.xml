@@ -315,6 +315,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.PercentDurationInTabletModeOnWindows" units="%"
+    expires_after="2027-06-20">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    The percentage of a session (as defined by DesktopSessionDurationTracker)
+    spent in tablet mode. Samples correspond one-to-one with
+    Session.TotalDuration samples, except that sessions of zero length are
+    skipped. This metric is only available on Windows.
+
+    Session.TotalDuration.TabletMode summed over the population and divided by
+    Session.TotalDuration gives the aggregate proportion of browsing time spent
+    in tablet mode. This histogram gives the shape behind that proportion: the
+    same aggregate can come from many users occasionally rotating a convertible,
+    which lands in the low buckets, or from a smaller set of users who browse in
+    tablet mode all the time, which lands in the 100 bucket. The two imply
+    different amounts of touch investment, so they are worth telling apart.
+  </summary>
+</histogram>
+
 <histogram name="Session.Restore.SettingChanged.{SessionRestoreInfobarType}"
     enum="Boolean" expires_after="2027-02-07">
   <owner>musalmaan@chromium.org</owner>
