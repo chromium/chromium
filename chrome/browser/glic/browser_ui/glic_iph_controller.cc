@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -92,6 +94,11 @@ void GlicIphController::MaybeShowPromo() {
 
 void GlicIphController::OnShowPromoResult(
     user_education::FeaturePromoResult result) {
+  if (result) {
+    if (base::FeatureList::IsEnabled(features::kGlicWarmOnIph)) {
+      glic_service_->TryPreload(GlicWarmingTrigger::kIph);
+    }
+  }
   // If there's no chance a promo could be shown in this browser window, stop
   // trying to check.
   if (result.is_blocked_this_instance()) {

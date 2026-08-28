@@ -289,4 +289,6 @@ BASE_FEATURE(kGlicActionFirstFRE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarmOnNudge, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicWarmOnIph, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

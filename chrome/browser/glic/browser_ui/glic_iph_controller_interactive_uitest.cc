@@ -6,8 +6,15 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -168,6 +175,109 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
                   WaitForAndInstrumentGlic(kHostAndContents));
+}
+
+class GlicIphControllerWarmingInteractiveUiTest
+    : public GlicIphControllerTestBase {
+ public:
+  GlicIphControllerWarmingInteractiveUiTest()
+      : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicWarmOnIph,
+                              features::kGlicAnchorEntryPointForOnboardedUsers},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+  ~GlicIphControllerWarmingInteractiveUiTest() override = default;
+
+  void SetUp() override {
+    ForceConnectionTypeForTesting(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    GlicIphControllerTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    GlicIphControllerTestBase::TearDown();
+    ForceConnectionTypeForTesting(std::nullopt);
+  }
+
+  bool IsWarmed() {
+    auto* keyed_service = GlicKeyedService::Get(browser()->GetProfile());
+    auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
+        keyed_service->instance_coordinator());
+    return coordinator.GetWebContentsWarmingPoolForTesting()
+        .HasWarmedContainerForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingInteractiveUiTest,
+                       WarmsOnIphShownWhenFeatureEnabled) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(IsWarmed());
+
+  RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}));
+
+  EXPECT_TRUE(base::test::RunUntil([this]() { return IsWarmed(); }));
+
+  histogram_tester.ExpectBucketCount("Glic.Prewarming.ChecksResult.Iph",
+                                     GlicPrewarmingChecksResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kIph, 1);
+}
+
+class GlicIphControllerWarmingDisabledInteractiveUiTest
+    : public GlicIphControllerTestBase {
+ public:
+  GlicIphControllerWarmingDisabledInteractiveUiTest()
+      : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicAnchorEntryPointForOnboardedUsers},
+        /*disabled_features=*/{features::kGlicWarmOnIph,
+                               features::kGlicWarming});
+  }
+  ~GlicIphControllerWarmingDisabledInteractiveUiTest() override = default;
+
+  void SetUp() override {
+    ForceConnectionTypeForTesting(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+    GlicIphControllerTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    GlicIphControllerTestBase::TearDown();
+    ForceConnectionTypeForTesting(std::nullopt);
+  }
+
+  bool IsWarmed() {
+    auto* keyed_service = GlicKeyedService::Get(browser()->GetProfile());
+    auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
+        keyed_service->instance_coordinator());
+    return coordinator.GetWebContentsWarmingPoolForTesting()
+        .HasWarmedContainerForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingDisabledInteractiveUiTest,
+                       DoesNotWarmOnIphShownWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(IsWarmed());
+
+  RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}));
+
+  base::PlatformThread::Sleep(base::Milliseconds(200));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsWarmed());
+
+  histogram_tester.ExpectTotalCount("Glic.Prewarming.ChecksResult.Iph", 0);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kIph, 0);
 }
 
 }  // namespace glic
