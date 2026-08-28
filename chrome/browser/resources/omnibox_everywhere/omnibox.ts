@@ -24,6 +24,7 @@ import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import {SearchboxSelectionMixin} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -50,13 +51,21 @@ export interface OmniboxEverywhereOmniboxElement {
 }
 
 // Note: Copied from omnibox_popup_searchbox.ts.
-//       I18nMixinLit may eventually be moved to SearchboxMixin.
-const OmniboxEverywhereOmniboxElementBase = HelpBubbleMixinLit(
-    SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement))));
+const OmniboxEverywhereOmniboxElementBase =
+    HelpBubbleMixinLit(SearchboxMixin(SearchboxSelectionMixin(
+        I18nMixinLit(WebUiListenerMixinLit(CrLitElement)))));
 
 export class OmniboxEverywhereOmniboxElement extends
-    OmniboxEverywhereOmniboxElementBase implements SearchboxMixinInterface,
-                                                   DragAndDropHost {
+    OmniboxEverywhereOmniboxElementBase implements DragAndDropHost,
+                                                   SearchboxMixinInterface {
+  override get isAimButtonVisible(): boolean {
+    return this.composeButtonEnabled;
+  }
+
+  override get showContextEntrypoint(): boolean {
+    return false;
+  }
+
   static get is() {
     return 'omnibox-everywhere-omnibox';
   }
@@ -71,6 +80,9 @@ export class OmniboxEverywhereOmniboxElement extends
 
   static override get properties() {
     return {
+      virtualFocusEnabled: {
+        type: Boolean,
+      },
       placeholderText: {
         type: String,
         reflect: true,
@@ -125,6 +137,9 @@ export class OmniboxEverywhereOmniboxElement extends
     };
   }
 
+  override accessor virtualFocusEnabled: boolean =
+      loadTimeData.valueExists('omniboxEverywhereVirtualFocusNavigation') &&
+      loadTimeData.getBoolean('omniboxEverywhereVirtualFocusNavigation');
   accessor placeholderText: string = '';
   accessor entrypointName: string = 'OmniboxEverywhere';
   accessor isDraggingFile: boolean = false;

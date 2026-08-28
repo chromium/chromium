@@ -36,12 +36,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     superClass: T): T&Constructor<SearchboxMixinInterface> => {
   class SearchboxMixin extends SearchboxSelectionMixin
   (superClass) implements SearchboxMixinInterface {
-    get virtualFocusEnabled(): boolean {
-      return false;
-    }
+    accessor virtualFocusEnabled: boolean = false;
 
     static get properties() {
       return {
+        virtualFocusEnabled: {
+          type: Boolean,
+        },
         dropdownIsVisible: {
           type: Boolean,
           reflect: true,
@@ -364,7 +365,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const firstMatch = hasMatches ? this.result.matches[0] : null;
       if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
         // Select the default match and update the input.
-        this.getDropdownElement().selectFirst();
+        if (this.virtualFocusEnabled) {
+          const available = this.getAvailableSelections(this.result);
+          this.setSelection(available[0] || kDefaultSelection);
+        } else {
+          this.getDropdownElement().selectFirst();
+        }
         this.getInputElement().setInput({
           text: this.lastQueriedInput ?? '',
           inline: firstMatch.inlineAutocompletion,

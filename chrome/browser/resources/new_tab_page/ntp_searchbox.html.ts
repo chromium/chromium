@@ -54,6 +54,8 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container voice">
         <button id="voiceSearchButton" class="searchbox-icon-button"
+            tabindex="${this.virtualFocusEnabled &&
+                this.dropdownIsVisible ? -1 : 0}"
             @click="${this.onVoiceSearchClick}"
             title="${this.i18n('voiceSearchButtonLabel')}">
         </button>
@@ -62,6 +64,8 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container lens">
         <button id="lensSearchButton" class="searchbox-icon-button lens"
+            tabindex="${this.virtualFocusEnabled &&
+                this.dropdownIsVisible ? -1 : 0}"
             @click="${this.onLensSearchClick_}"
             title="${this.i18n('lensSearchButtonLabel')}">
         </button>
@@ -72,6 +76,8 @@ export function getHtml(this: NtpSearchboxElement) {
           ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
           ?has-user-input="${this.hasUserInput_}"
           ?virtual-focus-enabled="${this.virtualFocusEnabled}"
+          ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
+          ?dropdown-is-visible="${this.dropdownIsVisible}"
           @compose-click="${this.onComposeClick_}">
       </cr-searchbox-compose-button>
     ` : ''}
@@ -80,6 +86,8 @@ export function getHtml(this: NtpSearchboxElement) {
     <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
         exportparts="dropdown-content"
         role="listbox" .result="${this.result}"
+        .selection="${this.selection}"
+        @selection-changed="${this.onSelectionChanged}"
         selected-match-index="${this.selectedMatchIndex}"
         @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
         ?can-show-secondary-side="${this.canShowSecondarySide}"

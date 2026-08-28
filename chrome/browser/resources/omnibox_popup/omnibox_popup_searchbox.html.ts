@@ -72,6 +72,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
             tooltip-title="${this.aimButtonConfig_.title}"
             a11y-label="${this.aimButtonConfig_.a11yLabel}"
             compose-icon="${this.aimButtonConfig_.icon}"
+            ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
+            ?dropdown-is-visible="${this.dropdownIsVisible}"
             @compose-click="${this.onComposeClick_}">
         </cr-searchbox-compose-button>
       </cr-searchbox-input>
@@ -80,9 +82,12 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
             exportparts="dropdown-content"
             role="listbox" .result="${this.result}"
             .selectedMatchIndex="${this.selectedMatchIndex}"
+            .virtualFocusEnabled="${this.isVirtualFocusEnabled_()}"
+            .selection="${this.selection}"
             ?can-show-secondary-side="${this.canShowSecondarySide}"
             ?has-secondary-side="${this.hasSecondarySide}"
             @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
+            @selection-changed="${this.onSelectionChanged}"
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
             @match-focusin="${this.onMatchFocusin}"
             @match-click="${this.onMatchClick}"

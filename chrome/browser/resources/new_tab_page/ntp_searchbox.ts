@@ -55,12 +55,22 @@ export interface NtpSearchboxElement {
   };
 }
 
-const NtpSearchboxElementBase =
-    SearchboxMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement)));
+import {SearchboxSelectionMixin} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
+
+const NtpSearchboxElementBase = SearchboxMixin(
+    SearchboxSelectionMixin(I18nMixinLit(WebUiListenerMixinLit(CrLitElement))));
 
 /** A search box for the NTP that behaves like the Omnibox. */
 export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     DragAndDropHost, SearchboxMixinInterface {
+  override get isAimButtonVisible(): boolean {
+    return this.showComposeButton_;
+  }
+
+  override get showContextEntrypoint(): boolean {
+    return this.ntpRealboxNextEnabled;
+  }
+
   static get is() {
     return 'ntp-searchbox';
   }
@@ -82,6 +92,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
         type: Boolean,
         reflect: true,
       },
+
+      virtualFocusEnabled: {type: Boolean},
 
       composeboxEnabled: {type: Boolean},
 
@@ -236,6 +248,9 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
+  override accessor virtualFocusEnabled: boolean =
+      loadTimeData.valueExists('realboxVirtualFocusNavigation') &&
+      loadTimeData.getBoolean('realboxVirtualFocusNavigation');
   // `contextManagementInComposeboxEnabled` is also passed in from parent, but
   // adding as a backup for tests.
   accessor contextManagementInComposeboxEnabled: boolean =

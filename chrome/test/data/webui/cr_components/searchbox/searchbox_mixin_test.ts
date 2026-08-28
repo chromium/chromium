@@ -2196,7 +2196,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
 
         const matches = [
           createSearchMatchForTesting({
-            allowedToBeDefaultMatch: true,
+            allowedToBeDefaultMatch: false,
             fillIntoEdit: 'hello world',
             inlineAutocompletion: ' world',
           }),

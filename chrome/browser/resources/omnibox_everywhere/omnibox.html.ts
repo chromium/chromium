@@ -42,6 +42,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
               ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
               ?has-user-input="${this.hasUserInput_}"
               ?virtual-focus-enabled="${this.virtualFocusEnabled}"
+              ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
+              ?dropdown-is-visible="${this.dropdownIsVisible}"
               @compose-click="${this.onComposeClick_}">
           </cr-searchbox-compose-button>
         ` :
@@ -52,6 +54,9 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result}"
+            .selection="${this.selection}"
+            .virtualFocusEnabled="${this.virtualFocusEnabled}"
+            @selection-changed="${this.onSelectionChanged}"
             .selectedMatchIndex="${this.selectedMatchIndex}"
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
             @match-focusin="${this.onMatchFocusin}"
@@ -102,6 +107,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
               html`
           <div class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
+                tabindex="${this.virtualFocusEnabled &&
+                    this.dropdownIsVisible ? -1 : 0}"
                 @click="${this.onVoiceSearchButtonClick_}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </button>
@@ -115,6 +122,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           <div class="searchbox-icon-button-container lens ${
               this.isScreenshotMenuOpen ? 'menu-open' : ''}">
             <button id="lensSearchButton" class="searchbox-icon-button"
+                tabindex="${this.virtualFocusEnabled &&
+                    this.dropdownIsVisible ? -1 : 0}"
                 @click="${this.onLensSearchClick_}"
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>

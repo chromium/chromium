@@ -14,6 +14,7 @@ import type {SearchboxInputElement} from '//resources/cr_components/searchbox/se
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import {selectionIsNativelySupported} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -84,6 +85,14 @@ const OmniboxPopupSearchboxElementBase =
 
 export class OmniboxPopupSearchboxElement extends
     OmniboxPopupSearchboxElementBase implements SearchboxMixinInterface {
+  override get isAimButtonVisible(): boolean {
+    return this.aimButtonVisible_;
+  }
+
+  protected isVirtualFocusEnabled_(): boolean {
+    return this.virtualFocusEnabled;
+  }
+
   static get is() {
     return 'omnibox-popup-searchbox';
   }
@@ -98,6 +107,9 @@ export class OmniboxPopupSearchboxElement extends
 
   static override get properties() {
     return {
+      virtualFocusEnabled: {
+        type: Boolean,
+      },
       omniboxPopupDebugEnabled_: {
         type: Boolean,
         reflect: true,
@@ -196,6 +208,9 @@ export class OmniboxPopupSearchboxElement extends
     };
   }
 
+  override accessor virtualFocusEnabled: boolean =
+      loadTimeData.valueExists('omniboxPopupVirtualFocusNavigation') &&
+      loadTimeData.getBoolean('omniboxPopupVirtualFocusNavigation');
   accessor canShowSecondarySide: boolean =
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
@@ -418,24 +433,38 @@ export class OmniboxPopupSearchboxElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('selectedMatchIndex')) {
-      // Guard against transient out-of-bounds indices when autocomplete results
-      // are being cleared or updated asynchronously. The backend will be synced
-      // once the new valid results are rendered.
-      if (this.selectedMatchIndex !== -1 &&
-          (!this.result || !this.result.matches ||
-           this.selectedMatchIndex >= this.result.matches.length)) {
-        return;
+    if (this.virtualFocusEnabled) {
+      if (changedProperties.has('selection')) {
+        this.searchboxPageHandler_.setPopupSelection(
+            selectionIsNativelySupported(this.selection) ? this.selection :
+                                                           kDefaultSelection);
+
+        const entrypoint = this.getContextualEntrypointButton();
+        if (entrypoint) {
+          entrypoint.hasPopupFocus = this.selection.state ===
+              SelectionLineState.kFocusedButtonContextEntrypoint;
+        }
       }
-      // Synchronize selection changes driven by WebUI back to C++. This
-      // ensures the backend edit model is aware of the active selection and can
-      // preserve it across tab switches.
-      this.searchboxPageHandler_.setPopupSelection(
-          this.selectedMatchIndex === -1 ? kDefaultSelection : {
-            line: this.selectedMatchIndex,
-            state: SelectionLineState.kNormal,
-            actionIndex: 0,
-          });
+    } else {
+      if (changedProperties.has('selectedMatchIndex')) {
+        // Guard against transient out-of-bounds indices when autocomplete
+        // results are being cleared or updated asynchronously. The backend will
+        // be synced once the new valid results are rendered.
+        if (this.selectedMatchIndex !== -1 &&
+            (!this.result || !this.result.matches ||
+             this.selectedMatchIndex >= this.result.matches.length)) {
+          return;
+        }
+        // Synchronize selection changes driven by WebUI back to C++. This
+        // ensures the backend edit model is aware of the active selection and
+        // can preserve it across tab switches.
+        this.searchboxPageHandler_.setPopupSelection(
+            this.selectedMatchIndex === -1 ? kDefaultSelection : {
+              line: this.selectedMatchIndex,
+              state: SelectionLineState.kNormal,
+              actionIndex: 0,
+            });
+      }
     }
   }
 
