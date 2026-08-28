@@ -8591,7 +8591,7 @@
   },
   {
     "name": "prompt-api",
-   "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 160
   },
   {
@@ -8601,6 +8601,11 @@
   },
   {
     "name": "prompt-api-sampling-mode",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "prompt-api-tool-use",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 160
   },

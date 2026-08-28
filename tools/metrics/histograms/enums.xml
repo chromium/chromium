@@ -8367,6 +8367,7 @@ from previous Chrome versions.
   <int value="-1972312724" label="OfflinePagesLoadSignalCollecting:enabled"/>
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
   <int value="-1971490389" label="UachOverrideBlank:disabled"/>
+  <int value="-1971303666" label="AIPromptAPIToolUse:enabled"/>
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969944335" label="ContextualTasksBypassDismissedCap:disabled"/>
@@ -9589,6 +9590,7 @@ from previous Chrome versions.
       label="AccountReauthenticationRecentTimeWindow:enabled"/>
   <int value="-1593456166" label="TextHighlightFullLink:enabled"/>
   <int value="-1593218491" label="WebCryptoPQC:enabled"/>
+  <int value="-1592779517" label="AIPromptAPIToolUse:disabled"/>
   <int value="-1591974904"
       label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>

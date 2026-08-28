@@ -5351,6 +5351,10 @@ inline constexpr char kPromptAPIMultimodalInputDescription[] =
     "(e.g. answering knowledge questions). "
     "Please refer to the built-in AI documentation [1] for details.";
 
+inline constexpr char kPromptAPIToolUseName[] = "Prompt API Tool Use";
+inline constexpr char kPromptAPIToolUseDescription[] =
+    "Extends the Prompt API with tool use (function calling) capabilities.";
+
 inline constexpr char kPromptAPISamplingModeName[] = "Prompt API Sampling Mode";
 inline constexpr char kPromptAPISamplingModeDescription[] =
     "Enables setting the sampling mode option during session creation. "

@@ -4755,6 +4755,11 @@ const FeatureEntry::Choice kAISemanticEmbedderChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "AIEmbeddingsAPI,AIEmbeddingsAPIForWorkers"}};
 
+const FeatureEntry::Choice kPromptAPIToolUseChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "AIPromptAPIToolUse,OnDeviceModelConversationBackend,"
+     "AIApiFoundationalModel:model_version/v4"}};
 
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -10559,6 +10564,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPromptAPIMultimodalInputName,
      flag_descriptions::kPromptAPIMultimodalInputDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIMultimodalInput),
+     flag_descriptions::kAIAPIsLinks},
+
+    {"prompt-api-tool-use", flag_descriptions::kPromptAPIToolUseName,
+     flag_descriptions::kPromptAPIToolUseDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kPromptAPIToolUseChoices),
      flag_descriptions::kAIAPIsLinks},
 
     {"prompt-api-sampling-mode", flag_descriptions::kPromptAPISamplingModeName,
