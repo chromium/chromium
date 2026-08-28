@@ -44,6 +44,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedLinkCapturing,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedPageInfo,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -104,6 +109,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedInstallerDownloader;
     case InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE:
       return &kMigratedKnownInterceptionDisclosure;
+    case InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE:
+      return &kMigratedLinkCapturing;
     case InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE:
       return &kMigratedPageInfo;
     case InfoBarDelegate::PDF_INFOBAR_DELEGATE:

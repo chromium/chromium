@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDevToolsSharedProcess);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedGoogleApiKeys);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedKnownInterceptionDisclosure);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedLinkCapturing);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPdf);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedChromeForTesting);

@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -44,18 +48,43 @@ content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
   return browser->GetTabStripModel()->GetActiveWebContents();
 }
 
+struct TestParams {
+  apps::test::LinkCapturingFeatureVersion feature_version;
+  bool migration_enabled;
+};
+
+std::string TestParamToString(const testing::TestParamInfo<TestParams>& info) {
+  std::string version_str = apps::test::LinkCapturingVersionToString(
+      testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>(
+          info.param.feature_version, info.index));
+  return base::StrCat({version_str, info.param.migration_enabled
+                                        ? "MigrationEnabled"
+                                        : "MigrationDisabled"});
+}
+
 class EnableLinkCapturingInfobarBrowserTest
     : public WebAppNavigationBrowserTest,
-      public testing::WithParamInterface<
-          apps::test::LinkCapturingFeatureVersion> {
+      public testing::WithParamInterface<TestParams> {
  public:
   EnableLinkCapturingInfobarBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            GetParam().feature_version);
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().migration_enabled) {
+      enabled_features.push_back({infobars::kCentralizedInfoBarFramework,
+                                  {{"MigratedLinkCapturing", "true"}}});
+    } else {
+      disabled_features.push_back(infobars::kCentralizedInfoBarFramework);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   bool LinkCapturingEnabledByDefault() {
-    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+    return GetParam().feature_version ==
+           apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
   }
 
   // Returns [app_id, in_scope_url]
@@ -453,9 +482,16 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     EnableLinkCapturingInfobarBrowserTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
-    apps::test::LinkCapturingVersionToString);
+    testing::Values(
+        TestParams{apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                   false},
+        TestParams{apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                   true},
+        TestParams{apps::test::LinkCapturingFeatureVersion::kV2DefaultOn,
+                   false},
+        TestParams{apps::test::LinkCapturingFeatureVersion::kV2DefaultOn,
+                   true}),
+    TestParamToString);
 
 }  // namespace
 }  // namespace web_app
