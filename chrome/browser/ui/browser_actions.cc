@@ -1784,6 +1784,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     media_router::CastBrowserController::From(bwi);
                 if (cast_browser_controller) {
                   cast_browser_controller->ToggleDialog();
+                } else {
+                  chrome::RouteMediaInvokedFromAppMenu(bwi);
                 }
               },
               bwi),
