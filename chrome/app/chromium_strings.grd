@@ -1929,6 +1929,9 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- Desktop Capture -->
+      <message name="IDS_SEARCHBOX_PICKER_HEADLINE" desc="Title of the searchbox screen or window picker dialog.">
+        Choose what to share with Chromium
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB" desc="Text for the button on the window picker dialog, clicking which takes one to tab sharing">
         Chromium Tab
       </message>

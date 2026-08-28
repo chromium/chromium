@@ -16585,8 +16585,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_WINDOW_ONLY" desc="Title for the window picker dialog shown when desktop capture of an application window is requested by an app.">
         Share an application window
       </message>
-      <message name="IDS_SEARCHBOX_PICKER_HEADLINE" desc="Title of the searchbox screen or window picker dialog.">
-        Choose what to share
+      <message name="IDS_SEARCHBOX_PICKER_DESCRIPTION" desc="Text on the searchbox screen picker dialog explaining capture privacy.">
+        Google will only see what's visible to you
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by the app itself.">
         <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen.

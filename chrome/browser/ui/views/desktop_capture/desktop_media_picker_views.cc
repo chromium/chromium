@@ -663,6 +663,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   if (request_source_ == RequestSource::kGlic) {
     description_label_->SetText(
         l10n_util::GetStringUTF16(IDS_GLIC_SCREEN_PICKER_DESCRIPTION));
+  } else if (request_source_ == RequestSource::kSearchbox) {
+    description_label_->SetText(
+        l10n_util::GetStringUTF16(IDS_SEARCHBOX_PICKER_DESCRIPTION));
   }
 
   DCHECK(!categories_.empty());

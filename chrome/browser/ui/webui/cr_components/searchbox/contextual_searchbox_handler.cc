@@ -2557,7 +2557,7 @@ void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
       std::make_unique<DesktopMediaPickerController>(picker_factory_);
 
   DesktopMediaPicker::Params picker_params(
-      DesktopMediaPicker::Params::RequestSource::kGlic);
+      DesktopMediaPicker::Params::RequestSource::kSearchbox);
   picker_params.web_contents = nullptr;
   picker_params.includable_web_contents_filter =
       base::BindRepeating([](content::WebContents*) { return true; });
