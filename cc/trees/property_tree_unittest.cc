@@ -7,6 +7,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
@@ -23,6 +24,8 @@
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/linear_gradient.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
@@ -1091,6 +1094,302 @@ TEST(PropertyTreeTest, TransformNodeScrollOffsetValidation) {
 
   node.SetScrollOffset(gfx::PointF(10, INFINITY), DamageReason::kUntracked);
   EXPECT_POINTF_EQ(gfx::PointF(10, 20), node.scroll_offset());
+}
+
+class RoundedCornersHitTestHelper {
+ public:
+  using CornerRadii = EffectTree::RoundedCornersHitTestInfo::CornerRadii;
+
+  RoundedCornersHitTestHelper()
+      : transform_tree_(property_trees_.transform_tree_mutable()),
+        effect_tree_(property_trees_.effect_tree_mutable()) {
+    TransformNode transform_root;
+    contents_root_transform_id_ = transform_tree_->Insert(transform_root, 0);
+    transform_tree_->UpdateTransforms(contents_root_transform_id_);
+
+    EffectNode contents_root;
+    contents_root.transform_id = contents_root_transform_id_;
+    contents_root_effect_id_ = effect_tree_->Insert(contents_root, 0);
+  }
+
+  EffectTree& effect_tree() { return *effect_tree_; }
+  int contents_root_transform_id() const { return contents_root_transform_id_; }
+  int contents_root_effect_id() const { return contents_root_effect_id_; }
+
+  int InsertTransformNode(int parent_id) {
+    TransformNode node;
+    node.id = transform_tree_->Insert(node, parent_id);
+    transform_tree_->UpdateTransforms(node.id);
+    return node.id;
+  }
+
+  int InsertEffectNode(int parent_id, EffectNode node = EffectNode()) {
+    if (node.transform_id == kRootPropertyNodeId) {
+      node.transform_id = contents_root_transform_id_;
+    }
+    node.id = effect_tree_->Insert(node, parent_id);
+    return node.id;
+  }
+
+  int InsertRoundedCornerMaskNode(int parent_id, const gfx::RRectF& bounds) {
+    return InsertMaskFilterNode(parent_id, gfx::MaskFilterInfo(bounds));
+  }
+
+  int InsertMaskFilterNode(int parent_id,
+                           const gfx::MaskFilterInfo& mask_filter_info) {
+    EffectNode node;
+    node.mask_filter_info = mask_filter_info;
+    return InsertEffectNode(parent_id, node);
+  }
+
+  static CornerRadii GetCornerRadii(const gfx::RRectF& rounded_rect) {
+    return {rounded_rect.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft),
+            rounded_rect.GetCornerRadii(gfx::RRectF::Corner::kUpperRight),
+            rounded_rect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight),
+            rounded_rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)};
+  }
+
+ private:
+  PropertyTrees property_trees_;
+  const raw_ref<TransformTree> transform_tree_;
+  const raw_ref<EffectTree> effect_tree_;
+  int contents_root_transform_id_ = kInvalidPropertyNodeId;
+  int contents_root_effect_id_ = kInvalidPropertyNodeId;
+};
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestSingleCircularCorner) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_node_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f));
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      rounded_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_FALSE(result.requires_async_hit_test);
+  ASSERT_TRUE(result.corner_radii);
+  EXPECT_EQ(helper.GetCornerRadii(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f)),
+            *result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestAncestorRoundedCorner) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_ancestor_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 12.f));
+  const int current_effect_id = helper.InsertEffectNode(rounded_ancestor_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_FALSE(result.requires_async_hit_test);
+  ASSERT_TRUE(result.corner_radii);
+  EXPECT_EQ(helper.GetCornerRadii(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 12.f)),
+            *result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestMultipleRoundedCorners) {
+  RoundedCornersHitTestHelper helper;
+  const int grand_ancestor_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 12.f));
+  const int ancestor_id = helper.InsertRoundedCornerMaskNode(
+      grand_ancestor_id, gfx::RRectF(0.f, 0.f, 100.f, 100.f, 8.f));
+  const int current_effect_id = helper.InsertEffectNode(ancestor_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestDuplicateRoundedCorners) {
+  RoundedCornersHitTestHelper helper;
+  const gfx::RRectF rounded_corner_bounds(0.f, 0.f, 100.f, 100.f, 8.f);
+  const int grand_ancestor_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(), rounded_corner_bounds);
+  const int ancestor_id = helper.InsertRoundedCornerMaskNode(
+      grand_ancestor_id, rounded_corner_bounds);
+  const int current_effect_id = helper.InsertEffectNode(ancestor_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_FALSE(result.requires_async_hit_test);
+  ASSERT_TRUE(result.corner_radii);
+  EXPECT_EQ(helper.GetCornerRadii(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 8.f)),
+            *result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestGradientMask) {
+  RoundedCornersHitTestHelper helper;
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(0.f, 0xff);
+  gradient_mask.AddStep(1.f, 0x00);
+  const int masked_node_id = helper.InsertMaskFilterNode(
+      helper.contents_root_effect_id(),
+      gfx::MaskFilterInfo(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f),
+                          gradient_mask));
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      masked_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestRectangleOnlyMaskInfo) {
+  RoundedCornersHitTestHelper helper;
+  const gfx::MaskFilterInfo mask_filter_info(gfx::RectF(0.f, 0.f, 100.f, 100.f),
+                                             gfx::RoundedCornersF(),
+                                             gfx::LinearGradient::GetEmpty());
+  ASSERT_FALSE(mask_filter_info.IsEmpty());
+  ASSERT_FALSE(mask_filter_info.HasRoundedCorners());
+  ASSERT_FALSE(mask_filter_info.HasGradientMask());
+  const int masked_node_id = helper.InsertMaskFilterNode(
+      helper.contents_root_effect_id(), mask_filter_info);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      masked_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestEllipticalRadii) {
+  RoundedCornersHitTestHelper helper;
+  const int elliptical_node_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f, 20.f));
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      elliptical_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_FALSE(result.requires_async_hit_test);
+  ASSERT_TRUE(result.corner_radii);
+  EXPECT_EQ(
+      helper.GetCornerRadii(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f, 20.f)),
+      *result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestTransformNodeMismatch) {
+  RoundedCornersHitTestHelper helper;
+  const int layer_transform_id =
+      helper.InsertTransformNode(helper.contents_root_transform_id());
+
+  const int rounded_ancestor_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f));
+
+  EffectNode child_effect;
+  child_effect.transform_id = layer_transform_id;
+  const int child_effect_id =
+      helper.InsertEffectNode(rounded_ancestor_id, child_effect);
+
+  // The layer lives in layer_transform's space, which differs from the
+  // ancestor mask's transform_root space. This mismatch means the mask
+  // bounds cannot be compared to hit_test_rect directly.
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      child_effect_id, layer_transform_id, gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestRenderSurfaceBoundary) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_ancestor_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 20.f));
+
+  // Intervening render surface between the ancestor with rounded corners and
+  // the layer. The render surface could represent clipping (clip mask/path for
+  // example) which would affect current_effect's output. One could allow
+  // specific render surface reasons that don't include clipping, but for now we
+  // are conservative and fall back to async.
+  EffectNode render_surface_node;
+  render_surface_node.render_surface_reason = RenderSurfaceReason::kTest;
+  const int render_surface_node_id =
+      helper.InsertEffectNode(rounded_ancestor_id, render_surface_node);
+  const int current_effect_id = helper.InsertEffectNode(render_surface_node_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestRoundedCornerWithMaskingChild) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_frame_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 16.f));
+
+  // A mask layer is represented as a child effect with kDstIn blend mode. Even
+  // though `rounded_frame` has simple circular corners matching the hit-test
+  // rect, this child can supply additional alpha geometry that cannot be
+  // serialized as corner radii.
+  EffectNode mask_layer;
+  mask_layer.blend_mode = SkBlendMode::kDstIn;
+  const int mask_layer_id =
+      helper.InsertEffectNode(rounded_frame_id, mask_layer);
+  helper.effect_tree().UpdateEffects(mask_layer_id);
+  ASSERT_TRUE(helper.effect_tree().Node(rounded_frame_id).has_masking_child);
+
+  const int current_effect_id = helper.InsertEffectNode(rounded_frame_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestBoundsMismatch) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_node_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 0.f, 80.f, 80.f, 10.f));
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      rounded_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestRectInTransformSpace) {
+  RoundedCornersHitTestHelper helper;
+  const int rounded_node_id = helper.InsertRoundedCornerMaskNode(
+      helper.contents_root_effect_id(),
+      gfx::RRectF(0.f, 133.f, 200.f, 200.f, 12.f));
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      rounded_node_id, helper.contents_root_transform_id(),
+      gfx::RectF(0.f, 133.f, 200.f, 200.f));
+  EXPECT_FALSE(result.requires_async_hit_test);
+  ASSERT_TRUE(result.corner_radii);
+  EXPECT_EQ(helper.GetCornerRadii(gfx::RRectF(0.f, 133.f, 200.f, 200.f, 12.f)),
+            *result.corner_radii);
+}
+
+TEST(EffectTreeTest, GetRoundedCornersForHitTestAncestorGradientMask) {
+  RoundedCornersHitTestHelper helper;
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(0.f, 0xff);
+  gradient_mask.AddStep(1.f, 0x00);
+  const int gradient_ancestor_id = helper.InsertMaskFilterNode(
+      helper.contents_root_effect_id(),
+      gfx::MaskFilterInfo(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 20.f),
+                          gradient_mask));
+  const int current_effect_id = helper.InsertEffectNode(gradient_ancestor_id);
+
+  auto result = helper.effect_tree().GetRoundedCornersForHitTest(
+      current_effect_id, helper.contents_root_transform_id(),
+      gfx::RectF(0, 0, 100, 100));
+  EXPECT_TRUE(result.requires_async_hit_test);
+  EXPECT_FALSE(result.corner_radii);
 }
 
 }  // namespace

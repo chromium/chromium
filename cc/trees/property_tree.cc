@@ -34,6 +34,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -1664,6 +1665,105 @@ bool EffectTree::ClippedHitTestRegionIsRectangle(int effect_id) const {
     }
   }
   return true;
+}
+
+EffectTree::RoundedCornersHitTestInfo EffectTree::GetRoundedCornersForHitTest(
+    int effect_tree_index,
+    int transform_tree_index,
+    const gfx::RectF& hit_test_rect_in_transform_space) const {
+  RoundedCornersHitTestInfo result;
+  // Track if we cross a render surface boundary while traversing the effect
+  // tree. Cross-surface traversal introduces additional complexity that we do
+  // not support for hit testing with rounded corners.
+  bool crossed_render_surface_boundary = false;
+  bool found_rounded_corner_mask = false;
+  int rounded_corner_transform_id = kInvalidPropertyNodeId;
+  gfx::RRectF rounded_corner_bounds;
+
+  for (int id = effect_tree_index; id != kContentsRootPropertyNodeId;
+       id = Node(id).parent_id) {
+    const EffectNode& effect_node = Node(id);
+    if (effect_node.has_masking_child) {
+      // A masking child can apply alpha geometry beyond rounded corners. For
+      // example, a kDstIn child for a star shaped mask would be a non-rounded
+      // mask shape.
+      return {/*requires_async_hit_test=*/true};
+    }
+
+    if (!effect_node.mask_filter_info.IsEmpty()) {
+      if (crossed_render_surface_boundary ||
+          effect_node.mask_filter_info.HasGradientMask()) {
+        return {/*requires_async_hit_test=*/true};
+      }
+      // Clearing rounded corners can retain non-empty mask bounds on an
+      // existing effect node, fall back to async to maintain existing behavior.
+      // TODO(crbug.com/553479922): We should be able to remove this check in
+      // one of two ways: a) eliminate this as a potential MaskFilterInfo state
+      // or b) handle the remaining mask rect as a clip and then support it as
+      // synchronous hit testing in viz.
+      if (!effect_node.mask_filter_info.HasRoundedCorners()) {
+        return {/*requires_async_hit_test=*/true};
+      }
+
+      // The HitTestRegion transform maps input points into
+      // `transform_tree_index`'s space. It does not carry a separate
+      // transform from an ancestor mask's space into that hit-test space, so
+      // only use rounded corners whose bounds are already expressed in the
+      // same transform node's space.
+      int used_transform_id = effect_node.transform_id;
+      if (effect_node.mask_filter_info.clip_id()) {
+        const ClipNode& clip_node = property_trees()->clip_tree().Node(
+            effect_node.mask_filter_info.clip_id().value());
+        used_transform_id = clip_node.transform_id;
+      }
+      if (used_transform_id != transform_tree_index) {
+        return {/*requires_async_hit_test=*/true};
+      }
+
+      const gfx::RRectF& current_rounded_corner_bounds =
+          effect_node.mask_filter_info.rounded_corner_bounds();
+
+      // As the rounded corners are offsets relative to the hit-test rect, the
+      // bounds of the rounded corners source rect must match to avoid changing
+      // the shape of the hit-test region when applying the rounded corners.
+      if (current_rounded_corner_bounds.rect() !=
+          hit_test_rect_in_transform_space) {
+        return {/*requires_async_hit_test=*/true};
+      }
+
+      if (found_rounded_corner_mask) {
+        // We only support a single set of rounded corners for hit testing
+        // unless the 2nd+ set of rounded corners is coincident.
+        if (used_transform_id != rounded_corner_transform_id ||
+            current_rounded_corner_bounds != rounded_corner_bounds) {
+          return {/*requires_async_hit_test=*/true};
+        }
+      } else {
+        found_rounded_corner_mask = true;
+        rounded_corner_transform_id = used_transform_id;
+        rounded_corner_bounds = current_rounded_corner_bounds;
+        result.corner_radii = RoundedCornersHitTestInfo::CornerRadii{
+            current_rounded_corner_bounds.GetCornerRadii(
+                gfx::RRectF::Corner::kUpperLeft),
+            current_rounded_corner_bounds.GetCornerRadii(
+                gfx::RRectF::Corner::kUpperRight),
+            current_rounded_corner_bounds.GetCornerRadii(
+                gfx::RRectF::Corner::kLowerRight),
+            current_rounded_corner_bounds.GetCornerRadii(
+                gfx::RRectF::Corner::kLowerLeft)};
+      }
+    }
+
+    // Crossing a render surface boundary increases the set of concerns that
+    // need to be evaluated to safely apply rounded border clipping in viz. We
+    // do not support this to keep the overall complexity down while enabling
+    // common scenarios.
+    if (effect_node.HasRenderSurface()) {
+      crossed_render_surface_boundary = true;
+    }
+  }
+
+  return result;
 }
 
 bool EffectTree::HitTestMayBeAffectedByMask(int effect_id) const {
