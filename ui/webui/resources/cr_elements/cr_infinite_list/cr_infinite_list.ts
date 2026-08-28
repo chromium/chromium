@@ -116,7 +116,7 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     assert(list);
 
     const renderedItems = list.domItems();
-    if (renderedItems.length < this.focusedIndex - 1) {
+    if (renderedItems.length <= this.focusedIndex) {
       return false;
     }
 
