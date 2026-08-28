@@ -9,7 +9,6 @@ import logging
 import os
 import re
 import sys
-from typing import List
 import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
@@ -36,7 +35,7 @@ _NAMESPACES_IN_MULTIPLE_FILES = [
 ]
 
 
-def CheckNamespaces(xml_paths: List[str]):
+def CheckNamespaces(xml_paths: list[str]):
   """Check that histograms from a single namespace are all in the same file.
 
   Generally we want the histograms from a single namespace to be in the same
@@ -83,7 +82,7 @@ def _IsGlobalVariantFile(path: str) -> bool:
   )
 
 
-def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
+def _CheckVariantsRegistered(xml_paths: list[str]) -> bool:
   """Checks that all tokens within histograms are registered.
 
   Tokens within histograms should be registered as tokens either inline
@@ -146,9 +145,17 @@ def _CheckVariantsRegistered(xml_paths: List[str]) -> bool:
   return has_errors
 
 
-def _CheckNoUnusedEnums(xml_paths: List[str]) -> bool:
+def _CheckNoUnusedEnums(
+  xml_paths: list[str],
+  histograms: dict[str, extract_histograms.HistogramDict] | None = None,
+) -> bool:
   """Checks that all enums are referenced by metrics."""
-  enum_names = enums.get_enums_used_in_files()
+  # Only reuse `histograms` if it was generated from the full XML dataset.
+  # Otherwise, fetch all enums to prevent false-positive unused enum errors.
+  if histograms is not None and set(xml_paths) == set(histogram_paths.ALL_XMLS):
+    enum_names = enums.get_all_used_enums(histograms)
+  else:
+    enum_names = enums.get_enums_used_in_files()
 
   has_errors = False
   for enum_file in xml_paths:
@@ -181,10 +188,10 @@ def main():
   doc = merge_xml.MergeFiles(
     paths_to_check, expand_owners_and_extract_components=False
   )
-  _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
+  histograms, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces(paths_to_check)
   errors = errors or _CheckVariantsRegistered(paths_to_check)
-  errors = errors or _CheckNoUnusedEnums(paths_to_check)
+  errors = errors or _CheckNoUnusedEnums(paths_to_check, histograms)
   sys.exit(bool(errors))
 
 
