@@ -1002,6 +1002,25 @@ TEST_P(WebMediaPlayerMSTest, NoWaitForFrameForAudioOnly) {
   EXPECT_CALL(*this, DoSetCcLayer(false));
 }
 
+TEST_P(WebMediaPlayerMSTest, CurrentTimeFollowsPlaybackState) {
+  InitializeWebMediaPlayerMS();
+  LoadAndGetFrameProvider(true);
+
+  EXPECT_EQ(0.0, player_->CurrentTime());
+
+  player_->Play();
+  task_environment_.AdvanceClock(base::Seconds(2));
+  EXPECT_EQ(2.0, player_->CurrentTime());
+
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
+  task_environment_.AdvanceClock(base::Seconds(2));
+  EXPECT_EQ(2.0, player_->CurrentTime());
+
+  player_->Play();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_EQ(3.0, player_->CurrentTime());
+}
+
 TEST_P(WebMediaPlayerMSTest, Playing_Normal) {
   // This test sends a bunch of normal frames with increasing timestamps
   // and verifies that they are produced by WebMediaPlayerMS in appropriate

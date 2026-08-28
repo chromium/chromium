@@ -319,6 +319,11 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   bool paused_;
 
+  // A MediaStream has a wall-clock timeline which advances while its media
+  // element is playing, even when no new media frames are received.
+  base::TimeDelta elapsed_playback_time_;
+  base::TimeTicks playback_started_at_;
+
   std::unique_ptr<media::MediaLog> media_log_;
 
   std::unique_ptr<MediaStreamRendererFactory> renderer_factory_;

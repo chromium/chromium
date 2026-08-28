@@ -479,6 +479,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   // TODO(acolwell): Change this to DCHECK_EQ(load_type, LoadTypeMediaStream)
   // once Blink-side changes land.
   DCHECK_NE(load_type, kLoadTypeMediaSource);
+  elapsed_playback_time_ = base::TimeDelta();
+  playback_started_at_ = base::TimeTicks::Now();
   web_stream_ = source.GetAsMediaStream();
   if (!web_stream_.IsNull())
     web_stream_.AddObserver(weak_this_);
@@ -829,6 +831,8 @@ void WebMediaPlayerMS::Play() {
   if (!paused_)
     return;
 
+  playback_started_at_ = base::TimeTicks::Now();
+
   if (video_frame_provider_)
     video_frame_provider_->Resume();
 
@@ -894,6 +898,7 @@ void WebMediaPlayerMS::Pause(PauseReason pause_reason) {
   delegate_->DidPause(delegate_id_, /* reached_end_of_stream = */ false);
   delegate_->SetIdle(delegate_id_, true);
 
+  elapsed_playback_time_ += base::TimeTicks::Now() - playback_started_at_;
   paused_ = true;
 }
 
@@ -1051,13 +1056,10 @@ double WebMediaPlayerMS::Duration() const {
 
 double WebMediaPlayerMS::CurrentTime() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const base::TimeDelta current_time =
-      GetFrameTime(compositor_->GetCurrentFrame());
-  if (current_time.ToInternalValue() != 0)
-    return current_time.InSecondsF();
-  else if (audio_renderer_.get())
-    return audio_renderer_->GetCurrentRenderTime().InSecondsF();
-  return 0.0;
+  base::TimeDelta current_time = elapsed_playback_time_;
+  if (!paused_)
+    current_time += base::TimeTicks::Now() - playback_started_at_;
+  return current_time.InSecondsF();
 }
 
 bool WebMediaPlayerMS::IsEnded() const {
