@@ -16,12 +16,14 @@
 #include "extensions/browser/api/messaging/extension_message_port.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/trace_util.h"
 #include "ipc/constants.mojom.h"
 #include "url/origin_debug.h"
@@ -513,11 +515,49 @@ void MessageService::OpenChannelToNativeApp(
   }
   debug::ScopedPortContextCrashKeys port_context_crash_keys(
       source.port_context());
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/515159909): The `extension_id` and IsValidMessagingSource
+  // checks are needed for Android. Consolidate these checks in a follow-up if
+  // they can be used for other platforms as well.
+  std::optional<ExtensionId> extension_id =
+      ValidateSourceContextAndExtractExtensionId(*process,
+                                                 source.port_context());
+  if (!extension_id || !IsValidMessagingSource(
+                           *process, mojom::MessagingEndpointType::kExtension,
+                           extension_id, source.port_context())) {
+    // No need to call ReceivedBadMessage here, because it will be called (when
+    // appropriate) within IsValidSourceContext.
+    return;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(source.browser_context())
+                                   ->enabled_extensions()
+                                   .GetByID(*extension_id);
+  if (!extension) {
+    // The extension may have legitimately been unloaded while the IPC is in
+    // flight. Gracefully drop the message on the floor without terminating
+    // the renderer.
+    return;
+  }
+
+  // Renderer bindings enforce that packed extensions specify signing
+  // certificates for the target app. An empty list indicates a compromised
+  // renderer.
+  if (!Manifest::IsUnpackedLocation(extension->location()) &&
+      android_certificates.empty()) {
+    bad_message::ReceivedBadMessage(
+        process,
+        bad_message::MS_EMPTY_ANDROID_CERTIFICATES_FOR_PACKED_EXTENSION);
+    return;
+  }
+#else
   if (!IsValidSourceContext(*process, source.port_context())) {
     // No need to call ReceivedBadMessage here, because it will be called (when
     // appropriate) within IsValidSourceContext.
     return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   OpenChannelToNativeAppImpl(source, source_port_id, native_app_name,
                              android_certificates, std::move(port),

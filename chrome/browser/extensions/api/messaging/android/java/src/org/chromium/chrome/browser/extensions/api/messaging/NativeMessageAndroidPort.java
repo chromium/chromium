@@ -89,16 +89,18 @@ public class NativeMessageAndroidPort {
     }
 
     // Initiates connecting this port (which is owned by the extension with the given `extensionId`)
-    // to the external app. Returns an error message if the connection immediately fails, or null on
-    // success.
+    // to the external app whose identity is specified by its package name and optionally, its
+    // signing certificates. Returns an error message if the connection immediately fails, or null
+    // on success.
     @CalledByNative
     public @JniType("std::optional<std::string>") @Nullable String connectToApp(
             @JniType("Profile*") Profile profile,
             @JniType("std::string") String packageName,
             @JniType("std::string") String extensionId,
-            boolean isVerifiedExtension) {
+            boolean isVerifiedExtension,
+            byte[][] certificates) {
         NativeMessagingManager manager = NativeMessagingManager.getForProfile(profile);
-        return manager.addPort(packageName, extensionId, isVerifiedExtension, this);
+        return manager.addPort(packageName, extensionId, isVerifiedExtension, certificates, this);
     }
 
     // Sets the active callback for this port.
@@ -218,8 +220,6 @@ public class NativeMessageAndroidPort {
     // A helper that receives calls from the external app back to the browser
     // and forwards these calls back to the NativeMessageAndroidPort.
     public static class Callback extends IExtensionNativeMessageCallback.Stub {
-        private static final String TAG = "NMCallback";
-
         private @Nullable NativeMessageAndroidPort mPort;
 
         public Callback(NativeMessageAndroidPort port) {

@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.extensions.api.messaging;
 
+import android.content.pm.PackageManager;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -82,8 +85,18 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
             String packageName,
             String extensionId,
             boolean isVerifiedExtension,
+            byte[][] certificates,
             NativeMessageAndroidPort port) {
         ThreadUtils.assertOnUiThread();
+
+        // If `certificates` is empty, then signing certificate checks for the external app will be
+        // skipped. If this method is called with an empty `certificates` array, assume callers of
+        // this method have authorized it.
+        if (certificates.length > 0
+                && !hasAnyMatchingSigningCertificate(packageName, certificates)) {
+            return NativeMessagingConnection.getUnableToConnectError(packageName);
+        }
+
         NativeMessagingConnection connection = mConnections.get(packageName);
         // Initiate a connection to the app if the app is not connected.
         if (connection == null) {
@@ -96,6 +109,18 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
         }
 
         return connection.addPort(extensionId, isVerifiedExtension, port);
+    }
+
+    private static boolean hasAnyMatchingSigningCertificate(
+            String packageName, byte[][] certificates) {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        for (byte[] certBytes : certificates) {
+            if (pm.hasSigningCertificate(
+                    packageName, certBytes, PackageManager.CERT_INPUT_SHA256)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable NativeMessagingConnection getConnectionForTesting(String packageName) {

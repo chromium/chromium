@@ -46,6 +46,9 @@ class NativeMessagingAndroidApiTest : public ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Needed to simulate installs for webstore extensions.
+  ScopedInstallVerifierBypassForTest ignore_install_verification_;
 };
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest, NativeMessagingBasic) {
@@ -59,6 +62,10 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest, SendNativeMessage) {
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest, ConnectNative) {
   ASSERT_TRUE(RunExtensionTest("native_messaging_connect")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest, NativeMessagingCerts) {
+  ASSERT_TRUE(RunExtensionTest("native_messaging_certs")) << message_;
 }
 
 // Test that the remote app can reject connections based on the extension ID.
@@ -184,6 +191,41 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
       unload_result,
       base::test::IsJson(base::StringPrintf(
           R"({"status": "unloaded", "extensionId": "%s"})", extension_id)));
+}
+
+// An unpacked extension can send messages to the external Android app without
+// specifying certificates.
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
+                       EmptyCertificates_Unpacked) {
+  ExtensionTestMessageListener listener;
+  const Extension* extension =
+      LoadExtension(test_data_dir_.DirName()
+                        .AppendASCII("native_messaging")
+                        .AppendASCII("send_native_message_android_no_certs"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ("success", listener.message());
+}
+
+// A packed extension must specify certificates in order to send messages to the
+// external Android app.
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
+                       EmptyCertificates_Packed) {
+  ExtensionTestMessageListener listener;
+  base::FilePath crx_path =
+      PackExtension(test_data_dir_.DirName()
+                        .AppendASCII("native_messaging")
+                        .AppendASCII("send_native_message_android_no_certs"));
+  const Extension* extension = InstallExtensionFromWebstore(crx_path, 1);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ(
+      "caught error: Error in invocation of runtime.sendNativeMessage("
+      "[string|runtime.NativeMessageTarget] application, "
+      "object message, optional function callback): Packed extensions on "
+      "Android must specify at least one expected signing certificate in "
+      "'androidCertificates'.",
+      listener.message());
 }
 
 // A sub-test which tests that the browser sends information on whether the

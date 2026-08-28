@@ -58,9 +58,11 @@ class NativeMessageAndroidPort : public MessagePort {
 
   // Initiates connection to the Android app. Returns an error message if
   // connection failed, or std::nullopt on success.
-  std::optional<std::string> ConnectToApp(Profile* profile,
-                                          const std::string& package_name,
-                                          const ExtensionId& extension_id);
+  std::optional<std::string> ConnectToApp(
+      Profile* profile,
+      const std::string& package_name,
+      const ExtensionId& extension_id,
+      const SigningCertificates& android_certificates);
 
   base::android::ScopedJavaGlobalRef<jobject> java_peer_;
 };

@@ -44,6 +44,7 @@ import java.util.List;
 public class NativeMessageAndroidPortTest {
     private static final String TARGET_PACKAGE = "com.example.extensionreceiver";
     private static final String EXTENSION_ID = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    private static final byte[][] NO_CERTIFICATES = new byte[0][];
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -159,7 +160,11 @@ public class NativeMessageAndroidPortTest {
 
     private @Nullable String connectToApp(NativeMessageAndroidPort port) {
         return port.connectToApp(
-                mProfile, TARGET_PACKAGE, EXTENSION_ID, /* isVerifiedExtension= */ true);
+                mProfile,
+                TARGET_PACKAGE,
+                EXTENSION_ID,
+                /* isVerifiedExtension= */ true,
+                NO_CERTIFICATES);
     }
 
     // Test that messages queued in NativeMessageAndroidPort before the app connects

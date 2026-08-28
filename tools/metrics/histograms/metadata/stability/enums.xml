@@ -610,6 +610,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="41" label="WER_UNEXPECTED_EVENT_HANDLING_DONE"/>
   <int value="42" label="WER_INVALID_EXTENSION_ID"/>
   <int value="43" label="AER_INVALID_PROCESS_FOR_AUTOMATION_BINDING"/>
+  <int value="44" label="MS_EMPTY_ANDROID_CERTIFICATES_FOR_PACKED_EXTENSION"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

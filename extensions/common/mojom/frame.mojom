@@ -213,10 +213,11 @@ interface LocalFrameHost {
     pending_associated_remote<extensions.mojom.MessagePort> port,
     pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
 
-  // Get a port handle to the native application.  The handle can be used for
+  // Get a port handle to the native application. The handle can be used for
   // sending messages to the extension.
   // `android_certificates` specifies the list of expected signing certificates
-  // if `native_app_name` is an external Android app.
+  // if `native_app_name` is an external Android app. Must be non-empty for
+  // packed extensions.
   OpenChannelToNativeApp(
     string native_app_name,
     [EnableIf=is_android]
@@ -225,7 +226,7 @@ interface LocalFrameHost {
     pending_associated_remote<extensions.mojom.MessagePort> port,
     pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
 
-  // Get a port handle to the given tab.  The handle can be used for sending
+  // Get a port handle to the given tab. The handle can be used for sending
   // messages to the extension.
   OpenChannelToTab(
     int32 tab_id, int32 frame_id, string? document_id,

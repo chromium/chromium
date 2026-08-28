@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -36,9 +37,41 @@ public class NativeMessagingManagerTest {
     private static final String TARGET_PACKAGE = "com.example.extensionreceiver";
     private static final String EXTENSION_ID = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+    // Used for addPort calls where no expected signing certificates are
+    // provided so certificate checks are skipped.
+    private static final byte[][] NO_CERTIFICATES = new byte[0][];
+
+    // A mock 32-byte SHA-256 certificate fingerprint that matches the target package.
+    private static final byte[] SIGNED_CERT_BYTES =
+            new byte[] {
+                (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44,
+                (byte) 0x55, (byte) 0x66, (byte) 0x77, (byte) 0x88,
+                (byte) 0x99, (byte) 0xaa, (byte) 0xbb, (byte) 0xcc,
+                (byte) 0xdd, (byte) 0xee, (byte) 0xff, (byte) 0x00,
+                (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44,
+                (byte) 0x55, (byte) 0x66, (byte) 0x77, (byte) 0x88,
+                (byte) 0x99, (byte) 0xaa, (byte) 0xbb, (byte) 0xcc,
+                (byte) 0xdd, (byte) 0xee, (byte) 0xff, (byte) 0x00
+            };
+
+    // A mock 32-byte SHA-256 certificate fingerprint that does not match the target package.
+    private static final byte[] OTHER_CERT_BYTES =
+            new byte[] {
+                (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04,
+                (byte) 0x05, (byte) 0x06, (byte) 0x07, (byte) 0x08,
+                (byte) 0x09, (byte) 0x0a, (byte) 0x0b, (byte) 0x0c,
+                (byte) 0x0d, (byte) 0x0e, (byte) 0x0f, (byte) 0x10,
+                (byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04,
+                (byte) 0x05, (byte) 0x06, (byte) 0x07, (byte) 0x08,
+                (byte) 0x09, (byte) 0x0a, (byte) 0x0b, (byte) 0x0c,
+                (byte) 0x0d, (byte) 0x0e, (byte) 0x0f, (byte) 0x10
+            };
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
+    @Mock private PackageManager mMockPackageManager;
+
     // Mocks the C++ bridge for NativeMessagingManager to prevent an UnsatisfiedLinkError.
     @Mock private NativeMessagingManager.Natives mNativeMessagingManagerJni;
 
@@ -49,6 +82,7 @@ public class NativeMessagingManagerTest {
         private ServiceConnection mServiceConnection;
         private Intent mBindIntent;
         private boolean mBindServiceResult = true;
+        private PackageManager mPackageManager;
 
         public TestContext(Context base) {
             super(base);
@@ -56,6 +90,15 @@ public class NativeMessagingManagerTest {
 
         public void setBindServiceResult(boolean result) {
             mBindServiceResult = result;
+        }
+
+        public void setPackageManager(PackageManager packageManager) {
+            mPackageManager = packageManager;
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return mPackageManager != null ? mPackageManager : super.getPackageManager();
         }
 
         @Override
@@ -86,6 +129,7 @@ public class NativeMessagingManagerTest {
         NativeMessagingManagerJni.setInstanceForTesting(mNativeMessagingManagerJni);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mTestContext = new TestContext(RuntimeEnvironment.application);
+        mTestContext.setPackageManager(mMockPackageManager);
         ContextUtils.initApplicationContextForTests(mTestContext);
         mManager = NativeMessagingManager.getForProfile(mProfile);
     }
@@ -104,6 +148,7 @@ public class NativeMessagingManagerTest {
                         TARGET_PACKAGE,
                         EXTENSION_ID,
                         /* isVerifiedExtension= */ true,
+                        NO_CERTIFICATES,
                         new NativeMessageAndroidPort());
         Assert.assertNull(error);
 
@@ -143,6 +188,7 @@ public class NativeMessagingManagerTest {
                         TARGET_PACKAGE,
                         EXTENSION_ID,
                         /* isVerifiedExtension= */ true,
+                        NO_CERTIFICATES,
                         new NativeMessageAndroidPort());
         Assert.assertNull(error);
 
@@ -165,6 +211,7 @@ public class NativeMessagingManagerTest {
                         "com.nonexistent.app",
                         EXTENSION_ID,
                         /* isVerifiedExtension= */ true,
+                        NO_CERTIFICATES,
                         new NativeMessageAndroidPort());
         Assert.assertNotNull(error);
         Assert.assertEquals("Unable to connect to com.nonexistent.app.", error);
@@ -178,6 +225,7 @@ public class NativeMessagingManagerTest {
                         TARGET_PACKAGE,
                         EXTENSION_ID,
                         /* isVerifiedExtension= */ true,
+                        NO_CERTIFICATES,
                         new NativeMessageAndroidPort());
         Assert.assertNull(error);
 
@@ -190,5 +238,71 @@ public class NativeMessagingManagerTest {
         // Check that unloading an extension means the connection has no more
         // active sub-sessions so it disconnects.
         Assert.assertNull(mManager.getConnectionForTesting(TARGET_PACKAGE));
+    }
+
+    @Test
+    public void testCertificateValidationSuccess() {
+        Mockito.when(
+                        mMockPackageManager.hasSigningCertificate(
+                                Mockito.eq(TARGET_PACKAGE),
+                                Mockito.eq(SIGNED_CERT_BYTES),
+                                Mockito.eq(PackageManager.CERT_INPUT_SHA256)))
+                .thenReturn(true);
+
+        String error =
+                mManager.addPort(
+                        TARGET_PACKAGE,
+                        EXTENSION_ID,
+                        /* isVerifiedExtension= */ true,
+                        new byte[][] {SIGNED_CERT_BYTES},
+                        new NativeMessageAndroidPort());
+        Assert.assertNull(error);
+        Assert.assertNotNull(mManager.getConnectionForTesting(TARGET_PACKAGE));
+    }
+
+    @Test
+    public void testCertificateValidationFailure() {
+        Mockito.when(
+                        mMockPackageManager.hasSigningCertificate(
+                                Mockito.eq(TARGET_PACKAGE),
+                                Mockito.eq(OTHER_CERT_BYTES),
+                                Mockito.eq(PackageManager.CERT_INPUT_SHA256)))
+                .thenReturn(false);
+
+        String error =
+                mManager.addPort(
+                        TARGET_PACKAGE,
+                        EXTENSION_ID,
+                        /* isVerifiedExtension= */ true,
+                        new byte[][] {OTHER_CERT_BYTES},
+                        new NativeMessageAndroidPort());
+        Assert.assertEquals("Unable to connect to " + TARGET_PACKAGE + ".", error);
+        Assert.assertNull(mManager.getConnectionForTesting(TARGET_PACKAGE));
+    }
+
+    @Test
+    public void testCertificateValidationMultipleCertificatesWithOneMatching() {
+        Mockito.when(
+                        mMockPackageManager.hasSigningCertificate(
+                                Mockito.eq(TARGET_PACKAGE),
+                                Mockito.eq(OTHER_CERT_BYTES),
+                                Mockito.eq(PackageManager.CERT_INPUT_SHA256)))
+                .thenReturn(false);
+        Mockito.when(
+                        mMockPackageManager.hasSigningCertificate(
+                                Mockito.eq(TARGET_PACKAGE),
+                                Mockito.eq(SIGNED_CERT_BYTES),
+                                Mockito.eq(PackageManager.CERT_INPUT_SHA256)))
+                .thenReturn(true);
+
+        String error =
+                mManager.addPort(
+                        TARGET_PACKAGE,
+                        EXTENSION_ID,
+                        /* isVerifiedExtension= */ true,
+                        new byte[][] {OTHER_CERT_BYTES, SIGNED_CERT_BYTES},
+                        new NativeMessageAndroidPort());
+        Assert.assertNull(error);
+        Assert.assertNotNull(mManager.getConnectionForTesting(TARGET_PACKAGE));
     }
 }
