@@ -8,14 +8,21 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.MediaStore.Downloads;
+import android.provider.MediaStore.MediaColumns;
 import android.provider.OpenableColumns;
+import android.system.Os;
 import android.text.format.Formatter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -42,16 +49,20 @@ import androidx.pdf.content.ExternalLink;
 import androidx.pdf.ink.EditablePdfViewerFragment;
 import androidx.pdf.view.PdfView;
 
+import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+import kotlin.coroutines.intrinsics.IntrinsicsKt;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -68,6 +79,7 @@ import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
@@ -81,12 +93,18 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -183,6 +201,9 @@ public class PdfCoordinator
     private final Tab mTab;
     private @Nullable PropertyModel mModalDialogModel;
     private @Nullable Runnable mAlertDialogCancelRunnable;
+    private boolean mDownloadAfterSave;
+    private boolean mIsEditModeActive;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final BeforeUnloadCallback mBeforeUnloadCallback =
             new BeforeUnloadCallback() {
                 @Override
@@ -246,8 +267,12 @@ public class PdfCoordinator
             mFragmentContainerViewId = R.id.pdf_fragment_container;
         } else {
             View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
-            mFragmentContainerViewId = View.generateViewId();
-            fragmentContainerView.setId(mFragmentContainerViewId);
+            if (fragmentContainerView != null) {
+                mFragmentContainerViewId = View.generateViewId();
+                fragmentContainerView.setId(mFragmentContainerViewId);
+            } else {
+                mFragmentContainerViewId = R.id.pdf_fragment_container;
+            }
         }
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
@@ -376,6 +401,7 @@ public class PdfCoordinator
             // When the delegate is attached after the fragment was restored by FragmentManager,
             // the PDF document may already be loaded. Trigger the callbacks immediately if so.
             if (capturedView.getPdfDocument() != null) {
+                maybeRestorePosition();
                 try {
                     delegate.onDocumentLoaded(capturedView.getPdfDocument().getPageCount());
                 } catch (PdfDocument.DocumentClosedException e) {
@@ -416,11 +442,29 @@ public class PdfCoordinator
 
             // Add a persistent listener to track page changes.
             capturedView.addOnViewportChangedListener(
-                    (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) ->
-                            delegate.onViewportChanged(
-                                    calculateCurrentPage(
-                                            capturedView, firstVisiblePage, pageLocations),
-                                    zoomLevel));
+                    (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) -> {
+                        maybeRestorePosition();
+                        delegate.onViewportChanged(
+                                calculateCurrentPage(capturedView, firstVisiblePage, pageLocations),
+                                zoomLevel);
+                    });
+        }
+
+        private void maybeRestorePosition() {
+            if (mRestorePositionPending && mPdfView != null) {
+                mRestorePositionPending = false;
+                final float zoom = mSavedZoom;
+                final int page = mSavedPageIndex;
+                mPdfView.post(
+                        () -> {
+                            if (zoom > 0) {
+                                zoomTo(zoom);
+                            }
+                            if (page >= 0) {
+                                scrollToPage(page);
+                            }
+                        });
+            }
         }
 
         @VisibleForTesting
@@ -640,8 +684,7 @@ public class PdfCoordinator
             String fileName = null;
             if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
                 String[] projection = new String[] {OpenableColumns.DISPLAY_NAME};
-                try (android.database.Cursor cursor =
-                        contentResolver.query(uri, projection, null, null, null)) {
+                try (Cursor cursor = contentResolver.query(uri, projection, null, null, null)) {
                     if (cursor != null && cursor.moveToFirst()) {
                         int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                         if (index != -1) {
@@ -652,7 +695,7 @@ public class PdfCoordinator
                         | IllegalArgumentException
                         | NullPointerException
                         | IllegalStateException
-                        | android.database.SQLException e) {
+                        | SQLException e) {
                     // Ignore
                 }
             }
@@ -735,98 +778,165 @@ public class PdfCoordinator
 
         @Override
         public void onApplyEditsSuccess(PdfWriteHandle handle) {
-            Uri uri = getDocumentUri();
-
-            if (uri != null && getContext() != null) {
-                ParcelFileDescriptor pfd = null;
-                boolean success = false;
-                try {
-                    if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                        pfd = getContext().getContentResolver().openFileDescriptor(uri, "rw");
-                    } else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
-                        String path = uri.getPath();
-                        if (path != null) {
-                            pfd =
-                                    ParcelFileDescriptor.open(
-                                            new File(path), ParcelFileDescriptor.MODE_READ_WRITE);
-                        } else {
-                            Log.e(TAG, "File URI has null path: " + uri);
-                        }
-                    }
-
-                    if (pfd != null) {
-                        final ParcelFileDescriptor finalPfd = pfd;
-                        Continuation<kotlin.Unit> continuation =
-                                new Continuation<kotlin.Unit>() {
-                                    @Override
-                                    public CoroutineContext getContext() {
-                                        return EmptyCoroutineContext.INSTANCE;
-                                    }
-
-                                    @Override
-                                    public void resumeWith(Object result) {
-                                        boolean isSuccess = result == kotlin.Unit.INSTANCE;
-                                        if (!isSuccess) {
-                                            Log.e(TAG, "Async PDF write failed: " + result);
-                                        }
-                                        PostTask.postTask(
-                                                TaskTraits.USER_BLOCKING_MAY_BLOCK,
-                                                () -> {
-                                                    cleanupWriteResources(finalPfd, handle);
-                                                    ThreadUtils.postOnUiThread(
-                                                            () -> {
-                                                                if (isSuccess
-                                                                        && mDelegate != null) {
-                                                                    mDelegate.onEditsApplied();
-                                                                }
-                                                                finishExitingEditMode();
-                                                            });
-                                                });
-                                    }
-                                };
-
-                        if (mPdfView != null) {
-                            mSavedPageIndex = mPdfView.getFirstVisiblePage();
-                            mSavedZoom = mPdfView.getZoom();
-                            mRestorePositionPending = true;
-                        }
-
-                        Object coroutineResult = handle.writeTo(pfd, continuation);
-
-                        if (coroutineResult
-                                != kotlin.coroutines.intrinsics.IntrinsicsKt
-                                        .getCOROUTINE_SUSPENDED()) {
-                            // Completed synchronously.
-                            PostTask.postTask(
-                                    TaskTraits.USER_BLOCKING_MAY_BLOCK,
-                                    () -> {
-                                        cleanupWriteResources(finalPfd, handle);
-                                        ThreadUtils.postOnUiThread(
-                                                () -> {
-                                                    if (mDelegate != null) {
-                                                        mDelegate.onEditsApplied();
-                                                    }
-                                                    finishExitingEditMode();
-                                                });
-                                    });
-                        }
-                        success = true;
-                        return;
-                    } else {
-                        Log.e(TAG, "Failed to open file descriptor for writing: " + uri);
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to write PDF edits", e);
-                } finally {
-                    if (!success) {
-                        cleanupWriteResources(pfd, handle);
-                        setEditModeEnabled(false);
-                    }
-                }
-            } else {
-                Log.e(TAG, "Cannot write edits, uri or context is null. Uri: " + uri);
+            if (getContext() == null || mDelegate == null) {
                 cleanupWriteResources(null, handle);
                 setEditModeEnabled(false);
+                return;
+            }
+
+            ParcelFileDescriptor pfd = null;
+            boolean success = false;
+            File tempFile = null;
+            // TODO(crbug.com/554018452): Revisit how the fragment accesses host and PDF data.
+            final boolean isIncognito = mDelegate.isIncognito();
+            try {
+                if (isIncognito) {
+                    FileDescriptor fd = Os.memfd_create("annotated_pdf", 0);
+                    pfd = ParcelFileDescriptor.dup(fd);
+                    try {
+                        Os.close(fd);
+                    } catch (Exception ignored) {
+                    }
+                } else {
+                    // Create a temporary file to write the annotated PDF to.
+                    // This prevents truncating the original PDF file while the PDF library is
+                    // reading
+                    // from it.
+                    File cacheDir = getContext().getCacheDir();
+                    File pdfsDir = new File(cacheDir, "pdfs");
+                    if (!pdfsDir.exists()) {
+                        pdfsDir.mkdirs();
+                    }
+                    tempFile = File.createTempFile("annotated_", ".pdf", pdfsDir);
+                    pfd =
+                            ParcelFileDescriptor.open(
+                                    tempFile,
+                                    ParcelFileDescriptor.MODE_READ_WRITE
+                                            | ParcelFileDescriptor.MODE_CREATE
+                                            | ParcelFileDescriptor.MODE_TRUNCATE);
+                }
+
+                if (pfd != null) {
+                    final ParcelFileDescriptor finalPfd = pfd;
+                    final File finalTempFile = tempFile;
+                    final AtomicBoolean handled = new AtomicBoolean(false);
+
+                    Consumer<Boolean> onSaveFinished =
+                            (isSuccess) -> {
+                                if (!handled.compareAndSet(false, true)) return;
+                                PostTask.postTask(
+                                        TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                                        () -> {
+                                            ParcelFileDescriptor savedPfd = null;
+                                            if (isSuccess && isIncognito) {
+                                                try {
+                                                    savedPfd = finalPfd.dup();
+                                                } catch (IOException e) {
+                                                    Log.e(
+                                                            TAG,
+                                                            "Failed to dup ParcelFileDescriptor",
+                                                            e);
+                                                }
+                                            }
+                                            cleanupWriteResources(finalPfd, handle);
+                                            if (isSuccess
+                                                    && (isIncognito
+                                                            ? (savedPfd != null)
+                                                            : (finalTempFile != null
+                                                                    && finalTempFile.length()
+                                                                            > 0))) {
+                                                final ParcelFileDescriptor finalSavedPfd = savedPfd;
+                                                if (mDelegate != null) {
+                                                    mDelegate.onPdfEditsSaved(
+                                                            finalTempFile,
+                                                            finalSavedPfd,
+                                                            () -> {
+                                                                finishExitingEditMode();
+                                                            });
+                                                } else {
+                                                    if (finalSavedPfd != null) {
+                                                        try {
+                                                            finalSavedPfd.close();
+                                                        } catch (IOException ignored) {
+                                                        }
+                                                    }
+                                                    finishExitingEditMode();
+                                                }
+                                            } else {
+                                                if (savedPfd != null) {
+                                                    try {
+                                                        savedPfd.close();
+                                                    } catch (IOException ignored) {
+                                                    }
+                                                }
+                                                if (finalTempFile != null) {
+                                                    finalTempFile.delete();
+                                                }
+                                                if (mDelegate != null) {
+                                                    mDelegate.onPdfEditsSaveFailed();
+                                                }
+                                                ThreadUtils.postOnUiThread(
+                                                        () -> {
+                                                            finishExitingEditMode();
+                                                        });
+                                            }
+                                        });
+                            };
+
+                    Continuation<Unit> continuation =
+                            new Continuation<Unit>() {
+                                @Override
+                                public CoroutineContext getContext() {
+                                    return EmptyCoroutineContext.INSTANCE;
+                                }
+
+                                @Override
+                                public void resumeWith(Object result) {
+                                    boolean isSuccess = result == Unit.INSTANCE;
+                                    if (!isSuccess) {
+                                        Log.e(TAG, "Async PDF write failed: " + result);
+                                    }
+                                    onSaveFinished.accept(isSuccess);
+                                }
+                            };
+
+                    if (mPdfView != null) {
+                        mSavedPageIndex = mPdfView.getFirstVisiblePage();
+                        mSavedZoom = mPdfView.getZoom();
+                        mRestorePositionPending = true;
+                    }
+
+                    Object coroutineResult = handle.writeTo(pfd, continuation);
+
+                    if (coroutineResult != IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
+                        // Completed synchronously.
+                        boolean isSuccess = (coroutineResult == Unit.INSTANCE);
+                        onSaveFinished.accept(isSuccess);
+                    }
+                    success = true;
+                    return;
+                } else {
+                    Log.e(
+                            TAG,
+                            "Failed to open file descriptor for writing: "
+                                    + (isIncognito ? "memfd" : tempFile));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to write PDF edits", e);
+            } finally {
+                if (!success) {
+                    cleanupWriteResources(pfd, handle);
+                    if (tempFile != null) {
+                        tempFile.delete();
+                    }
+                    if (mDelegate != null) {
+                        mDelegate.onPdfEditsSaveFailed();
+                    }
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                finishExitingEditMode();
+                            });
+                }
             }
         }
 
@@ -839,6 +949,9 @@ public class PdfCoordinator
         public void onApplyEditsFailed(Throwable error) {
             Log.e(TAG, "Failed to apply PDF edits", error);
             setEditModeEnabled(false);
+            if (mDelegate != null) {
+                mDelegate.onPdfEditsSaveFailed();
+            }
         }
 
         @Override
@@ -877,17 +990,7 @@ public class PdfCoordinator
                 mPdfView.setFormFillingEnabled(
                         PdfUtils.isInlinePdfV2FormFillingEnabled() && !isEditModeEnabled());
             }
-            if (mRestorePositionPending && mPdfView != null) {
-                mRestorePositionPending = false;
-                if (mSavedZoom > 0) {
-                    final float zoom = mSavedZoom;
-                    mPdfView.post(() -> zoomTo(zoom));
-                }
-                if (mSavedPageIndex >= 0) {
-                    final int page = mSavedPageIndex;
-                    mPdfView.post(() -> scrollToPage(page));
-                }
-            }
+
             if (mDocumentLoadStartTimestamp <= 0) {
                 return;
             }
@@ -1268,6 +1371,154 @@ public class PdfCoordinator
         return mPdfFilePath;
     }
 
+    /**
+     * Updates the PDF file path and URI after changes are saved.
+     *
+     * @param tempFile The temporary file containing the saved PDF content (non-Incognito).
+     * @param pfd The ParcelFileDescriptor containing the saved PDF content in memory (Incognito).
+     * @param onDone The callback to execute when the update has completed.
+     */
+    private void updatePdfAfterSave(
+            @Nullable File tempFile, @Nullable ParcelFileDescriptor pfd, Runnable onDone) {
+        if (mIsIncognito) {
+            int fd = -1;
+            if (pfd != null) {
+                fd = pfd.detachFd();
+            } else if (tempFile != null) {
+                try {
+                    // In incognito, adopt the new temporary file descriptor into the
+                    // PdfContentProvider so that it matches the secure sharing design.
+                    ParcelFileDescriptor openedPfd =
+                            ParcelFileDescriptor.open(
+                                    tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
+                    fd = openedPfd.detachFd();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to open temporary PDF file descriptor", e);
+                } finally {
+                    // Delete temp file from disk immediately to ensure incognito privacy and avoid
+                    // disk leaks.
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                }
+            }
+
+            final int finalFd = fd;
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        if (finalFd >= 0) {
+                            String securePath = "/proc/self/fd/" + finalFd;
+                            Uri newUri =
+                                    PdfContentProvider.registerStream(mTabId, securePath, mTitle);
+                            try {
+                                ParcelFileDescriptor.adoptFd(finalFd).close();
+                            } catch (IOException e) {
+                                /* ignore */
+                            }
+                            if (newUri != null) {
+                                PdfContentProvider.removeContentUri(mPdfFilePath);
+                                mPdfFilePath = newUri.toString();
+                                mUri = newUri;
+                                if (mChromePdfViewerFragment != null) {
+                                    mChromePdfViewerFragment.setDocumentUri(mUri);
+                                    mChromePdfViewerFragment.setFilePath(mPdfFilePath);
+                                    mChromePdfViewerFragment.setFileName(mTitle);
+                                }
+                            }
+                        }
+                        onDone.run();
+                    });
+        } else {
+            if (tempFile == null) {
+                if (pfd != null) {
+                    try {
+                        pfd.close();
+                    } catch (IOException ignored) {
+                    }
+                }
+                onDone.run();
+                return;
+            }
+            boolean overwritten = false;
+            String updatedFilePath = null;
+            if (mPdfFilePath != null) {
+                Uri uri = Uri.parse(mPdfFilePath);
+                String scheme = uri.getScheme();
+                if (UrlConstants.FILE_SCHEME.equals(scheme)) {
+                    String path = uri.getPath();
+                    if (path != null) {
+                        File originalFile = new File(path);
+                        overwritten = overwriteOriginalFile(tempFile, originalFile);
+                        if (overwritten) {
+                            updatedFilePath = originalFile.getAbsolutePath();
+                        }
+                    }
+                } else if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
+                    overwritten = overwriteOriginalContentUri(tempFile, uri);
+                } else {
+                    File originalFile = new File(mPdfFilePath);
+                    overwritten = overwriteOriginalFile(tempFile, originalFile);
+                    if (overwritten) {
+                        updatedFilePath = originalFile.getAbsolutePath();
+                    }
+                }
+            }
+
+            if (overwritten) {
+                if (tempFile.exists()) {
+                    tempFile.delete();
+                }
+            } else {
+                updatedFilePath = tempFile.getAbsolutePath();
+            }
+
+            final String finalUpdatedFilePath = updatedFilePath;
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        if (finalUpdatedFilePath != null) {
+                            mPdfFilePath = finalUpdatedFilePath;
+                            mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
+                        }
+                        onDone.run();
+                    });
+        }
+    }
+
+    private boolean overwriteOriginalFile(File tempFile, File originalFile) {
+        try {
+            if (tempFile.renameTo(originalFile)) {
+                return true;
+            }
+            try (FileInputStream is = new FileInputStream(tempFile);
+                    FileOutputStream os = new FileOutputStream(originalFile)) {
+                FileUtils.copyStream(is, os);
+                return true;
+            }
+        } catch (IOException | SecurityException e) {
+            Log.e(TAG, "No write permission for original file path: " + originalFile.getPath(), e);
+            return false;
+        }
+    }
+
+    private boolean overwriteOriginalContentUri(File tempFile, Uri uri) {
+        if (mActivity == null) return false;
+        try (FileInputStream is = new FileInputStream(tempFile);
+                OutputStream os = mActivity.getContentResolver().openOutputStream(uri, "w")) {
+            if (os != null) {
+                FileUtils.copyStream(is, os);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SecurityException | IllegalArgumentException e) {
+            Log.e(TAG, "No write permission for original URI", e);
+            return false;
+        } catch (IOException e) {
+            Log.e(TAG, "IO exception when writing to original URI", e);
+            return false;
+        }
+    }
+
     private void loadPdfFile(@Nullable String pdfFilePath) {
         mPdfFilePath = pdfFilePath;
         loadPdfFile();
@@ -1278,6 +1529,7 @@ public class PdfCoordinator
         mIsPdfLoaded = false;
         mIsFitToPageActive = TriState.NOT_SET;
         mLastFitZoom = -1f;
+        mHasMadeAnyChanges = false;
         if (mChromePdfViewerFragment != null) {
             if (mChromePdfViewerFragment.isAdded()) {
                 mChromePdfViewerFragment.setDocumentUri(null);
@@ -1335,7 +1587,7 @@ public class PdfCoordinator
         }
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.isAdded()) {
             try {
-                return mChromePdfViewerFragment.hasUnsavedChanges();
+                return mChromePdfViewerFragment.hasUnsavedChanges() || isEditModeActive();
             } catch (IllegalStateException e) {
                 return false;
             }
@@ -1604,10 +1856,10 @@ public class PdfCoordinator
     /** Exits edit mode and applies any draft edits. */
     @Override
     public void exitEditMode() {
-        if (!PdfUtils.isInlinePdfV2EditEnabled()) {
+        if (!PdfUtils.isInlinePdfV2EditEnabled() || mChromePdfViewerFragment == null) {
             return;
         }
-        if (mChromePdfViewerFragment.hasUnsavedChanges()) {
+        if (hasUnsavedChanges()) {
             mChromePdfViewerFragment.applyDraftEdits();
         } else {
             mChromePdfViewerFragment.setEditModeEnabled(false);
@@ -1647,14 +1899,129 @@ public class PdfCoordinator
         mChromePdfViewerFragment.scrollToPage(currentPageIndex);
     }
 
+    @VisibleForTesting
+    boolean hasUnsavedChanges() {
+        if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.isAdded()) {
+            try {
+                return mChromePdfViewerFragment.hasUnsavedChanges();
+            } catch (IllegalStateException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isEditModeActive() {
+        return mIsEditModeActive;
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
     @Override
     public void download() {
-        // TODO(crbug.com/501138999): Implement download action
+        if (mChromePdfViewerFragment != null && (hasUnsavedChanges() || isEditModeActive())) {
+            mDownloadAfterSave = true;
+            mChromePdfViewerFragment.applyDraftEdits();
+        } else {
+            downloadAnnotatedPdf();
+        }
     }
 
     @Override
     public void print() {
         mNativePageHost.print();
+    }
+
+    private void downloadAnnotatedPdf() {
+        String sourcePath = mUri != null ? mUri.toString() : mPdfFilePath;
+        if (sourcePath == null || mActivity == null) return;
+        Context context = mActivity.getApplicationContext();
+        String filename = sanitizePdfFileName(mTitle);
+        final String finalFilename = filename;
+        final String finalSourcePath = sourcePath;
+
+        Toast.makeText(context, R.string.pdf_downloading, Toast.LENGTH_SHORT).show();
+
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                () -> {
+                    try {
+                        ContentValues values = new ContentValues();
+                        values.put(MediaColumns.DISPLAY_NAME, finalFilename);
+                        values.put(MediaColumns.MIME_TYPE, MimeTypeUtils.PDF_MIME_TYPE);
+                        values.put(MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                        values.put(MediaColumns.IS_PENDING, 1);
+
+                        ContentResolver resolver = context.getContentResolver();
+                        Uri uri = resolver.insert(Downloads.EXTERNAL_CONTENT_URI, values);
+                        if (uri != null) {
+                            boolean copied = false;
+                            try {
+                                try (InputStream is =
+                                                openInputStreamForPath(context, finalSourcePath);
+                                        OutputStream os = resolver.openOutputStream(uri)) {
+                                    if (is != null && os != null) {
+                                        FileUtils.copyStream(is, os);
+                                        copied = true;
+                                    }
+                                }
+                                if (copied) {
+                                    values.clear();
+                                    values.put(MediaColumns.IS_PENDING, 0);
+                                    resolver.update(uri, values, null, null);
+                                } else {
+                                    resolver.delete(uri, null, null);
+                                }
+                            } catch (Exception e) {
+                                resolver.delete(uri, null, null);
+                                throw e;
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to download PDF", e);
+                    }
+                });
+    }
+
+    private static String sanitizePdfFileName(@Nullable String title) {
+        String filename = (title != null && !title.trim().isEmpty()) ? title.trim() : "document";
+        filename = new File(filename).getName().replaceAll("[\\\\/:*?\"<>|]", "_");
+        if (filename.isEmpty() || filename.equals(".") || filename.equals("..")) {
+            filename = "document";
+        }
+        if (!filename.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            filename += ".pdf";
+        }
+        return filename;
+    }
+
+    private static @Nullable InputStream openInputStreamForPath(Context context, String path) {
+        try {
+            Uri uri = Uri.parse(path);
+            if (UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
+                return context.getContentResolver().openInputStream(uri);
+            }
+            String filePath =
+                    UrlConstants.FILE_SCHEME.equals(uri.getScheme()) ? uri.getPath() : path;
+            if (filePath != null) {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    return new FileInputStream(file);
+                }
+            }
+            return context.getContentResolver().openInputStream(uri);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to open input stream for path: " + path, e);
+        }
+        return null;
     }
 
     @Override
@@ -1717,6 +2084,7 @@ public class PdfCoordinator
 
     @Override
     public void onEditModeChanged(boolean editMode) {
+        mIsEditModeActive = editMode;
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.setEditModeActive(editMode);
         }
@@ -1728,8 +2096,39 @@ public class PdfCoordinator
     }
 
     @Override
+    public boolean isIncognito() {
+        return mIsIncognito;
+    }
+
+    @Override
     public void onEditsApplied() {
         mHasMadeAnyChanges = true;
+        for (Observer observer : mObservers) {
+            observer.onHasChangesChanged();
+        }
+    }
+
+    @Override
+    public void onPdfEditsSaved(
+            @Nullable File tempFile, @Nullable ParcelFileDescriptor pfd, Runnable onDone) {
+        updatePdfAfterSave(
+                tempFile,
+                pfd,
+                () -> {
+                    onEditsApplied();
+                    if (onDone != null) {
+                        onDone.run();
+                    }
+                    if (mDownloadAfterSave) {
+                        mDownloadAfterSave = false;
+                        download();
+                    }
+                });
+    }
+
+    @Override
+    public void onPdfEditsSaveFailed() {
+        mDownloadAfterSave = false;
     }
 
     @Override

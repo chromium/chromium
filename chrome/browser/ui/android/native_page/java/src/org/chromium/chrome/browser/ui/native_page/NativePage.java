@@ -168,6 +168,9 @@ public interface NativePage {
         return true;
     }
 
+    /** Triggers downloading for the native page. */
+    default void download() {}
+
     /** Notify the native page that it is about to be navigated back or hidden by a back press. */
     default void notifyHidingWithBack() {}
 

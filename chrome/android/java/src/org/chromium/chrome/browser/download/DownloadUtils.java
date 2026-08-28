@@ -270,7 +270,7 @@ public class DownloadUtils {
         Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         NativePage nativePage = tab.getNativePage();
         if (nativePage != null && nativePage.isPdf()) {
-            DownloadController.downloadUrl(tab.getUrl().getSpec(), tab);
+            nativePage.download();
             if (fromAppMenu) {
                 tracker.notifyEvent(EventConstants.APP_MENU_PDF_PAGE_DOWNLOADED);
             }

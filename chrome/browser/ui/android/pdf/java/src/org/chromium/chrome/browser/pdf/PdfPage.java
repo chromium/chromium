@@ -66,6 +66,7 @@ public class PdfPage extends BasicNativePage {
             // Bind the PDF stream lifetime to the Tab instead of the transient PdfPage view.
             PdfTabHelper.from(tab).setPdfUrl(url);
         }
+
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
@@ -355,5 +356,10 @@ public class PdfPage extends BasicNativePage {
      */
     public @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
         return mPdfCoordinator.getFileUri(isWorkProfile, targetPackage);
+    }
+
+    @Override
+    public void download() {
+        mPdfCoordinator.download();
     }
 }
