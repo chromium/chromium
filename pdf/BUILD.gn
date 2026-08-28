@@ -59,11 +59,10 @@ if (enable_pdf) {
 
     public = [ "pdf.h" ]
 
-    public_deps = []
-
     deps = [
       ":features",
       ":internal",
+      ":pdf_watermark_overlayer",
       "//base",
       "//build:chromeos_buildflags",
       "//services/screen_ai/buildflags",
@@ -184,6 +183,8 @@ if (enable_pdf) {
       "pdfium/pdfium_text_fragment_finder.h",
       "pdfium/pdfium_unsupported_features.cc",
       "pdfium/pdfium_unsupported_features.h",
+      "pdfium/pdfium_watermark_overlayer.cc",
+      "pdfium/pdfium_watermark_overlayer.h",
       "preview_mode_client.cc",
       "preview_mode_client.h",
       "region_data.cc",
@@ -214,6 +215,7 @@ if (enable_pdf) {
       ":content_restriction",
       ":features",
       ":pdf_accessibility_constants_helper",
+      ":pdf_watermark_overlayer",
       ":structs",
       "//base",
       "//base:i18n",
@@ -334,6 +336,15 @@ if (enable_pdf) {
         "//skia",
       ]
     }
+  }
+
+  source_set("pdf_watermark_overlayer") {
+    public = [ "pdf_watermark_overlayer.h" ]
+
+    public_deps = [
+      "//base",
+      "//ui/gfx/geometry",
+    ]
   }
 
   source_set("assert_enums") {
@@ -552,6 +563,7 @@ if (enable_pdf) {
       ":pdf_accessibility_constants_helper",
       ":pdf_test_utils",
       ":pdf_view_web_plugin",
+      ":pdf_watermark_overlayer",
       ":structs",
       "//base",
       "//base:i18n",

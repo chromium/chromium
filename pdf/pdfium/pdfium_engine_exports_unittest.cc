@@ -5,6 +5,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,11 +13,13 @@
 #include "base/test/mock_callback.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
+#include "pdf/pdf_watermark_overlayer.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
+#include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_text.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/rect.h"
@@ -40,7 +43,6 @@ namespace chrome_pdf {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class ScopedLibraryInitializer {
  public:
   ScopedLibraryInitializer() {
@@ -49,6 +51,8 @@ class ScopedLibraryInitializer {
   }
   ~ScopedLibraryInitializer() { ShutdownSDK(); }
 };
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 // Returns all characters in the page.
 std::string GetText(base::span<const uint8_t> pdf, int page_index) {
@@ -105,6 +109,12 @@ class PDFiumEngineExportsTest : public testing::Test {
   }
 
   const base::FilePath& pdf_data_dir() const { return pdf_data_dir_; }
+
+  std::vector<uint8_t> ReadTestData(
+      base::FilePath::StringViewType filename) const {
+    base::FilePath pdf_path = pdf_data_dir_.Append(filename);
+    return base::ReadFileToBytes(pdf_path).value_or(std::vector<uint8_t>());
+  }
 
  private:
   base::FilePath pdf_data_dir_;
@@ -214,6 +224,136 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(612, 792), page_size.value());
   }
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerBasic) {
+  std::vector<uint8_t> pdf_buffer =
+      ReadTestData(FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::vector<uint8_t> output_pdf;
+  {
+    // `overlayer` must be destroyed before calling `GetPDFDocInfo()` below,
+    // to avoid overlapping PDFium SDK initializers.
+    std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+        CreatePdfWatermarkOverlayer(pdf_buffer);
+    ASSERT_TRUE(overlayer);
+
+    std::vector<gfx::SizeF> page_sizes = overlayer->GetPageSizes();
+    ASSERT_EQ(1u, page_sizes.size());
+    EXPECT_EQ(gfx::SizeF(200, 300), page_sizes[0]);
+
+    output_pdf = overlayer->OverlayPages(pdf_buffer);
+    ASSERT_FALSE(output_pdf.empty());
+  }
+
+  int page_count;
+  ASSERT_TRUE(GetPDFDocInfo(output_pdf, &page_count, nullptr));
+  EXPECT_EQ(1, page_count);
+
+  std::optional<gfx::SizeF> output_size = GetPDFPageSizeByIndex(output_pdf, 0);
+  ASSERT_TRUE(output_size.has_value());
+  EXPECT_EQ(gfx::SizeF(200, 300), output_size.value());
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerMultiPageSuccess) {
+  std::vector<uint8_t> pdf_buffer = ReadTestData(
+      FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::vector<uint8_t> output_pdf;
+  {
+    // `overlayer` must be destroyed before calling `GetPDFDocInfo()` below,
+    // to avoid overlapping PDFium SDK initializers.
+    std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+        CreatePdfWatermarkOverlayer(pdf_buffer);
+    ASSERT_TRUE(overlayer);
+
+    std::vector<gfx::SizeF> page_sizes = overlayer->GetPageSizes();
+    ASSERT_EQ(3u, page_sizes.size());
+
+    output_pdf = overlayer->OverlayPages(pdf_buffer);
+    ASSERT_FALSE(output_pdf.empty());
+  }
+
+  int page_count;
+  ASSERT_TRUE(GetPDFDocInfo(output_pdf, &page_count, nullptr));
+  EXPECT_EQ(3, page_count);
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerMismatchedPages) {
+  std::vector<uint8_t> pdf_buffer =
+      ReadTestData(FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::vector<uint8_t> multi_page_buffer = ReadTestData(
+      FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  ASSERT_FALSE(multi_page_buffer.empty());
+
+  std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+      CreatePdfWatermarkOverlayer(pdf_buffer);
+  ASSERT_TRUE(overlayer);
+
+  std::vector<uint8_t> output_pdf =
+      overlayer->OverlayPages(multi_page_buffer);
+  EXPECT_TRUE(output_pdf.empty());
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerMismatchedDimensions) {
+  std::vector<uint8_t> pdf_buffer =
+      ReadTestData(FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::vector<uint8_t> blank_buffer =
+      ReadTestData(FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_FALSE(blank_buffer.empty());
+
+  std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+      CreatePdfWatermarkOverlayer(pdf_buffer);
+  ASSERT_TRUE(overlayer);
+
+  // Both PDFs have 1 page, but rectangles.pdf is 200x300 and blank.pdf is
+  // 200x200.
+  std::vector<uint8_t> output_pdf = overlayer->OverlayPages(blank_buffer);
+  EXPECT_TRUE(output_pdf.empty());
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerInvalidBuffer) {
+  std::vector<uint8_t> empty_buffer;
+  EXPECT_FALSE(CreatePdfWatermarkOverlayer(empty_buffer));
+
+  constexpr uint8_t kCorruptData[] = "Not a valid PDF header";
+  EXPECT_FALSE(CreatePdfWatermarkOverlayer(kCorruptData));
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerInvalidOverlay) {
+  std::vector<uint8_t> pdf_buffer =
+      ReadTestData(FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+      CreatePdfWatermarkOverlayer(pdf_buffer);
+  ASSERT_TRUE(overlayer);
+
+  // 1. Empty overlay buffer
+  EXPECT_TRUE(overlayer->OverlayPages({}).empty());
+
+  // 2. Corrupt overlay buffer
+  constexpr uint8_t kCorruptOverlay[] = "Not a valid PDF overlay stream";
+  EXPECT_TRUE(overlayer->OverlayPages(kCorruptOverlay).empty());
+}
+
+TEST_F(PDFiumEngineExportsTest, PdfWatermarkOverlayerBadPage) {
+  std::vector<uint8_t> pdf_buffer =
+      ReadTestData(FILE_PATH_LITERAL("bad_page.pdf"));
+  ASSERT_FALSE(pdf_buffer.empty());
+
+  std::unique_ptr<PdfWatermarkOverlayer> overlayer =
+      CreatePdfWatermarkOverlayer(pdf_buffer);
+  ASSERT_TRUE(overlayer);
+
+  // GetPageSizes() should fail on bad_page.pdf and return {}
+  EXPECT_TRUE(overlayer->GetPageSizes().empty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

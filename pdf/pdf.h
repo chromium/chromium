@@ -39,6 +39,8 @@ class SizeF;
 
 namespace chrome_pdf {
 
+class PdfWatermarkOverlayer;
+
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class PdfProgressiveSearchifier;
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -149,6 +151,14 @@ std::optional<bool> PDFDocHasOutline(base::span<const uint8_t> pdf_buffer);
 std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index);
+
+// Creates a `PdfWatermarkOverlayer` for `pdf_buffer` to query page sizes and
+// overlay watermark PDF pages onto it.
+// Note: `pdf_buffer` must remain valid for the lifetime of the returned
+// overlayer instance. Returns nullptr if `pdf_buffer` cannot be parsed or has
+// no pages.
+std::unique_ptr<PdfWatermarkOverlayer> CreatePdfWatermarkOverlayer(
+    base::span<const uint8_t> pdf_buffer);
 
 enum class RenderDeviceType {
   kDisplay,

@@ -22,6 +22,7 @@
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
+#include "pdf/pdfium/pdfium_watermark_overlayer.h"
 #include "printing/nup_parameters.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -532,6 +533,12 @@ std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
   }
 
   return gfx::SizeF(size.width, size.height);
+}
+
+std::unique_ptr<PdfWatermarkOverlayer>
+PDFiumEngineExports::CreatePdfWatermarkOverlayer(
+    base::span<const uint8_t> pdf_buffer) {
+  return PdfiumWatermarkOverlayer::Create(pdf_buffer);
 }
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

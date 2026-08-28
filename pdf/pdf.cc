@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
+#include "pdf/pdf_watermark_overlayer.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -142,6 +143,12 @@ std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFiumEngineExports* engine_exports = PDFiumEngineExports::Get();
   return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
+}
+
+std::unique_ptr<PdfWatermarkOverlayer> CreatePdfWatermarkOverlayer(
+    base::span<const uint8_t> pdf_buffer) {
+  PDFiumEngineExports* engine_exports = PDFiumEngineExports::Get();
+  return engine_exports->CreatePdfWatermarkOverlayer(pdf_buffer);
 }
 
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
