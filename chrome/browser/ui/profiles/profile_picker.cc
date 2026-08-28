@@ -112,11 +112,12 @@ ProfilePicker::Params ProfilePicker::Params::ForTesting(  // IN-TEST
 }
 
 void ProfilePicker::Params::NotifyFirstRunExited(
-    FirstRunExitStatus exit_status) {
+    FirstRunExitStatus exit_status,
+    FirstRunFinishReason finish_reason) {
   if (!first_run_exited_callback_) {
     return;
   }
-  std::move(first_run_exited_callback_).Run(exit_status);
+  std::move(first_run_exited_callback_).Run(exit_status, finish_reason);
 }
 
 void ProfilePicker::Params::NotifyProfilePicked(Profile* profile) {

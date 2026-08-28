@@ -4661,6 +4661,7 @@ if (!is_android) {
         "//chrome/browser:main_extra_parts",
         "//chrome/browser/ui/supervised_user",
         "//chrome/browser/ui/views/profiles:profile_management_types",
+        "//chrome/browser/ui/views/profiles:profile_picker_utils",
         "//chrome/browser/ui/views/supervised_user",
       ]
     }

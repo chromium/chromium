@@ -35,18 +35,6 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 // platforms. It is not available on the other profiles.
 class FirstRunService : public KeyedService {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class FinishedReason {
-    kExperimentCounterfactual = 0,
-    kFinishedFlow = 1,
-    kProfileAlreadySetUp = 2,
-    kSkippedByPolicies = 3,
-    kForceSignin = 4,
-
-    kMaxValue = kForceSignin,
-  };
-
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   FirstRunService(Profile& profile, signin::IdentityManager& identity_manager);
@@ -94,13 +82,14 @@ class FirstRunService : public KeyedService {
   void OpenFirstRunInternal();
 
   // Processes the outcome from the FRE and resumes the user's interrupted task.
-  void OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus status);
+  void OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus status,
+                           ProfilePicker::FirstRunFinishReason finish_reason);
 
   // Marks the first run as finished and updates the profile entry based on
   // the info obtained during the first run.
   // Noting that the latter part is done by calling `FinishProfileSetUp()`,
   // which will be done asynchronously in most cases.
-  void FinishFirstRun(FinishedReason reason);
+  void FinishFirstRun(ProfilePicker::FirstRunFinishReason reason);
 
   void FinishProfileSetUp(std::u16string profile_name);
 

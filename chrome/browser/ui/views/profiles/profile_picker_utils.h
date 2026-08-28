@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_UTILS_H_
 
 #include <memory>
+#include <optional>
+
+#include "chrome/browser/ui/profiles/profile_picker.h"
 
 namespace blink::mojom {
 class WindowFeatures;
@@ -15,16 +18,12 @@ namespace content {
 class WebContents;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 class GURL;
 class Profile;
-
-enum class FirstRunDevicePolicyEffect {
-  // The First Run experience can proceed unaffected.
-  kNone,
-
-  // The First Run experience should not run.
-  kDisabled,
-};
 
 // Opens the given `contents` as a 'Learn more' popup window with the given
 // `target_url` and `window_features`.
@@ -36,7 +35,10 @@ void OpenLearnMorePopup(Profile* profile,
                         const GURL& target_url,
                         const blink::mojom::WindowFeatures& window_features);
 
-// Computes the effect of device policies on the First Run experience.
-FirstRunDevicePolicyEffect ComputeFirstRunDevicePolicyEffect(Profile& profile);
+// Computes the skip reason for the First Run experience, if any. Returns
+// std::nullopt if the First Run experience should proceed.
+std::optional<ProfilePicker::FirstRunFinishReason> ComputeFirstRunSkipReason(
+    Profile& profile,
+    signin::IdentityManager& identity_manager);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_UTILS_H_

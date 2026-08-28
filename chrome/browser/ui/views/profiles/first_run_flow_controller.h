@@ -143,6 +143,8 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
+  ProfilePicker::FirstRunFinishReason finish_reason_ =
+      ProfilePicker::FirstRunFinishReason::kFinishedFlow;
 
   FinishOrContinueChoice finish_or_continue_choice_ =
       FinishOrContinueChoice::kStartBrowsing;

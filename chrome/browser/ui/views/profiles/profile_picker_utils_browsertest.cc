@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +27,9 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,8 +44,7 @@ using ProfilePickerUtilsBrowserTest = InProcessBrowserTest;
 struct PolicyTestParam {
   std::string_view key;
   std::string_view value;
-  FirstRunDevicePolicyEffect expected_policy_effect =
-      FirstRunDevicePolicyEffect::kDisabled;
+  bool is_first_run_disabled = true;
 };
 
 const PolicyTestParam kPolicyTestParams[] = {
@@ -49,7 +52,7 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.key = policy::key::kBrowserSignin, .value = "0"},
     {.key = policy::key::kBrowserSignin,
      .value = "1",
-     .expected_policy_effect = FirstRunDevicePolicyEffect::kNone},
+     .is_first_run_disabled = false},
 #if !BUILDFLAG(IS_LINUX)
     {.key = policy::key::kBrowserSignin, .value = "2"},
 #endif  // BUILDFLAG(IS_LINUX)
@@ -107,19 +110,41 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest,
-                       ComputeFirstRunDevicePolicyEffect) {
-  EXPECT_EQ(ComputeFirstRunDevicePolicyEffect(*browser()->GetProfile()),
-            FirstRunDevicePolicyEffect::kNone);
+                       ComputeFirstRunSkipReasonProfileAlreadyExists) {
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_EQ(
+      ComputeFirstRunSkipReason(*browser()->GetProfile(), *identity_manager),
+      std::nullopt);
+
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  EXPECT_EQ(
+      ComputeFirstRunSkipReason(*browser()->GetProfile(), *identity_manager),
+      ProfilePicker::FirstRunFinishReason::kProfileAlreadySetUp);
 }
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerUtilsPolicyBrowserTest,
-                       ComputeFirstRunDevicePolicyEffect) {
+                       ComputeFirstRunSkipReason) {
   signin_util::ResetForceSigninForTesting();
 
   SetPolicy(GetParam().key, GetParam().value);
 
-  EXPECT_EQ(ComputeFirstRunDevicePolicyEffect(*browser()->GetProfile()),
-            GetParam().expected_policy_effect);
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  std::optional<ProfilePicker::FirstRunFinishReason> expected_skip_reason;
+  if (GetParam().is_first_run_disabled) {
+    if (signin_util::IsForceSigninEnabled()) {
+      expected_skip_reason = ProfilePicker::FirstRunFinishReason::kForceSignin;
+    } else {
+      expected_skip_reason =
+          ProfilePicker::FirstRunFinishReason::kSkippedByPolicies;
+    }
+  }
+
+  EXPECT_EQ(
+      ComputeFirstRunSkipReason(*browser()->GetProfile(), *identity_manager),
+      expected_skip_reason);
 }
 
 INSTANTIATE_TEST_SUITE_P(

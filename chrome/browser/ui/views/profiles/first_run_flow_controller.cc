@@ -945,7 +945,7 @@ FirstRunFlowController::~FirstRunFlowController() {
   } else {
     // TODO(crbug.com/40276516): Revisit the enum value name for kQuitAtEnd.
     std::move(first_run_exited_callback_)
-        .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
+        .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd, finish_reason_);
   }
 }
 
@@ -1089,7 +1089,7 @@ void FirstRunFlowController::PickProfile(
 bool FirstRunFlowController::PreFinishWithBrowser() {
   DCHECK(first_run_exited_callback_);
   std::move(first_run_exited_callback_)
-      .Run(ProfilePicker::FirstRunExitStatus::kCompleted);
+      .Run(ProfilePicker::FirstRunExitStatus::kCompleted, finish_reason_);
 
   MaybeTriggerHatsSurvey();
 
@@ -1102,10 +1102,12 @@ bool FirstRunFlowController::is_feature_showcase_eligible() const {
 }
 
 void FirstRunFlowController::OnWelcomeCompleted() {
-  if (ComputeFirstRunDevicePolicyEffect(*profile_) !=
-      FirstRunDevicePolicyEffect::kNone) {
-    // TODO(crbug.com/469391064): Ensure metrics parity between old and new
-    // flows by propagating the skip reason to `FirstRunService`.
+  signin::IdentityManager& identity_manager =
+      CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile_));
+  if (const std::optional<ProfilePicker::FirstRunFinishReason> skip_reason =
+          ComputeFirstRunSkipReason(*profile_, identity_manager);
+      skip_reason.has_value()) {
+    finish_reason_ = *skip_reason;
     FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
     return;
   }

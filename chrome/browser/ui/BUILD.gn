@@ -2268,8 +2268,6 @@ static_library("ui") {
         "views/profiles/profile_picker_reauth_provider.h",
         "views/profiles/profile_picker_sign_in_provider.cc",
         "views/profiles/profile_picker_sign_in_provider.h",
-        "views/profiles/profile_picker_utils.cc",
-        "views/profiles/profile_picker_utils.h",
       ]
       deps += [
         "webui/signin/batch_upload:mojo_bindings",

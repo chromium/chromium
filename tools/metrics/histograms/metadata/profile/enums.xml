@@ -100,14 +100,17 @@ chromium-metrics-reviews@google.com.
              window etc..), experience is considered 'finished'"/>
 </enum>
 
+<!-- LINT.IfChange(FirstRunFinishReason) -->
+
 <enum name="FirstRunFinishReason">
   <int value="0" label="ExperimentCounterfactual (feature is disabled)"/>
   <int value="1" label="FinishedFlow (happy path)"/>
-  <int value="2"
-      label="ProfileAlreadySetUp (syncing on Lacros or signed in on Dice)"/>
+  <int value="2" label="ProfileAlreadySetUp (already signed in on DICE)"/>
   <int value="3" label="SkippedByPolicies"/>
   <int value="4" label="ForceSignin"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:FirstRunFinishReason) -->
 
 <enum name="NukeProfileResult">
   <int value="0" label="Success (1st attempt)"/>
