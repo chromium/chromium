@@ -12,6 +12,10 @@
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace views {
+class Label;
+}
+
 namespace ash {
 
 namespace {

@@ -12,6 +12,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 namespace ash {
 

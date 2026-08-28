@@ -28,6 +28,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 

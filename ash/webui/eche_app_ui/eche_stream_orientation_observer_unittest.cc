@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::eche_app {
 
