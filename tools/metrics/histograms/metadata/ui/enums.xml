@@ -173,6 +173,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_service.cc:InitialWebUIView) -->
 
+<!-- LINT.IfChange(InitialWebUIWindowMetricsManagerBindingStatus) -->
+
+<enum name="InitialWebUIWindowMetricsManagerBindingStatus">
+  <int value="0" label="BoundAtStart"/>
+  <int value="1" label="BoundDeferred"/>
+  <int value="2" label="NeverBound"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h:InitialWebUIWindowMetricsManagerBindingStatus) -->
+
 <!-- LINT.IfChange(PinInfoBarUserInteraction) -->
 
 <enum name="PinInfoBarUserInteraction">

@@ -11,6 +11,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
@@ -29,11 +33,23 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 using content::NavigationSimulator;
 using page_load_metrics::PageLoadMetricsObserverTester;
 
 namespace {
+
+class TestBrowserElements : public BrowserElements {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+
+  explicit TestBrowserElements(BrowserWindowInterface& browser)
+      : BrowserElements(browser) {}
+  ui::ElementContext GetContext() override { return ui::ElementContext(); }
+};
+
+DEFINE_SAFE_CAST_TARGET(TestBrowserElements)
 
 using ::testing::AllOf;
 using ::testing::Contains;
@@ -350,42 +366,145 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
   EXPECT_THAT(entries, IsEmpty());
 }
 
-TEST_F(InitialWebUIPageLoadMetricsObserverTest, RecordsDroppedPaintHistograms) {
+// Verifies that when a WebContents is already associated with a
+// BrowserWindowInterface prior to first paint, FCP is forwarded immediately
+// to the InitialWebUIWindowMetricsManager.
+TEST_F(InitialWebUIPageLoadMetricsObserverTest,
+       ForwardMonotonicFCPWithBrowserWindowInterface) {
   base::HistogramTester histograms;
+  MockBrowserWindowInterface mock_browser;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_browser, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  EXPECT_CALL(mock_browser, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+  TestBrowserElements browser_elements(mock_browser);
+
+  InitialWebUIWindowMetricsManager manager(&mock_browser);
+  manager.SkipStartupForTesting();
+  manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kBrowserInitiated, base::TimeTicks::Now());
+
+  // Associate the WebContents with the BrowserWindowInterface before FCP
+  webui::SetBrowserWindowInterface(web_contents(), &mock_browser);
 
   NavigateAndCommit(GURL(kTestWebUIUrl));
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
-  timing.monotonic_paint_timing =
-      page_load_metrics::mojom::MonotonicPaintTiming::New();
   base::TimeTicks nav_start =
       tester()->GetDelegateForCommittedLoad().GetNavigationStart();
-  timing.monotonic_paint_timing->first_paint = nav_start + base::Seconds(2);
+  timing.monotonic_paint_timing =
+      page_load_metrics::mojom::MonotonicPaintTiming::New();
   timing.monotonic_paint_timing->first_contentful_paint =
       nav_start + base::Seconds(2);
   PopulateRequiredTimingFields(&timing);
 
   tester()->SimulateTimingUpdate(timing);
 
-  histograms.ExpectUniqueSample(
-      "InitialWebUI.ReloadButton.DroppedFirstPaintFromNavigationStart", 2000,
+  histograms.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "ReloadButton.FirstContentfulPaint.FromConstructor2",
       1);
-  histograms.ExpectUniqueSample(
-      "InitialWebUI.ReloadButton.DroppedFirstContentfulPaint"
-      "FromNavigationStart",
-      2000, 1);
 
-  // Normal metrics should not be recorded since the manager was not present.
+  DeleteContents();
+
+  histograms.ExpectUniqueSample(
+      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
+      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
+          kBoundAtStart,
+      1);
   histograms.ExpectTotalCount(
-      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
-      "FirstPaint.FromConstructor2",
-      0);
+      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 0);
   histograms.ExpectTotalCount(
-      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
-      "FirstContentfulPaint.FromConstructor2",
+      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 0);
+}
+
+// Verifies that when a WebContents is prewarmed without an associated
+// BrowserWindowInterface, FCP is buffered and only flushed to the
+// InitialWebUIWindowMetricsManager once BrowserWindowInterface is attached.
+TEST_F(InitialWebUIPageLoadMetricsObserverTest,
+       DeferredMonotonicFCPForPrewarmedWebContents) {
+  base::HistogramTester histograms;
+  MockBrowserWindowInterface mock_browser;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_browser, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  EXPECT_CALL(mock_browser, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+  TestBrowserElements browser_elements(mock_browser);
+
+  InitialWebUIWindowMetricsManager manager(&mock_browser);
+  manager.SkipStartupForTesting();
+  manager.SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kBrowserInitiated, base::TimeTicks::Now());
+
+  // Navigate and emit FCP while prewarmed (no BrowserWindowInterface yet)
+  NavigateAndCommit(GURL(kTestWebUIUrl));
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  base::TimeTicks nav_start_deferred =
+      tester()->GetDelegateForCommittedLoad().GetNavigationStart();
+  timing.monotonic_paint_timing =
+      page_load_metrics::mojom::MonotonicPaintTiming::New();
+  timing.monotonic_paint_timing->first_contentful_paint =
+      nav_start_deferred + base::Seconds(2);
+  PopulateRequiredTimingFields(&timing);
+
+  tester()->SimulateTimingUpdate(timing);
+
+  // Still 0 before being attached to a browser window
+  histograms.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "ReloadButton.FirstContentfulPaint.FromConstructor2",
       0);
+
+  // Simulate window creation consuming the prewarmed WebContents
+  webui::SetBrowserWindowInterface(web_contents(), &mock_browser);
+
+  // Now the deferred FCP should be flushed to the manager
+  histograms.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      1);
+
+  DeleteContents();
+
+  histograms.ExpectUniqueSample(
+      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
+      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
+          kBoundDeferred,
+      1);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 1);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 0);
+}
+
+// Verifies that when a WebContents is prewarmed but destroyed before ever
+// being attached to a BrowserWindowInterface, WindowMetricsManagerBindingStatus
+// is recorded as NeverBound in the destructor.
+TEST_F(InitialWebUIPageLoadMetricsObserverTest,
+       WindowMetricsManagerNeverBoundWhenNeverAttached) {
+  base::HistogramTester histograms;
+
+  NavigateAndCommit(GURL(kTestWebUIUrl));
+
+  // Destroy WebContents without ever setting BrowserWindowInterface
+  DeleteContents();
+
+  histograms.ExpectUniqueSample(
+      "InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus",
+      InitialWebUIPageLoadMetricsObserver::WindowMetricsManagerBindingStatus::
+          kNeverBound,
+      1);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound", 0);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction", 1);
 }
 
 }  // namespace

@@ -183,6 +183,7 @@ source_set("impl") {
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/metrics_reporter",
       "//chrome/browser/ui/webui/omnibox_popup",
       "//chrome/browser/ui/webui/top_chrome",
@@ -276,8 +277,11 @@ source_set("unit_tests") {
       "page_load_metrics_initialize_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/webui:webui_util",
     ]
   }
 

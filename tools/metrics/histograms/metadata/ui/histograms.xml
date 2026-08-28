@@ -666,28 +666,6 @@ chromium-metrics-reviews@google.com.
   <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
-<histogram
-    name="InitialWebUI.ReloadButton.Dropped{PaintType}FromNavigationStart"
-    units="ms" expires_after="2027-01-10">
-  <owner>leimy@chromium.org</owner>
-  <owner>chrome-webium-product-eng@google.com</owner>
-  <summary>
-    Records the time from navigation start to {PaintType} for the Reload Button
-    when the InitialWebUIWindowMetricsManager was null and the metric was
-    dropped.
-
-    Note: This is measured from NavigationStart rather than FromConstructor
-    because the browser window creation timestamp is unavailable when the
-    metrics manager is null (e.g. for background prewarmed WebContents whose
-    paint occurs before a window constructor runs, or fast in-process loads
-    before the window reference is resolved).
-  </summary>
-  <token key="PaintType">
-    <variant name="FirstContentfulPaint"/>
-    <variant name="FirstPaint"/>
-  </token>
-</histogram>
-
 <histogram name="InitialWebUI.ReloadButton.InputCount"
     enum="ReloadButtonInputType" expires_after="2027-01-17">
   <owner>mych@chromium.org</owner>
@@ -985,6 +963,44 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the number of times that the Web UI Toolbar render process is
     terminated abnormmaly and it exceeds the recovery limit.
+  </summary>
+</histogram>
+
+<histogram name="InitialWebUI.Toolbar.TimeToWindowMetricsManagerBound"
+    units="ms" expires_after="2027-08-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded when the `InitialWebUIWindowMetricsManager` is bound to the
+    `InitialWebUIPageLoadMetricsObserver` after being initially unavailable
+    (e.g., for prewarmed WebContents waiting for a BrowserWindowInterface).
+    Measures the elapsed time from observer creation until the manager is bound.
+  </summary>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Toolbar.TimeWithoutWindowMetricsManagerOnDestruction"
+    units="ms" expires_after="2027-08-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded in `~InitialWebUIPageLoadMetricsObserver` upon destruction when no
+    `InitialWebUIWindowMetricsManager` was ever bound to the observer. Measures
+    the elapsed time from observer creation until destruction.
+  </summary>
+</histogram>
+
+<histogram name="InitialWebUI.Toolbar.WindowMetricsManagerBindingStatus"
+    enum="InitialWebUIWindowMetricsManagerBindingStatus"
+    expires_after="2027-08-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Recorded in `~InitialWebUIPageLoadMetricsObserver` upon destruction. Records
+    the binding status of `InitialWebUIWindowMetricsManager`: whether it was
+    bound immediately at start, bound deferred (after receiving the
+    `BrowserWindowInterface` change notification), or never bound before
+    destruction.
   </summary>
 </histogram>
 
