@@ -5158,7 +5158,7 @@
     },
     {
       name: "ResponsiveIframes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RestrictGamepadAccess",

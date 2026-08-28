@@ -240,6 +240,7 @@ fontVariantPosition
 fontVariationSettings
 fontWeight
 forcedColorAdjust
+frameSizing
 gap
 getPropertyPriority
 getPropertyValue
