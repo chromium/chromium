@@ -790,15 +790,14 @@ void ExpectOkResult(ActResultFuture& future) {
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
   const auto& action_results = future.Get();
-  bool found_error = false;
   for (const auto& action_result : action_results) {
     if (!IsOk(*action_result.result)) {
-      found_error = action_result.result->code == expected_code;
-      break;
+      EXPECT_EQ(action_result.result->code, expected_code);
+      return;
     }
   }
-  EXPECT_TRUE(found_error) << "Expected error code " << expected_code
-                           << " not found in action results.";
+  ADD_FAILURE() << "Expected error code " << expected_code
+                << " not found in action results.";
 }
 
 void ExpectElementDisabledResultWithReason(ActResultFuture& future,
