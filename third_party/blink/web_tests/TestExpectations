@@ -2640,8 +2640,8 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/553525690 [ Win ] external/wpt/html-aam/accname-computation-by-element/phrasing-elements.html [ Pass Timeout ]
-crbug.com/553525690 [ Win ] external/wpt/html-aam/accname-computation-by-element/section-and-grouping-elements.html [ Pass Timeout ]
+crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/phrasing-elements.html [ Pass Timeout ]
+crbug.com/553525690 external/wpt/html-aam/accname-computation-by-element/section-and-grouping-elements.html [ Pass Timeout ]
 crbug.com/553095398 external/wpt/html/syntax/parsing/custom-element-reparenting-shadow-cycle.html [ Crash ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-shadow-spread-elliptical.html [ Failure ]
