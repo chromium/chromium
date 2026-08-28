@@ -1255,10 +1255,9 @@ void ToolsMenuModel::Build(BrowserWindowInterface* browser) {
                          kPerformanceMenuItem);
 
   if (chrome::CanOpenTaskManager()) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_TASK_MANAGER_APP_MENU, IDS_TASK_MANAGER,
-        features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                          : kTaskManagerOldIcon);
+    AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER_APP_MENU,
+                                     IDS_TASK_MANAGER,
+                                     vector_icons::kTableChartIcon);
   }
 #if BUILDFLAG(IS_CHROMEOS)
   AddItemWithStringId(IDC_TAKE_SCREENSHOT, IDS_TAKE_SCREENSHOT);

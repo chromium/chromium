@@ -1270,8 +1270,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-            features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                              : kTaskManagerOldIcon)
+            vector_icons::kTableChartIcon)
             .Build());
 
     root_action_item_->AddChild(
@@ -1284,8 +1283,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionTaskManagerAppMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-            features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                              : kTaskManagerOldIcon,
+            vector_icons::kTableChartIcon,
             /*is_pinnable=*/false)
             .Build());
     root_action_item_->AddChild(
@@ -1298,8 +1296,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionTaskManagerShortcut, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-            features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                              : kTaskManagerOldIcon,
+            vector_icons::kTableChartIcon,
             /*is_pinnable=*/false)
             .Build());
     root_action_item_->AddChild(
@@ -1312,8 +1309,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionTaskManagerContextMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-            features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                              : kTaskManagerOldIcon,
+            vector_icons::kTableChartIcon,
             /*is_pinnable=*/false)
             .Build());
     root_action_item_->AddChild(
@@ -1326,8 +1322,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionTaskManagerMainMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-            features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                              : kTaskManagerOldIcon,
+            vector_icons::kTableChartIcon,
             /*is_pinnable=*/false)
             .Build());
   }

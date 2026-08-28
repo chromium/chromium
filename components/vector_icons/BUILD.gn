@@ -456,6 +456,7 @@ if (current_toolchain == default_toolchain) {
       "sync_saved_locally_off.icon",
       "sync_saved_locally_off_old.icon",
       "sync_saved_locally_old.icon",
+      "table_chart.icon",
       "tenancy_filled.icon",
       "tenancy_old.icon",
       "text_select_end.icon",

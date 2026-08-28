@@ -276,9 +276,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : kDevicesChromeRefreshOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kSendTabToSelf;
     case kActionTaskManager:
-      CHECK_EQ(icon,
-               &(features::IsRoundedIconsEnabled() ? kTableChartIcon
-                                                   : kTaskManagerOldIcon));
+      CHECK_EQ(icon, &vector_icons::kTableChartIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager;
     case kActionDevTools:
       CHECK_EQ(icon,

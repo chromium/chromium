@@ -29,6 +29,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 
 namespace ash {
@@ -235,8 +236,11 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
     }
   }
 
-  AddItemWithStringId(MENU_TASK_MANAGER,
-                      IDS_ASH_SHELF_CONTEXT_MENU_TASK_MANAGER);
+  AddItemWithStringIdAndIcon(
+      MENU_TASK_MANAGER, IDS_ASH_SHELF_CONTEXT_MENU_TASK_MANAGER,
+      ui::ImageModel::FromVectorIcon(vector_icons::kTableChartIcon,
+                                     ui::kColorAshSystemUIMenuIcon,
+                                     kAppContextMenuIconSize));
 }
 
 }  // namespace ash
