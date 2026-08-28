@@ -41,6 +41,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -438,16 +439,16 @@ public class MultiColumnSettingsUnitTest {
         private final MainSettings mMainSettings = new TestMainSettings();
         private Fragment mInitialDetailFragment;
         private boolean mInitialDetailFragmentCreated;
-        private @Nullable Boolean mIsTwoColumnForTesting;
+        private @TriState int mIsTwoColumnForTesting = TriState.NOT_SET;
 
-        void setIsTwoColumnForTesting(@Nullable Boolean isTwoColumn) {
+        void setIsTwoColumnForTesting(@TriState int isTwoColumn) {
             mIsTwoColumnForTesting = isTwoColumn;
         }
 
         @Override
         boolean isTwoColumn() {
-            if (mIsTwoColumnForTesting != null) {
-                return mIsTwoColumnForTesting;
+            if (mIsTwoColumnForTesting != TriState.NOT_SET) {
+                return mIsTwoColumnForTesting == TriState.TRUE;
             }
             return super.isTwoColumn();
         }
@@ -594,7 +595,7 @@ public class MultiColumnSettingsUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
-                    settings.setIsTwoColumnForTesting(true);
+                    settings.setIsTwoColumnForTesting(TriState.TRUE);
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
@@ -619,7 +620,7 @@ public class MultiColumnSettingsUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
-                    settings.setIsTwoColumnForTesting(false);
+                    settings.setIsTwoColumnForTesting(TriState.FALSE);
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
@@ -644,7 +645,7 @@ public class MultiColumnSettingsUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
-                    settings.setIsTwoColumnForTesting(false);
+                    settings.setIsTwoColumnForTesting(TriState.FALSE);
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
@@ -665,7 +666,7 @@ public class MultiColumnSettingsUnitTest {
                             headerGroup.getImportantForAccessibility());
 
                     // In two-column mode, header descendants are allowed.
-                    settings.setIsTwoColumnForTesting(true);
+                    settings.setIsTwoColumnForTesting(TriState.TRUE);
                     settings.updateHeaderPaneFocusability();
                     assertEquals(
                             ViewGroup.FOCUS_AFTER_DESCENDANTS,
@@ -687,7 +688,7 @@ public class MultiColumnSettingsUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
-                    settings.setIsTwoColumnForTesting(true);
+                    settings.setIsTwoColumnForTesting(TriState.TRUE);
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
@@ -737,7 +738,7 @@ public class MultiColumnSettingsUnitTest {
 
                     TestMultiColumnSettings settings = new TestMultiColumnSettings();
                     settingsHolder[0] = settings;
-                    settings.setIsTwoColumnForTesting(false);
+                    settings.setIsTwoColumnForTesting(TriState.FALSE);
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
