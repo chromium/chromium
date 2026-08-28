@@ -264,6 +264,10 @@ bool AtMemoryHandler::DidReceiveKeyDownForTriggerShortcut(
 void AtMemoryHandler::DidReceiveKeyDownForTriggerString(
     const WebElement& field,
     const WebKeyboardEvent& event) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemoryTriggerString)) {
+    return;
+  }
+
   if (IsModifierKey(event)) {
     return;
   }

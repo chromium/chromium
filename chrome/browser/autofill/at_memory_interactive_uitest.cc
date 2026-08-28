@@ -82,6 +82,9 @@ class AtMemoryInteractiveUiTest : public AutofillUiTest,
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAutofillKeydownEditableElement,
                               features::kAutofillAtMemory,
+                              features::kAutofillAtMemoryDoubleCtrl,
+                              features::kAutofillAtMemoryTriggerShortcut,
+                              features::kAutofillAtMemoryTriggerString,
                               features::debug::kAtMemorySkipEnablementChecks},
         /*disabled_features=*/{});
   }

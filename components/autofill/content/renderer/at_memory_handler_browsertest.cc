@@ -59,6 +59,7 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
         /*enabled_features=*/{blink::features::kAutofillKeydownEditableElement,
                               features::kAutofillAtMemoryDoubleCtrl,
                               features::kAutofillAtMemoryTriggerShortcut,
+                              features::kAutofillAtMemoryTriggerString,
                               features::kAutofillAtMemory},
         /*disabled_features=*/{});
   }

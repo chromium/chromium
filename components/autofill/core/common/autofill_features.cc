@@ -591,6 +591,9 @@ BASE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid,
 BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AtMemory can be triggered by typing the trigger string like "@@".
+BASE_FEATURE(kAutofillAtMemoryTriggerString, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against
 // either the label or the placeholder, depending on how high quality the label
