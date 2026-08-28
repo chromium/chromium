@@ -146,7 +146,8 @@ AutofillAiPersonalContextAccessManagerImpl::
         subscription_eligibility::SubscriptionEligibilityService*
             subscription_eligibility_service,
         PrefService* pref_service,
-        syncer::DeviceInfoSyncService* device_info_sync_service)
+        syncer::DeviceInfoSyncService* device_info_sync_service,
+        EntitySuppressionManager* suppression_manager)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
           CHECK_DEREF(personal_context_eligibility_service)),
@@ -157,6 +158,9 @@ AutofillAiPersonalContextAccessManagerImpl::
   if (subscription_eligibility_service) {
     subscription_eligibility_observation_.Observe(
         subscription_eligibility_service);
+  }
+  if (suppression_manager) {
+    suppression_observation_.Observe(suppression_manager);
   }
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
@@ -323,28 +327,29 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
               ToEntityType(entity.sensitive_pii_presence().type())) {
         entities.push_back({*type, entity});
       }
-    }
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillAmbientAutofillSpiiCache) &&
-        entity.entity_case() ==
-            personal_context::proto::Entity::kEncryptedEntity) {
-      if (std::optional<personal_context::proto::Entity> decrypted_entity =
-              personal_context_service_->DecryptEntity(entity)) {
-        // TODO(crbug.com/548257908): Mask the decrypted entity.
-        if (std::optional<EntityInstance> converted =
-                PersonalContextEntityToEntityInstance(*decrypted_entity)) {
-          // Cache only the encrypted `entity`.
-          entities.push_back({std::move(*converted), entity});
-        }
-      }
-    } else {
-      if (std::optional<EntityInstance> converted =
-              PersonalContextEntityToEntityInstance(entity)) {
-        entities.push_back({std::move(*converted), entity});
-      }
+    } else if (std::optional<EntityInstance> converted =
+                   ConvertProtoToEntityInstance(entity)) {
+      entities.push_back({std::move(*converted), entity});
     }
   }
   return entities;
+}
+
+std::optional<EntityInstance>
+AutofillAiPersonalContextAccessManagerImpl::ConvertProtoToEntityInstance(
+    const personal_context::proto::Entity& entity) const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSpiiCache) &&
+      entity.entity_case() ==
+          personal_context::proto::Entity::kEncryptedEntity) {
+    // TODO(crbug.com/548257908): Mask the decrypted entity.
+    return personal_context_service_->DecryptEntity(entity).and_then(
+        [](const personal_context::proto::Entity& decrypted) {
+          return PersonalContextEntityToEntityInstance(decrypted);
+        });
+  }
+
+  return PersonalContextEntityToEntityInstance(entity);
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
@@ -493,6 +498,8 @@ void AutofillAiPersonalContextAccessManagerImpl::ResetStateForType(
                     *this, type);
 }
 
+// TODO(crbug.com/40100455): Change std::vector<EntityType> parameters to
+// DenseSet<EntityType>.
 void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     std::vector<EntityType> prefetched_types,
     std::vector<EntityType> requested_types,
@@ -515,20 +522,25 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   // Also cache presence signals.
   std::vector<EntityInstance> entities;
   entities.reserve(parsed_entities.size());
+  const EntitySuppressionManager* suppression_manager =
+      suppression_observation_.GetSource();
   for (ParsedEntity& entity : parsed_entities) {
-    if (const EntityInstance* e_instance =
-            std::get_if<EntityInstance>(&entity.instance)) {
-      if (std::ranges::contains(requested_types, e_instance->type())) {
-        prefetched_proto_cache_.emplace(e_instance->guid(),
-                                        std::move(entity.proto));
-        entities.push_back(std::move(*e_instance));
+    if (const auto* signal =
+            std::get_if<SpiiEntityPresenceSignal>(&entity.instance)) {
+      if (std::ranges::contains(requested_types, *signal)) {
+        CachePresenceSignal(*signal);
       }
-    } else {
-      const SpiiEntityPresenceSignal signal =
-          std::get<SpiiEntityPresenceSignal>(entity.instance);
-      if (std::ranges::contains(requested_types, signal)) {
-        CachePresenceSignal(signal);
-      }
+      continue;
+    }
+
+    EntityInstance& instance = std::get<EntityInstance>(entity.instance);
+    if (!std::ranges::contains(requested_types, instance.type())) {
+      continue;
+    }
+
+    prefetched_proto_cache_.emplace(instance.guid(), std::move(entity.proto));
+    if (!suppression_manager || !suppression_manager->IsSuppressed(instance)) {
+      entities.push_back(std::move(instance));
     }
   }
 
@@ -743,6 +755,37 @@ void AutofillAiPersonalContextAccessManagerImpl::NotifyPrefetchStatusObservers(
   observers_.Notify(&AutofillAiPersonalContextAccessManager::Observer::
                         OnPrefetchContextComplete,
                     *this, entities);
+}
+
+void AutofillAiPersonalContextAccessManagerImpl::OnEntitySuppressionsChanged() {
+  if (prefetched_proto_cache_.empty()) {
+    return;
+  }
+
+  DenseSet<EntityType> cached_types;
+  std::vector<EntityInstance> unsuppressed_entities;
+  const EntitySuppressionManager* suppression_manager =
+      suppression_observation_.GetSource();
+  for (const auto& [id, proto] : prefetched_proto_cache_) {
+    std::optional<EntityInstance> converted =
+        ConvertProtoToEntityInstance(proto);
+    if (!converted) {
+      continue;
+    }
+    EntityInstance entity = converted->CopyWithNewEntityId(id);
+    cached_types.insert(entity.type());
+    if (!suppression_manager || !suppression_manager->IsSuppressed(entity)) {
+      unsuppressed_entities.push_back(std::move(entity));
+    }
+  }
+
+  for (EntityType type : cached_types) {
+    observers_.Notify(&AutofillAiPersonalContextAccessManager::Observer::
+                          OnMaskedEntityTypeEvicted,
+                      *this, type);
+  }
+
+  NotifyPrefetchStatusObservers(unsuppressed_entities);
 }
 
 }  // namespace autofill

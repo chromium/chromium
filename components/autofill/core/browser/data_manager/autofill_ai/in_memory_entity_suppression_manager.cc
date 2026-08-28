@@ -16,6 +16,14 @@ InMemoryEntitySuppressionManager::InMemoryEntitySuppressionManager() = default;
 
 InMemoryEntitySuppressionManager::~InMemoryEntitySuppressionManager() = default;
 
+void InMemoryEntitySuppressionManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void InMemoryEntitySuppressionManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool InMemoryEntitySuppressionManager::SuppressEntity(
     const EntityInstance& entity) {
   std::vector<EntitySuppressionEntry> entries =
@@ -23,7 +31,11 @@ bool InMemoryEntitySuppressionManager::SuppressEntity(
   size_t original_size = suppressed_entries_.size();
   suppressed_entries_.insert(std::make_move_iterator(entries.begin()),
                              std::make_move_iterator(entries.end()));
-  return suppressed_entries_.size() > original_size;
+  bool modified = suppressed_entries_.size() > original_size;
+  if (modified) {
+    observers_.Notify(&Observer::OnEntitySuppressionsChanged);
+  }
+  return modified;
 }
 
 bool InMemoryEntitySuppressionManager::UnsuppressEntity(
@@ -34,7 +46,11 @@ bool InMemoryEntitySuppressionManager::UnsuppressEntity(
   for (const EntitySuppressionEntry& entry : entries) {
     suppressed_entries_.erase(entry);
   }
-  return suppressed_entries_.size() < original_size;
+  bool modified = suppressed_entries_.size() < original_size;
+  if (modified) {
+    observers_.Notify(&Observer::OnEntitySuppressionsChanged);
+  }
+  return modified;
 }
 
 bool InMemoryEntitySuppressionManager::IsSuppressed(

@@ -32,6 +32,7 @@
 #endif
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -114,6 +115,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/origin.h"
+
+// TODO(crbug.com/40100455): Move this to a GN buildflag_header.
+#define PLATFORM_SUPPORTS_DEVICE_REAUTH                               \
+  (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+   BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS))
 
 namespace autofill {
 namespace {
@@ -420,6 +426,7 @@ class AutofillExternalDelegateTest : public testing::Test,
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client().set_personal_context_eligibility_service(
         mock_personal_context_service_.get());
+    autofill_client().set_entity_suppression_manager(&suppression_manager_);
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(
@@ -638,6 +645,7 @@ class AutofillExternalDelegateTest : public testing::Test,
       personal_context::MockPersonalContextEligibilityService>>
       mock_personal_context_service_;
 
+  InMemoryEntitySuppressionManager suppression_manager_;
   // Form containing the triggering field that initialized the external delegate
   // `OnQuery`.
   FormData queried_form_;
@@ -2738,8 +2746,7 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
                                           {.multi_index = {0}});
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+#if PLATFORM_SUPPORTS_DEVICE_REAUTH
 // Tests that when accepting a `kFillAutofillAi` suggestion that requires
 // re-authentication, the re-authentication flow is triggered and the form is
 // filled upon success.
@@ -3040,7 +3047,7 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
 }
-#endif
+#endif  // PLATFORM_SUPPORTS_DEVICE_REAUTH
 
 TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
   Suggestion manage_suggestion =
@@ -3245,8 +3252,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
                                           {.multi_index = {0}});
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+#if PLATFORM_SUPPORTS_DEVICE_REAUTH
 // Tests that when attempting to fill a masked server entity and re-auth fails,
 // no failure notification is displayed.
 TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
@@ -3449,6 +3455,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ASSERT_FALSE(get_unmasked_entity_callback.is_null());
   std::move(get_unmasked_entity_callback).Run(full_passport);
 }
+#endif  // PLATFORM_SUPPORTS_DEVICE_REAUTH
 
 class AutofillExternalDelegateWithAmbientAutofillTest
     : public AutofillExternalDelegateTest {
@@ -3459,6 +3466,7 @@ class AutofillExternalDelegateWithAmbientAutofillTest
             features::kAutofillAiWithDataSchema,
             features::kAutofillAiReauthRequired,
             features::kAutofillAmbientAutofill,
+            features::kAutofillAmbientAutofillSuppression,
             features::kAutofillAiWalletPrivatePasses,
 #if BUILDFLAG(IS_ANDROID)
             features::kAutofillAiShowPersonalContextFillingYourInfoDialog,
@@ -3473,8 +3481,10 @@ class AutofillExternalDelegateWithAmbientAutofillTest
         NiceMock<MockAutofillAiPersonalContextAccessManager>>();
     autofill_client().set_personal_context_access_manager(
         personal_context_manager_.get());
+#if PLATFORM_SUPPORTS_DEVICE_REAUTH
     autofill_client().GetPrefs()->SetBoolean(
         prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
+#endif
   }
 
   void TearDown() override {
@@ -3495,6 +3505,7 @@ class AutofillExternalDelegateWithAmbientAutofillTest
       personal_context_manager_;
 };
 
+#if PLATFORM_SUPPORTS_DEVICE_REAUTH
 // Tests that when accepting a `kFillAutofillAi` suggestion for a masked
 // personal context entity, the entity is fetched and a loading state is shown
 // if it is async.
@@ -3847,7 +3858,30 @@ TEST_F(
   std::move(get_unmasked_entity_callback).Run(full_passport);
 }
 
-#endif
+#endif  // PLATFORM_SUPPORTS_DEVICE_REAUTH
+
+// Tests that accepting a `kRemoveAutofillAi` suggestion suppresses the
+// corresponding entity in `EntitySuppressionManager`.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       DidAcceptSuggestion_RemoveAutofillAi_SuppressesEntity) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{full_passport});
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion remove_suggestion(SuggestionType::kRemoveAutofillAi);
+  remove_suggestion.payload =
+      Suggestion::AutofillAiPayload(full_passport.guid());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                              Eq(std::nullopt)));
+
+  external_delegate().DidAcceptSuggestion(remove_suggestion,
+                                          {.multi_index = {0}});
+
+  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
+      full_passport));
+}
 
 TEST_F(AutofillExternalDelegateTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
@@ -5043,3 +5077,5 @@ TEST_F(AutofillExternalDelegateTest,
 }  // namespace
 
 }  // namespace autofill
+
+#undef PLATFORM_SUPPORTS_DEVICE_REAUTH

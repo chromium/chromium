@@ -33,6 +33,9 @@ class AutofillAiPersonalContextAccessManager : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
+    // TODO(crbug.com/516721244): Merge `OnPrefetchContextComplete` and
+    // `OnMaskedEntityTypeEvicted` into a single callback.
+
     // Called when asynchronous prefetching of entities through
     // `PrefetchContext()` finishes. If prefetching succeeded, `entities`
     // contains the result. In case it failed or the response was empty,

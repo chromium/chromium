@@ -70,5 +70,6 @@ IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<autofill::AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
       subscription_eligibility_service, profile->GetPrefs(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      /*suppression_manager=*/nullptr);
 }

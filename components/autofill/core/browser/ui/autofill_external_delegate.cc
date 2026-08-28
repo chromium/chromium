@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -1203,8 +1204,17 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // `RemoveSuggestion`.
       return;
     case SuggestionType::kRemoveAutofillAi:
-      // TODO(crbug.com/541184575): Implement suppression/removal of the entity.
-      NOTIMPLEMENTED();
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillAmbientAutofillSuppression)) {
+        break;
+      }
+      if (const base::optional_ref<const EntityInstance> entity =
+              GetEntityInstance(suggestion)) {
+        if (EntitySuppressionManager* suppression_manager =
+                manager_->client().GetEntitySuppressionManager()) {
+          suppression_manager->SuppressEntity(*entity);
+        }
+      }
       break;
     case SuggestionType::kAutofillAiSourceAttribution:
       // TODO(crbug.com/541184575): Implement navigation to source URL.

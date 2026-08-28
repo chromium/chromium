@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_MANAGER_H_
 
+#include "base/observer_list_types.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -16,7 +17,15 @@ namespace autofill {
 // constraints.
 class EntitySuppressionManager : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEntitySuppressionsChanged() {}
+  };
+
   ~EntitySuppressionManager() override = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Suppresses an entity by recording its satisfied merge constraints.
   // Returns true if suppression status was modified.
