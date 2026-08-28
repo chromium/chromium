@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -388,7 +389,7 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady) {
   EXPECT_EQ(u"Second page content", segments[1]->text);
 }
 
-TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady_EmptyPageHtml) {
+TEST_F(ReadAloudServiceTest, DistillPageAndArticleReadyEmptyPageHtml) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
   SetFakeController(std::make_unique<FakePlaybackController>());
@@ -1063,10 +1064,7 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
-TEST_F(ReadAloudServiceTest,
-       SetVoiceAndLanguageCodeForwardsToSpeechSynthesisBroker) {
-  // Verifies that SetVoice and SetLanguageCode do not crash and forward
-  // parameters.
+TEST_F(ReadAloudServiceTest, SetVoiceAndLanguageCodeForwardsToBroker) {
   service()->SetVoice("es-ES-Wavenet-B");
   service()->SetLanguageCode("es");
 }
@@ -1128,6 +1126,22 @@ TEST_F(ReadAloudServiceTest, CheckReadability) {
   service()->CheckReadability(invalid_url);
 
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest,
+       RequestSpeechSynthesisDelegatesToBrokerAndHandlesError) {
+  bool callback_called = false;
+  service()->RequestSpeechSynthesis(
+      /*text_chunk=*/u"Hello world", /*sequence_id=*/1,
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            // No OptGuide service configured on TestingProfile in basic unit
+            // test setup, so expects false gracefully.
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace readaloud

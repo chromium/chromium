@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
@@ -461,7 +463,19 @@ void ReadAloudService::RequestSpeechSynthesis(
     uint64_t sequence_id,
     read_aloud::mojom::ReadAloudPlaybackControllerClient::
         RequestSpeechSynthesisCallback callback) {
-  std::move(callback).Run(mojo_base::BigBuffer(), false);
+  if (!speech_synthesis_broker_) {
+    std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+    return;
+  }
+
+  OptimizationGuideKeyedService* opt_guide_service = nullptr;
+  if (profile_) {
+    opt_guide_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  }
+
+  speech_synthesis_broker_->SynthesizeSpeech(opt_guide_service, text_chunk,
+                                             std::move(callback));
 }
 
 }  // namespace readaloud

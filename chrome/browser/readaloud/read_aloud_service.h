@@ -235,6 +235,7 @@ class ReadAloudService
   // utility process is connected.
   void Initialize(content::WebContents* web_contents);
 
+  // TODO(b/553612030): Refactor out GetViewerHandleForTesting().
   dom_distiller::ViewerHandle* GetViewerHandleForTesting() const {
     return viewer_handle_.get();
   }
