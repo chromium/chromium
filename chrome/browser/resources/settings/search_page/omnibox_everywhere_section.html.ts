@@ -13,8 +13,7 @@ export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
       class="first"
       pref-key="omnibox_everywhere.enabled"
       label="$i18n{omniboxEverywhereToggleTitle}"
-      sub-label="$i18n{omniboxEverywhereToggleSublabel}"
-      learn-more-url="$i18n{omniboxEverywhereLearnMoreURL}">
+      sub-label="$i18n{omniboxEverywhereToggleSublabel}">
   </settings-toggle-button>
 
   <cr-collapse id="expandedContent" ?opened="${this.isEnabled_}">

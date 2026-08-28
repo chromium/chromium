@@ -3221,26 +3221,29 @@ Chromium is unable to recover your settings.
         </message>
       </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
-        Search in Chromium
+        Search with Chromium
       </message>
       <if expr="is_macosx">
-        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search in Chromium is shown in the Mac menu bar (on Mac only).">
-          Show Search in Chromium in Mac menu bar and turn on keyboard shortcut
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chromium is shown in the Mac menu bar (on Mac only).">
+          Show search with Chromium in Mac menu bar and turn on keyboard shortcut
         </message>
       </if>
       <if expr="is_win or is_linux or is_chromeos">
-        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search in Chromium is shown in the system tray (on ChromeOS, Windows and Linux).">
-          Show Search in Chromium in system tray and turn on keyboard shortcut
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chromium is shown in the system tray (on ChromeOS, Windows and Linux).">
+          Show search with Chromium in system tray and turn on keyboard shortcut
         </message>
       </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether Omnibox Everywhere is shown across the device even if Chromium is minimized.">
-        Easy access to use Search in Chromium across your device, even if Chromium is minimized.
+        Search and ask questions from anywhere, even if Chromium is minimized
       </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHORTCUT_SUBLABEL" desc="Description for the global keyboard shortcut setting to invoke Omnibox Everywhere.">
-        Open Search in Chromium with a keyboard shortcut.
+        Search with a keyboard shortcut.
+      </message>
+      <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE" desc="Label for the toggle to show shortcuts in Omnibox Everywhere.">
+        Show Chromium site shortcuts
       </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_SUBLABEL" desc="Description for the toggle to show shortcuts in Omnibox Everywhere.">
-        Easy access to your shortcuts from Search in Chromium
+        Easy access to websites below the address bar
       </message>
       <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux)." formatter_data="android_java">
         Easy access to use Gemini in Chromium across your device, even if Chromium is minimized.

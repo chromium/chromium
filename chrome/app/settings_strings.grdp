@@ -2147,9 +2147,6 @@
     <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHORTCUT_TITLE" desc="Label for the global keyboard shortcut setting to invoke Omnibox Everywhere.">
       Keyboard shortcut
     </message>
-    <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE" desc="Label for the toggle to show shortcuts in Omnibox Everywhere.">
-      Show shortcuts
-    </message>
     <message name="IDS_SETTINGS_SEARCH_ACTIVATE" desc="Text of the button that activates a search engine" meaning="To turn on/enable usage of the search engine">
       Turn on
     </message>

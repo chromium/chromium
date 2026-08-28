@@ -3242,26 +3242,29 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
-        Search in Chrome
+        Search with Chrome
       </message>
       <if expr="is_macosx">
-        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search in Chrome is shown in the Mac menu bar (on Mac only).">
-          Show Search in Chrome in Mac menu bar and turn on keyboard shortcut
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chrome is shown in the Mac menu bar (on Mac only).">
+          Show search with Chrome in Mac menu bar and turn on keyboard shortcut
         </message>
       </if>
       <if expr="is_win or is_linux or is_chromeos">
-        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search in Chrome is shown in the system tray (on ChromeOS, Windows and Linux).">
-          Show Search in Chrome in system tray and turn on keyboard shortcut
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chrome is shown in the system tray (on ChromeOS, Windows and Linux).">
+          Show search with Chrome in system tray and turn on keyboard shortcut
         </message>
       </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether Omnibox Everywhere is shown across the device even if Chrome is minimized.">
-        Easy access to use Search in Chrome across your device, even if Chrome is minimized.
+        Search and ask questions from anywhere, even if Chrome is minimized
       </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHORTCUT_SUBLABEL" desc="Description for the global keyboard shortcut setting to invoke Omnibox Everywhere.">
-        Open Search in Chrome with a keyboard shortcut.
+        Search with a keyboard shortcut.
+      </message>
+      <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE" desc="Label for the toggle to show shortcuts in Omnibox Everywhere.">
+        Show Chrome site shortcuts
       </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_SUBLABEL" desc="Description for the toggle to show shortcuts in Omnibox Everywhere.">
-        Easy access to your shortcuts from Search in Chrome
+        Easy access to websites below the address bar
       </message>
       <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux)." formatter_data="android_java">
         Easy access to use Gemini in Chrome across your device, even if Chrome is minimized.
