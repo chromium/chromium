@@ -134,6 +134,57 @@ export class MapperServerCdpConnection {
     debugInfo('exceptionThrown:', params);
   };
 
+  /**
+   * Creates the hidden mapper target.
+   *
+   * Note: This Node.js runner is used solely for e2e test runs.
+   *
+   * When creating a hidden target, Chromium's DevTools target handler validates
+   * that at least one frame target exists in `DevToolsManagerDelegate`.
+   * During early browser startup, there is an ephemeral race condition where
+   * the initial window/frame target is not yet registered, causing
+   * `Target.createTarget({hidden: true})` to temporarily fail with
+   * "Hidden target can be created only when remote debugging is enabled".
+   * We retry with backoff to allow the initial frame target to be registered.
+   */
+  static async #createMapperTarget(
+    browserClient: MapperCdpClient,
+  ): Promise<Protocol.Target.TargetID> {
+    const timeout = 10_000;
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+      try {
+        const {targetId} = await browserClient.sendCommand(
+          'Target.createTarget',
+          {
+            url: 'about:blank#MAPPER_TARGET',
+            hidden: true,
+            background: true,
+          } as any,
+        );
+        return targetId;
+      } catch (error: any) {
+        if (
+          !error?.message?.includes(
+            'Hidden target can be created only when remote debugging is enabled',
+          ) &&
+          !String(error).includes(
+            'Hidden target can be created only when remote debugging is enabled',
+          )
+        ) {
+          throw error;
+        }
+        debugInternal(
+          'Waiting for remote debugging targets to become available...',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+    }
+    throw new Error(
+      `Timed out after ${timeout}ms waiting for remote debugging targets to become available`,
+    );
+  }
+
   static async #initMapper(
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
@@ -143,14 +194,7 @@ export class MapperServerCdpConnection {
 
     const browserClient = await cdpConnection.createBrowserSession();
 
-    const {targetId: mapperTargetId} = await browserClient.sendCommand(
-      'Target.createTarget',
-      {
-        url: 'about:blank#MAPPER_TARGET',
-        hidden: true,
-        background: true,
-      } as any,
-    );
+    const mapperTargetId = await this.#createMapperTarget(browserClient);
 
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
