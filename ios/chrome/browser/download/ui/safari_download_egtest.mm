@@ -136,6 +136,27 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that a warning alert is dismissed when same-tab cross-document
+// web state navigation occurs.
+- (void)testDownloadAlertDismissedOnNavigation {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Mobileconfig"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"mobileconfig"];
+
+  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
+                 IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE)),
+             @"The warning alert did not show up");
+
+  // Navigate to another page in the same tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Verify the warning alert is dismissed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE))]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests that the correct warning alert is shown and when tapping 'Continue' a
 // SFSafariViewController is presented.
 - (void)testCalendarDownloadAndContinue {

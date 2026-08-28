@@ -34,8 +34,8 @@ class SafariDownloadTabHelperTest : public PlatformTest {
 };
 
 // Tests that a calendar alert deferred while the WebState was hidden is
-// dropped upon observing a cross-document navigation.
-TEST_F(SafariDownloadTabHelperTest, DeferredCalendarDroppedOnNavigation) {
+// dropped upon observing a cross-document navigation start.
+TEST_F(SafariDownloadTabHelperTest, DeferredCalendarDroppedOnNavigationStart) {
   web_state_.WasHidden();
 
   auto task =
@@ -60,4 +60,67 @@ TEST_F(SafariDownloadTabHelperTest, DeferredCalendarDroppedOnNavigation) {
 
   web_state_.WasShown();
   EXPECT_OCMOCK_VERIFY(mock_delegate_visible);
+}
+
+// Tests that a calendar alert deferred during provisional navigation is
+// dropped upon observing a committed cross-document navigation finish.
+TEST_F(SafariDownloadTabHelperTest, DeferredCalendarDroppedOnNavigationFinish) {
+  web_state_.WasHidden();
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationStarted(&context);
+
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "text/calendar");
+
+  id mock_delegate =
+      OCMProtocolMock(@protocol(SafariDownloadTabHelperDelegate));
+  tab_helper()->set_delegate(mock_delegate);
+  [[mock_delegate reject] presentCalendarAlertFromURL:OCMOCK_ANY];
+
+  tab_helper()->DownloadCalendar(std::move(task));
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+
+  web_state_.OnNavigationFinished(&context);
+
+  id mock_delegate_visible =
+      OCMProtocolMock(@protocol(SafariDownloadTabHelperDelegate));
+  tab_helper()->set_delegate(mock_delegate_visible);
+  [[mock_delegate_visible reject] presentCalendarAlertFromURL:OCMOCK_ANY];
+
+  web_state_.WasShown();
+  EXPECT_OCMOCK_VERIFY(mock_delegate_visible);
+}
+
+// Tests that dismissDownloadAlert is called upon observing a cross-document
+// navigation start.
+TEST_F(SafariDownloadTabHelperTest, DismissDownloadAlertOnNavigationStart) {
+  id mock_delegate =
+      OCMProtocolMock(@protocol(SafariDownloadTabHelperDelegate));
+  tab_helper()->set_delegate(mock_delegate);
+  OCMExpect([mock_delegate dismissDownloadAlert]);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  web_state_.OnNavigationStarted(&context);
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+}
+
+// Tests that dismissDownloadAlert is called upon observing a committed
+// cross-document navigation finish.
+TEST_F(SafariDownloadTabHelperTest, DismissDownloadAlertOnNavigationFinish) {
+  id mock_delegate =
+      OCMProtocolMock(@protocol(SafariDownloadTabHelperDelegate));
+  tab_helper()->set_delegate(mock_delegate);
+  OCMExpect([mock_delegate dismissDownloadAlert]);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&context);
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
 }

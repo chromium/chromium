@@ -56,6 +56,8 @@ class SafariDownloadTabHelper
   void WasShown(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
 
   // Enum representing the type of download triggered using
   // SFSafariViewController.

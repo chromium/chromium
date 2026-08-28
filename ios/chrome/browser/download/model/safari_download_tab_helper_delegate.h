@@ -22,6 +22,9 @@
 // are trying to download. If `fileURL` is nil then this is no-op.
 - (void)presentAppleWalletOrderAlertFromURL:(NSURL*)fileURL;
 
+// Dismisses the active download alert, if any.
+- (void)dismissDownloadAlert;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_SAFARI_DOWNLOAD_TAB_HELPER_DELEGATE_H_
