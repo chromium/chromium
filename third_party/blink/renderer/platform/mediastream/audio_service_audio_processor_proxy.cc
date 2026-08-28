@@ -74,6 +74,10 @@ void AudioServiceAudioProcessorProxy::MaybeUpdateNumPreferredCaptureChannels(
 
 void AudioServiceAudioProcessorProxy::SetVoiceIsolation(bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  if (voice_isolation_enabled_.has_value() &&
+      *voice_isolation_enabled_ == enabled) {
+    return;
+  }
   voice_isolation_enabled_ = enabled;
   if (processor_controls_) {
     processor_controls_->SetVoiceIsolation(enabled);
