@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
   ExpectErrorResult(result,
-                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   observer.VerifyTabCountRestored();
   EXPECT_EQ(observer.tabs_added_count(), 1);

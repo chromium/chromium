@@ -136,36 +136,39 @@ constexpr GateableEventSet kRequestsAndPageActions = {
     GateableEvent::kNavigationRequest, GateableEvent::kPageAction};
 
 // Splits a navigation gating callback, storing one split in
-// `pending_cancellations` (to invoke `arg_for_cancel_callback` when pending
-// navigations are cancelled) and another in a ScopedClosureRunner (to invoke
-// `arg_for_cancel_callback` if the callback is dropped before execution).
-// Returns a wrapped callback that disarms both upon normal invocation.
+// `pending_cancellations` (to invoke with `block_reason_if_dropped` when
+// pending navigations are cancelled) and another in a ScopedClosureRunner (to
+// invoke with `block_reason_if_dropped` if the callback is dropped before
+// execution).  Returns a wrapped callback that disarms both upon normal
+// invocation.
 ExecutionEngine::NavigationDecisionCallback TrackPendingNavigation(
     base::OnceCallbackList<void()>& pending_cancellations,
     ExecutionEngine::NavigationDecisionCallback callback,
-    bool arg_for_cancel_callback) {
+    MayActOnUrlBlockReason block_reason_if_dropped) {
   auto [cancel_1, temp] = base::SplitOnceCallback(std::move(callback));
   auto [cancel_2, wrapped] = base::SplitOnceCallback(std::move(temp));
 
   auto runner =
       base::MakeRefCounted<base::RefCountedData<base::ScopedClosureRunner>>(
           base::ScopedClosureRunner(
-              base::BindOnce(std::move(cancel_2), arg_for_cancel_callback)));
+              base::BindOnce(std::move(cancel_2), block_reason_if_dropped)));
 
   base::CallbackListSubscription subscription =
       pending_cancellations.Add(base::BindOnce(
           [](scoped_refptr<base::RefCountedData<base::ScopedClosureRunner>>
                  runner,
-             base::OnceCallback<void(bool)> cancel_cb, bool arg) {
+             ExecutionEngine::NavigationDecisionCallback cancel_cb,
+             MayActOnUrlBlockReason arg) {
             runner->data.ReplaceClosure(base::DoNothing());
             std::move(cancel_cb).Run(arg);
           },
-          runner, std::move(cancel_1), arg_for_cancel_callback));
+          runner, std::move(cancel_1), block_reason_if_dropped));
 
   return base::BindOnce(
              [](scoped_refptr<base::RefCountedData<base::ScopedClosureRunner>>
                     runner,
-                base::CallbackListSubscription sub, bool arg) {
+                base::CallbackListSubscription sub,
+                MayActOnUrlBlockReason arg) {
                runner->data.ReplaceClosure(base::DoNothing());
                return arg;
              },
@@ -822,7 +825,8 @@ void ExecutionEngine::ShouldNavigationCommit(
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!IsNavigationGatingEnabled()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), MayActOnUrlBlockReason::kAllowed));
     return;
   }
 
@@ -840,7 +844,7 @@ void ExecutionEngine::ShouldNavigationCommit(
   auto event = GateableEvent::kNavigationResponse;
   auto wrapped_callback = TrackPendingNavigation(
       pending_navigation_cancellations_, std::move(callback),
-      /*arg_for_cancel_callback=*/false);
+      /*block_reason_if_dropped=*/MayActOnUrlBlockReason::kTaskCancelled);
   origin_gating_checker_.ComputeGatingDecision(
       std::make_unique<NavigationResponseContext>(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
@@ -904,7 +908,8 @@ void ExecutionEngine::OnComputedGatingDecision(
                response_context->response_mime_type.value_or("null"))
           .Build());
 
-  std::move(callback).Run(decision.is_allowed);
+  std::move(callback).Run(
+      MapGatingDecisionToBlockReason(decision, destination_origin.GetURL()));
 }
 
 void ExecutionEngine::LogNavigationGating(
@@ -1075,7 +1080,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     ukm::SourceId ukm_source_id,
     base::ScopedUmaHistogramTimer timer,
     State engine_state,
-    ExecutionEngine::NavigationDecisionCallback callback,
+    base::OnceCallback<void(bool)> callback,
     webui::mojom::NavigationConfirmationResponsePtr response) {
   switch (response->result->which()) {
     case webui::mojom::ConfirmationRequestResult::Tag::kPermissionGranted: {
@@ -1131,7 +1136,7 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
 
 void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
     const url::Origin& destination,
-    ExecutionEngine::NavigationDecisionCallback callback,
+    base::OnceCallback<void(bool)> callback,
     webui::mojom::UserConfirmationDialogResponsePtr response) {
   switch (response->result->which()) {
     case webui::mojom::ConfirmationRequestResult::Tag::kPermissionGranted: {

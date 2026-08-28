@@ -110,6 +110,8 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
     case MayActOnUrlBlockReason::kOptimizationGuideBlock:
     case MayActOnUrlBlockReason::kBlockedByContainerConfig:
       return generic_block_code;
+    case MayActOnUrlBlockReason::kTaskCancelled:
+      return ActionResultCode::kTaskWentAway;
   }
 }
 

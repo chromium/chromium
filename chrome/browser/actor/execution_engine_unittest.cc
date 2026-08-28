@@ -1077,11 +1077,11 @@ TEST_F(ExecutionEngineNavigationGatingTest,
   content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
   navigation_handle.set_initiator_origin(kInitiatorOrigin);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   task_->GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                                      future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kAllowed);
 
   histograms_.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision2",
@@ -1112,11 +1112,11 @@ TEST_F(ExecutionEngineNavigationGatingTest,
 
   content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   task_->GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                                      future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kAllowed);
 
   // Verify that SameOriginSource is true, indicating it used the precursor
   // origin.
@@ -1541,11 +1541,11 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                               future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest,
@@ -1564,11 +1564,11 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                               future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kOptimizationGuideBlock);
 }
 
 struct MimeTestCase {
@@ -1584,7 +1584,11 @@ class ExecutionEngineMimeGatingTest
     return GetParam().content_type_header;
   }
 
-  bool expected_allowed() const { return GetParam().expected_allowed; }
+  MayActOnUrlBlockReason expected_reason() const {
+    return GetParam().expected_allowed
+               ? MayActOnUrlBlockReason::kAllowed
+               : MayActOnUrlBlockReason::kDangerousMimeType;
+  }
 };
 
 TEST_P(ExecutionEngineMimeGatingTest, HandlesMimeTypes) {
@@ -1609,11 +1613,11 @@ TEST_P(ExecutionEngineMimeGatingTest, HandlesMimeTypes) {
   }
   navigation_handle.set_response_headers(builder.Build());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                               future.GetCallback());
 
-  EXPECT_EQ(future.Get(), expected_allowed());
+  EXPECT_EQ(future.Get(), expected_reason());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -1659,11 +1663,11 @@ TEST_F(ExecutionEngineUrlGatingTest,
   builder.AddHeader("Content-Type", "application/json");
   navigation_handle.set_response_headers(builder.Build());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<MayActOnUrlBlockReason> future;
   GetExecutionEngine().ShouldNavigationCommit(navigation_handle,
                                               future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
 }  // namespace

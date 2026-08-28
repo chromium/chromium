@@ -80,9 +80,9 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       MayActOnUrlBlockReason block_reason);
 
-  // Adds to the journal and resumes/cancels the navigation if needed. Must not
+  // Adds to the journal and resumes/cancels the navigation as needed. Must not
   // be called for prerendered main frame navigations.
-  void OnNavigationConfirmationDecision(bool may_continue);
+  void OnNavigationConfirmationDecision(MayActOnUrlBlockReason block_reason);
 
   // Decision handlers for navigation throttle outcomes.
   void OnUserLeaveDialogDecision(bool may_continue);

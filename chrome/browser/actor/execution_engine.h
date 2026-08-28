@@ -255,10 +255,9 @@ class ExecutionEngine : public ToolDelegate,
       std::unique_ptr<actor_login::ActorLoginService> actor_login_service);
 
   // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
-  // the web client, receives its response. This callback gets a boolean
-  // indicating if navigation should continue.
+  // the web client, receives its response.
   using NavigationDecisionCallback =
-      base::OnceCallback<void(bool may_continue)>;
+      base::OnceCallback<void(MayActOnUrlBlockReason)>;
 
   // Invokes `callback` with a value indicating how the given navigation should
   // be handled (proceed, cancel and ignore). This method must only be called on
@@ -437,7 +436,7 @@ class ExecutionEngine : public ToolDelegate,
       ukm::SourceId ukm_source_id,
       base::ScopedUmaHistogramTimer timer,
       State engine_state,
-      NavigationDecisionCallback callback,
+      base::OnceCallback<void(bool)> callback,
       webui::mojom::NavigationConfirmationResponsePtr response);
 
   // Makes the web client confirm with the user that the actor is allowed to
@@ -449,7 +448,7 @@ class ExecutionEngine : public ToolDelegate,
       base::OnceCallback<void(NoVerdictResult)> callback);
   void OnPromptUserToConfirmNavigationDecision(
       const url::Origin& destination,
-      NavigationDecisionCallback callback,
+      base::OnceCallback<void(bool)> callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
   State state_ = State::kInit;

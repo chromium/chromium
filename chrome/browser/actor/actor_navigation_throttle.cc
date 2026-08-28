@@ -115,8 +115,8 @@ ActorNavigationThrottle::WillProcessResponse() {
 }
 
 void ActorNavigationThrottle::OnNavigationConfirmationDecision(
-    bool may_continue) {
-  if (may_continue) {
+    MayActOnUrlBlockReason block_reason) {
+  if (block_reason == MayActOnUrlBlockReason::kAllowed) {
     Resume();
     return;
   }
@@ -128,7 +128,7 @@ void ActorNavigationThrottle::OnNavigationConfirmationDecision(
   // tool usage, consider the action a failure.
   if (navigation_handle()->IsInPrimaryMainFrame() && execution_engine_) {
     execution_engine_->FailCurrentTool(
-        mojom::ActionResultCode::kTriggeredNavigationBlocked);
+        BlockReasonToResultCode(block_reason, /*for_navigation=*/true));
   }
   CancelDeferredNavigation(CANCEL_AND_IGNORE);
 }

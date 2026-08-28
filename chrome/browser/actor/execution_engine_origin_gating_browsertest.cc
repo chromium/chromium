@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
       ToRequestList(MakeNavigateRequest(*active_tab(), start_url.spec())),
       result.GetCallback());
   ExpectErrorResult(result,
-                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision2",
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", blocked_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ClickTarget("#link", mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision2",
@@ -1164,7 +1164,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(navigate_to_blocked), result.GetCallback());
   ExpectErrorResult(result,
-                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   StopAllTasks();
 
@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", blocked_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ClickTarget("#link", mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   // First navigation should be allowed due to same origin.
   histogram_tester.ExpectBucketCount(
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(navigate_blocked), result.GetCallback());
   ExpectErrorResult(result,
-                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
   // Second navigation should be blocked by static blocklist = 3.
   histogram_tester.ExpectBucketCount(
       "Actor.NavigationGating.GatingDecision2",
@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setLink($1);", sandboxed_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ClickTarget("#link", mojom::ActionResultCode::kActionsBlockedForSiteRisk);
 
   // First navigation should be allowed due to same origin.
   histogram_tester.ExpectBucketCount(
