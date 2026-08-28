@@ -35,4 +35,7 @@ inline constexpr char kContextualTasksTutorialId[] =
 inline constexpr char kContextualTasksTutorialMetricPrefix[] =
     "ContextualTasks";
 
+inline constexpr char kSaveVideoFrameTutorialId[] = "Save Video Frame Tutorial";
+inline constexpr char kSaveVideoFrameTutorialMetricPrefix[] = "SaveVideoFrame";
+
 #endif  // CHROME_BROWSER_USER_EDUCATION_TUTORIAL_IDENTIFIERS_H_

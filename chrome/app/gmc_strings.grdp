@@ -52,4 +52,16 @@
   <message name="IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS" desc="Title of a menu item which, on click, toggles (shows or hides) Cast sessions started by other devices on the same network.">
    Show other cast sessions
   </message>
+  <message name="IDS_GMC_SAVE_VIDEO_FRAME_PROMO_TEXT" desc="Promo text for the Save Video Frame In-Product Help bubble.">
+   Save an image of the video frame from Media Controls
+  </message>
+  <message name="IDS_GMC_SAVE_VIDEO_FRAME_TUTORIAL_STEP_1" desc="Step 1 of the Save Video Frame IPH tutorial pointing to the media button on the toolbar.">
+   Click on Media Controls
+  </message>
+  <message name="IDS_GMC_SAVE_VIDEO_FRAME_TUTORIAL_STEP_2" desc="Step 2 of the Save Video Frame IPH tutorial pointing to the Save Video Frame action button inside the Global Media Controls dialog.">
+   Click on this icon and then save it to your computer
+  </message>
+  <message name="IDS_GMC_SAVE_VIDEO_FRAME_TUTORIAL_SUCCESS" desc="Success step of the Save Video Frame IPH tutorial.">
+   You can also save video frames anytime by right-clicking a video and selecting "Save Video Frame As..."
+  </message>
 </grit-part>

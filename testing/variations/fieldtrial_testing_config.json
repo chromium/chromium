@@ -11649,6 +11649,30 @@
             ]
         }
     ],
+    "IPH_GMCSaveVideoFrame": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_save_video_frame_iph_trigger": "name:save_video_frame_iph_trigger;comparator:==0;window:3650;storage:3650",
+                        "event_save_video_frame_used": "name:save_video_frame_used;comparator:==0;window:3650;storage:3650",
+                        "session_rate": "==0"
+                    },
+                    "enable_features": [
+                        "IPH_GMCSaveVideoFrame"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdbSqliteOnDiskRollout": [
         {
             "platforms": [

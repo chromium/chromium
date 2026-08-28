@@ -18,6 +18,7 @@
 #include "components/media_message_center/notification_theme.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -51,6 +52,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
                         public speech::SodaInstaller::Observer {
   METADATA_HEADER(MediaDialogView, views::BubbleDialogDelegateView)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaItemUIUpdatedViewElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveVideoFrameButtonElementId);
+
   MediaDialogView(const MediaDialogView&) = delete;
   MediaDialogView& operator=(const MediaDialogView&) = delete;
 

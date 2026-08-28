@@ -58,6 +58,7 @@ MediaSessionItemProducer::Session::~Session() {
 
 void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  owner_->NotifyMediaSessionInfoChanged(id_, session_info);
   is_playing_ =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
@@ -82,6 +83,7 @@ void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
 
 void MediaSessionItemProducer::Session::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  owner_->NotifyMediaSessionActionsChanged(id_, actions);
   bool is_audio_device_switching_supported =
       std::ranges::find(
           actions,
@@ -97,6 +99,7 @@ void MediaSessionItemProducer::Session::MediaSessionActionsChanged(
 
 void MediaSessionItemProducer::Session::MediaSessionPositionChanged(
     const std::optional<media_session::MediaPosition>& position) {
+  owner_->NotifyMediaSessionPositionChanged(id_, position);
   OnSessionInteractedWith();
 }
 
@@ -414,6 +417,30 @@ void MediaSessionItemProducer::SetAudioSinkId(const std::string& id,
   auto it = sessions_.find(id);
   CHECK(it != sessions_.end());
   it->second.SetAudioSinkId(sink_id);
+}
+
+void MediaSessionItemProducer::NotifyMediaSessionInfoChanged(
+    const std::string& id,
+    const media_session::mojom::MediaSessionInfoPtr& session_info) {
+  for (auto& observer : observers_) {
+    observer.OnMediaSessionInfoChanged(id, session_info);
+  }
+}
+
+void MediaSessionItemProducer::NotifyMediaSessionActionsChanged(
+    const std::string& id,
+    const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  for (auto& observer : observers_) {
+    observer.OnMediaSessionActionsChanged(id, actions);
+  }
+}
+
+void MediaSessionItemProducer::NotifyMediaSessionPositionChanged(
+    const std::string& id,
+    const std::optional<media_session::MediaPosition>& position) {
+  for (auto& observer : observers_) {
+    observer.OnMediaSessionPositionChanged(id, position);
+  }
 }
 
 media_session::mojom::RemotePlaybackMetadataPtr

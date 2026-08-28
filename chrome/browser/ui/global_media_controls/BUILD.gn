@@ -78,6 +78,7 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/feature_engagement/public",

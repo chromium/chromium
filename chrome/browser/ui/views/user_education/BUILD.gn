@@ -121,6 +121,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/contextual_tasks",
     "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/global_media_controls",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/promos",
     "//chrome/browser/ui/views/tabs/horizontal",

@@ -117,6 +117,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
   void UpdateDeviceSelectorIssue(bool has_issue);
 
+  MediaActionButton* GetMediaActionButton(
+      media_session::mojom::MediaSessionAction action);
+
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
   views::ImageView* GetFaviconViewForTesting();

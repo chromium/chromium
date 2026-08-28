@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -94,6 +95,16 @@ class MediaNotificationService
   void OnMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action) override;
+  void OnMediaSessionInfoChanged(
+      const std::string& id,
+      const media_session::mojom::MediaSessionInfoPtr& session_info) override;
+  void OnMediaSessionActionsChanged(
+      const std::string& id,
+      const std::vector<media_session::mojom::MediaSessionAction>& actions)
+      override;
+  void OnMediaSessionPositionChanged(
+      const std::string& id,
+      const std::optional<media_session::MediaPosition>& position) override;
 
   void SetDialogDelegateForWebContents(
       global_media_controls::MediaDialogDelegate* delegate,
@@ -133,7 +144,7 @@ class MediaNotificationService
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool should_show_cast_local_media_iph() const {
-    return should_show_cast_local_media_iph_;
+    return iph_state_.should_show_cast_local_media;
   }
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
@@ -197,6 +208,10 @@ class MediaNotificationService
   // notification hidden). Mainly used for glic.
   bool IsIdBlocked(const std::string& request_id) const;
 
+  void EvaluateSaveVideoFrameIphConditions(const std::string& id);
+  void OnSaveVideoFrameIphTimerFired(const std::string& id);
+  void MaybeShowSaveVideoFrameIph(const std::string& id);
+
   global_media_controls::MediaItemManager*
   GetMediaItemManagerForSupplementalDevicePickerProducer();
 
@@ -235,9 +250,21 @@ class MediaNotificationService
 
   bool shutdown_has_started_ = false;
 
-  // It's set to true when MediaNotificationService receives sink updates for a
-  // local media.
-  bool should_show_cast_local_media_iph_ = false;
+  struct IphState {
+    // Set to true when MediaNotificationService receives sink updates for local
+    // media.
+    bool should_show_cast_local_media = false;
+
+    // Save Video Frame IPH state.
+    bool is_video_frame_available = false;
+    bool is_playing = false;
+    bool is_ad = false;
+    bool is_duration_sufficient = false;
+    bool is_fullscreen = false;
+    bool has_played_sufficient_time = false;
+  };
+  IphState iph_state_;
+  base::OneShotTimer save_video_frame_iph_timer_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   base::ScopedObservation<ash::MediaNotificationProvider,

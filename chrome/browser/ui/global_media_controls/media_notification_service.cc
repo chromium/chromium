@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/buildflags.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -66,6 +68,13 @@ namespace {
 
 // The maximum number of actions we will record to UKM for a specific source.
 constexpr int kMaxActionsRecordedToUKM = 100;
+
+// The minimum video duration required to show the Save Video Frame IPH.
+constexpr base::TimeDelta kSaveVideoFrameIphMinDuration = base::Minutes(5);
+
+// The minimum continuous playback time before the Save Video Frame IPH can be
+// shown.
+constexpr base::TimeDelta kSaveVideoFrameIphPlaybackTime = base::Seconds(10);
 
 void CancelRequest(
     std::unique_ptr<media_router::StartPresentationContext> context,
@@ -334,7 +343,7 @@ void MediaNotificationService::OnSinksDiscovered(const std::string& item_id) {
       content::MediaSession::GetWebContentsFromRequestId(item_id);
 
   if (web_contents) {
-    should_show_cast_local_media_iph_ =
+    iph_state_.should_show_cast_local_media =
         web_contents->GetLastCommittedURL().SchemeIsFile();
   }
 }
@@ -359,6 +368,92 @@ void MediaNotificationService::OnMediaSessionActionButtonPressed(
   ukm::builders::Media_GlobalMediaControls_ActionButtonPressed(source_id)
       .SetMediaSessionAction(static_cast<int64_t>(action))
       .Record(recorder);
+}
+
+void MediaNotificationService::OnMediaSessionInfoChanged(
+    const std::string& id,
+    const media_session::mojom::MediaSessionInfoPtr& session_info) {
+  iph_state_.is_playing =
+      session_info && session_info->playback_state ==
+                          media_session::mojom::MediaPlaybackState::kPlaying;
+  EvaluateSaveVideoFrameIphConditions(id);
+}
+
+void MediaNotificationService::OnMediaSessionActionsChanged(
+    const std::string& id,
+    const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  iph_state_.is_video_frame_available =
+      std::ranges::find(
+          actions, media_session::mojom::MediaSessionAction::kSaveVideoFrame) !=
+      actions.end();
+  iph_state_.is_ad =
+      std::ranges::find(actions,
+                        media_session::mojom::MediaSessionAction::kSkipAd) !=
+      actions.end();
+  EvaluateSaveVideoFrameIphConditions(id);
+}
+
+void MediaNotificationService::OnMediaSessionPositionChanged(
+    const std::string& id,
+    const std::optional<media_session::MediaPosition>& position) {
+  iph_state_.is_duration_sufficient =
+      position && position->duration() >= kSaveVideoFrameIphMinDuration;
+  EvaluateSaveVideoFrameIphConditions(id);
+}
+
+void MediaNotificationService::EvaluateSaveVideoFrameIphConditions(
+    const std::string& id) {
+  auto* web_contents = content::MediaSession::GetWebContentsFromRequestId(id);
+  iph_state_.is_fullscreen = web_contents && web_contents->IsFullscreen();
+
+  bool valid_video_state =
+      iph_state_.is_video_frame_available && !iph_state_.is_ad &&
+      iph_state_.is_duration_sufficient && !iph_state_.is_fullscreen;
+
+  if (!valid_video_state) {
+    iph_state_.has_played_sufficient_time = false;
+    save_video_frame_iph_timer_.Stop();
+    return;
+  }
+
+  if (iph_state_.is_playing) {
+    if (!iph_state_.has_played_sufficient_time &&
+        !save_video_frame_iph_timer_.IsRunning()) {
+      save_video_frame_iph_timer_.Start(
+          FROM_HERE, kSaveVideoFrameIphPlaybackTime,
+          base::BindOnce(
+              &MediaNotificationService::OnSaveVideoFrameIphTimerFired,
+              weak_ptr_factory_.GetWeakPtr(), id));
+    }
+  } else {
+    save_video_frame_iph_timer_.Stop();
+    if (iph_state_.has_played_sufficient_time) {
+      iph_state_.has_played_sufficient_time = false;
+      MaybeShowSaveVideoFrameIph(id);
+    }
+  }
+}
+
+void MediaNotificationService::OnSaveVideoFrameIphTimerFired(
+    const std::string& id) {
+  iph_state_.has_played_sufficient_time = true;
+}
+
+void MediaNotificationService::MaybeShowSaveVideoFrameIph(
+    const std::string& id) {
+  auto* web_contents = content::MediaSession::GetWebContentsFromRequestId(id);
+  if (!web_contents) {
+    return;
+  }
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return;
+  }
+  if (auto* user_ed = BrowserUserEducationInterface::From(browser)) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHGMCSaveVideoFrameFeature);
+  }
 }
 
 void MediaNotificationService::SetDialogDelegateForWebContents(

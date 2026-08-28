@@ -859,3 +859,46 @@ TEST_F(MediaNotificationServiceCastTest,
   // frame is deleted.
   EXPECT_FALSE(HasPresentationContextForSession(id.ToString()));
 }
+
+TEST_F(MediaNotificationServiceTest, SaveVideoFrameIphTimer) {
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  std::string id_str = id.ToString();
+
+  media_session::mojom::MediaSessionInfoPtr session_info =
+      media_session::mojom::MediaSessionInfo::New();
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPlaying;
+
+  std::vector<media_session::mojom::MediaSessionAction> actions = {
+      media_session::mojom::MediaSessionAction::kSaveVideoFrame};
+
+  media_session::MediaPosition position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+
+  service()->OnMediaSessionInfoChanged(id_str, session_info->Clone());
+  service()->OnMediaSessionActionsChanged(id_str, actions);
+  service()->OnMediaSessionPositionChanged(id_str, position);
+
+  // Advance time by 5 seconds (timer is 10 seconds).
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  // If playback pauses before 10 seconds, the timer should stop.
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPaused;
+  service()->OnMediaSessionInfoChanged(id_str, session_info->Clone());
+
+  // Resume playback.
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPlaying;
+  service()->OnMediaSessionInfoChanged(id_str, session_info->Clone());
+
+  // Advance time by 10 seconds; timer completes.
+  task_environment()->FastForwardBy(base::Seconds(10));
+
+  // Pausing after 10 seconds of uninterrupted playback should evaluate/show IPH
+  // without crashing.
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPaused;
+  service()->OnMediaSessionInfoChanged(id_str, session_info->Clone());
+}

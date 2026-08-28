@@ -60,6 +60,11 @@
 using global_media_controls::GlobalMediaControlsEntryPoint;
 using media_session::mojom::MediaSessionAction;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MediaDialogView,
+                                      kMediaItemUIUpdatedViewElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MediaDialogView,
+                                      kSaveVideoFrameButtonElementId);
+
 namespace {
 
 static constexpr int kHorizontalMarginDip = 20;
@@ -166,6 +171,13 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
   global_media_controls::MediaItemUI* view_ptr;
 
   auto view = BuildMediaItemUIUpdatedView(id, item);
+  view->SetProperty(views::kElementIdentifierKey,
+                    kMediaItemUIUpdatedViewElementId);
+  if (auto* save_button = view->GetMediaActionButton(
+          media_session::mojom::MediaSessionAction::kSaveVideoFrame)) {
+    save_button->SetProperty(views::kElementIdentifierKey,
+                             kSaveVideoFrameButtonElementId);
+  }
   view_ptr = view.get();
   items_[id] = view.get();
   active_sessions_view_->ShowUpdatedItem(id, std::move(view));

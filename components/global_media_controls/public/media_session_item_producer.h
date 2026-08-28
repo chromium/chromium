@@ -15,6 +15,7 @@
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
@@ -88,6 +89,16 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   bool HasSession(const std::string& id) const;
 
   void SetAudioSinkId(const std::string& id, const std::string& sink_id);
+
+  void NotifyMediaSessionInfoChanged(
+      const std::string& id,
+      const media_session::mojom::MediaSessionInfoPtr& session_info);
+  void NotifyMediaSessionActionsChanged(
+      const std::string& id,
+      const std::vector<media_session::mojom::MediaSessionAction>& actions);
+  void NotifyMediaSessionPositionChanged(
+      const std::string& id,
+      const std::optional<media_session::MediaPosition>& position);
 
   media_session::mojom::RemotePlaybackMetadataPtr
   GetRemotePlaybackMetadataFromItem(const std::string& id);
