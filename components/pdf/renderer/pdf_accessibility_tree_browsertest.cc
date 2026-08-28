@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <ranges>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -1851,7 +1852,74 @@ class PdfAccessibilityTreeStructuredModeTest
     : public PdfAccessibilityTreeTest,
       public testing::WithParamInterface<bool> {
  public:
+  void SetUp() override {
+    PdfAccessibilityTreeTest::SetUp();
+    if (UseStructuredMode()) {
+      pdf_tags_.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+    }
+  }
+
   bool UseStructuredMode() const { return GetParam(); }
+
+  void BuildAndSetAccessibilityTree() {
+    page_count_ = 1;
+    std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+        CreateAccessibilityDocInfo();
+
+    if (UseStructuredMode()) {
+      auto doc_structure_root =
+          std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+      doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+      auto page_structure =
+          std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+      page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+      auto para = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+      para->type = chrome_pdf::PdfTagType::kP;
+      for (auto& run : text_runs_) {
+        para->associated_text_runs_if_available.push_back(&run);
+      }
+
+      page_structure->children.push_back(std::move(para));
+      doc_structure_root->children.push_back(std::move(page_structure));
+
+      doc_info->is_tagged = true;
+      doc_info->structure_tree_root = std::move(doc_structure_root);
+    }
+
+    page_info_.text_run_count = text_runs_.size();
+    page_info_.char_count = chars_.size();
+
+    pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+    pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+    pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                      chars_, page_objects_);
+
+    WaitForThreadTasks();
+    WaitForThreadDelayedTasks();
+  }
+
+  ui::AXNode* FindFirstStaticTextNode() {
+    const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+    if (!pdf_root || pdf_root->GetChildCount() <= 1u) {
+      return nullptr;
+    }
+    const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+    if (!page || page->GetChildCount() == 0u) {
+      return nullptr;
+    }
+    ui::AXNode* static_text = page->GetChildAtIndex(0u);
+    while (static_text &&
+           static_text->GetRole() != ax::mojom::Role::kStaticText &&
+           static_text->GetChildCount() > 0u) {
+      static_text = static_text->GetChildAtIndex(0u);
+    }
+    return static_text;
+  }
+
+ private:
+  base::test::ScopedFeatureList pdf_tags_;
 };
 
 TEST_P(PdfAccessibilityTreeStructuredModeTest,
@@ -2050,6 +2118,116 @@ TEST_P(PdfAccessibilityTreeStructuredModeTest,
   EXPECT_EQ(ax::mojom::Role::kStaticText, second_static_text->GetRole());
   EXPECT_EQ(18, out_node_char_index);
   EXPECT_EQ(second_static_text->id(), out_node_id);
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       FindCharacterOffset_MultiLineStaticText) {
+  CreatePdfAccessibilityTree();
+
+  // Create two text runs representing two lines in a paragraph.
+  // Line 1 ("Jellicle songs ") has 15 chars starting at index 0.
+  // Line 2 ("for Jellicle cats") has 17 chars starting at index 15.
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, /*len=*/15, gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  chrome_pdf::AccessibilityTextRunInfo run2 = {
+      /*start_index=*/15, /*len=*/17, gfx::RectF(0.0f, 10.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+
+  text_runs_ = {run1, run2};
+
+  constexpr std::string_view kText = "Jellicle songs for Jellicle cats";
+  for (char c : kText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+  chrome_pdf::PageCharacterIndex page_char_index;
+
+  // Offset 0 (start of Line 1 "Jellicle songs ") -> PDFium char index 0.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 0,
+                                                           page_char_index));
+  EXPECT_EQ(0u, page_char_index.char_index);
+
+  // Offset 15 (start of Line 2 "for Jellicle cats") -> PDFium char index 15.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 15,
+                                                           page_char_index));
+  EXPECT_EQ(15u, page_char_index.char_index);
+
+  // Offset 16 (second char of Line 2 'o') -> PDFium char index 16.
+  EXPECT_TRUE(pdf_accessibility_tree_->FindCharacterOffset(*static_text, 16,
+                                                           page_char_index));
+  EXPECT_EQ(16u, page_char_index.char_index);
+}
+
+TEST_P(PdfAccessibilityTreeStructuredModeTest,
+       FindNodeOffset_MultiLineStaticText) {
+  CreatePdfAccessibilityTree();
+
+  // Create two text runs representing two lines in a paragraph.
+  // Line 1 ("Jellicle songs ") has 15 chars starting at index 0.
+  // Line 2 ("for Jellicle cats") has 17 chars starting at index 15.
+  chrome_pdf::AccessibilityTextRunInfo run1 = {
+      /*start_index=*/0, /*len=*/15, gfx::RectF(0.0f, 0.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+  chrome_pdf::AccessibilityTextRunInfo run2 = {
+      /*start_index=*/15, /*len=*/17, gfx::RectF(0.0f, 10.0f, 100.0f, 10.0f),
+      chrome_pdf::AccessibilityTextDirection::kNone,
+      chrome_pdf::AccessibilityTextStyleInfo()};
+
+  text_runs_ = {run1, run2};
+
+  constexpr std::string_view kText = "Jellicle songs for Jellicle cats";
+  for (char c : kText) {
+    chars_.push_back({static_cast<uint32_t>(c), 10.0f});
+  }
+
+  BuildAndSetAccessibilityTree();
+
+  ui::AXNode* static_text = FindFirstStaticTextNode();
+  ASSERT_NE(nullptr, static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static_text->GetRole());
+
+  int32_t out_node_id = -1;
+  int32_t out_node_char_index = -1;
+
+  // Offset 0 (start of Line 1 "Jellicle songs ") -> static text char index 0.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 0, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(0, out_node_char_index);
+
+  // Offset 15 (start of Line 2 "for Jellicle cats") -> static text char
+  // index 15.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 15, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(15, out_node_char_index);
+
+  // Offset 15 as end of selection (end of Line 1) -> static text char index 15.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/true, 0, 15, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(15, out_node_char_index);
+
+  // Offset 16 (second char of Line 2 'o') -> static text char index 16.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 16, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(16, out_node_char_index);
+
+  // Offset 32 as end of selection (end of Line 2) -> static text char index 32.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/true, 0, 32, &out_node_id, &out_node_char_index);
+  EXPECT_EQ(static_text->id(), out_node_id);
+  EXPECT_EQ(32, out_node_char_index);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
