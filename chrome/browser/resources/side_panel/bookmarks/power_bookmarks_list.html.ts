@@ -48,6 +48,7 @@ export function getHtml(this: PowerBookmarksListElement) {
           <cr-lazy-list id="listA"
               .items="${this.displayListA_}"
               .scrollTarget="${this.scrollTarget_}"
+              .itemSize="${this.getItemSize_()}"
               role="tree"
               .template="${(item: unknown, index: number) => html`
                 <power-bookmark-row
@@ -100,6 +101,7 @@ export function getHtml(this: PowerBookmarksListElement) {
           <cr-lazy-list id="listB"
               .items="${this.displayListB_}"
               .scrollTarget="${this.scrollTarget_}"
+              .itemSize="${this.getItemSize_()}"
               role="tree"
               .template="${(item: unknown, index: number) => html`
                 <power-bookmark-row

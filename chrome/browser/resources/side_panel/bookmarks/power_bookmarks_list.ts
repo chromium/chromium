@@ -43,7 +43,14 @@ import {getFolderLabel} from './power_bookmarks_utils.js';
 
 // Height of the sp-empty-state folder empty state inside list buffers.
 // Matches the CSS height defined in power_bookmarks_list.css.
+// LINT.IfChange(FolderEmptyStateHeight)
 const FOLDER_EMPTY_STATE_HEIGHT: number = 300;
+// LINT.ThenChange(power_bookmarks_list.css:FolderEmptyStateHeight)
+
+// Constants for bookmark item heights in compact and expanded views.
+// Matches the CSS heights defined in cr_url_list_item.css.
+const COMPACT_ITEM_HEIGHT: number = 36;
+const EXPANDED_ITEM_HEIGHT: number = 68;
 
 export interface DisplayItem {
   bookmark: BookmarksTreeNode;
@@ -343,7 +350,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
         changedPrivateProperties.has('labels') ||
         changedPrivateProperties.has('sortOrder') ||
         changedPrivateProperties.has('searchQuery') ||
-        changedPrivateProperties.has('hasSomeActiveFilter')) {
+        changedPrivateProperties.has('hasSomeActiveFilter') ||
+        changedPrivateProperties.has('compact_')) {
       this.updateDisplayList_();
       displayListChanged = true;
     }
@@ -868,14 +876,17 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return listId === this.activeList_ || listId === this.transitioningList_;
   }
 
+  protected getItemSize_(): number {
+    return this.compact_ ? COMPACT_ITEM_HEIGHT : EXPANDED_ITEM_HEIGHT;
+  }
+
   private getFolderHeight_(listId: string): number {
     if (this.isFolderEmptyStateVisible_(listId)) {
       return FOLDER_EMPTY_STATE_HEIGHT;
     }
     const displayList = this.getDisplayList_(listId);
     const itemsCount = displayList ? displayList.length : 0;
-    const itemHeight = this.compact_ ? 36 : 68;
-    return itemsCount * itemHeight;
+    return itemsCount * this.getItemSize_();
   }
 
   protected isFolderEmptyStateVisible_(listId: string): boolean {
@@ -1216,9 +1227,6 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
   protected onViewToggled_() {
     this.compact_ = !this.compact_;
-    if (this.compact_) {
-      this.updateDisplayList_();
-    }
     this.notifyBookmarksListResize_();
     recordViewType(this.compact_);
     const viewType = this.compact_ ? ViewType.kCompact : ViewType.kExpanded;

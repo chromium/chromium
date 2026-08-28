@@ -200,6 +200,55 @@ suite('General', () => {
           getBookmarks(powerBookmarksApp).length);
     });
 
+    test('InitialLoadItemSizeMatchesViewType', () => {
+      const listEl = powerBookmarksApp.$.bookmarksList.list;
+      assertTrue(!!listEl);
+      assertEquals(36, listEl.itemSize);
+      const container =
+          listEl.shadowRoot.querySelector<HTMLElement>('#container')!;
+      assertTrue(!!container);
+      const expectedCompactHeight = listEl.items.length * 36;
+      assertEquals(`${expectedCompactHeight}px`, container.style.height);
+    });
+
+    test('ViewToggleUpdatesHeightAndPreventsClipping', async () => {
+      const listEl = powerBookmarksApp.$.bookmarksList.list;
+      assertTrue(!!listEl);
+      assertEquals(36, listEl.itemSize);
+      const container =
+          listEl.shadowRoot.querySelector<HTMLElement>('#container')!;
+      assertTrue(!!container);
+      const compactHeight = listEl.items.length * 36;
+      assertEquals(`${compactHeight}px`, container.style.height);
+
+      const header = powerBookmarksApp.$.bookmarksList.shadowRoot
+                         .querySelector<PowerBookmarksListHeaderElement>(
+                             'power-bookmarks-list-header')!;
+      assertTrue(!!header);
+      const viewButton =
+          header.shadowRoot.querySelector<HTMLElement>('#viewButton')!;
+      assertTrue(!!viewButton);
+
+      // Toggle to expanded (card) view.
+      let viewportFilled = eventToPromise('viewport-filled', listEl);
+      viewButton.click();
+      await viewportFilled;
+      await microtasksFinished();
+
+      assertEquals(68, listEl.itemSize);
+      const expandedHeight = listEl.items.length * 68;
+      assertEquals(`${expandedHeight}px`, container.style.height);
+
+      // Toggle back to compact (list) view.
+      viewportFilled = eventToPromise('viewport-filled', listEl);
+      viewButton.click();
+      await viewportFilled;
+      await microtasksFinished();
+
+      assertEquals(36, listEl.itemSize);
+      assertEquals(`${compactHeight}px`, container.style.height);
+    });
+
     test('RebuildsKeyboardNavigationOnBookmarkNodeAdded', async () => {
       assertArrayEquals(
           [

@@ -23,6 +23,7 @@
   background: var(--cr-hover-background-color);
 }
 
+/* LINT.IfChange(FolderEmptyStateHeight) */
 sp-empty-state {
   box-sizing: border-box;
   /* Keep in sync with FOLDER_EMPTY_STATE_HEIGHT in
@@ -31,6 +32,7 @@ sp-empty-state {
   padding-top: 40px;
   padding-bottom: 40px;
 }
+/* LINT.ThenChange(power_bookmarks_list.ts:FolderEmptyStateHeight) */
 
 #scroller {
   height: 100%;
