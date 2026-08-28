@@ -662,11 +662,11 @@ TEST_F(GLES2ImplementationTest, GetBooleanv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetBooleanv(123, &result);
+  gl_->GetBooleanv(GL_COMPILE_STATUS, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -680,11 +680,12 @@ TEST_F(GLES2ImplementationTest, GetBufferParameteri64v) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_BUFFER_SIZE, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_BUFFER_SIZE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetBufferParameteri64v(123, GL_BUFFER_SIZE, &result);
+  gl_->GetBufferParameteri64v(GL_COMPILE_STATUS, GL_BUFFER_SIZE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -698,11 +699,12 @@ TEST_F(GLES2ImplementationTest, GetBufferParameteriv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_BUFFER_SIZE, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_BUFFER_SIZE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetBufferParameteriv(123, GL_BUFFER_SIZE, &result);
+  gl_->GetBufferParameteriv(GL_COMPILE_STATUS, GL_BUFFER_SIZE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -716,11 +718,11 @@ TEST_F(GLES2ImplementationTest, GetFloatv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetFloatv(123, &result);
+  gl_->GetFloatv(GL_COMPILE_STATUS, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -734,15 +736,15 @@ TEST_F(GLES2ImplementationTest, GetFramebufferAttachmentParameteriv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_COLOR_ATTACHMENT0,
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_COLOR_ATTACHMENT0,
                     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, result1.id,
                     result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
   gl_->GetFramebufferAttachmentParameteriv(
-      123, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE,
-      &result);
+      GL_COMPILE_STATUS, GL_COLOR_ATTACHMENT0,
+      GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -756,11 +758,11 @@ TEST_F(GLES2ImplementationTest, GetInteger64v) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetInteger64v(123, &result);
+  gl_->GetInteger64v(GL_COMPILE_STATUS, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -774,11 +776,11 @@ TEST_F(GLES2ImplementationTest, GetIntegeri_v) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, 2, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetIntegeri_v(123, 2, &result);
+  gl_->GetIntegeri_v(GL_COMPILE_STATUS, 2, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -792,11 +794,11 @@ TEST_F(GLES2ImplementationTest, GetInteger64i_v) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, 2, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetInteger64i_v(123, 2, &result);
+  gl_->GetInteger64i_v(GL_COMPILE_STATUS, 2, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -810,11 +812,11 @@ TEST_F(GLES2ImplementationTest, GetIntegerv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, result1.id, result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetIntegerv(123, &result);
+  gl_->GetIntegerv(GL_COMPILE_STATUS, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -846,11 +848,13 @@ TEST_F(GLES2ImplementationTest, GetRenderbufferParameteriv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_RENDERBUFFER_RED_SIZE, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_RENDERBUFFER_RED_SIZE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetRenderbufferParameteriv(123, GL_RENDERBUFFER_RED_SIZE, &result);
+  gl_->GetRenderbufferParameteriv(GL_COMPILE_STATUS, GL_RENDERBUFFER_RED_SIZE,
+                                  &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -937,11 +941,12 @@ TEST_F(GLES2ImplementationTest, GetTexParameterfv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_TEXTURE_MAG_FILTER, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_TEXTURE_MAG_FILTER, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetTexParameterfv(123, GL_TEXTURE_MAG_FILTER, &result);
+  gl_->GetTexParameterfv(GL_COMPILE_STATUS, GL_TEXTURE_MAG_FILTER, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -955,11 +960,12 @@ TEST_F(GLES2ImplementationTest, GetTexParameteriv) {
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, GL_TEXTURE_MAG_FILTER, result1.id, result1.offset);
+  expected.cmd.Init(GL_COMPILE_STATUS, GL_TEXTURE_MAG_FILTER, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetTexParameteriv(123, GL_TEXTURE_MAG_FILTER, &result);
+  gl_->GetTexParameteriv(GL_COMPILE_STATUS, GL_TEXTURE_MAG_FILTER, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -3083,11 +3089,13 @@ TEST_F(GLES2ImplementationTest,
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  expected.cmd.Init(123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetFramebufferPixelLocalStorageParameterfvANGLE(123, 2, &result);
+  gl_->GetFramebufferPixelLocalStorageParameterfvANGLE(
+      123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -3103,11 +3111,13 @@ TEST_F(GLES2ImplementationTest,
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  expected.cmd.Init(123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetFramebufferPixelLocalStorageParameterivANGLE(123, 2, &result);
+  gl_->GetFramebufferPixelLocalStorageParameterivANGLE(
+      123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
@@ -3123,11 +3133,13 @@ TEST_F(GLES2ImplementationTest,
   Cmds expected;
   ExpectedMemoryInfo result1 =
       GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
+  expected.cmd.Init(123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, result1.id,
+                    result1.offset);
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
       .RetiresOnSaturation();
-  gl_->GetFramebufferPixelLocalStorageParameteruivANGLE(123, 2, &result);
+  gl_->GetFramebufferPixelLocalStorageParameteruivANGLE(
+      123, GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE, &result);
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }

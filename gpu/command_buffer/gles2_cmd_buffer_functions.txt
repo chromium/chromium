@@ -379,9 +379,9 @@ GL_APICALL void         GL_APIENTRY glEndPixelLocalStorageImplicitANGLE (void);
 GL_APICALL void         GL_APIENTRY glPixelLocalStorageBarrierANGLE (void);
 GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE (void);
 GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE (void);
-GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenum pname, GLfloat* params);
-GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenum pname, GLint* params);
-GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameteruivANGLE (GLint plane, GLenum pname, GLuint* params);
+GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenumFramebufferPixelLocalStorageParameter pname, GLfloat* params);
+GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenumFramebufferPixelLocalStorageParameter pname, GLint* params);
+GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameteruivANGLE (GLint plane, GLenumFramebufferPixelLocalStorageParameter pname, GLuint* params);
 
 // Extension EXT_clip_control
 GL_APICALL void         GL_APIENTRY glClipControlEXT (GLenum origin, GLenum depth);
