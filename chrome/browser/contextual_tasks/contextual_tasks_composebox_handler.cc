@@ -657,6 +657,43 @@ void ContextualTasksComposeboxHandler::SetAimThreadRestoredTabs(
     }
     return;
   }
+
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    // Collect IDs and URLs of tabs that are now committed in thread history.
+    std::set<int32_t> restored_tab_ids;
+    std::set<GURL> restored_urls;
+    for (const auto& tab : tabs) {
+      restored_tab_ids.insert(tab->tab_id);
+      restored_urls.insert(tab->url);
+    }
+
+    // Remove any delayed tabs that have transitioned to restored tabs.
+    std::erase_if(delayed_tabs_, [&](const auto& pair) {
+      if (restored_tab_ids.contains(pair.second)) {
+        pending_delayed_tab_ids_.erase(pair.second);
+        return true;
+      }
+      return false;
+    });
+
+    // If the currently auto-suggested tab is now a restored tab, clear the
+    // uncommitted auto-suggested chip in the WebUI composebox.
+    auto* auto_suggestion_manager =
+        web_ui_interface_->GetAutoSuggestionManager();
+    if (auto_suggestion_manager) {
+      const auto* current_suggestion =
+          auto_suggestion_manager->GetCurrentSuggestion();
+      if (current_suggestion &&
+          (restored_tab_ids.contains(current_suggestion->tab_id) ||
+           restored_urls.contains(current_suggestion->url))) {
+        if (SearchboxHandler::page_) {
+          SearchboxHandler::page_->UpdateAutoSuggestedTabContext(
+              nullptr, /*invocation_source=*/std::nullopt);
+        }
+      }
+    }
+  }
+
   if (SearchboxHandler::page_) {
     SearchboxHandler::page_->SetAimThreadRestoredTabs(std::move(tabs));
   }
@@ -1198,6 +1235,19 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     SearchboxHandler::page_->UpdateAutoSuggestedTabContext(nullptr,
                                                            invocation_source);
     return;
+  }
+
+  // If context management is enabled and the tab is already restored/committed
+  // in the contextual task, do not suggest it again as an uncommitted chip.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      suggested_tab) {
+    std::vector<int32_t> restored_ids = web_ui_interface_->GetRestoredTabIds();
+    if (std::find(restored_ids.begin(), restored_ids.end(),
+                  suggested_tab->tab_id) != restored_ids.end()) {
+      SearchboxHandler::page_->UpdateAutoSuggestedTabContext(nullptr,
+                                                             invocation_source);
+      return;
+    }
   }
 
   // Always use the passed info as the result of the manager's filtering.
