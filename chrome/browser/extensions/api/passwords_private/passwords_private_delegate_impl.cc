@@ -42,7 +42,6 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/service_access_type.h"

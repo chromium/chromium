@@ -8,9 +8,12 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 // TODO(estade): many of these constants could be internalized.
 namespace message_center {

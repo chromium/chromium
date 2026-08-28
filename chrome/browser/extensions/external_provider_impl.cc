@@ -76,6 +76,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -83,7 +84,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #else
 #include "chrome/browser/extensions/preinstalled_extensions.h"
-#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

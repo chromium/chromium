@@ -185,7 +185,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "profile_load_tracker_win.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
@@ -258,6 +257,10 @@
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/profiles/profile_load_tracker_win.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

@@ -44,7 +44,6 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_load_tracker_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/storage_partition_descriptor.h"
@@ -147,6 +146,10 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/profiles/profile_load_tracker_win.h"
 #endif
 
 namespace {

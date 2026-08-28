@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -28,6 +27,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 DownloadDirPolicyHandler::DownloadDirPolicyHandler()

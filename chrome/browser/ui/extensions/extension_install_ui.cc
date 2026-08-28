@@ -8,9 +8,13 @@
 #include "base/check_is_test.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_android.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/extensions/extension_install_ui_android.h"
+#else
+#include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/metrics/android_metrics_helper.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -68,20 +67,19 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_info.h"
+#include "components/metrics/android_metrics_helper.h"
+#include "components/metrics/android_unconditional_persistent_histograms_field_trial.h"
+#if defined(__arm__)
+#include <cpu-features.h>
+#endif  // defined(__arm__)
+#else
 #include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/metrics/power/battery_discharge_reporter.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/apk_info.h"
-#include "components/metrics/android_unconditional_persistent_histograms_field_trial.h"
-#if defined(__arm__)
-#include <cpu-features.h>
-#endif
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
@@ -93,6 +91,7 @@
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/pressure/pressure_metrics_reporter.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -109,10 +108,6 @@
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_LINUX)
-#include "chrome/browser/metrics/pressure/pressure_metrics_reporter.h"
-#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
