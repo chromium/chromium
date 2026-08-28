@@ -258,7 +258,5 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client), sync_invalidations_service,
       /*pulse_task_runner=*/
-      base::FeatureList::IsEnabled(base::features::kReducePPMs)
-          ? web::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-          : web::GetUIThreadTaskRunner({}));
+      web::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
 }
