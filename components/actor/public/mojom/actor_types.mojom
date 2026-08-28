@@ -551,6 +551,11 @@ enum ActionResultCode {
   // The BookmarkModel was not loaded or not available.
   kBookmarkModelNotLoaded = 1600,
 
+  // Codes 1700-1799: Errors for find and highlight tool.
+
+  // The requested text could not be found or highlighted on the page.
+  kFindAndHighlightTextNotFound = 1700,
+
   // Please see the comment above about adding new values.
 };
 

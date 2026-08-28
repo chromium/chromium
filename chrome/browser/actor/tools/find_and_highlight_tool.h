@@ -12,7 +12,11 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "components/tabs/public/tab_interface.h"
 
+class GURL;
+
 namespace actor {
+
+class ActorTask;
 
 // Highlights matching text in a tab and scrolls it into view.
 class FindAndHighlightTool : public Tool {
@@ -28,15 +32,20 @@ class FindAndHighlightTool : public Tool {
   void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
+  GURL JournalURL() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              ToolCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
 
   const std::string& query() const { return query_; }
   tabs::TabHandle tab_handle() const { return tab_handle_; }
 
  private:
+  void OnHighlightFinished(ToolCallback callback, bool success);
+
   tabs::TabHandle tab_handle_;
   std::string query_;
 

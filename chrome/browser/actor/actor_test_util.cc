@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
+#include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -761,6 +762,12 @@ std::unique_ptr<ToolRequest> MakeTranslatePageRequest(
     std::string_view target_language) {
   return std::make_unique<TranslatePageToolRequest>(
       tab.GetHandle(), std::string(target_language));
+}
+
+std::unique_ptr<ToolRequest> MakeFindAndHighlightRequest(
+    tabs::TabInterface& tab,
+    const std::string& query) {
+  return std::make_unique<FindAndHighlightToolRequest>(tab.GetHandle(), query);
 }
 
 std::vector<std::unique_ptr<ToolRequest>> ToRequestList(

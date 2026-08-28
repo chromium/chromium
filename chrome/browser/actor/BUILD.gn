@@ -536,6 +536,7 @@ source_set("browser_tests") {
       "tools/bookmark_management_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",
+      "tools/find_and_highlight_tool_browsertest.cc",
       "tools/history_tool_browsertest.cc",
       "tools/load_and_extract_content_tool_browsertest.cc",
       "tools/media_control_tool_browsertest.cc",
