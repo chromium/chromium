@@ -1472,6 +1472,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SUB_FRAME_CREATED_DO_NOT_UPDATE_CLIENT_MAP,
                 "When enabled, the browser ignores SubFrameCreated IPC and does not update"
                         + " RfhToIoThreadClientMap."),
+        Flag.baseFeature(
+                "DomStorageSqliteNewDatabases",
+                "Controls the on-disk rollout of the SQLite backend for DomStorage on new"
+                        + " databases."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
