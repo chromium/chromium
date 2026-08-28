@@ -2441,6 +2441,62 @@ TEST_F(AILanguageModelOpenLoopToolTest, CompleteOpenLoopToolCallFlow) {
   EXPECT_THAT(final_response, testing::HasSubstr("\"location\":\"Seattle\""));
 }
 
+TEST_F(AILanguageModelOpenLoopToolTest,
+       GeneratedToolCallHistoryPreservedAfterOverflow) {
+  fake_broker_->settings().set_execute_result({"hi"});
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  // Fill most of the context with an exchange that can be evicted.
+  EXPECT_THAT(Prompt(*session, MakeInput(std::string(2400, 'a'))),
+              ElementsAre("hi"));
+
+  // Generate a structured tool call and append its matching response.
+  SetupSimulatedToolCall("call_overflow", "get_weather", "Seattle");
+  AITestUtils::TestStreamingResponder tool_call_responder;
+  session->Prompt(MakeInput("What's the weather in Seattle?"),
+                  /*constraint=*/nullptr, tool_call_responder.BindRemote());
+  EXPECT_TRUE(tool_call_responder.WaitForToolCalls());
+  EXPECT_TRUE(tool_call_responder.WaitForCompletion());
+
+  DisableToolCallSimulation();
+  base::DictValue tool_response;
+  tool_response.Set("callID", "call_overflow");
+  tool_response.Set("name", "get_weather");
+  base::DictValue result;
+  result.Set("temperature", 72);
+  tool_response.Set("result", std::move(result));
+  std::vector<blink::mojom::AILanguageModelPromptPtr> tool_response_prompts;
+  tool_response_prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
+      Role::kUser,
+      ToVector(blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(tool_response))),
+      /*is_prefix=*/false));
+  EXPECT_THAT(Prompt(*session, std::move(tool_response_prompts)),
+              ElementsAre("hi"));
+
+  // Force the older exchange out and rebuild the retained session history.
+  fake_broker_->settings().set_execute_result({});
+  std::string overflow_prompt(600, 'b');
+  AITestUtils::TestStreamingResponder overflow_responder;
+  session->Append(MakeInput(overflow_prompt), overflow_responder.BindRemote());
+  overflow_responder.WaitForContextOverflow();
+  EXPECT_TRUE(overflow_responder.WaitForCompletion());
+
+  // Echo the rebuilt context to verify both structured pieces were replayed.
+  AITestUtils::TestStreamingResponder replay_responder;
+  session->Prompt(MakeInput("Continue"), /*constraint=*/nullptr,
+                  replay_responder.BindRemote());
+  EXPECT_TRUE(replay_responder.WaitForCompletion());
+  std::string response = base::JoinString(replay_responder.responses(), "");
+  EXPECT_THAT(response, testing::HasSubstr(
+                            "<tool-call id=call_overflow name=get_weather"));
+  EXPECT_THAT(
+      response,
+      testing::HasSubstr("<tool-response id=call_overflow name=get_weather"));
+}
+
 // Test that cloned sessions preserve tools and tool call functionality.
 TEST_F(AILanguageModelOpenLoopToolTest, ClonedSessionPreservesTools) {
   // ========== STEP 1: Create original session with tools ==========
