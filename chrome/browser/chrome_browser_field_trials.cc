@@ -347,6 +347,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // complete.
   feature_overrides.EnableFeature(features::kAndroidMediaInsertion);
 
+  // Enables Custom IME Spellcheck UI on Android Desktop devices.
+  // TODO(crbug.com/553988342): Remove when rollout to all form factors is
+  // complete.
+  feature_overrides.EnableFeature(
+      blink::features::kAndroidSpellcheckFullApiBlink);
+  feature_overrides.EnableFeature(blink::features::kAndroidSpellcheckNativeUi);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
