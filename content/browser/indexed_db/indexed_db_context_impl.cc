@@ -344,7 +344,8 @@ void IndexedDBContextImpl::BindPipesOnIDBSequence(
         pending_blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
         pending_file_system_access_context) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   if (pending_quota_client_receiver) {
     quota_client_receiver_.Bind(std::move(pending_quota_client_receiver));
   }
@@ -359,7 +360,8 @@ void IndexedDBContextImpl::BindPipesOnIDBSequence(
 
 void IndexedDBContextImpl::BindControlOnIDBSequence(
     mojo::PendingReceiver<storage::mojom::IndexedDBControl> control) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   // We cannot run this in the constructor it needs to be async, but the async
   // tasks might not finish before the destructor runs.
   InitializeFromFilesIfNeeded(base::DoNothing());
@@ -432,8 +434,9 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
 
 void IndexedDBContextImpl::DeleteBucketData(const BucketLocator& bucket_locator,
                                             DeleteBucketDataCallback callback) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!callback.is_null());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M158);
   ForceClose(
       bucket_locator,
       /*delete_bucket_data=*/true,
@@ -566,7 +569,8 @@ void IndexedDBContextImpl::DownloadBucketData(
 
 void IndexedDBContextImpl::GetAllBucketsDetails(
     GetAllBucketsDetailsCallback callback) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   InitializeFromFilesIfNeeded(base::BindOnce(
       [](base::WeakPtr<IndexedDBContextImpl> handler,
          GetAllBucketsDetailsCallback callback) {
@@ -592,7 +596,8 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
 void IndexedDBContextImpl::ContinueGetAllBucketsDetails(
     GetAllBucketsDetailsCallback callback,
     std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
 
   // This barrier receives the bucket info from individual bucket contexts and
   // invokes the next step in the process, `FinishGetAllBucketsDetails`.
@@ -625,13 +630,15 @@ void IndexedDBContextImpl::ContinueGetAllBucketsDetails(
 }
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   force_keep_session_state_ = true;
 }
 
 void IndexedDBContextImpl::ApplyPolicyUpdates(
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   for (const storage::mojom::StoragePolicyUpdatePtr& update : policy_updates) {
     if (!update->purge_on_shutdown) {
       origins_to_purge_on_shutdown_.erase(update->origin);
@@ -643,7 +650,8 @@ void IndexedDBContextImpl::ApplyPolicyUpdates(
 
 void IndexedDBContextImpl::BindTestInterfaceForTesting(
     mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   test_receivers_.Add(this, std::move(receiver));
 }
 
@@ -747,7 +755,8 @@ void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
 
 std::optional<BucketLocator> IndexedDBContextImpl::LookUpBucket(
     storage::BucketId bucket_id) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   auto bucket_locator =
       std::ranges::find(bucket_set_, bucket_id, &BucketLocator::id);
   if (bucket_locator == bucket_set_.end()) {
@@ -766,7 +775,8 @@ IndexedDBContextImpl::GetBucketContextForTesting(
 
 base::Time IndexedDBContextImpl::GetBucketLastModified(
     const BucketLocator& bucket_locator) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   if (!LookUpBucket(bucket_locator.id)) {
     return base::Time();
   }
@@ -849,7 +859,8 @@ void IndexedDBContextImpl::NotifyIndexedDBContentChanged(
 }
 
 IndexedDBContextImpl::~IndexedDBContextImpl() {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
 
   // Invalidate the weak pointers that bind `on_ready_for_destruction` (among
   // other callbacks) so that `ForceClose()` below doesn't mutate
@@ -884,7 +895,8 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
 void IndexedDBContextImpl::ShutdownOnIDBSequence(
     base::ElapsedTimer shutdown_timer,
     base::OnceClosure purge_origins) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
 
   if (!in_memory()) {
     shutdown_timer_ = shutdown_timer;
@@ -900,7 +912,8 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence(
 }
 
 void IndexedDBContextImpl::PurgeOrigins() {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   // `this` will be destroyed when this method returns.
 
   for (const BucketLocator& bucket_locator : bucket_set_) {
@@ -957,7 +970,8 @@ void IndexedDBContextImpl::NotifyOfBucketModification(
 
 void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
     base::OnceClosure callback) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
   if (did_initialize_from_files_) {
     std::move(callback).Run();
     return;
@@ -1034,7 +1048,8 @@ void IndexedDBContextImpl::ForceInitializeFromFilesForTesting(
 
 std::map<StorageKey, base::FilePath>
 IndexedDBContextImpl::FindLegacyIndexedDBFiles() const {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
 
   base::FilePath data_path = GetLegacyDataPath();
   if (data_path.empty())
@@ -1069,7 +1084,8 @@ IndexedDBContextImpl::FindLegacyIndexedDBFiles() const {
 
 std::vector<storage::BucketId>
 IndexedDBContextImpl::FindBucketsWithIndexedDBDirs() const {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M158);
 
   std::vector<storage::BucketId> bucket_ids;
   if (base_data_path_.empty())

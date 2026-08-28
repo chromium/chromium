@@ -337,7 +337,7 @@ void BucketContext::ForceClose(bool doom) {
 }
 
 void BucketContext::DoForceClose(bool doom, const std::string& message) {
-  DCHECK_EQ(message, SanitizeErrorMessage(message));
+  CHECK_EQ(message, SanitizeErrorMessage(message), base::NotFatalUntil::M158);
 
   if (backing_store()) {
     backing_store()->OnForceClosing();

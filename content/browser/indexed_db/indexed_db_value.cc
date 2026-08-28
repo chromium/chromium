@@ -27,7 +27,8 @@ IndexedDBValue::IndexedDBValue(
     const std::string& input_bits,
     const std::vector<IndexedDBExternalObject>& external_objects)
     : bits(base::as_byte_span(input_bits)), external_objects(external_objects) {
-  DCHECK(external_objects.empty() || input_bits.size());
+  CHECK(external_objects.empty() || input_bits.size(),
+        base::NotFatalUntil::M158);
 }
 
 }  // namespace content::indexed_db

@@ -2890,7 +2890,8 @@ base::FilePath DatabaseConnection::GetLegacyBlobDirectory() const {
 base::FilePath DatabaseConnection::GetBlobFilePath(int64_t blob_id) const {
   base::FilePath path = GetLegacyBlobDirectory().AppendASCII(
       absl::StrFormat("%" PRIx64, blob_id));
-  DCHECK_EQ(blob_id, GetBlobIdFromLegacyFilePath(path).value_or(-1));
+  CHECK_EQ(blob_id, GetBlobIdFromLegacyFilePath(path).value_or(-1),
+           base::NotFatalUntil::M158);
   return path;
 }
 

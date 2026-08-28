@@ -741,7 +741,8 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
   auto& request = request_queue_.front();
   if (request->state() == RequestState::kNotStarted) {
     request->Perform(has_connections);
-    DCHECK(request->state() != RequestState::kNotStarted);
+    CHECK(request->state() != RequestState::kNotStarted,
+          base::NotFatalUntil::M158);
   }
 
   StatusOr<RequestState> state = request->state();

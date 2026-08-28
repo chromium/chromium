@@ -340,7 +340,7 @@ void BackingStoreImpl::OnCleanupComplete(const std::u16string& name,
 
 Status BackingStoreImpl::MigrateFrom(BackingStore& source) {
   CHECK(!in_memory());
-  DCHECK(GetDatabaseNamesAndVersions()->empty());
+  CHECK(GetDatabaseNamesAndVersions()->empty(), base::NotFatalUntil::M158);
 
   ASSIGN_OR_RETURN(
       std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,

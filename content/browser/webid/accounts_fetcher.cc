@@ -199,7 +199,7 @@ void AccountsFetcher::SendSuccessfulTokenRequestMetrics(
     base::TimeDelta account_selected_to_token_response_time,
     base::TimeDelta api_call_to_token_response_time,
     bool did_show_ui) {
-  DCHECK(IsMetricsEndpointEnabled());
+  CHECK(IsMetricsEndpointEnabled(), base::NotFatalUntil::M158);
 
   for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
     const GURL& metrics_endpoint = metrics_endpoint_kv.second;
@@ -854,7 +854,7 @@ void AccountsFetcher::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint,
     blink::mojom::FederatedRequestResult result,
     bool did_show_ui) {
-  DCHECK(IsMetricsEndpointEnabled());
+  CHECK(IsMetricsEndpointEnabled(), base::NotFatalUntil::M158);
   if (!metrics_endpoint.is_valid()) {
     return;
   }

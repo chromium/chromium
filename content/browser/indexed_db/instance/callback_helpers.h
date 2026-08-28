@@ -108,7 +108,7 @@ template <typename T, typename Functor, typename... Args>
 Transaction::Operation BindWeakOperation(Functor&& functor,
                                          base::WeakPtr<T> weak_ptr,
                                          Args&&... args) {
-  DCHECK(weak_ptr);
+  CHECK(weak_ptr, base::NotFatalUntil::M158);
   T* ptr = weak_ptr.get();
   return base::BindOnce(
       &indexed_db_callback_helpers_internal::InvokeOrSucceed<T>,
