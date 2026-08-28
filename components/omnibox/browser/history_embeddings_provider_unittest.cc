@@ -131,10 +131,6 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
 
-    auto feature_parameters = history_embeddings::GetFeatureParameters();
-    feature_parameters.use_ml_answerer = false;
-    history_embeddings::SetFeatureParametersForTesting(feature_parameters);
-
     CHECK(history_dir_.CreateUniqueTempDir());
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     client_->set_history_service(

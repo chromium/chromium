@@ -22,8 +22,6 @@
 #include "chrome/browser/profiles/profile_manager.h"  // nogncheck
 #include "components/history_embeddings/content/history_embeddings_service.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
-#include "components/history_embeddings/core/ml_answerer.h"
-#include "components/history_embeddings/core/ml_intent_classifier.h"
 #include "components/history_embeddings/core/mock_answerer.h"
 #include "components/history_embeddings/core/mock_intent_classifier.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -147,28 +145,18 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* passage_embeddings_service_controller =
       passage_embeddings::GetChromePassageEmbeddingsServiceController();
 
+  // TODO(crbug.com/553639147): Launch or remove the answerer functionality.
   std::unique_ptr<history_embeddings::Answerer> answerer;
   if (history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled()) {
-    if (history_embeddings::GetFeatureParameters().use_ml_answerer) {
-      answerer = std::make_unique<history_embeddings::MlAnswerer>(
-          optimization_guide_keyed_service,
-          optimization_guide_keyed_service
-              ->GetModelQualityLogsUploaderService());
-    } else {
-      answerer = std::make_unique<history_embeddings::MockAnswerer>();
-    }
+    answerer = std::make_unique<history_embeddings::MockAnswerer>();
   }
 
+  // TODO(crbug.com/553639147): Launch or remove the intent classifier
+  // functionality.
   std::unique_ptr<history_embeddings::IntentClassifier> intent_classifier;
   if (history_embeddings::GetFeatureParameters().enable_intent_classifier) {
-    if (history_embeddings::GetFeatureParameters().use_ml_intent_classifier) {
-      intent_classifier =
-          std::make_unique<history_embeddings::MlIntentClassifier>(
-              optimization_guide_keyed_service);
-    } else {
-      intent_classifier =
-          std::make_unique<history_embeddings::MockIntentClassifier>();
-    }
+    intent_classifier =
+        std::make_unique<history_embeddings::MockIntentClassifier>();
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(

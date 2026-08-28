@@ -32,8 +32,6 @@ include_rules = [
   "+components/history/core/browser/url_row.h",
   "+components/history_embeddings/content/history_embeddings_service.h",
   "+components/history_embeddings/core/history_embeddings_features.h",
-  "+components/history_embeddings/core/ml_answerer.h",
-  "+components/history_embeddings/core/ml_intent_classifier.h",
   "+components/history_embeddings/core/mock_answerer.h",
   "+components/history_embeddings/core/mock_intent_classifier.h",
   "+components/keyed_service/content/browser_context_dependency_manager.h",

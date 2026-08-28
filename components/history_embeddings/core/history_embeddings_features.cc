@@ -90,27 +90,10 @@ const base::FeatureParam<bool> kEnableIntentClassifier(&kHistoryEmbeddings,
                                                        "EnableIntentClassifier",
                                                        true);
 
-const base::FeatureParam<bool> kUseMlIntentClassifier(&kHistoryEmbeddings,
-                                                      "UseMlIntentClassifier",
-                                                      false);
-
-const base::FeatureParam<bool> kEnableMlIntentClassifierScore(
-    &kHistoryEmbeddings,
-    "EnableMlIntentClassifierScore",
-    false);
-
 const base::FeatureParam<int> kMockIntentClassifierDelayMS(
     &kHistoryEmbeddings,
     "MockIntentClassifierDelayMS",
     0);
-
-const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
-                                              "UseMlAnswerer",
-                                              true);
-
-const base::FeatureParam<double> kMlAnswererMinScore(&kHistoryEmbeddings,
-                                                     "MlAnswererMinScore",
-                                                     0.5);
 
 const base::FeatureParam<int> kMockAnswererDelayMS(&kHistoryEmbeddings,
                                                    "MockAnswererDelayMS",
@@ -230,11 +213,7 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   search_score_threshold = kSearchScoreThreshold.Get();
   search_word_match_score_threshold = kSearchWordMatchScoreThreshold.Get();
   enable_intent_classifier = kEnableIntentClassifier.Get();
-  use_ml_intent_classifier = kUseMlIntentClassifier.Get();
-  enable_ml_intent_classifier_score = kEnableMlIntentClassifierScore.Get();
   mock_intent_classifier_delay_ms = kMockIntentClassifierDelayMS.Get();
-  use_ml_answerer = kUseMlAnswerer.Get();
-  ml_answerer_min_score = kMlAnswererMinScore.Get();
   mock_answerer_delay_ms = kMockAnswererDelayMS.Get();
   mock_answerer_status = kMockAnswererStatus.Get();
   enable_images_for_results = kEnableImagesForResults.Get();

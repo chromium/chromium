@@ -71,23 +71,9 @@ struct FeatureParameters {
   // Specifies whether to use the intent classifier to gate answer generation.
   bool enable_intent_classifier = true;
 
-  // Specifies whether to use the ML intent classifier (if false, the mock is
-  // used).
-  bool use_ml_intent_classifier = false;
-
-  // Specifies whether to output scores (Decoding output is skipped when
-  // enabled).
-  bool enable_ml_intent_classifier_score = false;
-
   // Specifies the delay in milliseconds to use for the mock intent classifier
   // for local development.
   int mock_intent_classifier_delay_ms = 0;
-
-  // Specifies whether to use the ML Answerer (if false, the mock is used).
-  bool use_ml_answerer = true;
-
-  // Specifies the min score for generated answer from the ML answerer.
-  double ml_answerer_min_score = 0.5;
 
   // Specifies the delay in milliseconds to use for the mock answerer for local
   // development.

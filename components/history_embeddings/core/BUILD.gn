@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 static_library("core") {
   sources = [
     "answerer.cc",
@@ -13,10 +11,6 @@ static_library("core") {
     "history_embeddings_search.cc",
     "history_embeddings_search.h",
     "intent_classifier.h",
-    "ml_answerer.cc",
-    "ml_answerer.h",
-    "ml_intent_classifier.cc",
-    "ml_intent_classifier.h",
     "mock_answerer.cc",
     "mock_answerer.h",
     "mock_intent_classifier.cc",
@@ -38,7 +32,6 @@ static_library("core") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
     "//components/os_crypt/browser",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
@@ -58,12 +51,6 @@ source_set("unit_tests") {
     "sql_database_unittest.cc",
     "vector_database_unittest.cc",
   ]
-  if (build_with_model_execution) {
-    sources += [
-      "ml_answerer_unittest.cc",
-      "ml_intent_classifier_unittest.cc",
-    ]
-  }
   deps = [
     ":core",
     "//base/test:test_support",
