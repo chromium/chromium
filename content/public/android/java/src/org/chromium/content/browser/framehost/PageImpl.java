@@ -6,15 +6,22 @@ package org.chromium.content.browser.framehost;
 
 import android.util.LongSparseArray;
 
+import androidx.annotation.AnyThread;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.PageState;
 import org.chromium.url.GURL;
 
-/** JNI bridge with content::Page */
+/**
+ * JNI bridge with content::Page
+ *
+ * <p>All methods should be called on the UI thread with exception to getMostRecentPageState
+ */
 @JNINamespace("content")
 @NullMarked
 public class PageImpl implements Page {
@@ -30,6 +37,9 @@ public class PageImpl implements Page {
 
     private @Nullable PageDeletionListener mListener;
 
+    // Holds the most recent PageState snapshot taken, this is taken every time mUrl changes
+    private volatile PageState mMostRecentPageState;
+
     @Override
     public void setPageDeletionListener(PageDeletionListener listener) {
         mListener = listener;
@@ -39,6 +49,9 @@ public class PageImpl implements Page {
     public PageImpl(long nativePage, boolean isPrerendering) {
         mNativePage = nativePage;
         mIsPrerendering = isPrerendering;
+
+        takePageSnapshot();
+
         if (mNativePage != 0) {
             assert sPages.get(mNativePage) == null;
             sPages.put(mNativePage, this);
@@ -81,10 +94,22 @@ public class PageImpl implements Page {
     @Override
     public void setUrl(GURL url) {
         mUrl = url;
+        takePageSnapshot();
     }
 
     @CalledByNative
     private static @Nullable PageImpl getJavaObject(long nativePage) {
         return sPages.get(nativePage);
+    }
+
+    @Override
+    @AnyThread
+    public PageState getMostRecentPageState() {
+        return mMostRecentPageState;
+    }
+
+    /** Take a snapshot of the current state of Page */
+    private void takePageSnapshot() {
+        mMostRecentPageState = new PageState(mUrl);
     }
 }

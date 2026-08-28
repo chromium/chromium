@@ -4,10 +4,16 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.AnyThread;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
-/** JNI bridge with content::Page */
+/**
+ * JNI bridge with content::Page
+ *
+ * <p>All methods should be called on the UI thread with exception to getMostRecentPageState
+ */
 @NullMarked
 public interface Page {
     /** Listener for when the native C++ Page object is destructed. */
@@ -45,4 +51,8 @@ public interface Page {
      * @param url The URL to set.
      */
     void setUrl(GURL url);
+
+    /** Returns the most recent {@link PageState} */
+    @AnyThread
+    PageState getMostRecentPageState();
 }

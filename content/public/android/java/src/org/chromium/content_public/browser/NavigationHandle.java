@@ -6,6 +6,7 @@ package org.chromium.content_public.browser;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -26,7 +27,11 @@ import org.chromium.url.Origin;
 import java.util.HashMap;
 import java.util.Map;
 
-/** JNI bridge with content::NavigationHandle */
+/**
+ * JNI bridge with content::NavigationHandle
+ *
+ * <p>All methods must be called on the UI Thread with exception to getMostRecentNavigationState
+ */
 @JNINamespace("content")
 @NullMarked
 public class NavigationHandle {
@@ -70,6 +75,8 @@ public class NavigationHandle {
 
     private long mNavigationStartMs;
     private boolean mStarted;
+
+    private volatile NavigationState mMostRecentNavigationState;
 
     public static NavigationHandle createForTesting(
             GURL url,
@@ -144,6 +151,8 @@ public class NavigationHandle {
         mIsForward = isForward;
         mIsRestore = isRestore;
         mResponseHeaders = null;
+
+        takeNavigationStateSnapshot();
     }
 
     @CalledByNative
@@ -184,6 +193,8 @@ public class NavigationHandle {
         mWebContents = webContents;
 
         mStarted = true;
+
+        takeNavigationStateSnapshot();
     }
 
     /** Returns the navigation start time in milliseconds. */
@@ -203,6 +214,8 @@ public class NavigationHandle {
         mUrl = url;
         mIsRedirect = true;
         mIsExternalProtocol = isExternalProtocol;
+
+        takeNavigationStateSnapshot();
     }
 
     /** The navigation finished. Called once per navigation. */
@@ -246,6 +259,8 @@ public class NavigationHandle {
         mIsSameOrigin = isSameOrigin;
         mResponseHeaders = responseHeaders;
         mIgnoredDuplicateNavigationCount = ignoredDuplicateNavigationCount;
+
+        takeNavigationStateSnapshot();
     }
 
     public void callDidFinishForTesting(GURL url) {
@@ -552,5 +567,33 @@ public class NavigationHandle {
     /** Returns the number of duplicate navigations ignored during this navigation. */
     public int getIgnoredDuplicateNavigationCount() {
         return mIgnoredDuplicateNavigationCount;
+    }
+
+    /** Returns the most recent {@link NavigationState} */
+    @AnyThread
+    public NavigationState getMostRecentNavigationState() {
+        return mMostRecentNavigationState;
+    }
+
+    /** Take a snapshot of the current state of NavigationHandle */
+    private void takeNavigationStateSnapshot() {
+        mMostRecentNavigationState =
+                new NavigationState(
+                        mUrl,
+                        mIsRendererInitiated,
+                        mIsSameDocument,
+                        mIsReload,
+                        mIsHistory,
+                        mIsRestore,
+                        mIsBack,
+                        mIsForward,
+                        mHasCommitted,
+                        mIsErrorPage,
+                        mHttpStatusCode,
+                        mErrorCode,
+                        mErrorDescription,
+                        mResponseHeaders,
+                        mStarted,
+                        this);
     }
 }
