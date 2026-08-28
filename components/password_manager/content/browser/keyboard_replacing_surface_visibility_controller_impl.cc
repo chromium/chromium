@@ -30,15 +30,15 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::SetVisible(
   if (IsVisible()) {
     return;
   }
-    frame_driver_ = std::move(frame_driver);
-    suppress_callback_ = base::BindRepeating(
-        [](base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
-               controller) { return controller->IsVisible(); },
-        AsWeakPtr());
-    frame_driver_->render_frame_host()
-        ->GetRenderWidgetHost()
-        ->AddSuppressShowingImeCallback(suppress_callback_);
-    state_ = State::kVisible;
+  frame_driver_ = std::move(frame_driver);
+  suppress_callback_ = base::BindRepeating(
+      [](base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
+             controller) { return controller && controller->IsVisible(); },
+      AsWeakPtr());
+  frame_driver_->render_frame_host()
+      ->GetRenderWidgetHost()
+      ->AddSuppressShowingImeCallback(suppress_callback_);
+  state_ = State::kVisible;
 }
 
 void KeyboardReplacingSurfaceVisibilityControllerImpl::SetShown() {
