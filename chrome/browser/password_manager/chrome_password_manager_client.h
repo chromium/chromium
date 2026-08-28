@@ -102,6 +102,7 @@ namespace password_manager {
 class CredManController;
 class FieldInfoManager;
 class KeyboardReplacingSurfaceVisibilityController;
+class PasswordManagerCriticalActionLogger;
 class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
 
@@ -462,9 +463,6 @@ class ChromePasswordManagerClient
       const GURL& original_url,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
   void OnFedCmFederatedLogin(bool success) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // autofill::AutofillManager::Observer:
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
@@ -539,12 +537,6 @@ class ChromePasswordManagerClient
                                              FieldTypeSource source);
 
   void OnNonPasswordLoginDetected();
-
-  // Returns the navigation_id for the frame associated with `driver`, falling
-  // back to the primary main frame's navigation_id if applicable. Returns 0 if
-  // not found.
-  int64_t GetNavigationIdForDriver(
-      password_manager::PasswordManagerDriver* driver) const;
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -647,13 +639,13 @@ class ChromePasswordManagerClient
   CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
 
-  // Maps active frame pointers to the navigation_id that committed them.
-  base::flat_map<content::RenderFrameHost*, int64_t> rfh_to_navigation_id_;
-
   password_manager::UndoPasswordChangeController
       undo_password_change_controller_;
 
   bool apply_client_side_prediction_override_ = false;
+
+  std::unique_ptr<password_manager::PasswordManagerCriticalActionLogger>
+      critical_action_logger_;
 
   base::WeakPtrFactory<ChromePasswordManagerClient> weak_ptr_factory_{this};
 
