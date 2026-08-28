@@ -19,20 +19,20 @@
   initial-value: 0deg;
 }
 
-:host{
+:host {
   --cr-hover-background-color: #F3F5F6;
   --cr-button-height: 32px;
   flex-shrink: 0;
-  /* These variables are only relevant for dynamic mode. */
-  --arrow-transform-start: translateY(-50%) translateX(-10.5px);
-  --arrow-transform-end: translateY(-50%) translateX(0);
+  /* Dynamic mode motion tokens */
+  --aim-motion-duration-enter: 333ms;
+  --aim-motion-duration-exit: 383ms;
+  --aim-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+
   --label-transform-input: translateX(-18px);
 }
 
 :host-context([dir='rtl']) {
-  /* These variables are only relevant for dynamic mode. */
-  --arrow-transform-start: translateY(-50%) translateX(10.5px);
-  --arrow-transform-end: translateY(-50%) translateX(0);
+  /* Dynamic mode motion tokens (RTL) */
   --label-transform-input: translateX(18px);
 }
 
@@ -554,66 +554,56 @@
 :host([dynamic]) #label {
   display: inline-block;
   margin-inline-start: 22px; /* 18px icon + 4px gap */
-  transition: transform 350ms cubic-bezier(0.05, 0.735, 0.1, 1);
+  transform: translateX(0);
+  transition: transform var(--aim-motion-duration-exit) var(--aim-motion-easing);
 }
 
 :host([dynamic][has-user-input]) #label {
   transform: var(--label-transform-input);
-  transition: transform 333ms cubic-bezier(0.05, 0.7368, 0.1, 1);
+  transition: transform var(--aim-motion-duration-enter) var(--aim-motion-easing);
 }
 
 :host([dynamic]) .compose-icon {
-  position: absolute;
   inset-inline-start: 8px;
+  opacity: 1;
+  padding: 0;
+  pointer-events: auto;
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  scale: 1;
-  transition: opacity 17ms cubic-bezier(0, 0, 1, 1) 50ms,
-              scale 333ms cubic-bezier(0.05, 1.68, 0.1, 1) 50ms,
-              width 350ms cubic-bezier(0.05, 0.735, 0.1, 1);
+  visibility: visible;
+  transition: opacity var(--aim-motion-duration-exit) var(--aim-motion-easing),
+              visibility var(--aim-motion-duration-exit) var(--aim-motion-easing);
 }
 
 :host([dynamic][has-user-input]) .compose-icon {
-  width: 0;
   opacity: 0;
-  scale: 0.5;
-  transition: opacity 17ms cubic-bezier(0, 0, 1, 1),
-              scale 333ms cubic-bezier(0.05, 0.7368, 0.1, 1),
-              width 333ms cubic-bezier(0.05, 0.7368, 0.1, 1);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 50ms linear,
+              visibility 50ms linear;
 }
 
 :host([dynamic]) .arrow-icon {
   display: inline-block;
   height: 18px;
-  width: 0;
-  opacity: 0;
-  position: absolute;
   inset-inline-end: 8px;
+  opacity: 0;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
   top: 50%;
-  transform: var(--arrow-transform-start);
-  transition: opacity 250ms cubic-bezier(0.05, 0, 0.1, 1),
-              transform 350ms cubic-bezier(0.05, 0.735, 0.1, 1),
-              width 350ms cubic-bezier(0.05, 0.735, 0.1, 1);
+  transform: translateY(-50%);
+  visibility: hidden;
+  width: 18px;
+  transition: opacity 50ms linear,
+              visibility 50ms linear;
 }
 
 :host([dynamic][has-user-input]) .arrow-icon {
-  width: 18px;
   opacity: 1;
-  transform: var(--arrow-transform-end);
-  animation: emerge 333ms cubic-bezier(0.05, 0.7368, 0.1, 1) forwards;
-  transition: none;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity var(--aim-motion-duration-enter) var(--aim-motion-easing),
+              visibility var(--aim-motion-duration-enter) var(--aim-motion-easing);
 }
-
-@keyframes emerge {
-  from {
-    width: 0;
-    opacity: 0;
-    transform: var(--arrow-transform-start);
-  }
-  to {
-    width: 18px;
-    opacity: 1;
-    transform: var(--arrow-transform-end);
-  }
-}
-
