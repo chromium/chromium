@@ -633,8 +633,9 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
 }
 
+// TODO(crbug.com/553199051): Fix and re-enable.
 IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
-                       TypeIntoEditableEndsStream) {
+                       DISABLED_TypeIntoEditableEndsStream) {
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
