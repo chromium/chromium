@@ -1888,9 +1888,9 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragProximityInAndOut) {
   auto* event_source = connection_->event_source();
   base::TimeTicks time = base::TimeTicks::Now();
 
-  // 1. Enter pointer and press mouse button to set up pointer focus.
+  // 1. Enter pointer to set up pointer focus and simulate tablet down serial.
   SendPointerEnter(window_.get(), &delegate_);
-  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1u);
 
   // 2. Hover/proximity-in and press pen tip to start the drag.
   event_source->OnTabletToolProximityIn(window_.get(), {10, 10}, {}, time);
@@ -1910,8 +1910,7 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragProximityInAndOut) {
 
   // 5. Hover the pen back in (proximity-in).
   // Under the bug, this unilaterally released the buttons and cancelled the
-  // drag session because IsDragInProgress() wasn't checked.
-  // With the fix, we check IsDragInProgress() and do NOT release/cancel.
+  // drag session because proximity-in dispatched a release event.
   event_source->OnTabletToolProximityIn(window_.get(), {15, 15}, {}, time);
 
   // The drag session must still be active.
@@ -1928,6 +1927,62 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragProximityInAndOut) {
   // This runs the nested run loop. It should NOT crash because
   // nested_dispatcher_ is still valid and has not been reset!
   EXPECT_TRUE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+
+  // 7. Verify that a subsequent window dragging session can start cleanly.
+  connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 2u);
+  event_source->OnTabletToolButton(EF_LEFT_MOUSE_BUTTON, true, {}, time);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+  SendDndDropAndFinished();
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
+// Regression test for crbug.com/532860184. Ensures that when dragging with a
+// tablet pen, lifting the pen (which causes proximity_out) and dropping while
+// out of proximity cleanly finishes the drag session and releases the tablet
+// buttons.
+TEST_P(WaylandWindowDragControllerTest, TabletPenDragDropWhileProximityOut) {
+  auto* event_source = connection_->event_source();
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  // 1. Enter pointer to set up initial window and simulate tablet down serial.
+  SendPointerEnter(window_.get(), &delegate_);
+  connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1u);
+
+  // 2. Hover/proximity-in and press pen tip to start the drag.
+  event_source->OnTabletToolProximityIn(window_.get(), {10, 10}, {}, time);
+  event_source->OnTabletToolButton(EF_LEFT_MOUSE_BUTTON, true, {}, time);
+  event_source->OnTabletToolMotion({10, 10}, {}, time);
+
+  // 3. Start the window drag session.
+  auto* wayland_extension = GetWaylandToplevelExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // 4. While dragging, lift the pen (proximity-out).
+  event_source->OnTabletToolProximityOut({}, time);
+
+  // 5. Drag the tab and end the drag cleanly while still in proximity-out.
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  ScheduleTestTask(
+      base::BindLambdaForTesting([&]() { SendDndDropAndFinished(); }));
+
+  EXPECT_TRUE(move_loop_handler->RunMoveLoop({}));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+
+  // 6. Verify that a subsequent window dragging session can start cleanly.
+  connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 2u);
+  event_source->OnTabletToolProximityIn(window_.get(), {10, 10}, {}, time);
+  event_source->OnTabletToolButton(EF_LEFT_MOUSE_BUTTON, true, {}, time);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+  SendDndDropAndFinished();
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 

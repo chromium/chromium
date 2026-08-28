@@ -627,10 +627,6 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
                    tablet_tool_location_, time, keyboard_modifiers_, 0,
                    details);
   SetTargetAndDispatchEvent(&event, window);
-  if (tablet_tool_buttons_ && !connection_->IsDragInProgress()) {
-    // Release any buttons that were pressed during a DnD session.
-    OnTabletToolButton(tablet_tool_buttons_, /*pressed=*/false, details, time);
-  }
 }
 
 void WaylandEventSource::OnTabletToolProximityOut(const PointerDetails& details,
@@ -1000,6 +996,26 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 void WaylandEventSource::ReleasePressedPointerButtons(
     WaylandWindow* window,
     base::TimeTicks timestamp) {
+  // Dispatching the event may delete the window.
+  base::WeakPtr<WaylandWindow> window_weak =
+      window ? window->AsWeakPtr() : nullptr;
+
+  if (tablet_tool_buttons_ && connection_->IsDragInProgress()) {
+    // Release any tablet buttons that were pressed when the DnD session
+    // started.
+    auto* target =
+        window_weak ? window_weak.get() : tablet_tool_focused_window_.get();
+    if (target) {
+      EventType type = EventType::kMouseReleased;
+      int flags =
+          keyboard_modifiers_ | tablet_tool_buttons_ | EF_IS_SYNTHESIZED;
+      MouseEvent event(type, tablet_tool_location_, tablet_tool_location_,
+                       timestamp, flags, tablet_tool_buttons_);
+      SetTargetAndDispatchEvent(&event, target);
+    }
+    tablet_tool_buttons_ = 0;
+  }
+
   // This may be called through the pointer delegate to cleanup pointer state.
   // Clients may call this proactively regardless of whether the any pointer
   // buttons are registered as pressed.
@@ -1007,9 +1023,6 @@ void WaylandEventSource::ReleasePressedPointerButtons(
     return;
   }
 
-  // Dispatching the event may delete the window.
-  base::WeakPtr<WaylandWindow> window_weak =
-      window ? window->AsWeakPtr() : nullptr;
   for (const auto& [button, name] : kMouseButtonToStringMap) {
     if (button & pointer_flags_) {
       VLOG(1) << "Synthesizing pointer release for: " << name;
