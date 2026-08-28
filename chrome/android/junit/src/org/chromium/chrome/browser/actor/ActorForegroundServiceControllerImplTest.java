@@ -186,7 +186,7 @@ public class ActorForegroundServiceControllerImplTest {
         int taskState = ActorTaskState.ACTING;
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(tabId));
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
         assertNotNull("Intent should not be null.", intent);
@@ -208,45 +208,17 @@ public class ActorForegroundServiceControllerImplTest {
     }
 
     @Test
-    public void testCreateTrustedBringTabToFrontIntent_FinishedTaskWithValidTabId() {
-        int tabId = 123;
+    public void testCreateTrustedBringTabToFrontIntent_EmptyTabs() {
         int taskId = 456;
         int taskState = ActorTaskState.FINISHED;
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.emptySet());
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
         assertNotNull("Intent should not be null.", intent);
         assertEquals(
-                "Intent extra should contain the preserved tabId after task completion.",
-                tabId,
-                IntentHandler.getBringTabToFrontId(intent));
-        assertTrue(
-                "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
-                intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
-        assertEquals(
-                "Intent should have the correct taskId.",
-                taskId,
-                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
-        assertEquals(
-                "Intent should have the correct task state.",
-                taskState,
-                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, -1));
-    }
-
-    @Test
-    public void testCreateTrustedBringTabToFrontIntent_InvalidTabId() {
-        int taskId = 456;
-        int taskState = ActorTaskState.FINISHED;
-        when(mActorTask.getId()).thenReturn(taskId);
-        when(mActorTask.getState()).thenReturn(taskState);
-        when(mActorTask.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
-
-        Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
-        assertNotNull("Intent should not be null.", intent);
-        assertEquals(
-                "Intent extra should contain INVALID_TAB_ID for invalid tab ID.",
+                "Intent extra should contain INVALID_TAB_ID for empty tabs.",
                 Tab.INVALID_TAB_ID,
                 IntentHandler.getBringTabToFrontId(intent));
         assertTrue(

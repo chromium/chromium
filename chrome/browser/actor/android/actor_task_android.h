@@ -37,7 +37,6 @@ class ActorTaskAndroid : public base::SupportsUserData::Data {
   void Resume();
   std::vector<int32_t> GetTabs();
   std::vector<int32_t> GetLastActedTabs();
-  int32_t GetLastActuatedTabId();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
