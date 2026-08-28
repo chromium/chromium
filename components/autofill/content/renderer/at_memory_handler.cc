@@ -391,8 +391,7 @@ void AtMemoryHandler::DidReceiveKeyDownForDoubleCtrl(
     return;
   }
 
-  const size_t offset = GetCaretOffset(field);
-  if (offset == std::string::npos) {
+  if (!IsSupportedField(field) || !field.ContainsFrameSelection()) {
     ctrl_state_ = {};
     return;
   }
@@ -402,12 +401,10 @@ void AtMemoryHandler::DidReceiveKeyDownForDoubleCtrl(
 
   if (ctrl_state_.last_ctrl_dom_code != event.dom_code ||
       ctrl_state_.last_field_id != field_id ||
-      ctrl_state_.last_offset != offset ||
       now - ctrl_state_.last_time > kCoherentKeyDownThreshold) {
     ctrl_state_ = {.last_ctrl_dom_code = event.dom_code,
                    .last_time = now,
-                   .last_field_id = field_id,
-                   .last_offset = offset};
+                   .last_field_id = field_id};
     // The double Ctrl sequence isn't complete yet.
     return;
   }

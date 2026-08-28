@@ -161,8 +161,6 @@ class AtMemoryHandler {
     base::TimeTicks last_time;
     // The target of the last keydown event.
     FieldRendererId last_field_id{};
-    // The caret offset at the time of the previous keydown event.
-    size_t last_offset = std::string::npos;
   } ctrl_state_;
 
   // State for the "@@" UKM metric.

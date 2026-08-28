@@ -1266,6 +1266,30 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInContentEditable) {
   task_environment_.RunUntilIdle();
 }
 
+// Tests that pressing Ctrl twice triggers AtMemory even when a non-empty
+// selection has been made, and replaces the selection with the filled value.
+TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryWithSelection) {
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  blink::WebInputElement input = GetInputElementById("f");
+  Focus("f");
+
+  input.SetValue(blink::WebString::FromUtf16(u"hello selection world"));
+  input.SetSelectionRange(6, 15);
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  WaitForApplyFieldAction();
+
+  EXPECT_EQ(input.Value().Utf16(), u"hello result world");
+  EXPECT_EQ(input.SelectionStart(), 12u);
+}
+
 // Tests that typing an intervening character cancels the double Ctrl sequence.
 TEST_F(AtMemoryHandlerTest, InterveningKeyCancelsDoubleCtrl) {
   LoadHTML(R"(<input id="f">)");
