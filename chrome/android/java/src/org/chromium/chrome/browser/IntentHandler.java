@@ -1299,6 +1299,7 @@ public class IntentHandler {
     private static @Nullable String extractUrlFromIntent(@Nullable Intent intent) {
         if (intent == null) return null;
         String url = getUrlFromVoiceSearchResult(intent);
+        if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = getUrlForWebapp(intent);
         if (url == null) url = getUrlFromShareIntent(intent);
         if (url == null) url = getUrlForHandoff(intent);
@@ -1369,6 +1370,14 @@ public class IntentHandler {
         if (match != null) return match.getUrl().getSpec();
 
         return TemplateUrlServiceFactory.getForProfile(profile).getUrlForSearchQuery(text);
+    }
+
+    private static @Nullable String getUrlForCustomTab(@Nullable Intent intent) {
+        if (intent == null || intent.getData() == null) return null;
+        Uri data = intent.getData();
+        return TextUtils.equals(data.getScheme(), UrlConstants.CUSTOM_TAB_SCHEME)
+                ? data.getQuery()
+                : null;
     }
 
     private static @Nullable String getUrlForWebapp(@Nullable Intent intent) {
