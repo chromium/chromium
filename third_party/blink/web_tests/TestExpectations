@@ -4277,6 +4277,10 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [
 crbug.com/535451658 http/tests/devtools/console-xhr-logging-async.js [ Failure Pass ]
 crbug.com/535451658 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 
+## Disable layout tests to land crrev.com/c/8303474
+crbug.com/407750721 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
+crbug.com/407750721 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
+
 
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
