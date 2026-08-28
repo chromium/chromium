@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_hats_survey_controller.h"
@@ -299,19 +300,18 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
 }
 
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
-std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-ReadAnythingController::GetOrCreateWebUIWrapper(
+ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
     PresentationState web_ui_new_presentation_state) {
   SetPresentationState(web_ui_new_presentation_state);
   if (should_recreate_web_ui_ || !web_ui_wrapper_) {
     should_recreate_web_ui_ = false;
     has_shown_ui_ = false;
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
-    web_ui_wrapper_ =
+    web_ui_wrapper_ = ReadAnythingContentsWrapper(
         std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
             GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL), profile,
             IDS_READING_MODE_TITLE,
-            /*esc_closes_ui=*/false);
+            /*esc_closes_ui=*/false));
 
     ra_web_ui_observer_ = std::make_unique<WebContentsObserverInstance>(
         /*web_contents=*/web_ui_wrapper_->web_contents(),
@@ -355,14 +355,12 @@ void ReadAnythingController::OnRendererCrashed() {
 }
 
 void ReadAnythingController::SetWebUIWrapperForTest(
-    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-        web_ui_wrapper) {
+    ReadAnythingContentsWrapper web_ui_wrapper) {
   web_ui_wrapper_ = std::move(web_ui_wrapper);
 }
 
 void ReadAnythingController::TransferWebUiOwnership(
-    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-        web_ui_wrapper,
+    ReadAnythingContentsWrapper web_ui_wrapper,
     PresentationState from_presentation) {
   // Ignore the returned wrapper if it's coming from a UI that is no longer
   // the active presentation.

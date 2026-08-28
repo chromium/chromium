@@ -1588,7 +1588,7 @@ static_library("ui") {
       "//chrome/browser/importer:impl",
       "//chrome/browser/personal_context/first_run",
       "//chrome/browser/ui/commerce",
-      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/read_anything:impl",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/data_sharing",
@@ -1668,7 +1668,7 @@ static_library("ui") {
       "//chrome/browser/apps/app_service",
 
       # TODO(crbug.com/345487716): Remove circular dependencies.
-      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/read_anything:impl",
       "//chrome/browser/ui/views/side_panel",
 
       # TODO(crbug/com/387527798): Remove circular dependencies.

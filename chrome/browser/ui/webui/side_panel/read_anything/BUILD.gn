@@ -69,12 +69,6 @@ source_set("read_anything") {
   if (is_mac) {
     deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
   }
-
-  # Forms an include cycle with //chrome/browser/ui/read_anything: it includes
-  # this target's _ui.h / _page_handler.h, and this target's page handler
-  # includes its controller headers (read_anything_controller.h,
-  # read_anything_side_panel_controller.h).
-  allow_circular_includes_from = [ "//chrome/browser/ui/read_anything" ]
 }
 
 source_set("browser_tests") {

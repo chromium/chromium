@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_hats_survey_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
@@ -30,10 +31,6 @@
 
 class ReadAnythingController;
 class ReadAnythingService;
-class ReadAnythingUntrustedUI;
-
-template <typename T>
-class WebUIContentsWrapperT;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured
@@ -173,24 +170,20 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
   // caller, and the caller passes in the presentation that the webui will be
   // presented in (e.g. kInSidePanel, kInImmersiveOverlay)
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-  GetOrCreateWebUIWrapper(PresentationState web_ui_new_presentation_state);
+  ReadAnythingContentsWrapper GetOrCreateWebUIWrapper(
+      PresentationState web_ui_new_presentation_state);
 
   // Getter for has_shown_ui_. This is used by RM host views to
   // determine if the Reading Mode is ready to be shown, or if it should wait
   // for a notification that it is ready.
   bool has_shown_ui() const { return has_shown_ui_; }
 
-  void SetWebUIWrapperForTest(
-      std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-          web_ui_wrapper);
+  void SetWebUIWrapperForTest(ReadAnythingContentsWrapper web_ui_wrapper);
 
   // Called by other host views of the Reading Mode WebUI to return ownership of
   // the WebUIContentsWrapper to this controller.
-  void TransferWebUiOwnership(
-      std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-          web_ui_wrapper,
-      PresentationState from_presentation);
+  void TransferWebUiOwnership(ReadAnythingContentsWrapper web_ui_wrapper,
+                              PresentationState from_presentation);
 
   // Recreates the WebUI on the next GetOrCreateWebUIWrapper() call. This should
   // be called if Reading mode crashes so that we don't get stuck in a crashed
@@ -244,8 +237,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
 
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-      web_ui_wrapper_;
+  ReadAnythingContentsWrapper web_ui_wrapper_;
 
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;

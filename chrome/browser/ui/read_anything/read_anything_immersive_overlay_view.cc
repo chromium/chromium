@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -91,8 +92,7 @@ void ReadAnythingImmersiveOverlayView::OnShowImmersive(
 }
 
 void ReadAnythingImmersiveOverlayView::OnCloseImmersive() {
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      CloseUI();
+  ReadAnythingContentsWrapper wrapper = CloseUI();
   if (wrapper && controller_) {
     controller_->TransferWebUiOwnership(
         std::move(wrapper),
@@ -105,8 +105,7 @@ void ReadAnythingImmersiveOverlayView::OnDestroyed() {
 }
 
 void ReadAnythingImmersiveOverlayView::ShowUI(
-    std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-        contents_wrapper,
+    ReadAnythingContentsWrapper contents_wrapper,
     ReadAnythingOpenTrigger trigger) {
   CHECK(!immersive_web_view_);
   // Record has_shown_ui() before constructing ReadAnythingImmersiveWebView,
@@ -118,7 +117,7 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
   auto immersive_web_view = std::make_unique<ReadAnythingImmersiveWebView>(
       base::BindOnce(&ReadAnythingImmersiveOverlayView::OnShowUI,
                      base::Unretained(this)),
-      std::move(contents_wrapper), trigger);
+      std::move(contents_wrapper).release(), trigger);
   immersive_web_view_ = AddChildView(std::move(immersive_web_view));
   immersive_view_focus_subscription_ =
       immersive_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
@@ -162,8 +161,7 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
   }
 }
 
-std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-ReadAnythingImmersiveOverlayView::CloseUI() {
+ReadAnythingContentsWrapper ReadAnythingImmersiveOverlayView::CloseUI() {
   immersive_view_focus_subscription_ = {};
   SetVisible(false);
 
@@ -184,7 +182,7 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
     contents_web_view_->RequestFocus();
   }
 
-  return web_view->CloseAndTakeContentsWrapper();
+  return ReadAnythingContentsWrapper(web_view->CloseAndTakeContentsWrapper());
 }
 
 base::CallbackListSubscription

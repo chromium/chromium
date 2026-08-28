@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
@@ -724,9 +725,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
 
   // Get the WebUI wrapper again (should be inactive now)
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInactive);
+  ReadAnythingContentsWrapper wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInactive);
   ASSERT_TRUE(wrapper->web_contents());
 
   // Verify it is the same WebContents
@@ -981,9 +981,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kUndefined);
 
   // The wrapper is moved to the caller, so we must keep it alive.
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInSidePanel);
+  ReadAnythingContentsWrapper wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInSidePanel);
 }
@@ -1021,9 +1020,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 1. Create the WebUI wrapper.
   // We do NOT show it, so `has_shown_ui_` remains false (default).
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInSidePanel);
+  ReadAnythingContentsWrapper wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
   content::WebContents* original_contents = wrapper->web_contents();
   ASSERT_TRUE(original_contents);
 
@@ -1035,9 +1033,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       ReadAnythingController::PresentationState::kInSidePanel);
 
   // 3. Request the wrapper again.
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> new_wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInSidePanel);
+  ReadAnythingContentsWrapper new_wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
 
   // 4. Verify that we got a FRESH wrapper (different WebContents).
   EXPECT_NE(original_contents, new_wrapper->web_contents());
@@ -1065,9 +1062,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
 
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInactive);
+  ReadAnythingContentsWrapper wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInactive);
   EXPECT_TRUE(wrapper);
   EXPECT_TRUE(wrapper->web_contents());
   EXPECT_TRUE(wrapper->web_contents()->GetWebUI());
@@ -1081,9 +1077,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(controller);
 
   // Create the WebUI contents and get a pointer to it.
-  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper(
-          ReadAnythingController::PresentationState::kInactive);
+  ReadAnythingContentsWrapper wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInactive);
   content::WebContents* controller_web_contents = wrapper->web_contents();
   ASSERT_TRUE(controller_web_contents);
 

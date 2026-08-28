@@ -26,33 +26,20 @@ source_set("prefs") {
 }
 source_set("read_anything") {
   sources = [
+    "read_anything_contents_wrapper.h",
     "read_anything_controller.h",
-    "read_anything_entry_point_controller.cc",
     "read_anything_entry_point_controller.h",
     "read_anything_enums.h",
-    "read_anything_hats_survey_controller.cc",
     "read_anything_hats_survey_controller.h",
     "read_anything_immersive_activation_observer.h",
-    "read_anything_immersive_overlay_view.cc",
     "read_anything_immersive_overlay_view.h",
-    "read_anything_immersive_web_view.cc",
-    "read_anything_immersive_web_view.h",
     "read_anything_lifecycle_observer.h",
-    "read_anything_omnibox_controller.cc",
     "read_anything_omnibox_controller.h",
-    "read_anything_service.cc",
     "read_anything_service.h",
-    "read_anything_service_factory.cc",
     "read_anything_service_factory.h",
-    "read_anything_side_panel_controller.cc",
     "read_anything_side_panel_controller.h",
-    "read_anything_side_panel_controller_utils.cc",
     "read_anything_side_panel_controller_utils.h",
-    "read_anything_side_panel_navigation_throttle.cc",
     "read_anything_side_panel_navigation_throttle.h",
-    "read_anything_side_panel_web_view.cc",
-    "read_anything_side_panel_web_view.h",
-    "read_anything_soft_navigation_observer.cc",
     "read_anything_soft_navigation_observer.h",
   ]
   public_deps = [
@@ -71,6 +58,39 @@ source_set("read_anything") {
     "//ui/views/controls/webview",
   ]
   deps = [
+    "//chrome/browser/ui/page_action",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/views/side_panel",
+    "//components/page_load_metrics/browser",
+  ]
+}
+
+source_set("impl") {
+  # TODO(https://crbug.com/552467653): Migrate additional implementation-
+  # specific cc files to this project to reduce overall dependencies of the
+  # main project above.
+  sources = [
+    "read_anything_contents_wrapper.cc",
+    "read_anything_controller.cc",
+    "read_anything_entry_point_controller.cc",
+    "read_anything_hats_survey_controller.cc",
+    "read_anything_immersive_overlay_view.cc",
+    "read_anything_immersive_web_view.cc",
+    "read_anything_immersive_web_view.h",
+    "read_anything_omnibox_controller.cc",
+    "read_anything_service.cc",
+    "read_anything_service_factory.cc",
+    "read_anything_side_panel_controller.cc",
+    "read_anything_side_panel_controller_utils.cc",
+    "read_anything_side_panel_navigation_throttle.cc",
+    "read_anything_side_panel_web_view.cc",
+    "read_anything_side_panel_web_view.h",
+    "read_anything_soft_navigation_observer.cc",
+  ]
+  deps = [
+    ":read_anything",
+    "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility",
@@ -87,43 +107,20 @@ source_set("read_anything") {
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/side_panel/read_anything",
     "//components/accessibility:reading",
     "//components/find_in_page",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/page_load_metrics/browser",
-
-    # Temporarily added to avoid build flakiness while we untangle a circular
-    # dependency
-    "//components/user_education/webui:mojo_bindings",
     "//services/metrics/public/cpp:metrics_cpp",
-  ]
-}
-
-source_set("impl") {
-  # TODO(https://crbug.com/552467653): Migrate additional implementation-
-  # specific cc files to this project to reduce overall dependencies of the
-  # main project above.
-  sources = [ "read_anything_controller.cc" ]
-  deps = [
-    ":read_anything",
-    "//chrome/app:command_ids",
-    "//chrome/browser/translate",
-    "//chrome/browser/ui:accelerator_utils_headers",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui:view_ids",
-    "//chrome/browser/ui/find_bar",
-    "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-    "//chrome/browser/ui/tabs:tab_model",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/user_education",
-    "//chrome/browser/ui/webui/side_panel/read_anything",
   ]
 }
 

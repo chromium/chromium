@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
@@ -221,7 +222,7 @@ void ReadAnythingSidePanelController::ReturnWebUIToController() {
   auto* controller = ReadAnythingController::From(tab_);
   CHECK(controller);
   controller->TransferWebUiOwnership(
-      web_view_->TakeContentsWrapper(),
+      ReadAnythingContentsWrapper(web_view_->TakeContentsWrapper()),
       ReadAnythingController::PresentationState::kInSidePanel);
 }
 
@@ -237,8 +238,10 @@ ReadAnythingSidePanelController::CreateContainerView(
   std::unique_ptr<ReadAnythingSidePanelWebView> web_view =
       std::make_unique<ReadAnythingSidePanelWebView>(
           tab_->GetBrowserWindowInterface()->GetProfile(), scope,
-          ReadAnythingController::From(tab_)->GetOrCreateWebUIWrapper(
-              ReadAnythingController::PresentationState::kInSidePanel));
+          ReadAnythingController::From(tab_)
+              ->GetOrCreateWebUIWrapper(
+                  ReadAnythingController::PresentationState::kInSidePanel)
+              .release());
   ReadAnythingSidePanelControllerGlue::CreateForWebContents(
       web_view->contents_wrapper()->web_contents(), this);
   web_view_ = web_view->GetWeakPtr();
