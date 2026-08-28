@@ -1148,18 +1148,18 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         int targetSdkVersion =
                 ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
         return switch (quirk) {
+            case CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS,
+                    CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY ->
+                    targetSdkVersion < Build.VERSION_CODES.P;
+            case CompatQuirks.Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA ->
+                    targetSdkVersion < Build.VERSION_CODES.Q;
+            case CompatQuirks.Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT ->
+                    targetSdkVersion < Build.VERSION_CODES.R;
             case CompatQuirks.Quirk.LEGACY_DARK_MODE ->
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
                             ? targetSdkVersion < Build.VERSION_CODES.TIRAMISU
                             : !CompatChanges.isChangeEnabled(
                                     WebSettings.ENABLE_SIMPLIFIED_DARK_MODE);
-            case CompatQuirks.Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA ->
-                    targetSdkVersion < Build.VERSION_CODES.Q;
-            case CompatQuirks.Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT ->
-                    targetSdkVersion < Build.VERSION_CODES.R;
-            case CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS,
-                    CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY ->
-                    targetSdkVersion < Build.VERSION_CODES.P;
             default -> false;
         };
     }

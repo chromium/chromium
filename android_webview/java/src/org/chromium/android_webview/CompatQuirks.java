@@ -27,30 +27,37 @@ import javax.annotation.concurrent.GuardedBy;
 @NullMarked
 public abstract class CompatQuirks {
     @IntDef({
-        Quirk.LEGACY_DARK_MODE,
-        Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA,
-        Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT,
         Quirk.ALLOW_SNIFFING_FILE_URLS,
         Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY,
+        Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA,
+        Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT,
+        Quirk.LEGACY_DARK_MODE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Quirk {
+        /** Allows MIME-type sniffing for file:// URLs. Normally enabled for apps targeting < P. */
+        int ALLOW_SNIFFING_FILE_URLS = 0;
+
         /**
-         * Uses legacy dark mode logic instead of modern simplified dark mode (Android T+ feature).
+         * Log a warning instead of crashing if locking the data directory fails. Normally enabled
+         * for apps targeting < P.
          */
-        int LEGACY_DARK_MODE = 0;
+        int DATA_DIRECTORY_LOCK_WARN_ONLY = 1;
 
-        /** Fixes up unencoded '#' characters in data: URLs in WebView.loadData() (Android < Q). */
-        int FIXUP_OCTOTHORPES_IN_LOAD_DATA = 1;
+        /**
+         * Fixes up unencoded '#' characters in data: URLs in WebView.loadData(). Normally enabled
+         * for apps targeting < Q.
+         */
+        int FIXUP_OCTOTHORPES_IN_LOAD_DATA = 2;
 
-        /** Allows file:// URLs access to content by default (Android < R). */
-        int ALLOW_FILE_URL_ACCESS_BY_DEFAULT = 2;
+        /** Allow loading file:// URLs by default. Normally enabled for apps targeting < R. */
+        int ALLOW_FILE_URL_ACCESS_BY_DEFAULT = 3;
 
-        /** Allows MIME-type sniffing for file:// URLs (Android < P). */
-        int ALLOW_SNIFFING_FILE_URLS = 3;
-
-        /** Demotes single data directory locking failure to a warning only (Android < P). */
-        int DATA_DIRECTORY_LOCK_WARN_ONLY = 4;
+        /**
+         * Uses legacy dark mode logic instead of modern simplified dark mode. Normally enabled for
+         * apps targeting < T.
+         */
+        int LEGACY_DARK_MODE = 4;
     }
 
     /**
