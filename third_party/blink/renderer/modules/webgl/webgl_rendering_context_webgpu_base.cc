@@ -6,6 +6,7 @@
 #include <dawn/dawn_proc.h>
 #include <dawn/wire/WireClient.h>
 
+#include <array>
 #include <type_traits>
 
 #include "base/notimplemented.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/extension_set.h"
@@ -178,7 +180,7 @@ void InitializeEGLDebugLogging(const gl::DriverEGL& egl,
     return;
   }
 
-  constexpr EGLAttrib controls[] = {
+  constexpr auto controls = std::to_array<EGLAttrib>({
       EGL_DEBUG_MSG_CRITICAL_KHR,
       EGL_TRUE,
       EGL_DEBUG_MSG_ERROR_KHR,
@@ -189,9 +191,9 @@ void InitializeEGLDebugLogging(const gl::DriverEGL& egl,
       EGL_TRUE,
       EGL_NONE,
       EGL_NONE,
-  };
+  });
 
-  egl.fn.eglDebugMessageControlKHRFn(callback, controls);
+  egl.fn.eglDebugMessageControlKHRFn(callback, controls.data());
 }
 
 class ScopedBindTexture {
@@ -277,7 +279,7 @@ class ScopedBindRenderbuffer {
   GLint prev_renderbuffer_ = 0;
 };
 
-const char* GetErrorString(GLenum error) {
+std::string_view GetErrorString(GLenum error) {
   switch (error) {
     case GL_INVALID_ENUM:
       return "INVALID_ENUM";
@@ -3986,17 +3988,22 @@ void WebGLRenderingContextWebGPUBase::OnDebugMessage(GLenum source,
                                                      GLenum severity,
                                                      GLsizei length,
                                                      const GLchar* message) {
+  // SAFETY: GLDebugMessageCallback provides a pointer and length that are
+  // guaranteed to be valid for the duration of the callback.
+  base::span<const char> message_span =
+      UNSAFE_BUFFERS(base::span(message, base::checked_cast<size_t>(length)));
+  String message_str =
+      String::FromUtf8WithLatin1Fallback(base::as_byte_span(message_span));
+
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
     had_error_callback_ = true;
-    String formatted_message = UNSAFE_TODO(
-        String::Format("WebGL: %s: %s", GetErrorString(id), message));
-    PrintGLErrorToConsole(formatted_message);
+    PrintGLErrorToConsole(
+        blink::Format("WebGL: {}: {}", GetErrorString(id), message_str));
   } else {
-    String formatted_message = UNSAFE_TODO(String::Format(
-        "WebGL: (%s, %s, %s, %d): %s", gl::GetDebugSourceString(source),
+    PrintWarningToConsole(blink::Format(
+        "WebGL: ({}, {}, {}, {}): {}", gl::GetDebugSourceString(source),
         gl::GetDebugTypeString(type), gl::GetDebugSeverityString(severity), id,
-        message));
-    PrintWarningToConsole(formatted_message);
+        message_str));
   }
 }
 
@@ -4026,12 +4033,12 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
   current_swap_buffer_ = mailbox_texture->GetTexture();
 
   // Create an EGL image of the swap buffer texture.
-  const EGLint image_attribs[] = {
+  const auto image_attribs = std::to_array<EGLint>({
       EGL_NONE,
-  };
+  });
   default_framebuffer_color_image_ = driver_egl_.fn.eglCreateImageKHRFn(
       display_, EGL_NO_CONTEXT, EGL_WEBGPU_TEXTURE_ANGLE,
-      current_swap_buffer_.Get(), image_attribs);
+      current_swap_buffer_.Get(), image_attribs.data());
   CHECK(default_framebuffer_color_image_);
 
   // Import the EGL image to a GL texture and bind it to the default framebuffer
@@ -4098,7 +4105,7 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Initialize the EGL display using the device and the dawn wire client proc
   // table.
-  const EGLAttrib display_attribs[] = {
+  const auto display_attribs = std::to_array<EGLAttrib>({
       EGL_PLATFORM_ANGLE_TYPE_ANGLE,
       EGL_PLATFORM_ANGLE_TYPE_WEBGPU_ANGLE,
       EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
@@ -4106,9 +4113,9 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       EGL_PLATFORM_ANGLE_WEBGPU_INSTANCE_ANGLE,
       proxy_instance_->GetInstanceForANGLE(),
       EGL_NONE,
-  };
-  display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
-                                                    nullptr, display_attribs);
+  });
+  display_ = driver_egl_.fn.eglGetPlatformDisplayFn(
+      EGL_PLATFORM_ANGLE_ANGLE, nullptr, display_attribs.data());
   CHECK(display_ != EGL_NO_DISPLAY);
 
   EGLint egl_version_major, egl_version_minor;
@@ -4135,7 +4142,7 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // TODO(413078308): Request version 2 vs 3 depending on WebGL version.
   // TODO(413078308): Request a WebGL compatibility context when requesting
   // extensions is supported both for basic functionality and WebGL extensions.
-  const EGLint context_attribs[] = {
+  const auto context_attribs = std::to_array<EGLint>({
       EGL_CONTEXT_MAJOR_VERSION,
       IsWebGL() ? 3 : 2,
       EGL_CONTEXT_MINOR_VERSION,
@@ -4151,9 +4158,9 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE,
       EGL_TRUE,
       EGL_NONE,
-  };
+  });
   context_ = driver_egl_.fn.eglCreateContextFn(display_, EGL_NO_CONFIG_KHR,
-                                               nullptr, context_attribs);
+                                               nullptr, context_attribs.data());
   CHECK(context_ != EGL_NO_CONTEXT);
 
   driver_egl_.fn.eglMakeCurrentFn(display_, EGL_NO_SURFACE, EGL_NO_SURFACE,
@@ -4441,7 +4448,7 @@ void WebGLRenderingContextWebGPUBase::InsertGLError(GLenum error,
     errors_.push_back(error);
   }
 
-  String error_type = GetErrorString(error);
+  String error_type(GetErrorString(error));
   String message =
       StrCat({"WebGL: ", error_type, ": ", function_name, ": ", description});
 

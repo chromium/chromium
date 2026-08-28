@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/service/error_state.h"
@@ -428,9 +429,9 @@ void LogGLDebugMessage(GLenum source,
   } else {
     error_logger->LogMessage(
         __FILE__, __LINE__,
-        std::string("GL Driver Message (") + gl::GetDebugSourceString(source) +
-            ", " + gl::GetDebugTypeString(type) + ", " + id_string + ", " +
-            gl::GetDebugSeverityString(severity) + "): " + message);
+        base::StrCat({"GL Driver Message (", gl::GetDebugSourceString(source),
+                      ", ", gl::GetDebugTypeString(type), ", ", id_string, ", ",
+                      gl::GetDebugSeverityString(severity), "): ", message}));
   }
 }
 

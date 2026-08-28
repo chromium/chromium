@@ -234,7 +234,7 @@ ScopedPixelStore::~ScopedPixelStore() {
     glPixelStorei(name_, old_value_);
 }
 
-const char* GetDebugSourceString(unsigned int source) {
+std::string_view GetDebugSourceString(unsigned int source) {
   switch (source) {
     case GL_DEBUG_SOURCE_API:
       return "OpenGL";
@@ -253,7 +253,7 @@ const char* GetDebugSourceString(unsigned int source) {
   }
 }
 
-const char* GetDebugTypeString(unsigned int type) {
+std::string_view GetDebugTypeString(unsigned int type) {
   switch (type) {
     case GL_DEBUG_TYPE_ERROR:
       return "Error";
@@ -274,7 +274,7 @@ const char* GetDebugTypeString(unsigned int type) {
   }
 }
 
-const char* GetDebugSeverityString(unsigned int severity) {
+std::string_view GetDebugSeverityString(unsigned int severity) {
   switch (severity) {
     case GL_DEBUG_SEVERITY_HIGH:
       return "High";
