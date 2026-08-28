@@ -295,7 +295,11 @@ class NativeDesktopMediaList::Worker
       bool is_source_list_delegated);
 
 #if BUILDFLAG(IS_WIN)
-  static std::vector<SourceDescription> GetCurrentProcessWindows();
+  // On Windows, enumerates all capturable top-level HWNDs owned by the current
+  // Chrome process to augment WebRTC's source list. Skips |excluded_window_id|
+  // so the picker dialog itself is not listed in the window sharing list.
+  static std::vector<SourceDescription> GetCurrentProcessWindows(
+      DesktopMediaID::Id excluded_window_id);
 
   static std::vector<SourceDescription> MergeAndSortWindowSources(
       std::vector<SourceDescription> sources_a,
@@ -418,14 +422,16 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
 #if BUILDFLAG(IS_WIN)
   // If |add_current_process_windows_| is set to false, |capturer_| will have
   // found the windows owned by the current process for us. Otherwise, we must
-  // do this.
+  // do this. Pass |excluded_window_id_| so that the picker dialog window is
+  // not added back into the window list on Windows.
   if (add_current_process_windows_) {
     DCHECK_EQ(source_type_, DesktopMediaID::Type::TYPE_WINDOW);
     // WebRTC returns the windows in order of highest z-order to lowest, but
     // these additional windows will be out of order if we just append them. So
     // we sort the list according to the z-order of the windows.
     source_descriptions = MergeAndSortWindowSources(
-        std::move(source_descriptions), GetCurrentProcessWindows());
+        std::move(source_descriptions),
+        GetCurrentProcessWindows(excluded_window_id_));
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -528,7 +534,8 @@ NativeDesktopMediaList::Worker::FormatSources(
 #if BUILDFLAG(IS_WIN)
 // static
 std::vector<DesktopMediaListBase::SourceDescription>
-NativeDesktopMediaList::Worker::GetCurrentProcessWindows() {
+NativeDesktopMediaList::Worker::GetCurrentProcessWindows(
+    DesktopMediaID::Id excluded_window_id) {
   std::vector<HWND> current_process_windows;
   if (!::EnumWindows(CapturableCurrentProcessHwndCollector,
                      reinterpret_cast<LPARAM>(&current_process_windows))) {
@@ -537,6 +544,11 @@ NativeDesktopMediaList::Worker::GetCurrentProcessWindows() {
 
   std::vector<SourceDescription> current_process_sources;
   for (HWND hwnd : current_process_windows) {
+    // Skip the excluded window (e.g. the picker dialog itself) so it is not
+    // added to the window list on Windows.
+    if (reinterpret_cast<DesktopMediaID::Id>(hwnd) == excluded_window_id) {
+      continue;
+    }
     // Leave these sources untitled, we must get their title from the UI thread.
     current_process_sources.emplace_back(
         DesktopMediaID(
