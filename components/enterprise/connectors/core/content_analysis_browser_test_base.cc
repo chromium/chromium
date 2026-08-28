@@ -69,7 +69,7 @@ std::string GetMultipartBoundary(const net::test_server::HttpRequest& request) {
 //                      metadata, "\r\n--", boundary_, "\r\n", kDataContentType,
 //                      "\r\n\r\n", data, "\r\n--", boundary_, "--\r\n"});
 //
-// See multipart_uploader_base.cc for the actual code. The following utils
+// See multipart_uploader.cc for the actual code. The following utils
 // extract corresponding parts of the body based on the position of the boundary
 // indicators and newlines.
 ContentAnalysisRequest GetMultipartMetadata(

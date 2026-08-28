@@ -26,9 +26,6 @@ namespace enterprise_connectors {
 
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
-//
-// TODO(crbug.com/481674868): Combine multipart uploader base class and the
-// corresponding unit tests with this.
 class MultipartUploadRequest : public ConnectorUploadRequest {
  public:
   // Creates a MultipartUploadRequest, which will upload `data` to the given
@@ -182,9 +179,5 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
 
 }  // namespace enterprise_connectors
 
-namespace safe_browsing {
-// Compatibility alias for callers during migration.
-using MultipartUploadRequest = ::enterprise_connectors::MultipartUploadRequest;
-}  // namespace safe_browsing
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
