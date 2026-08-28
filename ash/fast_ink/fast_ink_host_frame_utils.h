@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/frame_sink/ui_resource.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -18,6 +17,7 @@
 namespace viz {
 class ClientResourceProvider;
 class CompositorFrame;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace gfx {
@@ -33,14 +33,12 @@ class Window;
 }  // namespace aura
 
 namespace ash {
-class UiResourceManager;
 
 namespace fast_ink_internal {
 
 inline constexpr viz::SharedImageFormat kFastInkSharedImageFormat =
     SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
                  : viz::SinglePlaneFormat::kBGRA_8888;
-inline constexpr UiSourceId kFastInkUiSourceId = 1u;
 
 // Converts the rect in window's coordinate to the buffer's coordinate.  If the
 // window is rotated, the window_rect will also be rotated, for example. The
@@ -59,13 +57,6 @@ ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage);
 
-// Creates a UiResource wrapping the `shared_image` (which must be non-null).
-// The created UiResource does not own `shared_image`.
-ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
-    UiSourceId ui_source_id,
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    gpu::SyncToken sync_token);
-
 // Creates and configures a compositor frame. Uses the SharedImage that
 // `shared_image` (which must be non-null) is referencing.
 ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
@@ -74,7 +65,6 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    UiResourceManager& resource_manager,
     viz::ClientResourceProvider& client_resource_provider,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);

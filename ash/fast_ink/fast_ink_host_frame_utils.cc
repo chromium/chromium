@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
-#include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
@@ -32,25 +31,6 @@
 
 namespace ash::fast_ink_internal {
 namespace {
-
-// Get a UiResource to paint the texture. We try to reuse any
-// existing resources in `resource_manager` before creating a new resource.
-std::unique_ptr<UiResource> AcquireUiResource(
-    UiResourceManager* resource_manager,
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    gpu::SyncToken sync_token) {
-  CHECK(shared_image);
-  std::unique_ptr<UiResource> resource = resource_manager->GetResourceToReuse(
-      shared_image->size(), kFastInkSharedImageFormat, kFastInkUiSourceId);
-
-  if (resource) {
-    CHECK(shared_image == resource->client_shared_image());
-  } else {
-    resource = CreateUiResource(kFastInkUiSourceId, shared_image, sync_token);
-  }
-
-  return resource;
-}
 
 // Configures and adds a `TextureDrawQuad` to the `render_pass_out`.
 void AppendQuad(const viz::TransferableResource& resource,
@@ -112,36 +92,12 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
       gpu::kNullSurfaceHandle, buffer_usage);
 }
 
-std::unique_ptr<UiResource> CreateUiResource(
-    UiSourceId ui_source_id,
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    gpu::SyncToken sync_token) {
-  DCHECK(ui_source_id > 0);
-  CHECK(shared_image);
-
-  auto context_provider = GetContextProvider();
-
-  if (!context_provider) {
-    LOG(ERROR) << "Failed to acquire a context provider";
-    return nullptr;
-  }
-
-  auto resource = std::make_unique<UiResource>(
-      context_provider->SharedImageInterface(), shared_image);
-
-  resource->sync_token = sync_token;
-  resource->damaged = true;
-  resource->ui_source_id = ui_source_id;
-  return resource;
-}
-
 std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    UiResourceManager& resource_manager,
     viz::ClientResourceProvider& client_resource_provider,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -204,74 +160,43 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  if (features::IsFrameSinkHostNewBackendEnabled() &&
-      features::IsFastInkHostNewBackendEnabled()) {
-    auto context_provider = GetContextProvider();
-    if (!context_provider) {
-      LOG(ERROR) << "Failed to acquire a context provider";
-      return nullptr;
-    }
-
-    scoped_refptr<gpu::SharedImageInterface> sii =
-        context_provider->SharedImageInterface();
-
-    gpu::SyncToken updated_sync_token =
-        shared_image->BackingWasExternallyUpdated(sync_token);
-    sii->VerifySyncToken(updated_sync_token);
-
-    viz::TransferableResource transferable_resource;
-    if (!features::IsFastInkHostLowPriorityHintEnabled()) {
-      transferable_resource = viz::TransferableResource::Make(
-          shared_image, viz::TransferableResource::ResourceSource::kUI,
-          updated_sync_token,
-          /*override=*/{.is_overlay_candidate = auto_update});
-    } else {
-      transferable_resource = viz::TransferableResource::Make(
-          shared_image, viz::TransferableResource::ResourceSource::kUI,
-          updated_sync_token);
-    }
-
-    viz::ResourceId resource_id = client_resource_provider.ImportResource(
-        transferable_resource,
-        base::BindOnce([](const gpu::SyncToken& sync_token, bool is_lost) {}));
-
-    client_resource_provider.PrepareSendToParent(
-        {resource_id}, &frame->resource_list, sii.get());
-
-    // In auto_update mode, we use hardware overlays to render the content.
-    AppendQuad(frame->resource_list.back(), output_rect, quad_rect, buffer_size,
-               buffer_to_target_transform, auto_update, *render_pass);
-
-    client_resource_provider.RemoveImportedResource(resource_id);
-  } else {
-    auto resource =
-        AcquireUiResource(&resource_manager, shared_image, sync_token);
-
-    if (!resource) {
-      return nullptr;
-    }
-
-    if (!features::IsFastInkHostLowPriorityHintEnabled()) {
-      resource->is_overlay_candidate = auto_update;
-    }
-
-    if (resource->damaged) {
-      resource->sync_token =
-          resource->client_shared_image()->BackingWasExternallyUpdated(
-              resource->sync_token);
-      resource->shared_image_interface->VerifySyncToken(resource->sync_token);
-      resource->damaged = false;
-    }
-
-    viz::TransferableResource transferable_resource =
-        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
-
-    // In auto_update mode, we use hardware overlays to render the content.
-    AppendQuad(transferable_resource, output_rect, quad_rect, buffer_size,
-               buffer_to_target_transform, auto_update, *render_pass);
-
-    frame->resource_list.push_back(std::move(transferable_resource));
+  auto context_provider = GetContextProvider();
+  if (!context_provider) {
+    LOG(ERROR) << "Failed to acquire a context provider";
+    return nullptr;
   }
+
+  scoped_refptr<gpu::SharedImageInterface> sii =
+      context_provider->SharedImageInterface();
+
+  gpu::SyncToken updated_sync_token =
+      shared_image->BackingWasExternallyUpdated(sync_token);
+  sii->VerifySyncToken(updated_sync_token);
+
+  viz::TransferableResource transferable_resource;
+  if (!features::IsFastInkHostLowPriorityHintEnabled()) {
+    transferable_resource = viz::TransferableResource::Make(
+        shared_image, viz::TransferableResource::ResourceSource::kUI,
+        updated_sync_token,
+        /*override=*/{.is_overlay_candidate = auto_update});
+  } else {
+    transferable_resource = viz::TransferableResource::Make(
+        shared_image, viz::TransferableResource::ResourceSource::kUI,
+        updated_sync_token);
+  }
+
+  viz::ResourceId resource_id = client_resource_provider.ImportResource(
+      transferable_resource,
+      base::BindOnce([](const gpu::SyncToken& sync_token, bool is_lost) {}));
+
+  client_resource_provider.PrepareSendToParent(
+      {resource_id}, &frame->resource_list, sii.get());
+
+  // In auto_update mode, we use hardware overlays to render the content.
+  AppendQuad(frame->resource_list.back(), output_rect, quad_rect, buffer_size,
+             buffer_to_target_transform, auto_update, *render_pass);
+
+  client_resource_provider.RemoveImportedResource(resource_id);
 
   frame->render_pass_list.push_back(std::move(render_pass));
 
