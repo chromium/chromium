@@ -487,9 +487,7 @@ void OnPrepareTpmDeviceFinished() {
 void SaveSyncTrustedVaultKeysToProfile(
     const GaiaId& gaia_id,
     const SyncTrustedVaultKeys& trusted_vault_keys,
-    Profile* profile) {
-  trusted_vault::TrustedVaultService* trusted_vault_service =
-      TrustedVaultServiceFactory::GetForProfile(profile);
+    trusted_vault::TrustedVaultService* trusted_vault_service) {
   if (!trusted_vault_service) {
     return;
   }
@@ -1934,7 +1932,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     if (user_context_.GetSyncTrustedVaultKeys().has_value()) {
       SaveSyncTrustedVaultKeysToProfile(
           user_context_.GetGaiaID(), *user_context_.GetSyncTrustedVaultKeys(),
-          profile);
+          TrustedVaultServiceFactory::GetForProfile(profile));
     }
 
     VLOG(1) << "Clearing all secrets";
