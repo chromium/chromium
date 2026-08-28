@@ -1358,10 +1358,6 @@ TEST_F(HistoryBackendTest, SegmentsDoNotIncludeRedirects) {
 }
 
 TEST_F(HistoryBackendTest, AddPage404) {
-  // Enable `history::kVisitedLinksOn404` to make 404s eligible for History.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
-
   ASSERT_TRUE(backend_.get());
 
   // Call `AddPage()` with a 404 visit.
@@ -3452,10 +3448,6 @@ TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
 }
 
 TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
-  // Allow 404s to be saved to History.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kVisitedLinksOn404);
-
   ASSERT_TRUE(backend_.get());
 
   // Make 10 visits, each 1µs apart. All visits have a response code of 200,
@@ -4417,10 +4409,6 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
 }
 
 TEST_F(HistoryBackendTest, AddPageVisitAddedDueTo404) {
-  // Allow 404s to be saved to History.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
-
   base::HistogramTester histogram_tester;
 
   // Test a redirect chain ending in a 404.
@@ -4611,10 +4599,6 @@ TEST_F(HistoryBackendTest, GetAnnotatedVisits) {
 }
 
 TEST_F(HistoryBackendTest, GetAnnotatedVisits_404s) {
-  // Allow 404s to be persisted to the History DB.
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kVisitedLinksOn404);
-
   // Add a 404 visit.
   const auto [url_id, visit_id] = backend_->AddPageVisit(
       GURL("https://google.com/"), GetRelativeTime(0), /*referring_visit=*/0,

@@ -18,7 +18,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -1138,9 +1137,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientHistorySyncTest,
 
 class SingleClientHistorySync404Test : public SingleClientHistorySyncTest {
  public:
-  SingleClientHistorySync404Test() {
-    scoped_feature_list_.InitAndEnableFeature(history::kVisitedLinksOn404);
-  }
   void NavigateTo404URL() {
     GURL url404 = embedded_test_server()->GetURL("/page404.html");
     content::NavigationController::LoadURLParams params(url404);
@@ -1171,9 +1167,6 @@ class SingleClientHistorySync404Test : public SingleClientHistorySyncTest {
           return nullptr;
         }));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientHistorySync404Test, Handles404Visits) {

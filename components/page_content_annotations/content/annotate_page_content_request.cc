@@ -28,7 +28,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/content_extraction/content/browser/inner_text.h"
-#include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -167,22 +166,20 @@ bool ShouldExtractPageContent(content::NavigationHandle* navigation_handle) {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(history::kVisitedLinksOn404)) {
-    // With the flag enabled, navigations with a 404 status code will be
-    // eligible for History. We want to ignore 404s. At this point, we should
-    // only be looking at committed same-document navigations. Same-document
-    // navigations have no network request and therefore no response code, so we
-    // should look at the response code for the request that brought us to the
-    // current document instead of the `NavigationHandle`.
-    const auto* document_response_head =
-        navigation_handle->GetRenderFrameHost()->GetLastResponseHead();
-    if (!document_response_head || !document_response_head->headers) {
-      return false;
-    }
-    const int status_code = document_response_head->headers->response_code();
-    if (status_code == 404) {
-      return false;
-    }
+  // We want to ignore navigations to 404 pages, but at this point, we should
+  // only be looking at committed same-document navigations, and same-document
+  // navigations have no network request and therefore no response code. So
+  // instead of looking to the `NavigationHandle` for the response code, look at
+  // the response code for the request that brought us to the current document
+  // to determine if we're on a 404 page.
+  const auto* document_response_head =
+      navigation_handle->GetRenderFrameHost()->GetLastResponseHead();
+  if (!document_response_head || !document_response_head->headers) {
+    return false;
+  }
+  const int status_code = document_response_head->headers->response_code();
+  if (status_code == 404) {
+    return false;
   }
 
   return true;

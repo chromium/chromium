@@ -5608,7 +5608,6 @@ test("unit_tests") {
     "//components/feedback",
     "//components/feedback/redaction_tool",
     "//components/history/content/browser",
-    "//components/history/core/browser:features",
     "//components/history/core/common",
     "//components/history_clusters/core",
     "//components/history_clusters/core:test_support",

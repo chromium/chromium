@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "components/history/core/browser/features.h"
 #include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -1666,15 +1665,10 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   if (failed_navigation) {
     params->url_is_unreachable = true;
     params->should_update_history = false;
-  } else if (same_document) {
-    params->should_update_history = true;
   } else {
     // TODO(crbug.com/40161149): Reconsider how we calculate
     // should_update_history.
-    bool are_404_navigations_saved_in_history =
-        base::FeatureList::IsEnabled(history::kVisitedLinksOn404);
-    params->should_update_history = are_404_navigations_saved_in_history ||
-                                    response_headers_->response_code() != 404;
+    params->should_update_history = true;
   }
 
   // This mirrors the calculation in

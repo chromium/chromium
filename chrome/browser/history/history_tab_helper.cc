@@ -19,7 +19,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/actor/core/task_id.h"
 #include "components/history/content/browser/history_context_helper.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -346,21 +345,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           ? history::VisitContextEphemerality::kEphemeral
           : history::VisitContextEphemerality::kNotEphemeral;
 
-  // If `history::kVisitedLinksOn404` is enabled, visits to reachable URLs that
-  // result in a 404 response will be saved to history. We don't want to count
-  // 404 navigations as visits when calculating the Most Visited, so we filter
-  // them out here.
-  const bool status_code_qualifies_for_ntp_most_visited =
-      !(base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
-        http_response_code == 404);
-
   const actor::TaskId actor_task_id =
       GetActorTaskId(web_contents(), chrome_ui_data);
 
   // If the visit was initiated by an actor, it should not contribute to the
-  // Most Visited tiles in the NTP.
+  // Most Visited tiles in the NTP. We also don't want to count 404 navigations
+  // as visits when calculating the Most Visited.
   const bool should_consider_for_ntp_most_visited =
-      status_code_qualifies_for_ntp_most_visited && !actor_task_id &&
+      !actor_task_id && http_response_code != 404 &&
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle);
 
   // Reloads do not result in calling TitleWasSet() (which normally sets

@@ -31,7 +31,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -207,9 +206,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
-  PrefService* GetPrefs() {
-    return GetProfile()->GetPrefs();
-  }
+  PrefService* GetPrefs() { return GetProfile()->GetPrefs(); }
 
   Profile* GetProfile() { return browser()->GetProfile(); }
 
@@ -331,10 +328,12 @@ class HistoryBrowserTest : public InProcessBrowserTest {
                          bool success,
                          const history::URLRow& url_row,
                          const history::VisitVector& visit_vector) {
-    if (success_out)
+    if (success_out) {
       *success_out = success;
-    if (url_row_out)
+    }
+    if (url_row_out) {
       *url_row_out = url_row;
+    }
     std::move(closure).Run();
   }
 };
@@ -494,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
 // sophisticated and multi-part, so we'd need to wait on or ensure a few things
 // are happening before running the test.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, DISABLED_HistorySearchXSS) {
-  GURL url(std::string(chrome::kChromeUIHistoryURL) +
+  GURL url(
+      std::string(chrome::kChromeUIHistoryURL) +
       "#q=%3Cimg%20src%3Dx%3Ax%20onerror%3D%22document.title%3D'XSS'%22%3E");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Mainly, this is to ensure we send a synchronous message to the renderer
@@ -729,8 +729,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, RedirectHistory) {
   GURL landing_url = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("landing.html"));
-  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-      browser(), redirector, 2);
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                            redirector, 2);
   ASSERT_EQ(
       landing_url,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
@@ -1304,19 +1304,7 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, RendererInitiated) {
   EXPECT_TRUE(IsHistoryEntryTaggedWithActorId());
 }
 
-class History404BrowserTest : public HistoryBrowserTest,
-                              public ::testing::WithParamInterface<bool> {
- public:
-  History404BrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(History404BrowserTest, NavigationTo404) {
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, NavigationTo404) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
@@ -1337,33 +1325,26 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest, NavigationTo404) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
   history::QueryURLAndVisitsResult result = QueryURLAndVisits(url404);
-  if (GetParam()) {
-    // 404 visits should be added to History DB.
-    EXPECT_TRUE(result.success);
-    EXPECT_EQ(1u, result.visits.size());
+  // 404 visits should be added to History DB.
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(1u, result.visits.size());
 
-    // 404 visits should be added to VisitedLink DB.
-    base::CancelableTaskTracker tracker;
-    history::VisitedLinkRow row;
-    history::VisitedLinkID visited_link_id = 0;
-    base::WaitableEvent wait_event(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    auto task = std::make_unique<GetVisitedLinkTask>(
-        result.row.id(), initial_url, initial_url, &visited_link_id,
-        &wait_event);
-    history_service->ScheduleDBTask(FROM_HERE, std::move(task), &tracker);
-    wait_event.Wait();
+  // 404 visits should be added to VisitedLink DB.
+  base::CancelableTaskTracker tracker;
+  history::VisitedLinkRow row;
+  history::VisitedLinkID visited_link_id = 0;
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  auto task = std::make_unique<GetVisitedLinkTask>(
+      result.row.id(), initial_url, initial_url, &visited_link_id, &wait_event);
+  history_service->ScheduleDBTask(FROM_HERE, std::move(task), &tracker);
+  wait_event.Wait();
 
-    EXPECT_NE(history::VisitedLinkID(0), visited_link_id);
-  } else {
-    // 404 visits should not be added to History DB.
-    EXPECT_FALSE(result.success);
-    EXPECT_EQ(0u, result.visits.size());
-  }
+  EXPECT_NE(history::VisitedLinkID(0), visited_link_id);
 }
 
-IN_PROC_BROWSER_TEST_P(History404BrowserTest, HistoryRemovalRemoves404Url) {
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemoves404Url) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
@@ -1374,27 +1355,22 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest, HistoryRemovalRemoves404Url) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
-  if (GetParam()) {
-    // When feature is enabled, 404 navigations should be in history.
-    EXPECT_TRUE(HistoryContainsURL(url));
+  // 404 navigations should be in history.
+  EXPECT_TRUE(HistoryContainsURL(url));
 
-    // Delete url from history
-    history_service->DeleteURLs({url});
+  // Delete url from history
+  history_service->DeleteURLs({url});
 
-    // Wait for the asynchronous delete to complete
-    base::RunLoop run_loop;
-    history_service->FlushForTest(run_loop.QuitClosure());
-    run_loop.Run();
+  // Wait for the asynchronous delete to complete
+  base::RunLoop run_loop;
+  history_service->FlushForTest(run_loop.QuitClosure());
+  run_loop.Run();
 
-    // Expect url to successfully be deleted from history
-    EXPECT_FALSE(HistoryContainsURL(url));
-  } else {
-    // When feature is disabled, 404 navigations should not be in history.
-    EXPECT_FALSE(HistoryContainsURL(url));
-  }
+  // Expect url to successfully be deleted from history
+  EXPECT_FALSE(HistoryContainsURL(url));
 }
 
-IN_PROC_BROWSER_TEST_P(History404BrowserTest,
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
                        NoOnUpdatedHistoryForNavigationOn404) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
@@ -1424,8 +1400,6 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest,
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_non_404));
 }
-
-INSTANTIATE_TEST_SUITE_P(, History404BrowserTest, ::testing::Bool());
 
 // MPArch means Multiple Page Architecture, each WebContents may have additional
 // FrameTrees which will have their own associated Page.

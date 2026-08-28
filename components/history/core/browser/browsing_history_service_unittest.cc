@@ -389,12 +389,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 
-
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
-  // Allow saving 404 visits to History.
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitAndEnableFeature(history::kVisitedLinksOn404);
-
   // Add a non-404 visit.
   AddHistory({{kUrl1, 1, kLocal}});
 
@@ -602,14 +597,13 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingFull) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   // The first query doesn't reach the beginning, since there were just enough
   // local results to fulfill the request and remote hasn't been queried yet.
-  EXPECT_THAT(QueryHistory(3),
-              MatchesQueryResult(baseline_time_,
-                                 /*reached_beginning*/ false,
-                                 std::vector<TestResult>{
-                                     {kUrl3, 3, kLocal},
-                                     {kUrl2, 2, kLocal},
-                                     {kUrl1, 1, kLocal},
-                                 }));
+  EXPECT_THAT(QueryHistory(3), MatchesQueryResult(baseline_time_,
+                                                  /*reached_beginning*/ false,
+                                                  std::vector<TestResult>{
+                                                      {kUrl3, 3, kLocal},
+                                                      {kUrl2, 2, kLocal},
+                                                      {kUrl1, 1, kLocal},
+                                                  }));
 
   EXPECT_THAT(ContinueQuery(), MatchesQueryResult(baseline_time_,
                                                   /*reached_beginning*/ true,
@@ -764,7 +758,6 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPending) {
                                                       {kUrl1, 1, kRemote},
                                                   }));
 }
-
 
 TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailureEmpty) {
   web_history()->SetupFakeResponse(false, 0);
@@ -1084,14 +1077,13 @@ TEST_F(BrowsingHistoryServiceTest, GroupSimilarVisits) {
 
   BlockUntilHistoryProcessesPendingRequests();
 
-  EXPECT_THAT(
-      QueryHistory(),
-      MatchesQueryResult(baseline_time_, /*reached_beginning=*/true,
-                         std::vector<TestResult>{
-                             {"http://www.a.com/1", 5, kLocal},
-                             {"http://www.b.com/1", 3, kLocal},
-                             {"http://www.a.com/3", 1, kLocal},
-                         }));
+  EXPECT_THAT(QueryHistory(),
+              MatchesQueryResult(baseline_time_, /*reached_beginning=*/true,
+                                 std::vector<TestResult>{
+                                     {"http://www.a.com/1", 5, kLocal},
+                                     {"http://www.b.com/1", 3, kLocal},
+                                     {"http://www.a.com/3", 1, kLocal},
+                                 }));
 }
 
 TEST_F(BrowsingHistoryServiceTest, ShouldQueryActorVisitsOnly) {

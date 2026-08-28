@@ -73,10 +73,6 @@ const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
 
 BASE_FEATURE(kPopulateVisitedLinkDatabase, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Makes links `:visited` even when the visit results in an HTTP
-// response code of 404.
-BASE_FEATURE(kVisitedLinksOn404, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, uses new scoring function for Most Visited Tiles computation.
 BASE_FEATURE(kMostVisitedTilesNewScoring,
              is_android ? base::FEATURE_ENABLED_BY_DEFAULT
@@ -134,7 +130,6 @@ BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
 BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_IOS)
-
 
 // If enabled, the WebHistoryService will use a new API for querying browsing
 // history (https://footprints-pa.googleapis.com/...) instead of the old and

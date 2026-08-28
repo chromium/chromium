@@ -556,7 +556,6 @@ static_library("test_support") {
     "//cc/slim",
     "//components/breadcrumbs/core",
     "//components/cbor",
-    "//components/history/core/browser:features",
     "//components/input",
     "//components/input:test_support",
     "//components/network_session_configurator/common",

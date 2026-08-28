@@ -37,7 +37,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -261,10 +260,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceEphemeralProfileBrowserTest,
 class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{history::kVisitedLinksOn404, {}}},
-        /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+    scoped_feature_list_.InitAndDisableFeature(
+        optimization_guide::features::kPreventLongRunningPredictionModels);
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
@@ -1403,9 +1400,9 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
 
 class PageContentAnnotationsServiceContentExtractionResponseCodeTest
     : public PageContentAnnotationsServiceContentExtractionTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  bool IsPageSettledMonitorEnabled() const { return std::get<1>(GetParam()); }
+  bool IsPageSettledMonitorEnabled() const { return GetParam(); }
 
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features_with_params =
@@ -1416,13 +1413,6 @@ class PageContentAnnotationsServiceContentExtractionResponseCodeTest
     AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
                                       enabled_features_with_params,
                                       disabled_features);
-
-    bool are_404_navigations_saved_to_history = std::get<0>(GetParam());
-    if (are_404_navigations_saved_to_history) {
-      enabled_features_with_params.push_back({history::kVisitedLinksOn404, {}});
-    } else {
-      disabled_features.push_back(history::kVisitedLinksOn404);
-    }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_with_params, disabled_features);
@@ -1534,15 +1524,8 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     PageContentAnnotationsServiceContentExtractionResponseCodeTest,
-    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "VisitedLinksOn404Enabled"
-                                   : "VisitedLinksOn404Disabled",
-           "_",
-           PageContentAnnotationsServiceContentExtractionTestBase::
-               GetPageSettledMonitorParamName(std::get<1>(info.param))});
-    });
+    ::testing::Bool(),
+    &PageContentAnnotationsServiceContentExtractionTest::DescribeParams);
 
 class PageContentAnnotationsServiceContentExtractionTestNoFeatureFlag
     : public PageContentAnnotationsServiceContentExtractionTest {

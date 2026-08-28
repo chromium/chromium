@@ -1220,14 +1220,12 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   // works. As they are artificial they shouldn't be tracked for referral
   // chains.
   // TODO: crbug.com/439886906 - Stop excluding 404s from `VisitTracker`. 404
-  // visits are temporarily excluded until `history::kVisitedLinksOn404` is
-  // enabled by default, to avoid making a feature change to `VisitTracker` at
-  // the same time as making 404s eligible for History (404 visits were not
-  // eligible for History prior to `history::kVisitedLinksOn404` and were
-  // skipped upstream of this code).
+  //   visits were excluded to avoid making a feature change to `VisitTracker`
+  //   at the same time as the change to make 404s eligible for History (before
+  //   that change, 404 visits were skipped upstream of this code).
   // TODO(evanm): Due to http://b/1194536 we lose the referrers of a subframe
-  // navigation anyway, so last_visit_id is always zero for them.  But adding
-  // them here confuses main frame history, so we skip them for now.
+  //   navigation anyway, so last_visit_id is always zero for them. But adding
+  //   them here confuses main frame history, so we skip them for now.
   bool is_subframe_navigation =
       ui::PageTransitionCoreTypeIs(request_transition,
                                    ui::PAGE_TRANSITION_AUTO_SUBFRAME) ||
@@ -1391,12 +1389,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     std::optional<VisitID> originator_opener_visit,
     bool is_known_to_sync) {
   DCHECK(url.is_valid());
-  if (!base::FeatureList::IsEnabled(history::kVisitedLinksOn404)) {
-    // 404s should not be recorded in history unless the feature
-    // `history::kVisitedLinksOn404` is enabled. If 404s are reaching this point
-    // with the flag disabled, something is broken.
-    CHECK_NE(response_code_category, VisitResponseCodeCategory::k404);
-  }
+
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);
@@ -1508,13 +1501,11 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   if (visit_info.visit_id) {
     // For redirect chains that end in a 404 visit, the redirect visits are
-    // saved due to the 404 visit, as with `history::kVisitedLinksOn404`
-    // disabled, the entire chain would be ineligible for History
-    // (`NavigationHandle::ShouldUpdateHistory()` would be false). Here, the
-    // `response_code_category` is always for the final navigation in the chain.
-    bool is_saved_due_to_404 =
-        response_code_category == VisitResponseCodeCategory::k404;
-    UMA_HISTOGRAM_BOOLEAN("History.VisitAddedDueTo404", is_saved_due_to_404);
+    // saved due to the 404 visit. Here, the `response_code_category` is
+    // always for the final navigation in the chain.
+    UMA_HISTOGRAM_BOOLEAN(
+        "History.VisitAddedDueTo404",
+        response_code_category == VisitResponseCodeCategory::k404);
     // Broadcast a notification of the visit.
     NotifyURLVisited(VisitedURLInfo(
         url_info, visit_info, response_code_category, local_navigation_id));

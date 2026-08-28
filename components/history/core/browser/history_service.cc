@@ -677,11 +677,9 @@ void HistoryService::AddPartitionedVisitedLinks(
       VisitedLink link = {redirect, net::SchemefulSite(*args.top_level_url),
                           url::Origin::Create(*args.frame_url)};
       visit_delegate_->AddVisitedLink(link);
-      // Redirects for chains ending in a 404 are only saved to History if
-      // `history::kVisitedLinksOn404` is enabled, because the final visit is
-      // only saved to History if the flag is enabled. Therefore, VisitedLink
-      // hashtable entries for redirects in chains ending in a 404 are caused by
-      // the 404 visit.
+      // Redirects for chains ending in a 404 are saved to History because the
+      // final 404 visit is saved. Therefore, VisitedLink hashtable entries
+      // for redirects in chains ending in a 404 are caused by the 404 visit.
       EmitVisitedLinksAdditionCausedBy404Uma(
           /*was_addition_caused_by_404=*/args.response_code_category ==
           VisitResponseCodeCategory::k404);

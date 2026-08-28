@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/commerce/content/browser/web_contents_wrapper.h"
 #include "components/commerce/core/mock_shopping_service.h"
-#include "components/history/core/browser/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -89,20 +88,7 @@ TEST_F(CommerceTabHelperTest, SubFrameNavigation) {
   EXPECT_EQ(infos.size(), 0u);
 }
 
-class CommerceTabHelperResponseCodeTest
-    : public CommerceTabHelperTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CommerceTabHelperResponseCodeTest() {
-    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(CommerceTabHelperResponseCodeTest, Reachable404Page) {
+TEST_F(CommerceTabHelperTest, Reachable404Page) {
   FocusWebContentsOnMainFrame();
   content::MockNavigationHandle navigation_handle(GURL(kNotFoundUrl),
                                                   main_rfh());
@@ -120,15 +106,11 @@ TEST_P(CommerceTabHelperResponseCodeTest, Reachable404Page) {
             .ShoppingService::GetUrlInfosForRecentlyViewedWebWrappers();
       });
 
-  // We don't want to notify on 404 visits, even when they're made eligible for
-  // history by `history::kVisitedLinksOn404`.
+  // We don't want to notify on 404 visits, even though they're eligible for
+  // history.
   std::vector<UrlInfo> infos =
       shopping_service_.GetUrlInfosForRecentlyViewedWebWrappers();
   EXPECT_EQ(infos.size(), 0u);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CommerceTabHelperResponseCodeTest,
-                         ::testing::Bool());
 
 }  // namespace commerce

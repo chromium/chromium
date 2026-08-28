@@ -156,7 +156,6 @@ source_set("browser") {
     "//components/embedder_support:user_agent",
     "//components/file_access",
     "//components/filename_generation",
-    "//components/history/core/browser:features",
     "//components/input",
     "//components/language/core/common",
     "//components/language_detection/content/common",

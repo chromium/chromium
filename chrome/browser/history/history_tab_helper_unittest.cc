@@ -24,7 +24,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -187,34 +186,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
-class HistoryTabHelperVisitedFilteringTest
-    : public HistoryTabHelperTest,
-      public testing::WithParamInterface<bool> {
- public:
-  HistoryTabHelperVisitedFilteringTest() {
-    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
-                                              GetParam());
-  }
-
-  void SetUp() override {
-    HistoryTabHelperTest::SetUp();
-    subscription_ =
-        history_tab_helper()->RegisterOnUpdatedHistoryForNavigationCallback(
-            base::BindRepeating(&MockObserver::OnUpdatedHistoryForNavigation,
-                                base::Unretained(&mock_observer_)));
-  }
-
- protected:
-  NiceMock<MockObserver> mock_observer_;
-  base::CallbackListSubscription subscription_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
-  bool are_404s_eligible_for_history =
-      base::FeatureList::IsEnabled(history::kVisitedLinksOn404);
+TEST_F(HistoryTabHelperTest, ShouldConsiderForNtpMostVisited) {
   NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
   const GURL some_url = GURL("https://someurl.com");
   navigation_handle.set_redirect_chain({some_url});
@@ -244,13 +216,18 @@ TEST_P(HistoryTabHelperVisitedFilteringTest, ShouldConsiderForNtpMostVisited) {
   args = history_tab_helper()->CreateHistoryAddPageArgs(
       GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
 
-  // If 404 error navigations are recorded in history, we should filter them out
+  // 404 error navigations are recorded in history, so we should filter them out
   // when determining NTP most visited.
-  EXPECT_EQ(args.consider_for_ntp_most_visited, !are_404s_eligible_for_history);
+  EXPECT_FALSE(args.consider_for_ntp_most_visited);
 }
 
-TEST_P(HistoryTabHelperVisitedFilteringTest,
-       NoOnUpdatedHistoryForNavigationOn404) {
+TEST_F(HistoryTabHelperTest, NoOnUpdatedHistoryForNavigationOn404) {
+  testing::NiceMock<MockObserver> mock_observer;
+  base::CallbackListSubscription subscription =
+      history_tab_helper()->RegisterOnUpdatedHistoryForNavigationCallback(
+          base::BindRepeating(&MockObserver::OnUpdatedHistoryForNavigation,
+                              base::Unretained(&mock_observer)));
+
   // Navigate to a URL that returns a 404 with a body.
   auto navigation_simulator =
       content::NavigationSimulator::CreateBrowserInitiated(
@@ -275,21 +252,14 @@ TEST_P(HistoryTabHelperVisitedFilteringTest,
   EXPECT_EQ(actually_written_bytes, response_body.size());
 
   // When calling HistoryTabHelper::DidFinishNavigation for a 404 navigation,
-  // don't notify observers. When `history::kVisitedLinksOn404` is disabled,
-  // this happens because `ShouldUpdateHistory()` will return false for 404s.
-  // When `history::kVisitedLinksOn404` is enabled, `ShouldUpdateHistory()` will
-  // return true for 404s, and we should explicitly skip notifying observers
-  // for 404s, as 404 navigations aren't relevant for them.
-  EXPECT_CALL(mock_observer_,
+  // we should explicitly skip notifying observers for 404s, as 404 navigations
+  // aren't relevant for them.
+  EXPECT_CALL(mock_observer,
               OnUpdatedHistoryForNavigation(testing::_, testing::_, testing::_,
                                             testing::_))
       .Times(0);
   navigation_simulator->Commit();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HistoryTabHelperVisitedFilteringTest,
-                         ::testing::Bool());
 
 TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {
   web_contents_tester()->NavigateAndCommit(page_url_);

@@ -20,7 +20,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/history/core/browser/features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -3248,21 +3247,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   }
 }
 
-class NavigationRequestUpdateHistoryBrowserTest
-    : public NavigationRequestBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  NavigationRequestUpdateHistoryBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(history::kVisitedLinksOn404,
-                                              GetParam());
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(NavigationRequestUpdateHistoryBrowserTest,
-                       Reachable404) {
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, Reachable404) {
   base::RunLoop did_finish_navigation_run_loop;
   DidFinishNavigationObserver observer(
       shell()->web_contents(),
@@ -3273,11 +3258,8 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestUpdateHistoryBrowserTest,
         ASSERT_TRUE(navigation_handle->GetResponseHeaders());
         ASSERT_EQ(navigation_handle->GetResponseHeaders()->response_code(),
                   404);
-        // If `history::kVisitedLinksOn404` is enabled, history should be
-        // updated even for 404 navigations. If disabled, history should not be
-        // updated for navigations resulting in a 404.
-        EXPECT_EQ(navigation_handle->ShouldUpdateHistory(),
-                  base::FeatureList::IsEnabled(history::kVisitedLinksOn404));
+        // History should be updated even for 404 navigations.
+        EXPECT_TRUE(navigation_handle->ShouldUpdateHistory());
         did_finish_navigation_run_loop.Quit();
       }));
 
@@ -3287,10 +3269,6 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestUpdateHistoryBrowserTest,
 
   did_finish_navigation_run_loop.Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationRequestUpdateHistoryBrowserTest,
-                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
                        StartToCommitMetrics) {
@@ -6102,8 +6080,8 @@ IN_PROC_BROWSER_TEST_F(
       si->GetSecurityPrincipal().GetStoragePartitionConfig().is_default());
 
   BrowserContext* browser_context = contents()->GetBrowserContext();
-  auto* default_partition =
-      static_cast<StoragePartitionImpl*>(browser_context->GetDefaultStoragePartition());
+  auto* default_partition = static_cast<StoragePartitionImpl*>(
+      browser_context->GetDefaultStoragePartition());
 
   DeclarativePerformanceObserverStore* default_store =
       default_partition->GetDeclarativePerformanceObserverStore();
