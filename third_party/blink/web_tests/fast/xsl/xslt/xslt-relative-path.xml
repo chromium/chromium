@@ -5,6 +5,10 @@
 <!ATTLIST xsl:stylesheet id ID #REQUIRED>
 ]>
 <doc>
+  <script xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
+    if (window.testRunner)
+      testRunner.dumpAsText();
+  ]]></script>
 
   <xsl:stylesheet version="1.0" id="stylesheet" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="html"/>
@@ -20,6 +24,10 @@
         </head>
 
         <body>
+          <script>
+            if (window.testRunner)
+              testRunner.dumpAsText();
+          </script>
           <p>Here is an attempt to extract the string "Hello, Webkit!" from the file findme.xml:</p>
 
           <p>using document('<xsl:value-of select="$method1"/>'):

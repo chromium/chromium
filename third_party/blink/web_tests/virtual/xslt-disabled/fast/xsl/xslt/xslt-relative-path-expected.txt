@@ -1,1 +1,2 @@
 CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+file:resources/findme.xml resources/findme.xml Testing Webkit if (window.testRunner) testRunner.dumpAsText(); Here is an attempt to extract the string "Hello, Webkit!" from the file findme.xml: using document(''): using document(''):
