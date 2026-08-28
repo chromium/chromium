@@ -55,7 +55,9 @@ namespace enterprise_reporting {
 #if !BUILDFLAG(IS_CHROMEOS)
 class SaasUsageBrowserLevelTest : public policy::PolicyTest {
  public:
-  SaasUsageBrowserLevelTest() = default;
+  SaasUsageBrowserLevelTest() {
+    scoped_feature_list_.InitAndEnableFeature(kSaasUsageReporting);
+  }
   ~SaasUsageBrowserLevelTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -96,6 +98,7 @@ class SaasUsageBrowserLevelTest : public policy::PolicyTest {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   std::unique_ptr<policy::FakeBrowserDMTokenStorage>
       fake_browser_dm_token_storage_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaasUsageBrowserLevelTest, RecordsUsage) {
@@ -164,7 +167,9 @@ IN_PROC_BROWSER_TEST_F(SaasUsageBrowserLevelTest, RecordsUsage) {
 
 class SaasUsageProfileLevelTest : public policy::PolicyTest {
  public:
-  SaasUsageProfileLevelTest() = default;
+  SaasUsageProfileLevelTest() {
+    scoped_feature_list_.InitAndEnableFeature(kSaasUsageReporting);
+  }
   ~SaasUsageProfileLevelTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -205,6 +210,7 @@ class SaasUsageProfileLevelTest : public policy::PolicyTest {
 
  protected:
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
