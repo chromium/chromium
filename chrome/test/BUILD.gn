@@ -10115,10 +10115,6 @@ source_set("xr_browser_tests_common") {
   if (!is_mac && !is_android) {
     data_deps = [ "//chrome:packed_resources" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_linux || is_mac || is_win) {
