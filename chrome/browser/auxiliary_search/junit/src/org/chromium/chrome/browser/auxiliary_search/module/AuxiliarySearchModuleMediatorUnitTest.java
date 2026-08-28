@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
@@ -78,7 +79,7 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         mFactory = AuxiliarySearchControllerFactory.getInstance();
         mHooks = Mockito.mock(AuxiliarySearchHooks.class);
         when(mHooks.isEnabled()).thenReturn(true);
-        mFactory.setHooksForTesting(mHooks);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mHooks);
         assertTrue(mFactory.isEnabled());
     }
 

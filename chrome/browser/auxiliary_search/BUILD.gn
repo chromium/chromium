@@ -281,6 +281,7 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:callback_java",
+    "//base:service_loader_java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",

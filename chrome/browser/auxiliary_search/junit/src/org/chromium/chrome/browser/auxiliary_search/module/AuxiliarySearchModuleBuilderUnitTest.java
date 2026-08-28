@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -68,7 +69,7 @@ public class AuxiliarySearchModuleBuilderUnitTest {
         mHooks = Mockito.mock(AuxiliarySearchHooks.class);
         when(mHooks.isEnabled()).thenReturn(true);
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        mFactory.setHooksForTesting(mHooks);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mHooks);
         assertTrue(mFactory.isEnabled());
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);

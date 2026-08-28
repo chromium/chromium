@@ -35,6 +35,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -81,7 +82,7 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
         when(mContext.getResources()).thenReturn(mResources);
 
         var factory = AuxiliarySearchControllerFactory.getInstance();
-        factory.setHooksForTesting(mHooks);
+        ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, mHooks);
         factory.setSupportMultiDataSourceForTesting(true);
         createController();
     }
