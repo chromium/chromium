@@ -724,9 +724,7 @@ export function autofillSubmissionData(form: HTMLFormElement):
  * makes an edited field unedited.
  */
 export function fieldWasEditedByUser(element: Element) {
-  return !autofillFormFeaturesApi.getFunction(
-             'isAutofillCorrectUserEditedBitInParsedField')() ||
-      (wasEditedByUser.get(element) ?? false);
+  return (wasEditedByUser.get(element) ?? false);
 }
 
 /**

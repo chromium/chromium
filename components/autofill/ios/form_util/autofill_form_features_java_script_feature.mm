@@ -31,11 +31,6 @@ GetReplacements() {
             base::FeatureList::IsEnabled(::kAutofillSupportDateInput)
         ? @"true"
         : @"false",
-    @"gCrWebPlaceholderAutofillCorrectUserEditedBitInParsedField" :
-            base::FeatureList::IsEnabled(
-                ::kAutofillCorrectUserEditedBitInParsedField)
-        ? @"true"
-        : @"false",
     @"gCrWebPlaceholderAutofillAllowDefaultPreventedSubmission" :
             base::FeatureList::IsEnabled(
                 ::kAutofillAllowDefaultPreventedSubmission)

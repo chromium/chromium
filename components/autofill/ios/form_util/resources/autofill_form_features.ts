@@ -14,8 +14,6 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 declare const gCrWebPlaceholderAutofillAcrossIframesThrottling: boolean;
 declare const gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels: boolean;
 declare const gCrWebPlaceholderAutofillSupportDateInput: boolean;
-declare const gCrWebPlaceholderAutofillCorrectUserEditedBitInParsedField:
-    boolean;
 declare const gCrWebPlaceholderAutofillAllowDefaultPreventedSubmission: boolean;
 declare const gCrWebPlaceholderAutofillDedupeFormSubmission: boolean;
 declare const gCrWebPlaceholderAutofillEmailVerification: boolean;
@@ -52,16 +50,6 @@ function isAutofillSupportDateInputEnabled(): boolean {
   return gCrWebPlaceholderAutofillSupportDateInput;
 }
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_support_date_input)
-
-// LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
-/**
- * Enables correctly setting the is_user_edited_deprecated bit in the parsed
- * form fields instead of using true by default.
- */
-function isAutofillCorrectUserEditedBitInParsedField(): boolean {
-  return gCrWebPlaceholderAutofillCorrectUserEditedBitInParsedField;
-}
-// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_correct_user_edited_bit_in_parsed_field)
 
 // LINT.IfChange(autofill_allow_default_prevented_submission)
 /**
@@ -140,9 +128,6 @@ autofillFormFeatures.addFunction(
     isAutofillDisallowMoreHyphenLikeLabelsEnabled);
 autofillFormFeatures.addFunction(
     'isAutofillSupportDateInputEnabled', isAutofillSupportDateInputEnabled);
-autofillFormFeatures.addFunction(
-    'isAutofillCorrectUserEditedBitInParsedField',
-    isAutofillCorrectUserEditedBitInParsedField);
 autofillFormFeatures.addFunction(
     'isAutofillAllowDefaultPreventedSubmission',
     isAutofillAllowDefaultPreventedSubmission);
