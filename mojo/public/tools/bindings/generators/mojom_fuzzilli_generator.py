@@ -37,6 +37,18 @@ PRIMITIVES_MAPPING = {
   mojom.NULLABLE_DOUBLE: "float",
   mojom.NULLABLE_STRING: "string",
 }
+# Map raw Mojo handle kinds to their Fuzzilli UniqueName
+# TODO(crbug.com/553473421): Add support for MSGPIPE and PLATFORMHANDLE
+HANDLES_MAPPING = {
+  mojom.HANDLE: "MojoHandle",
+  mojom.DPPIPE: "MojoDataPipeProducer",
+  mojom.DCPIPE: "MojoDataPipeConsumer",
+  mojom.SHAREDBUFFER: "MojoHandle",
+  mojom.NULLABLE_HANDLE: "MojoHandle",
+  mojom.NULLABLE_DPPIPE: "MojoDataPipeProducer",
+  mojom.NULLABLE_DCPIPE: "MojoDataPipeConsumer",
+  mojom.NULLABLE_SHAREDBUFFER: "MojoHandle",
+}
 # List of types skipped during profile generation.
 # These types should be hand-defined in MojoCommonProfile.swift; its definitions
 # are always used in every generated profile.
@@ -234,6 +246,9 @@ class Generator(generator.Generator):
       name = generator.ToCamel(PRIMITIVES_MAPPING[kind])
       return name + "Element" if primitive_with_suffix else name
 
+    if kind in HANDLES_MAPPING:
+      return HANDLES_MAPPING[kind]
+
     # Certain kinds, such as `Array`, do not have a `module` attribute
     prefix = (
       ""
@@ -289,6 +304,7 @@ class Generator(generator.Generator):
       mojom.IsStructKind(kind)
       or mojom.IsEnumKind(kind)
       or mojom.IsUnionKind(kind)
+      or kind in HANDLES_MAPPING
     ):
       return f"js{self._FormatUniqueName(kind)}"
 
