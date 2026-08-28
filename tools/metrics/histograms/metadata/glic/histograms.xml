@@ -2463,16 +2463,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.Prewarming.ChecksResult"
+<histogram name="Glic.Prewarming.ChecksResult.{Trigger}"
     enum="GlicPrewarmingChecksResult" expires_after="2027-01-31">
-  <owner>dullweber@chromium.org</owner>
-  <owner>vollick@chromium.org</owner>
-  <owner>jbroman@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>chrome-glic@google.com</owner>
   <summary>
-    Records the reason why Glic preloading was or was not attempted. Recorded
-    each time we try to preload if the user has Glic enabled and went through
-    the FRE.
+    Records the reason why Glic preloading was or was not attempted for trigger
+    {Trigger}. Recorded each time we try to preload.
   </summary>
+  <token key="Trigger">
+    <variant name="Iph" summary="iph"/>
+    <variant name="Nudge" summary="contextual nudge"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.PrewarmingFre.{PrewarmDisposition}PreloadFreForSource"

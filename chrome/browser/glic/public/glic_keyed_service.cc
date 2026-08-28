@@ -108,15 +108,42 @@ namespace glic {
 
 namespace {
 
-base::TimeDelta GetWarmingDelay() {
-  base::TimeDelta delay_start =
-      base::Milliseconds(features::kGlicWarmingDelayMs.Get());
-  base::TimeDelta delay_limit =
-      delay_start + base::Milliseconds(features::kGlicWarmingJitterMs.Get());
-  if (delay_limit > delay_start) {
-    return RandTimeDelta(delay_start, delay_limit);
+base::TimeDelta GetWarmingDelay(GlicWarmingTrigger trigger) {
+  switch (trigger) {
+    case GlicWarmingTrigger::kStartup: {
+      base::TimeDelta delay_start =
+          base::Milliseconds(features::kGlicWarmingDelayMs.Get());
+      base::TimeDelta delay_limit =
+          delay_start +
+          base::Milliseconds(features::kGlicWarmingJitterMs.Get());
+      if (delay_limit > delay_start) {
+        return RandTimeDelta(delay_start, delay_limit);
+      }
+      return delay_start;
+    }
+    case GlicWarmingTrigger::kNudge:
+    case GlicWarmingTrigger::kIph:
+      return base::TimeDelta();
   }
-  return delay_start;
+}
+
+std::string_view GlicWarmingTriggerToString(GlicWarmingTrigger trigger) {
+  switch (trigger) {
+    case GlicWarmingTrigger::kStartup:
+      return "Startup";
+    case GlicWarmingTrigger::kNudge:
+      return "Nudge";
+    case GlicWarmingTrigger::kIph:
+      return "Iph";
+  }
+}
+
+void RecordPrewarmingChecksResult(GlicWarmingTrigger trigger,
+                                  GlicPrewarmingChecksResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Prewarming.ChecksResult.",
+                    GlicWarmingTriggerToString(trigger)}),
+      result);
 }
 
 void WriteGuestUrlPresetToPrefs(const char* switch_name,
@@ -203,7 +230,7 @@ GlicKeyedService::GlicKeyedService(
   glic_profile_manager->MaybeAutoOpenGlicPanel();
 
   if (base::FeatureList::IsEnabled(features::kGlicWarming)) {
-    TryPreload();
+    TryPreload(GlicWarmingTrigger::kStartup);
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -459,29 +486,30 @@ void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {
   preload_callback_ = std::move(callback);
 }
 
-void GlicKeyedService::TryPreload() {
-  base::TimeDelta delay = GetWarmingDelay();
+void GlicKeyedService::TryPreload(GlicWarmingTrigger trigger) {
+  base::TimeDelta delay = GetWarmingDelay(trigger);
 
   // TODO(b/411100559): Ideally we'd use post delayed task in all cases,
   // but this requires a refactor of tests that are currently brittle. For now,
   // just synchronously call ShouldPreloadForProfile if there is no delay.
   if (delay.is_zero()) {
-    ShouldPreloadForProfile(
-        profile_,
-        base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+    ShouldPreloadForProfile(profile_, trigger,
+                            base::BindOnce(&GlicKeyedService::FinishPreload,
+                                           GetWeakPtr(), trigger));
   } else {
     content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&GlicKeyedService::TryPreloadAfterDelay,
-                           GetWeakPtr()),
+                           GetWeakPtr(), trigger),
             delay);
   }
 }
 
-void GlicKeyedService::TryPreloadAfterDelay() {
+void GlicKeyedService::TryPreloadAfterDelay(GlicWarmingTrigger trigger) {
   ShouldPreloadForProfile(
-      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
+      profile_, trigger,
+      base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr(), trigger));
 }
 
 void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
@@ -492,14 +520,15 @@ base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
+void GlicKeyedService::FinishPreload(GlicWarmingTrigger trigger,
+                                     GlicPrewarmingChecksResult result) {
   if (result == GlicPrewarmingChecksResult::kSuccess) {
-    if (!instance_coordinator().MaybeStartInitialWarming()) {
+    if (!instance_coordinator().MaybeStartWarming(trigger)) {
       result = GlicPrewarmingChecksResult::kUnderMemoryPressure;
     }
   }
 
-  base::UmaHistogramEnumeration("Glic.Prewarming.ChecksResult", result);
+  RecordPrewarmingChecksResult(trigger, result);
   if (preload_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(preload_callback_)));

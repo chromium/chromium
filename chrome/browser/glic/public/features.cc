@@ -287,4 +287,6 @@ const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount{
 BASE_FEATURE(kGlicActionFirstFRE,
              "GlicActionFirstFRE",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicWarmOnNudge, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

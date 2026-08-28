@@ -5,7 +5,10 @@
 #include "chrome/browser/glic/glic_warming_checks.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -36,6 +39,13 @@ class GlicWarmingChecksTestBase : public GlicBrowserTest {
     GlicBrowserTest::SetUp();
   }
 
+  void TearDownOnMainThread() override {
+    if (service()) {
+      coordinator().GetWebContentsWarmingPoolForTesting().Shutdown();
+    }
+    GlicBrowserTest::TearDownOnMainThread();
+  }
+
   void TearDown() override {
     GlicBrowserTest::TearDown();
     SetPrewarmingEnabledForTesting(true);
@@ -44,9 +54,9 @@ class GlicWarmingChecksTestBase : public GlicBrowserTest {
 
   void ResetPrewarming() { SetPrewarmingEnabledForTesting(true); }
 
-  GlicPrewarmingChecksResult RunShouldPreload() {
+  GlicPrewarmingChecksResult RunShouldPreload(GlicWarmingTrigger trigger) {
     base::test::TestFuture<GlicPrewarmingChecksResult> future;
-    ShouldPreloadForProfile(GetProfile(), future.GetCallback());
+    ShouldPreloadForProfile(GetProfile(), trigger, future.GetCallback());
     return future.Get();
   }
 
@@ -100,20 +110,29 @@ class GlicWarmingChecksBrowserTest : public GlicWarmingChecksTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDisabledBrowserTest,
                        ShouldPreloadForProfile_WarmingDisabled) {
-  EXPECT_EQ(RunShouldPreload(), GlicPrewarmingChecksResult::kWarmingDisabled);
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
+            GlicPrewarmingChecksResult::kWarmingDisabled);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDisabledBrowserTest,
+                       ShouldPreloadForProfile_PrewarmingDisabledForTesting) {
+  SetPrewarmingEnabledForTesting(false);
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kNudge),
+            GlicPrewarmingChecksResult::kPrewarmingDisabledForTesting);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
                        ShouldPreloadForProfile_Success) {
   ResetPrewarming();
-  EXPECT_EQ(RunShouldPreload(), GlicPrewarmingChecksResult::kSuccess);
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
+            GlicPrewarmingChecksResult::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
                        ShouldPreloadForProfile_NotSupportedProfile) {
   ResetPrewarming();
   SetGlicCapability(GetProfile(), false);
-  EXPECT_EQ(RunShouldPreload(),
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
             GlicPrewarmingChecksResult::kProfileNotEligibleAccountCapabilities);
 }
 
@@ -121,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
                        ShouldPreloadForProfile_WillBeDestroyed) {
   ResetPrewarming();
   GetProfile()->NotifyWillBeDestroyed();
-  EXPECT_EQ(RunShouldPreload(),
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
             GlicPrewarmingChecksResult::kBrowserShuttingDown);
 }
 
@@ -129,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
                        ShouldPreloadForProfile_Cellular) {
   ResetPrewarming();
   SetConnectionType(net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
-  EXPECT_EQ(RunShouldPreload(),
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
             GlicPrewarmingChecksResult::kCellularConnection);
 }
 
@@ -137,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksBrowserTest,
                        ShouldPreloadForProfile_DoNotDefer) {
   ResetPrewarming();
-  service()->TryPreload();
+  service()->TryPreload(GlicWarmingTrigger::kStartup);
   EXPECT_TRUE(
       RunUntil([this]() { return IsWarmed(); }, "Wait for container to warm"));
 }
@@ -158,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksLowMemoryTest,
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
       base::GiB(2));
 
-  EXPECT_EQ(RunShouldPreload(), GlicPrewarmingChecksResult::kDeviceLowMemory);
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
+            GlicPrewarmingChecksResult::kDeviceLowMemory);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksLowMemoryTest,
@@ -170,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksLowMemoryTest,
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
       base::GiB(8));
 
-  EXPECT_EQ(RunShouldPreload(), GlicPrewarmingChecksResult::kSuccess);
+  EXPECT_EQ(RunShouldPreload(GlicWarmingTrigger::kStartup),
+            GlicPrewarmingChecksResult::kSuccess);
 }
 
 class GlicWarmingChecksDeferredTest : public GlicWarmingChecksBrowserTest {
@@ -185,7 +206,7 @@ class GlicWarmingChecksDeferredTest : public GlicWarmingChecksBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredTest,
                        ShouldPreloadForProfile_Defer) {
   ResetPrewarming();
-  service()->TryPreload();
+  service()->TryPreload(GlicWarmingTrigger::kStartup);
   // Wait for an interval shorter than the configured 500ms preload delay to
   // verify that warming has not triggered prematurely while deferred.
   WaitForDuration(base::Milliseconds(200));
@@ -197,11 +218,64 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredTest,
   ResetPrewarming();
   base::test::TestFuture<void> future;
   service()->AddPreloadCallback(future.GetCallback());
-  service()->TryPreload();
+  service()->TryPreload(GlicWarmingTrigger::kStartup);
   service()->reset_profile_for_test();
   EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(IsWarmed());
 }
+
+struct WarmingTriggerParam {
+  GlicWarmingTrigger trigger;
+  std::string expected_histogram_suffix;
+  GlicWebContentsWarmingPool::ContainerCreationReason expected_creation_reason;
+};
+
+class GlicWarmOnTriggerBrowserTest
+    : public GlicWarmingChecksTestBase,
+      public ::testing::WithParamInterface<WarmingTriggerParam> {
+ public:
+  GlicWarmOnTriggerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicAnchorEntryPointForOnboardedUsers},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicWarmOnTriggerBrowserTest, WarmsOnTrigger) {
+  const WarmingTriggerParam& param = GetParam();
+  base::HistogramTester histogram_tester;
+  ResetPrewarming();
+  EXPECT_FALSE(IsWarmed());
+
+  service()->TryPreload(param.trigger);
+  EXPECT_TRUE(
+      RunUntil([this]() { return IsWarmed(); }, "Wait for container to warm"));
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"Glic.Prewarming.ChecksResult.", param.expected_histogram_suffix}),
+      GlicPrewarmingChecksResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.ContainerCreationReason",
+                                     param.expected_creation_reason, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicWarmOnTriggerBrowserTest,
+    ::testing::Values(
+        WarmingTriggerParam{
+            .trigger = GlicWarmingTrigger::kNudge,
+            .expected_histogram_suffix = "Nudge",
+            .expected_creation_reason =
+                GlicWebContentsWarmingPool::ContainerCreationReason::kNudge},
+        WarmingTriggerParam{
+            .trigger = GlicWarmingTrigger::kIph,
+            .expected_histogram_suffix = "Iph",
+            .expected_creation_reason =
+                GlicWebContentsWarmingPool::ContainerCreationReason::kIph}));
 
 }  // namespace
 }  // namespace glic

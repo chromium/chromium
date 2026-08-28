@@ -670,7 +670,8 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
   }
 
   auto TryPreload() {
-    return Do([this]() { glic_service()->TryPreload(); });
+    return Do(
+        [this]() { glic_service()->TryPreload(GlicWarmingTrigger::kStartup); });
   }
 
   auto CheckWarmed() {

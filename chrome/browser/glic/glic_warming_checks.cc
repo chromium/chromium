@@ -118,8 +118,11 @@ void ForceConnectionTypeForTesting(
   g_forced_connection_type = connection_type;
 }
 
-void ShouldPreloadForProfile(Profile* profile, ShouldPreloadCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kGlicWarming)) {
+void ShouldPreloadForProfile(Profile* profile,
+                             GlicWarmingTrigger trigger,
+                             ShouldPreloadCallback callback) {
+  if (trigger == GlicWarmingTrigger::kStartup &&
+      !base::FeatureList::IsEnabled(features::kGlicWarming)) {
     PostResult(std::move(callback),
                GlicPrewarmingChecksResult::kWarmingDisabled);
     return;

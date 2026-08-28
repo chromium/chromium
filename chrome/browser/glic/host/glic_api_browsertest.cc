@@ -4142,9 +4142,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiMultiProfileTest, testGetContextCrossProfile) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnFullLoad) {
-  ASSERT_TRUE(coordinator()
-                  .GetWebContentsWarmingPoolForTesting()
-                  .MaybeStartInitialWarming());
+  ASSERT_TRUE(
+      coordinator().GetWebContentsWarmingPoolForTesting().MaybeStartWarming(
+          GlicWarmingTrigger::kStartup));
   ASSERT_OK(RunUntilNotNull([&]() {
     return coordinator()
         .GetWebContentsWarmingPoolForTesting()
@@ -5350,9 +5350,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
-  ASSERT_TRUE(coordinator()
-                  .GetWebContentsWarmingPoolForTesting()
-                  .MaybeStartInitialWarming());
+  ASSERT_TRUE(
+      coordinator().GetWebContentsWarmingPoolForTesting().MaybeStartWarming(
+          GlicWarmingTrigger::kStartup));
 
   // Open 3 instances, with instance 2 being the active one.
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
@@ -5376,9 +5376,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
 
   // There is a warmed contents initially. It should be non-showing and
   // non-actuating.
-  ASSERT_TRUE(coordinator()
-                  .GetWebContentsWarmingPoolForTesting()
-                  .MaybeStartInitialWarming());
+  ASSERT_TRUE(
+      coordinator().GetWebContentsWarmingPoolForTesting().MaybeStartWarming(
+          GlicWarmingTrigger::kStartup));
   ASSERT_TRUE(coordinator()
                   .GetWebContentsWarmingPoolForTesting()
                   .HasWarmedContainerForTesting());

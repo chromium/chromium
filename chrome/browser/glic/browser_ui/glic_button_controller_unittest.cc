@@ -82,7 +82,7 @@ class MockGlicKeyedServiceForButtonController : public MockGlicKeyedService {
                              actor_keyed_service),
         window_controller_(std::make_unique<TestingGlicInstanceCoordinator>()) {
   }
-  MOCK_METHOD(void, TryPreload, (), (override));
+  MOCK_METHOD(void, TryPreload, (GlicWarmingTrigger), (override));
 
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override {

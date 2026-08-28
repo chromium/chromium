@@ -224,7 +224,8 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, IncognitoCheck) {
   Profile* incognito =
       GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   base::test::TestFuture<GlicPrewarmingChecksResult> future;
-  ShouldPreloadForProfile(incognito, future.GetCallback());
+  ShouldPreloadForProfile(incognito, GlicWarmingTrigger::kStartup,
+                          future.GetCallback());
   EXPECT_EQ(future.Get(), GlicPrewarmingChecksResult::kProfileNotEligible);
 }
 
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingDisabledBrowserTest, NoWarming) {
   EXPECT_FALSE(pool().HasWarmedContainerForTesting());
 
   // Trigger preload attempt manually.
-  GlicKeyedService::Get(GetProfile())->TryPreload();
+  GlicKeyedService::Get(GetProfile())->TryPreload(GlicWarmingTrigger::kStartup);
 
   WaitForWarmingDelay();
 

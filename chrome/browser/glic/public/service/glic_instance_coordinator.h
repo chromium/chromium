@@ -17,6 +17,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -103,7 +104,7 @@ class GlicInstanceCoordinator {
 
   // Checks resource constraints (e.g., memory pressure) before readying glic to
   // show. Returns true if preloading proceeded, or false otherwise.
-  virtual bool MaybeStartInitialWarming() = 0;
+  virtual bool MaybeStartWarming(GlicWarmingTrigger trigger) = 0;
 
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 
 class Profile;
 namespace content {
@@ -39,7 +40,9 @@ class GlicWebContentsWarmingPool {
     kRefill = 2,  // Created to refill the pool after TakeContainer()
     kReloadAfterExpiry =
         3,  // Created to reload the pool after the previous container expired
-    kMaxValue = kReloadAfterExpiry,
+    kNudge = 4,  // Preloaded when a contextual nudge is shown.
+    kIph = 5,    // Preloaded when Gemini IPH is shown.
+    kMaxValue = kIph,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
 
@@ -51,9 +54,9 @@ class GlicWebContentsWarmingPool {
   // container is then preloaded in the background to replace the taken one.
   std::unique_ptr<WebUIContentsContainer> TakeContainer();
   // Checks resource constraints (e.g., memory pressure) and initiates
-  // initial cold-start pre-warming if allowed. Returns true if pre-warming
-  // proceeded, or false otherwise.
-  bool MaybeStartInitialWarming();
+  // pre-warming if allowed. Returns true if pre-warming proceeded, or false
+  // otherwise.
+  bool MaybeStartWarming(GlicWarmingTrigger trigger);
 
   // Shuts down the warming pool, destroying any warmed container instance and
   // stopping all timers.

@@ -562,8 +562,9 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
   Show(browser, source);
 }
 
-bool GlicInstanceCoordinatorImpl::MaybeStartInitialWarming() {
-  return web_contents_warming_pool_->MaybeStartInitialWarming();
+bool GlicInstanceCoordinatorImpl::MaybeStartWarming(
+    GlicWarmingTrigger trigger) {
+  return web_contents_warming_pool_->MaybeStartWarming(trigger);
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {

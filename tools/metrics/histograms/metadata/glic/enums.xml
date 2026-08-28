@@ -154,6 +154,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="UserTriggeredColdStart"/>
   <int value="2" label="Refill"/>
   <int value="3" label="ReloadAfterExpiry"/>
+  <int value="4" label="Nudge"/>
+  <int value="5" label="Iph"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicContainerCreationReason) -->

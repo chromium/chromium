@@ -157,6 +157,7 @@ BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 
 BASE_DECLARE_FEATURE(kGlicActionFirstFRE);
 
+BASE_DECLARE_FEATURE(kGlicWarmOnNudge);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

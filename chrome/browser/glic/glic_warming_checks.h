@@ -88,13 +88,23 @@ enum class GlicPrewarmingChecksResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
 
+// Identifies what triggered prewarming of the Glic WebContents.
+enum class GlicWarmingTrigger {
+  kStartup = 0,
+  kNudge = 1,
+  kIph = 2,
+  kMaxValue = kIph,
+};
+
 using ShouldPreloadCallback =
     base::OnceCallback<void(GlicPrewarmingChecksResult)>;
 
 // Evaluates profile readiness, enablement, device memory constraints, and
 // network meter status to determine if preloading is permitted for the given
-// profile.
-void ShouldPreloadForProfile(Profile* profile, ShouldPreloadCallback callback);
+// profile and trigger.
+void ShouldPreloadForProfile(Profile* profile,
+                             GlicWarmingTrigger trigger,
+                             ShouldPreloadCallback callback);
 
 // Testing helpers to override prewarming behavior and network connection type.
 void SetPrewarmingEnabledForTesting(bool enabled);

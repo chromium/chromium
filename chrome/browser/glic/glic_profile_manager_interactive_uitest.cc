@@ -79,7 +79,7 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
 
   auto CreateAndWarmGlic(bool primary_profile) {
     return Do([primary_profile, this]() {
-      GetService(primary_profile)->TryPreload();
+      GetService(primary_profile)->TryPreload(GlicWarmingTrigger::kStartup);
     });
   }
 

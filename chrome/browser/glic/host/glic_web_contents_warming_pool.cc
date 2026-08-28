@@ -26,7 +26,20 @@ const base::FeatureParam<int> kGlicMaxReloadCount{
 
 namespace {
 constexpr base::TimeDelta kDelayTooLong = base::Days(7);
+
+GlicWebContentsWarmingPool::ContainerCreationReason ToContainerCreationReason(
+    GlicWarmingTrigger trigger) {
+  switch (trigger) {
+    case GlicWarmingTrigger::kStartup:
+      return GlicWebContentsWarmingPool::ContainerCreationReason::
+          kInitialColdWarming;
+    case GlicWarmingTrigger::kNudge:
+      return GlicWebContentsWarmingPool::ContainerCreationReason::kNudge;
+    case GlicWarmingTrigger::kIph:
+      return GlicWebContentsWarmingPool::ContainerCreationReason::kIph;
+  }
 }
+}  // namespace
 
 class GlicWebContentsWarmingPool::Metrics {
  public:
@@ -151,12 +164,12 @@ GlicWebContentsWarmingPool::TakeContainer() {
   return result;
 }
 
-bool GlicWebContentsWarmingPool::MaybeStartInitialWarming() {
+bool GlicWebContentsWarmingPool::MaybeStartWarming(GlicWarmingTrigger trigger) {
   is_active_ = true;
   if (memory_pressure_level_ >= base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return false;
   }
-  EnsurePreload(ContainerCreationReason::kInitialColdWarming);
+  EnsurePreload(ToContainerCreationReason(trigger));
   return true;
 }
 

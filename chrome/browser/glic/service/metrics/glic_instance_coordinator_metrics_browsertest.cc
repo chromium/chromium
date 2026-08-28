@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -202,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsWarmingTest,
   GlicHistogramTester histogram_tester;
 
   // 1. Start initial warming (warmed instance exists) and wait for it to load.
-  ASSERT_TRUE(coordinator()
-                  .GetWebContentsWarmingPoolForTesting()
-                  .MaybeStartInitialWarming());
+  ASSERT_TRUE(
+      coordinator().GetWebContentsWarmingPoolForTesting().MaybeStartWarming(
+          GlicWarmingTrigger::kStartup));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return coordinator()
                .GetWebContentsWarmingPoolForTesting()
