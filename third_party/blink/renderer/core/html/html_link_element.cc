@@ -368,8 +368,14 @@ void HTMLLinkElement::RemovedFrom(ContainerNode& insertion_point) {
   // the flags.
   bool was_connected = isConnected();
   HTMLElement::RemovedFrom(insertion_point);
-  if (!insertion_point.isConnected() ||
-      GetDocument().StatePreservingAtomicMoveInProgress()) {
+  if (!insertion_point.isConnected()) {
+    return;
+  }
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    if (was_connected) {
+      GetDocument().GetStyleEngine().RemoveStyleSheetCandidateNode(
+          *this, insertion_point);
+    }
     return;
   }
 
