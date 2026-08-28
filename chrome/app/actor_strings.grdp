@@ -105,6 +105,9 @@
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_WORKING_ON_TASK" desc="Notification title when the actor is actively working on a task." formatter_data="android_java">
    Working on your task
   </message>
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_PREPARING_TO_START_TASK" desc="Notification title when the actor is preparing to start a task." formatter_data="android_java">
+    Preparing to start your task…
+  </message>
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_CHECK_YOUR_TASK" desc="Notification title when the actor is waiting for user input to proceed with a task." formatter_data="android_java">
    Check your task
   </message>
