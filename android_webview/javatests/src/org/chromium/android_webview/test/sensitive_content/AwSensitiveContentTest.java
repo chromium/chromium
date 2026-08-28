@@ -39,9 +39,13 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT)
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 public class AwSensitiveContentTest {
-    public static final String SENSITIVE_FILE =
+    public static final String PAGE_WITH_USERNAME =
+            "/android_webview/test/data/autofill/form_username_sensitive.html";
+    public static final String PAGE_WITH_PASSWORD =
+            "/android_webview/test/data/autofill/form_password.html";
+    public static final String PAGE_WITH_CREDIT_CARD =
             "/android_webview/test/data/autofill/page_address_credit_card_forms.html";
-    public static final String NOT_SENSITIVE_FILE =
+    public static final String PAGE_WITHOUT_SENSITIVE_FIELDS =
             "/android_webview/test/data/autofill/form_with_datalist.html";
 
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
@@ -71,19 +75,70 @@ public class AwSensitiveContentTest {
 
     @Test
     @MediumTest
-    public void testWebViewHasSensitiveContentWhileSensitiveFieldsArePresent() throws Exception {
+    @EnableFeatures(
+            SensitiveContentFeatures.SENSITIVE_CONTENT
+                    + ":sensitive_content_use_pwm_heuristics/true")
+    public void testSensitiveFields_username() throws Exception {
         Assert.assertEquals(
                 "Initially, the page does not have sensitive content",
                 View.CONTENT_SENSITIVITY_AUTO,
                 mTestContainerView.getContentSensitivity());
 
-        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(PAGE_WITH_USERNAME));
         pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
 
-        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(NOT_SENSITIVE_FILE));
+        mActivityTestRule.loadUrlAsync(
+                mAwContents, mTestServer.getURL(PAGE_WITHOUT_SENSITIVE_FIELDS));
+        pollUiThread(
+                () ->
+                        mTestContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(
+            SensitiveContentFeatures.SENSITIVE_CONTENT
+                    + ":sensitive_content_use_pwm_heuristics/true")
+    public void testSensitiveFields_password() throws Exception {
+        Assert.assertEquals(
+                "Initially, the page does not have sensitive content",
+                View.CONTENT_SENSITIVITY_AUTO,
+                mTestContainerView.getContentSensitivity());
+
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(PAGE_WITH_PASSWORD));
+        pollUiThread(
+                () ->
+                        mTestContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+
+        mActivityTestRule.loadUrlAsync(
+                mAwContents, mTestServer.getURL(PAGE_WITHOUT_SENSITIVE_FIELDS));
+        pollUiThread(
+                () ->
+                        mTestContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
+    @Test
+    @MediumTest
+    public void testSensitiveFields_creditCard() throws Exception {
+        Assert.assertEquals(
+                "Initially, the page does not have sensitive content",
+                View.CONTENT_SENSITIVITY_AUTO,
+                mTestContainerView.getContentSensitivity());
+
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(PAGE_WITH_CREDIT_CARD));
+        pollUiThread(
+                () ->
+                        mTestContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+
+        mActivityTestRule.loadUrlAsync(
+                mAwContents, mTestServer.getURL(PAGE_WITHOUT_SENSITIVE_FIELDS));
         pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
@@ -93,7 +148,7 @@ public class AwSensitiveContentTest {
     @Test
     @MediumTest
     public void testSwapViewAndroidDelegate() {
-        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(PAGE_WITH_CREDIT_CARD));
         pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
