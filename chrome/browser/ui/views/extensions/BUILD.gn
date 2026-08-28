@@ -246,7 +246,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:extensions_menu_handler",
     "//chrome/browser/ui/toolbar:test_support",

@@ -88,7 +88,6 @@ source_set("unit_tests") {
     ":impl",
     ":shared",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window/test:test_support",

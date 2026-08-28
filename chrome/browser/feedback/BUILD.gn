@@ -192,7 +192,6 @@ source_set("unit_tests") {
   deps = [
     ":feedback_impl",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser:browser_features",
     "//chrome/browser/performance_manager:test_support",
     "//chrome/common:constants",

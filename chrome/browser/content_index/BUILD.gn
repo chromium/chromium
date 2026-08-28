@@ -45,7 +45,6 @@ source_set("unit_tests") {
   deps = [
     ":content_index",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/engagement",
     "//chrome/browser/history",
     "//chrome/test:test_support",

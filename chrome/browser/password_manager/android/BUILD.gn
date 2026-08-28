@@ -574,7 +574,6 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
-    "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/keyboard_accessory/test_utils/android",
     "//chrome/browser/password_edit_dialog/android",

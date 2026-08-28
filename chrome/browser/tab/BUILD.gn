@@ -322,7 +322,6 @@ source_set("unit_tests") {
     ":tab",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//components/tabs:public",
     "//testing/gtest",
   ]

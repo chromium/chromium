@@ -74,7 +74,6 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
-    "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//testing/gtest",
     "//ui/base/mojom:ui_base_types",

@@ -67,7 +67,6 @@ source_set("unit_tests") {
   sources = [ "geolocation_permission_context_delegate_unittest.cc" ]
   deps = [
     ":impl",
-    "//chrome/browser",
     "//chrome/browser/content_settings",
     "//chrome/browser/permissions",
     "//chrome/test:test_support",

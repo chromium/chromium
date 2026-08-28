@@ -40,7 +40,6 @@ source_set("unit_tests") {
   deps = [
     ":back_to_opener",
     ":impl",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",

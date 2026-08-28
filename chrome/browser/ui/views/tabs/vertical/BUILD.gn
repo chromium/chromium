@@ -146,7 +146,6 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     "//base/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:unit_tests",

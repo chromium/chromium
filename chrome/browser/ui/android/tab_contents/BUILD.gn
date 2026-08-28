@@ -28,7 +28,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/dom_distiller/core",
     "//components/search_engines:test_support",

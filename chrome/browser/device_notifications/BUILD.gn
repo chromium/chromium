@@ -103,7 +103,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//url",

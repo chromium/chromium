@@ -136,7 +136,6 @@ source_set("unit_tests") {
     ":plugins",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/pdf/common:constants",

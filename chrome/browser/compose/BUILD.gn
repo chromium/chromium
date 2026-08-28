@@ -108,7 +108,6 @@ source_set("unit_tests") {
     ":compose",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser:flags",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/segmentation_platform",

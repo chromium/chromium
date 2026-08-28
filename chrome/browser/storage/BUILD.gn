@@ -51,7 +51,6 @@ source_set("unit_tests") {
     ":storage",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/bookmarks",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",

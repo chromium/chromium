@@ -657,7 +657,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/segmentation_platform",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/segmentation_platform/public:test_support",
     "//content/test:test_support",

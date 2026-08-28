@@ -92,7 +92,6 @@ source_set("unit_tests") {
     ":downloads",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/download",
     "//chrome/browser/download:impl",
     "//chrome/browser/ui/hats:test_support",

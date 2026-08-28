@@ -235,8 +235,6 @@ source_set("unit_tests") {
   deps = [
     ":launch_utils",
     ":web_applications",
-    "//chrome/browser",
-    "//chrome/browser/ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_test",
     "//chrome/browser/web_applications:web_applications_test_support",

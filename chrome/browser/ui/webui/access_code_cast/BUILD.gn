@@ -122,7 +122,6 @@ source_set("unit_tests") {
     ":access_code_cast",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/media/router/discovery",

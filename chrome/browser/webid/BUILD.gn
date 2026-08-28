@@ -183,7 +183,6 @@ source_set("unit_tests") {
     ":webid",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

@@ -33,7 +33,6 @@ source_set("unit_tests") {
   deps = [
     ":exclusive_access",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

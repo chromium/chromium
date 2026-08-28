@@ -59,7 +59,6 @@ if (!is_android) {
       ":thumbnails",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/extensions",
       "//chrome/test:test_support",
       "//content/test:test_support",

@@ -287,7 +287,6 @@ source_set("unit_tests") {
       ":test_support_ui",
       "//base:i18n",
       "//chrome/app:generated_resources",
-      "//chrome/browser",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager:test_support",

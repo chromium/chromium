@@ -66,7 +66,6 @@ if (!is_android) {
       ":ntp_microsoft_auth",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/new_tab_page",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/search:test_support_ui",

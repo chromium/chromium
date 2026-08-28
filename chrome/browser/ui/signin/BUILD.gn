@@ -291,8 +291,6 @@ if (enable_dice_support) {
       ":signin",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",

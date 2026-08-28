@@ -181,7 +181,6 @@ source_set("unit_tests") {
     ":impl",
     ":new_tab_page",
     ":test_support",
-    "//chrome/browser",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui/webui:webui_util",

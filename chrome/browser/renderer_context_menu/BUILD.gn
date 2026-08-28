@@ -328,7 +328,6 @@ if (!is_android) {
       ":renderer_context_menu",
       ":test_support",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/password_manager",
       "//chrome/browser/prefs",
       "//chrome/browser/search_engines",

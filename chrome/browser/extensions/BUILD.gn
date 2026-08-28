@@ -2057,7 +2057,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser:browser_process_impl",
     "//chrome/browser/background",
     "//chrome/browser/bookmarks",

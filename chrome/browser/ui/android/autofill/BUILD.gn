@@ -125,7 +125,6 @@ source_set("unit_tests") {
     "//chrome/browser/android:resource_mapper",
     "//chrome/browser/autofill",
     "//chrome/browser/personal_context/first_run",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/android/autofill:test_support",
     "//chrome/browser/ui/android/tab_model:test_support",

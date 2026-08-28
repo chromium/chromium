@@ -177,7 +177,6 @@ source_set("unit_tests") {
     ":translate",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//components/infobars/content",
     "//components/translate/content/browser",

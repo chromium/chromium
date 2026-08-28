@@ -207,7 +207,6 @@ source_set("unit_tests") {
     ":common",
     ":impl",
     "//base/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/test:test_support",

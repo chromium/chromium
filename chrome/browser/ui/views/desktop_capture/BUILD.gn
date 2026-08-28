@@ -127,7 +127,6 @@ source_set("unit_tests") {
     ":desktop_capture",
     ":test_support",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views:title_origin_label",
     "//chrome/test:test_support",

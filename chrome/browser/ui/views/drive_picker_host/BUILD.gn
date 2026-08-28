@@ -58,7 +58,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":drive_picker_host",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/views/global_media_controls:test_support",

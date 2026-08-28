@@ -45,7 +45,6 @@ source_set("unit_tests") {
     ":btm",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//content/test:test_support",

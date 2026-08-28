@@ -9,7 +9,7 @@ source_set("unit_tests") {
   sources = [ "browser_signals_decorator_unittest.cc" ]
 
   deps = [
-    "//chrome/browser",
+    "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/signals",
     "//chrome/browser/enterprise/connectors/device_trust/signals:test_support",

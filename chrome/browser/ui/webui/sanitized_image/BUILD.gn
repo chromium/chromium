@@ -43,7 +43,6 @@ source_set("unit_tests") {
   deps = [
     ":sanitized_image_source",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gmock",

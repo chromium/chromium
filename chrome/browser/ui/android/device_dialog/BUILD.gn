@@ -45,7 +45,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ssl",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/hid",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:test_support",

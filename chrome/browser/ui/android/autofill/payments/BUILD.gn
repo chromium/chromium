@@ -23,7 +23,6 @@ source_set("unit_tests") {
     ":payments",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//testing/gmock",

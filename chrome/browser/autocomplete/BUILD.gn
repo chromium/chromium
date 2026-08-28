@@ -269,7 +269,6 @@ source_set("unit_tests") {
     ":aim_eligibility_service",
     ":autocomplete",
     "//base",
-    "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
     "//chrome/browser/omnibox",

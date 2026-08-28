@@ -114,7 +114,6 @@ source_set("unit_tests") {
     ":global_media_controls",
     ":test_support",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",
     "//components/global_media_controls",

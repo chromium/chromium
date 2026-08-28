@@ -73,7 +73,6 @@ source_set("unit_tests") {
     ":impl",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//components/keyed_service/content",
     "//components/policy:generated",

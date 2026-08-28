@@ -201,7 +201,6 @@ source_set("unit_tests") {
     ":history",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
     "//chrome/common:chrome_features",

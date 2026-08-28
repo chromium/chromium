@@ -59,7 +59,6 @@ source_set("unit_tests") {
     ":browser_command",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/user_education",
     "//chrome/common",

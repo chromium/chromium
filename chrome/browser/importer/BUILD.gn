@@ -119,7 +119,6 @@ source_set("unit_tests") {
     ":importer",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/bookmarks",
     "//chrome/browser/history",
     "//chrome/browser/password_manager:test_support",

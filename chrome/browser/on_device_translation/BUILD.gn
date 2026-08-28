@@ -58,7 +58,6 @@ source_set("unit_tests") {
     ":on_device_translation",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/test:test_support",
     "//components/component_updater:test_support",
     "//components/crx_file",

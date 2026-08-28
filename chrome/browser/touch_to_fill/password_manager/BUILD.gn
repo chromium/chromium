@@ -94,7 +94,6 @@ if (is_android) {
       ":public",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/android/grouped_affiliations:public",
       "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",

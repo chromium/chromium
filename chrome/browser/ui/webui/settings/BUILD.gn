@@ -570,7 +570,6 @@ if (!is_android) {
       "//chrome/browser/signin:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/tab_list:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window",

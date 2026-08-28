@@ -244,7 +244,6 @@ source_set("unit_tests") {
       "//chrome/browser:browser_process",
       "//chrome/browser/performance_manager",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//components/favicon/content",
       "//components/favicon/core/test:test_support",
       "//components/performance_manager/test_support:test_support_common",

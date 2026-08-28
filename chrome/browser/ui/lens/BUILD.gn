@@ -514,7 +514,6 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/contextual_tasks:test_support",
       "//chrome/browser/contextual_tasks:ui",

@@ -65,7 +65,6 @@ source_set("unit_tests") {
 
   deps = [
     ":crostini",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//ui/base/mojom",
     "//ui/views",

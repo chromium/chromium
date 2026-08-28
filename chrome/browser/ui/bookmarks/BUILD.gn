@@ -179,7 +179,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:command_ids",
-    "//chrome/browser",
     "//chrome/browser/bookmarks",
     "//chrome/browser/bookmarks:test_support",
     "//chrome/browser/profiles:profile",

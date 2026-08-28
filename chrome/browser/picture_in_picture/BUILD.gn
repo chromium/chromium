@@ -223,7 +223,6 @@ source_set("unit_tests") {
       "picture_in_picture_window_manager_uma_helper_unittest.cc",
     ]
     deps += [
-      "//chrome/browser",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/safety_hub:test_support",
       "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",

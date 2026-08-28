@@ -555,7 +555,6 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profiles_extra_parts",

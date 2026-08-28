@@ -286,8 +286,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:test_support",

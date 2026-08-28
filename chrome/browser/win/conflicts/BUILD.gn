@@ -50,7 +50,6 @@ source_set("unit_tests") {
     ":conflicts_dll",
     ":module_info",
     "//base",
-    "//chrome/browser",
     "//chrome/services/util_win:lib",
     "//chrome/test:test_support",
     "//content/test:test_support",

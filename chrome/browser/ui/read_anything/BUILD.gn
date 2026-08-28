@@ -201,7 +201,6 @@ source_set("unit_tests") {
   deps = [
     ":read_anything",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/test:test_support",

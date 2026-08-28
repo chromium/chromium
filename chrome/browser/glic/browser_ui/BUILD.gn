@@ -214,7 +214,6 @@ if (!is_android) {
       ":browser_ui",
       ":impl",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser:global_features",
       "//chrome/browser/actor:test_support",
       "//chrome/browser/glic",
