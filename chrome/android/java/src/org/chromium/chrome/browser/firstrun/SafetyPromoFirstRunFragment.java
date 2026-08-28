@@ -20,9 +20,10 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils.SafetyFrePromoArm;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.safety_promo.R;
+import org.chromium.chrome.browser.safety_promo.SafetyPromoFirstRunView;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 
 /** A {@link Fragment} for the Safety Promo during the First Run Experience (FRE). */
@@ -83,7 +84,7 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
 
     private void setupView(SafetyPromoFirstRunView view, @SafetyFrePromoArm int arm) {
         if (FirstRunUtils.isCardBasedPromoArm(arm)) {
-            view.setCards(FirstRunUtils.getCardsForSafetyFrePromoArm(arm));
+            view.setCards(FirstRunUtils.getItemsForSafetyFrePromoArm(arm));
         }
         var pageDelegate = assumeNonNull(getPageDelegate());
         view.getContinueButtonView().setOnClickListener(v -> pageDelegate.advanceToNextPage());

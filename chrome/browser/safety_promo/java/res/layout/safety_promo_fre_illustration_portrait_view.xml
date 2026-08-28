@@ -4,7 +4,7 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.firstrun.SafetyPromoFirstRunView
+<org.chromium.chrome.browser.safety_promo.SafetyPromoFirstRunView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -84,4 +84,4 @@ found in the LICENSE file.
       android:layout_marginBottom="@dimen/fre_spacing"
       android:layout_marginHorizontal="@dimen/fre_spacing"
       android:text="@string/safety_fre_promo_start_browsing_button" />
-</org.chromium.chrome.browser.firstrun.SafetyPromoFirstRunView>
+</org.chromium.chrome.browser.safety_promo.SafetyPromoFirstRunView>

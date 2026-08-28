@@ -4,7 +4,7 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.firstrun.safety_promo.SafetyPromoCarouselView
+<org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -86,4 +86,4 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:text="@string/safety_fre_promo_show_me_how_button" />
   </LinearLayout>
-</org.chromium.chrome.browser.firstrun.safety_promo.SafetyPromoCarouselView>
+</org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselView>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Safety FRE Promo Card dimensions -->
+    <dimen name="safety_fre_card_height">88dp</dimen>
+    <dimen name="safety_fre_card_gap">8dp</dimen>
+    <dimen name="safety_fre_card_padding_vertical">12dp</dimen>
+    <dimen name="safety_fre_card_padding_horizontal">16dp</dimen>
+    <dimen name="safety_fre_card_icon_size">40dp</dimen>
+    <dimen name="safety_fre_card_subtitle_margin_top">4dp</dimen>
+    <dimen name="safety_fre_card_chevron_size">24dp</dimen>
+
+    <!-- Safety FRE with cards UI dimensions -->
+    <dimen name="safety_fre_logo_size">48dp</dimen>
+    <dimen name="safety_fre_title_margin_bottom">36dp</dimen>
+
+    <!-- Safety FRE Carousel dimensions -->
+    <dimen name="safety_fre_carousel_icon_margin_top">64dp</dimen>
+    <dimen name="safety_fre_carousel_title_margin_bottom">8dp</dimen>
+    <dimen name="safety_fre_carousel_button_margin_bottom">8dp</dimen>
+</resources>

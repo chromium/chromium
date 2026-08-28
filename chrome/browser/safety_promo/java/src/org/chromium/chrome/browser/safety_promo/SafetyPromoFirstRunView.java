@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.safety_promo;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.List;
@@ -42,25 +41,25 @@ public class SafetyPromoFirstRunView extends RelativeLayout {
         return mContinueButton;
     }
 
-    public void setCards(List<SafetyPromoCard> cards) {
+    public void setCards(List<SafetyPromoItem> items) {
         assert mCardsContainer != null;
         mCardsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        for (SafetyPromoCard card : cards) {
+        for (SafetyPromoItem item : items) {
             View cardView =
                     inflater.inflate(R.layout.safety_promo_card_item, mCardsContainer, false);
-            bindCard(cardView, card);
+            bindCard(cardView, item);
             mCardsContainer.addView(cardView);
         }
     }
 
-    private static void bindCard(View cardView, SafetyPromoCard card) {
+    private static void bindCard(View cardView, SafetyPromoItem item) {
         ImageView iconView = cardView.findViewById(R.id.card_icon);
         TextView titleView = cardView.findViewById(R.id.card_title);
         TextView subtitleView = cardView.findViewById(R.id.card_subtitle);
 
-        iconView.setImageResource(card.iconResId);
-        titleView.setText(card.titleResId);
-        subtitleView.setText(card.subtitleResId);
+        iconView.setImageResource(item.cardIconResId);
+        titleView.setText(item.cardTitleResId);
+        subtitleView.setText(item.cardSubtitleResId);
     }
 }

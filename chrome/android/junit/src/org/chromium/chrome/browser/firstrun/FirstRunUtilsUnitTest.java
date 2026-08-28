@@ -8,11 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -25,8 +22,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FirstRunUtilsUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Test
     @DisableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
     public void testShouldShowSafetyFrePromo_FeatureDisabled() {
@@ -71,21 +66,21 @@ public class FirstRunUtilsUnitTest {
     }
 
     @Test
-    public void testGetCardsForSafetyFrePromoArm() {
+    public void testGetItemsForSafetyFrePromoArm() {
         assertEquals(
-                FirstRunUtils.ARM_1_CARDS,
-                FirstRunUtils.getCardsForSafetyFrePromoArm(SafetyFrePromoArm.PASSWORD_MANAGER));
+                FirstRunUtils.ARM_1_ITEMS,
+                FirstRunUtils.getItemsForSafetyFrePromoArm(SafetyFrePromoArm.PASSWORD_MANAGER));
         assertEquals(
-                FirstRunUtils.ARM_2_CARDS,
-                FirstRunUtils.getCardsForSafetyFrePromoArm(SafetyFrePromoArm.HISTORY_QUICK_DELETE));
+                FirstRunUtils.ARM_2_ITEMS,
+                FirstRunUtils.getItemsForSafetyFrePromoArm(SafetyFrePromoArm.HISTORY_QUICK_DELETE));
         assertEquals(
-                FirstRunUtils.ARM_3_CARDS,
-                FirstRunUtils.getCardsForSafetyFrePromoArm(
+                FirstRunUtils.ARM_3_ITEMS,
+                FirstRunUtils.getItemsForSafetyFrePromoArm(
                         SafetyFrePromoArm.PASSWORD_MANAGER_AND_HISTORY_QUICK_DELETE));
         assertTrue(
-                FirstRunUtils.getCardsForSafetyFrePromoArm(SafetyFrePromoArm.UNDEFINED).isEmpty());
+                FirstRunUtils.getItemsForSafetyFrePromoArm(SafetyFrePromoArm.UNDEFINED).isEmpty());
         assertTrue(
-                FirstRunUtils.getCardsForSafetyFrePromoArm(SafetyFrePromoArm.ANIMATED_ILLUSTRATION)
+                FirstRunUtils.getItemsForSafetyFrePromoArm(SafetyFrePromoArm.ANIMATED_ILLUSTRATION)
                         .isEmpty());
     }
 }
