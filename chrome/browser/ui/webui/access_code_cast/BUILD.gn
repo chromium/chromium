@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/resources/access_code_cast:resources",
     "//chrome/browser/signin",
     "//chrome/browser/ui/views:chrome_constrained_window_views_client",
+    "//chrome/browser/ui/views:chrome_web_dialog_view",
     "//chrome/browser/ui/webui:metrics_handler",
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:theme_source",

@@ -1863,7 +1863,6 @@ static_library("ui") {
     sources += [
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
-      "views/chrome_views_delegate_ash.cc",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
       "views/frame/browser_frame_view_chromeos.cc",
@@ -2485,12 +2484,6 @@ static_library("ui") {
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
-      "views/chrome_browser_main_extra_parts_views.cc",
-      "views/chrome_browser_main_extra_parts_views.h",
-      "views/chrome_views_delegate.cc",
-      "views/chrome_views_delegate.h",
-      "views/chrome_web_dialog_view.cc",
-      "views/chrome_web_dialog_view.h",
       "views/constrained_web_dialog_delegate_views.cc",
       "views/context_hub/save_to_memory_bank_bubble_controller.cc",
       "views/context_hub/save_to_memory_bank_bubble_controller.h",
@@ -2708,7 +2701,12 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:bubble_menu_item_factory",
+      "//chrome/browser/ui/views:certificate_selector",
+      "//chrome/browser/ui/views:chrome_browser_main_extra_parts_views",
       "//chrome/browser/ui/views:chrome_constrained_window_views_client",
+      "//chrome/browser/ui/views:chrome_views_delegate",
+      "//chrome/browser/ui/views:chrome_web_dialog_view",
+      "//chrome/browser/ui/views:chrome_web_dialog_view_impl",
       "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
@@ -3285,7 +3283,6 @@ static_library("ui") {
 
     if (is_linux) {
       sources += [
-        "views/chrome_views_delegate_linux.cc",
         "views/frame/browser_frame_view_layout_linux.cc",
         "views/frame/browser_frame_view_layout_linux.h",
         "views/frame/browser_frame_view_layout_linux_native.cc",
@@ -3306,7 +3303,6 @@ static_library("ui") {
     }
 
     if (is_mac) {
-      sources += [ "views/chrome_views_delegate_mac.cc" ]
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals",
         "//chrome/browser/ui/webui/unexportable_keys_internals:impl",
@@ -3317,26 +3313,10 @@ static_library("ui") {
     }
 
     if (is_win) {
-      sources += [ "views/chrome_views_delegate_win.cc" ]
       deps += [
         ":accessibility_util",
         "//chrome/browser/ui/views/frame:system_menu_insertion_delegate_win",
       ]
-    }
-
-    if (use_aura && is_linux) {
-      # These files can do Gtk+-based theming for builds with gtk enabled.
-      sources += [
-        "views/chrome_browser_main_extra_parts_views_linux.cc",
-        "views/chrome_browser_main_extra_parts_views_linux.h",
-      ]
-      deps += [
-        "//ui/base/cursor",
-        "//ui/ozone",
-      ]
-      if (use_dbus) {
-        deps += [ "//ui/linux:dark_mode_manager" ]
-      }
     }
 
     if (is_chromeos) {
@@ -3471,25 +3451,23 @@ static_library("ui") {
     ]
 
     sources += [
-      "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/extension_action_delegate_desktop.cc",
       "views/extensions/extension_action_delegate_desktop.h",
       "views/extensions/extension_popup.cc",
       "views/extensions/extension_popup.h",
       "views/extensions/extension_view_views.cc",
       "views/extensions/extension_view_views.h",
-      "views/javascript_app_modal_event_blocker.h",
     ]
 
-    if (is_mac) {
-      deps +=
-          [ "//chrome/browser/ui/views:javascript_app_modal_event_blocker_mac" ]
+    if (use_aura) {
+      sources += [ "views/javascript_app_modal_event_blocker_aura.cc" ]
     }
 
-    if (use_aura) {
-      sources += [
-        "views/javascript_app_modal_event_blocker_aura.cc",
-        "views/javascript_app_modal_event_blocker_aura.h",
+    if (toolkit_views) {
+      deps += [
+        "//chrome/browser/ui/views:chrome_javascript_app_modal_view_factory_views",
+        "//chrome/browser/ui/views:javascript_app_modal_event_blocker",
+        "//chrome/browser/ui/views/extensions:extensions_views_utils",
       ]
     }
   }

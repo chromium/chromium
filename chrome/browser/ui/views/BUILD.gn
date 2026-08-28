@@ -2,7 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//ui/views/features.gni")
 
 assert(toolkit_views)
@@ -632,6 +636,24 @@ if (is_mac) {
   }
 }
 
+source_set("javascript_app_modal_event_blocker") {
+  public = [ "javascript_app_modal_event_blocker.h" ]
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+  ]
+  if (is_mac) {
+    public_deps += [ ":javascript_app_modal_event_blocker_mac" ]
+  }
+  if (use_aura) {
+    public += [ "javascript_app_modal_event_blocker_aura.h" ]
+    public_deps += [
+      "//ui/aura",
+      "//ui/events",
+    ]
+  }
+}
+
 source_set("tab_icon_view") {
   public = [ "tab_icon_view.h" ]
   sources = [ "tab_icon_view.cc" ]
@@ -1008,5 +1030,190 @@ if (is_chromeos) {
       "//ui/aura",
       "//url",
     ]
+  }
+}
+
+source_set("chrome_web_dialog_view") {
+  public = [ "chrome_web_dialog_view.h" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx/geometry",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("chrome_web_dialog_view_impl") {
+  sources = [ "chrome_web_dialog_view.cc" ]
+  public_deps = [ ":chrome_web_dialog_view" ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:chrome_web_contents_handler",
+    "//ui/views",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//ash/public/cpp",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ui/webui/ash/system_web_dialog",
+      "//components/session_manager/core",
+      "//components/user_manager",
+    ]
+  }
+}
+
+source_set("chrome_views_delegate") {
+  public = [ "chrome_views_delegate.h" ]
+  sources = [ "chrome_views_delegate.cc" ]
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/ui:browser_window_state",
+    "//components/keep_alive_registry",
+    "//components/prefs",
+    "//components/version_info",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/display",
+    "//ui/gfx/geometry",
+  ]
+  if (is_linux) {
+    sources += [ "chrome_views_delegate_linux.cc" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/ui/views:native_widget_factory",
+      "//chrome/common:channel_info",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/linux:linux_ui",
+      "//ui/ozone",
+    ]
+  }
+  if (is_mac) {
+    sources += [ "chrome_views_delegate_mac.cc" ]
+    deps += [ "//content/public/browser" ]
+  }
+  if (is_win) {
+    sources += [ "chrome_views_delegate_win.cc" ]
+    deps += [
+      "//chrome/browser/ui/views:native_widget_factory",
+      "//chrome/browser/win",
+    ]
+  }
+  if (is_chromeos) {
+    sources += [ "chrome_views_delegate_ash.cc" ]
+    deps += [
+      "//ash",
+      "//ash/public/cpp",
+      "//chrome/browser/ui/ash/capture_mode",
+      "//chromeos/ash/experiences/arc/touch_selection_menu",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+    ]
+  }
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+}
+
+source_set("chrome_browser_main_extra_parts_views") {
+  public = [ "chrome_browser_main_extra_parts_views.h" ]
+  sources = [ "chrome_browser_main_extra_parts_views.cc" ]
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser:main_extra_parts",
+    "//ui/views",
+  ]
+  deps = [
+    ":chrome_constrained_window_views_client",
+    ":chrome_views_delegate",
+    ":layout_provider",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/net",
+    "//chrome/browser/ui:simple_message_box_headers",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/infobars",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/media_router",
+    "//chrome/browser/ui/views/relaunch_notification",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/infobars/core",
+    "//components/media_router/browser",
+    "//components/strings:components_strings",
+    "//components/ui_devtools",
+    "//components/ui_devtools/views",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//sandbox/policy",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/display",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ui/wm" ]
+  }
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+    ]
+  }
+  if (use_aura && is_linux) {
+    public += [ "chrome_browser_main_extra_parts_views_linux.h" ]
+    sources += [ "chrome_browser_main_extra_parts_views_linux.cc" ]
+    deps += [
+      "//build/config/linux/dbus:buildflags",
+      "//chrome/app:branded_strings",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/views:theme_profile_key",
+      "//content/public/common",
+      "//printing/buildflags",
+      "//ui/linux:display_server_utils",
+      "//ui/linux:linux_ui",
+      "//ui/linux:linux_ui_factory",
+      "//ui/native_theme",
+      "//ui/ozone",
+    ]
+    if (use_dbus) {
+      deps += [ "//ui/linux:dark_mode_manager" ]
+    }
+  }
+}
+
+if (enable_extensions) {
+  source_set("chrome_javascript_app_modal_view_factory_views") {
+    sources = [ "chrome_javascript_app_modal_view_factory_views.cc" ]
+    public_deps = [ "//chrome/browser/ui/javascript_dialogs" ]
+    deps = [
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/ui/blocked_content",
+      "//chrome/browser/ui/views:javascript_app_modal_event_blocker",
+      "//components/constrained_window",
+      "//components/javascript_dialogs",
+      "//content/public/browser",
+      "//ui/base:features",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    if (use_aura) {
+      deps += [ "//ui/aura" ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }

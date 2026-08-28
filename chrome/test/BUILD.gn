@@ -2315,6 +2315,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/pinned_toolbar:browser_tests",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:browser_tests",
+      "//chrome/browser/ui/views:chrome_views_delegate",
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:external_protocol_dialog",
       "//chrome/browser/ui/views:file_system_access_test_support",

@@ -19,6 +19,7 @@ source_set("views") {
   ]
   public_deps = [
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views:chrome_views_delegate",
     "//chrome/browser/ui/views:layout_provider",
     "//ui/views",
     "//ui/views:test_support",

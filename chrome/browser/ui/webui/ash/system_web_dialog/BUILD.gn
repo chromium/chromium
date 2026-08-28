@@ -18,6 +18,7 @@ static_library("system_web_dialog") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/views:chrome_web_dialog_view",
     "//chromeos/constants",
     "//components/session_manager/core",
     "//content/public/browser",
