@@ -93,6 +93,8 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   dbus_utils::ExportMethodResult<> OnScroll(int32_t delta,
                                             std::string orientation);
   dbus_utils::ExportMethodResult<> OnSecondaryActivate(int32_t x, int32_t y);
+  dbus_utils::ExportMethodResult<> OnProvideXdgActivationToken(
+      std::string token);
 
   void OnGetProperty(dbus::MethodCall* method_call,
                      dbus::ExportedObject::ResponseSender response_sender);

@@ -82,6 +82,7 @@ const char kMethodContextMenu[] = "ContextMenu";
 const char kMethodScroll[] = "Scroll";
 const char kMethodSecondaryActivate[] = "SecondaryActivate";
 const char kMethodGet[] = "Get";
+const char kMethodProvideXdgActivationToken[] = "ProvideXdgActivationToken";
 
 // Properties.
 const char kPropertyIsStatusNotifierHostRegistered[] =
@@ -444,6 +445,12 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
             &StatusIconLinuxDbus::OnSecondaryActivate,
             weak_factory_.GetWeakPtr()),
         base::DoNothing());
+    dbus_utils::ExportMethod<"s", "">(
+        item_, interface, kMethodProvideXdgActivationToken,
+        dbus_utils::BindWeakPtrForExportMethod(
+            &StatusIconLinuxDbus::OnProvideXdgActivationToken,
+            weak_factory_.GetWeakPtr()),
+        base::DoNothing());
   }
 
   item_->ExportMethod(DBUS_INTERFACE_PROPERTIES, "Get",
@@ -578,6 +585,13 @@ dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnSecondaryActivate(
   // which is non-obvious, so allow middle-click to activate which is slightly
   // more obvious.
   delegate_->OnClick();
+  return std::make_tuple();
+}
+
+dbus_utils::ExportMethodResult<>
+StatusIconLinuxDbus::OnProvideXdgActivationToken(std::string token) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::nix::SetActivationToken(token);
   return std::make_tuple();
 }
 
