@@ -626,6 +626,7 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
     return;
   }
   if (controlled_tabs_.contains(tab_handle)) {
+    last_actuated_tab_ = tab_handle;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
     return;
@@ -647,6 +648,7 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
   controlled_tabs_.emplace(
       tab_handle,
       std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
+  last_actuated_tab_ = tab_handle;
 
   DidTabEnterActorControl(tab_handle);
 
@@ -864,6 +866,14 @@ absl::flat_hash_set<tabs::TabHandle> ActorTask::GetLastActedTabs() const {
   }
 
   return last_acted_tabs;
+}
+
+tabs::TabInterface* ActorTask::GetLastActuatedTab() const {
+  return last_actuated_tab_.Get();
+}
+
+tabs::TabHandle ActorTask::GetLastActuatedTabHandle() const {
+  return last_actuated_tab_;
 }
 
 absl::flat_hash_set<tabs::TabHandle> ActorTask::GetTabs() const {

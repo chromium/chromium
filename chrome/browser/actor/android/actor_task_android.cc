@@ -101,6 +101,12 @@ std::vector<int32_t> ActorTaskAndroid::GetLastActedTabs() {
   return tab_ids;
 }
 
+int32_t ActorTaskAndroid::GetLastActuatedTabId() {
+  auto handle = task_->GetLastActuatedTabHandle();
+  auto* tab_android = TabAndroid::FromTabHandle(handle);
+  return tab_android ? tab_android->GetAndroidId() : TabAndroid::kInvalidTabId;
+}
+
 }  // namespace actor
 
 DEFINE_JNI(ActorTask)

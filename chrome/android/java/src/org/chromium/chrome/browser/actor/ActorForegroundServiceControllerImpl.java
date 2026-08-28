@@ -179,8 +179,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
 
     @Override
     public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
-        Set<Integer> tabs = task.getLastActedTabs();
-        int tabId = tabs.isEmpty() ? Tab.INVALID_TAB_ID : tabs.iterator().next();
+        int tabId = task.getLastActuatedTabId();
 
         Intent intent =
                 IntentHandler.createTrustedBringTabToFrontIntent(
