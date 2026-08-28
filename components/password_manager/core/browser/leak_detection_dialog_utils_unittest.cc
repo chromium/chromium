@@ -8,8 +8,10 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,23 +68,23 @@ const struct LeakTypeParams {
      {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true)), IDS_OK,
       IDS_CLOSE, GetLeakChangePasswordMessage(),
       IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false}},
-  kPasswordCheckLeakTypesTestCases[] =
-      {{CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)),
-        IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
+   kPasswordCheckLeakTypesTestCases[] =
+       {{CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)),
+         IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
 #else
-        IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
+         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
 #endif
-        IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
-       {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)),
-        IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
+         IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
+        {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)),
+         IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
 #else
-        IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
+         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
 #endif
-        IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true}
+         IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true}
 #if BUILDFLAG(IS_ANDROID)
 },
   kPasswordCheckLeakTypesTestCasesAndroidAutomotive[] = {
@@ -319,4 +321,106 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(
         PasswordChangeCredentialLeakDialogUtilsTest::GetTestCases()));
 #endif
+
+TEST(CredentialLeakDialogUtilsUnifiedTest, UnifiedDialogDefaultEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif
+
+  // When unified dialog is enabled by default, both saved and unsaved credentials with
+  // reuse should map to kCheckup and use the unified description.
+  EXPECT_EQ(LeakDialogType::kCheckup,
+            GetLeakDialogType(
+                CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true))));
+  EXPECT_EQ(LeakDialogType::kCheckup,
+            GetLeakDialogType(CreateLeakType(IsSaved(false), IsReused(true),
+                                             IsSyncing(true))));
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+#else
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
+#endif
+          ),
+      CreateDialogTraits(
+          CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)))
+          ->GetDescription());
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+#else
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
+#endif
+          ),
+      CreateDialogTraits(
+          CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)))
+          ->GetDescription());
+}
+
+TEST(CredentialLeakDialogUtilsUnifiedTest, KillswitchDisabled) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kUnifiedPasswordLeakDialog);
+
+  // When disabled (killswitch active), unsaved credentials map to kCheckupAndChange.
+  EXPECT_EQ(LeakDialogType::kCheckup,
+            GetLeakDialogType(
+                CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true))));
+  EXPECT_EQ(LeakDialogType::kCheckupAndChange,
+            GetLeakDialogType(CreateLeakType(IsSaved(false), IsReused(true),
+                                             IsSyncing(true))));
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+#else
+          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
+#endif
+          ),
+      CreateDialogTraits(
+          CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)))
+          ->GetDescription());
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+#else
+          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED
+#endif
+          ),
+      CreateDialogTraits(
+          CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)))
+          ->GetDescription());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(CredentialLeakDialogUtilsUnifiedTest, AutomotiveShowsChangeDialog) {
+  if (!base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+
+  // On Automotive, ShouldCheckPasswords() returns false, so it always displays
+  // kChange.
+  EXPECT_EQ(LeakDialogType::kChange,
+            GetLeakDialogType(
+                CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true))));
+  EXPECT_EQ(LeakDialogType::kChange,
+            GetLeakDialogType(CreateLeakType(IsSaved(false), IsReused(true),
+                                             IsSyncing(true))));
+}
+#endif
+
 }  // namespace password_manager
