@@ -77,6 +77,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/threading/scoped_blocking_call.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/file_select_listener.h"
@@ -97,6 +106,31 @@ namespace {
 
 constexpr char kThirdPartyIframesNotAllowedToShowFilePicker[] =
     "Third party iframes are not allowed to show a file picker.";
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+bool CreateAndTruncateLocalFile(const base::FilePath& path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  // Let the process umask determine permissions for new files. Do not follow a
+  // symbolic link or block while opening a special file at the selected path.
+  base::ScopedFD descriptor(HANDLE_EINTR(
+      open(path.value().c_str(),
+           O_CREAT | O_WRONLY | O_NONBLOCK | O_CLOEXEC | O_NOFOLLOW, 0666)));
+  if (!descriptor.is_valid()) {
+    return false;
+  }
+  // ftruncate() behavior for non-regular files is platform-dependent, so
+  // explicitly reject them before truncating through the descriptor.
+  struct stat file_info;
+  if (HANDLE_EINTR(fstat(descriptor.get(), &file_info)) != 0 ||
+      !S_ISREG(file_info.st_mode)) {
+    return false;
+  }
+
+  base::File file(std::move(descriptor));
+  return file.SetLength(0);
+}
+#endif
 
 // Holds resolved and validated frame objects. All pointers are guaranteed to be
 // non-null and active if this struct is returned.
@@ -1900,12 +1934,22 @@ void FileSystemAccessManagerImpl::OnCheckPathsAgainstEnterprisePolicy(
     // Create file if it doesn't yet exist, and truncate file if it does
     // exist.
     auto fs_url = CreateFileSystemURLFromPath(entries.front());
+    auto did_create_and_truncate = base::BindOnce(
+        &FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile,
+        weak_factory_.GetWeakPtr(), binding_context, entries.front(), fs_url,
+        std::move(callback));
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+    if (entries.front().type == PathType::kLocal) {
+      context()->default_file_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(&CreateAndTruncateLocalFile, fs_url.path()),
+          std::move(did_create_and_truncate));
+      return;
+    }
+#endif
 
     operation_runner().PostTaskWithThisObject(base::BindOnce(
-        &CreateAndTruncateFile, fs_url,
-        base::BindOnce(
-            &FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile, this,
-            binding_context, entries.front(), fs_url, std::move(callback)),
+        &CreateAndTruncateFile, fs_url, std::move(did_create_and_truncate),
         base::SequencedTaskRunner::GetCurrentDefault()));
     return;
   }

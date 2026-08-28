@@ -47,6 +47,15 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#endif
+
 namespace content {
 
 using base::test::RunOnceCallback;
@@ -55,6 +64,24 @@ using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 
 static constexpr char kTestMountPoint[] = "testfs";
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+namespace {
+
+class ScopedUmaskSetter {
+ public:
+  explicit ScopedUmaskSetter(mode_t target_mask)
+      : old_umask_(umask(target_mask)) {}
+  ScopedUmaskSetter(const ScopedUmaskSetter&) = delete;
+  ScopedUmaskSetter& operator=(const ScopedUmaskSetter&) = delete;
+  ~ScopedUmaskSetter() { umask(old_umask_); }
+
+ private:
+  const mode_t old_umask_;
+};
+
+}  // namespace
+#endif
 
 // This browser test implements end-to-end tests for the file picker
 // APIs.
@@ -313,12 +340,25 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_NonExistingFile) {
           std::vector<base::FilePath>{test_file}, &dialog_params_));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
-            EvalJs(shell(),
-                   "(async () => {"
-                   "  let e = await self.showSaveFilePicker();"
-                   "  self.entry = e;"
-                   "  return e.name; })()"));
+  {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+    ScopedUmaskSetter scoped_umask(0002);
+#endif
+    EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+              EvalJs(shell(),
+                     "(async () => {"
+                     "  let e = await self.showSaveFilePicker();"
+                     "  self.entry = e;"
+                     "  return e.name; })()"));
+  }
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    int mode;
+    ASSERT_TRUE(base::GetPosixFilePermissions(test_file, &mode));
+    EXPECT_EQ(0664, mode & base::FILE_PERMISSION_MASK);
+  }
+#endif
   EXPECT_EQ(ui::SelectFileDialog::SELECT_SAVEAS_FILE, dialog_params_.type);
   EXPECT_EQ(static_cast<int>(file_contents.size()),
             EvalJs(shell(),
@@ -339,6 +379,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_NonExistingFile) {
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        SaveFile_TruncatesExistingFile) {
   const base::FilePath test_file = CreateTestFile("Hello World");
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+  constexpr int kInitialMode = 0620;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::SetPosixFilePermissions(test_file, kInitialMode));
+  }
+#endif
 
   ui::SelectFileDialog::SetFactory(
       std::make_unique<FakeSelectFileDialogFactory>(
@@ -356,7 +403,131 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
             EvalJs(shell(),
                    "(async () => { const file = await self.entry.getFile(); "
                    "return await file.text(); })()"));
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  int mode;
+  ASSERT_TRUE(base::GetPosixFilePermissions(test_file, &mode));
+  EXPECT_EQ(kInitialMode, mode & base::FILE_PERMISSION_MASK);
+#endif
 }
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SaveFile_RejectsSymbolicLink) {
+  const std::string target_contents = "target contents";
+  const base::FilePath target_file = CreateTestFile(target_contents);
+  const base::FilePath symbolic_link =
+      target_file.DirName().AppendASCII("symbolic-link");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateSymbolicLink(target_file, symbolic_link));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{symbolic_link}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "(async () => {"
+                         "  try {"
+                         "    await self.showSaveFilePicker();"
+                         "    return false;"
+                         "  } catch (e) {"
+                         "    return true;"
+                         "  }"
+                         "})()"));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string actual_contents;
+    ASSERT_TRUE(base::ReadFileToString(target_file, &actual_contents));
+    EXPECT_EQ(target_contents, actual_contents);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_RejectsFifo) {
+  const base::FilePath fifo_path = temp_dir_.GetPath().AppendASCII("fifo");
+  base::ScopedFD fifo_reader;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_EQ(0, mkfifo(fifo_path.value().c_str(), 0600));
+    // Keep a reader open so the write-only open succeeds and exercises the
+    // regular-file check.
+    fifo_reader.reset(HANDLE_EINTR(
+        open(fifo_path.value().c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC)));
+  }
+  ASSERT_TRUE(fifo_reader.is_valid());
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{fifo_path}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "(async () => {"
+                         "  try {"
+                         "    await self.showSaveFilePicker();"
+                         "    return false;"
+                         "  } catch (e) {"
+                         "    return true;"
+                         "  }"
+                         "})()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SaveFile_RejectsFifoWithoutReader) {
+  const base::FilePath fifo_path =
+      temp_dir_.GetPath().AppendASCII("fifo-without-reader");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_EQ(0, mkfifo(fifo_path.value().c_str(), 0600));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{fifo_path}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "(async () => {"
+                         "  try {"
+                         "    await self.showSaveFilePicker();"
+                         "    return false;"
+                         "  } catch (e) {"
+                         "    return true;"
+                         "  }"
+                         "})()"));
+}
+#endif
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SaveFile_ExternalPathUsesStorageBackend) {
+  const base::FilePath test_file =
+      temp_dir_.GetPath().AppendASCII("external-save");
+  const base::FilePath virtual_path =
+      base::FilePath::FromASCII(kTestMountPoint).Append(test_file.BaseName());
+  ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
+  selected_file.virtual_path = virtual_path;
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  {
+    ScopedUmaskSetter scoped_umask(0022);
+    EXPECT_EQ(virtual_path.BaseName().AsUTF8Unsafe(),
+              EvalJs(shell(), "self.showSaveFilePicker().then(e => e.name)"));
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  int mode;
+  ASSERT_TRUE(base::GetPosixFilePermissions(test_file, &mode));
+  EXPECT_EQ(0600, mode & base::FILE_PERMISSION_MASK);
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        SaveFile_NoEnterpriseChecks) {
