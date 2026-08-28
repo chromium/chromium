@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_INDIGO_ONBOARDING_AGENT_H_
 #define CHROME_RENDERER_INDIGO_ONBOARDING_AGENT_H_
 
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -23,21 +24,24 @@ namespace indigo {
 //
 // This class manages its own lifetime, deleting itself when the RenderFrame it
 // observes is destroyed. It can only observe a single RenderFrame.
-class OnboardingAgent : public content::RenderFrameObserver {
+class OnboardingAgent : public content::RenderFrameObserver,
+                        public base::SelfDeleting {
  public:
   static void MaybeCreate(content::RenderFrame* render_frame,
                           blink::AssociatedInterfaceRegistry* registry);
 
-  explicit OnboardingAgent(content::RenderFrame* render_frame,
-                           blink::AssociatedInterfaceRegistry* registry);
+  OnboardingAgent(content::RenderFrame* render_frame,
+                  blink::AssociatedInterfaceRegistry* registry,
+                  base::SelfDeletingPassKey key);
   OnboardingAgent(const OnboardingAgent&) = delete;
   OnboardingAgent& operator=(const OnboardingAgent&) = delete;
-  ~OnboardingAgent() override;
 
   // Called by the JS `window.chromeOnboarding.acknowledgeChromeDisclaimer()`.
   void AcknowledgeChromeDisclaimer();
 
  private:
+  ~OnboardingAgent() override;
+
   // content::RenderFrameObserver:
   void OnDestruct() override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
