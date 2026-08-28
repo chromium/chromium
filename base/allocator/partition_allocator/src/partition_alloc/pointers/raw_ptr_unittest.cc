@@ -2459,6 +2459,76 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
 
+TEST_F(BackupRefPtrTest, DirectMapReallocReuseWithAliveRawPtr) {
+  // Allocate a large chunk (direct-mapped).
+  size_t big_size = 1500 * 1024;  // 1.5MB is direct-mapped.
+  char* ptr = static_cast<char*>(allocator_.root()->Alloc(big_size, ""));
+  ASSERT_TRUE(ptr);
+
+  // Hold a raw_ptr pointing to the start. This increments the slot's refcount.
+  raw_ptr<char, DisableDanglingPtrDetection> ref = ptr;
+
+  // Shrink in-place within the same 2MB reservation.
+  size_t small_size = 1400 * 1024;  // 1.4MB.
+  char* new_ptr =
+      static_cast<char*>(allocator_.root()->Realloc(ptr, small_size, ""));
+
+  // Under BRP, if a slot has active raw_ptr references, it must NOT be
+  // reallocated in-place (to prevent potential UAF on the truncated tail
+  // portion).
+  EXPECT_NE(new_ptr, ptr);
+
+  // Clean up.
+  ref = nullptr;  // Releases BRP quarantine of 'ptr'.
+  if (new_ptr != ptr) {
+    allocator_.root()->Free(new_ptr);
+  } else {
+    allocator_.root()->Free(ptr);
+  }
+}
+
+TEST_F(BackupRefPtrTest, NormalBucketReallocReuseWithAliveRawPtr) {
+  // Find a bucketted size (likely in thread cache) that stays in-place upon
+  // shrinking.
+  size_t big_size = 0;
+  size_t small_size = 0;
+
+  for (size_t size = 128; size <= 1024; size += 64) {
+    size_t alloc_size = allocator_.root()->AdjustSizeForExtrasSubtract(size);
+    if (alloc_size > 32) {
+      size_t s_size = alloc_size - 16;
+      if (allocator_.root()->AllocationCapacityFromRequestedSize(alloc_size) ==
+          allocator_.root()->AllocationCapacityFromRequestedSize(s_size)) {
+        big_size = alloc_size;
+        small_size = s_size;
+        break;
+      }
+    }
+  }
+
+  ASSERT_NE(big_size, 0u)
+      << "Could not find a suitable normal bucket for the test";
+
+  char* ptr = static_cast<char*>(allocator_.root()->Alloc(big_size, ""));
+  ASSERT_TRUE(ptr);
+
+  raw_ptr<char, DisableDanglingPtrDetection> ref = ptr;
+
+  char* new_ptr =
+      static_cast<char*>(allocator_.root()->Realloc(ptr, small_size, ""));
+
+  // Under BRP, if a slot has active raw_ptr references, it must NOT be
+  // reallocated in-place.
+  EXPECT_NE(new_ptr, ptr);
+
+  ref = nullptr;  // Releases BRP quarantine of 'ptr'.
+  if (new_ptr != ptr) {
+    allocator_.root()->Free(new_ptr);
+  } else {
+    allocator_.root()->Free(ptr);
+  }
+}
+
 #endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
