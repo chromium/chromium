@@ -114,7 +114,7 @@ class FeaturePromoControllerQueueTest
         std::make_unique<TestPromoController<TestFeaturePromoControllerImpl>>(
             &tracker(), &promo_registry(), &help_bubble_factory_registry(),
             &storage_service(), &session_policy(), &tutorial_service(),
-            &messaging_controller());
+            messaging_controller());
     result->Init();
     test_promo_controller_ = result.get();
     return result;

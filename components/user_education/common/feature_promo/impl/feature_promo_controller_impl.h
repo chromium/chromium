@@ -52,7 +52,7 @@ class FeaturePromoControllerImpl : public FeaturePromoController {
       UserEducationStorageService* storage_service,
       FeaturePromoSessionPolicy* session_policy,
       TutorialService* tutorial_service,
-      ProductMessagingController* messaging_controller);
+      ProductMessagingController& messaging_controller);
   ~FeaturePromoControllerImpl() override;
 
   // Perform required initialization that cannot be safely done in the

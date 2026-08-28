@@ -2645,7 +2645,7 @@ CreateUserEducationResources(UserEducationService& user_education_service) {
       &user_education_service.user_education_storage_service(),
       &user_education_service.feature_promo_session_policy(),
       &user_education_service.tutorial_service(),
-      &user_education_service.product_messaging_controller());
+      user_education_service.product_messaging_controller());
   result->Init();
   return result;
 }
