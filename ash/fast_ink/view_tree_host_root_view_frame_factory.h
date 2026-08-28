@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/frame_sink/ui_resource.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -34,8 +33,6 @@ class Size;
 
 namespace ash {
 
-class UiResourceManager;
-
 class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
  public:
   explicit ViewTreeHostRootViewFrameFactory(views::Widget* widget);
@@ -47,23 +44,12 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
 
   ~ViewTreeHostRootViewFrameFactory() = default;
 
-  // Creates a UiResource of a given `size` and `format`. We draw
-  // the textures of view tree host by `widget` into the gpu buffer associated
-  // with the resource and attach it to a compositor frame by converting it into
-  // a transferable resource. Note: This method is also used in unittests.
-  static std::unique_ptr<UiResource> CreateUiResource(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      UiSourceId ui_source_id,
-      bool is_overlay_candidate);
-
   // Creates and configures a compositor frame.
   std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       const viz::BeginFrameAck& begin_frame_ack,
       const gfx::Rect& content_rect,
       const gfx::Rect& total_damage_rect,
       bool use_overlays,
-      UiResourceManager& resource_manager,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool);
 
@@ -78,13 +64,6 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
                   const gfx::Rect& output_rect,
                   const gfx::Size& buffer_size,
                   const gfx::Transform& buffer_to_target_transform) const;
-
-  // Get a UiResource to paint the texture. We try to reuse any
-  // existing resources in `resource_manager` before creating a new resource.
-  std::unique_ptr<UiResource> AcquireUiResource(
-      const gfx::Size& size,
-      bool is_overlay_candidate,
-      UiResourceManager& resource_manager) const;
 
   cc::ResourcePool::InUsePoolResource AcquireResource(
       const gfx::Size& size,

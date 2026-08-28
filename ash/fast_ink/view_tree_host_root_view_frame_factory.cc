@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
-#include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -43,7 +42,6 @@ constexpr viz::SharedImageFormat kSharedImageFormat =
     SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
                  : viz::SinglePlaneFormat::kBGRA_8888;
 
-constexpr uint32_t kUiSourceId = 1u;
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -53,60 +51,12 @@ ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
     views::Widget* widget)
     : widget_(widget) {}
 
-// static
-std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
-    const gfx::Size& size,
-    viz::SharedImageFormat format,
-    UiSourceId ui_source_id,
-    bool is_overlay_candidate) {
-  DCHECK(!size.IsEmpty());
-  DCHECK(ui_source_id > 0);
-
-  auto context_provider = aura::Env::GetInstance()
-                              ->context_factory()
-                              ->SharedMainThreadRasterContextProvider();
-  if (!context_provider) {
-    LOG(ERROR) << "Failed to acquire a context provider";
-    return nullptr;
-  }
-
-  scoped_refptr<gpu::SharedImageInterface> sii =
-      context_provider->SharedImageInterface();
-
-  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-  if (is_overlay_candidate &&
-      sii->GetCapabilities().supports_scanout_shared_images) {
-    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  }
-
-  auto client_shared_image = sii->CreateSharedImage(
-      {format, size, gfx::ColorSpace(), usage, "FastInkRootViewFrame"},
-      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
-  if (!client_shared_image) {
-    LOG(ERROR) << "Failed to create MappableSharedImage";
-    return nullptr;
-  }
-
-  auto resource = std::make_unique<UiResource>(std::move(sii),
-                                               std::move(client_shared_image));
-
-  resource->sync_token = resource->client_shared_image()->creation_sync_token();
-  resource->shared_image_interface->VerifySyncToken(resource->sync_token);
-  resource->damaged = true;
-  resource->is_overlay_candidate = is_overlay_candidate;
-  resource->ui_source_id = ui_source_id;
-
-  return resource;
-}
-
 std::unique_ptr<viz::CompositorFrame>
 ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
     const gfx::Rect& total_damage_rect,
     bool use_overlays,
-    UiResourceManager& resource_manager,
     viz::ClientResourceProvider& client_resource_provider,
     cc::ResourcePool& resource_pool) {
   auto* window = widget_->GetNativeView();
@@ -178,69 +128,40 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  if (features::IsFrameSinkHostNewBackendEnabled() &&
-      features::IsViewTreeHostNewBackendEnabled()) {
-    auto context_provider = aura::Env::GetInstance()
-                                ->context_factory()
-                                ->SharedMainThreadRasterContextProvider();
-    if (!context_provider) {
-      LOG(ERROR) << "Failed to acquire a context provider";
-      return nullptr;
-    }
-
-    scoped_refptr<gpu::SharedImageInterface> sii =
-        context_provider->SharedImageInterface();
-
-    cc::ResourcePool::InUsePoolResource resource =
-        AcquireResource(buffer_size, use_overlays, resource_pool, sii.get());
-    if (!resource) {
-      return nullptr;
-    }
-
-    Paint(total_damage_rect, rotation_transform,
-          resource.backing()->shared_image().get());
-
-    resource.backing()->mailbox_sync_token =
-        resource.backing()->shared_image()->BackingWasExternallyUpdated(
-            resource.backing()->returned_sync_token);
-
-    resource_pool.PrepareForExport(
-        resource, viz::TransferableResource::ResourceSource::kUI);
-
-    client_resource_provider.PrepareSendToParent(
-        {resource.resource_id_for_export()}, &frame->resource_list, sii.get());
-
-    AppendQuad(*render_pass, frame->resource_list.back(), output_rect,
-               buffer_size, buffer_to_target_transform);
-
-    resource_pool.ReleaseResource(std::move(resource));
-  } else {
-    auto resource =
-        AcquireUiResource(buffer_size, use_overlays, resource_manager);
-
-    if (!resource) {
-      return nullptr;
-    }
-
-    Paint(total_damage_rect, rotation_transform,
-          resource->client_shared_image().get());
-
-    if (resource->damaged) {
-      resource->sync_token =
-          resource->client_shared_image()->BackingWasExternallyUpdated(
-              resource->sync_token);
-      resource->shared_image_interface->VerifySyncToken(resource->sync_token);
-      resource->damaged = false;
-    }
-
-    viz::TransferableResource transferable_resource =
-        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
-
-    AppendQuad(*render_pass, transferable_resource, output_rect, buffer_size,
-               buffer_to_target_transform);
-
-    frame->resource_list.push_back(transferable_resource);
+  auto context_provider = aura::Env::GetInstance()
+                              ->context_factory()
+                              ->SharedMainThreadRasterContextProvider();
+  if (!context_provider) {
+    LOG(ERROR) << "Failed to acquire a context provider";
+    return nullptr;
   }
+
+  scoped_refptr<gpu::SharedImageInterface> sii =
+      context_provider->SharedImageInterface();
+
+  cc::ResourcePool::InUsePoolResource resource =
+      AcquireResource(buffer_size, use_overlays, resource_pool, sii.get());
+  if (!resource) {
+    return nullptr;
+  }
+
+  Paint(total_damage_rect, rotation_transform,
+        resource.backing()->shared_image().get());
+
+  resource.backing()->mailbox_sync_token =
+      resource.backing()->shared_image()->BackingWasExternallyUpdated(
+          resource.backing()->returned_sync_token);
+
+  resource_pool.PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kUI);
+
+  client_resource_provider.PrepareSendToParent(
+      {resource.resource_id_for_export()}, &frame->resource_list, sii.get());
+
+  AppendQuad(*render_pass, frame->resource_list.back(), output_rect,
+             buffer_size, buffer_to_target_transform);
+
+  resource_pool.ReleaseResource(std::move(resource));
 
   frame->render_pass_list.push_back(std::move(render_pass));
 
@@ -313,21 +234,6 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                        /*nearest=*/false,
                        /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
                        /*is_tex_coords_normalized=*/false);
-}
-
-std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::AcquireUiResource(
-    const gfx::Size& size,
-    bool is_overlay_candidate,
-    UiResourceManager& resource_manager) const {
-  std::unique_ptr<UiResource> resource = resource_manager.GetResourceToReuse(
-      size, kSharedImageFormat, kUiSourceId);
-
-  if (!resource) {
-    resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
-                                is_overlay_candidate);
-  }
-
-  return resource;
 }
 
 cc::ResourcePool::InUsePoolResource
