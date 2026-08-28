@@ -590,9 +590,12 @@ public class StripLayoutHelper
     // touchable, but other strip widgets (e.g new tab button) could be.
     private float mLeftMargin;
     private float mRightMargin;
+    private float mLeftFadeOpaqueWidth;
+    private float mLeftFadeGradientWidth;
     private float mLeftFadeWidth;
+    private float mRightFadeOpaqueWidth;
+    private float mRightFadeGradientWidth;
     private float mRightFadeWidth;
-    private float mButtonSideFadeGradientWidth;
     // Padding regions on the edges of the strip where strip touch events are blocked. Different
     // from margins, no strip widgets should be drawn within the padding regions.
     private float mLeftPadding;
@@ -1145,13 +1148,7 @@ public class StripLayoutHelper
      *     gradient width.
      */
     public float getLeftFadeGradientWidth() {
-        if (LocalizationUtils.isLayoutRtl()) {
-            return mButtonSideFadeGradientWidth;
-        } else {
-            return mTabSearchButton.isVisible()
-                    ? BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP
-                    : NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
-        }
+        return mLeftFadeGradientWidth;
     }
 
     /**
@@ -1161,13 +1158,7 @@ public class StripLayoutHelper
      *     edge fade gradient width.
      */
     public float getRightFadeGradientWidth() {
-        if (LocalizationUtils.isLayoutRtl()) {
-            return mTabSearchButton.isVisible()
-                    ? BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP
-                    : NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
-        } else {
-            return mButtonSideFadeGradientWidth;
-        }
+        return mRightFadeGradientWidth;
     }
 
     /**
@@ -1177,7 +1168,7 @@ public class StripLayoutHelper
      *     button. Otherwise, it covers the standard margin width.
      */
     public float getLeftFadeOpaqueWidth() {
-        return mLeftFadeWidth - getLeftFadeGradientWidth();
+        return mLeftFadeOpaqueWidth;
     }
 
     /**
@@ -1187,7 +1178,7 @@ public class StripLayoutHelper
      *     button. Otherwise, it covers the standard margin width.
      */
     public float getRightFadeOpaqueWidth() {
-        return mRightFadeWidth - getRightFadeGradientWidth();
+        return mRightFadeOpaqueWidth;
     }
 
     float getLeftFadeWidthForTesting() {
@@ -1213,37 +1204,58 @@ public class StripLayoutHelper
         return mScrollDelegate.getScrollOffset();
     }
 
-    /**
-     * Returns the visible left bound of the tab strip for pinned or unpinned views. Pinned views
-     * begin at {@code mLeftPadding} and remain fixed (do not scroll), while unpinned views scroll
-     * and are positioned after the pinned tabs. Pass {@code false} for the entire tab strip bound,
-     * or {@code true} for the scrolling portion.
-     *
-     * @param clampToUnpinnedViews true to return the bound for unpinned views; false for pinned
-     *     views.
-     * @return the tab strip's visible left bound.
-     */
-    float getVisibleLeftBound(boolean clampToUnpinnedViews) {
-        if (!clampToUnpinnedViews) {
-            return mLeftPadding;
-        }
-        return mLeftPadding + (LocalizationUtils.isLayoutRtl() ? 0.f : getTotalPinnedTabsWidth());
+    /** Returns the left bound of the tab strip. */
+    float getLeftBound() {
+        return mLeftPadding;
+    }
+
+    /** Returns the right bound of the tab strip. */
+    float getRightBound() {
+        return mWidth - mRightPadding;
+    }
+
+    /** Returns the visible left bound of the tab strip. Accounts for the opaque fade region. */
+    float getVisibleLeftBound() {
+        return getLeftBound() + mLeftFadeOpaqueWidth;
+    }
+
+    /** Returns the visible right bound of the tab strip. Accounts for the opaque fade region. */
+    float getVisibleRightBound() {
+        return getRightBound() - mRightFadeOpaqueWidth;
+    }
+
+    /** Returns the fully visible left bound of the tab strip. Accounts for the fade region. */
+    float getFullyVisibleLeftBound() {
+        return getLeftBound() + mLeftFadeWidth;
+    }
+
+    /** Returns the fully visible right bound of the tab strip. Accounts for the fade region. */
+    float getFullyVisibleRightBound() {
+        return getRightBound() - mRightFadeWidth;
     }
 
     /**
-     * See {@link #getVisibleLeftBound(boolean)} for details on difference between pinned and
-     * unpinned bounds.
+     * Returns the visible left bound of the tab strip for unpinned views. Pinned views begin at
+     * {@code mLeftPadding} and remain fixed (do not scroll), while unpinned views scroll and are
+     * positioned after the pinned tabs.
      *
-     * @param clampToUnpinnedViews true to return the bound for unpinned views; false for pinned
-     *     views.
-     * @return the tab strip's visible right bound.
+     * @return the visible left bound of the tab strip for unpinned views.
      */
-    float getVisibleRightBound(boolean clampToUnpinnedViews) {
-        float baseRightBound = mWidth - mRightPadding;
-        if (!clampToUnpinnedViews) {
-            return baseRightBound;
-        }
-        return baseRightBound - (LocalizationUtils.isLayoutRtl() ? getTotalPinnedTabsWidth() : 0.f);
+    float getFullyVisibleLeftUnpinnedBound() {
+        float leftPinnedTabsWidth =
+                (LocalizationUtils.isLayoutRtl() ? 0.f : getTotalPinnedTabsWidth());
+        return getFullyVisibleLeftBound() + leftPinnedTabsWidth;
+    }
+
+    /**
+     * See {@link #getFullyVisibleLeftUnpinnedBound}.
+     *
+     * @return the visible right bound of the tab strip for unpinned views.
+     */
+    float getFullyVisibleRightUnpinnedBound() {
+        float rightPinnedTabsWidth =
+                (LocalizationUtils.isLayoutRtl() ? getTotalPinnedTabsWidth() : 0.f);
+        return getFullyVisibleRightBound() - rightPinnedTabsWidth;
     }
 
     /** Returns tab strip's visible left padding accounting for pinned tab background. */
@@ -1297,31 +1309,37 @@ public class StripLayoutHelper
     }
 
     private void updateFades(float stripButtonsTouchTargetSize) {
-        mButtonSideFadeGradientWidth =
+        float startFadeOpaqueWidth;
+        float startFadeGradientWidth;
+        if (mTabSearchButton.isVisible()) {
+            startFadeOpaqueWidth = getButtonTouchTargetSizeDp(mContext) + mButtonSideFadePadding;
+            startFadeGradientWidth = BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
+        } else {
+            startFadeOpaqueWidth = NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
+            startFadeGradientWidth = NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
+        }
+        float endFadeOpaqueWidth = mReservedEndMargin + mButtonSideFadePadding;
+        float endFadeGradientWidth =
                 stripButtonsTouchTargetSize > 0
                         ? BUTTON_FADE_GRADIENT_LONG_WIDTH_DP
                         : BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
 
-        float startFadeWidth;
-        if (mTabSearchButton.isVisible()) {
-            // getButtonTouchTargetSizeDp(mContext) represents the Tab Search button's touch target
-            // size.
-            startFadeWidth =
-                    getButtonTouchTargetSizeDp(mContext)
-                            + mButtonSideFadePadding
-                            + BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
-        } else {
-            startFadeWidth = NO_BUTTON_FADE_GRADIENT_WIDTH_DP + NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
-        }
-
-        float endFadeWidth =
-                mReservedEndMargin + mButtonSideFadePadding + mButtonSideFadeGradientWidth;
         if (LocalizationUtils.isLayoutRtl()) {
-            mRightFadeWidth = startFadeWidth;
-            mLeftFadeWidth = endFadeWidth;
+            mRightFadeOpaqueWidth = startFadeOpaqueWidth;
+            mRightFadeGradientWidth = startFadeGradientWidth;
+            mRightFadeWidth = mRightFadeOpaqueWidth + mRightFadeGradientWidth;
+
+            mLeftFadeOpaqueWidth = endFadeOpaqueWidth;
+            mLeftFadeGradientWidth = endFadeGradientWidth;
+            mLeftFadeWidth = mLeftFadeOpaqueWidth + mLeftFadeGradientWidth;
         } else {
-            mLeftFadeWidth = startFadeWidth;
-            mRightFadeWidth = endFadeWidth;
+            mLeftFadeOpaqueWidth = startFadeOpaqueWidth;
+            mLeftFadeGradientWidth = startFadeGradientWidth;
+            mLeftFadeWidth = mLeftFadeOpaqueWidth + mLeftFadeGradientWidth;
+
+            mRightFadeOpaqueWidth = endFadeOpaqueWidth;
+            mRightFadeGradientWidth = endFadeGradientWidth;
+            mRightFadeWidth = mRightFadeOpaqueWidth + mRightFadeGradientWidth;
         }
     }
 
@@ -2316,8 +2334,8 @@ public class StripLayoutHelper
         boolean anyVisibilityChange = false;
 
         final int count = mStripTabs.length;
-        float visibleLeftBound = getVisibleLeftBound(/* clampToUnpinnedViews= */ true);
-        float visibleRightBound = getVisibleRightBound(/* clampToUnpinnedViews= */ true);
+        float visibleLeftBound = getLeftPaddingToDraw();
+        float visibleRightBound = mWidth - getRightPaddingToDraw();
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
@@ -2392,11 +2410,7 @@ public class StripLayoutHelper
         // Make the entire strip touchable when during dragging / reordering mode.
         boolean isTabDraggingInProgress = isViewDraggingInProgress();
         if (mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
-            mTouchableRect.set(
-                    getVisibleLeftBound(/* clampToUnpinnedViews= */ false),
-                    0,
-                    getVisibleRightBound(/* clampToUnpinnedViews= */ false),
-                    mHeight);
+            mTouchableRect.set(getLeftBound(), 0, getRightBound(), mHeight);
             return;
         }
 
@@ -2411,14 +2425,14 @@ public class StripLayoutHelper
 
         float leftBound = firstStripView.getDrawX();
         float rightBound = lastStripView.getDrawX() + lastStripView.getWidth();
-        float minLeft = getVisibleLeftBound(/* clampToUnpinnedViews= */ false);
+        float minLeft = getLeftBound();
         float maxRight = mWidth - mRightMargin;
 
         if (LocalizationUtils.isLayoutRtl()) {
             leftBound = lastStripView.getDrawX();
             rightBound = firstStripView.getDrawX() + firstStripView.getWidth();
             minLeft = mLeftMargin;
-            maxRight = getVisibleRightBound(/* clampToUnpinnedViews= */ false);
+            maxRight = getRightBound();
         }
 
         // Clamp the bounding box to the visible area (excluding reserved margins for the NTB and
@@ -4798,9 +4812,7 @@ public class StripLayoutHelper
 
         // 3. Calculate view stacking - update view draw properties and visibility.
         mStripStacker.pushDrawPropertiesToViews(
-                mStripViews,
-                getVisibleLeftBound(/* clampToUnpinnedViews= */ false),
-                getVisibleRightBound(/* clampToUnpinnedViews= */ false));
+                mStripViews, getVisibleLeftBound(), getVisibleRightBound());
         mStripStacker.pushDrawPropertiesToButtons(
                 mNewTabButton,
                 mStripTabs,
@@ -4970,11 +4982,8 @@ public class StripLayoutHelper
 
         // 1. Calculate the bounds to fully show the regular view on the left/right side of the
         // strip.
-        // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
-        final float rightBound =
-                getVisibleRightBound(/* clampToUnpinnedViews= */ true) - mRightFadeWidth;
-        final float leftBound =
-                getVisibleLeftBound(/* clampToUnpinnedViews= */ true) + mLeftFadeWidth;
+        final float rightBound = getFullyVisibleRightUnpinnedBound();
+        final float leftBound = getFullyVisibleLeftUnpinnedBound();
 
         // 2. Calculate vectors from the view's ideal position to the farthest left/right point
         // where the view can be visible.
@@ -5095,13 +5104,8 @@ public class StripLayoutHelper
 
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
-        boolean rtl = LocalizationUtils.isLayoutRtl();
-        float leftBound =
-                getVisibleLeftBound(/* clampToUnpinnedViews= */ true)
-                        + (rtl ? mReservedEndMargin : 0f);
-        float rightBound =
-                getVisibleRightBound(/* clampToUnpinnedViews= */ true)
-                        + (rtl ? 0f : mReservedEndMargin);
+        float leftBound = getFullyVisibleLeftUnpinnedBound();
+        float rightBound = getFullyVisibleRightUnpinnedBound();
         mReorderDelegate.updateReorderPositionAutoScroll(
                 mStripViews, mStripGroupTitles, mStripTabs, time, leftBound, rightBound);
     }
@@ -5302,9 +5306,9 @@ public class StripLayoutHelper
     private boolean isViewCompletelyVisible(StripLayoutView view) {
         boolean isPinned = (view instanceof StripLayoutTab tab) && tab.getIsPinned();
         float leftBound =
-                getVisibleLeftBound(/* clampToUnpinnedViews= */ !isPinned) + mLeftFadeWidth;
+                isPinned ? getFullyVisibleLeftBound() : getFullyVisibleLeftUnpinnedBound();
         float rightBound =
-                getVisibleRightBound(/* clampToUnpinnedViews= */ !isPinned) - mRightFadeWidth;
+                isPinned ? getFullyVisibleRightBound() : getFullyVisibleRightUnpinnedBound();
         float viewStart = 0f;
         float viewEnd = 0f;
         if (view instanceof StripLayoutTab tab) {
@@ -5345,9 +5349,9 @@ public class StripLayoutHelper
 
     private boolean isViewCompletelyHiddenAt(float viewX, float viewWidth, boolean isPinned) {
         float leftBound =
-                getVisibleLeftBound(/* clampToUnpinnedViews= */ !isPinned) + mLeftFadeWidth;
+                isPinned ? getFullyVisibleLeftBound() : getFullyVisibleLeftUnpinnedBound();
         float rightBound =
-                getVisibleRightBound(/* clampToUnpinnedViews= */ !isPinned) - mRightFadeWidth;
+                isPinned ? getFullyVisibleRightBound() : getFullyVisibleRightUnpinnedBound();
         // Check if the tab is outside the visible bounds to the left...
         return viewX + viewWidth <= leftBound
                 // ... or to the right.

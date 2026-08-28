@@ -120,6 +120,8 @@ public class StripStackerUnitTest {
 
         @Override
         public void pushDrawPropertiesToViews(
-                StripLayoutView[] indexOrderedViews, float leftBound, float rightBound) {}
+                StripLayoutView[] indexOrderedViews,
+                float visibleLeftBound,
+                float visibleRightBound) {}
     }
 }

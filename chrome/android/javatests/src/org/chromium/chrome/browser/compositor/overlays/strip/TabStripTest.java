@@ -1563,8 +1563,9 @@ public class TabStripTest {
                         new Callable<>() {
                             @Override
                             public Boolean call() {
-                                return (tabView.getDrawX() + tabView.getWidth()) >= 0
-                                        && tabView.getDrawX() <= tabStrip.getWidthForTesting();
+                                return (tabView.getDrawX() + tabView.getWidth())
+                                                >= tabStrip.getVisibleLeftBound()
+                                        && tabView.getDrawX() <= tabStrip.getVisibleRightBound();
                             }
                         });
         assertTabVisibility(shouldBeVisible, tabView);

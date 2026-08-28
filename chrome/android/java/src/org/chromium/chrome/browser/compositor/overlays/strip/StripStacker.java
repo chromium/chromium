@@ -146,9 +146,9 @@ public abstract class StripStacker {
      * interface because the implementing class knows the proper visual order to optimize this pass.
      *
      * @param indexOrderedViews A list of views ordered by index.
-     * @param xOffset The xOffset for the start of the strip.
-     * @param visibleWidth The width of the visible space on the tab strip.
+     * @param visibleLeftBound The visible left bound of the tab strip.
+     * @param visibleRightBound The visible right bound of the tab strip.
      */
     public abstract void pushDrawPropertiesToViews(
-            StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth);
+            StripLayoutView[] indexOrderedViews, float visibleLeftBound, float visibleRightBound);
 }
