@@ -297,6 +297,7 @@ crbug.com/525137354 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_*_avc1.4
 
 # D3D12VEA issue on NVIDIA 32.0.16.1074. Likely to be fixed by upgrading driver (crbug.com/413300864)
 crbug.com/553687628 [ win11 nvidia-0x2184 ] WebCodecs_cropEncode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/553687628 [ win11 nvidia-0x2184 ] WebCodecs_cropEncode_hw_decoder_avc1.42001E_prefer-hardware [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
