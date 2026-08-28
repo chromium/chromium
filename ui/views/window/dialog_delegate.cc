@@ -28,6 +28,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_utils.h"

@@ -20,6 +20,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"

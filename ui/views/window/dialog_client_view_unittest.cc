@@ -29,6 +29,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/metrics.h"

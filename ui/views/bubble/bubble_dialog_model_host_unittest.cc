@@ -15,6 +15,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout_view.h"

@@ -9,6 +9,10 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace views {
+class LabelButton;
+}
+
 namespace user_education::test {
 
 class TestCustomHelpBubbleView : public views::BubbleDialogDelegateView,

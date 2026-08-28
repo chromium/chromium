@@ -20,6 +20,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/box_layout_view.h"

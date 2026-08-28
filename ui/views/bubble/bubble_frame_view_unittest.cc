@@ -33,6 +33,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"

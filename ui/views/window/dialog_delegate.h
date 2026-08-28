@@ -23,7 +23,6 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -175,6 +174,7 @@ class DialogClientViewTestDelegate;
 class DialogObserver;
 class InitialFocusTestDialog;
 class MakeCloseSynchronousTest;
+class MdTextButton;
 class TestDialog;
 class TestDialogDelegateView;
 FORWARD_DECLARE_TEST(DesktopScreenPositionClientTest, PositionDialog);
