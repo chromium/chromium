@@ -43,6 +43,10 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
     return MediaDevicesManager::BoolDeviceTypes();
 
   RenderFrameHostDelegate* delegate = frame_host->delegate();
+  if (!delegate) {
+    return MediaDevicesManager::BoolDeviceTypes();
+  }
+
   url::Origin origin = frame_host->GetLastCommittedOrigin();
   bool microphone_permission = delegate->CheckMediaAccessPermission(
       frame_host, origin, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
