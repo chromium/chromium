@@ -107,7 +107,7 @@
   position: absolute;
   top: 0;
   user-select: none;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   word-break: break-word;
 }
 
@@ -131,12 +131,13 @@
   outline: none;
   position: relative;
   resize: none;
+  white-space: break-spaces;
 }
 
 :host([composebox-skills-enabled]) #input {
   display: inline-block;
   min-height: 24px;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   word-break: break-word;
 }
 
@@ -242,12 +243,12 @@
 
 #invisibleText {
   color: transparent;
-  white-space: pre-wrap;
+  white-space: break-spaces;
 }
 
 #ghostText {
   color: var(--color-composebox-type-ahead);
-  white-space: pre-wrap;
+  white-space: break-spaces;
 }
 
 #tabChip {

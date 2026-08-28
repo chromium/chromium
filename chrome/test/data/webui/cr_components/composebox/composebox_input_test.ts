@@ -638,4 +638,37 @@ suite('ComposeboxCaretGeometry', () => {
     assertEquals('--cursor-char', lastSpan.style.anchorName);
     assertFalse(caret.classList.contains('at-start'));
   });
+
+  test('CaretWrapsToNextLineOnConsecutiveSpaces', async () => {
+    inputElement.style.width = '100px';
+    const input = inputElement.$.input as HTMLTextAreaElement;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!caret);
+    assertTrue(!!mirror);
+
+    // Type spaces that exceed the container width.
+    const spaces = ' '.repeat(50);
+    input.value = spaces;
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.setSelectionRange(spaces.length, spaces.length);
+    input.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    input.focus();
+    await inputElement.updateComplete;
+    await microtasksFinished();
+
+    const firstSpan = mirror.childNodes[0] as HTMLElement;
+    const lastSpan = mirror.childNodes[spaces.length - 1] as HTMLElement;
+    assertTrue(!!firstSpan);
+    assertTrue(!!lastSpan);
+
+    const firstSpanRect = firstSpan.getBoundingClientRect();
+    const lastSpanRect = lastSpan.getBoundingClientRect();
+
+    // The last space span should wrap to a line below the first span.
+    assertTrue(lastSpanRect.top > firstSpanRect.top);
+  });
 });
