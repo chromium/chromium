@@ -556,11 +556,13 @@ class TracingHandler::PerfettoTracingSession {
 
 TracingHandler::TracingHandler(DevToolsAgentHostImpl* host,
                                DevToolsIOContext* io_context,
-                               DevToolsSession* root_session)
+                               DevToolsSession* root_session,
+                               bool is_trusted)
     : DevToolsDomainHandler(Tracing::Metainfo::domainName),
       io_context_(io_context),
       host_(host),
       session_for_process_filter_(root_session),
+      is_trusted_(is_trusted),
       did_initiate_recording_(false),
       return_as_stream_(false),
       gzip_compression_(false),
@@ -790,6 +792,12 @@ void TracingHandler::Start(
   if (!backend) {
     callback->sendFailure(Response::InvalidParams(
         "Unsupported value for tracing_backend parameter."));
+    return;
+  }
+
+  if (*backend == perfetto::BackendType::kSystemBackend && !is_trusted_) {
+    callback->sendFailure(Response::ServerError(
+        "System backend is not allowed for the current client"));
     return;
   }
 

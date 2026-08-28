@@ -4463,6 +4463,43 @@ IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
   EXPECT_FALSE(StartSystemTrace());
 }
 
+IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
+                       StartSystemTracingRequiresTrustedClient) {
+  SetIsTrusted(false);
+  EXPECT_FALSE(StartSystemTrace());
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+  EXPECT_EQ(*error()->FindString("message"),
+            "System backend is not allowed for the current client");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       TracingAutoBackendNonChromeSourceRequiresTrustedClient) {
+  perfetto::TraceConfig perfetto_config;
+  perfetto_config.add_buffers()->set_size_kb(1024);
+  perfetto_config.add_data_sources()->mutable_config()->set_name(
+      "linux.ftrace");
+  std::string perfetto_config_encoded =
+      base::Base64Encode(perfetto_config.SerializeAsString());
+
+  base::DictValue params;
+  params.Set("perfettoConfig", perfetto_config_encoded);
+  params.Set("transferMode", "ReturnAsStream");
+  params.Set("tracingBackend", "auto");
+
+  SetIsTrusted(false);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  EXPECT_FALSE(SendCommandSync("Tracing.start", std::move(params)));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+  EXPECT_EQ(*error()->FindString("message"),
+            "System backend is not allowed for the current client");
+}
+
 #if BUILDFLAG(IS_POSIX)
 class PosixSystemTracingDevToolsProtocolTest
     : public SystemTracingDevToolsProtocolTest {

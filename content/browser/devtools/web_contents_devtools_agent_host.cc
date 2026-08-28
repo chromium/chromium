@@ -420,8 +420,8 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   DevToolsSession* root_session = session->GetRootSession();
   CHECK(root_session);
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
-  session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
-                                                         root_session);
+  session->CreateAndAddHandler<protocol::TracingHandler>(
+      this, GetIOContext(), root_session, session->GetClient()->IsTrusted());
   return true;
 }
 

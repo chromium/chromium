@@ -83,7 +83,8 @@ class TracingHandlerTest : public testing::Test {
  public:
   void SetUp() override {
     tracing_handler_ =
-        std::make_unique<TracingHandler>(nullptr, nullptr, nullptr);
+        std::make_unique<TracingHandler>(nullptr, nullptr, nullptr,
+                                         /*is_trusted=*/true);
   }
 
   void TearDown() override { tracing_handler_.reset(); }

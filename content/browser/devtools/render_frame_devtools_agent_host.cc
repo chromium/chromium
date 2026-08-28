@@ -470,8 +470,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (is_main_frame) {
     DevToolsSession* root_session = session->GetRootSession();
     CHECK(root_session);
-    session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
-                                                           root_session);
+    session->CreateAndAddHandler<protocol::TracingHandler>(
+        this, GetIOContext(), root_session, session->GetClient()->IsTrusted());
   }
   if (base::FeatureList::IsEnabled(blink::features::kDevToolsWebMCPSupport)) {
     session->CreateAndAddHandler<protocol::WebMCPHandler>();
