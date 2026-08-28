@@ -154,6 +154,11 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_SESSIONLESS_VOICE_SEARCH,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sSuppressStatusIconDuringHttpNavigation =
+            newFlag(
+                    OmniboxFeatureList.SUPPRESS_STATUS_ICON_DURING_HTTP_NAVIGATION,
+                    FeatureState.ENABLED_IN_PROD);
+
     private static final CachedFlag sOmniboxMultimodalInput =
             newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_PROD);
 

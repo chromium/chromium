@@ -640,7 +640,8 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (hasPendingHttpOrHttpsNavigation()) {
+        } else if (OmniboxFeatures.sSuppressStatusIconDuringHttpNavigation.isEnabled()
+                && hasPendingHttpOrHttpsNavigation()) {
             // Prevent jank due to the info (i) icon appearing during page navigation. But if the
             // destination page isn't http, then it's fine to show the info icon, because that's
             // what it'll end up being anyway.

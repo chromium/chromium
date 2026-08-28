@@ -1439,6 +1439,21 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.SUPPRESS_STATUS_ICON_DURING_HTTP_NAVIGATION)
+    public void statusIcon_notBlankWhenPendingHttpNavigation_killSwitch() {
+        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+
+        assertModelIconResId(R.drawable.ic_settings_tune_24dp);
+
+        doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mNavigationEntry).getUrl();
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+
+        assertModelIconResId(R.drawable.ic_info_24dp);
+    }
+
+    @Test
+    @SmallTest
     public void statusIcon_infoIconWhenPendingNonHttpNavigation() {
         mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
 

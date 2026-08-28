@@ -239,6 +239,7 @@ BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
 BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
 BASE_DECLARE_FEATURE(kOmniboxSessionlessVoiceSearch);
+BASE_DECLARE_FEATURE(kSuppressStatusIconDuringHttpNavigation);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, X-Geo headers are sent for all search navigations on all
