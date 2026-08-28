@@ -581,7 +581,7 @@ BASE_FEATURE(kIPHPageInfoStoreInfoFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPageZoomFeature,
              "IPH_PageZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPdfPageDownloadFeature,
              "IPH_PdfPageDownload",
              base::FEATURE_ENABLED_BY_DEFAULT);
