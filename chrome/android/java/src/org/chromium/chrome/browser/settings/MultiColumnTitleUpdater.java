@@ -9,6 +9,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -37,6 +39,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -435,6 +438,12 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 searchView.setLayoutParams(searchViewParams);
                 searchView.setMaxWidth(Integer.MAX_VALUE);
                 searchView.setVisibility(View.GONE);
+                Drawable bg = ContextCompat.getDrawable(mContext, R.drawable.pill_background);
+                if (bg != null) {
+                    int tint = SemanticColorUtils.getSettingsContainerBackgroundColor(mContext);
+                    bg.mutate().setTint(tint);
+                    searchView.setBackground(bg);
+                }
                 searchViewProvider.initSearchView(searchView);
 
                 searchButton.setOnClickListener(

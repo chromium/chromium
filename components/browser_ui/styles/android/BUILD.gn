@@ -269,6 +269,7 @@ android_resources("java_resources") {
     "java/res/drawable/list_item_ripple.xml",
     "java/res/drawable/material_ic_close_24dp.xml",
     "java/res/drawable/open_in_new.xml",
+    "java/res/drawable/pill_background.xml",
     "java/res/drawable/report_octagon.xml",
     "java/res/drawable/search_spark.xml",
     "java/res/drawable/secured_by_brand_shield_24.xml",

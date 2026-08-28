@@ -392,6 +392,7 @@ public class MultiColumnTitleUpdaterTest {
         // mContainer.
         assertEquals(3, mContainer.getChildCount());
         assertNotNull(selectLanguageFragment.getSearchView());
+        assertNotNull(selectLanguageFragment.getSearchView().getBackground());
         var titleParams = (LinearLayout.LayoutParams) mContainer.getChildAt(0).getLayoutParams();
         assertEquals(1f, titleParams.weight, 0.01f);
     }
@@ -420,6 +421,7 @@ public class MultiColumnTitleUpdaterTest {
         // mContainer.
         assertEquals(3, mContainer.getChildCount());
         assertNotNull(searchViewProviderFragment.getSearchView());
+        assertNotNull(searchViewProviderFragment.getSearchView().getBackground());
         var titleParams = (LinearLayout.LayoutParams) mContainer.getChildAt(0).getLayoutParams();
         assertEquals(1f, titleParams.weight, 0.01f);
     }
