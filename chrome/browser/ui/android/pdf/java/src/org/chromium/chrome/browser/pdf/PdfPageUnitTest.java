@@ -350,8 +350,8 @@ public class PdfPageUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testDestroy_DeletesFile_WhenTabFrozen() throws Exception {
-        doReturn(true).when(mMockTab).isFrozen();
+    public void testDestroy_PreservesFile_WhenTabHidden() throws Exception {
+        doReturn(true).when(mMockTab).isHidden();
         doReturn(new GURL(mPdfPageUrl)).when(mMockTab).getUrl();
         File tempFile = File.createTempFile("test_pdf", ".pdf");
         PdfPage pdfPage =
@@ -368,7 +368,10 @@ public class PdfPageUnitTest {
 
         pdfPage.destroy();
 
-        assertFalse("Transient file should be deleted when tab is frozen", tempFile.exists());
+        assertTrue(
+                "Transient file should be preserved when tab is hidden in background",
+                tempFile.exists());
+        tempFile.delete();
     }
 
     @Test

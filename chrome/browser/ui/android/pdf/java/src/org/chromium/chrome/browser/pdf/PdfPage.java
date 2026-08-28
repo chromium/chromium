@@ -161,12 +161,14 @@ public class PdfPage extends BasicNativePage {
     @Override
     public void destroy() {
         super.destroy();
-        String filepath = mPdfCoordinator.getFilepath();
-        if (!isPdfPageStillInUse()) {
-            if (mIsIncognito) {
-                PdfContentProvider.removeContentUri(filepath);
+        if (PdfUtils.isInlinePdfV2Enabled()) {
+            String filepath = mPdfCoordinator.getFilepath();
+            if (!isPdfPageStillInUse()) {
+                if (mIsIncognito) {
+                    PdfContentProvider.removeContentUri(filepath);
+                }
+                maybeDeleteTransientFile(filepath);
             }
-            maybeDeleteTransientFile(filepath);
         }
         // Stream cleanup is now managed by PdfTabHelper based on Tab lifecycle
         // to support window swapping (drag and drop) without timers.
@@ -185,9 +187,10 @@ public class PdfPage extends BasicNativePage {
             return currentPage.isPdf() && PdfUtils.isPdfUrlMatch(currentPage.getUrl(), mUrl);
         }
         // When the Tab is detached from an Activity (e.g. during drag and drop tab reparenting
-        // to a new window), the old PdfPage is destroyed while the Tab transitions. The
-        // underlying file is still in use by the Tab and should not be cleaned up.
-        if (mTab.isDetachedFromActivity()) {
+        // to a new window) or when the Tab is frozen in the background, the old
+        // PdfPage is destroyed to save memory. However, the underlying file is still in use by
+        // the Tab and should not be cleaned up as long as the Tab is still at the same PDF URL.
+        if (mTab.isDetachedFromActivity() || mTab.isHidden()) {
             GURL tabUrl = mTab.getUrl();
             return tabUrl != null && PdfUtils.isPdfUrlMatch(tabUrl.getSpec(), mUrl);
         }
