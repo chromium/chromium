@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
+
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -19,12 +23,15 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using content::WebContents;
 using extensions::AppSorting;
@@ -151,3 +158,53 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_FULLSCREEN));
   InstallThemeAndVerify("theme", "camo theme");
 }
+
+class ExtensionInstallUIInstallationErrorBrowserTest
+    : public ExtensionInstallUIBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionInstallUIInstallationErrorBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedInstallationError.name, "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionInstallUIInstallationErrorBrowserTest,
+                       OnInstallFailureShowsInfoBar) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  ASSERT_EQ(0U, infobar_manager->infobars().size());
+
+  const std::u16string error_message = u"Extension installation error";
+  auto install_ui = ExtensionInstallUI::Create(profile());
+  install_ui->OnInstallFailure(extensions::CrxInstallError(
+      extensions::CrxInstallErrorType::OTHER,
+      extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
+      error_message));
+
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  ConfirmInfoBarDelegate* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(infobars::InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE,
+            delegate->GetIdentifier());
+  EXPECT_EQ(error_message, delegate->GetMessageText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_LEARN_MORE), delegate->GetLinkText());
+  EXPECT_EQ(GURL("https://support.google.com/chrome_webstore/?p=crx_warning"),
+            delegate->GetLinkURL());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionInstallUIInstallationErrorBrowserTest,
+                         testing::Bool());

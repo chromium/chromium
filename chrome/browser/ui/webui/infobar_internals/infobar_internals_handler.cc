@@ -74,8 +74,11 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -134,6 +137,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
       return {.web_contents = true};
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case InfoBarType::kIncognitoConnectability:
+    case InfoBarType::kInstallationError:
       return {.profile = true, .web_contents = true};
 #endif
     case InfoBarType::kExtensionDevTools:
@@ -228,6 +232,9 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "The Incognito Connectability infobar is used to ask the user if "
             "they want to allow an extension to communicate with a website in "
             "incognito mode. This trigger shows the infobar.");
+  add_entry(InfoBarType::kInstallationError, "Installation Error",
+            "The Installation Error infobar is shown when an extension "
+            "installation fails.");
 #endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   add_entry(InfoBarType::kInstallerDownloader, "Installer Downloader",
@@ -479,6 +486,38 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return false;
 #endif
     }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    case InfoBarType::kInstallationError: {
+      const std::u16string msg =
+          l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE);
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE)) {
+        infobars::InfoBarShowParams params;
+        params.message_text = msg;
+        params.link_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            active_tab,
+            infobars::InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE,
+            std::move(params));
+      } else {
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        InstallationErrorInfoBarDelegate::Create(
+            infobar_manager,
+            extensions::CrxInstallError(
+                extensions::CrxInstallErrorType::OTHER,
+                extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
+                msg));
+      }
+      return true;
+    }
+#endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case InfoBarType::kInstallerDownloader: {
       if (auto* controller = g_browser_process->GetFeatures()

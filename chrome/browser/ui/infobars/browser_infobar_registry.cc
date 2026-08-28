@@ -242,6 +242,18 @@ void RegisterInfoBars() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
+
+  if (IsInfoBarMigrated(InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE)
+            .SetScope(InfoBarScope::kTab)
+            .SetLinkNavigationUrl(GURL(
+                "https://support.google.com/chrome_webstore/?p=crx_warning"))
+            .AddOkButton(std::u16string(), base::DoNothing())
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

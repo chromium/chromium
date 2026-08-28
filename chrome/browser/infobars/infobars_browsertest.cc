@@ -60,6 +60,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/crx_installer.h"
@@ -335,12 +336,24 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE: {
       const std::u16string msg =
           l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE);
-      InstallationErrorInfoBarDelegate::Create(
-          GetInfoBarManager(),
-          extensions::CrxInstallError(
-              extensions::CrxInstallErrorType::OTHER,
-              extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
-              msg));
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE)) {
+        infobars::InfoBarShowParams params;
+        params.message_text = msg;
+        params.link_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+        infobars::BrowserInfoBarManager::From(g_browser_process)
+            ->Show(
+                browser()->GetTabStripModel()->GetActiveTab(),
+                infobars::InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE,
+                std::move(params));
+      } else {
+        InstallationErrorInfoBarDelegate::Create(
+            GetInfoBarManager(),
+            extensions::CrxInstallError(
+                extensions::CrxInstallErrorType::OTHER,
+                extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
+                msg));
+      }
       break;
     }
 

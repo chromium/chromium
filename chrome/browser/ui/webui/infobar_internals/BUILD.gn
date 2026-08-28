@@ -109,6 +109,7 @@ source_set("impl") {
       "//chrome/browser/extensions/api/debugger",
       "//chrome/browser/extensions/api/messaging",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/extensions",
       "//extensions/browser",
       "//extensions/common",
     ]

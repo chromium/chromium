@@ -38,6 +38,10 @@ enum InfoBarType {
   [EnableIf=enable_extensions]
   kIncognitoConnectability,
 
+  // Installation error infobar.
+  [EnableIf=enable_extensions]
+  kInstallationError,
+
   // Installer downloader infobar. Can only be triggered on Windows.
   [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,
