@@ -653,4 +653,23 @@ const char kDefaultPlatformAppContentSecurityPolicy[] =
                 extension_mv2_platform_app.get(), "/test"));
 }
 
+TEST_F(CSPInfoUnitTest, SandboxedPagesInvalidCharacters) {
+  // A sandboxed page CSP containing non-printable characters like DEL (0x7F)
+  // must fail manifest parsing.
+  ManifestData manifest_data(base::test::ParseJsonDict(R"({
+    "name": "Test Sandbox CSP With DEL",
+    "manifest_version": 3,
+    "version": "0.1",
+    "sandbox": {
+      "pages": ["sandboxed.html"]
+    },
+    "content_security_policy": {
+      "sandbox": "sandbox allow-scripts allow-same-origin\x7f"
+    }
+  })"));
+  LoadAndExpectError(manifest_data,
+                     GetInvalidManifestKeyError(
+                         keys::kContentSecurityPolicy_SandboxedPagesPath));
+}
+
 }  // namespace extensions

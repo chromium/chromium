@@ -538,12 +538,12 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
 }  //  namespace
 
 bool ContentSecurityPolicyIsLegal(const std::string& policy) {
-  // We block these characters to prevent HTTP header injection when
-  // representing the content security policy as an HTTP header.
-  const char kBadChars[] = {',', '\r', '\n', '\0'};
-
-  return policy.find_first_of(kBadChars, 0, std::size(kBadChars)) ==
-         std::string::npos;
+  // We block commas, newlines, nulls, control characters, and non-printable
+  // ASCII characters (like DEL) to prevent HTTP header injection and parser
+  // differentials with the runtime CSP parser.
+  return std::ranges::all_of(policy, [](char c) {
+    return c == '\t' || c == '\f' || (base::IsAsciiPrintable(c) && c != ',');
+  });
 }
 
 Directive::Directive(std::string_view directive_string,
@@ -617,6 +617,9 @@ std::string GetSandboxedPageCSPDisallowingRemoteSources(
 
 bool ContentSecurityPolicyIsSandboxed(
     const std::string& policy, Manifest::Type type) {
+  if (!ContentSecurityPolicyIsLegal(policy)) {
+    return false;
+  }
   bool seen_sandbox = false;
   CSPParser parser(policy);
   for (const auto& directive : parser.directives()) {

@@ -158,12 +158,18 @@ TEST(ExtensionCSPValidator, IsLegal) {
       "default-src 'self';\rscript-src http://www.google.com"));
   EXPECT_FALSE(ContentSecurityPolicyIsLegal(
       "default-src 'self';,script-src http://www.google.com"));
-  EXPECT_TRUE(ContentSecurityPolicyIsLegal(
+  EXPECT_FALSE(ContentSecurityPolicyIsLegal(
       "default-src 'self';\vscript-src http://www.google.com"));
   EXPECT_TRUE(ContentSecurityPolicyIsLegal(
       "default-src 'self';\tscript-src http://www.google.com"));
   EXPECT_TRUE(ContentSecurityPolicyIsLegal(
       "default-src 'self';\fscript-src http://www.google.com"));
+  EXPECT_FALSE(ContentSecurityPolicyIsLegal(
+      "default-src 'self';\x7fscript-src http://www.google.com"));
+  EXPECT_FALSE(ContentSecurityPolicyIsLegal(
+      "default-src 'self';\x01script-src http://www.google.com"));
+  EXPECT_FALSE(ContentSecurityPolicyIsLegal(
+      "default-src 'self';\x80script-src http://www.google.com"));
 }
 
 TEST(ExtensionCSPValidator, IsSecure) {
@@ -503,6 +509,11 @@ TEST(ExtensionCSPValidator, IsSandboxed) {
                                                 Manifest::Type::kExtension));
   EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("sandbox \fallow-same-origin\f",
                                                 Manifest::Type::kExtension));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("sandbox allow-same-origin\x7f",
+                                                Manifest::Type::kExtension));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(
+      "sandbox allow-scripts allow-same-origin\x7f",
+      Manifest::Type::kExtension));
 
   // Additional directives are OK.
   EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
