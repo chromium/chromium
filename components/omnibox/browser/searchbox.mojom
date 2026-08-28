@@ -4,6 +4,7 @@
 
 module searchbox.mojom;
 
+import "components/omnibox/browser/fusebox_action.mojom";
 import "components/omnibox/browser/omnibox.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
@@ -113,6 +114,9 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16? tail_suggest_common_prefix;
   // Keyword UI state for this match. Empty if not a keyword suggestion.
   MatchKeywordModel? keyword_model;
+  // FuseboxAction carries client behavior and configuration to apply when the
+  // user accepts a suggestion.
+  fusebox_action.mojom.FuseboxAction? fusebox_action;
 };
 
 // Information about a suggested tab in the WebUI.
@@ -325,18 +329,6 @@ enum DriveDisclaimerStatus {
   kRestricted = 2,
 };
 
-// This enum is mapped to third_party/omnibox_proto/suggest_inventory.proto.
-enum SuggestInventory {
-  kDefault = 0,
-  kTravel = 1,
-  kAimTakeover = 2,
-  kImageGenTakeover = 3,
-  kConversationStarters = 4,
-  kBrainstorm = 5,
-  kHelpMeLearn = 6,
-  kWriteOrEdit = 7,
-};
-
 // LINT.IfChange(InputMethod)
 enum InputMethod {
   kKeyboard = 1,
@@ -393,7 +385,7 @@ interface PageHandler {
                     mojo_base.mojom.String16 input,
                     bool prevent_inline_autocomplete,
                     uint32 cursor_position,
-                    SuggestInventory suggest_inventory,
+                    fusebox_action.mojom.SuggestInventory suggest_inventory,
                     bool is_on_focus,
                     string keyword,
                     InputMethod input_method);

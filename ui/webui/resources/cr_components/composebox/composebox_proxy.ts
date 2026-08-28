@@ -40,6 +40,7 @@ export function createAutocompleteMatch(
     answer: null,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
+    fuseboxAction: null,
     ...config,
   };
 }

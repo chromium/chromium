@@ -57,6 +57,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/contextual_search_provider.h"
+#include "components/omnibox/browser/fusebox_action.mojom.h"
+#include "components/omnibox/browser/fusebox_action_mojo_utils.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_metrics_constants.h"
@@ -1037,6 +1039,11 @@ SearchboxHandler::CreateAutocompleteMatch(
       match.suggestion_group_id == omnibox::GROUP_MIA_RECOMMENDATIONS;
 
   mojom_match->is_contextual_suggestion = match.IsContextualSearchSuggestion();
+
+  if (match.suggest_template && match.suggest_template->has_fusebox_action()) {
+    mojom_match->fusebox_action = fusebox_action::SyncFuseboxActionProtoToMojo(
+        match.suggest_template->fusebox_action());
+  }
 
   return mojom_match;
 }

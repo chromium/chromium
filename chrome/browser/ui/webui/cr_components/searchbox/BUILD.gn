@@ -95,6 +95,7 @@ source_set("searchbox_impl") {
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/google/core/common",
+    "//components/omnibox/browser:fusebox_action_mojo_utils",
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common:features",
     "//components/search",

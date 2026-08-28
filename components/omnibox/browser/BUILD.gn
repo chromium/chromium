@@ -1136,29 +1136,27 @@ mojom("mojo_bindings") {
 
   if (!is_ios) {
     sources += [ "searchbox.mojom" ]
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "searchbox.mojom.SuggestInventory"
-            cpp = "::omnibox::SuggestInventory"
-          },
-        ]
-        traits_headers = [ "searchbox_mojom_traits.h" ]
-        traits_sources = [ "searchbox_mojom_traits.cc" ]
-        traits_deps = [ "//third_party/omnibox_proto" ]
-      },
-    ]
+    public_deps += [ ":fusebox_action_mojo_bindings" ]
   }
 }
 
 if (!is_ios) {
   mojom("fusebox_action_mojo_bindings") {
     sources = [ "fusebox_action.mojom" ]
-    webui_module_path = "/"
-    public_deps = [
-      ":mojo_bindings",
-      "//components/omnibox/composebox:mojo_bindings",
+    webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
+    public_deps = [ "//components/omnibox/composebox:mojo_bindings" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "fusebox_action.mojom.SuggestInventory"
+            cpp = "::omnibox::SuggestInventory"
+          },
+        ]
+        traits_headers = [ "fusebox_action_mojom_traits.h" ]
+        traits_sources = [ "fusebox_action_mojom_traits.cc" ]
+        traits_deps = [ "//third_party/omnibox_proto" ]
+      },
     ]
   }
 

@@ -47,6 +47,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
+#include "components/omnibox/browser/fusebox_action.mojom.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -74,6 +75,7 @@
 #include "third_party/omnibox_proto/model_config.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1203,6 +1205,43 @@ TEST_F(
   ASSERT_TRUE(mojom_match.has_value());
   EXPECT_EQ(mojom_match.value()->icon_path,
             searchbox_internal::kReplyRotated180IconResourceName);
+}
+
+TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatch_PopulatesFuseboxAction) {
+  AutocompleteMatch match;
+  match.destination_url = GURL("https://example.com");
+
+  omnibox::SuggestTemplateInfo suggest_template;
+  auto* fusebox_action = suggest_template.mutable_fusebox_action();
+  fusebox_action->set_preselected_tool(omnibox::TOOL_MODE_DEEP_SEARCH);
+  fusebox_action->set_preferred_inventory(
+      omnibox::SUGGEST_INVENTORY_BRAINSTORM);
+  fusebox_action->set_query_action_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::QUERY_ACTION_PASTE);
+  fusebox_action->set_searchbox_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::
+          SEARCHBOX_OVERRIDE_COMPOSEBOX);
+  match.suggest_template = suggest_template;
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_match = handler_->CreateAutocompleteMatch(
+      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+
+  ASSERT_TRUE(mojom_match.has_value());
+  ASSERT_TRUE(mojom_match.value()->fusebox_action);
+  EXPECT_EQ(mojom_match.value()->fusebox_action->preselected_tool,
+            omnibox::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_EQ(mojom_match.value()->fusebox_action->preferred_inventory,
+            omnibox::SUGGEST_INVENTORY_BRAINSTORM);
+  EXPECT_EQ(mojom_match.value()->fusebox_action->query_action_override,
+            fusebox_action::mojom::QueryActionOverride::kPaste);
+  EXPECT_EQ(mojom_match.value()->fusebox_action->searchbox_override,
+            fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
