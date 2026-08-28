@@ -26,11 +26,8 @@ base::Value MediaGalleriesPermissionData::ToValue() const {
   return base::Value(permission_);
 }
 
-bool MediaGalleriesPermissionData::FromValue(const base::Value* value) {
-  if (!value)
-    return false;
-
-  const std::string* raw_permission = value->GetIfString();
+bool MediaGalleriesPermissionData::FromValue(const base::Value& value) {
+  const std::string* raw_permission = value.GetIfString();
   if (!raw_permission)
     return false;
 

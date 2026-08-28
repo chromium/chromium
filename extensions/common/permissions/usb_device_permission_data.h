@@ -43,7 +43,7 @@ class UsbDevicePermissionData {
   base::Value ToValue() const;
 
   // Populate `this` from a base::Value.
-  bool FromValue(const base::Value* value);
+  bool FromValue(const base::Value& value);
 
   friend auto operator<=>(const UsbDevicePermissionData&,
                           const UsbDevicePermissionData&) = default;

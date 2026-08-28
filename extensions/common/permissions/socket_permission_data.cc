@@ -95,11 +95,12 @@ base::Value SocketPermissionData::ToValue() const {
   return base::Value(GetAsString());
 }
 
-bool SocketPermissionData::FromValue(const base::Value* value) {
-  if (!value->is_string())
+bool SocketPermissionData::FromValue(const base::Value& value) {
+  if (!value.is_string()) {
     return false;
+  }
 
-  return Parse(value->GetString());
+  return Parse(value.GetString());
 }
 
 SocketPermissionEntry& SocketPermissionData::entry() {

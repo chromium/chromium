@@ -115,7 +115,7 @@ class SetDisjunctionPermission : public APIPermission {
 
     for (const base::Value& item_value : value->GetList()) {
       PermissionDataType data;
-      if (data.FromValue(&item_value)) {
+      if (data.FromValue(item_value)) {
         data_set_.insert(data);
       } else {
         std::string unknown_permission =

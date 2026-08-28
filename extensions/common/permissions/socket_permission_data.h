@@ -55,7 +55,7 @@ class SocketPermissionData {
   base::Value ToValue() const;
 
   // Populate `this` from a base::Value.
-  bool FromValue(const base::Value* value);
+  bool FromValue(const base::Value& value);
 
   // TODO(bryeung): SocketPermissionData should be encoded as a base::Value
   // instead of a string.  Until that is done, expose these methods for

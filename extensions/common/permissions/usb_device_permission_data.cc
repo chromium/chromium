@@ -91,11 +91,8 @@ base::Value UsbDevicePermissionData::ToValue() const {
   return base::Value(std::move(result));
 }
 
-bool UsbDevicePermissionData::FromValue(const base::Value* value) {
-  if (!value)
-    return false;
-
-  const base::DictValue* dict_value = value->GetIfDict();
+bool UsbDevicePermissionData::FromValue(const base::Value& value) {
+  const base::DictValue* dict_value = value.GetIfDict();
   if (!dict_value)
     return false;
 
