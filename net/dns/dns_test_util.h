@@ -442,14 +442,18 @@ class MockDnsClient : public DnsClient {
 
   // DnsClient interface:
   bool CanUseSecureDnsTransactions() const override;
-  bool CanUseInsecureDnsTransactions() const override;
-  bool CanQueryAdditionalTypesViaInsecureDns() const override;
+  bool CanUseInsecureDnsTransactions(
+      std::optional<EchMode> ech_mode) const override;
+  bool CanQueryAdditionalTypesViaInsecureDns(
+      std::optional<EchMode> ech_mode) const override;
   void SetInsecureEnabled(InsecureDnsMode mode,
                           bool additional_types_enabled) override;
-  InsecureDnsMode GetInsecureDnsMode() const override;
+  InsecureDnsMode GetInsecureDnsMode(
+      std::optional<EchMode> ech_mode) const override;
   bool FallbackFromSecureTransactionPreferred(
       ResolveContext* resolve_context) const override;
-  bool FallbackFromInsecureTransactionPreferred() const override;
+  bool FallbackFromInsecureTransactionPreferred(
+      std::optional<EchMode> ech_mode) const override;
   bool SetSystemConfig(std::optional<DnsConfig> system_config) override;
   bool SetConfigOverrides(DnsConfigOverrides config_overrides) override;
   void ReplaceCurrentSession() override;

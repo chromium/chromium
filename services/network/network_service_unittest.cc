@@ -725,7 +725,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*dns_over_https_config=*/{},
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions(std::nullopt));
   EXPECT_EQ(net::SecureDnsMode::kOff,
             dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
@@ -735,7 +735,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*dns_over_https_config=*/{},
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
+  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions(std::nullopt));
   EXPECT_EQ(net::SecureDnsMode::kOff,
             dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
@@ -745,7 +745,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
                                        /*dns_over_https_config=*/{},
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
+  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions(std::nullopt));
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
             dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 
@@ -755,7 +755,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       *net::DnsOverHttpsConfig::FromString("https://foo/"),
       /*additional_dns_types_enabled=*/true,
       /*fallback_doh_nameservers=*/{});
-  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
+  EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions(std::nullopt));
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
             dns_client_ptr->GetEffectiveConfig().secure_dns_mode);
 }
@@ -777,7 +777,8 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
                                        /*dns_over_https_config=*/{},
                                        /*additional_dns_types_enabled=*/true,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_TRUE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_TRUE(
+      dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns(std::nullopt));
 
   service()->ConfigureStubHostResolver(net::InsecureDnsMode::kEnabledBuiltIn,
                                        /*happy_eyeballs_v3_enabled=*/false,
@@ -785,7 +786,8 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
                                        /*dns_over_https_config=*/{},
                                        /*additional_dns_types_enabled=*/false,
                                        /*fallback_doh_nameservers=*/{});
-  EXPECT_FALSE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
+  EXPECT_FALSE(
+      dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns(std::nullopt));
 }
 
 TEST_F(NetworkServiceTest, HappyEyeballsV3EnableDisable) {

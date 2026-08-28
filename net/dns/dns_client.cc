@@ -154,8 +154,9 @@ class DnsClientImpl : public DnsClient {
     return !GetEffectiveConfig().doh_config.servers().empty();
   }
 
-  bool CanUseInsecureDnsTransactions() const override {
-    switch (insecure_dns_mode_) {
+  bool CanUseInsecureDnsTransactions(
+      std::optional<EchMode> ech_mode) const override {
+    switch (GetInsecureDnsMode(ech_mode)) {
       case InsecureDnsMode::kDisabled:
         return false;
       case InsecureDnsMode::kEnabledPlatform:
@@ -169,11 +170,18 @@ class DnsClientImpl : public DnsClient {
     }
   }
 
-  bool CanQueryAdditionalTypesViaInsecureDns() const override {
+  bool CanQueryAdditionalTypesViaInsecureDns(
+      std::optional<EchMode> ech_mode) const override {
     // Only useful information if insecure DNS is usable, so expect this to
     // never be called if that is not the case.
-    DCHECK(CanUseInsecureDnsTransactions());
+    DCHECK(CanUseInsecureDnsTransactions(ech_mode));
 
+    // When InsecureDnsMode is being overridden due to the selected EchMode (see
+    // `GetInsecureDnsMode`), we must make sure we support additional query
+    // types for this resolution.
+    if (UseDnsPlatformDueToEchMode(ech_mode)) {
+      return true;
+    }
     return can_query_additional_types_via_insecure_;
   }
 
@@ -183,7 +191,23 @@ class DnsClientImpl : public DnsClient {
     can_query_additional_types_via_insecure_ = additional_types_enabled;
   }
 
-  InsecureDnsMode GetInsecureDnsMode() const override {
+  InsecureDnsMode GetInsecureDnsMode(
+      std::optional<EchMode> ech_mode) const override {
+    if (UseDnsPlatformDueToEchMode(ech_mode)) {
+      // To support EchMode::kStrict, without causing a performance regression
+      // for non-kStrict requests, selectively override the InsecureDnsMode to
+      // kEnabledPlatformNoSystem for kStrict requests only. We pick
+      // kEnabledPlatformNoSystem instead of kEnabledPlatform, or
+      // kEnabledBuiltIn, because
+      // - kEnabledBuiltIn would fallback onto TaskType::SYSTEM if
+      //   DnsConfig::dns_over_tls_active == true
+      // - kEnabledPlatform, would fallback onto TaskType::SYSTEM if
+      //   TaskType::DNS_PLATFORM failed.
+      // In both cases, falling back would lead to a failure since
+      // TaskType::SYSTEM cannot query HTTPS RR (necessary for EchMode::kStrict
+      // to succeed).
+      return InsecureDnsMode::kEnabledPlatformNoSystem;
+    }
     return insecure_dns_mode_;
   }
 
@@ -218,8 +242,16 @@ class DnsClientImpl : public DnsClient {
     return false;
   }
 
-  bool FallbackFromInsecureTransactionPreferred() const override {
-    return !CanUseInsecureDnsTransactions() ||
+  bool FallbackFromInsecureTransactionPreferred(
+      std::optional<EchMode> ech_mode) const override {
+    // When InsecureDnsMode is being overridden due to the selected EchMode (see
+    // `GetInsecureDnsMode`), we must make sure we never fallback regardless of
+    // whether the insecure DNS transaction succeeded or failed.
+    if (UseDnsPlatformDueToEchMode(ech_mode)) {
+      return false;
+    }
+
+    return !CanUseInsecureDnsTransactions(ech_mode) ||
            insecure_fallback_failures_ >= kMaxInsecureFallbackFailures;
   }
 
@@ -304,7 +336,7 @@ class DnsClientImpl : public DnsClient {
     base::DictValue dict = GetEffectiveConfig().ToDict();
     dict.Set("can_use_secure_dns_transactions", CanUseSecureDnsTransactions());
     dict.Set("can_use_insecure_dns_transactions",
-             CanUseInsecureDnsTransactions());
+             CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt));
     return dict;
   }
 

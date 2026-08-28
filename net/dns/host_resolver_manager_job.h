@@ -63,6 +63,7 @@ struct HostResolverManager::JobKey {
   // multi-networking has been removed. Currently, this is used as a compat
   // layer between the two.
   handles::NetworkHandle GetTargetNetwork() const;
+  EchMode GetEchMode() const;
 
  private:
   // TODO(crbug.com/495684670): Make this public once the old way of doing

@@ -45,6 +45,8 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_response_info.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -1771,6 +1773,43 @@ TEST_F(ResolveContextTest, PlatformServerStats) {
 
   histogram_tester.ExpectTotalCount(
       "Net.DNS.DnsTransaction.Insecure.Other.SuccessTime", 50);
+}
+
+TEST_F(ResolveContextTest, GetEchMode) {
+  // When url_request_context is null, returns kOpportunistic.
+  ResolveContext null_context(nullptr, false /* enable_caching */);
+  EXPECT_EQ(null_context.GetEchMode("example.com"), EchMode::kOpportunistic);
+
+  // When url_request_context has SSLConfigService, returns the configured
+  // EchMode.
+  auto test_ssl_config_service =
+      std::make_unique<TestSSLConfigService>(SSLContextConfig());
+  test_ssl_config_service->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict,
+                                                "strict.example.com"));
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_ssl_config_service(std::move(test_ssl_config_service));
+  auto request_context = builder->Build();
+  ResolveContext resolve_context(request_context.get(),
+                                 false /* enable_caching */);
+
+  EXPECT_EQ(resolve_context.GetEchMode("strict.example.com"), EchMode::kStrict);
+
+  // When SSLConfigService is configured with EchMode::kDisabled.
+  auto test_ssl_config_service_disabled =
+      std::make_unique<TestSSLConfigService>(SSLContextConfig());
+  test_ssl_config_service_disabled->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,
+                                                "disabled.example.com"));
+  auto builder_disabled = CreateTestURLRequestContextBuilder();
+  builder_disabled->set_ssl_config_service(
+      std::move(test_ssl_config_service_disabled));
+  auto request_context_disabled = builder_disabled->Build();
+  ResolveContext resolve_context_disabled(request_context_disabled.get(),
+                                          false /* enable_caching */);
+
+  EXPECT_EQ(resolve_context_disabled.GetEchMode("disabled.example.com"),
+            EchMode::kDisabled);
 }
 
 }  // namespace

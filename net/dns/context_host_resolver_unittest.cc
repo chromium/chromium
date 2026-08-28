@@ -96,8 +96,9 @@ class ContextHostResolverTest : public ::testing::Test,
         /*additional_dns_types_enabled=*/true);
 
     // Ensure DnsClient is fully usable.
-    EXPECT_TRUE(dns_client_->CanUseInsecureDnsTransactions());
-    EXPECT_FALSE(dns_client_->FallbackFromInsecureTransactionPreferred());
+    EXPECT_TRUE(dns_client_->CanUseInsecureDnsTransactions(std::nullopt));
+    EXPECT_FALSE(
+        dns_client_->FallbackFromInsecureTransactionPreferred(std::nullopt));
     EXPECT_FALSE(dns_client_->GetEffectiveConfig().nameservers.empty());
 
     scoped_refptr<HostResolverProc> proc = CreateCatchAllHostResolverProc();

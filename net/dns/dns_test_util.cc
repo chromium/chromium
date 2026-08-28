@@ -28,6 +28,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -799,8 +800,9 @@ bool MockDnsClient::CanUseSecureDnsTransactions() const {
   return !GetEffectiveConfig().doh_config.servers().empty();
 }
 
-bool MockDnsClient::CanUseInsecureDnsTransactions() const {
-  switch (insecure_dns_mode_) {
+bool MockDnsClient::CanUseInsecureDnsTransactions(
+    std::optional<EchMode> ech_mode) const {
+  switch (GetInsecureDnsMode(ech_mode)) {
     case InsecureDnsMode::kDisabled:
       return false;
     case InsecureDnsMode::kEnabledPlatform:
@@ -813,8 +815,12 @@ bool MockDnsClient::CanUseInsecureDnsTransactions() const {
   }
 }
 
-bool MockDnsClient::CanQueryAdditionalTypesViaInsecureDns() const {
-  DCHECK(CanUseInsecureDnsTransactions());
+bool MockDnsClient::CanQueryAdditionalTypesViaInsecureDns(
+    std::optional<EchMode> ech_mode) const {
+  DCHECK(CanUseInsecureDnsTransactions(ech_mode));
+  if (DnsClient::UseDnsPlatformDueToEchMode(ech_mode)) {
+    return true;
+  }
   return additional_types_enabled_;
 }
 
@@ -824,7 +830,11 @@ void MockDnsClient::SetInsecureEnabled(InsecureDnsMode mode,
   additional_types_enabled_ = additional_types_enabled;
 }
 
-InsecureDnsMode MockDnsClient::GetInsecureDnsMode() const {
+InsecureDnsMode MockDnsClient::GetInsecureDnsMode(
+    std::optional<EchMode> ech_mode) const {
+  if (DnsClient::UseDnsPlatformDueToEchMode(ech_mode)) {
+    return InsecureDnsMode::kEnabledPlatformNoSystem;
+  }
   return insecure_dns_mode_;
 }
 
@@ -836,8 +846,12 @@ bool MockDnsClient::FallbackFromSecureTransactionPreferred(
   return !CanUseSecureDnsTransactions() || !doh_server_available;
 }
 
-bool MockDnsClient::FallbackFromInsecureTransactionPreferred() const {
-  return !CanUseInsecureDnsTransactions() ||
+bool MockDnsClient::FallbackFromInsecureTransactionPreferred(
+    std::optional<EchMode> ech_mode) const {
+  if (DnsClient::UseDnsPlatformDueToEchMode(ech_mode)) {
+    return false;
+  }
+  return !CanUseInsecureDnsTransactions(ech_mode) ||
          fallback_failures_ >= max_fallback_failures_;
 }
 

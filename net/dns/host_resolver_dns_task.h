@@ -302,6 +302,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   bool fallback_available_;
 
   const HostResolver::HttpsSvcbOptions https_svcb_options_;
+  const EchMode ech_mode_;
 
   // If true, the task will wait for the pending HTTPS query and treat
   // certain HTTPS query errors as fatal.

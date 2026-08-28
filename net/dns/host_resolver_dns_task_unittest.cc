@@ -45,6 +45,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <android/multinetwork.h>
 
+#include "base/android/android_info.h"
 #include "net/dns/dns_platform_attempt_factory_android.h"
 #include "net/dns/mock_dns_platform_android_attempt_delegate.h"
 #endif
@@ -1029,6 +1030,109 @@ TEST_F(HostResolverDnsTaskWithSSLConfigTest,
     task.StartNextTransaction();
   }
   run_loop.Run();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that under Strict ECH, HTTPS queries are still issued even if insecure
+// DNS is disabled on the client (because EchMode::kStrict overrides it).
+TEST_F(HostResolverDnsTaskWithSSLConfigTest,
+       StrictEch_QueriesHttpsEvenIfInsecureDnsDisabled) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Platform DNS APIs are only available from Q.";
+  }
+
+  const char kName[] = "name.test";
+  SetEchMode(EchMode::kStrict, kName);
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeHttps, /*secure=*/false,
+      MockDnsClientRule::Result(
+          MockDnsClientRule::ResultType::kOk,
+          BuildTestDnsResponse(kName, dns_protocol::kTypeHttps,
+                               {BuildTestHttpsServiceRecord(
+                                   kName, /*priority=*/1, /*service_name=*/".",
+                                   /*params=*/{})})),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+  client->SetInsecureEnabled(InsecureDnsMode::kDisabled,
+                             /*additional_types_enabled=*/false);
+
+  base::SimpleTestTickClock clock;
+  DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA,
+                           DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kClassic, SecureDnsMode::kAutomatic,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  // EchMode::kStrict ensures HTTPS query is NOT stripped from
+  // transactions_needed_.
+  EXPECT_FALSE(task.https_disabled());
+  EXPECT_EQ(task.num_additional_transactions_needed(), 3u);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) {
+        EXPECT_FALSE(results.empty());
+        run_loop.Quit();
+      });
+
+  while (task.num_additional_transactions_needed() > 0) {
+    task.StartNextTransaction();
+  }
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Tests that without Strict ECH, HTTPS queries are dropped when insecure DNS
+// does not allow additional types.
+TEST_F(HostResolverDnsTaskWithSSLConfigTest,
+       NonStrictEch_DropsHttpsWhenInsecureDnsDisabled) {
+  const char kName[] = "name.test";
+  SetEchMode(EchMode::kDisabled, kName);
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/false,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/false);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+  client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+                             /*additional_types_enabled=*/false);
+
+  base::SimpleTestTickClock clock;
+  DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kClassic, SecureDnsMode::kOff,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  // Non-strict ECH drops HTTPS transaction when additional types are disabled.
+  EXPECT_TRUE(task.https_disabled());
+  EXPECT_EQ(task.num_additional_transactions_needed(), 1u);
 }
 
 // Tests that under Opportunistic ECH, a delayed HTTPS transaction triggers a

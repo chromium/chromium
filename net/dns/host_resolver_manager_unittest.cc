@@ -95,6 +95,8 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_static_ech_mode_getter.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
@@ -5095,7 +5097,129 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_THAT(response.request()->GetAddressResults(),
               testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
 }
+
+TEST_F(HostResolverManagerDnsTest,
+       StrictEch_GloballyDisabledInsecureDns_ResolvesPlatform) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_Q) {
+    GTEST_SKIP() << "Platform DNS APIs are only available from Q.";
+  }
+
+  // Globally disable insecure DNS (standard Cronet configuration).
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kDisabled,
+      /*additional_dns_types_enabled=*/false);
+
+  // Set up rules in proc_ (system resolver).
+  proc_->AddRuleForAllFamilies("4ok", "192.168.1.101");
+  proc_->AddRuleForAllFamilies("normal", "192.168.1.102");
+  proc_->SignalMultiple(1u);
+
+  // 1. Resolve "normal" (EchMode::kDisabled): Uses system resolver (proc_).
+  ResolveHostResponseHelper normal_response(resolver_->CreateRequest(
+      HostPortPair("normal", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  EXPECT_THAT(normal_response.result_error(), IsOk());
+  EXPECT_THAT(normal_response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("192.168.1.102", 80)));
+
+  // 2. Resolve "4ok" (EchMode::kStrict): Overrides to DNS_PLATFORM without
+  // system fallback (resolves via MockDnsClient to 127.0.0.1, ignoring proc_).
+  auto test_ssl_config_service =
+      std::make_unique<TestSSLConfigService>(SSLContextConfig());
+  test_ssl_config_service->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict, "4ok"));
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_ssl_config_service(std::move(test_ssl_config_service));
+  auto request_context = builder->Build();
+  auto strict_resolve_context = std::make_unique<ResolveContext>(
+      request_context.get(), true /* enable_caching */);
+  resolver_->RegisterResolveContext(strict_resolve_context.get());
+
+  ResolveHostResponseHelper strict_response(resolver_->CreateRequest(
+      HostPortPair("4ok", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      strict_resolve_context.get()));
+  EXPECT_THAT(strict_response.result_error(), IsOk());
+  EXPECT_THAT(strict_response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+
+  resolver_->DeregisterResolveContext(strict_resolve_context.get());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(HostResolverManagerDnsTest, StrictEch_NoSystemFallback) {
+  // Add a rule to `proc_` (the system resolver) for "nx", which fails in
+  // MockDnsClient. If fallback to the system resolver were allowed, this query
+  // would succeed with the IP configured here.
+  proc_->AddRuleForAllFamilies("nx", "192.168.1.102");
+
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  auto test_ssl_config_service =
+      std::make_unique<TestSSLConfigService>(SSLContextConfig());
+  test_ssl_config_service->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict, "nx"));
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_ssl_config_service(std::move(test_ssl_config_service));
+  auto request_context = builder->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      request_context.get(), true /* enable_caching */);
+  resolver_->RegisterResolveContext(resolve_context.get());
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("nx", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context.get()));
+
+  // Under Strict ECH, fallback to the system resolver is disallowed. Since
+  // MockDnsClient fails for "nx", the overall request fails with
+  // ERR_NAME_NOT_RESOLVED instead of falling back to proc_.
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+
+  resolver_->DeregisterResolveContext(resolve_context.get());
+}
+
+TEST_F(HostResolverManagerDnsTest, StrictEch_SelectiveSystemFallback) {
+  proc_->AddRuleForAllFamilies("nx_strict", "192.168.1.101");
+  proc_->AddRuleForAllFamilies("nx_normal", "192.168.1.102");
+  proc_->SignalMultiple(1u);
+
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  // 1. "nx_normal" has EchMode::kDisabled, so when MockDnsClient fails, it
+  // falls back to proc_ and succeeds.
+  ResolveHostResponseHelper normal_response(resolver_->CreateRequest(
+      HostPortPair("nx_normal", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      resolve_context_.get()));
+  EXPECT_THAT(normal_response.result_error(), IsOk());
+  EXPECT_THAT(normal_response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("192.168.1.102", 80)));
+
+  // 2. "nx_strict" has EchMode::kStrict, so system fallback is disallowed and
+  // it fails with ERR_NAME_NOT_RESOLVED.
+  auto test_ssl_config_service =
+      std::make_unique<TestSSLConfigService>(SSLContextConfig());
+  test_ssl_config_service->SetEchModeGetter(
+      std::make_unique<TestStaticEchModeGetter>(EchMode::kStrict, "nx_strict"));
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_ssl_config_service(std::move(test_ssl_config_service));
+  auto request_context = builder->Build();
+  auto strict_resolve_context = std::make_unique<ResolveContext>(
+      request_context.get(), true /* enable_caching */);
+  resolver_->RegisterResolveContext(strict_resolve_context.get());
+
+  ResolveHostResponseHelper strict_response(resolver_->CreateRequest(
+      HostPortPair("nx_strict", 80), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt,
+      strict_resolve_context.get()));
+  EXPECT_THAT(strict_response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  resolver_->DeregisterResolveContext(strict_resolve_context.get());
+}
 
 // RFC 6761 localhost names should always resolve to loopback.
 TEST_F(HostResolverManagerDnsTest, LocalhostLookup) {
@@ -9436,7 +9560,7 @@ TEST_F(HostResolverManagerDnsTest,
   resolver_->SetDnsConfigOverrides(overrides);
   const DnsConfig& fetched_config = client_ptr->GetEffectiveConfig();
   EXPECT_TRUE(fetched_config.nameservers.empty());
-  EXPECT_FALSE(client_ptr->CanUseInsecureDnsTransactions());
+  EXPECT_FALSE(client_ptr->CanUseInsecureDnsTransactions(std::nullopt));
   EXPECT_EQ(dns_over_https_config_override, fetched_config.doh_config);
   EXPECT_TRUE(client_ptr->CanUseSecureDnsTransactions());
 }

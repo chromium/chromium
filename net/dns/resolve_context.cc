@@ -41,6 +41,7 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_info.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
 
 namespace net {
@@ -796,6 +797,13 @@ bool ResolveContext::ServerStatsToDohAvailability(
     const ResolveContext::ServerStats& stats) {
   return stats.last_failure_count < kAutomaticModeFailureLimit &&
          stats.current_connection_success;
+}
+
+EchMode ResolveContext::GetEchMode(std::string_view host) const {
+  if (!url_request_context_ || !url_request_context_->ssl_config_service()) {
+    return EchMode::kOpportunistic;
+  }
+  return url_request_context_->ssl_config_service()->GetEchMode(host);
 }
 
 }  // namespace net

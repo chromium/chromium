@@ -65,6 +65,7 @@
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ech_mode.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -311,13 +312,13 @@ void RecordDnsClientCapabilityMetrics(const DnsClient* dns_client) {
   }
   DnsClientCapability capability;
   if (dns_client->CanUseSecureDnsTransactions()) {
-    if (dns_client->CanUseInsecureDnsTransactions()) {
+    if (dns_client->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt)) {
       capability = DnsClientCapability::kSecureEnabledInsecureEnabled;
     } else {
       capability = DnsClientCapability::kSecureEnabledInsecureDisabled;
     }
   } else {
-    if (dns_client->CanUseInsecureDnsTransactions()) {
+    if (dns_client->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt)) {
       capability = DnsClientCapability::kSecureDisabledInsecureEnabled;
     } else {
       capability = DnsClientCapability::kSecureDisabledInsecureDisabled;
@@ -649,9 +650,11 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
   if (!dns_client_)
     return;
 
-  bool enabled_before = dns_client_->CanUseInsecureDnsTransactions();
+  bool enabled_before =
+      dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt);
   bool additional_types_before =
-      enabled_before && dns_client_->CanQueryAdditionalTypesViaInsecureDns();
+      enabled_before && dns_client_->CanQueryAdditionalTypesViaInsecureDns(
+                            /*ech_mode=*/std::nullopt);
   dns_client_->SetInsecureEnabled(mode, additional_dns_types_enabled);
 
   // Abort current tasks if `CanUseInsecureDnsTransactions()` changes or if
@@ -659,10 +662,11 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
   // `CanQueryAdditionalTypesViaInsecureDns()` changes. Changes to allowing
   // additional types don't matter if insecure transactions are completely
   // disabled.
-  if (dns_client_->CanUseInsecureDnsTransactions() != enabled_before ||
-      (dns_client_->CanUseInsecureDnsTransactions() &&
-       dns_client_->CanQueryAdditionalTypesViaInsecureDns() !=
-           additional_types_before)) {
+  if (dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt) !=
+          enabled_before ||
+      (dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt) &&
+       dns_client_->CanQueryAdditionalTypesViaInsecureDns(
+           /*ech_mode=*/std::nullopt) != additional_types_before)) {
     AbortInsecureDnsTasks(ERR_NETWORK_CHANGED, false /* fallback_only */);
   }
 }
@@ -684,7 +688,7 @@ void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
 
   bool transactions_allowed_before =
       dns_client_->CanUseSecureDnsTransactions() ||
-      dns_client_->CanUseInsecureDnsTransactions();
+      dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt);
   bool changed = dns_client_->SetConfigOverrides(std::move(overrides));
 
   if (changed) {
@@ -1424,6 +1428,8 @@ void HostResolverManager::CreateTaskSequence(
     std::deque<TaskType>* out_tasks) {
   DCHECK(out_tasks->empty());
 
+  EchMode ech_mode = job_key.GetEchMode();
+
   // A cache lookup should generally be performed first. For jobs involving a
   // DnsTask, this task may be replaced.
   bool allow_cache =
@@ -1469,14 +1475,16 @@ void HostResolverManager::CreateTaskSequence(
       } else if (!ResemblesMulticastDNSName(job_key.host.GetHostname())) {
         bool system_task_allowed =
             has_address_type &&
-            job_key.secure_dns_mode != SecureDnsMode::kSecure;
+            job_key.secure_dns_mode != SecureDnsMode::kSecure &&
+            ech_mode != EchMode::kStrict;
         if (dns_client_) {
           InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
-          if (dns_client_->CanUseInsecureDnsTransactions() &&
-              !dns_client_->FallbackFromInsecureTransactionPreferred() &&
+          if (dns_client_->CanUseInsecureDnsTransactions(ech_mode) &&
+              !dns_client_->FallbackFromInsecureTransactionPreferred(
+                  ech_mode) &&
               (has_address_type ||
-               dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
-            insecure_dns_mode = dns_client_->GetInsecureDnsMode();
+               dns_client_->CanQueryAdditionalTypesViaInsecureDns(ech_mode))) {
+            insecure_dns_mode = dns_client_->GetInsecureDnsMode(ech_mode);
           }
           PushDnsTasks(
               *dns_client_, !ShouldForceSystemResolverDueToTestOverride(),
@@ -1501,10 +1509,10 @@ void HostResolverManager::CreateTaskSequence(
     case HostResolverSource::DNS:
       if (dns_client_) {
         InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
-        if (dns_client_->CanUseInsecureDnsTransactions() &&
+        if (dns_client_->CanUseInsecureDnsTransactions(ech_mode) &&
             (has_address_type ||
-             dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
-          insecure_dns_mode = dns_client_->GetInsecureDnsMode();
+             dns_client_->CanQueryAdditionalTypesViaInsecureDns(ech_mode))) {
+          insecure_dns_mode = dns_client_->GetInsecureDnsMode(ech_mode);
         }
         PushDnsTasks(
             *dns_client_, !ShouldForceSystemResolverDueToTestOverride(),
@@ -1827,8 +1835,9 @@ void HostResolverManager::OnSystemDnsConfigChanged(const DnsConfig& config) {
   bool changed = false;
   bool transactions_allowed_before = false;
   if (dns_client_) {
-    transactions_allowed_before = dns_client_->CanUseSecureDnsTransactions() ||
-                                  dns_client_->CanUseInsecureDnsTransactions();
+    transactions_allowed_before =
+        dns_client_->CanUseSecureDnsTransactions() ||
+        dns_client_->CanUseInsecureDnsTransactions(/*ech_mode=*/std::nullopt);
     changed = dns_client_->SetSystemConfig(config);
   }
 
@@ -1862,15 +1871,19 @@ void HostResolverManager::OnFallbackResolve(int dns_task_error) {
   DCHECK_NE(OK, dns_task_error);
 
   // Nothing to do if DnsTask is already not preferred.
-  if (dns_client_->FallbackFromInsecureTransactionPreferred())
+  if (dns_client_->FallbackFromInsecureTransactionPreferred(
+          /*ech_mode=*/std::nullopt)) {
     return;
+  }
 
   dns_client_->IncrementInsecureFallbackFailures();
 
   // If DnsClient became not preferred, fallback all fallback-allowed insecure
   // DnsTasks to HostResolverSystemTasks.
-  if (dns_client_->FallbackFromInsecureTransactionPreferred())
+  if (dns_client_->FallbackFromInsecureTransactionPreferred(
+          /*ech_mode=*/std::nullopt)) {
     AbortInsecureDnsTasks(ERR_FAILED, true /* fallback_only */);
+  }
 }
 
 int HostResolverManager::GetOrCreateMdnsClient(MDnsClient** out_client) {
