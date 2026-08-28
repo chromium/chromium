@@ -3009,6 +3009,7 @@ if (!is_android) {
       "../browser/ui/browser_instant_controller_browsertest.cc",
       "../browser/ui/browser_tab_strip_model_delegate_browsertest.cc",
       "../browser/ui/browser_tabrestore_browsertest.cc",
+      "../browser/ui/collected_cookies_browsertest.cc",
       "../browser/ui/desktop_to_mobile_promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
