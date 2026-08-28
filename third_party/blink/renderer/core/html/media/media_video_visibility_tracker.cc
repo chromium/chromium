@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -282,9 +283,9 @@ void RecordVideoOcclusionState(
 
   for (wtf_size_t i = 0; i < occluding_rects.size(); ++i) {
     const auto& rect = gfx::SkIRectToRect(occluding_rects[i]);
-    occluding_rects_stream << String::Format(
-        "[x: %d, y: %d, width: %d, height: %d]", rect.x(), rect.y(),
-        rect.width(), rect.height());
+    occluding_rects_stream << Format("[x: {}, y: {}, width: {}, height: {}]",
+                                     rect.x(), rect.y(), rect.width(),
+                                     rect.height());
     if (i < occluding_rects.size() - 1) {
       occluding_rects_stream << ", ";
     }
@@ -298,21 +299,20 @@ void RecordVideoOcclusionState(
   const String intersection_rect_string =
       intersection_rect.IsEmpty()
           ? "None"
-          : String::Format("x: %d, y: %d, width: %d, height: %d",
-                           intersection_rect.X().ToInt(),
-                           intersection_rect.Y().ToInt(),
-                           intersection_rect.Width().ToInt(),
-                           intersection_rect.Height().ToInt());
+          : Format("x: {}, y: {}, width: {}, height: {}",
+                   intersection_rect.X().ToInt(), intersection_rect.Y().ToInt(),
+                   intersection_rect.Width().ToInt(),
+                   intersection_rect.Height().ToInt());
 
   const auto& video_element_rect = occlusion_state.video_element_rect;
   const String video_element_rect_string =
       video_element_rect.IsEmpty()
           ? "None"
-          : String::Format("x: %d, y: %d, width: %d, height: %d",
-                           video_element_rect.X().ToInt(),
-                           video_element_rect.Y().ToInt(),
-                           video_element_rect.Width().ToInt(),
-                           video_element_rect.Height().ToInt());
+          : Format("x: {}, y: {}, width: {}, height: {}",
+                   video_element_rect.X().ToInt(),
+                   video_element_rect.Y().ToInt(),
+                   video_element_rect.Width().ToInt(),
+                   video_element_rect.Height().ToInt());
 
   const String occlusion_state_string = Format(
       "has sufficiently visible video: {{{}}}, occluded area: {{{:.2f}}}, "

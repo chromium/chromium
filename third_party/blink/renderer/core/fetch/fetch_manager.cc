@@ -113,6 +113,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -1715,10 +1716,9 @@ FetchLaterResult* FetchLaterManager::FetchLater(
                       WebFeature::kFetchLaterErrorQuotaExceeded);
     QuotaExceededError::Throw(
         exception_state,
-        String::Format(
-            "fetchLater exceeds its quota for the origin: got %" PRIu64 " "
-            "bytes, expected less than %" PRIu64 " bytes.",
-            total_request_length, available_quota));
+        Format("fetchLater exceeds its quota for the origin: got {} bytes, "
+               "expected less than {} bytes.",
+               total_request_length, available_quota));
     return nullptr;
   }
 

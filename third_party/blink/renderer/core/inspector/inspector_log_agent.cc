@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -265,9 +266,9 @@ protocol::Response InspectorLogAgent::stopViolationsReport() {
 }
 
 void InspectorLogAgent::ReportLongLayout(base::TimeDelta duration) {
-  String message_text = String::Format(
-      "Forced reflow while executing JavaScript took %" PRId64 "ms",
-      duration.InMilliseconds());
+  String message_text =
+      Format("Forced reflow while executing JavaScript took {}ms",
+             duration.InMilliseconds());
   auto* message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kViolation,
       mojom::blink::ConsoleMessageLevel::kVerbose, message_text);

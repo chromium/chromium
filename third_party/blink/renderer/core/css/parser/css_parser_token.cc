@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -252,8 +253,8 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       break;
     }
     case kUnicodeRangeToken:
-      return builder.Append(
-          String::Format("U+%X-%X", UnicodeRangeStart(), UnicodeRangeEnd()));
+      FormatTo(builder, "U+{:X}-{:X}", UnicodeRangeStart(), UnicodeRangeEnd());
+      return;
     case kStringToken:
       return SerializeString(Value().ToString(), builder);
 

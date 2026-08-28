@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -310,11 +311,10 @@ void HTMLIFrameElement::ParseAttribute(
       // invalid 'csp' attribute.
       required_csp_ = g_null_atom;
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kError,
-          String::Format("'csp' attribute too long. The max length for the "
-                         "'csp' attribute is %zu bytes.",
-                         kMaxLengthCSPAttribute)));
+          ConsoleMessage::Source::kOther, ConsoleMessage::Level::kError,
+          Format("'csp' attribute too long. The max length for the 'csp' "
+                 "attribute is {} bytes.",
+                 kMaxLengthCSPAttribute)));
     } else if (required_csp_ != value) {
       required_csp_ = value;
       should_call_did_change_attributes = true;

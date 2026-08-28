@@ -209,19 +209,22 @@ class SpeculationRuleSetTest : public ::testing::Test {
 
   SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
       const char* target_hint) {
-    return CreateRuleSet(UNSAFE_TODO(String::Format(R"({
+    return CreateRuleSet(StrCat({R"({
         "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/hint.html"],
-          "target_hint": "%s"
+          "target_hint": ")",
+                                 target_hint,
+                                 R"("
         }],
         "prerender": [{
           "source": "list",
           "urls": ["https://example.com/hint.html"],
-          "target_hint": "%s"
+          "target_hint": ")",
+                                 target_hint,
+                                 R"("
         }]
-      })",
-                                                    target_hint, target_hint)),
+      })"}),
                          KURL("https://example.com/"), execution_context_);
   }
 
@@ -1621,14 +1624,16 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
     // clang-format off
     auto* rule_set =
         CreateRuleSet(
-          String::Format(
+          StrCat({
             R"({
               "prefetch": [{
                 "source": "document",
-                "where": {%s}
+                "where": {)",
+            where_text,
+            R"(}
               }]
             })",
-            where_text.Latin1().c_str()),
+          }),
           base_url, execution_context());
     // clang-format on
     return rule_set;
@@ -4554,13 +4559,14 @@ TEST_F(SpeculationRuleSetTest, InvalidTag) {
   const char* tag =
       "Qu\xe9"
       "bec";
-  rule_set = CreateRuleSet(UNSAFE_TODO(String::Format(R"({
-        "tag": "%s",
+  rule_set = CreateRuleSet(StrCat({R"({
+        "tag": ")",
+                                   tag,
+                                   R"(",
         "prefetch": [{
           "where": {"href_matches": "/foo"}
         }]
-      })",
-                                                      tag)),
+      })"}),
                            KURL("https://example.com/"), execution_context());
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesetLevelTag);

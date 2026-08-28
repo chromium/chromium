@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -676,9 +677,9 @@ void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
 
 void HTMLFencedFrameElement::SetContainerSize(const gfx::Size& size) {
   setAttribute(html_names::kWidthAttr,
-               AtomicString(String::Format("%dpx", size.width())));
+               AtomicString(Format("{}px", size.width())));
   setAttribute(html_names::kHeightAttr,
-               AtomicString(String::Format("%dpx", size.height())));
+               AtomicString(Format("{}px", size.height())));
 
   frame_delegate_->MarkContainerSizeStale();
 }

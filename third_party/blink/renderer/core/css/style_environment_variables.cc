@@ -280,7 +280,7 @@ String StyleEnvironmentVariables::FormatFloatPx(float value) {
 }
 
 String StyleEnvironmentVariables::FormatPx(int value) {
-  return String::Format("%dpx", value);
+  return Format("{}px", value);
 }
 
 const FeatureContext* StyleEnvironmentVariables::GetFeatureContext() const {

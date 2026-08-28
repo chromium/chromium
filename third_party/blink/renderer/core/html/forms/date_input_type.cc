@@ -87,11 +87,12 @@ bool DateInputType::CanSetSuggestedValue() {
 }
 
 void DateInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value != GetElement().SanitizeValue(value))
+  if (value != GetElement().SanitizeValue(value)) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format, "
+        "The specified value {} does not conform to the required format, "
         "\"yyyy-MM-dd\".",
         value);
+  }
 }
 
 String DateInputType::FormatDateTimeFieldsState(

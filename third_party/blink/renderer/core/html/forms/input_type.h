@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/html/forms/color_chooser_client.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -360,8 +361,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
                                       const Decimal& minimum_default,
                                       const Decimal& maximum_default,
                                       const StepRange::StepDescription&) const;
-  void AddWarningToConsole(const char* message_format,
-                           const String& value) const;
+  void AddWarningToConsole(const FormatString<const StringView&>& format,
+                           const StringView& value) const;
 
  private:
   // Helper for stepUp()/stepDown(). Adds step value * count to the current

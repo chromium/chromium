@@ -79,12 +79,13 @@ bool WeekInputType::SetMillisecondToDateComponents(double value,
 }
 
 void WeekInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value != GetElement().SanitizeValue(value))
+  if (value != GetElement().SanitizeValue(value)) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "format is \"yyyy-Www\" where yyyy is year in four or more digits, and "
         "ww is 01-53.",
         value);
+  }
 }
 
 String WeekInputType::FormatDateTimeFieldsState(

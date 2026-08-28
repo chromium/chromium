@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -196,8 +197,7 @@ InspectorMemoryAgent::GetSamplingProfileById(
         protocol::Memory::Module::create()
             .setName(FilePathToString(module->GetDebugBasename()))
             .setUuid(String(module->GetId()))
-            .setBaseAddress(
-                String::Format("0x%" PRIxPTR, module->GetBaseAddress()))
+            .setBaseAddress(Format("0x{:x}", module->GetBaseAddress()))
             .setSize(static_cast<double>(module->GetSize()))
             .build());
   }

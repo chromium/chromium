@@ -321,12 +321,12 @@ void ColorInputType::WarnIfValueIsInvalid(const String& value) const {
   if (RuntimeEnabledFeatures::InputTypeColorEnhancementsEnabled() ||
       RuntimeEnabledFeatures::ColorInputAcceptsCSSColorsEnabled()) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "value must be a valid CSS color.",
         value);
   } else {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "format is \"#rrggbb\" where rr, gg, bb are two-digit hexadecimal "
         "numbers.",
         value);

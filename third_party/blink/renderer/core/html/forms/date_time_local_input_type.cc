@@ -111,12 +111,13 @@ String DateTimeLocalInputType::LocalizeValue(
 }
 
 void DateTimeLocalInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (!value.empty() && GetElement().SanitizeValue(value).empty())
+  if (!value.empty() && GetElement().SanitizeValue(value).empty()) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "format is \"yyyy-MM-ddThh:mm\" followed by optional \":ss\" or "
         "\":ss.SSS\".",
         value);
+  }
 }
 
 String DateTimeLocalInputType::FormatDateTimeFieldsState(

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/base/ui_base_features.h"
@@ -383,29 +384,28 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
   data.Append(ChooserResourceLoader::GetListPickerStyleSheet());
   int padding = static_cast<int>(roundf(4 * scale_factor));
   int min_height = static_cast<int>(roundf(24 * scale_factor));
-  PagePopupClient::AddString(String::Format("option, optgroup {"
-                                            "padding-top: %dpx;"
-                                            "}\n"
-                                            "option {"
-                                            "padding-bottom: %dpx;"
-                                            "min-block-size: %dpx;"
-                                            "display: flex;"
-                                            "align-items: center;"
-                                            "}\n",
-                                            padding, padding, min_height),
+  PagePopupClient::AddString(Format("option, optgroup {{"
+                                    "padding-top: {}px;"
+                                    "}}\n"
+                                    "option {{"
+                                    "padding-bottom: {}px;"
+                                    "min-block-size: {}px;"
+                                    "display: flex;"
+                                    "align-items: center;"
+                                    "}}\n",
+                                    padding, padding, min_height),
                              data);
   // Sets the min target size of <option> to 24x24 CSS pixels to meet
   // Accessibility standards.
-  PagePopupClient::AddString(
-      String::Format("option {"
-                     "display: block;"
-                     "align-content: center;"
-                     "min-inline-size: %dpx;"
-                     "min-block-size: %dpx;"
-                     "box-sizing: border-box;"
-                     "}\n",
-                     min_height, std::max(24, min_height)),
-      data);
+  PagePopupClient::AddString(Format("option {{"
+                                    "display: block;"
+                                    "align-content: center;"
+                                    "min-inline-size: {}px;"
+                                    "min-block-size: {}px;"
+                                    "box-sizing: border-box;"
+                                    "}}\n",
+                                    min_height, std::max(24, min_height)),
+                             data);
 
   PagePopupClient::AddLiteral(
       "</style></head><body><div id=main>Loading...</div><script>\n"

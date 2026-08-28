@@ -351,7 +351,7 @@ void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
   if (value.empty() || !GetElement().SanitizeValue(value).empty())
     return;
   AddWarningToConsole(
-      "The specified value %s cannot be parsed, or is out of range.", value);
+      "The specified value {} cannot be parsed, or is out of range.", value);
 }
 
 String RangeInputType::ValueNotEqualText(const Decimal& value) const {

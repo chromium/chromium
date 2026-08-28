@@ -123,12 +123,13 @@ bool MonthInputType::CanSetSuggestedValue() {
 }
 
 void MonthInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value != GetElement().SanitizeValue(value))
+  if (value != GetElement().SanitizeValue(value)) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "format is \"yyyy-MM\" where yyyy is year in four or more digits, and "
         "MM is 01-12.",
         value);
+  }
 }
 
 String MonthInputType::FormatDateTimeFieldsState(

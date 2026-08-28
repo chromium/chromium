@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/base/ui_base_features.h"
 
@@ -571,11 +572,10 @@ void HTMLSelectElement::SetOption(unsigned index,
   if (index > length() && (index >= kMaxListItems ||
                            GetListItems().size() + diff + 1 > kMaxListItems)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kWarning,
-        String::Format(
-            "Unable to expand the option list and set an option at index=%u. "
-            "The maximum allowed list length is %u.",
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        Format(
+            "Unable to expand the option list and set an option at index={}. "
+            "The maximum allowed list length is {}.",
             index, kMaxListItems)));
     return;
   }
@@ -611,11 +611,10 @@ void HTMLSelectElement::setLength(unsigned new_len,
       (new_len > kMaxListItems ||
        GetListItems().size() + new_len - length() > kMaxListItems)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kWarning,
-        String::Format("Unable to expand the option list to length %u. "
-                       "The maximum allowed list length is %u.",
-                       new_len, kMaxListItems)));
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        Format("Unable to expand the option list to length {}. "
+               "The maximum allowed list length is {}.",
+               new_len, kMaxListItems)));
     return;
   }
   int diff = length() - new_len;

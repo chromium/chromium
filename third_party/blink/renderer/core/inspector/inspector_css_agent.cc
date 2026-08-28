@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 
@@ -697,8 +698,8 @@ class InspectorCSSAgent::ModifyRuleAction final
   }
 
   String MergeId() override {
-    return String::Format("ModifyRuleAction:%d %s:%d", type_,
-                          style_sheet_->Id().Utf8().c_str(), old_range_.start);
+    return Format("ModifyRuleAction:{} {}:{}", type_, style_sheet_->Id(),
+                  old_range_.start);
   }
 
   bool IsNoop() override { return old_text_ == new_text_; }
@@ -3049,8 +3050,7 @@ protocol::Response InspectorCSSAgent::MultipleStyleTextsActions(
         AssertStyleSheetForId(edit->getStyleSheetId(), inspector_style_sheet);
     if (!response.IsSuccess()) {
       return protocol::Response::ServerError(
-          String::Format("StyleSheet not found for edit #%zu of %zu", i + 1, n)
-              .Utf8());
+          Format("StyleSheet not found for edit #{} of {}", i + 1, n).Utf8());
     }
 
     SourceRange range;
@@ -3113,7 +3113,7 @@ protocol::Response InspectorCSSAgent::setStyleTexts(
         DCHECK(!undo_exception_state.HadException());
       }
       return protocol::Response::ServerError(
-          String::Format("Failed applying edit #%d: ", i).Utf8() +
+          Format("Failed applying edit #{}: ", i).Utf8() +
           InspectorDOMAgent::ToResponse(exception_state).Message());
     }
   }

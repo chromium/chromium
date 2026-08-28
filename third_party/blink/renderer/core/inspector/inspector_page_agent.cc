@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/platform/text/locale_to_script_mapping.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -194,20 +195,16 @@ std::unique_ptr<protocol::Array<String>> GetEnabledWindowFeatures(
     const WebWindowFeatures& window_features) {
   auto feature_strings = std::make_unique<protocol::Array<String>>();
   if (window_features.x_set) {
-    feature_strings->emplace_back(
-        String::Format("left=%d", static_cast<int>(window_features.x)));
+    feature_strings->emplace_back(Format("left={}", window_features.x));
   }
   if (window_features.y_set) {
-    feature_strings->emplace_back(
-        String::Format("top=%d", static_cast<int>(window_features.y)));
+    feature_strings->emplace_back(Format("top={}", window_features.y));
   }
   if (window_features.width_set) {
-    feature_strings->emplace_back(
-        String::Format("width=%d", static_cast<int>(window_features.width)));
+    feature_strings->emplace_back(Format("width={}", window_features.width));
   }
   if (window_features.height_set) {
-    feature_strings->emplace_back(
-        String::Format("height=%d", static_cast<int>(window_features.height)));
+    feature_strings->emplace_back(Format("height={}", window_features.height));
   }
   if (!window_features.is_popup) {
     feature_strings->emplace_back("menubar");

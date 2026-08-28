@@ -5592,8 +5592,8 @@ bool Document::CanAcceptChild(const Node* new_child,
   if (num_elements > 1 || num_doctypes > 1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kHierarchyRequestError,
-        UNSAFE_TODO(String::Format("Only one %s on document allowed.",
-                                   num_elements > 1 ? "element" : "doctype")));
+        StrCat({"Only one ", num_elements > 1 ? "element" : "doctype",
+                " on document allowed."}));
     return false;
   }
 

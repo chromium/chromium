@@ -497,8 +497,8 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     Vector<String> allowlist;
     for (const auto& parameterized_item : value.member) {
       if (!parameterized_item.params.empty()) {
-        logger_.Warn(UNSAFE_TODO(String::Format(
-            "Feature %s's parameters are ignored.", feature_name)));
+        logger_.Warn(
+            StrCat({"Feature ", feature_name, "'s parameters are ignored."}));
       }
 
       String allowlist_item;
@@ -506,26 +506,25 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
               parameterized_item.item.GetIfToken()) {
         // All special keyword appears as token, i.e. self, src and *.
         if (*token_value != "*" && *token_value != "self") {
-          logger_.Warn(UNSAFE_TODO(String::Format(
-              "Invalid allowlist item(%s) for feature %s. Allowlist item "
-              "must be *, self or quoted url.",
-              token_value->c_str(), feature_name)));
+          logger_.Warn(
+              StrCat({"Invalid allowlist item(", token_value->c_str(),
+                      ") for feature ", feature_name,
+                      ". Allowlist item must be *, self or quoted url."}));
           continue;
         }
 
         if (*token_value == "*") {
           allowlist_item = "*";
         } else {
-          allowlist_item = String::Format("'%s'", token_value->c_str());
+          allowlist_item = StrCat({"'", token_value->c_str(), "'"});
         }
       } else if (const std::string* str =
                      parameterized_item.item.GetIfString()) {
         allowlist_item = String(*str);
       } else {
-        logger_.Warn(UNSAFE_TODO(
-            String::Format("Invalid allowlist item for feature %s. Allowlist "
-                           "item must be *, self, or quoted url.",
-                           feature_name)));
+        logger_.Warn(
+            StrCat({"Invalid allowlist item for feature ", feature_name,
+                    ". Allowlist item must be *, self, or quoted url."}));
         continue;
       }
       if (!allowlist_item.empty()) {
@@ -711,11 +710,11 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
               std::ostream_iterator<std::string>(features_stream, ", "));
     features_stream << overlap_features.back();
 
-    feature_policy_logger.Warn(String::Format(
-        "Some features are specified in both Feature-Policy and "
-        "Permissions-Policy header: %s. Values defined in Permissions-Policy "
-        "header will be used.",
-        features_stream.str().c_str()));
+    feature_policy_logger.Warn(StrCat(
+        {"Some features are specified in both Feature-Policy and "
+         "Permissions-Policy header: ",
+         features_stream.str().c_str(),
+         ". Values defined in Permissions-Policy header will be used."}));
   }
   return permissions_policy;
 }

@@ -1336,14 +1336,13 @@ StepRange InputType::CreateStepRange(
                    has_reversed_range, step, step_description);
 }
 
-void InputType::AddWarningToConsole(const char* message_format,
-                                    const String& value) const {
+void InputType::AddWarningToConsole(
+    const FormatString<const StringView&>& format,
+    const StringView& value) const {
   GetElement().GetDocument().AddConsoleMessage(
       MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kRendering,
-          mojom::ConsoleMessageLevel::kWarning,
-          UNSAFE_TODO(String::Format(
-              message_format, JSONValue::QuoteString(value).Utf8().c_str()))));
+          ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kWarning,
+          Format<const StringView&>(format, JSONValue::QuoteString(value))));
 }
 
 bool InputType::SupportsBaseAppearance(Element::BaseAppearanceValue) const {

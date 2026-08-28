@@ -117,6 +117,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -2374,7 +2375,7 @@ std::optional<Color> ParseQuirkyHexColor(CSSParserTokenStream& stream) {
       return std::nullopt;
     }
     if (token.GetType() == kNumberToken) {  // e.g. 112233
-      color = String::Format("%d", static_cast<int>(token.NumericValue()));
+      color = String::Number(static_cast<int>(token.NumericValue()));
     } else {  // e.g. 0001FF
       color = StrCat({String::Number(static_cast<int>(token.NumericValue())),
                       token.Value()});

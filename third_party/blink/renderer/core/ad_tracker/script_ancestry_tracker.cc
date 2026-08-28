@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
@@ -35,7 +36,7 @@ String GenerateFakeUrlFromScriptId(V8ScriptId script_id) {
   }
 
   // The prefix cannot appear in real URLs.
-  return String::Format("{ id %d }", script_id.value());
+  return Format("{{ id {} }}", script_id.value());
 }
 
 }  // namespace

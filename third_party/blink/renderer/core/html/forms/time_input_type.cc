@@ -97,7 +97,7 @@ bool TimeInputType::SetMillisecondToDateComponents(double value,
 void TimeInputType::WarnIfValueIsInvalid(const String& value) const {
   if (value != GetElement().SanitizeValue(value)) {
     AddWarningToConsole(
-        "The specified value %s does not conform to the required format.  The "
+        "The specified value {} does not conform to the required format.  The "
         "format is \"HH:mm\", \"HH:mm:ss\" or \"HH:mm:ss.SSS\" where HH is "
         "00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.",
         value);

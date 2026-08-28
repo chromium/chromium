@@ -5027,11 +5027,9 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
     case PlayPromiseError::kNotSupported:
       NOTREACHED();
   }
-  RejectPlayPromisesInternal(
-      DOMExceptionCode::kAbortError,
-      UNSAFE_TODO(String::Format(
-          "The play() request was interrupted%s. https://goo.gl/LdLk22",
-          reason)));
+  RejectPlayPromisesInternal(DOMExceptionCode::kAbortError,
+                             StrCat({"The play() request was interrupted",
+                                     reason, ". https://goo.gl/LdLk22"}));
 }
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,
