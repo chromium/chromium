@@ -419,6 +419,20 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   static std::optional<std::string> GenerateCachePartitionKeyForRequest(
       const HttpRequestInfo& request);
 
+  // Generates a cache key given the various pieces used to construct the key.
+  // Returns nullopt if the key cannot be generated (e.g., if SplitCache is
+  // enabled and the NetworkIsolationKey is transient).
+  static std::optional<std::string> GenerateCacheKey(
+      const GURL& url,
+      int load_flags,
+      const NetworkIsolationKey& network_isolation_key,
+      std::optional<int64_t> upload_data_identifier,
+      bool is_subframe_document_resource,
+      bool is_mainframe_navigation,
+      bool is_shared_resource,
+      std::optional<url::Origin> initiator,
+      bool include_url = true);
+
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
   // cache is initialized.
@@ -648,31 +662,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Methods ------------------------------------------------------------------
 
-  // Returns whether a request can be cached. Certain types of requests can't or
-  // shouldn't be cached, such as requests with a transient NetworkIsolationKey
-  // (when network state partitioning is enabled) or requests with an opaque
-  // initiator (for HTTP cache experiment partition schemes that incorporate the
-  // initiator into the cache key).
-  static bool CanGenerateCacheKeyForRequest(const HttpRequestInfo& request);
-
-  // Returns the result of GenerateCacheKey() provided that
-  // CanGenerateCacheKeyForRequest() returned true. Otherwise returns nullopt.
+  // Calls GenerateCacheKey() with fields extracted from `request`.
   static std::optional<std::string> GenerateCacheKeyInternal(
       const HttpRequestInfo& request,
-      bool include_url);
-
-  // Generates a cache key given the various pieces used to construct the key.
-  // Must not be called if a corresponding `CanGenerateCacheKeyForRequest`
-  // returns false.
-  static std::string GenerateCacheKey(
-      const GURL& url,
-      int load_flags,
-      const NetworkIsolationKey& network_isolation_key,
-      int64_t upload_data_identifier,
-      bool is_subframe_document_resource,
-      bool is_mainframe_navigation,
-      bool is_shared_resource,
-      std::optional<url::Origin> initiator,
       bool include_url);
 
   // Generates a cache key for `request_info` and informs the backend it should

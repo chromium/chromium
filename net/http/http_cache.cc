@@ -819,67 +819,63 @@ std::string_view HttpCache::GetResourceURLFromHttpCacheKey(
 }
 
 // static
-bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo& request) {
-  if (IsSplitCacheEnabled()) {
-    if (request.network_isolation_key.IsTransient()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// static
-// Generate a key that can be used inside the cache.
-std::string HttpCache::GenerateCacheKey(
+// Generate a key that can be used inside the cache. Returns nullopt if the key
+// cannot be generated (e.g., if SplitCache is enabled and the
+// NetworkIsolationKey is transient).
+std::optional<std::string> HttpCache::GenerateCacheKey(
     const GURL& url,
     int load_flags,
     const NetworkIsolationKey& network_isolation_key,
-    int64_t upload_data_identifier,
+    std::optional<int64_t> upload_data_identifier,
     bool is_subframe_document_resource,
     bool is_mainframe_navigation,
     bool is_shared_resource,
     std::optional<url::Origin> initiator,
     bool include_url) {
+  std::string isolation_key;
+  if (IsSplitCacheEnabled()) {
+    // Requests with a transient NetworkIsolationKey should not be cached when
+    // network state partitioning is enabled. Transient keys have no persistent
+    // string representation, and caching them could cause cross-site leaks.
+    if (network_isolation_key.IsTransient()) {
+      return std::nullopt;
+    }
+
+    if (!is_shared_resource) {
+      // Prepend the key with |kDoubleKeyPrefix| = "_dk_" to mark it as
+      // double-keyed (and makes it an invalid url so that it doesn't get
+      // confused with a single-keyed entry). Separate the origin and url
+      // with invalid whitespace character |kDoubleKeySeparator|.
+      const std::string_view subframe_prefix =
+          is_subframe_document_resource ? kSubframeDocumentResourcePrefix : "";
+
+      const bool is_cross_site_main_frame_navigation =
+          is_mainframe_navigation && initiator.has_value() &&
+          !net::SchemefulSite::IsSameSite(*initiator, url::Origin::Create(url));
+      const std::string_view cross_site_prefix =
+          is_cross_site_main_frame_navigation
+              ? kCrossSiteMainFrameNavigationPrefix
+              : "";
+
+      isolation_key = base::StrCat({
+          kDoubleKeyPrefix,
+          subframe_prefix,
+          cross_site_prefix,
+          *network_isolation_key.ToCacheKeyString(),
+          include_url ? kDoubleKeySeparator : "",
+      });
+    }
+  }
+
   // The first character of the key may vary depending on whether or not sending
   // credentials is permitted for this request. This only happens if the
   // SplitCacheByIncludeCredentials feature is enabled.
-  const char credential_key = (base::FeatureList::IsEnabled(
-                                   features::kSplitCacheByIncludeCredentials) &&
-                               (load_flags & LOAD_DO_NOT_SAVE_COOKIES))
-                                  ? '0'
-                                  : '1';
-
-  std::string isolation_key;
-  if (!is_shared_resource && IsSplitCacheEnabled()) {
-    // Prepend the key with |kDoubleKeyPrefix| = "_dk_" to mark it as
-    // double-keyed (and makes it an invalid url so that it doesn't get
-    // confused with a single-keyed entry). Separate the origin and url
-    // with invalid whitespace character |kDoubleKeySeparator|.
-    CHECK(!network_isolation_key.IsTransient());
-
-    std::string_view subframe_document_resource_prefix;
-    if (is_subframe_document_resource) {
-      subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
-    }
-
-    std::string_view is_cross_site_main_frame_navigation_prefix;
-    if (initiator.has_value() && is_mainframe_navigation) {
-      const bool is_initiator_cross_site =
-          !net::SchemefulSite::IsSameSite(*initiator, url::Origin::Create(url));
-      if (is_initiator_cross_site) {
-        is_cross_site_main_frame_navigation_prefix =
-            kCrossSiteMainFrameNavigationPrefix;
-      }
-    }
-    isolation_key = base::StrCat(
-        {kDoubleKeyPrefix, subframe_document_resource_prefix,
-         is_cross_site_main_frame_navigation_prefix,
-         *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
-    if (!include_url) {
-      // Remove the final space (kDoubleKeySeparator).
-      isolation_key.pop_back();
-    }
-  }
+  const std::string_view credential_prefix =
+      (base::FeatureList::IsEnabled(
+           features::kSplitCacheByIncludeCredentials) &&
+       (load_flags & LOAD_DO_NOT_SAVE_COOKIES))
+          ? "0/"
+          : "1/";
 
   // The key format is:
   // credential_key/upload_data_identifier/[isolation_key]url
@@ -887,10 +883,13 @@ std::string HttpCache::GenerateCacheKey(
   // Strip out the reference, username, and password sections of the URL and
   // concatenate with the credential_key, the post_key, and the network
   // isolation key if we are splitting the cache.
-  return base::StringPrintf(
-      "%c/%" PRId64 "/%s%s", credential_key, upload_data_identifier,
-      isolation_key.c_str(),
-      include_url ? HttpUtil::SpecForRequest(url).c_str() : "");
+  return base::StrCat({
+      credential_prefix,
+      base::NumberToString(upload_data_identifier.value_or(0)),
+      "/",
+      isolation_key,
+      include_url ? HttpUtil::SpecForRequest(url) : "",
+  });
 }
 
 // static
@@ -903,13 +902,10 @@ std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
 std::optional<std::string> HttpCache::GenerateCacheKeyInternal(
     const HttpRequestInfo& request,
     bool include_url) {
-  if (!CanGenerateCacheKeyForRequest(request)) {
-    return std::nullopt;
-  }
-
-  const int64_t upload_data_identifier =
-      request.upload_data_stream ? request.upload_data_stream->identifier()
-                                 : int64_t{0};
+  const std::optional<int64_t> upload_data_identifier =
+      request.upload_data_stream
+          ? std::optional(request.upload_data_stream->identifier())
+          : std::nullopt;
   return GenerateCacheKey(
       request.url, request.load_flags, request.network_isolation_key,
       upload_data_identifier, request.is_subframe_document_resource,

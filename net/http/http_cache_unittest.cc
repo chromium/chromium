@@ -14464,6 +14464,59 @@ TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCachePartitionKeyForRequest) {
             HttpCache::GenerateCachePartitionKeyForRequest(request));
 }
 
+TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCacheKey) {
+  const GenerateCacheKeyTestParams& params = GetParam();
+  const auto& [upload_data_stream, request] =
+      GenerateRequestFromTestParams(params);
+
+  const std::optional<int64_t> upload_data_identifier =
+      upload_data_stream ? std::optional(upload_data_stream->identifier())
+                         : std::nullopt;
+  EXPECT_EQ(params.expected_key,
+            HttpCache::GenerateCacheKey(
+                request.url, request.load_flags, request.network_isolation_key,
+                upload_data_identifier, request.is_subframe_document_resource,
+                request.is_main_frame_navigation, request.is_shared_resource,
+                request.initiator, /*include_url=*/true));
+
+  EXPECT_EQ(params.expected_key,
+            HttpCache::GenerateCacheKey(
+                request.url, request.load_flags, request.network_isolation_key,
+                upload_data_identifier, request.is_subframe_document_resource,
+                request.is_main_frame_navigation, request.is_shared_resource,
+                request.initiator));
+
+  EXPECT_EQ(params.expected_partition_key,
+            HttpCache::GenerateCacheKey(
+                request.url, request.load_flags, request.network_isolation_key,
+                upload_data_identifier, request.is_subframe_document_resource,
+                request.is_main_frame_navigation, request.is_shared_resource,
+                request.initiator, /*include_url=*/false));
+}
+
+TEST_F(HttpCacheTest, GenerateCacheKeyUploadDataIdentifier) {
+  const GURL url("http://example.com/");
+  const NetworkIsolationKey nik;
+  EXPECT_EQ("1/0/http://example.com/",
+            HttpCache::GenerateCacheKey(
+                url, LOAD_NORMAL, nik, /*upload_data_identifier=*/std::nullopt,
+                /*is_subframe_document_resource=*/false,
+                /*is_mainframe_navigation=*/false, /*is_shared_resource=*/false,
+                /*initiator=*/std::nullopt));
+  EXPECT_EQ("1/0/http://example.com/",
+            HttpCache::GenerateCacheKey(
+                url, LOAD_NORMAL, nik, /*upload_data_identifier=*/0,
+                /*is_subframe_document_resource=*/false,
+                /*is_mainframe_navigation=*/false, /*is_shared_resource=*/false,
+                /*initiator=*/std::nullopt));
+  EXPECT_EQ("1/42/http://example.com/",
+            HttpCache::GenerateCacheKey(
+                url, LOAD_NORMAL, nik, /*upload_data_identifier=*/42,
+                /*is_subframe_document_resource=*/false,
+                /*is_mainframe_navigation=*/false, /*is_shared_resource=*/false,
+                /*initiator=*/std::nullopt));
+}
+
 const GenerateCacheKeyTestParams kGenerateCacheKeyTestParams[] = {
     {"NoSplitting", "http://a.com/", LOAD_NORMAL,
      IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
