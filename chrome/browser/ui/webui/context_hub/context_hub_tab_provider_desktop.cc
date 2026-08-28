@@ -16,6 +16,7 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_handle_factory.h"
@@ -99,11 +101,43 @@ void MoveTabsToBrowser(BrowserWindowInterface* target_browser,
   }
 }
 
+// Returns true if any of the target tabs currently belong to a tab group
+// that is pinned to the bookmarks bar.
+bool WereAnyTabsInPinnedGroup(
+    Profile* profile,
+    const WindowTabIndicesMap& window_indices) {
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return false;
+  }
+
+  for (const auto& [browser, indices] : window_indices) {
+    TabStripModel* tab_strip = browser->GetTabStripModel();
+    if (!tab_strip || !tab_strip->SupportsTabGroups()) {
+      continue;
+    }
+    for (int index : indices) {
+      if (std::optional<tab_groups::TabGroupId> group_id =
+              tab_strip->GetTabGroupForTab(index)) {
+        if (std::optional<tab_groups::SavedTabGroup> saved_group =
+                sync_service->GetGroup(*group_id)) {
+          if (saved_group->is_pinned()) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 // Creates a new tab group in the browser window and applies the group visual
-// metadata.
+// metadata and pinned state.
 bool GroupTabsInWindow(BrowserWindowInterface* browser,
                        const base::flat_set<int64_t>& group_tab_ids,
-                       std::string_view label) {
+                       std::string_view label,
+                       bool should_be_pinned) {
   TabStripModel* tab_strip = browser->GetTabStripModel();
   // Tabs moved from other windows have new positions
   // Rescan the target window to find all matching indices.
@@ -118,6 +152,21 @@ bool GroupTabsInWindow(BrowserWindowInterface* browser,
                                              tab_groups::TabGroupColorId::kBlue,
                                              /*is_collapsed=*/false);
   tab_strip->ChangeTabGroupVisuals(group_id, visual_data);
+
+  // Tab groups created by Context Hub should only be pinned if they reuse /
+  // extend an existing group that was already pinned by the user.
+  if (tab_groups::TabGroupSyncService* sync_service =
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+              browser->GetProfile())) {
+    if (std::optional<tab_groups::SavedTabGroup> saved_group =
+            sync_service->GetGroup(group_id)) {
+      if (saved_group->is_pinned() != should_be_pinned) {
+        sync_service->UpdateGroupPosition(saved_group->saved_guid(),
+                                          should_be_pinned,
+                                          /*new_index=*/std::nullopt);
+      }
+    }
+  }
   return true;
 }
 
@@ -142,13 +191,16 @@ bool ConfirmSingleTabGroup(Profile* profile, const TabGroupEntry& group) {
     return false;
   }
 
+  bool should_be_pinned = WereAnyTabsInPinnedGroup(profile, window_indices);
+
   BrowserWindowInterface* target_browser = GetMajorityBrowser(window_indices);
   if (!target_browser) {
     return false;
   }
 
   MoveTabsToBrowser(target_browser, window_indices);
-  return GroupTabsInWindow(target_browser, tab_ids, group.label);
+  return GroupTabsInWindow(target_browser, tab_ids, group.label,
+                           should_be_pinned);
 }
 
 }  // namespace

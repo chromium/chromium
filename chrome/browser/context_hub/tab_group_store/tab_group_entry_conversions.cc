@@ -57,8 +57,6 @@ std::optional<tab_groups::SavedTabGroup> ToSavedTabGroup(
     saved_tabs.emplace_back(tab.url, base::UTF8ToUTF16(tab.title), group_guid,
                             position++);
   }
-  // TODO(crbug.com/542736828): Check if Context Hub tab groups can be saved
-  // without pinning to the tab bar.
   return tab_groups::SavedTabGroup(base::UTF8ToUTF16(entry.label),
                                    tab_groups::TabGroupColorId::kBlue,
                                    std::move(saved_tabs),

@@ -35,6 +35,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -113,28 +114,38 @@ class ContextHubTabProviderDesktopTest : public testing::Test {
     feature_list_.InitWithFeatures({features::kContextHub}, {});
   }
 
+  virtual std::unique_ptr<KeyedService> CreateTabGroupSyncService(
+      content::BrowserContext* context) {
+    return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() {
+    return {
+        TestingProfile::TestingFactory{
+            tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &ContextHubTabProviderDesktopTest::CreateTabGroupSyncService,
+                base::Unretained(this))},
+        TestingProfile::TestingFactory{
+            PersonalContextServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<testing::NiceMock<
+                  personal_context::MockPersonalContextService>>();
+            })},
+        TestingProfile::TestingFactory{
+            OptimizationGuideKeyedServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  testing::NiceMock<MockOptimizationGuideKeyedService>>();
+            })},
+    };
+  }
+
   void SetUp() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(
-        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<tab_groups::FakeTabGroupSyncService>();
-        }));
-    builder.AddTestingFactory(
-        PersonalContextServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<testing::NiceMock<
-              personal_context::MockPersonalContextService>>();
-        }));
-    builder.AddTestingFactory(
-        OptimizationGuideKeyedServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<MockOptimizationGuideKeyedService>>();
-        }));
+    builder.AddTestingFactories(GetTestingFactories());
     profile_ = builder.Build();
 
     main_browser_ = std::make_unique<TestBrowserInstance>(profile_.get());
@@ -190,6 +201,16 @@ class ContextHubTabProviderDesktopTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestBrowserInstance> main_browser_;
   std::unique_ptr<ContextHubTabProviderDesktop> provider_;
+};
+
+class ContextHubTabProviderDesktopMockSyncTest
+    : public ContextHubTabProviderDesktopTest {
+ public:
+  std::unique_ptr<KeyedService> CreateTabGroupSyncService(
+      content::BrowserContext* context) override {
+    return std::make_unique<
+        testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+  }
 };
 
 TEST_F(ContextHubTabProviderDesktopTest, GetTabs_ReturnsAllTabs) {
@@ -503,6 +524,129 @@ TEST_F(ContextHubTabProviderDesktopTest,
 
   // Group tabs are closed, only the ungrouped tab remains.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+}
+
+TEST_F(ContextHubTabProviderDesktopMockSyncTest,
+       ConfirmTabGroups_UnpinsCreatedTabGroup) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+
+  int64_t id1 = GetTabId(0);
+  int64_t id2 = GetTabId(1);
+
+  TabGroupEntry group;
+  group.label = "Unpinned Group";
+  group.tab_ids = {id1, id2};
+
+  auto* mock_sync_service = static_cast<tab_groups::MockTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(mock_sync_service);
+
+  base::Uuid test_guid = base::Uuid::GenerateRandomV4();
+  ON_CALL(*mock_sync_service,
+          GetGroup(testing::A<const tab_groups::LocalTabGroupID&>()))
+      .WillByDefault([test_guid](const tab_groups::LocalTabGroupID& local_id) {
+        return tab_groups::SavedTabGroup(
+            u"Unpinned Group", tab_groups::TabGroupColorId::kBlue, {},
+            /*position=*/0, test_guid, local_id);
+      });
+
+  EXPECT_CALL(*mock_sync_service,
+              UpdateGroupPosition(test_guid, std::optional<bool>(false),
+                                  std::optional<int>(std::nullopt)));
+
+  bool result = provider_->ConfirmTabGroups({group});
+  EXPECT_TRUE(result);
+}
+
+TEST_F(ContextHubTabProviderDesktopMockSyncTest,
+       ConfirmTabGroups_PreservesPinnedStateForExistingPinnedGroup) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+
+  int64_t id1 = GetTabId(0);
+  int64_t id2 = GetTabId(1);
+
+  // Group tab 1 initially into an existing group.
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  auto* mock_sync_service = static_cast<tab_groups::MockTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(mock_sync_service);
+
+  base::Uuid test_guid = base::Uuid::GenerateRandomV4();
+  // Return a pinned SavedTabGroup (position=0) for any local group ID.
+  ON_CALL(*mock_sync_service,
+          GetGroup(testing::A<const tab_groups::LocalTabGroupID&>()))
+      .WillByDefault([test_guid](const tab_groups::LocalTabGroupID& local_id) {
+        return tab_groups::SavedTabGroup(
+            u"Existing Pinned Group", tab_groups::TabGroupColorId::kBlue, {},
+            /*position=*/0, test_guid, local_id);
+      });
+
+  // Since the existing group was pinned and the new group is created as pinned,
+  // UpdateGroupPosition(..., false, ...) should NOT be called.
+  EXPECT_CALL(*mock_sync_service,
+              UpdateGroupPosition(testing::_, std::optional<bool>(false),
+                                  testing::_))
+      .Times(0);
+
+  TabGroupEntry group;
+  group.label = "Extended Pinned Group";
+  group.tab_ids = {id1, id2};
+
+  bool result = provider_->ConfirmTabGroups({group});
+  EXPECT_TRUE(result);
+}
+
+TEST_F(ContextHubTabProviderDesktopMockSyncTest,
+       ConfirmTabGroups_UnpinsWhenExistingGroupWasNotPinned) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+
+  int64_t id1 = GetTabId(0);
+  int64_t id2 = GetTabId(1);
+
+  // Group tab 1 initially into an unpinned existing group.
+  tab_groups::TabGroupId existing_local_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  auto* mock_sync_service = static_cast<tab_groups::MockTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(mock_sync_service);
+
+  base::Uuid existing_guid = base::Uuid::GenerateRandomV4();
+  base::Uuid new_guid = base::Uuid::GenerateRandomV4();
+
+  // For the existing local group ID before regrouping, return unpinned group
+  // (position=std::nullopt). For any new group created during AddToNewGroup,
+  // return auto-pinned group (position=0).
+  ON_CALL(*mock_sync_service,
+          GetGroup(testing::A<const tab_groups::LocalTabGroupID&>()))
+      .WillByDefault([existing_local_id, existing_guid,
+                      new_guid](const tab_groups::LocalTabGroupID& local_id) {
+        if (local_id == existing_local_id) {
+          return tab_groups::SavedTabGroup(
+              u"Existing Unpinned Group", tab_groups::TabGroupColorId::kBlue,
+              {}, /*position=*/std::nullopt, existing_guid, local_id);
+        }
+        return tab_groups::SavedTabGroup(
+            u"New Group", tab_groups::TabGroupColorId::kBlue, {},
+            /*position=*/0, new_guid, local_id);
+      });
+
+  // Because the existing group was not pinned, the newly created group should
+  // be unpinned.
+  EXPECT_CALL(*mock_sync_service,
+              UpdateGroupPosition(new_guid, std::optional<bool>(false),
+                                  std::optional<int>(std::nullopt)));
+
+  TabGroupEntry group;
+  group.label = "Extended Unpinned Group";
+  group.tab_ids = {id1, id2};
+
+  bool result = provider_->ConfirmTabGroups({group});
+  EXPECT_TRUE(result);
 }
 
 }  // namespace
