@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -238,6 +239,8 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
           features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
           ui::kColorMenuIcon, kTabMenuIconSize));
 #endif
+
+  SetElementIdentifierAt(GetItemCount() - 1, kTabSendTabToSelfMenuItem);
 
   // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
   SetIsNewFeatureAt(GetItemCount() - 1,
