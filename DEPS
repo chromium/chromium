@@ -2612,7 +2612,7 @@ deps = {
   },
 
   'src/third_party/libinput/src': {
-      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libinput.git' + '@' + '3aa004b96488bf0b2446c11b97a7f8a75ff37c23',
+      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libinput.git' + '@' + '39491253b27715d8c81a6a0f3a96d767e0defc7b',
       'condition': 'checkout_linux and checkout_mutter',
   },
 

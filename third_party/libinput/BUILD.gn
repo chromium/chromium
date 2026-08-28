@@ -20,9 +20,14 @@ pkg_config("mtdev") {
   packages = [ "mtdev" ]
 }
 
+config("libinput_private_config") {
+  cflags_c = [ "-std=gnu11" ]
+}
+
 config("libinput_public_config") {
   include_dirs = [
     "include",
+    "src/include",
     "src",
     "src/src",
   ]
@@ -58,20 +63,20 @@ source_set("libinput") {
   ]
 
   sources = [
-    "src/src/evdev-debounce.c",
     "src/src/evdev-fallback.c",
     "src/src/evdev-middle-button.c",
     "src/src/evdev-mt-touchpad-buttons.c",
+    "src/src/evdev-mt-touchpad-circular-scroll.c",
     "src/src/evdev-mt-touchpad-edge-scroll.c",
     "src/src/evdev-mt-touchpad-gestures.c",
     "src/src/evdev-mt-touchpad-tap.c",
     "src/src/evdev-mt-touchpad-thumb.c",
     "src/src/evdev-mt-touchpad.c",
+    "src/src/evdev-plugin.c",
     "src/src/evdev-tablet-pad-leds.c",
     "src/src/evdev-tablet-pad.c",
     "src/src/evdev-tablet.c",
     "src/src/evdev-totem.c",
-    "src/src/evdev-wheel.c",
     "src/src/evdev.c",
     "src/src/filter-custom.c",
     "src/src/filter-flat.c",
@@ -84,16 +89,27 @@ source_set("libinput") {
     "src/src/filter-trackpoint-flat.c",
     "src/src/filter-trackpoint.c",
     "src/src/filter.c",
+    "src/src/libinput-plugin-button-debounce.c",
+    "src/src/libinput-plugin-mouse-wheel-lowres.c",
+    "src/src/libinput-plugin-mouse-wheel.c",
+    "src/src/libinput-plugin-mtdev.c",
+    "src/src/libinput-plugin-tablet-double-tool.c",
+    "src/src/libinput-plugin-tablet-eraser-button.c",
+    "src/src/libinput-plugin-tablet-forced-tool.c",
+    "src/src/libinput-plugin-tablet-proximity-timer.c",
+    "src/src/libinput-plugin.c",
     "src/src/libinput-private-config.c",
     "src/src/libinput.c",
     "src/src/path-seat.c",
     "src/src/timer.c",
     "src/src/udev-seat.c",
+    "src/src/util-libinput.c",
 
     # quirks sources
     "src/src/quirks.c",
 
     # util sources
+    "src/src/util-files.c",
     "src/src/util-list.c",
     "src/src/util-prop-parsers.c",
     "src/src/util-ratelimit.c",
@@ -102,6 +118,7 @@ source_set("libinput") {
 
   configs += [
     ":libevdev",
+    ":libinput_private_config",
     ":libinput_public_config",
     ":mtdev",
     ":libudev",

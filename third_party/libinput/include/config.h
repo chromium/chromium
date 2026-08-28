@@ -5,15 +5,9 @@
 
 #pragma once
 
-#define HAVE_DEBUG_GUI 0
-
-#define HAVE_INSTALLED_TESTS 0
-
-#define HAVE_LIBEVDEV_DISABLE_PROPERTY 1
-
-#define HAVE_LIBWACOM 0
-
 #define HAVE_LOCALE_H 1
+
+#define HAVE_MTDEV 1
 
 #define HAVE_PIDFD_OPEN 1
 
@@ -21,7 +15,13 @@
 
 #define HAVE_VERSIONSORT 1
 
-#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/1.27.1"
+#define HTTP_DOC_LINK "https://wayland.freedesktop.org/libinput/doc/1.31.0"
+
+#define IS_DEBUG_BUILD 1
+
+#define LIBINPUT_PLUGIN_ETCDIR "/etc/libinput/plugins"
+
+#define LIBINPUT_PLUGIN_LIBDIR "/usr/lib/x86_64-linux-gnu/libinput/plugins"
 
 #define LIBINPUT_QUIRKS_DIR "/usr/share/libinput"
 
@@ -34,3 +34,4 @@
 #define MESON_BUILD_ROOT ""
 
 #define _GNU_SOURCE 1
+
