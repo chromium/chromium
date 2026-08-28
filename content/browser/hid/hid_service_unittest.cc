@@ -513,6 +513,31 @@ TEST_P(HidServiceTest, RequestDeviceWithoutUserActivation) {
   EXPECT_EQ(0u, chosen_devices.size());
 }
 
+TEST_P(HidServiceTest, RequestDeviceWhenInactive) {
+  if (GetParam() != kCreateUsingRenderFrameHost) {
+    return;
+  }
+  const auto& service = GetService(GetParam());
+
+  auto* rfh =
+      static_cast<TestWebContents*>(web_contents_)->GetPrimaryMainFrame();
+  rfh->SimulateUserActivation();
+
+  static_cast<RenderFrameHostImpl*>(rfh)->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+  EXPECT_FALSE(rfh->IsActive());
+
+  ON_CALL(hid_delegate(), CanRequestDevicePermission)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(hid_delegate(), RunChooserInternal).Times(0);
+
+  TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> future;
+  service->RequestDevice(std::vector<blink::mojom::HidDeviceFilterPtr>(),
+                         std::vector<blink::mojom::HidDeviceFilterPtr>(),
+                         future.GetCallback());
+  EXPECT_EQ(0u, future.Get().size());
+}
+
 TEST_P(HidServiceTest, OpenAndCloseHidConnection) {
   auto service_creation_type = GetParam();
   const auto& service = GetService(service_creation_type);

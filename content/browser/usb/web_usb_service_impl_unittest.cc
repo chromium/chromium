@@ -434,6 +434,25 @@ TEST_F(WebUsbServiceImplFrameTest, GetPermissionWithoutUserActivation) {
   EXPECT_TRUE(future.Get().is_null());
 }
 
+TEST_F(WebUsbServiceImplFrameTest, GetPermissionWhenInactive) {
+  const auto& service = GetService(kCreateForFrame);
+
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+
+  static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsActive());
+
+  ON_CALL(delegate(), CanRequestDevicePermission).WillByDefault(Return(true));
+  EXPECT_CALL(delegate(), RunChooserInternal).Times(0);
+
+  TestFuture<device::mojom::UsbDeviceInfoPtr> future;
+  service->GetPermission(blink::mojom::WebUsbRequestDeviceOptions::New(),
+                         future.GetCallback());
+  EXPECT_TRUE(future.Get().is_null());
+}
+
 TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
   const auto origin = url::Origin::Create(GURL(kDefaultTestUrl));
 

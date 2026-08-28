@@ -342,6 +342,7 @@ void WebUsbServiceImpl::GetPermission(
     return;
   }
 
+  // Device chooser requests require a RenderFrameHost context.
   if (!render_frame_host_) {
     mojo::ReportBadMessage(
         "GetPermission is not allowed from a service worker.");
@@ -349,7 +350,11 @@ void WebUsbServiceImpl::GetPermission(
     return;
   }
 
-  if (!FrameTreeNode::From(render_frame_host_)
+  // Ensure the requesting document is still active and consume transient user
+  // activation to prevent stale/pending-deletion frames from opening choosers
+  // or consuming user gestures from newly committed documents.
+  if (!render_frame_host_->IsActive() ||
+      !FrameTreeNode::From(render_frame_host_)
            ->UpdateUserActivationState(
                blink::mojom::UserActivationUpdateType::
                    kConsumeTransientActivation,

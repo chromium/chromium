@@ -435,13 +435,21 @@ void HidService::RequestDevice(
     std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
     RequestDeviceCallback callback) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!render_frame_host_ ||
+  if (!delegate ||
+      !delegate->CanRequestDevicePermission(GetBrowserContext(), origin_)) {
+    std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
+    return;
+  }
+
+  // Ensure the requesting document is still active and consume transient user
+  // activation to prevent stale/pending-deletion frames from opening choosers
+  // or consuming user gestures from newly committed documents.
+  if (!render_frame_host_ || !render_frame_host_->IsActive() ||
       !FrameTreeNode::From(render_frame_host_)
            ->UpdateUserActivationState(
                blink::mojom::UserActivationUpdateType::
                    kConsumeTransientActivation,
-               blink::mojom::UserActivationNotificationType::kNone) ||
-      !delegate->CanRequestDevicePermission(GetBrowserContext(), origin_)) {
+               blink::mojom::UserActivationNotificationType::kNone)) {
     std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
     return;
   }

@@ -217,6 +217,28 @@ TEST_F(SerialTest, RequestPortWithoutUserActivation) {
   EXPECT_TRUE(future.Get().is_null());
 }
 
+TEST_F(SerialTest, RequestPortWhenInactive) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+
+  static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+  EXPECT_FALSE(contents()->GetPrimaryMainFrame()->IsActive());
+
+  ON_CALL(delegate(), CanRequestPortPermission).WillByDefault(Return(true));
+  EXPECT_CALL(delegate(), RunChooserInternal).Times(0);
+
+  TestFuture<blink::mojom::SerialPortInfoPtr> future;
+  service->RequestPort({}, {}, future.GetCallback());
+  EXPECT_TRUE(future.Get().is_null());
+}
+
 TEST_F(SerialTest, OpenAndClosePort) {
   NavigateAndCommit(GURL(kTestUrl));
 

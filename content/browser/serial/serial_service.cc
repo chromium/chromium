@@ -90,17 +90,20 @@ void SerialService::RequestPort(
         allowed_bluetooth_service_class_ids,
     RequestPortCallback callback) {
   SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
-  if (!delegate ||
+  if (!delegate || !delegate->CanRequestPortPermission(&render_frame_host())) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Ensure the requesting document is still active and consume transient user
+  // activation to prevent stale/pending-deletion frames from opening choosers
+  // or consuming user gestures from newly committed documents.
+  if (!render_frame_host().IsActive() ||
       !FrameTreeNode::From(&render_frame_host())
            ->UpdateUserActivationState(
                blink::mojom::UserActivationUpdateType::
                    kConsumeTransientActivation,
                blink::mojom::UserActivationNotificationType::kNone)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  if (!delegate->CanRequestPortPermission(&render_frame_host())) {
     std::move(callback).Run(nullptr);
     return;
   }
