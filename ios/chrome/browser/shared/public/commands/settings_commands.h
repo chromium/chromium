@@ -172,6 +172,10 @@ enum class PushNotificationClientId;
 // Shows the Autofill settings UI from an Autofill notice (no back button).
 - (void)showAutofillSettingsFromNotice;
 
+// Shows the Enhanced Autofill settings UI (no back button). `completion` is
+// executed after the UI is dismissed.
+- (void)showEnhancedAutofillSettingsWithCompletion:(ProceduralBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_

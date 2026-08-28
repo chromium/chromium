@@ -369,6 +369,9 @@ extern NSString* const kSettingsDoneButtonId;
 // owned by SettingsNavigationController.
 - (UIBarButtonItem*)doneButton;
 
+// Shows the Enhanced Autofill settings UI (no back button).
+- (void)showEnhancedAutofillSettings;
+
 // Notifies this `SettingsNavigationController` of a dismissal such
 // that it has a possibility to do necessary clean up.
 - (void)cleanUpSettings;

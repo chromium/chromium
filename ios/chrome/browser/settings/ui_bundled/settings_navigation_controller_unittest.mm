@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -229,6 +230,21 @@ TEST_F(SettingsNavigationControllerTest, ActivityReporting) {
   [settingsController cleanUpSettings];
   [settingsController setValue:nil forKey:@"activityReporter"];
   [mockInstance stopMocking];
+}
+
+// Tests that `showEnhancedAutofillSettings` pushes
+// `EnhancedAutofillTableViewController` to the navigation stack.
+TEST_F(SettingsNavigationControllerTest, ShowEnhancedAutofillSettings) {
+  SettingsNavigationController* settingsController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser_.get()
+                            delegate:mockDelegate_];
+  [settingsController showEnhancedAutofillSettings];
+  EXPECT_EQ(1U, [[settingsController viewControllers] count]);
+  EXPECT_TRUE([settingsController.topViewController
+      isKindOfClass:[EnhancedAutofillTableViewController class]]);
+  [settingsController cleanUpSettings];
 }
 
 }  // namespace

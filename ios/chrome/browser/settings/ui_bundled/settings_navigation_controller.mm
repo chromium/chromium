@@ -9,6 +9,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -38,6 +39,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
@@ -1680,6 +1682,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   } else {
     [self showProfileSettingsFromViewController:nil];
   }
+}
+
+- (void)showEnhancedAutofillSettings {
+  EnhancedAutofillTableViewController* controller =
+      [[EnhancedAutofillTableViewController alloc]
+          initWithBrowser:self.browser];
+  ConfigureHandlers(controller, self.browser->GetCommandDispatcher());
+  [self pushViewController:controller animated:self.viewControllers.count > 0];
+}
+
+// `SceneCoordinator` is the entrypoint that handles presentation and captures
+// the dismissal completion block.
+- (void)showEnhancedAutofillSettingsWithCompletion:(ProceduralBlock)completion {
+  NOTREACHED();
 }
 
 #pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate

@@ -1501,6 +1501,34 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
+- (void)showEnhancedAutofillSettingsWithCompletion:(ProceduralBlock)completion {
+  CHECK(!self.isSigninInProgress);
+
+  if (self.sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return;
+  }
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showEnhancedAutofillSettings];
+    return;
+  }
+  _settingsDismissalCompletion = [completion copy];
+  _settingsNavigationController = [[SettingsNavigationController alloc]
+      initWithRootViewController:nil
+                         browser:_regularBrowser.get()
+                        delegate:self];
+  [_settingsNavigationController showEnhancedAutofillSettings];
+
+  UIViewController* presenter = self.activeViewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:_settingsNavigationController
+                          animated:YES
+                        completion:nil];
+}
+
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
     API_AVAILABLE(ios(26.0)) {
   if (!_settingsNavigationController) {
