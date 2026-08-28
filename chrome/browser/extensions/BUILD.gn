@@ -2494,6 +2494,7 @@ source_set("browser_tests") {
     "wasm_mv3_browsertest.cc",
     "web_accessible_resources_browsertest.cc",
     "web_contents_browsertest.cc",
+    "webstore_domain_browsertest.cc",
     "webstore_installer_browsertest.cc",
     "webstore_reinstaller_browsertest.cc",
   ]
@@ -2803,7 +2804,6 @@ source_set("browser_tests") {
       "user_script_listener_browsertest.cc",
       "user_script_world_browsertest.cc",
       "wasm_app_browsertest.cc",
-      "webstore_domain_browsertest.cc",
       "window_open_apitest.cc",
       "worker_apitest.cc",
     ]

@@ -25,7 +25,7 @@
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension_urls.h"
 #endif
 
@@ -322,7 +322,7 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Built-in additional protection for the chrome web store origin by
   // ensuring that the X-Frame-Options protection mechanism is set to either
   // DENY or SAMEORIGIN.
@@ -340,7 +340,7 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
           network::mojom::XFrameOptionsValue::kSameOrigin;
     }
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
