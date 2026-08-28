@@ -111,7 +111,7 @@ GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails::~GenAiPolicyDetails() =
     default;
 
 GenAiDefaultSettingsPolicyHandler::GenAiDefaultSettingsPolicyHandler(
-    std::vector<GenAiPolicyDetails>&& gen_ai_policies)
+    std::vector<GenAiPolicyDetails> gen_ai_policies)
     : TypeCheckingPolicyHandler(key::kGenAiDefaultSettings,
                                 base::Value::Type::INTEGER),
       gen_ai_policies_(std::move(gen_ai_policies)) {}

@@ -3686,23 +3686,19 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kFindAndFillWithGeminiSettings,
       optimization_guide::prefs::kFindAndFillWithGeminiSettings);
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-      std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
-          gen_ai_default_policies)));
+      gen_ai_default_policies));
 #if !BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<GeminiSparkSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-          std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
-              gen_ai_default_policies))));
+          gen_ai_default_policies)));
   handlers->AddHandler(std::make_unique<SmartTabSharingSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-          std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
-              gen_ai_default_policies))));
+          gen_ai_default_policies)));
 #endif
-  handlers->AddHandler(std::make_unique<
-                       FindAndFillWithGeminiSettingsPolicyHandler>(
-      std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-          std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
-              gen_ai_default_policies))));
+  handlers->AddHandler(
+      std::make_unique<FindAndFillWithGeminiSettingsPolicyHandler>(
+          std::make_unique<GenAiDefaultSettingsPolicyHandler>(
+              gen_ai_default_policies)));
   handlers->AddHandler(std::make_unique<GeminiActOnWebSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies))));

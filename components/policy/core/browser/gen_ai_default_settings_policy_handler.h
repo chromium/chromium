@@ -54,7 +54,7 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
   };
 
   explicit GenAiDefaultSettingsPolicyHandler(
-      std::vector<GenAiPolicyDetails>&& gen_ai_policies);
+      std::vector<GenAiPolicyDetails> gen_ai_policies);
   GenAiDefaultSettingsPolicyHandler(const GenAiDefaultSettingsPolicyHandler&) =
       delete;
   GenAiDefaultSettingsPolicyHandler& operator=(

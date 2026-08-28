@@ -38,8 +38,7 @@ class FindAndFillWithGeminiSettingsPolicyHandlerTest : public testing::Test {
 
     gen_ai_default_handler_ =
         std::make_unique<GenAiDefaultSettingsPolicyHandler>(
-            std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
-                gen_ai_default_policies));
+            gen_ai_default_policies);
 
     handler_ = std::make_unique<FindAndFillWithGeminiSettingsPolicyHandler>(
         std::make_unique<GenAiDefaultSettingsPolicyHandler>(
