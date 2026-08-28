@@ -51,6 +51,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -620,8 +621,12 @@ void DownloadToolbarUIController::ShowDetails() {
   if (bubble_delegate_ || pending_bubble_) {
     return;
   }
-  if (use_auto_close_bubble_timer_) {
-    auto_close_bubble_timer_.Reset();
+  base::TimeDelta delay = GetAutoCloseDelay();
+  if (use_auto_close_bubble_timer_ && !delay.is_max()) {
+    auto_close_bubble_timer_.Start(
+        FROM_HERE, delay,
+        base::BindRepeating(&DownloadToolbarUIController::AutoClosePartialView,
+                            base::Unretained(this)));
   }
   ShowBubble(DownloadBubbleMode::kPartial);
 }
@@ -1128,6 +1133,18 @@ void DownloadToolbarUIController::AutoClosePartialView() {
     return;
   }
   HideDetails();
+}
+
+base::TimeDelta DownloadToolbarUIController::GetAutoCloseDelay() const {
+  // If accessibility mode is enabled (screen reader, screen magnifier, etc.) do
+  // not auto-close on a timer to allow users sufficient time to locate and
+  // interact with it.
+  if (!content::BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityMode()
+           .is_mode_off()) {
+    return base::TimeDelta::Max();
+  }
+  return kAutoClosePartialViewDelay;
 }
 
 std::vector<DownloadUIModel::DownloadUIModelPtr>
