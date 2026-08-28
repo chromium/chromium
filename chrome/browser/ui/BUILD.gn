@@ -2603,10 +2603,6 @@ static_library("ui") {
       "views/tabs/tab_strip.h",
       "views/tabs/tab_strip_action_container.cc",
       "views/tabs/tab_strip_action_container.h",
-      "views/tabs/tab_strip_control_button.cc",
-      "views/tabs/tab_strip_control_button.h",
-      "views/tabs/tab_strip_nudge_button.cc",
-      "views/tabs/tab_strip_nudge_button.h",
       "views/task_manager_view.cc",
       "views/task_manager_view.h",
       "views/upgrade_notification_controller.cc",
@@ -2869,6 +2865,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs:tab_group",
       "//chrome/browser/ui/views/tabs:tab_group_impl",
       "//chrome/browser/ui/views/tabs:tab_impl",
+      "//chrome/browser/ui/views/tabs:tab_strip_button",
+      "//chrome/browser/ui/views/tabs:tab_strip_button_impl",
       "//chrome/browser/ui/views/tabs:tab_style_views",
       "//chrome/browser/ui/views/tabs:tab_style_views_impl",
       "//chrome/browser/ui/views/tabs/common",
@@ -3142,9 +3140,8 @@ static_library("ui") {
       # - c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/tabs/tab:impl",
 
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/tabs/tab_strip_control_button.h
+      # TODO(crbug.com/451609048): Remove this circular dependency - no
+      # blockers.
       "//chrome/browser/ui/views/tabs/horizontal",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
@@ -3188,6 +3185,13 @@ static_library("ui") {
       # TODO(crbug.com/451609048): Remove this circular dependency - no
       # blockers.
       "//chrome/browser/ui/views/tabs/dragging",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following headers get componentized:
+      # - c/b/ui/views/frame/browser_frame_view.h
+      # - c/b/ui/views/frame/browser_view.h
+      # - c/b/ui/views/tabs/tab_strip.h
+      "//chrome/browser/ui/views/tabs:tab_strip_button_impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:

@@ -15,6 +15,7 @@ source_set("horizontal") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/views/tabs:tab_strip_button",
     "//chrome/browser/ui/views/tabs/shared",
     "//ui/base/interaction",
     "//ui/gfx/animation",
@@ -33,14 +34,6 @@ source_set("horizontal") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
-
-  # TODO(crbug.com/451609048): Remove this circular dependency when the
-  # following header gets componentized:
-  # - c/b/ui/views/tabs/tab_strip_control_button.h
-  # (No allow_circular_includes_from entry belongs here -- the waiver that
-  # makes this legal is declared on //chrome/browser/ui:ui, which is the
-  # target that owns tab_strip_control_button.h and depends on this
-  # target.)
 }
 
 source_set("impl") {

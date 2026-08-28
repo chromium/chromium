@@ -7801,6 +7801,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs:base",
       "//chrome/browser/ui/views/tabs:tab_container",
       "//chrome/browser/ui/views/tabs:tab_group",
+      "//chrome/browser/ui/views/tabs:tab_strip_button",
       "//chrome/browser/ui/views/tabs:tab_style_views",
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/views/tabs/dragging:test_support",

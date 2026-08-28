@@ -25,6 +25,7 @@ source_set("glic") {
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/tabs:tab_strip_button",
       "//ui/base/metadata",
       "//ui/gfx/geometry",
       "//ui/views",

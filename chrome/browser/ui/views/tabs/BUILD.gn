@@ -356,3 +356,47 @@ source_set("tab_impl") {
   # allow_circular_includes_from grant on ui:ui, not the public :tab target.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+source_set("tab_strip_button") {
+  sources = [
+    "tab_strip_control_button.h",
+    "tab_strip_nudge_button.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("tab_strip_button_impl") {
+  sources = [
+    "tab_strip_control_button.cc",
+    "tab_strip_nudge_button.cc",
+  ]
+
+  deps = [
+    ":base",
+    ":tab_strip_button",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/vector_icons",
+    "//skia",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
