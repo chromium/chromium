@@ -113,35 +113,6 @@ TEST_F(CredentialLeakControllerAndroidTest, ClickedCancel) {
       LeakDialogDismissalReason::kClickedClose, 1);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.Checkup",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  CheckUkmMetricsExpectations(test_ukm_recorder,
-                              LeakDialogType::kCheckup,
-                              LeakDialogDismissalReason::kClickedClose);
-}
-
-TEST_F(CredentialLeakControllerAndroidTest, ClickedCancelWithKillswitch) {
-  if (base::android::device_info::is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordLeakDialog);
-
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  MakeController(profile(),
-                 std::make_unique<MockPasswordCheckupLauncherHelper>(),
-                 IsSaved(false), IsReused(true), IsSyncing(true), kTestAccount)
-      ->OnCancelDialog();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  histogram_tester.ExpectUniqueSample(
       "PasswordManager.LeakDetection.DialogDismissalReason.CheckupAndChange",
       LeakDialogDismissalReason::kClickedClose, 1);
 

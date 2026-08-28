@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate_mock.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -152,40 +151,6 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogOk) {
 }
 
 TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCancel) {
-  // With kUnifiedPasswordLeakDialog enabled by default, unsaved reused credentials
-  // route to kCheckup.
-  SetUpController(
-      CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)));
-
-  auto leak_prompt = SetupLeakPrompt();
-
-  EXPECT_CALL(*leak_prompt, ShowCredentialLeakPrompt());
-  controller().ShowCredentialLeakPrompt(std::move(leak_prompt));
-
-  EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
-  controller().OnCancelDialog();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.Checkup",
-      LeakDialogDismissalReason::kClickedClose, 1);
-
-  CheckUkmMetricsExpectations(test_ukm_recorder(),
-                              LeakDialogType::kCheckup,
-                              LeakDialogDismissalReason::kClickedClose);
-}
-
-TEST_F(CredentialLeakDialogControllerTest,
-       CredentialLeakDialogKillswitchDisabledCancel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordLeakDialog);
-
-  // When killswitch is active (feature disabled), unsaved reused credentials
-  // route to kCheckupAndChange.
   SetUpController(
       CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)));
 
