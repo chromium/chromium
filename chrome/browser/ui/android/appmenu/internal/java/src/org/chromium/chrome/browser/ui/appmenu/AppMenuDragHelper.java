@@ -63,8 +63,8 @@ class AppMenuDragHelper {
     private volatile float mLastTouchX;
     private volatile float mLastTouchY;
     private final int mItemRowHeight;
-    private boolean mIsSingleTapCanceled;
     private boolean mMoved;
+    private boolean mHasMovedOutOfButton;
     private int mMenuButtonScreenCenterY;
 
     // These are used in a function locally, but defined here to avoid heap allocation on every
@@ -72,7 +72,6 @@ class AppMenuDragHelper {
     private final Rect mScreenVisibleRect = new Rect();
     private final int[] mScreenVisiblePoint = new int[2];
 
-    private final int mTapTimeout;
     private final int mScaledTouchSlop;
 
     AppMenuDragHelper(Context context, AppMenu appMenu, int itemRowHeight) {
@@ -106,10 +105,6 @@ class AppMenuDragHelper {
                     }
                 });
 
-        // We use medium timeout, the average of tap and long press timeouts. This is consistent
-        // with ListPopupWindow#ForwardingListener implementation.
-        mTapTimeout =
-                (ViewConfiguration.getTapTimeout() + ViewConfiguration.getLongPressTimeout()) / 2;
         mScaledTouchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
     }
 
@@ -126,8 +121,8 @@ class AppMenuDragHelper {
         mDragScrollOffset = 0.0f;
         mDragScrollOffsetRounded = 0;
         mDragScrollingVelocity = 0.0f;
-        mIsSingleTapCanceled = false;
         mMoved = false;
+        mHasMovedOutOfButton = false;
 
         if (startDragging) mDragScrolling.start();
     }
@@ -169,8 +164,8 @@ class AppMenuDragHelper {
         final int roundedRawX = Math.round(rawX);
         final int roundedRawY = Math.round(rawY);
         final int eventActionMasked = event.getActionMasked();
-        final long timeSinceDown = event.getEventTime() - event.getDownTime();
         final ListView listView = mAppMenu.getListView();
+        final float deltaY = Float.isNaN(mLastTouchY) ? 0.0f : (rawY - mLastTouchY);
 
         mLastTouchX = rawX;
         mLastTouchY = rawY;
@@ -185,33 +180,50 @@ class AppMenuDragHelper {
             mMoved = true;
         }
 
-        mIsSingleTapCanceled |= timeSinceDown > mTapTimeout;
-        mIsSingleTapCanceled |= !pointInView(button, event.getX(), event.getY(), mScaledTouchSlop);
-        if (eventActionMasked == MotionEvent.ACTION_UP && (!mMoved || !mIsSingleTapCanceled)) {
-            RecordUserAction.record("MobileUsingMenuBySwButtonTap");
-            finishDragging();
+        boolean isInsideButton = pointInView(button, event.getX(), event.getY(), mScaledTouchSlop);
+        if (!isInsideButton) {
+            mHasMovedOutOfButton = true;
         }
 
-        // After this line, drag scrolling is happening.
-        if (!mDragScrolling.isRunning()) return false;
+        if (eventActionMasked == MotionEvent.ACTION_UP && (!mMoved || !mHasMovedOutOfButton)) {
+            RecordUserAction.record("MobileUsingMenuBySwButtonTap");
+            finishDragging();
+            return true;
+        }
 
+        // Do not highlight or perform any item action until the user drags out of the anchor
+        // button into the menu. If the finger is still on the button (!mHasMovedOutOfButton),
+        // keep itemAction as CLEAR_HIGHLIGHT_ALL so adjacent menu items are not highlighted.
         @ItemAction int itemAction = ItemAction.CLEAR_HIGHLIGHT_ALL;
-        switch (eventActionMasked) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-                itemAction = ItemAction.HIGHLIGHT;
-                break;
-            case MotionEvent.ACTION_UP:
-                itemAction = ItemAction.PERFORM;
-                break;
-            default:
-                break;
+        if (mHasMovedOutOfButton) {
+            switch (eventActionMasked) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_MOVE:
+                    itemAction = ItemAction.HIGHLIGHT;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    itemAction = ItemAction.PERFORM;
+                    break;
+                default:
+                    break;
+            }
         }
         boolean didPerformClick = menuItemAction(roundedRawX, roundedRawY, itemAction);
 
-        if (eventActionMasked == MotionEvent.ACTION_UP && !didPerformClick) {
-            RecordUserAction.record("MobileUsingMenuBySwButtonDragging");
-            mAppMenu.dismiss();
+        if (eventActionMasked == MotionEvent.ACTION_UP) {
+            // When drag gesture ends on ACTION_UP, if the release did not perform an action on
+            // a menu item (e.g. released on empty background space), dismiss the menu.
+            if (!didPerformClick) {
+                RecordUserAction.record("MobileUsingMenuBySwButtonDragging");
+                mAppMenu.dismiss();
+            }
+            return true;
+        }
+
+        // Auto-scrolling velocity calculation for ongoing gestures:
+        if (!mHasMovedOutOfButton) {
+            // Do not auto-scroll while the user's touch has not moved outside the anchor button.
+            mDragScrollingVelocity = 0.0f;
         } else if (eventActionMasked == MotionEvent.ACTION_MOVE) {
             // Auto scrolling on the top or the bottom of the listView.
             assumeNonNull(listView);
@@ -222,15 +234,25 @@ class AppMenuDragHelper {
                                 mItemRowHeight * 1.2f / listView.getHeight());
                 float normalizedY =
                         (rawY - getScreenVisibleRect(listView).top) / listView.getHeight();
+                boolean isButtonAtTop =
+                        mMenuButtonScreenCenterY <= getScreenVisibleRect(listView).centerY();
+
                 if (normalizedY < autoScrollAreaRatio) {
-                    // Top
+                    // Top auto-scroll zone: auto-scroll up.
                     mDragScrollingVelocity =
                             (normalizedY / autoScrollAreaRatio - 1.0f) * mAutoScrollFullVelocity;
                 } else if (normalizedY > 1.0f - autoScrollAreaRatio) {
-                    // Bottom
-                    mDragScrollingVelocity =
-                            ((normalizedY - 1.0f) / autoScrollAreaRatio + 1.0f)
-                                    * mAutoScrollFullVelocity;
+                    // Bottom auto-scroll zone: auto-scroll down.
+                    // For a bottom-anchored menu, suppress downward auto-scrolling if the user is
+                    // dragging upward out of the bottom button (deltaY < 0). Only auto-scroll down
+                    // when the user moves their finger downward (deltaY > 0).
+                    if (!isButtonAtTop && deltaY < 0) {
+                        mDragScrollingVelocity = 0.0f;
+                    } else if (isButtonAtTop || deltaY > 0) {
+                        mDragScrollingVelocity =
+                                ((normalizedY - 1.0f) / autoScrollAreaRatio + 1.0f)
+                                        * mAutoScrollFullVelocity;
+                    }
                 } else {
                     // Middle or not scrollable.
                     mDragScrollingVelocity = 0.0f;
@@ -321,13 +343,20 @@ class AppMenuDragHelper {
         ListView listView = mAppMenu.getListView();
         assumeNonNull(listView);
 
-        // Starting M, we have a popup menu animation that slides down. If we process dragging
-        // events while it's sliding, it will touch many views that are passing by user's finger,
-        // which is not desirable. So we only process when the first item is below the menu button.
-        // Unfortunately, there is no available listener for sliding animation finished. Thus the
-        // following nasty heuristics.
+        // When the menu button is at the top, the popup menu has an entrance animation that slides
+        // down from the top. If we process dragging events while it is sliding down, it touches
+        // multiple views passing under the user's finger. Thus, we wait until the first item slides
+        // below the top menu button.
+        //
+        // However, for a bottom-anchored menu, the button center Y is at the bottom of the screen,
+        // so `firstRow.bottom <= mMenuButtonScreenCenterY` is always true at scroll position 0 and
+        // would permanently block all drag actions. Therefore, only apply this slide-down heuristic
+        // when the button is at the top of the menu (`isButtonAtTop`).
+        boolean isButtonAtTop =
+                mMenuButtonScreenCenterY <= getScreenVisibleRect(listView).centerY();
         final View firstRow = listView.getChildAt(0);
-        if (listView.getFirstVisiblePosition() == 0
+        if (isButtonAtTop
+                && listView.getFirstVisiblePosition() == 0
                 && firstRow != null
                 && firstRow.getTop() == 0
                 && getScreenVisibleRect(firstRow).bottom <= mMenuButtonScreenCenterY) {
