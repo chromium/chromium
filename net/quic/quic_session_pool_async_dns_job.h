@@ -196,7 +196,7 @@ class QuicSessionPool::AsyncDnsJob
   // handshake succeeds. An attempt with a stale ECH config can fail where a
   // plain A/AAAA endpoint to the same IP works.
   std::optional<Candidate> TakeNextCandidate(
-      const EndpointConnector* connector);
+      const EndpointConnector& connector);
 
   // Called by a connector every time one of its attempts failed. The job
   // keeps the most recent failure and reports it when it runs out of
@@ -208,7 +208,7 @@ class QuicSessionPool::AsyncDnsJob
   // ERR_IO_PENDING means the session was created and its crypto handshake
   // is still in flight. A failed result is held until the job's outcome is
   // known, because a later attempt may still create a session.
-  void OnSessionCreationDecided(int rv, const EndpointConnector* connector);
+  void OnSessionCreationDecided(int rv, const EndpointConnector& connector);
 
   // Called by `connector` when it settled successfully or when it ran out of
   // untried candidates. A connector settles successfully when its attempt
@@ -216,14 +216,14 @@ class QuicSessionPool::AsyncDnsJob
   // then destroys the other connector together with its in-flight attempt.
   // Running out of candidates fails the job only when the other connector has
   // nothing in flight and DNS has finished.
-  void OnConnectorComplete(int rv, EndpointConnector* connector);
+  void OnConnectorComplete(int rv, EndpointConnector& connector);
 
   // Returns the name of the slot `connector` occupies. For logging.
-  const char* SlotName(const EndpointConnector* connector) const;
+  const char* SlotName(const EndpointConnector& connector) const;
 
   // Called immediately before `connector` starts an attempt. Updates the
   // attempt metrics, logs the attempt, and returns its job-wide identifier.
-  int OnAttemptStarted(const EndpointConnector* connector,
+  int OnAttemptStarted(const EndpointConnector& connector,
                        const Candidate& candidate,
                        base::TimeTicks start_time);
 
@@ -278,7 +278,7 @@ class QuicSessionPool::AsyncDnsJob
   // Called when `connector` settled the job. Logs how it settled, destroys the
   // other connector together with the attempt it had in flight, and moves
   // `connector` into the primary slot when it was in the secondary one.
-  void DestroyOtherConnector(const EndpointConnector* connector);
+  void DestroyOtherConnector(const EndpointConnector& connector);
 
   // Starts the slow timer when the primary connector has its first attempt in
   // flight. The deadline is kept while the primary moves on to other
@@ -300,7 +300,7 @@ class QuicSessionPool::AsyncDnsJob
   // Returns the connector in the other slot, or nullptr when the other slot
   // is empty.
   const EndpointConnector* OtherConnector(
-      const EndpointConnector* connector) const;
+      const EndpointConnector& connector) const;
 
   // Returns the result of the most recently failed attempt, or nothing while
   // no attempt failed.
