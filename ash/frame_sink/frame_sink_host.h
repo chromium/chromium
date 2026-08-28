@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/frame_sink/ui_resource_manager.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "cc/resources/resource_pool.h"
@@ -93,8 +92,6 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Creates a compositor frame that can be sent to the display compositor.
   // `begin_frame_ack` is a token that needs to be attached to the compositor
   // frame being created.
-  // `resource_manager` helps manage resources that can be attached to the
-  // compositor frame and also give us a pool of reusable resources.
   // `auto_update` if true means that we are continuously submitting frames
   // asynchronously and should redraw full surface regardless of damage.
   // `last_submitted_frame_size` and `last_submitted_frame_dsf`
@@ -103,7 +100,6 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Returns nullptr if a compositor frame cannot be created.
   virtual std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       const viz::BeginFrameAck& begin_frame_ack,
-      UiResourceManager& resource_manager,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool,
       bool auto_update,

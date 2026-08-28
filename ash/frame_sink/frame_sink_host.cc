@@ -93,10 +93,6 @@ void FrameSinkHost::UpdateSurface(const gfx::Rect& content_rect,
   content_rect_ = content_rect;
   UnionDamage(damage_rect);
 
-  if (!damage_rect.IsEmpty()) {
-    frame_sink_holder_->resource_manager().DamageResources();
-  }
-
   frame_sink_holder_->SubmitCompositorFrame(synchonous_draw);
 }
 
@@ -108,10 +104,6 @@ void FrameSinkHost::AutoUpdateSurface(const gfx::Rect& content_rect,
 
   content_rect_ = content_rect;
   UnionDamage(damage_rect);
-
-  if (!damage_rect.IsEmpty()) {
-    frame_sink_holder_->resource_manager().DamageResources();
-  }
 
   frame_sink_holder_->SetAutoUpdateMode(/*mode=*/true);
 }

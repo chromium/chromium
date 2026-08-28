@@ -97,7 +97,6 @@ std::unique_ptr<FastInkHost::ScopedPaint> FastInkHost::CreateScopedPaint(
 
 std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
-    UiResourceManager& resource_manager,
     viz::ClientResourceProvider& client_resource_provider,
     cc::ResourcePool& resource_pool,
     bool auto_update,

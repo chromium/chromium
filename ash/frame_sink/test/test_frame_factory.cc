@@ -4,7 +4,6 @@
 
 #include "ash/frame_sink/test/test_frame_factory.h"
 
-#include "ash/frame_sink/ui_resource_manager.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,7 +16,6 @@ TestFrameFactory::~TestFrameFactory() = default;
 
 std::unique_ptr<viz::CompositorFrame> TestFrameFactory::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
-    UiResourceManager& resource_manager,
     viz::ClientResourceProvider& client_resource_provider,
     cc::ResourcePool& resource_pool,
     bool auto_refresh,

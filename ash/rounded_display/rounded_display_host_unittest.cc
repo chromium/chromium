@@ -37,14 +37,13 @@ class TestRoundedDisplayHost : public RoundedDisplayHost {
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) {
     return RoundedDisplayHost::CreateCompositorFrame(
-        viz::BeginFrameAck::CreateManualAckWithDamage(), resource_manager_,
+        viz::BeginFrameAck::CreateManualAckWithDamage(),
         client_resource_provider_, *resource_pool_,
         /*auto_update=*/false, last_submitted_frame_size,
         last_submitted_frame_dsf);
   }
 
  private:
-  UiResourceManager resource_manager_;
   viz::ClientResourceProvider client_resource_provider_;
   std::unique_ptr<cc::ResourcePool> resource_pool_ =
       std::make_unique<cc::ResourcePool>(

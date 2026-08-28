@@ -8,13 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/rounded_display/rounded_display_gutter.h"
 #include "ash/rounded_display/rounded_display_gutter_factory.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -35,16 +33,16 @@ constexpr gfx::RoundedCornersF kTestPanelRadii(10);
 
 using RoundedDisplayMasksInfo = viz::TextureDrawQuad::RoundedDisplayMasksInfo;
 
-class RoundedDisplayFrameFactoryTest : public AshTestBase {
+class RoundedDisplayFrameFactoryTestBase : public AshTestBase {
  public:
-  RoundedDisplayFrameFactoryTest() = default;
+  RoundedDisplayFrameFactoryTestBase() = default;
 
-  RoundedDisplayFrameFactoryTest(const RoundedDisplayFrameFactoryTest&) =
-      delete;
-  RoundedDisplayFrameFactoryTest& operator=(
-      const RoundedDisplayFrameFactoryTest&) = delete;
+  RoundedDisplayFrameFactoryTestBase(
+      const RoundedDisplayFrameFactoryTestBase&) = delete;
+  RoundedDisplayFrameFactoryTestBase& operator=(
+      const RoundedDisplayFrameFactoryTestBase&) = delete;
 
-  ~RoundedDisplayFrameFactoryTest() override = default;
+  ~RoundedDisplayFrameFactoryTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -116,6 +114,8 @@ class RoundedDisplayFrameFactoryTest : public AshTestBase {
           false);
   std::unique_ptr<aura::Window> host_window_;
 };
+
+using RoundedDisplayFrameFactoryTest = RoundedDisplayFrameFactoryTestBase;
 
 // TODO(zoraiznaeem): Add more unittest coverage.
 TEST_F(RoundedDisplayFrameFactoryTest, CompositorFrameHasCorrectStructure) {

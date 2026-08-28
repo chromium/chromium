@@ -78,7 +78,6 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
   // FrameSinkHost:
   std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       const viz::BeginFrameAck& begin_frame_ack,
-      UiResourceManager& resource_manager,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool,
       bool auto_update,

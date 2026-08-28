@@ -41,16 +41,16 @@ namespace {
 constexpr auto kTestContentRectInDIP = gfx::Rect(0, 0, 200, 100);
 constexpr auto kTestTotalDamageRectInDIP = gfx::Rect(0, 0, 50, 25);
 
-class FastInkHostCreateFrameUtilTest : public AshTestBase {
+class FastInkHostCreateFrameUtilTestBase : public AshTestBase {
  public:
-  FastInkHostCreateFrameUtilTest() = default;
+  FastInkHostCreateFrameUtilTestBase() = default;
 
-  FastInkHostCreateFrameUtilTest(const FastInkHostCreateFrameUtilTest&) =
-      delete;
-  FastInkHostCreateFrameUtilTest& operator=(
-      const FastInkHostCreateFrameUtilTest&) = delete;
+  FastInkHostCreateFrameUtilTestBase(
+      const FastInkHostCreateFrameUtilTestBase&) = delete;
+  FastInkHostCreateFrameUtilTestBase& operator=(
+      const FastInkHostCreateFrameUtilTestBase&) = delete;
 
-  ~FastInkHostCreateFrameUtilTest() override = default;
+  ~FastInkHostCreateFrameUtilTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -110,6 +110,8 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
   raw_ptr<aura::Window> host_window_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
+
+using FastInkHostCreateFrameUtilTest = FastInkHostCreateFrameUtilTestBase;
 
 TEST_F(FastInkHostCreateFrameUtilTest, HasValidSourceId) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
@@ -195,9 +197,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
 TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHintKillswitch) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureStates({
-        {features::kFastInkHostLowPriorityHint, false},
-    });
+    scoped_feature_list.InitAndDisableFeature(
+        features::kFastInkHostLowPriorityHint);
 
     auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
         viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
@@ -226,9 +227,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHintKillswitch) {
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureStates({
-        {features::kFastInkHostLowPriorityHint, true},
-    });
+    scoped_feature_list.InitAndEnableFeature(
+        features::kFastInkHostLowPriorityHint);
 
     auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
         viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,

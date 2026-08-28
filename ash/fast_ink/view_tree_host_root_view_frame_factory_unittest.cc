@@ -9,11 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -31,16 +29,16 @@ namespace {
 constexpr gfx::Rect kTestContentRect = gfx::Rect(0, 0, 200, 100);
 constexpr gfx::Rect kTestTotalDamageRect = gfx::Rect(0, 0, 50, 25);
 
-class ViewTreeHostRootViewFrameFactoryTest : public AshTestBase {
+class ViewTreeHostRootViewFrameFactoryTestBase : public AshTestBase {
  public:
-  ViewTreeHostRootViewFrameFactoryTest() = default;
+  ViewTreeHostRootViewFrameFactoryTestBase() = default;
 
-  ViewTreeHostRootViewFrameFactoryTest(
-      const ViewTreeHostRootViewFrameFactoryTest&) = delete;
-  ViewTreeHostRootViewFrameFactoryTest& operator=(
-      const ViewTreeHostRootViewFrameFactoryTest&) = delete;
+  ViewTreeHostRootViewFrameFactoryTestBase(
+      const ViewTreeHostRootViewFrameFactoryTestBase&) = delete;
+  ViewTreeHostRootViewFrameFactoryTestBase& operator=(
+      const ViewTreeHostRootViewFrameFactoryTestBase&) = delete;
 
-  ~ViewTreeHostRootViewFrameFactoryTest() override = default;
+  ~ViewTreeHostRootViewFrameFactoryTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -70,6 +68,9 @@ class ViewTreeHostRootViewFrameFactoryTest : public AshTestBase {
           false);
   std::unique_ptr<views::Widget> widget_;
 };
+
+using ViewTreeHostRootViewFrameFactoryTest =
+    ViewTreeHostRootViewFrameFactoryTestBase;
 
 TEST_F(ViewTreeHostRootViewFrameFactoryTest,
        CompositorFrameHasCorrectStructure) {
@@ -208,7 +209,7 @@ struct ViewTreeHostRootViewFrameResourceTestParams {
 };
 
 class ViewTreeHostRootViewFrameResourceTest
-    : public ViewTreeHostRootViewFrameFactoryTest,
+    : public ViewTreeHostRootViewFrameFactoryTestBase,
       public ::testing::WithParamInterface<
           ViewTreeHostRootViewFrameResourceTestParams> {};
 

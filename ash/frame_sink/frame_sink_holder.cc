@@ -8,9 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
-#include "ash/frame_sink/ui_resource_manager.h"
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/resources/resource_pool.h"
@@ -71,11 +69,7 @@ bool FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
     return true;
   }
 
-  UiResourceManager& resource_manager = frame_sink_holder->resource_manager();
-  bool has_exported_resources =
-      features::IsFrameSinkHostNewBackendEnabled()
-          ? !frame_sink_holder->exported_resources_.empty()
-          : resource_manager.exported_resources_count() > 0;
+  bool has_exported_resources = !frame_sink_holder->exported_resources_.empty();
 
   if (frame_sink_holder->last_frame_size_in_pixels_.IsEmpty()) {
     // Delete sink holder immediately if no frame has been submitted.
@@ -104,12 +98,8 @@ bool FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   if (!root_window) {
     // Since we are in shutdown process, we will not be able to recover the
     // exported resources so just let the resources be marked as lost.
-    if (features::IsFrameSinkHostNewBackendEnabled()) {
-      frame_sink_holder->client_resource_provider_->ReleaseAllExportedResources(
-          /*lose=*/true);
-    } else {
-      resource_manager.LostExportedResources();
-    }
+    frame_sink_holder->client_resource_provider_->ReleaseAllExportedResources(
+        /*lose=*/true);
     return true;
   }
 
@@ -183,7 +173,7 @@ void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
 
   std::unique_ptr<viz::CompositorFrame> frame =
       get_compositor_frame_callback_.Run(
-          viz::BeginFrameAck::CreateManualAckWithDamage(), resources_manager_,
+          viz::BeginFrameAck::CreateManualAckWithDamage(),
           *client_resource_provider_, *resource_pool_, auto_update_,
           last_frame_size_in_pixels_, last_frame_device_scale_factor_);
 
@@ -206,10 +196,8 @@ void FrameSinkHolder::SubmitCompositorFrameInternal(
 
   frame->metadata.frame_token = ++compositor_frame_token_generator_;
 
-  if (features::IsFrameSinkHostNewBackendEnabled()) {
-    for (const auto& resource : frame->resource_list) {
-      exported_resources_.insert(resource.id);
-    }
+  for (const auto& resource : frame->resource_list) {
+    exported_resources_.insert(resource.id);
   }
 
   frame_sink_->SubmitCompositorFrame(std::move(*frame),
@@ -243,9 +231,9 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
 
   std::unique_ptr<viz::CompositorFrame> frame =
       get_compositor_frame_callback_.Run(
-          current_begin_frame_ack, resources_manager_,
-          *client_resource_provider_, *resource_pool_, auto_update_,
-          last_frame_size_in_pixels_, last_frame_device_scale_factor_);
+          current_begin_frame_ack, *client_resource_provider_, *resource_pool_,
+          auto_update_, last_frame_size_in_pixels_,
+          last_frame_device_scale_factor_);
 
   if (!frame) {
     // Failure to produce a frame is treated as if there was no damage.
@@ -254,10 +242,8 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
     return false;
   }
 
-  if (features::IsFrameSinkHostNewBackendEnabled()) {
-    for (const auto& resource : frame->resource_list) {
-      exported_resources_.insert(resource.id);
-    }
+  for (const auto& resource : frame->resource_list) {
+    exported_resources_.insert(resource.id);
   }
 
   SubmitCompositorFrameInternal(std::move(frame));
@@ -310,19 +296,12 @@ void FrameSinkHolder::ReclaimResources(
     return;
   }
 
-  if (features::IsFrameSinkHostNewBackendEnabled()) {
-    for (const auto& returned_resource : resources) {
-      exported_resources_.erase(returned_resource.id);
-    }
-    client_resource_provider_->ReceiveReturnsFromParent(std::move(resources));
-  } else {
-    resource_manager().ReclaimResources(resources);
+  for (const auto& returned_resource : resources) {
+    exported_resources_.erase(returned_resource.id);
   }
+  client_resource_provider_->ReceiveReturnsFromParent(std::move(resources));
 
-  bool has_exported_resources =
-      features::IsFrameSinkHostNewBackendEnabled()
-          ? !exported_resources_.empty()
-          : resource_manager().exported_resources_count() > 0;
+  bool has_exported_resources = !exported_resources_.empty();
 
   if (WaitingToScheduleDelete() && !has_exported_resources) {
     ScheduleDelete();
@@ -345,12 +324,8 @@ void FrameSinkHolder::DidPresentCompositorFrame(
 }
 
 void FrameSinkHolder::DidLoseLayerTreeFrameSink() {
-  if (features::IsFrameSinkHostNewBackendEnabled()) {
-    exported_resources_.clear();
-    client_resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
-  } else {
-    resource_manager().LostExportedResources();
-  }
+  exported_resources_.clear();
+  client_resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
   is_frame_sink_lost_ = true;
 
   if (WaitingToScheduleDelete()) {
@@ -375,12 +350,8 @@ void FrameSinkHolder::OnWindowDestroying(aura::Window* window) {
   // Since we are destroying the root_window via which we were extending the
   // lifetime of the layer_sink_holder, after this point we cannot recover the
   // exported resources therefore just mark the exported resources as lost.
-  if (features::IsFrameSinkHostNewBackendEnabled()) {
-    exported_resources_.clear();
-    client_resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
-  } else {
-    resources_manager_.LostExportedResources();
-  }
+  exported_resources_.clear();
+  client_resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
   root_window_observation_.Reset();
   // Detaching client from `frame_sink_` ensures that display_compositor does
   // not call methods on `this` after we have scheduled the deletion of this

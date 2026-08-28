@@ -4,7 +4,6 @@
 
 #include "ash/fast_ink/view_tree_host_root_view_frame_factory.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
 #include "base/check.h"
 #include "base/logging.h"

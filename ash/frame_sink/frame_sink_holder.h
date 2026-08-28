@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/frame_sink/frame_sink_host.h"
-#include "ash/frame_sink/ui_resource_manager.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -53,7 +52,6 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   using GetCompositorFrameCallback =
       base::RepeatingCallback<std::unique_ptr<viz::CompositorFrame>(
           const viz::BeginFrameAck& begin_frame_ack,
-          UiResourceManager& resource_manager,
           viz::ClientResourceProvider& resource_provider,
           cc::ResourcePool& resource_pool,
           bool auto_update,
@@ -101,8 +99,6 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // display compositor without a request to submit a frame via
   // `SubmitCompositorFrame()`.
   void SetAutoUpdateMode(bool mode);
-
-  UiResourceManager& resource_manager() { return resources_manager_; }
 
   // Submits a single compositor frame to display compositor. Auto-submit
   // mode must be off to use this method. If synchronous_draw is true, we try to
@@ -192,11 +188,6 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // If either changes, we'll need to allocate a new local surface ID.
   gfx::Size last_frame_size_in_pixels_;
   float last_frame_device_scale_factor_ = 1.0f;
-
-  // Keeps track of resources that are currently available to be reused in a
-  // compositor frame and the resources that are in-use by the display
-  // compositor.
-  UiResourceManager resources_manager_;
 
   std::unique_ptr<viz::ClientResourceProvider> client_resource_provider_;
   std::unique_ptr<cc::ResourcePool> resource_pool_;
