@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_component_configs.h"
 #include "components/optimization_guide/core/delivery/prediction_model_component_update_listener.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "third_party/zlib/google/zip.h"
 
 namespace component_updater {
 
@@ -60,7 +61,15 @@ class PredictionModelComponentInstallerPolicy
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictValue& manifest,
       const base::FilePath& install_dir) override {
-    return update_client::CrxInstaller::Result(0);  // Nothing custom here.
+    base::FilePath model_crx_path = install_dir.AppendASCII("model.crx3");
+    if (base::PathExists(model_crx_path)) {
+      if (!zip::Unzip(model_crx_path, install_dir)) {
+        return update_client::CrxInstaller::Result(
+            update_client::InstallError::GENERIC_ERROR);
+      }
+      base::DeleteFile(model_crx_path);
+    }
+    return update_client::CrxInstaller::Result(0);
   }
 
   void OnCustomUninstall() override {

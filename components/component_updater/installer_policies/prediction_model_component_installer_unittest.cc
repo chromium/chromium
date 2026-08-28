@@ -31,6 +31,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/zlib/google/zip.h"
 
 namespace component_updater {
 
@@ -345,6 +346,50 @@ TEST_F(PredictionModelComponentInstallerTest, UninstallBeforeComponentReady) {
   EXPECT_EQ(observer.last_model_info(), nullptr);
 
   listener_.RemoveObserverForOptimizationTargetModel(kTestTarget, &observer);
+}
+
+TEST_F(PredictionModelComponentInstallerTest, OnCustomInstallExtractsModelCrx) {
+  // Create a staging folder for raw model files.
+  base::ScopedTempDir raw_files_dir;
+  ASSERT_TRUE(raw_files_dir.CreateUniqueTempDir());
+  base::WriteFile(raw_files_dir.GetPath().Append(
+                      optimization_guide::GetBaseFileNameForModels()),
+                  "dummy model content");
+
+  optimization_guide::proto::ModelInfo model_info;
+  model_info.set_optimization_target(kTestTarget);
+  model_info.set_version(123);
+  std::string serialized;
+  ASSERT_TRUE(model_info.SerializeToString(&serialized));
+  base::WriteFile(raw_files_dir.GetPath().Append(
+                      optimization_guide::GetBaseFileNameForModelInfo()),
+                  serialized);
+
+  // Zip the model files and save to a new, empty install_dir.
+  base::ScopedTempDir install_dir;
+  ASSERT_TRUE(install_dir.CreateUniqueTempDir());
+  base::FilePath model_crx_path =
+      install_dir.GetPath().AppendASCII("model.crx3");
+  ASSERT_TRUE(zip::Zip(raw_files_dir.GetPath(), model_crx_path,
+                       /*include_hidden_files=*/false));
+
+  // Prior to `OnCustomInstall`, the extracted model files do not exist, and
+  // `OnCustomInstall` should unzip model.crx3 and delete the crx3 file.
+  EXPECT_FALSE(
+      policy_->VerifyInstallation(base::DictValue(), install_dir.GetPath()));
+  auto result =
+      policy_->OnCustomInstall(base::DictValue(), install_dir.GetPath());
+  EXPECT_EQ(result.result.code, 0);
+  EXPECT_FALSE(base::PathExists(model_crx_path));
+
+  EXPECT_TRUE(
+      policy_->VerifyInstallation(base::DictValue(), install_dir.GetPath()));
+}
+
+TEST_F(PredictionModelComponentInstallerTest, OnCustomInstallNoModelCrx) {
+  // When model.crx3 is not present `OnCustomInstall` should succeed as a no-op.
+  auto result = policy_->OnCustomInstall(base::DictValue(), model_dir_.path());
+  EXPECT_EQ(result.result.code, 0);
 }
 
 }  // namespace component_updater

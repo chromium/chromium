@@ -68,6 +68,7 @@ static_library("installer_policies_with_content_deps") {
     "//components/omnibox/common",
     "//components/optimization_guide/core",
     "//components/update_client",
+    "//third_party/zlib/google:zip",
   ]
 
   if (is_chromeos || is_win || is_mac || is_linux) {
@@ -110,6 +111,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/zlib/google:zip",
     "//url",
   ]
 }
