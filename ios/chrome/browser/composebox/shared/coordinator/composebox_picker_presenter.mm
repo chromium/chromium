@@ -152,14 +152,10 @@
   }
   CHECK_EQ(_browser->type(), Browser::Type::kRegular);
 
-  ProfileIOS* profile = _browser->GetProfile();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  CHECK(authService && authService->HasPrimaryIdentity());
-  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
+  id<SystemIdentity> identity = [self driveFilePickerIdentity];
   CHECK(identity);
 
-  PrefService* prefService = profile->GetPrefs();
+  PrefService* prefService = _browser->GetProfile()->GetPrefs();
   auto consentState = static_cast<contextual_search::DriveConsentState>(
       prefService->GetInteger(contextual_search::kDriveConsentState));
 
@@ -200,15 +196,7 @@
 
 - (void)privacyPrimitiveFlowCompletedWithSuccess:(BOOL)success {
   self.privacyPrimitiveService = nil;
-  if (!success || !_browser) {
-    return;
-  }
-  if (_browser->type() != Browser::Type::kRegular) {
-    return;
-  }
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  if (!authService || !authService->HasPrimaryIdentity()) {
+  if (!success || ![self canShowDriveFilePicker]) {
     return;
   }
   PrefService* prefs = _browser->GetProfile()->GetPrefs();
@@ -219,15 +207,7 @@
 }
 
 - (void)showDriveFilePickerInternal {
-  if (!_browser) {
-    return;
-  }
-  if (_browser->type() != Browser::Type::kRegular) {
-    return;
-  }
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  if (!authService || !authService->HasPrimaryIdentity()) {
+  if (!_browser || ![self canShowDriveFilePicker]) {
     return;
   }
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
@@ -312,6 +292,25 @@
 }
 
 #pragma mark - Private
+
+/// Returns the primary identity if the browser is regular and the user is
+/// signed in; otherwise returns nil.
+- (id<SystemIdentity>)driveFilePickerIdentity {
+  if (!_browser || _browser->type() != Browser::Type::kRegular) {
+    return nil;
+  }
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
+  if (!authService || !authService->HasPrimaryIdentity()) {
+    return nil;
+  }
+  return authService->GetPrimaryIdentity();
+}
+
+/// Returns whether the Drive file picker can be presented.
+- (BOOL)canShowDriveFilePicker {
+  return [self driveFilePickerIdentity] != nil;
+}
 
 - (void)createSnackbarPresenterIfNeeded {
   if (_snackbarPresenter || !_browser) {
