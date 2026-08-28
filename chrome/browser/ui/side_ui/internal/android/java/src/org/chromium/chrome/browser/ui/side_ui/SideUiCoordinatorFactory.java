@@ -11,7 +11,7 @@ import android.view.ViewStub;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -32,8 +32,8 @@ public final class SideUiCoordinatorFactory {
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for {@code
      *     parentActivity}.
      * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
-     *     top controls changes.
+     * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager} to
+     *     adjust for top controls changes.
      * @param fullscreenManager The {@link FullscreenManager} for observing tab fullscreen mode.
      * @param topControlsStacker The {@link TopControlsStacker} to calculate heights for top
      *     controls.
@@ -51,7 +51,7 @@ public final class SideUiCoordinatorFactory {
             Activity parentActivity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             FullscreenManager fullscreenManager,
             TopControlsStacker topControlsStacker,
             @Nullable ViewGroup anchorContainerParent,
@@ -73,7 +73,7 @@ public final class SideUiCoordinatorFactory {
                 parentActivity,
                 lifecycleDispatcher,
                 layoutStateProviderSupplier,
-                browserControlsStateProvider,
+                browserControlsVisibilityManager,
                 fullscreenManager,
                 topControlsStacker,
                 anchorContainerParent,

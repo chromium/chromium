@@ -50,7 +50,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -83,7 +84,9 @@ public class SideUiCoordinatorImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final TestBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate =
+            new TestBrowserControlsVisibilityDelegate();
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
@@ -133,6 +136,7 @@ public class SideUiCoordinatorImplTest {
         doReturn(mLeftAnchorContainer).when(mLeftAnchorContainerStub).inflate();
         doReturn(mRightAnchorContainer).when(mRightAnchorContainerStub).inflate();
 
+        // Set up hairline container.
         SideUiWebContentHairlineContainer webContentHairlineContainer =
                 (SideUiWebContentHairlineContainer)
                         mTestActivity
@@ -141,6 +145,10 @@ public class SideUiCoordinatorImplTest {
         webContentHairlineContainer.setLayoutParams(new MarginLayoutParams(0, 0));
         doReturn(webContentHairlineContainer).when(mWebContentHairlineContainerStub).inflate();
 
+        // Set up browser controls classes.
+        doReturn(mBrowserControlsVisibilityDelegate)
+                .when(mBrowserControlsVisibilityManager)
+                .getBrowserVisibilityDelegate();
         doReturn(HEIGHT_TO_TABSTRIP_BOTTOM)
                 .when(mTopControlsStacker)
                 .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
@@ -151,7 +159,7 @@ public class SideUiCoordinatorImplTest {
                         mTestActivity,
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderSupplier,
-                        mBrowserControlsStateProvider,
+                        mBrowserControlsVisibilityManager,
                         mFullscreenManager,
                         mTopControlsStacker,
                         anchorContainerParent,
@@ -812,7 +820,7 @@ public class SideUiCoordinatorImplTest {
     @Test
     @DisabledTest(message = "crbug.com/538387539")
     public void testUpdateUi_UpdatesWebContentHairline() {
-        doReturn(50f).when(mBrowserControlsStateProvider).getTopVisibleContentOffset();
+        doReturn(50f).when(mBrowserControlsVisibilityManager).getTopVisibleContentOffset();
 
         var sideUiContainer =
                 new TestSideUiContainer(
@@ -822,7 +830,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.updateUi(
                 new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
 
-        verify(mBrowserControlsStateProvider, atLeastOnce()).getTopVisibleContentOffset();
+        verify(mBrowserControlsVisibilityManager, atLeastOnce()).getTopVisibleContentOffset();
     }
 
     @Test
@@ -1014,5 +1022,110 @@ public class SideUiCoordinatorImplTest {
         MarginLayoutParams rightLayoutParams =
                 (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
         assertEquals(0, rightLayoutParams.topMargin);
+    }
+
+    @Test
+    public void testBrowserControlsVisibility_whenSideUiShownAndHidden() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // Opening side UI should lock browser controls to SHOWN.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mShowCount);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
+        // Closing side UI should release the persistent showing token.
+        sideUiContainer.mHasContentToShow = false;
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+    }
+
+    @Test
+    public void testBrowserControlsVisibility_multipleContainers() {
+        var leftContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        View rightView = new View(mTestActivity);
+        var rightContainer =
+                new TestSideUiContainer(
+                        mCoordinator, rightView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+
+        mCoordinator.registerSideUiContainer(leftContainer);
+        mCoordinator.registerSideUiContainer(rightContainer);
+
+        // Showing left container acquires token.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(leftContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mShowCount);
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
+        // Showing right container as well should not acquire another token.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(rightContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mShowCount);
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+
+        // Hiding left container while right container is still showing should not release the
+        // token.
+        leftContainer.mHasContentToShow = false;
+        mCoordinator.updateUi(
+                new UiUpdateRequest(leftContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
+        // Hiding right container (all containers hidden) should release the token.
+        rightContainer.mHasContentToShow = false;
+        mCoordinator.updateUi(
+                new UiUpdateRequest(rightContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+    }
+
+    @Test
+    public void testBrowserControlsVisibility_destroyReleasesToken() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mShowCount);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
+        mCoordinator.destroy();
+        assertEquals(1, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+    }
+
+    @Test
+    public void testBrowserControlsVisibility_destroyWithoutBeingVisible() {
+        mCoordinator.destroy();
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+    }
+
+    @Test
+    public void testBrowserControlsVisibility_whenShouldLockTopControlsIsFalse() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mShouldLockTopControls = false;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // Opening side UI when shouldLockTopControls is false should not acquire token.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mShowCount);
+        assertEquals(0, mBrowserControlsVisibilityDelegate.mReleaseCount);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
     }
 }

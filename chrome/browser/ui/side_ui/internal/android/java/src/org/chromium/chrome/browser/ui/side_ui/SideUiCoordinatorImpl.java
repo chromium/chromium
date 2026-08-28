@@ -31,6 +31,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +67,8 @@ final class SideUiCoordinatorImpl
     private final Activity mParentActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TopControlsStacker mTopControlsStacker;
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final FullscreenManager mFullscreenManager;
 
     private final ViewGroup mAnchorContainerParent;
@@ -85,6 +89,8 @@ final class SideUiCoordinatorImpl
 
     private final SideUiWebContentHairlineManager mWebContentsHairlineManager;
 
+    private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+
     /**
      * Whether {@link #updateUiInternal} is in progress.
      *
@@ -99,8 +105,8 @@ final class SideUiCoordinatorImpl
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for {@code
      *     parentActivity}.
      * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
-     *     top controls changes.
+     * @param browserControlVisibilityManager The {@link BrowserControlsVisibilityManager} to adjust
+     *     for top controls changes.
      * @param fullscreenManager {@link FullscreenManager} to observe fullscreen mode switching.
      * @param topControlsStacker The {@link TopControlsStacker} to calculate heights for top
      *     controls.
@@ -116,7 +122,7 @@ final class SideUiCoordinatorImpl
             Activity parentActivity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlVisibilityManager,
             FullscreenManager fullscreenManager,
             TopControlsStacker topControlsStacker,
             ViewGroup anchorContainerParent,
@@ -126,10 +132,13 @@ final class SideUiCoordinatorImpl
             IncognitoStateProvider incognitoStateProvider) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControlsVisibilityManager = browserControlVisibilityManager;
         mFullscreenManager = fullscreenManager;
         mTopControlsStacker = topControlsStacker;
         mAnchorContainerParent = anchorContainerParent;
+
+        mBrowserControlsVisibilityDelegate =
+                browserControlVisibilityManager.getBrowserVisibilityDelegate();
 
         ViewGroup leftAnchorContainer = (ViewGroup) leftAnchorContainerStub.inflate();
         ViewGroup rightAnchorContainer = (ViewGroup) rightAnchorContainerStub.inflate();
@@ -144,7 +153,7 @@ final class SideUiCoordinatorImpl
                 (SideUiWebContentHairlineContainer) webContentHairlineContainerStub.inflate();
         mWebContentsHairlineManager =
                 new SideUiWebContentHairlineManager(
-                        browserControlsStateProvider,
+                        browserControlVisibilityManager,
                         /* sideUiStateProvider= */ this,
                         webContentHairlineContainer,
                         incognitoStateProvider);
@@ -154,7 +163,7 @@ final class SideUiCoordinatorImpl
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
-        browserControlsStateProvider.addObserver(this);
+        browserControlVisibilityManager.addObserver(this);
         mFullscreenManager.addObserver(this);
         mActivityLifecycleDispatcher.register(this);
     }
@@ -211,6 +220,7 @@ final class SideUiCoordinatorImpl
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        releasePersistentShowingToken();
         if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;
@@ -218,7 +228,7 @@ final class SideUiCoordinatorImpl
         }
         mCallbackController.destroy();
         mSideUiContainers.clear();
-        mBrowserControlsStateProvider.removeObserver(this);
+        mBrowserControlsVisibilityManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
         mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
@@ -441,7 +451,10 @@ final class SideUiCoordinatorImpl
         // 6. Notify SideUiObservers of the new SideUiShowability.
         mSideUiObserverNotifier.notifySideUiShowability(newSideUiShowability);
 
-        // 7. Commit the new SideUiSpecs.
+        // 7. Update browser controls visibility constraint.
+        updateBrowserControlsVisibility(newSideUiSpecs);
+
+        // 8. Commit the new SideUiSpecs.
         if (!sideUiSpecsDiff.isEmpty() || !topMarginDiff.isEmpty()) {
             var uiUpdateSpecs =
                     new SideUiUpdateSpecs(
@@ -889,6 +902,35 @@ final class SideUiCoordinatorImpl
         anchorContainer.removeView(sideUiContainerView);
         assert anchorContainer.getChildCount() == 0;
         anchorContainer.setVisibility(View.GONE);
+    }
+
+    private void updateBrowserControlsVisibility(SideUiSpecs newSideUiSpecs) {
+        boolean shouldLockTopControls = shouldLockTopControls(newSideUiSpecs);
+        if (!shouldLockTopControls) {
+            releasePersistentShowingToken();
+            return;
+        }
+
+        if (mBrowserControlsToken == TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsToken = mBrowserControlsVisibilityDelegate.showControlsPersistent();
+        }
+    }
+
+    private boolean shouldLockTopControls(SideUiSpecs sideUiSpecs) {
+        for (var container : mSideUiContainers) {
+            if (container.shouldLockTopControls()
+                    && sideUiSpecs.getWidth(container.getAnchorSide()) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void releasePersistentShowingToken() {
+        if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(mBrowserControlsToken);
+            mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 
     private @Px int getWindowWidth() {

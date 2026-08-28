@@ -23,7 +23,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     static final int COLLAPSED_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
 
     private final SideUiCoordinator mSideUiCoordinator;
-    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final FrameLayout mRootView;
     private final @AnchorSide int mAnchorSide;
     private final VerticalTabListCoordinator mTabListCoordinator;
@@ -71,18 +68,15 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     // insufficient available width. When true, the rail collapses and the collapse button is
     // disabled.
     private boolean mIsForcedCollapsed;
-    private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
     public VerticalTabsSideUiCoordinator(
             Activity activity,
             SideUiCoordinator sideUiCoordinator,
-            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             VerticalTabListCoordinator tabListCoordinator,
             SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier) {
         mAnchorSide = AnchorSide.LEFT;
 
         mSideUiCoordinator = sideUiCoordinator;
-        mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mTabListCoordinator = tabListCoordinator;
         mCollapseController = mTabListCoordinator.getCollapseController();
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
@@ -107,11 +101,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mManualVisible = show;
         if (!show) {
             updateAutoHiddenState(false);
-            releasePersistentShowingToken();
-        } else {
-            if (mBrowserControlsToken == TokenHolder.INVALID_TOKEN) {
-                mBrowserControlsToken = mBrowserControlsVisibilityDelegate.showControlsPersistent();
-            }
         }
         mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
         // Fallback: If hiding VT when spec diff is empty (no hide animation scheduled),
@@ -124,7 +113,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     public void destroy() {
         updateAutoHiddenState(false);
-        releasePersistentShowingToken();
         mSideUiCoordinator.removeObserver(this);
         mCollapseController.setRailCollapseListener(null);
         mTabListCoordinator.destroy();
@@ -161,13 +149,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
      */
     public boolean canActivateTabLayoutToggleMenu() {
         return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
-    }
-
-    private void releasePersistentShowingToken() {
-        if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
-            mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(mBrowserControlsToken);
-            mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
-        }
     }
 
     // SideUiContainer implementation:
