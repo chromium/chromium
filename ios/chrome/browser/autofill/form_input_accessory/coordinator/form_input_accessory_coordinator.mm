@@ -582,6 +582,10 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   // TODO(crbug.com/551864564): Implement opening sources for the suggestion.
 }
 
+- (void)suppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  // TODO(crbug.com/551864564): Implement suppression/removal of the entity.
+}
+
 - (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofillSourceAttribution)) {
@@ -609,6 +613,14 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   return std::ranges::any_of(payload->sources, [](const auto& source) {
     return GURL(source.url).is_valid();
   });
+}
+
+- (BOOL)canSuppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  if (![self isPersonalContextSuggestion:suggestion]) {
+    return NO;
+  }
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillAmbientAutofillSuppressionUI);
 }
 
 - (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {

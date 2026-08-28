@@ -864,6 +864,28 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   return viewSourcesAction;
 }
 
+// Handles the tap on the remove context menu action.
+- (void)handleRemoveTap {
+  [_delegate suppressPersonalContextSuggestion:self.suggestion];
+}
+
+// Returns the action to remove a personal context suggestion.
+- (UIAction*)removeAction {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* removeAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_ACTION)
+                image:SymbolWithPointSize(SymbolHideAction,
+                                          kSymbolActionPointSize)
+           identifier:nil
+              handler:^(__kindof UIAction* action) {
+                [weakSelf handleRemoveTap];
+              }];
+  removeAction.attributes = UIMenuElementAttributesDestructive;
+  removeAction.accessibilityIdentifier =
+      kFormSuggestionLabelRemoveAccessibilityIdentifier;
+  return removeAction;
+}
+
 // Returns the context menu for the suggestion.
 - (UIMenu*)contextMenu {
   NSMutableArray<UIMenuElement*>* children = [[NSMutableArray alloc] init];
@@ -874,6 +896,11 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 
   if ([_delegate hasSourcesForSuggestion:self.suggestion]) {
     [children addObject:[self viewSourcesAction]];
+  }
+
+  if (self.suggestion.type == autofill::SuggestionType::kFillAutofillAi &&
+      [_delegate canSuppressPersonalContextSuggestion:self.suggestion]) {
+    [children addObject:[self removeAction]];
   }
 
   NSString* title = @"";

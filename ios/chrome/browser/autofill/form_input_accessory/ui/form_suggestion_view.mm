@@ -276,8 +276,18 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   [self.formSuggestionViewDelegate openSourcesForSuggestion:suggestion];
 }
 
+- (void)suppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  [self.formSuggestionViewDelegate
+      suppressPersonalContextSuggestion:suggestion];
+}
+
 - (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
   return [self.formSuggestionViewDelegate hasSourcesForSuggestion:suggestion];
+}
+
+- (BOOL)canSuppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  return [self.formSuggestionViewDelegate
+      canSuppressPersonalContextSuggestion:suggestion];
 }
 
 - (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {

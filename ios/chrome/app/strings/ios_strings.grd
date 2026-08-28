@@ -694,6 +694,10 @@
       <message name="IDS_IOS_AUTOFILL_AI_PREVIOUSLY_FILLED_SECTION_TITLE" desc="Title for the previously filled section in the Autofill AI suggestions popup. [iOS only]">
         Previously filled
       </message>
+      <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_ACTION" desc="Context menu option to remove an Autofill AI suggestion from personal context. [iOS only]" translateable="false">
+        Remove
+      </message>
       <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_GOT_IT" desc="Primary button label for the Private Inference notice bottom sheet. [iOS only]">
         Got it
       </message>

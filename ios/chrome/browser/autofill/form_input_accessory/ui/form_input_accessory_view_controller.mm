@@ -808,8 +808,17 @@ UIImage* GetManualFillSymbol() {
   [self.contextMenuHandler openSourcesForSuggestion:suggestion];
 }
 
+- (void)suppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  [self.contextMenuHandler suppressPersonalContextSuggestion:suggestion];
+}
+
 - (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
   return [self.contextMenuHandler hasSourcesForSuggestion:suggestion];
+}
+
+- (BOOL)canSuppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
+  return
+      [self.contextMenuHandler canSuppressPersonalContextSuggestion:suggestion];
 }
 
 - (NSString*)formSuggestionView:(FormSuggestionView*)formSuggestionView

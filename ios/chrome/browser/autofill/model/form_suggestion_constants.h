@@ -20,6 +20,9 @@ extern NSString* const kFormSuggestionLabelEditAccessibilityIdentifier;
 // Accessibility identifier for View Sources action in context menu.
 extern NSString* const kFormSuggestionLabelViewSourcesAccessibilityIdentifier;
 
+// Accessibility identifier for Remove action in context menu.
+extern NSString* const kFormSuggestionLabelRemoveAccessibilityIdentifier;
+
 // Accessibility identifier for FormSuggestionView.
 extern NSString* const kFormSuggestionsViewAccessibilityIdentifier;
 

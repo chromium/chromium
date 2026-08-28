@@ -517,3 +517,42 @@ TEST_F(FormInputAccessoryViewControllerTest, OpenSourcesForSuggestion) {
 
   EXPECT_OCMOCK_VERIFY(context_menu_handler);
 }
+
+// Tests that FormInputAccessoryViewController forwards
+// canSuppressPersonalContextSuggestion: to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest,
+       CanSuppressPersonalContextSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMStub(
+      [context_menu_handler canSuppressPersonalContextSuggestion:suggestion])
+      .andReturn(YES);
+
+  EXPECT_TRUE([(id<FormSuggestionViewDelegate>)view_controller_
+      canSuppressPersonalContextSuggestion:suggestion]);
+}
+
+// Tests that FormInputAccessoryViewController forwards
+// suppressPersonalContextSuggestion: to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest,
+       SuppressPersonalContextSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMExpect(
+      [context_menu_handler suppressPersonalContextSuggestion:suggestion]);
+
+  [(id<FormSuggestionViewDelegate>)view_controller_
+      suppressPersonalContextSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(context_menu_handler);
+}
