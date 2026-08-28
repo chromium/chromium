@@ -1315,6 +1315,38 @@ bool BrowserAutofillManager::MaybeShowPrivateInferenceNotice(
   return false;
 }
 
+std::vector<Suggestion>
+BrowserAutofillManager::CreatePasskeySuggestionsForMerge(
+    const FormFieldData& field) {
+  if (!ShouldShowWebauthnHybridEntryPoint(field)) {
+    return {};
+  }
+  PasswordManagerDelegate* password_delegate =
+      client().GetPasswordManagerDelegate(field.global_id());
+  if (!password_delegate) {
+    return {};
+  }
+
+  // If any field **on the page** allows starting the hybrid passkey flow,
+  // these suggestions become available.
+  std::vector<Suggestion> suggestions;
+  if (std::optional<Suggestion> inline_qr_suggestion =
+          password_delegate->GetWebauthnInlineQrCodeSuggestion()) {
+    suggestions.push_back(*std::move(inline_qr_suggestion));
+  }
+  if (std::optional<Suggestion> passkey_suggestion =
+          password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+    suggestions.push_back(*std::move(passkey_suggestion));
+  }
+  return suggestions;
+}
+
+void BrowserAutofillManager::MergePasskeysAndExistingSuggestions(
+    std::vector<Suggestion>& suggestions,
+    std::vector<Suggestion> passkey_suggestions) {
+  base::Extend(suggestions, std::move(passkey_suggestions));
+}
+
 std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
     std::map<FillingProduct, std::vector<Suggestion>> suggestions_map,
     const AutofillField* trigger_field,
@@ -1354,6 +1386,17 @@ std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
         trigger_field->Type().GetAddressType());
   }
   return address_suggestions;
+}
+
+void BrowserAutofillManager::MergeIdentityCredentialsAndAddressSuggestions(
+    std::vector<Suggestion>& suggestions,
+    std::vector<Suggestion> identity_credential_suggestions) {
+  // TODO(crbug.com/380367784): figure out what to do when both verified
+  // and unverified suggestions point to the same email address.
+  suggestions.insert(
+      suggestions.begin(),
+      std::make_move_iterator(identity_credential_suggestions.begin()),
+      std::make_move_iterator(identity_credential_suggestions.end()));
 }
 
 void BrowserAutofillManager::MergeAutocompleteAndAddressSuggestions(
@@ -1565,38 +1608,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
       form, form_structure, field, autofill_field, client(),
       std::move(on_suggestions_returned));
-}
-
-std::vector<Suggestion>
-BrowserAutofillManager::CreatePasskeySuggestionsForMerge(
-    const FormFieldData& field) {
-  if (!ShouldShowWebauthnHybridEntryPoint(field)) {
-    return {};
-  }
-  PasswordManagerDelegate* password_delegate =
-      client().GetPasswordManagerDelegate(field.global_id());
-  if (!password_delegate) {
-    return {};
-  }
-
-  // If any field **on the page** allows starting the hybrid passkey flow,
-  // these suggestions become available.
-  std::vector<Suggestion> suggestions;
-  if (std::optional<Suggestion> inline_qr_suggestion =
-          password_delegate->GetWebauthnInlineQrCodeSuggestion()) {
-    suggestions.push_back(*std::move(inline_qr_suggestion));
-  }
-  if (std::optional<Suggestion> passkey_suggestion =
-          password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-    suggestions.push_back(*std::move(passkey_suggestion));
-  }
-  return suggestions;
-}
-
-void BrowserAutofillManager::MergePasskeysAndExistingSuggestions(
-    std::vector<Suggestion>& suggestions,
-    std::vector<Suggestion> passkey_suggestions) {
-  base::Extend(suggestions, std::move(passkey_suggestions));
 }
 
 void BrowserAutofillManager::GenerateFooter(
@@ -3140,17 +3151,6 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   }
 
   return false;
-}
-
-void BrowserAutofillManager::MergeIdentityCredentialsAndAddressSuggestions(
-    std::vector<Suggestion>& suggestions,
-    std::vector<Suggestion> identity_credential_suggestions) {
-  // TODO(crbug.com/380367784): figure out what to do when both verified
-  // and unverified suggestions point to the same email address.
-  suggestions.insert(
-      suggestions.begin(),
-      std::make_move_iterator(identity_credential_suggestions.begin()),
-      std::make_move_iterator(identity_credential_suggestions.end()));
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
