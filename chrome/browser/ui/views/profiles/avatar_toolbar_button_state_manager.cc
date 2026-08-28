@@ -366,6 +366,59 @@ class IncognitoStateProvider : public PrivateBaseStateProvider {
   }
 };
 
+class EnterpriseIsolatedStateProvider : public PrivateBaseStateProvider {
+ public:
+  explicit EnterpriseIsolatedStateProvider(Profile* profile,
+                                           StateObserver* state_observer)
+      : PrivateBaseStateProvider(profile, state_observer) {}
+
+  ~EnterpriseIsolatedStateProvider() override = default;
+
+  // StateProvider:
+  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
+      override {
+    // TODO(b/548967433): Implement once IsolatedModeMenuView lands in follow-up
+    // CL.
+    return base::DoNothing();
+  }
+
+  std::u16string GetText() const override {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_AVATAR_BUTTON_ISOLATED_MODE,
+        static_cast<int>(ProfileBrowserCollection::GetForProfile(&profile())
+                             ->GetOffTheRecordBrowserCount()));
+  }
+
+  std::optional<SkColor> GetHighlightColor(
+      const ui::ColorProvider& color_provider) const override {
+    return color_provider.GetColor(kColorAvatarButtonHighlightDefault);
+  }
+
+  std::optional<SkColor> GetHighlightTextColor(
+      const ui::ColorProvider& color_provider) const override {
+    return color_provider.GetColor(
+        kColorAvatarButtonHighlightDefaultForeground);
+  }
+
+  std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
+      int icon_size,
+      SkColor /*icon_color*/,
+      const ui::ColorProvider& color_provider) const override {
+    auto [image, icon_type] = GetProfileAvatarImage(
+        *profile().GetOriginalProfile(), color_provider, icon_size);
+    ui::ImageModel avatar_model =
+        ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+            image, icon_size, icon_size, profiles::SHAPE_CIRCLE));
+    return {avatar_model, icon_type};
+  }
+
+  std::u16string GetAvatarTooltipText() const override {
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_ISOLATED_MODE_TOOLTIP);
+  }
+
+  bool ShouldPaintBorder() const override { return true; }
+};
+
 class ExplicitStateProvider : public StateProvider {
  public:
   explicit ExplicitStateProvider(
@@ -1002,6 +1055,7 @@ class PromoStateProviderCoordinator
       case ButtonState::kPasskeysLockedError:
       case ButtonState::kOnSignin:
       case ButtonState::kIncognitoProfile:
+      case ButtonState::kEnterpriseIsolatedProfile:
       case ButtonState::kGuestSession:
       case ButtonState::kNormal:
       case ButtonState::kExplicitTextShowing:
@@ -2498,6 +2552,12 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     states_[ButtonState::kGuestSession] =
         std::make_unique<GuestStateProvider>(profile,
                                              /*state_observer=*/this);
+  } else if (profile->IsEnterpriseIsolatedModeProfile()) {
+    // This state is always active.
+    states_[ButtonState::kEnterpriseIsolatedProfile] =
+        std::make_unique<EnterpriseIsolatedStateProvider>(
+            profile,
+            /*state_observer=*/this);
   } else if (profile->IsIncognitoProfile()) {
     // This state is always active.
     states_[ButtonState::kIncognitoProfile] =

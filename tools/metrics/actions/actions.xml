@@ -20955,6 +20955,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IsolatedModeMenu_ExitClicked">
+  <owner>szpotekagata@google.com</owner>
+  <description>
+    User clicked on the Close Isolated window button in the Isolated Mode
+    profile menu.
+  </description>
+</action>
+
+<action name="IsolatedModeMenu_Show">
+  <owner>szpotekagata@google.com</owner>
+  <description>
+    Recorded when the Isolated Mode profile menu is opened.
+  </description>
+</action>
+
 <action name="Italic">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

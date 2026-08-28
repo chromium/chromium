@@ -278,6 +278,7 @@ struct AppMenuControlState {
 enum AvatarToolbarButtonState {
   kGuestSession,
   kIncognitoProfile,
+  kEnterpriseIsolatedProfile,
   kExplicitTextShowing,
   kOnSignin,
   kShowIdentityName,

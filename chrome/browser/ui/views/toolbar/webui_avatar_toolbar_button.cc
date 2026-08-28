@@ -35,6 +35,9 @@ toolbar_ui_api::mojom::AvatarToolbarButtonState MapAvatarState(
       return toolbar_ui_api::mojom::AvatarToolbarButtonState::kGuestSession;
     case ::AvatarToolbarButtonState::kIncognitoProfile:
       return toolbar_ui_api::mojom::AvatarToolbarButtonState::kIncognitoProfile;
+    case ::AvatarToolbarButtonState::kEnterpriseIsolatedProfile:
+      return toolbar_ui_api::mojom::AvatarToolbarButtonState::
+          kEnterpriseIsolatedProfile;
     case ::AvatarToolbarButtonState::kExplicitTextShowing:
       return toolbar_ui_api::mojom::AvatarToolbarButtonState::
           kExplicitTextShowing;

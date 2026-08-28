@@ -50,6 +50,9 @@ namespace {
       return ::AvatarToolbarButtonState::kGuestSession;
     case toolbar_ui_api::mojom::AvatarToolbarButtonState::kIncognitoProfile:
       return ::AvatarToolbarButtonState::kIncognitoProfile;
+    case toolbar_ui_api::mojom::AvatarToolbarButtonState::
+        kEnterpriseIsolatedProfile:
+      return ::AvatarToolbarButtonState::kEnterpriseIsolatedProfile;
     case toolbar_ui_api::mojom::AvatarToolbarButtonState::kExplicitTextShowing:
       return ::AvatarToolbarButtonState::kExplicitTextShowing;
     case toolbar_ui_api::mojom::AvatarToolbarButtonState::kOnSignin:

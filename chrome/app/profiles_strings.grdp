@@ -26,6 +26,24 @@
   <message name="IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP" desc="Tooltip for the avatar button when the user is in Incognito mode.">
     You're Incognito
   </message>
+  <message name="IDS_ISOLATED_MODE_BUBBLE_ACCESSIBLE_TITLE" is_accessibility_with_no_ui="true" desc="Accessible title of the avatar menu, opened in Isolated Mode. The message also shows the number of open Isolated Mode windows if they are more than one. [ICU Syntax]">
+      {0, plural,
+        =1 {Isolated Mode}
+        other {# open Isolated Mode windows}
+      }
+  </message>
+  <message name="IDS_AVATAR_BUTTON_ISOLATED_MODE" desc="Short label for the avatar button when the user is in Isolated Mode and the number of open Isolated Mode windows if there are more than one Isolated Mode window open. [ICU Syntax]" meaning="This window is browsing in Isolated Mode and there are more than one Isolated Mode windows open. The counter is not shown when there is only one Isolated Mode window open.">
+    {0, plural,
+      =1 {Isolated}
+      other {Isolated (#)}
+    }
+  </message>
+  <message name="IDS_AVATAR_BUTTON_ISOLATED_MODE_TOOLTIP" desc="Tooltip for the avatar button when the user is in Isolated Mode.">
+    You're in an Isolated Window
+  </message>
+  <message name="IDS_ISOLATED_MODE_SESSION_TITLE" desc="Label for an isolated mode session.">
+    Isolated session
+  </message>
   <message name="IDS_AVATAR_BUTTON_SYNC_ERROR" desc="Short label for the avatar button when there are sync errors for the current profile." meaning="An error has occurred during sync">
     Error
   </message>
@@ -217,6 +235,12 @@
     {0, plural,
       =1 {Close Incognito}
       other {Close Incognito (# windows)}
+    }
+  </message>
+  <message name="IDS_ISOLATED_MODE_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all Isolated Mode windows.">
+    {0, plural,
+      =1 {Close Isolated window}
+      other {Close Isolated (# windows)}
     }
   </message>
   <if expr="not use_titlecase">

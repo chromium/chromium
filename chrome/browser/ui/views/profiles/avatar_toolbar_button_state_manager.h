@@ -38,6 +38,7 @@ class StateObserver;
 enum class AvatarToolbarButtonState {
   kGuestSession,
   kIncognitoProfile,
+  kEnterpriseIsolatedProfile,
   kExplicitTextShowing,
   kOnSignin,
   kShowIdentityName,
