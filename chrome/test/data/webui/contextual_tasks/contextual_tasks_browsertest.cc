@@ -70,6 +70,21 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_TracksFinishedTopLevelNavigation) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'tracks finished top level navigation')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_TracksFinishedTopLevelNavigationRace) {
+  RunTest(
+      "contextual_tasks/app_test.js",
+      "runMochaTest('ContextualTasksAppTest', "
+      "'tracks finished top level navigation when content load wins race')");
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App_Composebox_BasicMode) {
   RunTest("contextual_tasks/app_composebox_basic_mode_test.js", "mocha.run();");

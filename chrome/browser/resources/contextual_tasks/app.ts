@@ -421,6 +421,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // A callback to allow tests to wait until the loadstart handler in this class
   // has finished running.
   private onLoadStartFinishedCallbackForTesting_: (() => void)|null = null;
+  // Tracks whether at least one top-level navigation handler has finished
+  // running. Used to support waiting for the initial navigation in tests.
+  private hasFinishedTopLevelNavigationForTesting_: boolean = false;
   private forceBasicModeIfOpeningThreadHistory_: boolean =
       loadTimeData.getBoolean('forceBasicModeIfOpeningThreadHistory');
   // This is needed to keep navigations between non-AIM pages from triggering
@@ -1186,6 +1189,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // If the frame is no longer loading after waiting for isAiPage,
     // then exit early to prevent racind.
     if (!this.isFrameLoading) {
+      this.hasFinishedTopLevelNavigationForTesting_ = true;
       if (this.onLoadStartFinishedCallbackForTesting_) {
         this.onLoadStartFinishedCallbackForTesting_();
       }
@@ -1236,6 +1240,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     this.isInitialFrameLoad_ = false;
 
+    this.hasFinishedTopLevelNavigationForTesting_ = true;
     if (this.onLoadStartFinishedCallbackForTesting_) {
       this.onLoadStartFinishedCallbackForTesting_();
     }
@@ -1824,6 +1829,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   setOnLoadStartFinishedCallbackForTesting(callback: () => void) {
     this.onLoadStartFinishedCallbackForTesting_ = callback;
+  }
+
+  getHasFinishedTopLevelNavigationForTesting(): boolean {
+    return this.hasFinishedTopLevelNavigationForTesting_;
   }
 
   setMockPostMessageHandlerForTesting(

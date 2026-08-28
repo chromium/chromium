@@ -986,6 +986,49 @@ suite('ContextualTasksAppTest', function() {
         'isFrameLoading should be false');
   });
 
+  test('tracks finished top level navigation', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+    const appElement = document.createElement('contextual-tasks-app');
+    const event = new Event('loadstart');
+    Object.assign(event, {url: fixtureUrl, isTopLevel: true});
+
+    assertFalse(appElement.getHasFinishedTopLevelNavigationForTesting());
+
+    await appElement.onThreadFrameTopLevelNavigationForTesting(event);
+
+    assertTrue(appElement.getHasFinishedTopLevelNavigationForTesting());
+    appElement.onThreadFrameContentLoadForTesting();
+    assertTrue(appElement.getHasFinishedTopLevelNavigationForTesting());
+  });
+
+  test(
+      'tracks finished top level navigation when content load wins race',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        const {promise: isAiPagePromise, resolve: resolveIsAiPage} =
+            Promise.withResolvers<{isAiPage: boolean}>();
+        proxy.handler.isAiPage = () => isAiPagePromise;
+        proxy.handler.isZeroState = () => Promise.resolve({isZeroState: false});
+        BrowserProxyImpl.setInstance(proxy);
+        const appElement = document.createElement('contextual-tasks-app');
+        const event = new Event('loadstart');
+        Object.assign(event, {url: fixtureUrl, isTopLevel: true});
+
+        assertFalse(appElement.getHasFinishedTopLevelNavigationForTesting());
+
+        const topLevelNavigationPromise =
+            appElement.onThreadFrameTopLevelNavigationForTesting(event);
+        assertTrue(appElement.getIsFrameLoadingForTesting());
+        appElement.onThreadFrameContentLoadForTesting();
+        assertFalse(appElement.getIsFrameLoadingForTesting());
+        assertFalse(appElement.getHasFinishedTopLevelNavigationForTesting());
+        resolveIsAiPage({isAiPage: true});
+        await topLevelNavigationPromise;
+
+        assertTrue(appElement.getHasFinishedTopLevelNavigationForTesting());
+      });
+
   test('sets isFrameLoading to false when load aborts', async () => {
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);

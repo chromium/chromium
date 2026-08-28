@@ -1227,18 +1227,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFrameLoadedEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxFocusedEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHasFinishedTopLevelNavigationEvent);
 
-// TODO(crbug.com/528971436): Flaky on Linux dbg.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden \
-  DISABLED_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden
-#else
-#define MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden \
-  ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden
-#endif
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-    MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
   SetUpTasks();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
@@ -1263,6 +1255,14 @@ IN_PROC_BROWSER_TEST_F(
       "(app) => app.shadowRoot.activeElement && "
       "app.shadowRoot.activeElement.id === 'composebox'";
   composebox_focused.event = kComposeboxFocusedEvent;
+
+  StateChange has_finished_top_level_navigation;
+  has_finished_top_level_navigation.type =
+      StateChange::Type::kExistsAndConditionTrue;
+  has_finished_top_level_navigation.where = {"contextual-tasks-app"};
+  has_finished_top_level_navigation.test_function =
+      "(app) => app.getHasFinishedTopLevelNavigationForTesting()";
+  has_finished_top_level_navigation.event = kHasFinishedTopLevelNavigationEvent;
 
   RunTestSequence(
       Do([&]() {
@@ -1326,10 +1326,20 @@ IN_PROC_BROWSER_TEST_F(
             "  app.forcedComposeboxBounds_ = null;"
             "})()"));
       }),
+      WaitForStateChange(kSidePanelWebContentsId,
+                         has_finished_top_level_navigation),
       WaitForStateChange(kSidePanelWebContentsId, frame_loaded), Do([&]() {
         content::WebContents* side_panel_contents =
             coordinator->GetActiveWebContents();
         ASSERT_NE(side_panel_contents, nullptr);
+        // Isolate jump fix visibility from unrelated initial load CSS gating.
+        EXPECT_TRUE(content::ExecJs(
+            side_panel_contents,
+            "(async () => {"
+            "  const app = document.querySelector('contextual-tasks-app');"
+            "  app.setIsInitialFrameLoadForTesting(false);"
+            "  await app.updateComplete;"
+            "})()"));
         EXPECT_EQ(
             true,
             content::EvalJs(
@@ -1339,8 +1349,7 @@ IN_PROC_BROWSER_TEST_F(
                 "  return app.isComposeboxHidden_();"
                 "})()"));
       }),
-      FocusWebContents(kSidePanelWebContentsId),
-      Do([&]() {
+      FocusWebContents(kSidePanelWebContentsId), Do([&]() {
         content::WebContents* side_panel_contents =
             coordinator->GetActiveWebContents();
         ASSERT_NE(side_panel_contents, nullptr);
