@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
+#include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -269,6 +270,20 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
     state->background_color_override =
         color_provider->GetColor(*override_color_id);
   }
+
+  std::string identifier_name;
+  page_actions::PageActionPropertiesProvider provider;
+  if (provider.Contains(action_id_)) {
+    ui::ElementIdentifier element_id =
+        provider.GetProperties(action_id_).element_identifier;
+    if (element_id) {
+      identifier_name = element_id.GetName();
+    }
+  }
+  state->identifier = tracked_element::mojom::TrackedElementIdentifier::New(
+      std::move(identifier_name),
+      /*secondary_identifier=*/std::string());
+
   return state;
 }
 

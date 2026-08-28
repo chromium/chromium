@@ -4,11 +4,12 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import type {HelpBubbleOptions} from '//resources/cr_components/help_bubble/help_bubble_controller.js';
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, PageActionId, PageActionTrigger} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, PageActionId, PageActionTrigger, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LhsChipIdentifier, PageActionIconElement, PageActionState} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import type {ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api.mojom-webui.js';
@@ -124,10 +125,18 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   onChipCollapseAnimationEnded(_chip: LhsChipIdentifier) {}
 }
 
+interface StartTrackingCall {
+  element: HTMLElement;
+  nativeId: string;
+  options?: HelpBubbleOptions;
+}
+
 suite('PageActionIconTest', function() {
   let icon: PageActionIconElement;
   let toolbarUiHandler: TestToolbarUiHandler;
   let browserProxy: TestToolbarBrowserProxy;
+  let startTrackingCalls: StartTrackingCall[] = [];
+  let stopTrackingCalls: HTMLElement[] = [];
 
   function createBaseState(): PageActionState {
     return {
@@ -140,11 +149,30 @@ suite('PageActionIconTest', function() {
       shouldAnimateChipIn: false,
       shouldAnimateChipOut: false,
       backgroundColorOverride: null,
+      identifier: {
+        nativeIdentifier: '',
+        secondaryIdentifier: '',
+      },
     };
   }
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    startTrackingCalls = [];
+    stopTrackingCalls = [];
+
+    const mockManager: Partial<TrackedElementManager> = {
+      startTracking:
+          (element: HTMLElement, nativeId: string,
+           options?: HelpBubbleOptions) => {
+            startTrackingCalls.push({element, nativeId, options});
+          },
+      stopTracking: (element: HTMLElement) => {
+        stopTrackingCalls.push(element);
+      },
+    };
+    TrackedElementManager.setInstance(mockManager as TrackedElementManager);
+
     browserProxy = new TestToolbarBrowserProxy();
     toolbarUiHandler = browserProxy.toolbarUIHandler;
     BrowserProxyImpl.setInstance(browserProxy);
@@ -401,5 +429,145 @@ suite('PageActionIconTest', function() {
     const actionId =
         await toolbarUiHandler.whenCalled('onPageActionPointerDown');
     assertEquals(PageActionId.kActionShowTranslate, actionId);
+  });
+
+  test('Start tracking when identifier is set', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(1, startTrackingCalls.length);
+    assertEquals(icon.$.button, startTrackingCalls[0]!.element);
+    assertEquals('test-id', startTrackingCalls[0]!.nativeId);
+    assertEquals(0, stopTrackingCalls.length);
+  });
+
+  test('Stop tracking when identifier is cleared', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: '',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(1, startTrackingCalls.length);
+    assertEquals(1, stopTrackingCalls.length);
+    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+  });
+
+  test('Stop tracking and start tracking when identifier changes', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id-1',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id-2',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(1, stopTrackingCalls.length);
+    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+    assertEquals(2, startTrackingCalls.length);
+    assertEquals(icon.$.button, startTrackingCalls[1]!.element);
+    assertEquals('test-id-2', startTrackingCalls[1]!.nativeId);
+  });
+
+  test('Stop tracking on disconnected', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+
+    icon.remove();
+    assertEquals(1, stopTrackingCalls.length);
+    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+  });
+
+  test('Highlight changed callback updates is-menu-open', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+    const options = startTrackingCalls[0]!.options;
+    assertTrue(!!options?.onHighlightChanged);
+
+    assertFalse(icon.$.button.hasAttribute('is-menu-open'));
+
+    options.onHighlightChanged(true);
+    await microtasksFinished();
+    assertTrue(icon.$.button.hasAttribute('is-menu-open'));
+
+    options.onHighlightChanged(false);
+    await microtasksFinished();
+    assertFalse(icon.$.button.hasAttribute('is-menu-open'));
+  });
+
+  test('Help bubble callbacks update hasHelpBubble and tooltip', async () => {
+    icon.state = {
+      ...icon.state,
+      identifier: {
+        nativeIdentifier: 'test-id',
+        secondaryIdentifier: '',
+      },
+    };
+    await microtasksFinished();
+    assertEquals(1, startTrackingCalls.length);
+    const options = startTrackingCalls[0]!.options;
+    assertTrue(!!options?.onHelpBubbleShown);
+    assertTrue(!!options?.onHelpBubbleHidden);
+
+    assertFalse(icon.hasHelpBubble);
+    assertEquals(
+        'Translate this page',
+        icon.adjustTooltipForHelpBubble('Translate this page'));
+
+    options.onHelpBubbleShown();
+    await microtasksFinished();
+    assertTrue(icon.hasHelpBubble);
+    assertEquals('', icon.adjustTooltipForHelpBubble('Translate this page'));
+
+    options.onHelpBubbleHidden();
+    await microtasksFinished();
+    assertFalse(icon.hasHelpBubble);
+    assertEquals(
+        'Translate this page',
+        icon.adjustTooltipForHelpBubble('Translate this page'));
   });
 });

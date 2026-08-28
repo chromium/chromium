@@ -377,6 +377,18 @@ bool PageActionPropertiesProvider::Contains(actions::ActionId action_id) const {
   return kPageActionProperties.contains(action_id);
 }
 
+// static
+std::vector<ui::ElementIdentifier>
+PageActionPropertiesProvider::GetAllElementIdentifiers() {
+  std::vector<ui::ElementIdentifier> result;
+  for (const auto& [action_id, properties] : kPageActionProperties) {
+    if (properties.element_identifier) {
+      result.push_back(properties.element_identifier);
+    }
+  }
+  return result;
+}
+
 const PageActionProperties& PageActionPropertiesProvider::GetProperties(
     actions::ActionId action_id) const {
   CHECK(Contains(action_id));

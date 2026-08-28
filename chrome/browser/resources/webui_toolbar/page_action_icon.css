@@ -5,7 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=/shared/webui_toolbar_shared_vars.css.js
+ * #import=/shared/help_bubble_anchor.css.js
  * #scheme=relative
+ * #include=help-bubble-anchor
  * #css_wrapper_metadata_end */
 
 :host {
