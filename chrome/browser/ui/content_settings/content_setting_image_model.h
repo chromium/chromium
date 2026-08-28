@@ -68,6 +68,9 @@ class ContentSettingImageModel {
   static std::vector<std::unique_ptr<ContentSettingImageModel>>
   GenerateContentSettingImageModels();
 
+  // Returns all element identifiers for all content setting image models.
+  static std::vector<ui::ElementIdentifier> GetAllElementIdentifiers();
+
   // Returns the corresponding index into the above vector for the given
   // ContentSettingsType. For testing.
   static size_t GetContentSettingImageModelIndexForTesting(

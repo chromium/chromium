@@ -124,7 +124,7 @@ export class LocationIconElement extends LocationIconElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.registerHelpBubble('kLocationIconElementId', this.$.button, {
+    this.registerHelpBubble('kLocationIconElementId', this, {
       onHighlightChanged: (highlighted: boolean) => {
         // Manually toggle the DOM attribute to bypass Lit's asynchronous
         // update batching, ensuring the style updates synchronously without

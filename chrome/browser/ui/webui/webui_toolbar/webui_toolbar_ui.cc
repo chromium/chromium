@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -543,8 +544,14 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kToolbarBatterySaverButtonElementId,
        kExtensionsMenuButtonElementId,
        kToolbarActionViewElementId});
-  auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
-  pinned_ids.reserve(pinned_ids.size() + ids->size());
-  pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());
-  return pinned_ids;
+  auto result = webui_toolbar::GetPinnedToolbarActionElementIds();
+  std::vector<ui::ElementIdentifier> content_setting_identifiers =
+      ContentSettingImageModel::GetAllElementIdentifiers();
+  result.reserve(result.size() + ids->size() +
+                 content_setting_identifiers.size());
+  result.insert(result.end(), ids->begin(), ids->end());
+  result.insert(result.end(), content_setting_identifiers.begin(),
+                content_setting_identifiers.end());
+
+  return result;
 }

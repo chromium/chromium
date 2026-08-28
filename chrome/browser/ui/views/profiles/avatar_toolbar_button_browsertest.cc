@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, SigninBrowser) {
   // On ChromeOS, captive portal signin windows show a
   // disabled avatar button to indicate that the window is incognito.
   EXPECT_TRUE(avatar_accessor1.GetVisible());
-  EXPECT_FALSE(avatar_accessor1.GetEnabled());
+  EXPECT_TRUE(avatar_accessor1.WaitForEnabled(false));
 }
 #endif
 

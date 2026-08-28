@@ -152,6 +152,7 @@ class AvatarToolbarButtonTestAccessor {
   bool WaitForRenderedTooltipText(const std::u16string& text);
   bool WaitForAccessibilityLabel(const std::u16string& text);
   bool WaitForAccessibilityDescription(const std::u16string& text);
+  bool WaitForEnabled(bool enabled);
   bool GetEnabled();
   bool GetVisible();
   std::u16string GetText();

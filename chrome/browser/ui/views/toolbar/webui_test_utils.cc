@@ -370,6 +370,11 @@ bool AvatarToolbarButtonTestAccessor::WaitForAccessibilityDescription(
       [this, text]() { return GetAccessibilityDescription() == text; });
 }
 
+bool AvatarToolbarButtonTestAccessor::WaitForEnabled(bool enabled) {
+  return base::test::RunUntil(
+      [this, enabled]() { return GetEnabled() == enabled; });
+}
+
 AvatarToolbarButtonInterface* AvatarToolbarButtonTestAccessor::GetInterface() {
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   if (!browser_view) {
@@ -453,10 +458,20 @@ bool AvatarToolbarButtonTestAccessor::GetEnabled() {
             return contents &&
                    content::EvalJs(
                        contents,
-                       "document.querySelector('toolbar-app')"
-                       "?.shadowRoot?.querySelector('avatar-button')"
-                       "?.shadowRoot?.querySelector('#button')"
-                       "?.disabled === false")
+                       "(async () => {"
+                       "  const app = document.querySelector('toolbar-app');"
+                       "  if (!app) return false;"
+                       "  await app.updateComplete;"
+                       "  const btn = "
+                       "app.shadowRoot?.querySelector('avatar-button');"
+                       "  if (!btn) return false;"
+                       "  await btn.updateComplete;"
+                       "  const chip = "
+                       "btn.shadowRoot?.querySelector('#button');"
+                       "  if (!chip) return false;"
+                       "  await chip.updateComplete;"
+                       "  return !chip.disabled;"
+                       "})()")
                        .ExtractBool();
           },
       },

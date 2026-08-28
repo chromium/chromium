@@ -8,8 +8,7 @@ import type {ReloadButtonElement} from './reload_button.js';
 
 export function getHtml(this: ReloadButtonElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button
-    id="button"
+<cr-icon-button id="button" class="iph-visual-target"
     iron-icon="${this.getIronIcon_()}"
     title="${this.tooltip}"
     aria-label="${this.accName_}"

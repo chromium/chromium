@@ -5,8 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=/shared/help_bubble_anchor.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit
+ * #include=cr-hidden-style-lit help-bubble-anchor
  * #css_wrapper_metadata_end */
 
 :host {
@@ -58,41 +59,6 @@ cr-button[is-menu-open],
 :host(.anchor-highlight) cr-icon-button {
   background-color: var(--cr-active-background-color);
 }
-
-:host(.help-anchor-highlight) cr-icon-button,
-:host(.help-anchor-highlight) cr-button {
-  --cr-hover-background-color: transparent;
-  --cr-icon-button-hover-background-color: transparent;
-  --cr-icon-button-active-background-color: transparent;
-  background-color: transparent !important;
-}
-
-:host(.help-anchor-highlight) cr-icon-button::before,
-:host(.help-anchor-highlight) cr-button::before {
-  animation: pulse 1600ms infinite;
-  background-color: var(--color-button-feature-attention-highlight);
-  border-radius: 50%;
-  content: '';
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: -1;
-}
-
-@keyframes pulse {
-  0% {
-    inset: 0;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  50% {
-    inset: 3px;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  100% {
-    inset: 0;
-  }
-}
-
 
 /* The "Blue Bar" status indicator that appears when a split is active */
 .status-indicator {

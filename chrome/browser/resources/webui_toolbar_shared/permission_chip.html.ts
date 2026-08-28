@@ -9,7 +9,7 @@ import type {PermissionChipElement} from './permission_chip.js';
 export function getHtml(this: PermissionChipElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<button id="chip" type="button"
+<button id="chip" class="iph-visual-target" type="button"
     role="button"
     tabindex="0"
     ?collapsed="${this.isFullyCollapsed_}"

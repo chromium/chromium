@@ -36,6 +36,29 @@ suite('IPH', function() {
         normalTooltip, button.getAttribute('title'),
         `Button ${tagName} should restore tooltip after IPH`);
 
+    const hostWithHighlight =
+        el.shadowRoot!.querySelector('toolbar-chip-button') || el;
+    const visualTarget = el.shadowRoot!.querySelector('.iph-visual-target') ||
+        el.shadowRoot!.querySelector('toolbar-chip-button')
+            ?.shadowRoot!.querySelector('.iph-visual-target')!;
+    assertTrue(
+        !!visualTarget, `Button ${tagName} should have an iph-visual-target`);
+
+    assertEquals(
+        'none', window.getComputedStyle(visualTarget, '::before').animationName,
+        `Button ${tagName} should not pulse when highlight is inactive`);
+
+    hostWithHighlight.classList.add('help-anchor-highlight');
+    await microtasksFinished();
+
+    assertEquals(
+        'pulse',
+        window.getComputedStyle(visualTarget, '::before').animationName,
+        `Button ${tagName} should pulse when help-anchor-highlight is active`);
+    assertEquals(
+        '1', window.getComputedStyle(visualTarget, '::before').opacity,
+        `Button ${tagName} pulse layer should have opacity: 1`);
+
     el.remove();
   }
 

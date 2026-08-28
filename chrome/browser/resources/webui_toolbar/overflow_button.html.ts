@@ -13,6 +13,7 @@ export function getHtml(this: OverflowButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-icon-button
+    class="iph-visual-target"
     iron-icon="webui-toolbar:keyboard_double_arrow_right"
     noink
     @pointerdown="${this.onPointerdown_}"

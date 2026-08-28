@@ -56,6 +56,9 @@ toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
         l10n_util::GetStringUTF16(model->AccessibilityAnnouncementStringId());
   }
   state->should_run_animation = model->ShouldRunAnimation(web_contents);
+  state->identifier = tracked_element::mojom::TrackedElementIdentifier::New(
+      model->GetElementIdentifier().GetName(),
+      /*secondary_identifier=*/std::string());
 
   return state;
 }

@@ -8,7 +8,7 @@ import type {ExtensionElement} from './extension.js';
 
 export function getHtml(this: ExtensionElement) {
   return html`<!--_html_template_start_-->
-  <cr-button type="button"
+  <cr-button class="iph-visual-target" type="button"
       tabindex="-1"
       ?is-menu-open="${this.trackedHighlighted}"
       title="${this.state.tooltip}"

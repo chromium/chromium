@@ -81,6 +81,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "help_bubble_anchor.css",
     "icon_from_table.css",
     "permission_chip.css",
     "permission_dashboard.css",

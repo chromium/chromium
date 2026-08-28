@@ -5,7 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=/shared/help_bubble_anchor.css.js
  * #scheme=relative
+ * #include=help-bubble-anchor
  * #css_wrapper_metadata_end */
 
 :host {
@@ -198,30 +200,6 @@ icon-from-table {
 :host([has-text][is-dangerous]) #text {
   /* Prevent mathematically double-applying the extra trailing pad */
   padding-inline-end: 0;
-}
-
-#button.help-anchor-highlight {
-  background-color: transparent;
-}
-
-#button.help-anchor-highlight::before {
-  animation: pulse 1600ms infinite;
-  background-color: var(--color-button-feature-attention-highlight);
-  opacity: 1;
-}
-
-@keyframes pulse {
-  0% {
-    inset: 0;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  50% {
-    inset: 3px;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  100% {
-    inset: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

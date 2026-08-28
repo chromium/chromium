@@ -112,6 +112,88 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
                                       kProtectedMediaElementId);
 #endif
 
+namespace {
+
+using ImageType = ContentSettingImageModel::ImageType;
+
+// The ordering of the models here influences the order in which icons are
+// shown in the omnibox.
+constexpr ImageType kContentSettingImageOrder[] = {
+    ImageType::kCookies,
+    ImageType::kImages,
+    ImageType::kJavaScript,
+    ImageType::kPopups,
+    ImageType::kGeolocation,
+    ImageType::kMixedScript,
+    ImageType::kProtocolHandlers,
+    ImageType::kMediaStream,
+    ImageType::kSensors,
+    ImageType::kAds,
+    ImageType::kAutomaticDownloads,
+    ImageType::kMidiSysex,
+    ImageType::kSound,
+    ImageType::kFramebust,
+    ImageType::kClipboardReadWrite,
+    ImageType::kNotifications,
+    ImageType::kStorageAccess,
+#if BUILDFLAG(IS_CHROMEOS)
+    ImageType::kSmartCard,
+#endif
+#if BUILDFLAG(IS_WIN)
+    ImageType::kProtectedMediaIdentifier,
+#endif
+};
+
+ui::ElementIdentifier GetElementIdentifierForType(ImageType image_type) {
+  switch (image_type) {
+    case ImageType::kCookies:
+      return ContentSettingImageModel::kCookiesIconElementId;
+    case ImageType::kImages:
+      return ContentSettingImageModel::kImagesIconElementId;
+    case ImageType::kJavaScript:
+      return ContentSettingImageModel::kJavaScriptIconElementId;
+    case ImageType::kPopups:
+      return ContentSettingImageModel::kPopupsIconElementId;
+    case ImageType::kGeolocation:
+      return ContentSettingImageModel::kGeolocationIconElementId;
+    case ImageType::kMixedScript:
+      return ContentSettingImageModel::kMixedScriptIconElementId;
+    case ImageType::kProtocolHandlers:
+      return ContentSettingImageModel::kProtocolHandlersIconElementId;
+    case ImageType::kMediaStream:
+      return ContentSettingImageModel::kMediaStreamIconElementId;
+    case ImageType::kAds:
+      return ContentSettingImageModel::kAdsIconElementId;
+    case ImageType::kAutomaticDownloads:
+      return ContentSettingImageModel::kAutomaticDownloadsIconElementId;
+    case ImageType::kMidiSysex:
+      return ContentSettingImageModel::kMidiSysexIconElementId;
+    case ImageType::kSound:
+      return ContentSettingImageModel::kSoundIconElementId;
+    case ImageType::kFramebust:
+      return ContentSettingImageModel::kFramebustElementId;
+    case ImageType::kSensors:
+      return ContentSettingImageModel::kSensorsElementId;
+    case ImageType::kClipboardReadWrite:
+      return ContentSettingImageModel::kClipboardRWElementId;
+    case ImageType::kStorageAccess:
+      return ContentSettingImageModel::kStorageAccessElementId;
+    case ImageType::kNotifications:
+      return kNotificationContentSettingImageView;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ImageType::kSmartCard:
+      return ContentSettingImageModel::kSmartCardIconElementId;
+#endif
+#if BUILDFLAG(IS_WIN)
+    case ImageType::kProtectedMediaIdentifier:
+      return ContentSettingImageModel::kProtectedMediaElementId;
+#endif
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 // The image models hierarchy:
 //
 // ContentSettingImageModel                   - base class
@@ -1468,51 +1550,7 @@ void ContentSettingImageModel::SetIconSize(int icon_size) {
 }
 
 ui::ElementIdentifier ContentSettingImageModel::GetElementIdentifier() const {
-  switch (image_type_) {
-    case ImageType::kCookies:
-      return kCookiesIconElementId;
-    case ImageType::kImages:
-      return kImagesIconElementId;
-    case ImageType::kJavaScript:
-      return kJavaScriptIconElementId;
-    case ImageType::kPopups:
-      return kPopupsIconElementId;
-    case ImageType::kGeolocation:
-      return kGeolocationIconElementId;
-    case ImageType::kMixedScript:
-      return kMixedScriptIconElementId;
-    case ImageType::kProtocolHandlers:
-      return kProtocolHandlersIconElementId;
-    case ImageType::kMediaStream:
-      return kMediaStreamIconElementId;
-    case ImageType::kAds:
-      return kAdsIconElementId;
-    case ImageType::kAutomaticDownloads:
-      return kAutomaticDownloadsIconElementId;
-    case ImageType::kMidiSysex:
-      return kMidiSysexIconElementId;
-    case ImageType::kSound:
-      return kSoundIconElementId;
-    case ImageType::kFramebust:
-      return kFramebustElementId;
-    case ImageType::kSensors:
-      return kSensorsElementId;
-    case ImageType::kClipboardReadWrite:
-      return kClipboardRWElementId;
-    case ImageType::kStorageAccess:
-      return kStorageAccessElementId;
-    case ImageType::kNotifications:
-      return kNotificationContentSettingImageView;
-#if BUILDFLAG(IS_CHROMEOS)
-    case ImageType::kSmartCard:
-      return kSmartCardIconElementId;
-#endif
-#if BUILDFLAG(IS_WIN)
-    case ImageType::kProtectedMediaIdentifier:
-      return kProtectedMediaElementId;
-#endif
-  }
-  NOTREACHED();
+  return GetElementIdentifierForType(image_type_);
 }
 
 int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
@@ -1542,34 +1580,6 @@ ContentSettingImageModel::CreateBubbleModel(
 // static
 std::vector<std::unique_ptr<ContentSettingImageModel>>
 ContentSettingImageModel::GenerateContentSettingImageModels() {
-  // The ordering of the models here influences the order in which icons are
-  // shown in the omnibox.
-  constexpr ImageType kContentSettingImageOrder[] = {
-      ImageType::kCookies,
-      ImageType::kImages,
-      ImageType::kJavaScript,
-      ImageType::kPopups,
-      ImageType::kGeolocation,
-      ImageType::kMixedScript,
-      ImageType::kProtocolHandlers,
-      ImageType::kMediaStream,
-      ImageType::kSensors,
-      ImageType::kAds,
-      ImageType::kAutomaticDownloads,
-      ImageType::kMidiSysex,
-      ImageType::kSound,
-      ImageType::kFramebust,
-      ImageType::kClipboardReadWrite,
-      ImageType::kNotifications,
-      ImageType::kStorageAccess,
-#if BUILDFLAG(IS_CHROMEOS)
-      ImageType::kSmartCard,
-#endif
-#if BUILDFLAG(IS_WIN)
-      ImageType::kProtectedMediaIdentifier,
-#endif
-  };
-
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
   for (auto type : kContentSettingImageOrder) {
 #if BUILDFLAG(IS_WIN)
@@ -1580,6 +1590,18 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
     }
 #endif
     result.push_back(CreateForContentType(type));
+  }
+
+  return result;
+}
+
+// static
+std::vector<ui::ElementIdentifier>
+ContentSettingImageModel::GetAllElementIdentifiers() {
+  std::vector<ui::ElementIdentifier> result;
+  result.reserve(std::size(kContentSettingImageOrder));
+  for (auto type : kContentSettingImageOrder) {
+    result.push_back(GetElementIdentifierForType(type));
   }
 
   return result;

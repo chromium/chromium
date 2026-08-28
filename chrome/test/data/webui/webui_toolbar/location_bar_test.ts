@@ -134,6 +134,10 @@ suite('LocationBar', function() {
         isBubbleVisible: false,
         shouldRunAnimation: false,
         explanatoryString: '',
+        identifier: {
+          nativeIdentifier: '',
+          secondaryIdentifier: '',
+        },
       }],
     };
     await microtasksFinished();

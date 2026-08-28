@@ -52,6 +52,7 @@ mojom("mojom_data_model") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/range/mojom",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 
   # Generate TypeScript bindings for WebUI.

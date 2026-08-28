@@ -298,4 +298,45 @@ suite('AppMenuButtonTest', function() {
             .getPropertyValue('--toolbar-chip-trailing-margin')
             .trim());
   });
+
+  test('Anchor Highlight Does Not Pulse', async function() {
+    const visualTarget =
+        appMenuButton.$.button.shadowRoot.querySelector('.iph-visual-target')!;
+    assertTrue(!!visualTarget);
+
+    appMenuButton.classList.add('anchor-highlight');
+    await microtasksFinished();
+
+    assertEquals(
+        'none',
+        window.getComputedStyle(visualTarget, '::before').animationName);
+    assertEquals(
+        '1',
+        getComputedStyle(appMenuButton.$.button)
+            .getPropertyValue('--toolbar-chip-highlight-opacity')
+            .trim());
+  });
+
+  test('Help Bubble Activates Pulse Animation', async function() {
+    const visualTarget =
+        appMenuButton.$.button.shadowRoot.querySelector('.iph-visual-target')!;
+    assertTrue(!!visualTarget);
+
+    appMenuButton.hasHelpBubble = true;
+    await microtasksFinished();
+
+    assertTrue(
+        appMenuButton.$.button.classList.contains('help-anchor-highlight'));
+    assertEquals(
+        'pulse',
+        window.getComputedStyle(visualTarget, '::before').animationName);
+    assertEquals(
+        '1', window.getComputedStyle(visualTarget, '::before').opacity);
+
+    appMenuButton.hasHelpBubble = false;
+    await microtasksFinished();
+
+    assertFalse(
+        appMenuButton.$.button.classList.contains('help-anchor-highlight'));
+  });
 });

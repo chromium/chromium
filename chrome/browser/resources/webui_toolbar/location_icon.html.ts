@@ -9,7 +9,7 @@ import type {LocationIconElement} from './location_icon.js';
 export function getHtml(this: LocationIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<button id="button" type="button"
+<button id="button" type="button" class="iph-visual-target"
     title="${this.state.tooltip}"
     role="${this.getAccessibilityRole_()}"
     aria-label="${this.state.accessibilityState.label}"

@@ -6,7 +6,9 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./webui_toolbar_shared_vars.css.js
+ * #import=./help_bubble_anchor.css.js
  * #scheme=relative
+ * #include=help-bubble-anchor
  * #css_wrapper_metadata_end */
 
 :host {
@@ -218,30 +220,6 @@
       circle at calc(100% - var(--mask-center-x)) 50%,
       transparent var(--mask-radius),
       black calc(var(--mask-radius) + 0.5px));
-}
-
-:host(.help-anchor-highlight) #chip {
-  background-color: transparent;
-}
-
-:host(.help-anchor-highlight) #chip::before {
-  animation: pulse 1600ms infinite;
-  background-color: var(--color-button-feature-attention-highlight);
-  opacity: 1;
-}
-
-@keyframes pulse {
-  0% {
-    inset: 0;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  50% {
-    inset: 3px;
-    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
-  }
-  100% {
-    inset: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

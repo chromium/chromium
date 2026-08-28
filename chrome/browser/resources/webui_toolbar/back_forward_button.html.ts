@@ -27,7 +27,7 @@ export function getHtml(this: BackForwardButtonElement) {
     @click="${this.onClick_}">
   <!-- Disable standard ink ripple when Glow Up is enabled to avoid visual
     clashing with the interactive SMIL icon animation and glow styling. -->
-  <cr-icon-button id="button"
+  <cr-icon-button id="button" class="iph-visual-target"
       iron-icon="${this.getIronIcon_()}"
       ?disabled="${!this.state.enabled}"
       ?noink="${this.glowUpEnabled}"

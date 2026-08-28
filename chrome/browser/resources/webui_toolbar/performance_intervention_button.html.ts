@@ -9,7 +9,7 @@ import type {PerformanceInterventionButtonElement} from './performance_intervent
 export function getHtml(this: PerformanceInterventionButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-icon-button id="button"
+<cr-icon-button id="button" class="iph-visual-target"
     iron-icon="webui-toolbar:speed"
     ?is-activated="${this.state.isActive}"
     @click="${this.onClick_}"

@@ -173,8 +173,6 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#location-bar', id: 'kLocationBarElementId'},
   {selector: '#home', id: 'kToolbarHomeButtonElementId'},
   {selector: '#overflow', id: 'kToolbarOverflowButtonElementId'},
-  {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
-  {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#battery-saver', id: 'kToolbarBatterySaverButtonElementId'},
   {
     selector: '#performance-intervention',
